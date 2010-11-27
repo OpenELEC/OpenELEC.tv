@@ -1,7 +1,6 @@
-diff -Naur gcc-4.5-20100624-old/configure gcc-4.5-20100624-new/configure
-diff -Naur gcc-4.5-20100624-old/configure.ac gcc-4.5-20100624-new/configure.ac
---- gcc-4.5-20100624-old/configure.ac	2010-06-24 14:06:37.000000000 -0700
-+++ gcc-4.5-20100624-new/configure.ac	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/configure.ac gcc-4.5-20101118.patch/configure.ac
+--- gcc-4.5-20101118/configure.ac	2010-10-06 12:29:55.000000000 +0200
++++ gcc-4.5-20101118.patch/configure.ac	2010-11-26 03:48:17.007444557 +0100
 @@ -174,7 +174,7 @@
  # know that we are building the simulator.
  # binutils, gas and ld appear in that order because it makes sense to run
@@ -82,7 +81,7 @@ diff -Naur gcc-4.5-20100624-old/configure.ac gcc-4.5-20100624-new/configure.ac
 -    # Check for target supported by gold.
 -    case "${target}" in
 -      i?86-*-* | x86_64-*-* | sparc*-*-* | powerpc*-*-* | arm*-*-*)
--        configdirs="`echo " ${configdirs} " | sed -e 's/ ld / gold /'`"
+-        configdirs=`echo " ${configdirs} " | sed -e 's/ ld / gold /'`
 -        ;;
 -    esac
 -  fi
@@ -91,9 +90,9 @@ diff -Naur gcc-4.5-20100624-old/configure.ac gcc-4.5-20100624-new/configure.ac
  # Configure extra directories which are host specific
  
  case "${host}" in
-diff -Naur gcc-4.5-20100624-old/gcc/collect2.c gcc-4.5-20100624-new/gcc/collect2.c
---- gcc-4.5-20100624-old/gcc/collect2.c	2010-06-24 14:06:37.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/collect2.c	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/collect2.c gcc-4.5-20101118.patch/gcc/collect2.c
+--- gcc-4.5-20101118/gcc/collect2.c	2010-06-24 23:06:37.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/collect2.c	2010-11-26 03:42:31.162881405 +0100
 @@ -1114,17 +1114,19 @@
  int
  main (int argc, char **argv)
@@ -336,9 +335,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/collect2.c gcc-4.5-20100624-new/gcc/collect2
  
  #ifdef REAL_NM_FILE_NAME
    nm_file_name = find_a_file (&path, REAL_NM_FILE_NAME);
-diff -Naur gcc-4.5-20100624-old/gcc/common.opt gcc-4.5-20100624-new/gcc/common.opt
---- gcc-4.5-20100624-old/gcc/common.opt	2010-03-17 20:01:09.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/common.opt	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/common.opt gcc-4.5-20101118.patch/gcc/common.opt
+--- gcc-4.5-20101118/gcc/common.opt	2010-03-18 04:01:09.000000000 +0100
++++ gcc-4.5-20101118.patch/gcc/common.opt	2010-11-26 03:42:31.164881431 +0100
 @@ -1401,6 +1401,9 @@
  Common Report Var(flag_unwind_tables) Optimization
  Just generate unwind tables for exception handling
@@ -349,9 +348,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/common.opt gcc-4.5-20100624-new/gcc/common.o
  fuse-linker-plugin
  Common Undocumented
  
-diff -Naur gcc-4.5-20100624-old/gcc/configure gcc-4.5-20100624-new/gcc/configure
---- gcc-4.5-20100624-old/gcc/configure	2010-06-14 03:38:18.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/configure	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/configure gcc-4.5-20101118.patch/gcc/configure
+--- gcc-4.5-20101118/gcc/configure	2010-10-06 21:09:10.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/configure	2010-11-26 03:42:31.184881696 +0100
 @@ -684,6 +684,7 @@
  gcc_cv_objdump
  ORIGINAL_NM_FOR_TARGET
@@ -410,9 +409,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/configure gcc-4.5-20100624-new/gcc/configure
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking what linker to use" >&5
  $as_echo_n "checking what linker to use... " >&6; }
  if test "$gcc_cv_ld" = ../ld/ld-new$build_exeext; then
-diff -Naur gcc-4.5-20100624-old/gcc/configure.ac gcc-4.5-20100624-new/gcc/configure.ac
---- gcc-4.5-20100624-old/gcc/configure.ac	2010-06-14 03:38:18.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/configure.ac	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/configure.ac gcc-4.5-20101118.patch/gcc/configure.ac
+--- gcc-4.5-20101118/gcc/configure.ac	2010-10-06 21:09:10.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/configure.ac	2010-11-26 03:42:31.201881922 +0100
 @@ -1947,6 +1947,17 @@
          AC_PATH_PROG(gcc_cv_ld, $LD_FOR_TARGET)
  fi])
@@ -441,9 +440,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/configure.ac gcc-4.5-20100624-new/gcc/config
  AC_MSG_CHECKING(what linker to use)
  if test "$gcc_cv_ld" = ../ld/ld-new$build_exeext; then
  	# Single tree build which includes ld.  We want to prefer it
-diff -Naur gcc-4.5-20100624-old/gcc/doc/invoke.texi gcc-4.5-20100624-new/gcc/doc/invoke.texi
---- gcc-4.5-20100624-old/gcc/doc/invoke.texi	2010-04-06 07:02:22.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/doc/invoke.texi	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/doc/invoke.texi gcc-4.5-20101118.patch/gcc/doc/invoke.texi
+--- gcc-4.5-20101118/gcc/doc/invoke.texi	2010-09-08 19:36:40.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/doc/invoke.texi	2010-11-26 03:42:31.218882146 +0100
 @@ -390,7 +390,7 @@
  -funit-at-a-time -funroll-all-loops -funroll-loops @gol
  -funsafe-loop-optimizations -funsafe-math-optimizations -funswitch-loops @gol
@@ -453,7 +452,7 @@ diff -Naur gcc-4.5-20100624-old/gcc/doc/invoke.texi gcc-4.5-20100624-new/gcc/doc
  --param @var{name}=@var{value}
  -O  -O0  -O1  -O2  -O3  -Os}
  
-@@ -7415,6 +7415,16 @@
+@@ -7416,6 +7416,16 @@
  
  Disabled by default.
  
@@ -470,9 +469,10 @@ diff -Naur gcc-4.5-20100624-old/gcc/doc/invoke.texi gcc-4.5-20100624-new/gcc/doc
  @item -fcprop-registers
  @opindex fcprop-registers
  After register allocation and post-register allocation instruction splitting,
-diff -Naur gcc-4.5-20100624-old/gcc/exec-tool.in gcc-4.5-20100624-new/gcc/exec-tool.in
---- gcc-4.5-20100624-old/gcc/exec-tool.in	2009-11-08 14:36:51.000000000 -0800
-+++ gcc-4.5-20100624-new/gcc/exec-tool.in	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/doc/invoke.texi.orig gcc-4.5-20101118.patch/gcc/doc/invoke.texi.orig
+diff -Naur gcc-4.5-20101118/gcc/exec-tool.in gcc-4.5-20101118.patch/gcc/exec-tool.in
+--- gcc-4.5-20101118/gcc/exec-tool.in	2009-11-08 23:36:51.000000000 +0100
++++ gcc-4.5-20101118.patch/gcc/exec-tool.in	2010-11-26 03:42:31.226882250 +0100
 @@ -1,6 +1,6 @@
  #! /bin/sh
  
@@ -637,9 +637,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/exec-tool.in gcc-4.5-20100624-new/gcc/exec-t
 +  echo "$invoked: unable to locate executable: $original"
 +  exit 1
 +fi
-diff -Naur gcc-4.5-20100624-old/gcc/gcc.c gcc-4.5-20100624-new/gcc/gcc.c
---- gcc-4.5-20100624-old/gcc/gcc.c	2010-04-18 10:46:08.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/gcc.c	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/gcc.c gcc-4.5-20101118.patch/gcc/gcc.c
+--- gcc-4.5-20101118/gcc/gcc.c	2010-04-18 19:46:08.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/gcc.c	2010-11-26 03:42:31.230882305 +0100
 @@ -790,6 +790,9 @@
      %{v:-plugin-opt=-v} \
      } \
@@ -650,9 +650,9 @@ diff -Naur gcc-4.5-20100624-old/gcc/gcc.c gcc-4.5-20100624-new/gcc/gcc.c
     "%X %{o*} %{A} %{d} %{e*} %{m} %{N} %{n} %{r}\
      %{s} %{t} %{u*} %{x} %{z} %{Z} %{!A:%{!nostdlib:%{!nostartfiles:%S}}}\
      %{static:} %{L*} %(mfwrap) %(link_libgcc) %o\
-diff -Naur gcc-4.5-20100624-old/gcc/opts.c gcc-4.5-20100624-new/gcc/opts.c
---- gcc-4.5-20100624-old/gcc/opts.c	2010-05-17 03:13:28.000000000 -0700
-+++ gcc-4.5-20100624-new/gcc/opts.c	2010-06-25 07:18:18.000000000 -0700
+diff -Naur gcc-4.5-20101118/gcc/opts.c gcc-4.5-20101118.patch/gcc/opts.c
+--- gcc-4.5-20101118/gcc/opts.c	2010-05-17 12:13:28.000000000 +0200
++++ gcc-4.5-20101118.patch/gcc/opts.c	2010-11-26 03:42:31.236882383 +0100
 @@ -2138,8 +2138,9 @@
        /* These are no-ops, preserved for backward compatibility.  */
        break;
