@@ -1,5 +1,5 @@
 #
-# Configuration file for HAMA MCE Remote Control
+# Configuration file for Jetway Remote Control
 #
 # Map a key (or key sequence, if using "wait") to an action.
 # Format: KEY_SEQUENCE = ACTIONS
