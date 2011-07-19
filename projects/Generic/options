@@ -175,7 +175,7 @@
 # Graphic drivers to use (all / i915,i965,r200,r300,r600,radeon,nvidia,nouveau,vmware)
 # Space separated list is supported, 
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 nvidia nouveau"
-  GRAPHIC_DRIVERS="i915 i965 r200 r300 fglrx nvidia vmware"
+  GRAPHIC_DRIVERS="nvidia"
 
 # Use VDPAU video# use linux-next (latest rc) instead latest released version
   LINUX_NEXT="no"
@@ -184,11 +184,11 @@
   VDPAU="yes"
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
-  VAAPI="yes"
+  VAAPI="no"
 
 # Use Broadcom CrystalHD Decoder Card for video acceleration 
 # (needs Kernelsupport for Broadcom Decoder Card and a supported card)
-  CRYSTALHD="yes"
+  CRYSTALHD="no"
 
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="yes"
