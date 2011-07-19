@@ -9,5 +9,5 @@ index bac0c9e..e7dba5a 100644
 -   struct glx_display *const priv = __glXInitialize(gc->psc->dpy);
 +   const struct glx_display *priv = gc->psc->display;
     __GLXDRIdrawable *pdraw;
- 
+
     if (priv == NULL)
