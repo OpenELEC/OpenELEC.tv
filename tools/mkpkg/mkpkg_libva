@@ -1,8 +1,7 @@
 #!/bin/sh
-
 ################################################################################
-#      Copyright (C) 2009-2010 OpenELEC.tv
-#      http://www.openelec.tv
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,10 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-TEMP="0"
+echo "getting sources..."
+  if [ ! -d libva.git ]; then
+    git clone git://anongit.freedesktop.org/libva libva.git
+  fi
 
-if [ -f /usr/bin/sensors ]; then
-  TEMP=`/usr/bin/sensors -u | tail -n6 | grep temp._input | awk '{print $2 }' |awk '{printf("%d\n",$1 + 0.5);}'`
-fi
+  cd libva.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-echo "${TEMP} C"
+echo "copying sources..."
+  rm -rf libva-$GIT_REV
+  cp -R libva.git libva-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf libva-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf libva-$GIT_REV.tar.xz libva-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf libva-$GIT_REV
