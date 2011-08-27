@@ -5,6 +5,7 @@
 	<string id="2000">System</string>
 	<string id="2010">Tastatur</string>
 	<string id="2011">Språklayout</string>
+        <string id="2012">Språklayout #2</string>
 	<string id="2020">Systemoppdateringer</string>
 	<string id="2021">Systemoppdateringer</string>
 	<string id="2050">LCD/VFD</string>
@@ -15,6 +16,7 @@
 
 	<!-- Nettverk -->
 	<string id="2100">Nettverk</string>
+	<string id="2101">Nettverk 2</string>
 	<string id="2110">Generelt</string>
 	<string id="2111">Vertsnavn</string>
 	<string id="2120">Nettverkskort</string>
@@ -33,19 +35,9 @@
 	<string id="2153">WLAN Sikkerhet</string>
 	<string id="2154">WLAN Passord</string>
 
-	<!-- TV_SERVER -->
-	<string id="4100">TV/PVR</string>
-	<string id="4110">Oppstart</string>
-	<string id="4111">Start TV Serveren under oppstart</string>
-
 	<!-- SAMBA -->
 	<string id="5000">Samba</string>
 	<string id="5010">Oppstart</string>
 	<string id="5011">Start Samba under oppstart</string>
-
-	<!-- SABnzbd -->
-	<string id="5200">SABnzbd</string>
-	<string id="5210">Oppstart</string>
-	<string id="5211">Start SABnzbd under oppstart</string>
 
 </strings>

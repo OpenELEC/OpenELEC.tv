@@ -4,7 +4,8 @@
 	<!-- System -->
 	<string id="2000">System</string>
 	<string id="2010">Keyboard</string>
-	<string id="2011">Keyboardlayout</string>
+	<string id="2011">Keyboard layout</string>
+	<string id="2012">Alternate keyboard layout (optional)</string>
 	<string id="2020">System Update</string>
 	<string id="2021">System Update</string>
 	<string id="2050">LCD/VFD</string>
@@ -15,6 +16,7 @@
 
 	<!-- Network -->
 	<string id="2100">Network</string>
+	<string id="2101">Network 2</string>
 	<string id="2110">General</string>
 	<string id="2111">Hostname</string>
 	<string id="2120">Network Adapter</string>
@@ -33,19 +35,9 @@
 	<string id="2153">WLAN Security</string>
 	<string id="2154">WLAN Passphrase</string>
 
-	<!-- TV_SERVER -->
-	<string id="4100">TV/PVR</string>
-	<string id="4110">Boot</string>
-	<string id="4111">Start TV Server at boot</string>
-
 	<!-- SAMBA -->
 	<string id="5000">Samba</string>
 	<string id="5010">Boot</string>
 	<string id="5011">Start Samba at boot</string>
-
-	<!-- SABnzbd -->
-	<string id="5200">SABnzbd</string>
-	<string id="5210">Boot</string>
-	<string id="5211">Start SABnzbd at boot</string>
 
 </strings>

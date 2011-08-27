@@ -32,15 +32,21 @@ setup_toolchain host
 
 OPT="$HOST_CFLAGS" \
 LDFLAGS="$LDFLAGS -lexpat" \
-../configure --prefix=$ROOT/$TOOLCHAIN \
+../configure --host=$HOST_NAME \
+             --build=$HOST_NAME \
+             --prefix=$ROOT/$TOOLCHAIN \
              --cache-file=config.cache \
              --enable-shared \
              --without-cxx-main \
              --with-threads \
              --enable-unicode=ucs4 \
 
-make
-make install
+make PYTHON_MODULES_INCLUDE="$HOST_INCDIR" \
+     PYTHON_MODULES_LIB="$HOST_LIBDIR"
+
+make PYTHON_MODULES_INCLUDE="$HOST_INCDIR" \
+     PYTHON_MODULES_LIB="$HOST_LIBDIR" \
+     install
 
 # symlink python binary to python2 (needed for Mesa)
   ln -sf python $ROOT/$TOOLCHAIN/bin/python2
@@ -93,8 +99,8 @@ make  -j1 CC="$TARGET_CC" \
       PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
       CROSS_COMPILE="$TARGET_NAME" \
       CROSS_COMPILE_TARGET="yes" \
-      PYTHON_MODULES_INCLUDE=$SYSROOT_PREFIX/usr/include \
-      PYTHON_MODULES_LIB="$SYSROOT_PREFIX/lib $SYSROOT_PREFIX/usr/lib" \
+      PYTHON_MODULES_INCLUDE="$TARGET_INCDIR" \
+      PYTHON_MODULES_LIB="$TARGET_LIBDIR" \
 
 make  -j1 CC="$TARGET_CC" \
       DESTDIR=$SYSROOT_PREFIX \
@@ -104,12 +110,9 @@ make  -j1 CC="$TARGET_CC" \
       PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
       CROSS_COMPILE="$TARGET_NAME" \
       CROSS_COMPILE_TARGET="yes" \
-      PYTHON_MODULES_INCLUDE=$SYSROOT_PREFIX/usr/include \
-      PYTHON_MODULES_LIB="$SYSROOT_PREFIX/lib $SYSROOT_PREFIX/usr/lib" \
+      PYTHON_MODULES_INCLUDE="$TARGET_INCDIR" \
+      PYTHON_MODULES_LIB="$TARGET_LIBDIR" \
       install
-
-cp -R ../Lib ./
-  $ROOT/$TOOLCHAIN/bin/python -Wi -t ./Lib/compileall.py -f -x test ./Lib
 
 # replace python-config to make sure python uses $SYSROOT_PREFIX
   mkdir -p $ROOT/$TOOLCHAIN/bin

@@ -94,10 +94,13 @@ REBOOT="0"
   }
 
   mount_part() {
-    progress "trying to mount $1 ..."
+#    progress "check filesystem $1 ..."
+#      /sbin/fsck -M -T -a $1 > /dev/null 2>&1
+
     for i in 1 2 3 4 5 6 7 8 9 10; do
       ERR_ENV=1
-      $IONICE /bin/busybox mount -o $3 $1 $2 > /dev/null 2>&1
+      progress "mount filesystem $1 ..."
+      /bin/busybox mount -o $3 $1 $2 > /dev/null 2>&1
       [ "$?" -eq "0" ] && ERR_ENV=0 && break
       /bin/busybox usleep 1000000
     done
@@ -119,6 +122,7 @@ REBOOT="0"
     for DEV in `/bin/busybox ls /dev/sd*`; do
       FS_TYPE=$(/sbin/blkid -o value -s TYPE $DEV)
       if [ "$FS_TYPE" = "hfs" -o "$FS_TYPE" = "hfsplus" ]; then
+        progress "check filesystem $DEV ..."
         /sbin/fsck_hfs -r -y $DEV > /dev/null 2>&1
       fi
     done
@@ -131,7 +135,7 @@ REBOOT="0"
 
   mount_part "$boot" "/flash" "ro,noatime"
 
-  if [ -f "/flash/atv_single_boot" ]; then
+  if [ -f "/flash/MACH_KERNEL" ]; then
     IMAGE_KERNEL="MACH_KERNEL"
   fi
 

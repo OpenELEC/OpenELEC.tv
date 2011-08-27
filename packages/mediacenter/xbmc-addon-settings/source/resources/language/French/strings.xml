@@ -5,6 +5,7 @@
 	<string id="2000">Système</string>
 	<string id="2010">Clavier</string>
 	<string id="2011">Clavier</string>
+	<string id="2012">Clavier alternatif (facultatif)</string>
 	<string id="2020">Mise à jour du système</string>
 	<string id="2021">Mise à jour du système</string>
 	<string id="2050">LCD/VFD</string>
@@ -15,6 +16,7 @@
 
 	<!-- Network -->
 	<string id="2100">Réseau</string>
+	<string id="2101">Réseau 2</string>
 	<string id="2110">Général</string>
 	<string id="2111">Nom d'hote</string>
 	<string id="2120">Réseau</string>
@@ -33,19 +35,9 @@
 	<string id="2153">Sécurité WIFI</string>
 	<string id="2154">Passphrase</string>
 
-	<!-- TV_SERVER -->
-	<string id="4100">TV/PVR</string>
-	<string id="4110">Démarrage</string>
-	<string id="4111">Lancer le serveur TV au démarrage</string>
-
 	<!-- SAMBA -->
 	<string id="5000">Samba</string>
 	<string id="5010">Démarrage</string>
 	<string id="5011">Lancer Samba au démarrage</string>
-
-	<!-- SABnzbd -->
-	<string id="5200">SABnzbd</string>
-	<string id="5210">Démarrage</string>
-	<string id="5211">Lancer SABnzbd au démarrage</string>
 
 </strings>

@@ -25,9 +25,14 @@
 strip_lto  # Fails to compile with GCC's link time optimization.
 strip_gold # Fails to compile using the gold linker.
 
-# Filter out some problematic CFLAGS
-  CFLAGS=`echo $CFLAGS | sed -e "s|-ffast-math||"`
-  CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-O2|"`
+# Filter out some problematic *FLAGS
+  CFLAGS=`echo $CFLAGS | sed -e "s|-ffast-math||g"`
+  CFLAGS=`echo $CFLAGS | sed -e "s|-Ofast|-O2|g"`
+  CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-O2|g"`
+
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-ffast-math||g"`
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-Ofast|-O2|g"`
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-O.|-O2|g"`
 
 # set some CFLAGS we need
   CFLAGS="$CFLAGS -g -fno-stack-protector"
@@ -117,7 +122,7 @@ EOF
              --enable-bind-now \
              --with-elf \
              --with-tls \
-             --enable-kernel=2.6.35 \
+             --enable-kernel=2.6.39 \
              --with-__thread \
              --with-binutils=$BUILD/toolchain/bin \
              --with-headers=$SYSROOT_PREFIX/usr/include \

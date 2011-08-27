@@ -49,8 +49,8 @@ else
   mixer 0 CD 0% mute
 
 # Only unmute Line and Aux if they are possibly used.
-  mixer 0 Line 100%
-  mixer 0 Aux 100%
+#  mixer 0 Line 100%
+#  mixer 0 Aux 100%
 
 # mute mic
   mixer 0 Mic 0% mute
@@ -84,6 +84,8 @@ else
   mixer 0 Speaker 100%
   mixer 0 'Internal Speaker' 0% mute
   mixer 0 Playback 100%
+  mixer 1 Headphone 100%
+  mixer 1 Speaker 100%
 
   mixer 0 Center 100%
   mixer 0 LFE 100%

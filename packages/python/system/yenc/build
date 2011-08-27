@@ -27,4 +27,7 @@ export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/usr/lib -L$SYSROOT_PREFIX/lib"
 
 cd $PKG_BUILD
 
-python setup.py build --cross-compile bdist_egg --exclude-source-files
+python setup.py build --cross-compile
+python setup.py install -O0 --no-compile --prefix /usr --root .install
+
+rm -rf .install/usr/bin
