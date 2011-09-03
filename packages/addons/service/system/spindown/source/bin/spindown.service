@@ -1,0 +1,65 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+  ADDON_DIR="$HOME/.xbmc/addons/service.system.spindown"
+  ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.system.spindown"
+
+  SPINDOWN_SETTINGS_XML="$ADDON_HOME/settings.xml"
+  SPINDOWN_SETTINGS_CONF="/var/config/spindown-settings.conf"
+
+  mkdir -p $ADDON_HOME
+
+  # create default config
+  if [ ! -f "$SPINDOWN_SETTINGS_XML" ]; then
+    cp $ADDON_DIR/settings-default.xml $SPINDOWN_SETTINGS_XML
+  fi
+
+
+  SPINDOWN_CONF_ORIG="$ADDON_HOME/spindown.conf"
+  SPINDOWN_CONF_VAR="/var/config/spindown.conf"
+  
+  if [ ! -f "$SPINDOWN_CONF_ORIG" ]; then
+    cp $ADDON_DIR/spindown.conf $SPINDOWN_CONF_ORIG
+  fi
+  
+  # convert xml file to bash variables and use them
+  if [ -f "$SPINDOWN_SETTINGS_XML" ]; then
+    mkdir -p /var/config/
+    awk -F\" '{print $2"=\""$4"\""}' "$SPINDOWN_SETTINGS_XML" | sed '/^=/d' > $SPINDOWN_SETTINGS_CONF
+    . $SPINDOWN_SETTINGS_CONF
+  else
+    IDLE_TIME="15"
+  fi
+
+  # first copy to /var
+  cp "$SPINDOWN_CONF_ORIG" "$SPINDOWN_CONF_VAR"
+
+  # modify with real values
+  let "IDLE_TIME *= 60"
+  sed -i "s|idle-time = \([0-9]*\)\(.*\)|idle-time = $IDLE_TIME\2|g" $SPINDOWN_CONF_VAR
+
+  export PATH=$PATH:$ADDON_DIR
+
+  # run spindown daemon
+  if [ ! $(pidof spindownd) ]; then
+    spindownd -d -p /var/run/spindownd.pid -f /var/run/spindownd.fifo -c $SPINDOWN_CONF_VAR
+  fi

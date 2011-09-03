@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <!-- spindown -->
+  <category label="1000">
+    <setting label="1010" type="lsep"/>
+    <setting type="sep" />
+    <setting id="IDLE_TIME" type="number" label="1020" default="15"/>
+  </category>
+</settings>

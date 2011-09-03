@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <!-- spindown -->
+  <string id="1000">Spindown daemon</string>
+  <string id="1010">Settings</string>
+  <string id="1020">Idle time</string>
+</strings>
