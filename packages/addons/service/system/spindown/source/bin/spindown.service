@@ -36,11 +36,11 @@
 
   SPINDOWN_CONF_ORIG="$ADDON_HOME/spindown.conf"
   SPINDOWN_CONF_VAR="/var/config/spindown.conf"
-  
+
   if [ ! -f "$SPINDOWN_CONF_ORIG" ]; then
     cp $ADDON_DIR/spindown.conf $SPINDOWN_CONF_ORIG
   fi
-  
+
   # convert xml file to bash variables and use them
   if [ -f "$SPINDOWN_SETTINGS_XML" ]; then
     mkdir -p /var/config/
@@ -48,6 +48,7 @@
     . $SPINDOWN_SETTINGS_CONF
   else
     IDLE_TIME="15"
+    SYSTEM_DISK="false"
   fi
 
   # first copy to /var
@@ -55,7 +56,13 @@
 
   # modify with real values
   let "IDLE_TIME *= 60"
-  sed -i "s|idle-time = \([0-9]*\)\(.*\)|idle-time = $IDLE_TIME\2|g" $SPINDOWN_CONF_VAR
+  sed -i "s|idle-time[ ]*=[ ]*\([0-9]*\)\(.*\)|idle-time = $IDLE_TIME\2|g" $SPINDOWN_CONF_VAR
+
+  # exclude system disk
+  if [ "$SYSTEM_DISK" = "false" ]; then
+    SYSTEM_DISK=`mount | sed -n 's|/dev/\([a-z]*\)[0-9] on /flash.*|\1|p'`
+    sed -i "s|name[ ]*=[ ]*$SYSTEM_DISK|name = system_disabled|g" $SPINDOWN_CONF_VAR
+  fi
 
   export PATH=$PATH:$ADDON_DIR
 

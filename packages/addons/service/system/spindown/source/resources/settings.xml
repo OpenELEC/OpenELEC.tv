@@ -5,5 +5,6 @@
     <setting label="1010" type="lsep"/>
     <setting type="sep" />
     <setting id="IDLE_TIME" type="number" label="1020" default="15"/>
+    <setting id="SYSTEM_DISK" type="bool" label="1030" default="false" />
   </category>
 </settings>
