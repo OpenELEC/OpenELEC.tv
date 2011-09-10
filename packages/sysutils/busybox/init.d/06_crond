@@ -54,6 +54,6 @@ EOF_CRON
 
   if [ -d /storage/.config/cron/crontabs/ ]; then
     progress "Starting Cron daemon"
-      crond
+      crond >/dev/null 2>&1
   fi
 )&
