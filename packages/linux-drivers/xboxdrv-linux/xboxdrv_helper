@@ -1,0 +1,9 @@
+#!/bin/bash
+
+env >> /tmp/xbl
+
+XBOXDRV=/storage/xboxdrv
+
+TYPE=`"$XBOXDRV" --list-supported-devices| grep "0x$ID_VENDOR_ID 0x$ID_MODEL_ID"| awk '{print $1}'`
+
+

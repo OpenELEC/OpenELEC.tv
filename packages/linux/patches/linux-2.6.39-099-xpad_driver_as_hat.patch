@@ -1,0 +1,11 @@
+--- linux-2.6.39/drivers/input/joystick/xpad.c	2011-05-25 18:08:42.059243780 -0600
++++ linux-2.6.39.patch/drivers/input/joystick/xpad.c	2011-05-25 18:09:15.327244625 -0600
+@@ -121,7 +121,7 @@
+ 	{ 0x045e, 0x0289, "Microsoft X-Box pad v2 (US)", 0, XTYPE_XBOX },
+ 	{ 0x045e, 0x0285, "Microsoft X-Box pad (Japan)", 0, XTYPE_XBOX },
+ 	{ 0x045e, 0x0287, "Microsoft Xbox Controller S", 0, XTYPE_XBOX },
+-	{ 0x045e, 0x0719, "Xbox 360 Wireless Receiver", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360W },
++	{ 0x045e, 0x0719, "Xbox 360 Wireless Receiver", 0, XTYPE_XBOX360W },
+ 	{ 0x0c12, 0x8809, "RedOctane Xbox Dance Pad", DANCEPAD_MAP_CONFIG, XTYPE_XBOX },
+ 	{ 0x044f, 0x0f07, "Thrustmaster, Inc. Controller", 0, XTYPE_XBOX },
+ 	{ 0x046d, 0xc242, "Logitech Chillstream Controller", 0, XTYPE_XBOX360 },
