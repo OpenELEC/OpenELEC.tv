@@ -1,0 +1,4 @@
+<settings>
+  <setting id="IDLE_TIME" value="15" />
+  <setting id="SYSTEM_DISK" value="false" />
+</settings>
