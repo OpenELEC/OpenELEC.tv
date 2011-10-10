@@ -1,0 +1,59 @@
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+#
+# start cron daemon
+#
+# runlevels: openelec, textmode
+
+(
+  # create sample dir if not exist
+  if [ ! -d /storage/.config/cron.sample/crontabs ]; then
+    mkdir -p /storage/.config/cron.sample/crontabs
+    mkdir -p /storage/.config/cron.sample/cron.hourly
+    mkdir -p /storage/.config/cron.sample/cron.daily
+    mkdir -p /storage/.config/cron.sample/cron.weekly
+    mkdir -p /storage/.config/cron.sample/cron.monthly
+
+    cat >/storage/.config/cron.sample/crontabs/root << EOF_CRON
+
+
+# *  *  *  *  *   command to be executed
+# -  -  -  -  -
+# |  |  |  |  |
+# |  |  |  |  +----- day of week (0 - 6) (Sunday=0)
+# |  |  |  +------- month (1 - 12)
+# |  |  +--------- day of        month (1 - 31)
+# |  +----------- hour (0 - 23)
+# +------------- min (0 - 59)
+
+#01 * * * * /bin/run-parts /storage/.config/cron/cron.hourly
+#02 4 * * * /bin/run-parts /storage/.config/cron/cron.daily
+#22 4 * * 0 /bin/run-parts /storage/.config/cron/cron.weekly
+#42 4 1 * * /bin/run-parts /storage/.config/cron/cron.monthly
+
+EOF_CRON
+  fi
+
+  if [ -d /storage/.config/cron/crontabs/ ]; then
+    progress "Starting Cron daemon"
+      crond >/dev/null 2>&1
+  fi
+)&
