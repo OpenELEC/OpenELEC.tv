@@ -20,20 +20,12 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-PYTHON_LIBDIR="`ls -d $SYSROOT_PREFIX/usr/lib/python*`"
-
-cd $PKG_BUILD
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --disable-static \
-            --enable-shared \
-            --enable-thread \
-            --disable-introspection \
-
-make
-
-$MAKEINSTALL
+case "$1" in
+  thaw|resume)
+    xbmc-send --host=127.0.0.1 -a "ReloadSkin()" &
+    ;;
+  *) exit $NA
+    ;;
+esac

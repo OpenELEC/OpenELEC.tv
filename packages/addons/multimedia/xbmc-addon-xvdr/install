@@ -22,18 +22,8 @@
 
 . config/options $1
 
-PYTHON_LIBDIR="`ls -d $SYSROOT_PREFIX/usr/lib/python*`"
-
-cd $PKG_BUILD
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --disable-static \
-            --enable-shared \
-            --enable-thread \
-            --disable-introspection \
-
-make
-
-$MAKEINSTALL
+mkdir -p $INSTALL/usr/share/xbmc/addons/pvr.vdr.xvdr
+  cp -PRf $PKG_BUILD/addons/pvr.vdr.xvdr/resources $INSTALL/usr/share/xbmc/addons/pvr.vdr.xvdr
+  cp -Pf $PKG_BUILD/addons/pvr.vdr.xvdr/addon.xml $INSTALL/usr/share/xbmc/addons/pvr.vdr.xvdr
+#  cp -Pf $PKG_BUILD/addons/pvr.vdr.xvdr/icon.png $INSTALL/usr/share/xbmc/addons/pvr.vdr.xvdr
+  cp -Pf $PKG_BUILD/addons/pvr.vdr.xvdr/XBMC_VDR_xvdr.pvr $INSTALL/usr/share/xbmc/addons/pvr.vdr.xvdr
