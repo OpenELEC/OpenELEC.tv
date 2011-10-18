@@ -214,8 +214,8 @@ REBOOT=0
   mount_boot_nfs() {
     boot=${boot#*=}
     mount_part "$boot" "/flash" "ro,nolock,noatime" "nfs"
-    [ "$ERR_ENV" -ne "0" ] && debug_shell
     show_splash
+    
     
     if [ -f "/flash/$IMAGE_SYSTEM" ]; then
       mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
@@ -226,7 +226,7 @@ REBOOT=0
     fi
 
     mount_disk
-
+    
     /bin/busybox mount --move /flash /sysroot/flash
     /bin/busybox mount --move /storage /sysroot/storage
   }
