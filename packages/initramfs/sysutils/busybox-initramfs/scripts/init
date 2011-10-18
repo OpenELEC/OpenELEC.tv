@@ -83,7 +83,7 @@ REBOOT=0
       break
     else
       if [ -f "/sbin/ply-image" ]; then
-        /sbin/ply-image "$SPLASHIMAGE"
+        /sbin/ply-image "$SPLASHIMAGE" &
       fi
     fi
   }
