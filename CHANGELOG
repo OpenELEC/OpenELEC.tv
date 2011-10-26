@@ -1,3 +1,10 @@
+OpenELEC - 1.0.2 (26.10.2011)
+- samba: Inherit netbios name from hostname
+- samba: Short static OpenELEC server string
+- PyBluez: dont build and install bytecode
+- update to linux-3.1 (final)
+- update to xf86-video-nvidia-290.03
+
 OpenELEC - 1.0.1 (21.10.2011)
 - dont start wpa_supplicant in debugmode, this fixes non working wlan connections
 - update DVB firmwares
