@@ -2,6 +2,8 @@
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
 #
+#      Author: Lars Op den Kamp <lars.opdenkamp@pulse-eight.com>
+#
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2, or (at your option)
@@ -18,30 +20,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-import os
-import sys
-import xbmc
-import xbmcaddon
+#
+# reset installation
+#
+# runlevels: openelec, textmode
 
-__scriptname__ = "OpenELEC OS Settings Dialog"
-__author__ = "OpenELEC"
-__url__ = "http://www.openelec.tv"
-__svn_url__ = ""
-__credits__ = ""
-__version__ = "0.0.12"
-__XBMC_Revision__ = "22240"
+if [ -f /storage/.factory_reset ]; then
+  progress "performing factory reset"
 
-__settings__   = xbmcaddon.Addon(id='os.openelec.settings')
-__language__   = __settings__.getLocalizedString
-__cwd__        = __settings__.getAddonInfo('path')
+  partition=`/bin/cat /proc/mounts | /bin/grep '/storage' | /usr/bin/awk '{print $1}'`
+  if [ ! -z "${partition}" ]; then
+    /bin/umount -f -l /storage
+    /sbin/mkfs.ext4 ${partition}
+    /sbin/tune2fs -U random -L Storage ${partition}
 
-if __name__ == "__main__":
-	__settings__.openSettings()
-	if ( __settings__.getSetting( "FACTORY_RESET" ) == "complete" ):
-		FILE = open("/storage/.factory_reset","w")
-		FILE.close()
-	elif ( __settings__.getSetting( "FACTORY_RESET" ) == "settings" ):
-		FILE = open("/storage/.settings_reset","w")
-		FILE.close()
-	if ( __settings__.getSetting( "FACTORY_RESET" ) != "no" ):
-		xbmc.executebuiltin('XBMC.Reboot()')
+    progress "rebooting"
+    /sbin/reboot -f
+  fi
+elif [ -f /storage/.settings_reset ]; then
+  progress "performing settings reset"
+
+  /bin/rm -r -f /storage/.cache /storage/.config /storage/.update /storage/.xbmc /storage/.settings_reset
+fi
+
