@@ -17,6 +17,9 @@
 		<setting type="sep" />
 		<setting id="WAKEUP_VIDEODBUPDATE" type="bool" label="2061" default="false" />
 		<setting id="WAKEUP_MUSICDBUPDATE" type="bool" label="2062" default="false" />
+		<setting label="2063" type="lsep"/>
+		<setting type="sep" />
+		<setting id="FACTORY_RESET" type="labelenum" label="2064" values="no|settings|complete" sort="no" default="no" />
     </category>
 
    <!-- Network -->
