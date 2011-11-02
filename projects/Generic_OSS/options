@@ -200,7 +200,7 @@
   GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nouveau vmware"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
-  VDPAU="yes"
+  VDPAU="no"
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
   VAAPI="yes"
