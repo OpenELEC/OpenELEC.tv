@@ -24,8 +24,11 @@
 
 cd $PKG_BUILD
 
-# files have strange permissions, change this
-# chmod -R u+rwX .
-# ./v4l/tbs-x86.sh
-./v4l/tbs-x86_64.sh
+if [ $TARGET_ARCH = "x86_64" ]; then
+	sh ./v4l/tbs-x86_64.sh
+fi
+if [ $TARGET_ARCH = "i386" ]; then
+	sh ./v4l/tbs-x86.sh
+fi
+
 make -j1 CC=$CC KDIR=$(kernel_path) DEST=${PKG_BUILD}/v4l

@@ -22,17 +22,18 @@
 
 . config/options $1
 
-echo unzip $SOURCES/$1/*.zip $SOURCES/$1/
 unzip -o $SOURCES/$1/*.zip -d $SOURCES/$1/
-# mv $SOURCES/$1/$1-drivers.tar.bz2 $SOURCES/$1/$1-$PKG_VERSION.tar.bz2
 
 if [ -n "$PKG_URL" ]; then
   tar xjf $SOURCES/$1/$1-drivers.tar.bz2 -C $BUILD
 fi
 
 
-[ -d $BUILD/${PKG_NAME}-drivers ] && chmod -R u+rwX $BUILD/${PKG_NAME}-drivers && mv $BUILD/${PKG_NAME}-drivers $BUILD/${PKG_NAME}_${PKG_VERSION} && PKG_BUILD=`ls -d $BUILD/${PKG_NAME}_${PKG_VERSION}`
-
-cp $PKG_BUILD/linux/drivers/media/dvb/frontends/tbs* $PKG_BUILD/v4l/
-cp $PKG_BUILD/linux/drivers/media/dvb/frontends/kmem_wrap.c $PKG_BUILD/v4l/
-cp $PKG_DIR/Makefile $PKG_BUILD/v4l/
+if [ -d $BUILD/${PKG_NAME}-drivers ]; then
+	chmod -R u+rwX $BUILD/${PKG_NAME}-drivers
+	mv $BUILD/${PKG_NAME}-drivers $BUILD/${PKG_NAME}_${PKG_VERSION} 
+	 PKG_BUILD=`ls -d $BUILD/${PKG_NAME}_${PKG_VERSION}`
+	cp $PKG_BUILD/linux/drivers/media/dvb/frontends/tbs* $PKG_BUILD/v4l/
+	cp $PKG_BUILD/linux/drivers/media/dvb/frontends/kmem_wrap.c $PKG_BUILD/v4l/
+	cp $PKG_DIR/sources/Makefile $PKG_BUILD/v4l/
+fi
