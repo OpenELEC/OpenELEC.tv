@@ -28,12 +28,11 @@ if [ -n "$PKG_URL" ]; then
   tar xjf $SOURCES/$1/$1-drivers.tar.bz2 -C $BUILD
 fi
 
-
 if [ -d $BUILD/${PKG_NAME}-drivers ]; then
 	chmod -R u+rwX $BUILD/${PKG_NAME}-drivers
-	mv $BUILD/${PKG_NAME}-drivers $BUILD/${PKG_NAME}_${PKG_VERSION} 
-	 PKG_BUILD=`ls -d $BUILD/${PKG_NAME}_${PKG_VERSION}`
+	mv $BUILD/${PKG_NAME}-drivers $BUILD/${PKG_NAME}-${PKG_VERSION}
+	PKG_BUILD=`ls -d $BUILD/${PKG_NAME}-${PKG_VERSION}`
 	cp $PKG_BUILD/linux/drivers/media/dvb/frontends/tbs* $PKG_BUILD/v4l/
 	cp $PKG_BUILD/linux/drivers/media/dvb/frontends/kmem_wrap.c $PKG_BUILD/v4l/
-	cp $PKG_DIR/sources/Makefile $PKG_BUILD/v4l/
+	cp $PKG_DIR/source/Makefile $PKG_BUILD/v4l/
 fi
