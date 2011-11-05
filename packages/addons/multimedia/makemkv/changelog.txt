@@ -1,3 +1,12 @@
+1.90.0
+- prepare for OpenELEC-1.90 release
+
+1.0.0
+- prepare for OpenELEC-1.0 release
+
+0.99.3
+- update to makemkv-1.6.15
+
 0.99.2
 - change icon
 

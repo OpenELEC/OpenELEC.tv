@@ -1,3 +1,22 @@
+1.90.0
+- add (CH) GA Weissenstein default muxes
+- prepare for OpenELEC-1.90 release
+
+1.0.1
+- add XMLTV tv_file_grab support
+- add XMLTV configuration support
+- add teletext support patch
+- add fix memory leak patch
+
+1.0.0
+- prepare for OpenELEC-1.0 release
+
+0.99.8
+- add suspend/wakeup script
+
+0.99.7
+- update to hts-tvheadend-c88a646
+
 0.99.6
 - update to hts-tvheadend-9d775da
 
