@@ -22,18 +22,11 @@
 
 . config/options $1
 
-cd $PKG_BUILD
+STAMP=$STAMPS/$1/unpack
 
-# Set the owner of the device node to be usbmuxd
-  sed -i 's/ATTR{idVendor}=="05ac"/OWNER="root", ATTR{idVendor}=="05ac"/' udev/85-usbmuxd.rules.in
-  sed -i 's/-U usbmux/-U root/' udev/85-usbmuxd.rules.in
+test $PKG_DIR/config/linux.$TARGET_ARCH.conf -nt $STAMP -o \
+     $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -nt $STAMP -o \
+     $PKG_DIR/url -nt $STAMP -o \
+     $PKG_DIR/meta -nt $STAMP && rm -f $STAMP
 
-mkdir -p build && cd build
-
-cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
-      -DCMAKE_INSTALL_PREFIX=/usr \
-      -DLIB_SUFFIX="" \
-      ..
-
-make
-$MAKEINSTALL
+exit 0

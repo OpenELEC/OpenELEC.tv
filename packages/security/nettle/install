@@ -23,10 +23,7 @@
 . config/options $1
 
 mkdir -p $INSTALL/usr/lib
-  cp -P $PKG_BUILD/build/libusbmuxd/libusbmuxd.so* $INSTALL/usr/lib
-
-mkdir -p $INSTALL/usr/sbin
-  cp -P $PKG_BUILD/build/daemon/usbmuxd $INSTALL/usr/sbin
-
-mkdir -p $INSTALL/lib/udev/rules.d
-  cp -P $PKG_BUILD/build/udev/*.rules $INSTALL/lib/udev/rules.d
+  cp -P $PKG_BUILD/libnettle.so $INSTALL/usr/lib
+  ln -sf libnettle.so $INSTALL/usr/lib/`basename $PKG_BUILD/.lib/libnettle.so.[0-9]`
+  cp -P $PKG_BUILD/libhogweed.so $INSTALL/usr/lib
+  ln -sf libhogweed.so $INSTALL/usr/lib/`basename $PKG_BUILD/.lib/libhogweed.so.[0-9]`
