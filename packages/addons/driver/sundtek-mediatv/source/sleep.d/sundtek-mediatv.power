@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -18,33 +20,29 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="linux"
-PKG_VERSION="3.1.5"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="busybox linux-drivers linux-firmware pciutils"
-PKG_BUILD_DEPENDS="toolchain busybox-hosttools xz cpio pciutils"
-PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
-PKG_IS_ADDON="no"
+. /etc/profile
 
-PKG_AUTORECONF="no"
+LOCKDIR="/var/lock/"
+LOCKFILE="sundtek-mediatv"
 
-if [ "$LINUX_NEXT" = "yes" -a "$LINUX" = "default" ]; then
-  PKG_VERSION="3.0"
-  PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.0/$PKG_NAME-$PKG_VERSION.tar.bz2"
-fi
+case "$1" in
+  hibernate|suspend)
+    if [ -n "$(pidof mediasrv)" ]; then
+      progress "Shutting down Sundtek MediaTV DVB driver for suspending..."
+      mkdir -p "$LOCKDIR"
+      touch "$LOCKDIR/$LOCKFILE"
+      mediaclient --shutdown
+    fi
+    ;;
 
-if [ "$LINUX" = "ti-omap4" ]; then
-  PKG_VERSION="2.6.38-ti-omap4"
-  PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-fi
+  thaw|resume)
+    if [ -f "$LOCKDIR/$LOCKFILE" ]; then
+      progress "Restarting Sundtek MediaTV DVB driver for wakeup..."
+      sundtek-mediatv.service
+      rm -rf "$LOCKDIR/$LOCKFILE"
+    fi
+    ;;
 
-if [ "$BOOTLOADER" = "atv-bootloader" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atv-bootloader"
-fi
+  *) exit $NA
+    ;;
+esac

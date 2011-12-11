@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -18,33 +20,29 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="linux"
-PKG_VERSION="3.1.5"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="busybox linux-drivers linux-firmware pciutils"
-PKG_BUILD_DEPENDS="toolchain busybox-hosttools xz cpio pciutils"
-PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
-PKG_IS_ADDON="no"
+ADDON_DIR="$HOME/.xbmc/addons/driver.dvb.sundtek-mediatv"
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/driver.dvb.sundtek-mediatv"
+SUNDTEK_CONFIG_FILE="$ADDON_HOME/sundtek.conf"
 
-PKG_AUTORECONF="no"
+mkdir -p $ADDON_HOME
 
-if [ "$LINUX_NEXT" = "yes" -a "$LINUX" = "default" ]; then
-  PKG_VERSION="3.0"
-  PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.0/$PKG_NAME-$PKG_VERSION.tar.bz2"
+if [ ! -f "$SUNDTEK_CONFIG_FILE" ]; then
+  cp $ADDON_DIR/config/* $ADDON_HOME/
 fi
 
-if [ "$LINUX" = "ti-omap4" ]; then
-  PKG_VERSION="2.6.38-ti-omap4"
-  PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
+if [ ! -f "$ADDON_HOME/device_attach_detach.sh" ]; then
+  cp $ADDON_DIR/scripts/* $ADDON_HOME/
+  chmod +x $ADDON_HOME/*.sh
 fi
 
-if [ "$BOOTLOADER" = "atv-bootloader" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atv-bootloader"
+if [ ! -x "$ADDON_HOME/device_attach_detach.sh" ]; then
+  chmod +x $ADDON_HOME/device_attach_detach.sh
+fi
+
+SUNDTEK_ARG="--pluginpath=$ADDON_DIR/bin --daemon"
+
+if [ -z "$(pidof mediasrv)" ]; then
+  rm $ADDON_HOME/attach_detach.log
+  ln -sf $SUNDTEK_CONFIG_FILE /tmp/sundtek.conf
+  mediasrv $SUNDTEK_ARG
 fi
