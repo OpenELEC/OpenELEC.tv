@@ -68,4 +68,10 @@
 		<setting type="sep" />
 		<setting id="SAMBA_START" type="bool" label="5011" default="true" />
     </category>
+   <!-- DEBUG -->
+    <category label="5100">
+		<setting label="5110" type="lsep"/>
+		<setting type="sep" />
+		<setting id="DEBUG_SSH_START" type="bool" label="5111" default="false" />
+    </category>
 </settings>

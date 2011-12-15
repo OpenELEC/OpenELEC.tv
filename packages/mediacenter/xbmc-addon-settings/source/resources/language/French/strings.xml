@@ -37,4 +37,8 @@
 	<string id="5010">Démarrage</string>
 	<string id="5011">Lancer Samba au démarrage</string>
 
+	<!-- DEBUG -->
+	<string id="5100">Debug</string>
+	<string id="5110">Démarrage</string>
+	<string id="5111">Lancer SSH au démarrage</string>
 </strings>

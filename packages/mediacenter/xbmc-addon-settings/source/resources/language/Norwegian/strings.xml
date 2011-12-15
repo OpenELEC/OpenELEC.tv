@@ -37,4 +37,8 @@
 	<string id="5010">Oppstart</string>
 	<string id="5011">Start Samba under oppstart</string>
 
+	<!-- DEBUG -->
+	<string id="5100">Debug</string>
+	<string id="5110">Oppstart</string>
+	<string id="5111">Start SSH under oppstart</string>
 </strings>
