@@ -26,7 +26,7 @@ $SCRIPTS/checkdeps build
 $SCRIPTS/build toolchain
 $SCRIPTS/build squashfs
 $SCRIPTS/build fakeroot
-$SCRIPTS/build busybox-hosttools
+$SCRIPTS/build module-init-tools
 
 export INSTALL=$BUILD/image/system
 
@@ -84,11 +84,11 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   fi
 
 # create /etc/issue
-  echo $GREATING0 >  $INSTALL/etc/issue
-  echo $GREATING1 >> $INSTALL/etc/issue
-  echo $GREATING2 >> $INSTALL/etc/issue
-  echo $GREATING3 >> $INSTALL/etc/issue
-  echo $GREATING4 >> $INSTALL/etc/issue
+  echo $GREETING0 >  $INSTALL/etc/issue
+  echo $GREETING1 >> $INSTALL/etc/issue
+  echo $GREETING2 >> $INSTALL/etc/issue
+  echo $GREETING3 >> $INSTALL/etc/issue
+  echo $GREETING4 >> $INSTALL/etc/issue
   echo "$DISTRONAME Version: $OPENELEC_VERSION" >> $INSTALL/etc/issue
   if [ -n "$GIT_HASH" ]; then
     echo "$DISTRONAME git: $GIT_HASH" >> $INSTALL/etc/issue
@@ -149,10 +149,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # run depmod
   KVER=`ls $BUILD/linux-*/modules/lib/modules`
-  $ROOT/$TOOLCHAIN/sbin/depmod -b $INSTALL $KVER > /dev/null
-  for i in `ls $INSTALL/lib/modules/*/modules.* | grep -v modules.dep | grep -v modules.alias | grep -v modules.symbols`; do
-    rm -f $i
-  done
+  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $KVER > /dev/null
 
 # strip kernel modules
   for MOD in `find $INSTALL/lib/modules/ -name *.ko`; do

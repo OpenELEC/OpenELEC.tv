@@ -6,11 +6,11 @@
   fi
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
-  GREATING0="##############################################"
-  GREATING1="# OpenELEC - The living room PC for everyone #"
-  GREATING2="# ...... visit http://www.openelec.tv ...... #"
-  GREATING3="##############################################"
-  GREATING4=""
+  GREETING0="##############################################"
+  GREETING1="# OpenELEC - The living room PC for everyone #"
+  GREETING2="# ...... visit http://www.openelec.tv ...... #"
+  GREETING3="##############################################"
+  GREETING4=""
 
 # Hostname for target system (openelec)
   HOSTNAME="openelec"
@@ -81,7 +81,7 @@
 # Project CFLAGS
   PROJECT_CFLAGS=""
 
-# LTO (Link Time Optimazion) support
+# LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
 
 # GOLD (Google Linker) support
@@ -232,6 +232,9 @@
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
   VAAPI="no"
+
+# Use XVBA video acceleration (needs AMD fglrx driver and a supported card)
+  XVBA="no"
 
 # Use Broadcom CrystalHD Decoder Card for video acceleration 
 # (needs Kernelsupport for Broadcom Decoder Card and a supported card)

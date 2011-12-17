@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -20,8 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="kmod"
+PKG_VERSION="1"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://git.profusion.mobi/cgit.cgi/kmod.git/"
+PKG_URL="http://packages.profusion.mobi/kmod//$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="kmod offers the needed flexibility and fine grained control over insertion, removal, configuration and listing of kernel modules."
+PKG_LONGDESC="kmod offers the needed flexibility and fine grained control over insertion, removal, configuration and listing of kernel modules."
+PKG_IS_ADDON="no"
 
-mkdir -p $INSTALL/usr/lib/va
-  cp -P $PKG_BUILD/src/.libs/xvba_drv_video.so $INSTALL/usr/lib/va
-  ln -sf xvba_drv_video.so $INSTALL/usr/lib/va/fglrx_drv_video.so
+PKG_AUTORECONF="yes"
