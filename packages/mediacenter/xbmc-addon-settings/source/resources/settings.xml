@@ -67,5 +67,13 @@
 		<setting label="5010" type="lsep"/>
 		<setting type="sep" />
 		<setting id="SAMBA_START" type="bool" label="5011" default="true" />
+		<setting id="SAMBA_USERNAME" type="text" label="5012" default="openelec" enable="eq(-1,true)"/>
+		<setting id="SAMBA_PASSWORD" type="text" option="hidden" label="5013" default="openelec"  enable="eq(-2,true)"/>
+    </category>
+   <!-- DEBUG -->
+    <category label="5100">
+		<setting label="5110" type="lsep"/>
+		<setting type="sep" />
+		<setting id="DEBUG_SSH_START" type="bool" label="5111" default="false" />
     </category>
 </settings>
