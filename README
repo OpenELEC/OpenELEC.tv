@@ -52,8 +52,7 @@ Software:
 - IR/Bluetooth Remote Control
 
 Notes:
-- Change from previous versions: SSH is not enabled by default.
-  Login details for SSH are user: “root” password: “openelec”.
+- Login details for SSH are user: “root” password: “openelec”.
   SSH allows command line access to your openelec.tv machine for configuration
   and file transfer. Linux/mac clients can natively use SSH, windows users 
   might want to try PuTTY for their terminal access.

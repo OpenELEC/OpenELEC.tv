@@ -26,7 +26,7 @@
     <setting id="NET2_SECURITY" value="NONE" />
     <setting id="NET2_SSID" value="" />   
     <setting id="SAMBA_START" value="true" />
-    <setting id="DEBUG_SSH_START" value="false" />
+    <setting id="DEBUG_SSH_START" value="true" />
     <setting id="UPDATE_AUTO" value="manual" />
     <setting id="X11_KEYMAP" value="us" />
     <setting id="X11_KEYMAP2" value="" />

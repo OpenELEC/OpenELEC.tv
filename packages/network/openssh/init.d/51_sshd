@@ -26,7 +26,7 @@
   if [ -f /var/config/settings.conf ]; then
     . /var/config/settings.conf
 
-    if [ "$DEBUG_SSH_START" != "true" ]; then
+    if [ "$DEBUG_SSH_START" == "false" ]; then
       exit 0
     fi
   fi
