@@ -23,6 +23,14 @@
 # runlevels: openelec, textmode
 
 (
+  if [ -f /var/config/settings.conf ]; then
+    . /var/config/settings.conf
+
+    if [ "$DEBUG_SSH_START" == "false" ]; then
+      exit 0
+    fi
+  fi
+
   RSA1_KEY="/storage/.cache/ssh/ssh_host_key"
   RSA2_KEY="/storage/.cache/ssh/ssh_host_rsa_key"
   DSA2_KEY="/storage/.cache/ssh/ssh_host_dsa_key"

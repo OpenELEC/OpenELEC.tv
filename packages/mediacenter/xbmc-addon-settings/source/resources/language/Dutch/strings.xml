@@ -37,5 +37,9 @@
 	<string id="5010">Configuratie</string>
 	<string id="5011">Start Samba bij het opstarten</string>
 
+	<!-- DEBUG -->
+	<string id="5100">Debug</string>
+	<string id="5110">Boot</string>
+	<string id="5111">Start SSH bij het opstarten</string>
 </strings>
 
