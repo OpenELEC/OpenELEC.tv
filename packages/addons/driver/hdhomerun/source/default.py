@@ -18,6 +18,16 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-import xbmc, time, os, subprocess
+import os
+import sys
+import xbmcaddon
 
-os.system("hdhomerun.service")
+__scriptname__ = "Driver for the HDHomeRun DVB tuner"
+__author__ = "OpenELEC"
+__url__ = "http://www.openelec.tv"
+__settings__   = xbmcaddon.Addon(id='driver.dvb.hdhomerun')
+__cwd__        = __settings__.getAddonInfo('path')
+__path__       = xbmc.translatePath( os.path.join( __cwd__, 'bin', "hdhomerun.service") )
+
+os.system(__path__)
+
