@@ -27,11 +27,11 @@ mkdir -p $BUILD/${PKG_NAME}_${PKG_VERSION}
 (
   cd $BUILD/${PKG_NAME}_${PKG_VERSION}
 
-	if [ ${SOURCES:0:1} = "/" ]; then
-		SRC_INSTALLER_ROOT=""
-	else
-		SRC_INSTALLER_ROOT="$ROOT/"
-	fi
+  if [ "x${SOURCES##/*}" = "x" ] ; then
+    SRC_INSTALLER_ROOT=""
+  else
+    SRC_INSTALLER_ROOT="$ROOT/"
+  fi
 
   sh ${SRC_INSTALLER_ROOT}$SOURCES/$1/${PKG_NAME}_${PKG_VERSION}.sh -e >/dev/null 2>&1
 
