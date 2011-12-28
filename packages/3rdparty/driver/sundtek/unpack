@@ -22,33 +22,24 @@
 
 . config/options $1
 
+SRC_INSTALLER=$(readlink -f $SOURCES/$1/${PKG_NAME}_${PKG_VERSION}.sh)
+
 mkdir -p $BUILD/${PKG_NAME}_${PKG_VERSION}
-  
-(
-  cd $BUILD/${PKG_NAME}_${PKG_VERSION}
+cd $BUILD/${PKG_NAME}_${PKG_VERSION}
 
-  if [ "x${SOURCES##/*}" = "x" ] ; then
-    SRC_INSTALLER_ROOT=""
-  else
-    SRC_INSTALLER_ROOT="$ROOT/"
-  fi
+sh $SRC_INSTALLER -e >/dev/null 2>&1
 
-  sh ${SRC_INSTALLER_ROOT}$SOURCES/$1/${PKG_NAME}_${PKG_VERSION}.sh -e >/dev/null 2>&1
-
-  rm chk* installer.tar.gz
-  rm -r 32bit23 arm* dreambox mips* openwrtmipsr2 ppc*
-)
+rm chk* installer.tar.gz
+rm -r 32bit23 arm* dreambox mips* openwrtmipsr2 ppc*
 
 [ "$TARGET_ARCH" = "i386" ] && ARCH_DIR=32bit
 [ "$TARGET_ARCH" = "x86_64" ] && ARCH_DIR=64bit
 
-SUNDTEK_ROOT=$BUILD/${PKG_NAME}_${PKG_VERSION}/rootsys
-
-mkdir -p $SUNDTEK_ROOT
-tar xzf $BUILD/${PKG_NAME}_${PKG_VERSION}/$ARCH_DIR/installer.tar.gz -C $SUNDTEK_ROOT
+mkdir -p rootsys
+tar xzf $ARCH_DIR/installer.tar.gz -C rootsys
 
 # fix permissions (on mediasrv binary)
-chmod 755 $SUNDTEK_ROOT/opt/bin/*
+chmod 755 rootsys/opt/bin/*
 
 # binary search & replace (strings must be same length!)
 # mediasrv
@@ -58,19 +49,19 @@ chmod 755 $SUNDTEK_ROOT/opt/bin/*
 # /etc/sundtek.conf
 # mediaclient
 # /etc/sundtek_diseqc.conf
-#perl -pi -e 's|\x2F\x65\x74\x63\x2F\x73\x75\x6E\x49\xBB\x64\x74\x65\x6B\x2E\x63\x6F\x6E\x66|\x2F\x74\x6D\x70\x2F\x73\x75\x6E\x49\xBB\x64\x74\x65\x6B\x2E\x63\x6F\x6E\x66|g' $SUNDTEK_ROOT/opt/bin/mediasrv
-#perl -pi -e 's|/etc/sundtek.conf|/tmp/sundtek.conf|g' $SUNDTEK_ROOT/opt/bin/mediasrv
-#perl -pi -e 's|/etc/sundtek.conf|/tmp/sundtek.conf|g' $SUNDTEK_ROOT/opt/bin/dvb/libdrv_em28xx.so
-#perl -pi -e 's|/etc/sundtek_diseqc.conf|/tmp/sundtek_diseqc.conf|g' $SUNDTEK_ROOT/opt/bin/mediaclient 
+#perl -pi -e 's|\x2F\x65\x74\x63\x2F\x73\x75\x6E\x49\xBB\x64\x74\x65\x6B\x2E\x63\x6F\x6E\x66|\x2F\x74\x6D\x70\x2F\x73\x75\x6E\x49\xBB\x64\x74\x65\x6B\x2E\x63\x6F\x6E\x66|g' rootsys/opt/bin/mediasrv
+#perl -pi -e 's|/etc/sundtek.conf|/tmp/sundtek.conf|g' rootsys/opt/bin/mediasrv
+#perl -pi -e 's|/etc/sundtek.conf|/tmp/sundtek.conf|g' rootsys/opt/bin/dvb/libdrv_em28xx.so
+#perl -pi -e 's|/etc/sundtek_diseqc.conf|/tmp/sundtek_diseqc.conf|g' rootsys/opt/bin/mediaclient
 
-perl -pi -e 's|/etc|/tmp|g' $SUNDTEK_ROOT/opt/bin/mediasrv
-perl -pi -e 's|/etc|/tmp|g' $SUNDTEK_ROOT/opt/bin/dvb/libdrv_em28xx.so
-perl -pi -e 's|/etc|/tmp|g' $SUNDTEK_ROOT/opt/bin/mediaclient
+perl -pi -e 's|/etc|/tmp|g' rootsys/opt/bin/mediasrv
+perl -pi -e 's|/etc|/tmp|g' rootsys/opt/bin/dvb/libdrv_em28xx.so
+perl -pi -e 's|/etc|/tmp|g' rootsys/opt/bin/mediaclient
 
 if [ "$PKG_VERSION" = "installer_development" ]; then
-  wget -q -t 3 -T 3 -O $SUNDTEK_ROOT/sundtek_version.html http://support.sundtek.com/index.php/topic,708.0.html
+  wget -q -t 3 -T 3 -O rootsys/sundtek_version.html http://support.sundtek.com/index.php/topic,708.0.html
 else
-  cat >$SUNDTEK_ROOT/sundtek_version.html << MYDATA
+  cat >rootsys/sundtek_version.html << MYDATA
 <html><body>${PKG_NAME}_${PKG_VERSION}.sh</body></html>
 MYDATA
 fi
