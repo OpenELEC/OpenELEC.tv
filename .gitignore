@@ -13,5 +13,8 @@
 /tools/mkpkg/*
 !/tools/mkpkg/mkpkg_*
 
+# mkpkg temp
+mkpkg-temp
+
 # private working directory
 /.work/

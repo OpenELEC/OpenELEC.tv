@@ -25,6 +25,9 @@
 # nano fails to build with GOLD linker
   strip_gold
 
+LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
+LDFLAGS="$LDFLAGS -ltinfo"
+
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
