@@ -145,13 +145,13 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
 
   update() {
     if [ -f "$UPDATE_DIR/$2" ]; then
-      if [ -n "$singlepartition" -a -z "$disk" ]; then
-	SINGLEOPTION=",bind"
+      if [ [ -n "$singlepartition" -a -z "$disk" ] -o -n "$bootfolder" ]; then
+	BINDOPTION=",bind"
       fi
       echo "updating $1..."
-        $IONICE /bin/busybox mount -o "remount,rw$SINGLEOPTION" /flash
+        $IONICE /bin/busybox mount -o "remount,rw$BINDOPTION" /flash
         $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3
-        $IONICE /bin/busybox mount -o "remount,ro$SINGLEOPTION" /flash
+        $IONICE /bin/busybox mount -o "remount,ro$BINDOPTION" /flash
         $IONICE /bin/busybox sync
         [ "$2" = "$IMAGE_KERNEL" ] && REBOOT="1"
     fi
@@ -213,10 +213,15 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
       hfsdiskprep
     fi
 
-    mount_part "$boot" "/boot" "rw,noatime"
-    $IONICE /bin/busybox mount -o bind "/boot$bootfolder" "/flash"
-    #needed because initial remount with ro is not possible in kernel atm
-    $IONICE /bin/busybox mount -o remount,bind,ro /flash
+    if [ -z "$bootfolder" -a -z "$singlepartition" ]; then
+      mount_part "$boot" "/flash" "ro,noatime"
+    else
+      mount_part "$boot" "/boot" "rw,noatime"
+      $IONICE /bin/busybox mount -o bind "/boot$bootfolder" "/flash"
+      #needed because initial remount with ro is not possible in kernel atm
+      $IONICE /bin/busybox mount -o remount,bind,ro /flash
+    fi
+
     show_splash
 
     if [ -n "$disk" -o -n "$singlepartition" ]; then
