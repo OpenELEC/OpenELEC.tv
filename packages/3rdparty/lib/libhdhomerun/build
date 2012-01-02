@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. config/options $1
+
+cd $PKG_BUILD
+
+CROSS_COMPILE=$TARGET_PREFIX make
+
+# remove build stamp for dvbhdhomerun to build user application
+rm -f $ROOT/$STAMPS/dvbhdhomerun/build

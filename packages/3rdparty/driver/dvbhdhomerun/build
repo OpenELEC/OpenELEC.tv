@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. config/options $1
+
+cd $PKG_BUILD
+
+if [ -d $ROOT/$BUILD/libhdhomerun_*/ ]; then
+  pushd userhdhomerun
+  LIBHDHOMERUN_PATH=$(ls -d $ROOT/$BUILD/libhdhomerun_*/)
+  sed -i "s|SET(LIBHDHOMERUN_PATH .*)|SET(LIBHDHOMERUN_PATH $LIBHDHOMERUN_PATH)|g" CMakeLists.txt
+  sed -i 's|/etc/dvbhdhomerun|/tmp/dvbhdhomerun|g' hdhomerun_tuner.cpp
+  LDFLAGS="-lpthread" make
+  popd
+else
+  pushd kernel
+  sed -i 's|KERNEL_VERSION\t:= \(.*\)|KERNEL_VERSION\t?= \1|g' Makefile
+  sed -i 's|KERNEL_DIR\t:= \(.*\)|KERNEL_DIR\t?= \1|g' Makefile
+  KERNEL_DIR=$(kernel_path) make dvb_hdhomerun
+  fix_module_depends dvb_hdhomerun_core.ko "dvb_core"
+  popd
+fi
