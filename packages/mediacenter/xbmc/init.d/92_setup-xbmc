@@ -92,6 +92,9 @@ EOF
     <debug>
         <screenshotpath pathversion="1">$HOME/screenshots/</screenshotpath>
     </debug>
+    <skinsettings>
+        <setting type="string" name="skin.confluence.HomeProgramButton1">os.openelec.settings</setting>
+    </skinsettings>
 EOF
 
 #
