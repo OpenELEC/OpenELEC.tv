@@ -37,8 +37,7 @@ case "$1" in
 
   thaw|resume)
     if [ -f "$LOCKDIR/$LOCKFILE" ]; then
-      progress "Restarting Sundtek MediaTV DVB driver for wakeup..."
-      sundtek-mediatv.service
+      # driver started within Tvheadend/VDR
       rm -rf "$LOCKDIR/$LOCKFILE"
     fi
     ;;
