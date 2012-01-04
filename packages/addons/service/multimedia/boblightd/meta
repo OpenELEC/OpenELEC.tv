@@ -19,14 +19,14 @@
 ################################################################################
 
 PKG_NAME="boblightd"
-PKG_VERSION="2.0.3"
-PKG_REV="3"
+PKG_VERSION="2.0.4"
+PKG_REV="4"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://code.google.com/p/boblight"
 PKG_URL="http://dl.dropbox.com/u/10051534/$PKG_NAME.tar.gz"
-PKG_DEPENDS="libX11 libXext libX11 libXrender $MESA"
-PKG_BUILD_DEPENDS="toolchain libX11 libXext libXrender $MESA"
+PKG_DEPENDS="libX11 libXext libX11 libXrender Mesa"
+PKG_BUILD_DEPENDS="toolchain libX11 libXext libXrender Mesa"
 PKG_PRIORITY="optional"
 PKG_SECTION="service/multimedia"
 PKG_SHORTDESC="boblightd: an ambilight controller."

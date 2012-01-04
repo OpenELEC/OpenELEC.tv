@@ -22,8 +22,30 @@
 
 . config/options $1
 
+if [ "$XORG_SUPPORT" = yes ]; then
+  XBMC_XORG="--enable-x11 --enable-xrandr"
+else
+  XBMC_XORG="--disable-x11 --disable-xrandr"
+fi
+
+if [ "$OPENGL_SUPPORT" = yes ]; then
+  XBMC_OPENGL="--enable-gl"
+else
+  XBMC_OPENGL="--disable-gl"
+fi
+
+if [ "$OPENGLES_SUPPORT" = yes ]; then
+  XBMC_OPENGLES="--enable-gles"
+else
+  XBMC_OPENGLES="--disable-gles"
+fi
+
 if [ "$XBMC_SCR_RSXS" = yes ]; then
   XBMC_RSXS="--enable-rsxs"
+  # fix build of RSXS Screensaver support if not using libiconv
+    if [ ! "$ICONV" = "libiconv" ]; then
+      export jm_cv_func_gettimeofday_clobber=no
+    fi
 else
   XBMC_RSXS="--disable-rsxs"
 fi
@@ -50,6 +72,12 @@ if [ "$CEC_SUPPORT" = yes ]; then
   XBMC_CEC="--enable-libcec --enable-external-libcec --enable-udev --disable-libusb"
 else
   XBMC_CEC="--disable-libcec --disable-udev --disable-libusb"
+fi
+
+if [ "$JOYSTICK_SUPPORT" = yes ]; then
+  XBMC_JOYSTICK="--enable-joystick"
+else
+  XBMC_JOYSTICK="--disable-joystick"
 fi
 
 if [ "$NONFREE_SUPPORT" = yes ]; then
@@ -185,8 +213,8 @@ cd $PKG_BUILD
             GIT_REV=`cat git.version` \
             --disable-debug \
             --disable-optimizations \
-            --enable-gl \
-            --disable-gles \
+            $XBMC_OPENGL \
+            $XBMC_OPENGLES \
             $XBMC_VDPAU \
             $XBMC_VAAPI \
             $XBMC_CRYSTALHD \
@@ -196,13 +224,12 @@ cd $PKG_BUILD
             --disable-openmax \
             --disable-tegra \
             --disable-profiling \
-            --enable-joystick \
+            $XBMC_JOYSTICK \
             $XBMC_CEC \
             $XBMC_GOOM \
             $XBMC_RSXS \
             $XBMC_PROJECTM \
-            --enable-x11 \
-            --enable-xrandr \
+            $XBMC_XORG \
             --disable-ccache \
             $XBMC_PULSEAUDIO \
             --enable-rtmp \
@@ -231,4 +258,7 @@ cd $PKG_BUILD
 
 make externals
 make xbmc.bin
-make xbmc-xrandr
+
+if [ "$XORG_SUPPORT" = yes ]; then
+  make xbmc-xrandr
+fi
