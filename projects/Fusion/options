@@ -79,7 +79,7 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-  PROJECT_CFLAGS="-mfpmath=sse -msse2" # -mssse3 removed for Llano compatibility
+  TARGET_CFLAGS="-march=btver1 -msse2 -msse4a -mno-3dnow -sse3 -ssse3 -mno-sse4 -mabm -mtune=btver1 -m96bit-long-double -mno-align-double -msahf -m64"
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
