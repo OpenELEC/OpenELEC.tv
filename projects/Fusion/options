@@ -79,7 +79,7 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-  TARGET_CFLAGS="-march=btver1 -msahf"
+  TARGET_CFLAGS="-msahf"
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
