@@ -18,7 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 # Location of repo
-  UPDATEURL="http://snapshots.openelec.tv"
+  UPDATEURL="http://very.getmyip.com"
 
 # Setup Download tool (wget/scp)
   DL_METHOD="wget"
