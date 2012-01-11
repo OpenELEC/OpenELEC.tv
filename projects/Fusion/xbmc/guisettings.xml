@@ -1,0 +1,15 @@
+     <audiooutput>
+        <ac3passthrough>false</ac3passthrough>
+        <audiodevice>alsa:plug:hdmi</audiodevice>
+        <channellayout>0</channellayout>
+        <customdevice></customdevice>
+        <custompassthrough></custompassthrough>
+        <dontnormalizelevels>false</dontnormalizelevels>
+        <dtspassthrough>false</dtspassthrough>
+        <mode>2</mode>
+        <passthroughaac>false</passthroughaac>
+        <passthroughdevice>alsa:hdmi</passthroughdevice>
+        <passthroughmp1>false</passthroughmp1>
+        <passthroughmp2>false</passthroughmp2>
+        <passthroughmp3>false</passthroughmp3>
+    </audiooutput>

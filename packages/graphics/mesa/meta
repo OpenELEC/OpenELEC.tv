@@ -18,14 +18,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="mesa"
-#PKG_VERSION="cf5948380829ff44aafb12c911b0fc064360d352"
-PKG_VERSION="a56a732c6991f47d63f5ccbb27a45467541c43f8"
+PKG_NAME="Mesa"
+PKG_VERSION="7.11"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
-PKG_URL="http://cgit.freedesktop.org/mesa/mesa/snapshot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_URL="ftp://ftp.freedesktop.org/pub/mesa/$PKG_VERSION/MesaLib-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS="libXdamage libdrm expat libXext libXfixes libXxf86vm libxcb libX11"
 PKG_BUILD_DEPENDS="toolchain Python-host makedepend libxml2-host expat glproto dri2proto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11"
 PKG_PRIORITY="optional"
@@ -41,14 +40,4 @@ get_graphicdrivers
 if [ "$LLVM_SUPPORT" = "yes" ]; then
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS llvm"
   PKG_DEPENDS="$PKG_DEPENDS llvm"
-fi
-
-if [ "$MESA_VDPAU_SUPPORT" = "yes" ]; then
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libvdpau"
-  PKG_DEPENDS="$PKG_DEPENDS libvdpau"
-fi
-
-if [ "$MESA_VAAPI_SUPPORT" = "yes" ]; then
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libva"
-  PKG_DEPENDS="$PKG_DEPENDS libva"
 fi
