@@ -24,6 +24,9 @@
 
 mkdir -p $INSTALL/etc/modprobe.d
   cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
+  if [ $PROJECT = ATV ]; then
+     sed -i -e "s|^options snd-hda-intel model=auto|options snd-hda-intel model=appletv|" $INSTALL/etc/modprobe.d/alsa-base.conf
+  fi
 
 mkdir -p $INSTALL/usr/config
   cp -R $PKG_DIR/config/*.sample $INSTALL/usr/config
