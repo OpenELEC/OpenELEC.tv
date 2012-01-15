@@ -20,29 +20,51 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
+. /etc/profile
+
 ADDON_DIR="$HOME/.xbmc/addons/driver.dvb.sundtek-mediatv"
 ADDON_HOME="$HOME/.xbmc/userdata/addon_data/driver.dvb.sundtek-mediatv"
-SUNDTEK_CONFIG_FILE="$ADDON_HOME/sundtek.conf"
+SUNDTEK_READY="/var/run/sundtek.ready"
 
 mkdir -p $ADDON_HOME
 
-if [ ! -f "$SUNDTEK_CONFIG_FILE" ]; then
+if [ ! -f "$ADDON_HOME/sundtek.conf" ]; then
   cp $ADDON_DIR/config/* $ADDON_HOME/
-fi
-
-if [ ! -f "$ADDON_HOME/device_attach_detach.sh" ]; then
-  cp $ADDON_DIR/scripts/* $ADDON_HOME/
-  chmod +x $ADDON_HOME/*.sh
-fi
-
-if [ ! -x "$ADDON_HOME/device_attach_detach.sh" ]; then
-  chmod +x $ADDON_HOME/device_attach_detach.sh
 fi
 
 SUNDTEK_ARG="--pluginpath=$ADDON_DIR/bin --daemon"
 
 if [ -z "$(pidof mediasrv)" ]; then
-  rm $ADDON_HOME/attach_detach.log
-  ln -sf $SUNDTEK_CONFIG_FILE /tmp/sundtek.conf
+  rm -f $SUNDTEK_READY
+  rm -f /tmp/sundtek.conf
+  ln -sf $ADDON_HOME/sundtek.conf /tmp/sundtek.conf
   mediasrv $SUNDTEK_ARG
+
+  # wait for device to attach
+  cnt=0
+  while [ 1 ]; do
+    if [ -f $SUNDTEK_READY ]; then
+      rm -f $SUNDTEK_READY
+      break
+    else if [ "$cnt" = "120" ]; then
+      logger -t Tvheadend "### No Sundtek device attached in 60 sec ###"
+      return
+    fi
+    fi
+    let cnt=cnt+1
+    usleep 500000
+  done
+
+  export LD_LIBRARY_PATH=$ADDON_DIR/lib:$LD_LIBRARY_PATH
+  export LD_PRELOAD=$ADDON_DIR/lib/libmediaclient.so:$LD_PRELOAD
+
+(
+  # save adapter serial number in background
+  sleep 4
+  serial_number_old=$(cat $ADDON_HOME/adapters.txt 2>/dev/null)
+  serial_number_new=$(mediaclient -e | awk '/ID:/ {print $2}')
+  if [ "$serial_number_old" != "$serial_number_new" ]; then
+    echo "$serial_number_new" >$ADDON_HOME/adapters.txt
+  fi
+)&
 fi
