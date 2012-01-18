@@ -23,9 +23,11 @@
 . config/options $1
 
 mkdir -p $INSTALL/etc/modprobe.d
-  cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
-  if [ $PROJECT = ATV ]; then
-     sed -i -e "s|^options snd-hda-intel model=auto|options snd-hda-intel model=appletv|" $INSTALL/etc/modprobe.d/alsa-base.conf
+
+  if [[ $PROJECT = "ATV" || $PROJECT = "ATV_nvidia" ]]; then
+    cp -P $PKG_DIR/config/alsa-base_appletv.conf $PKG_DIR/config/alsa-base.conf
+  else
+    cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
   fi
 
 mkdir -p $INSTALL/usr/config
