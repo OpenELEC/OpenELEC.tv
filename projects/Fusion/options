@@ -1,8 +1,8 @@
 # Name of the Distro to build (full name, without special charcters)
   if [ "$PVR" = yes ]; then
-    DISTRONAME="OpenELEC_PVR"
+    DISTRONAME="OpenELEC_PVR_Muschl"
   else
-    DISTRONAME="OpenELEC"
+    DISTRONAME="OpenELEC_Muschl"
   fi
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
@@ -39,7 +39,7 @@
       #               i686 i586 i486 i386
       # (VIA CPUs)    c3 c3-2
       #
-      TARGET_CPU="amdfam10"
+      TARGET_CPU="btver1"
       ;;
 
     x86_64)
@@ -47,7 +47,7 @@
       #               athlon-fx amdfam10 barcelona
       # (Intel CPUs)  atom core2 nocona
       #
-      TARGET_CPU="amdfam10"
+      TARGET_CPU="btver1"
       ;;
 
     arm)
@@ -79,7 +79,9 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-  PROJECT_CFLAGS="-mfpmath=sse -msse2" # -mssse3 removed for Llano compatibility
+PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno-sse4 -mtune=btver1 -mabm -msahf -m96bit-long-double -mno-align-double"
+#Optimize for the dual cores, remove instructions that are core specific
+#and 32bit compatibility, highlight the default btver1 enabled options.
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
