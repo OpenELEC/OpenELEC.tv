@@ -259,7 +259,7 @@ PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb"
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
