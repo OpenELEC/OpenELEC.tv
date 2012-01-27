@@ -5,7 +5,7 @@
     <setting id="NET_DNS3" value="" />
     <setting id="NET_GATEWAY" value="" />
     <setting id="NET_HIDDEN" value="false" />
-    <setting id="NET_HOSTNAME" value="openelec" />
+    <setting id="NET_HOSTNAME" value="zbox" />
     <setting id="NET_IFACE" value="eth0" />
     <setting id="NET_IPADDRESS" value="" />
     <setting id="NET_NETWORK" value="LAN" />
@@ -26,7 +26,7 @@
     <setting id="NET2_SECURITY" value="NONE" />
     <setting id="NET2_SSID" value="" />   
     <setting id="SAMBA_START" value="true" />
-    <setting id="UPDATE_AUTO" value="manual" />
+    <setting id="UPDATE_AUTO" value="true" />
     <setting id="X11_KEYMAP" value="us" />
     <setting id="X11_KEYMAP2" value="" />
 </settings>
