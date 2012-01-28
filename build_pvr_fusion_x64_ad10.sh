@@ -1,7 +1,7 @@
 #!/bin/sh
 
 arch=x86_64
-project=Fusion
+project=Fusion_AD10
 email=PE-Builder@gmx.de
 #master branch select only 1
 #branch=OpenELEC
