@@ -295,10 +295,10 @@ LCD_DRIVER="none"
   COREBOOT="no"
 
 # Distribution Specific source location
-  DISTRO_SRC="http://sources.itcrl.de/$OPENELEC_VERSION"
+  DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url
-  ADDON_SERVER_URL="http://addons.itcrl.de"
+  ADDON_SERVER_URL="http://addons.openelec.tv"
 
 # set the addon dirs
   ADDON_PATH="$OS_VERSION/$PROJECT/$TARGET_ARCH"
