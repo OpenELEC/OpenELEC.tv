@@ -221,6 +221,9 @@ PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
 
+# GL/GLES implementation to use (Mesa)
+  OPENGL="Mesa"
+
 # Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon fglrx nvidia nouveau"
@@ -244,6 +247,9 @@ PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno
 
 # build and install ATV IR remote support (yes / no)
   ATVCLIENT_SUPPORT="no"
+
+# build and install IRServer IR/LCD support (yes / no)
+  IRSERVER_SUPPORT="yes"
 
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
