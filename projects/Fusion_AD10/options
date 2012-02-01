@@ -252,7 +252,7 @@ PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse3 -mssse3 -msse4a -mno-3dnow -mno-sse4 
   IRSERVER_SUPPORT="yes"
 
 # build and install CEC adapter support (yes / no)
-  CEC_SUPPORT="yes"
+  CEC_SUPPORT="no"
 
 # LCD driver to Use - Possible drivers are ( Comma seperated:
 # bayrad,CFontz,CFontz633,CFontzPacket,curses,CwLnx,
