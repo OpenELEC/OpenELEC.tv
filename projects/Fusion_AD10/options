@@ -79,7 +79,7 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-PROJECT_CFLAGS="-mfpmath=sse -mcx16 -mpopcnt -mmmx -msse -mssse3 -msse2 -msse4a -msse3 -mabm -msahf -m128bit-long-double -malign-double"
+PROJECT_CFLAGS="-mfpmath=sse -mcx16 -mpopcnt -mmmx -msse -mssse3 -msse2 -msse4a -msse3 -mabm -msahf -mtune=btver1"
 # --with-arch-64 --with-cpu-64 --with-tune-64
 #Optimize for the dual cores, remove instructions that are core specific
 #and 32bit compatibility, highlight the default btver1 enabled options.
