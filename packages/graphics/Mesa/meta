@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="Mesa"
-PKG_VERSION="8.0-rc1"
+PKG_VERSION="8.0-rc2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -50,4 +50,8 @@ fi
 if [ "$MESA_VAAPI_SUPPORT" = "yes" ]; then
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libva"
   PKG_DEPENDS="$PKG_DEPENDS libva"
+fi
+
+if [ "$DEVTOOLS" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS mesa-demos"
 fi
