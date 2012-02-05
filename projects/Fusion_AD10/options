@@ -1,8 +1,8 @@
 # Name of the Distro to build (full name, without special charcters)
   if [ "$PVR" = yes ]; then
-    DISTRONAME="OpenELEC_PVR_Muschl"
+    DISTRONAME="ZBOX_PVR_Muschl"
   else
-    DISTRONAME="OpenELEC_Muschl"
+    DISTRONAME="ZBOX_Muschl"
   fi
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
@@ -13,19 +13,19 @@
   GREETING4=""
 
 # Hostname for target system (openelec)
-  HOSTNAME="openelec"
+  HOSTNAME="zbox"
 
 # Root password to integrate in the target system
-  ROOT_PASSWORD="openelec"
+  ROOT_PASSWORD="zbox"
 
 # User to integrate in the target system
-  USER_NAME="openelec"
+  USER_NAME="zbox"
 
 # User group to integrate in the target system
-  USER_GROUP="openelec"
+  USER_GROUP="zbox"
 
 # User password to integrate in the target system
-  USER_PASSWORD="openelec"
+  USER_PASSWORD="zbox"
 
 # The TARGET_CPU variable controls which processor should be targeted for
 # generated code.
@@ -79,7 +79,9 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno-sse4 -mtune=btver1 -mabm -msahf -m96bit-long-double -mno-align-double"
+PROJECT_CFLAGS="-mtune=btver1"
+#-mfpmath=sse -mcx16 -mpopcnt -mmmx -msse -mssse3 -msse2 -msse4a -msse3 -mabm -msahf -mtune=btver1"
+# --with-arch-64 --with-cpu-64 --with-tune-64
 #Optimize for the dual cores, remove instructions that are core specific
 #and 32bit compatibility, highlight the default btver1 enabled options.
 
