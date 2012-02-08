@@ -116,8 +116,8 @@
 
 # Skins to install (Confluence)
 # Space separated list is supported,
-# e.g. SKINS="Confluence"
-  SKINS="Confluence"
+# e.g. SKINS="Confluence AeonMQ.3"
+  SKINS="Confluence AeonMQ.3"
 
 # Default Skin (Confluence)
   SKIN_DEFAULT="Confluence"
