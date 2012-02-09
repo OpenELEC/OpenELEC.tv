@@ -39,6 +39,6 @@ cd $PKG_BUILD
             --disable-examples \
             --disable-tirpc \
 
-make -j1
+make
 $MAKEINSTALL
 
