@@ -79,9 +79,10 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-  PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno-sse4 -mtune=btver1 -mabm -msahf -m96bit-long-double -mno-align-double"
+#  PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno-sse4 -mtune=btver1 -mabm -msahf -m96bit-long-double -mno-align-double"
 #Optimize for the dual cores, remove instructions that are core specific
 #and 32bit compatibility, highlight the default btver1 enabled options.
+  PROJECT_CFLAGS=""
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
@@ -162,7 +163,7 @@
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
   ADDITIONAL_DRIVERS="asix-ax887xx"
   if [ "$PVR" = yes ]; then
-    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver"
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
 
 # build with network support (yes / no)
@@ -215,19 +216,19 @@
 # build and install hfs filesystem utilities (yes / no)
   HFSTOOLS="yes"
 
-# Displayserver to use (xorg-server / no)
-  DISPLAYSERVER="xorg-server"
+# OpenGL(X) implementation to use (no / Mesa)
+  OPENGL="Mesa"
+
+# OpenGL-ES implementation to use (no)
+  OPENGLES="no"
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
 
-# Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
+# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon fglrx nvidia nouveau"
   GRAPHIC_DRIVERS="fglrx"
-
-# Mesa to use (Mesa / mesa)
-  MESA="mesa"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
   VDPAU="no"
@@ -248,6 +249,12 @@
 # build and install ATV IR remote support (yes / no)
   ATVCLIENT_SUPPORT="no"
 
+# build and install IRServer IR/LCD support (yes / no)
+  IRSERVER_SUPPORT="yes"
+
+# build and install Joystick support (yes / no)
+  JOYSTICK_SUPPORT="yes"
+
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
 
@@ -262,7 +269,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb"
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,

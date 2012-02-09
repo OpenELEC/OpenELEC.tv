@@ -1,6 +1,14 @@
+2.0.3
+- update to vdr-plugin-xvdr-0ac808a
+- rebuild for libiconv changes
+- update to vdr-plugin-dvbapi-b0194c8
+- update to w_scan-20120112
+
 2.0.2
 - update to vdr-plugin-xvdr-ec9b759
 - update to vdr-plugin-dvbapi-dad660a
+- update to vdr-dynamite-27d7bed
+- add plugin 'vdr-iptv'
 
 2.0.1
 - rename vdr-dvbapi-plugin to vdr-plugin-dvbapi
