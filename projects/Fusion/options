@@ -79,9 +79,6 @@
   OPTIMIZATIONS="speed"
 
 # Project CFLAGS
-#  PROJECT_CFLAGS="-mfpmath=sse -msse2 -msse4a -mno-3dnow -mno-sse3 -mno-ssse3 -mno-sse4 -mtune=btver1 -mabm -msahf -m96bit-long-double -mno-align-double"
-#Optimize for the dual cores, remove instructions that are core specific
-#and 32bit compatibility, highlight the default btver1 enabled options.
   PROJECT_CFLAGS=""
 
 # LTO (Link Time Optimization) support
