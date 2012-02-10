@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="xorg-server"
-PKG_VERSION="1.11.3"
+PKG_VERSION="1.11.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -65,4 +65,8 @@ fi
 
 if [ -n "$WINDOWMANAGER" -a "$WINDOWMANAGER" != "none" ]; then
   PKG_DEPENDS="$PKG_DEPENDS $WINDOWMANAGER"
+fi
+
+if [ "$DEVTOOLS" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS mrxvt"
 fi
