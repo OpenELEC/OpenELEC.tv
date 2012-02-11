@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. config/options $1
+
+cd $PKG_BUILD
+#make
+echo "CXX $CXX"
+scons CXX=${CXX}
+

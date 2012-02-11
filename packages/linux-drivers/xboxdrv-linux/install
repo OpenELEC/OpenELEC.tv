@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. config/options $1
+
+  cp $PKG_BUILD/xboxdrv $INSTALL/usr/bin
+  echo 'blacklist xpad' >> $INSTALL/etc/modprobe.d/blacklist.conf

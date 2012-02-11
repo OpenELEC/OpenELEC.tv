@@ -18,27 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="remote"
-PKG_VERSION=""
+PKG_NAME="pyinputevent"
+PKG_VERSION="0.0.1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="eventlircd eventrewrited v4l-utils"
-PKG_BUILD_DEPENDS="toolchain"
+PKG_LICENSE="MIT"
+PKG_SITE="https://github.com/ismell/pyinputevent"
+PKG_URL="https://github.com/ismell/$PKG_NAME/tarball/v$PKG_VERSION"
+PKG_DEPENDS="Python"
+PKG_BUILD_DEPENDS="toolchain Python"
 PKG_PRIORITY="optional"
-PKG_SECTION="system/remote"
-PKG_SHORTDESC="remote: Meta package for installing various tools needed for remote support"
-PKG_LONGDESC="Meta package for installing various tools needed for remote support"
+PKG_SECTION="python/devel"
+PKG_SHORTDESC="pyinputevent: provides a python interface to Linux's input subsystem"
+PKG_LONGDESC="PyInputEvent provides a python interface to Linux's input subsystem using the '/dev/input/event*' devices, as well as providing a means to pass new events to the input subsystem using the 'uinput' kernel module and '/dev/uinput'."
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
-
-if [ "$ATVCLIENT_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atvclient"
-fi
-
-if [ "$IRSERVER_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS irserver"
-fi

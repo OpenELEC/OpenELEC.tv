@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -18,27 +20,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="remote"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="eventlircd eventrewrited v4l-utils"
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="system/remote"
-PKG_SHORTDESC="remote: Meta package for installing various tools needed for remote support"
-PKG_LONGDESC="Meta package for installing various tools needed for remote support"
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
+PKG_SRC_DIR=`ls -d $BUILD/pyinputevent-*`
+mkdir -p $INSTALL/usr/sbin
+  cp -rf $PKG_SRC_DIR/eventrewrited/eventrewrited.py $INSTALL/usr/sbin/eventrewrited
 
-if [ "$ATVCLIENT_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atvclient"
-fi
+#mkdir -p $INSTALL/lib/udev
+#  cp $PKG_BUILD/udev/lircd_helper $INSTALL/lib/udev
+#  chmod +x $INSTALL/lib/udev/lircd_helper
+#  cp $PKG_BUILD/udev/wakeup_enable $INSTALL/lib/udev
+#  chmod +x $INSTALL/lib/udev/wakeup_enable
 
-if [ "$IRSERVER_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS irserver"
-fi
+mkdir -p $INSTALL/etc/eventrewrite.d
+  cp -rf $PKG_DIR/pymap/*.pymap $INSTALL/etc/eventrewrite.d

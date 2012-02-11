@@ -1,0 +1,39 @@
+--- xboxdrv-linux-0.6.2/Makefile	2010-12-31 14:04:59.000000000 -0700
++++ xboxdrv-linux-0.6.2.orig/Makefile	2011-05-25 21:07:52.167242306 -0600
+@@ -15,19 +15,22 @@
+ ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ DESTDIR = 
+-PREFIX  = "/usr/local"
++PREFIX  = "/usr"
+ DATADIR = "${PREFIX}/share/xboxdrv"
+ MANDIR  = "${PREFIX}/share/man"
+ BINDIR  = "${PREFIX}/bin"
+ 
+-xboxdrv:
+-	scons
++OBJFILES := $(patsubst %.cpp,%.o,$(wildcard src/*.cpp)) $(patsubst %.cpp,%.o,$(wildcard src/modifier/*.cpp))
++
++xboxdrv: $(OBJFILES)
++	${CXX} -o xboxdrv -g -O2 -Wall -ansi -pedantic -lX11 -lusb -lboost_thread $(OBJFILES)
++
++%.o: %.cpp
++	$(CXX) -o $@ -c -g -O2 -Wall -ansi -pedantic -DPACKAGE_VERSION='"0.8.0"' -Isrc $<
++
+ 
+ clean:
+-	scons -c
+-	rm -rf .sconf_temp/
+-	rm -f .sconsign.dblite
+-	rm -f config.log
++	rm -f *.o xboxdrv config.log
+ 
+ install: install-exec install-man
+ 
+@@ -38,6 +41,3 @@
+ 	install -D doc/xboxdrv-daemon.1 "${DESTDIR}${MANDIR}/man1/xboxdrv-daemon.1"
+ 	install -D doc/xboxdrv.1 "${DESTDIR}${MANDIR}/man1/xboxdrv.1"
+ 
+-.PHONY : clean install install-exec install-man
+-
+-# EOF #

@@ -18,27 +18,10 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="remote"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="eventlircd eventrewrited v4l-utils"
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="system/remote"
-PKG_SHORTDESC="remote: Meta package for installing various tools needed for remote support"
-PKG_LONGDESC="Meta package for installing various tools needed for remote support"
-PKG_IS_ADDON="no"
+# only does something with "usb" subsystem devices.
+SUBSYSTEM!="usb", GOTO="end"
 
-PKG_AUTORECONF="no"
+# Start Xbox Controller Event Client
+RUN+="/storage/xboxdrv_helper"
 
-if [ "$ATVCLIENT_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atvclient"
-fi
-
-if [ "$IRSERVER_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS irserver"
-fi
+LABEL="end"

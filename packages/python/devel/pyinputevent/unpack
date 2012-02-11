@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -18,27 +20,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="remote"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="eventlircd eventrewrited v4l-utils"
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="system/remote"
-PKG_SHORTDESC="remote: Meta package for installing various tools needed for remote support"
-PKG_LONGDESC="Meta package for installing various tools needed for remote support"
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
-
-if [ "$ATVCLIENT_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS atvclient"
-fi
-
-if [ "$IRSERVER_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS irserver"
-fi
+PKG_BUILD="$BUILD/$PKG_NAME-v$PKG_VERSION"
+[ -d $PKG_BUILD ] && rm -rf $PKG_BUILD
+mkdir "$PKG_BUILD"
+tar -zxvf "$SOURCES/$PKG_NAME/v$PKG_VERSION" -C "$PKG_BUILD" --strip 1

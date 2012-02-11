@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. config/options $1
+
+cd $PKG_BUILD
+#make
+env
+echo "CXX $CXX"
+scons CXX=${CXX}
+
