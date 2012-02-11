@@ -22,12 +22,11 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/bin
-  cp $PKG_BUILD/ply-image $INSTALL/bin
+STAMP=$STAMPS/$1/unpack
 
-mkdir -p $INSTALL/splash
-  if [ -f $PROJECT_DIR/$PROJECT/splash/splash.png ]; then
-    cp $PROJECT_DIR/$PROJECT/splash/splash.png $INSTALL/splash
-  else
-    cp $PKG_DIR/splash/splash.png $INSTALL/splash
-  fi
+test $PKG_DIR/config/linux.$TARGET_ARCH.conf -nt $STAMP -o \
+     $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -nt $STAMP -o \
+     $PKG_DIR/url -nt $STAMP -o \
+     $PKG_DIR/meta -nt $STAMP && rm -f $STAMP
+
+exit 0

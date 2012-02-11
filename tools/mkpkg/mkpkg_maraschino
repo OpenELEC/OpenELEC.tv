@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -20,9 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+echo "getting sources..."
+  if [ ! -d maraschino.git ]; then
+    git clone git://github.com/mrkipling/maraschino.git maraschino.git
+  fi
 
-LIBPNG_DIR="$BUILD/libpng-*"
+  cd maraschino.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-mkdir -p $INSTALL/lib
-  cp -P $LIBPNG_DIR/.libs/libpng*.so* $INSTALL/lib
+echo "copying sources..."
+  rm -rf maraschino-$GIT_REV
+  cp -R maraschino.git maraschino-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf maraschino-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf maraschino-$GIT_REV.tar.xz maraschino-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf maraschino-$GIT_REV

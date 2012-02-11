@@ -22,7 +22,8 @@
 
 . config/options $1
 
-ZLIB_DIR="$BUILD/zlib-*"
+cd $PKG_BUILD
 
-mkdir -p $INSTALL/lib
-  cp -R $ZLIB_DIR/*.so* $INSTALL/lib
+make KDIR=$(kernel_path) CC=$CC
+fix_module_depends vtunerc.ko "dvb_core"
+
