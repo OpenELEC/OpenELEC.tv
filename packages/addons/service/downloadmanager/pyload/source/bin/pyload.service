@@ -29,4 +29,4 @@
 ################################################################################
 # start pyload
 ################################################################################
-  python $ADDON_DIR/pyload/pyLoadCore.py -daemon --configdir=$ADDON_HOME
+  python $ADDON_DIR/pyload/pyLoadCore.py --daemon --configdir=$ADDON_HOME

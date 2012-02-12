@@ -33,12 +33,14 @@
   mkdir -p /dev/shm
   mount -n -t tmpfs none /dev/shm
 
-  mount -n -t tmpfs none /run
-
 # showing version
   lsb_release
 
 # starting init scripts for wanted runlevel
+
+if [ -f /etc/oem.conf ]; then
+  . /etc/oem.conf
+fi
 
 . /etc/profile
 

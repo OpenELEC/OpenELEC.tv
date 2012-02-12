@@ -19,14 +19,14 @@
 ################################################################################
 
 PKG_NAME="SDL_image"
-PKG_VERSION="1.2.10"
+PKG_VERSION="1.2.12"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.libsdl.org/"
 PKG_URL="http://www.libsdl.org/projects/SDL_image/release/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="SDL $LIBJPEG libpng tiff"
-PKG_BUILD_DEPENDS="toolchain SDL $LIBJPEG libpng tiff"
+PKG_DEPENDS="SDL libjpeg-turbo libpng tiff"
+PKG_BUILD_DEPENDS="toolchain SDL libjpeg-turbo libpng tiff"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="libsdl_image: A cross-platform Graphic API"
