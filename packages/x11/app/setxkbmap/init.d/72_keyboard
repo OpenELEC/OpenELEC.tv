@@ -37,7 +37,7 @@
 
     # setup keymap
       if [ -z $X11_KEYMAP2 ]; then
-        setxkbmap -display $DISPLAY $X11_KEYMAP;
+        setxkbmap -display $DISPLAY -layout $X11_KEYMAP;
       else
         setxkbmap -display $DISPLAY -layout "$X11_KEYMAP,$X11_KEYMAP2" -option "grp:alt_shift_toggle";
       fi
