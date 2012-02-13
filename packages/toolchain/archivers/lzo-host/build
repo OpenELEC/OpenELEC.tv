@@ -22,15 +22,22 @@
 
 . config/options $1
 
+$SCRIPTS/unpack lzo
+
+LZO_DIR=`ls -d $BUILD/lzo-[0-9]*`
+
 setup_toolchain host
 
-LDFLAGS="$LDFLAGS -fwhole-program"
+cd $LZO_DIR
 
-cd $BUILD/$1*/squashfs-tools
-make mksquashfs \
-     XZ_SUPPORT=1 \
-     LZO_SUPPORT=1 \
-     INCLUDEDIR="-I. -I$ROOT/$TOOLCHAIN/include"
+mkdir -p .build-host && cd .build-host
+../configure --host=$HOST_NAME \
+             --build=$HOST_NAME \
+             --prefix=$ROOT/$TOOLCHAIN \
+             --sysconfdir=$ROOT/$TOOLCHAIN/etc \
+             --datadir=/usr/share \
+             --enable-shared \
+             --disable-static \
 
-mkdir -p $ROOT/$TOOLCHAIN/bin
-  cp mksquashfs $ROOT/$TOOLCHAIN/bin
+make
+make install
