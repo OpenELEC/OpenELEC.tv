@@ -1,9 +1,9 @@
 # build directorys
-/build.*/
+/build.*
 /.fakeroot.*
 
 # automatically downloaded source files
-/sources/
+/sources
 /.stamps/
 
 # prebuild target binarys to provide
@@ -17,4 +17,9 @@
 mkpkg-temp
 
 # private working directory
-/.work/
+/.work
+
+# IDE related files and folders
+/.anjuta/
+/.anjuta_sym_db.db
+/OpenELEC.tv.anjuta
