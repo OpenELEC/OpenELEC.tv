@@ -19,6 +19,10 @@ mkpkg-temp
 # private working directory
 /.work
 
+# ignore backup files
+*~
+*.bak
+
 # IDE related files and folders
 /.anjuta/
 /.anjuta_sym_db.db
