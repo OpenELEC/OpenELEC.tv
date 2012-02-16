@@ -1,0 +1,10 @@
+#!/bin/sh
+# use the given build version 
+#
+if [ -f /flash/$1.kernel -a -f /flash/$1.system ] ; then
+  cd /flash
+  mv KERNEL KERNEL.last
+  mv SYSTEM SYSTEM.last
+  ln -sf $1.kernel KERNEL
+  ln -sf $1.system SYSTEM
+fi
