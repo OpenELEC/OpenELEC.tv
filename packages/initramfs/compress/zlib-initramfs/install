@@ -22,7 +22,7 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/src/chvt $INSTALL/usr/bin
-  cp $PKG_BUILD/src/deallocvt $INSTALL/usr/bin
-  cp $PKG_BUILD/src/fgconsole $INSTALL/usr/bin
+ZLIB_DIR="$BUILD/zlib-*"
+
+mkdir -p $INSTALL/lib
+  cp -R $ZLIB_DIR/*.so* $INSTALL/lib

@@ -22,13 +22,7 @@
 
 . config/options $1
 
-cd $PKG_BUILD
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --datadir=/usr/share \
-            --localstatedir=/var \
-            --disable-nls \
+LIBPNG_DIR="$BUILD/libpng-*"
 
-make
+mkdir -p $INSTALL/lib
+  cp -P $LIBPNG_DIR/.libs/libpng*.so* $INSTALL/lib

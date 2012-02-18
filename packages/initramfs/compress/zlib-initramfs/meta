@@ -18,30 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="libav"
-PKG_VERSION="0.7.2"
-PKG_REV="2"
+PKG_NAME="zlib-initramfs"
+PKG_VERSION=""
+PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.libav.org"
-PKG_URL="http://libav.org/releases/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.zlib.net"
+PKG_URL=""
 PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain alsa-lib zlib bzip2 SDL"
+PKG_BUILD_DEPENDS="toolchain zlib"
 PKG_PRIORITY="optional"
-PKG_SECTION="lib/multimedia"
-PKG_SHORTDESC="libav: A complete audio and video stream library"
-PKG_LONGDESC="libav is a complete solution to record, convert and stream audio and video forked from FFMPEG. It includes libavcodec, the leading audio/video codec library."
-
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.python.script"
+PKG_SECTION="initramfs/compress"
+PKG_SHORTDESC="zlib: A general purpose (ZIP) data compression library"
+PKG_LONGDESC="zlib is a general purpose data compression library. All the code is thread safe. The data format used by the zlib library is described by RFCs (Request for Comments) 1950 to 1952 in the files ftp://ds.internic.net/rfc/rfc1950.txt (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format)."
+PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
-
-if [ "$VDPAU" = yes ]; then
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libvdpau"
-fi
-
-if [ "$VAAPI" = yes ]; then
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libva"
-fi
-
