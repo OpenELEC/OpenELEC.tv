@@ -44,6 +44,7 @@ mkdir -p $INSTALL/sys
 mkdir -p $INSTALL/flash
 mkdir -p $INSTALL/sysroot
 mkdir -p $INSTALL/storage
+mkdir -p $INSTALL/boot
 
   cp $PKG_DIR/scripts/init $INSTALL
   chmod 755 $INSTALL/init

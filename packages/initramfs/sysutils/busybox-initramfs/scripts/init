@@ -143,10 +143,13 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
 
   update() {
     if [ -f "$UPDATE_DIR/$2" ]; then
+      if [ [ -n "$singlepartition" -a -z "$disk" ] -o -n "$bootfolder" ]; then
+	BINDOPTION=",bind"
+      fi
       echo "updating $1..."
-        $IONICE /bin/busybox mount -o remount,rw /flash
+        $IONICE /bin/busybox mount -o "remount,rw$BINDOPTION" /flash
         $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3
-        $IONICE /bin/busybox mount -o remount,ro /flash
+        $IONICE /bin/busybox mount -o "remount,ro$BINDOPTION" /flash
         $IONICE /bin/busybox sync
         [ "$2" = "$IMAGE_KERNEL" ] && REBOOT="1"
     fi
@@ -208,11 +211,23 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
       hfsdiskprep
     fi
 
-    mount_part "$boot" "/flash" "ro,noatime"
+    if [ -z "$bootfolder" -a -z "$singlepartition" ]; then
+      mount_part "$boot" "/flash" "ro,noatime"
+    else
+      mount_part "$boot" "/boot" "rw,noatime"
+      $IONICE /bin/busybox mount -o bind "/boot$bootfolder" "/flash"
+      #needed because initial remount with ro is not possible in kernel atm
+      $IONICE /bin/busybox mount -o remount,bind,ro /flash
+    fi
+
     show_splash
 
-    if [ -n "$disk" ]; then
-      mount_part "$disk" "/storage" "rw,noatime"
+    if [ -n "$disk" -o -n "$singlepartition" ]; then
+      if [ -n "$disk" ]; then
+	mount_part "$disk" "/storage" "rw,noatime"
+      else
+	$IONICE /bin/busybox mount -o bind "/boot$singlepartition" "/storage"
+      fi
 
       if [ -f "/flash/MACH_KERNEL" ]; then
         IMAGE_KERNEL="MACH_KERNEL"
@@ -236,10 +251,10 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
     fi
 
     # move /flash and /storage to /sysroot
-    /bin/busybox mount --move /flash /sysroot/flash
+    /bin/busybox mount -o move /flash /sysroot/flash
 
-    if [ -n "$disk" ]; then
-      /bin/busybox mount --move /storage /sysroot/storage
+    if [ -n "$disk" -o -n "$singlepartition" ]; then
+      /bin/busybox mount -o move /storage /sysroot/storage
     fi
   }
 
@@ -250,9 +265,9 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
   fi
 
 # move some special filesystems
-  /bin/busybox mount --move /dev /sysroot/dev
-  /bin/busybox mount --move /proc /sysroot/proc
-  /bin/busybox mount --move /sys /sysroot/sys
+  /bin/busybox mount -o move /dev /sysroot/dev
+  /bin/busybox mount -o move /proc /sysroot/proc
+  /bin/busybox mount -o move /sys /sysroot/sys
 
 # switch to new sysroot and start real init
   exec /bin/busybox switch_root /sysroot /sbin/init
