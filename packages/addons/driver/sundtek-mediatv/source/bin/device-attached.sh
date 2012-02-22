@@ -20,7 +20,6 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+SUNDTEK_READY="/var/run/sundtek.ready"
 
-mkdir -p $INSTALL/$SSL_CERTIFICATES
-  cp $PKG_DIR/script/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cacert.pem
+touch $SUNDTEK_READY
