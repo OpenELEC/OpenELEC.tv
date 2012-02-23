@@ -22,21 +22,7 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/bin
-  cp -PR $BUILD/busybox*/_install-initramfs/bin/busybox $INSTALL/bin
-  ln -sf busybox $INSTALL/bin/sh
-  chmod 4755 $INSTALL/bin/busybox
+LIBJPEG_DIR="$BUILD/libjpeg-turbo-*"
 
-mkdir -p $INSTALL/etc
-  touch $INSTALL/etc/fstab
-  ln -sf /proc/self/mounts $INSTALL/etc/mtab
-
-mkdir -p $INSTALL/dev
-mkdir -p $INSTALL/proc
-mkdir -p $INSTALL/sys
-mkdir -p $INSTALL/flash
-mkdir -p $INSTALL/sysroot
-mkdir -p $INSTALL/storage
-
-  cp $PKG_DIR/scripts/init $INSTALL
-  chmod 755 $INSTALL/init
+mkdir -p $INSTALL/lib
+  cp -P $LIBJPEG_DIR/.libs/libjpeg.so* $INSTALL/lib

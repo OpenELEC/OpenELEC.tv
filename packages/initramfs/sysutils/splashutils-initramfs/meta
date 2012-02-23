@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -20,23 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="splashutils-initramfs"
+PKG_VERSION=""
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE=""
+PKG_URL=""
+PKG_DEPENDS="gcc-initramfs libpng-initramfs libjpeg-turbo-initramfs"
+PKG_BUILD_DEPENDS="toolchain splashutils"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="splashutils:"
+PKG_LONGDESC="splashutils:"
+PKG_IS_ADDON="no"
 
-mkdir -p $INSTALL/bin
-  cp -PR $BUILD/busybox*/_install-initramfs/bin/busybox $INSTALL/bin
-  ln -sf busybox $INSTALL/bin/sh
-  chmod 4755 $INSTALL/bin/busybox
-
-mkdir -p $INSTALL/etc
-  touch $INSTALL/etc/fstab
-  ln -sf /proc/self/mounts $INSTALL/etc/mtab
-
-mkdir -p $INSTALL/dev
-mkdir -p $INSTALL/proc
-mkdir -p $INSTALL/sys
-mkdir -p $INSTALL/flash
-mkdir -p $INSTALL/sysroot
-mkdir -p $INSTALL/storage
-
-  cp $PKG_DIR/scripts/init $INSTALL
-  chmod 755 $INSTALL/init
+PKG_AUTORECONF="no"

@@ -22,21 +22,15 @@
 
 . config/options $1
 
+SPLASHUTILS_DIR="$BUILD/splashutils-*"
+
+mkdir -p $INSTALL/lib
+  cp -P $SPLASHUTILS_DIR/src/.libs/libfbsplash.so* $INSTALL/lib
+  cp -P $SPLASHUTILS_DIR/src/.libs/libfbsplashrender.so* $INSTALL/lib
+  rm -rf $INSTALL/lib/libfbsplashrender.so*T
+
 mkdir -p $INSTALL/bin
-  cp -PR $BUILD/busybox*/_install-initramfs/bin/busybox $INSTALL/bin
-  ln -sf busybox $INSTALL/bin/sh
-  chmod 4755 $INSTALL/bin/busybox
+  cp $SPLASHUTILS_DIR/src/.libs/fbsplashd $INSTALL/bin
 
-mkdir -p $INSTALL/etc
-  touch $INSTALL/etc/fstab
-  ln -sf /proc/self/mounts $INSTALL/etc/mtab
-
-mkdir -p $INSTALL/dev
-mkdir -p $INSTALL/proc
-mkdir -p $INSTALL/sys
-mkdir -p $INSTALL/flash
-mkdir -p $INSTALL/sysroot
-mkdir -p $INSTALL/storage
-
-  cp $PKG_DIR/scripts/init $INSTALL
-  chmod 755 $INSTALL/init
+mkdir -p $INSTALL/etc/splash
+  cp -R $PKG_DIR/theme/openelec $INSTALL/etc/splash
