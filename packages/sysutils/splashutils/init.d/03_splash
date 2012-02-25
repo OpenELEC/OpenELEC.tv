@@ -18,19 +18,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="splashutils"
-PKG_VERSION="1.5.4.4"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://dev.gentoo.org/~spock/projects/fbsplash"
-PKG_URL="http://dev.gentoo.org/~spock/projects/fbsplash/archive/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libpng libjpeg-turbo freetype"
-PKG_BUILD_DEPENDS="toolchain libpng libjpeg-turbo freetype"
-PKG_PRIORITY="optional"
-PKG_SECTION="system"
-PKG_SHORTDESC="splashutils:"
-PKG_LONGDESC="splashutils.."
-PKG_IS_ADDON="no"
+#
+# make variable directory structure
+#
+# runlevels: openelec, installer, textmode
 
-PKG_AUTORECONF="yes"
+progress "starting splash"
+  mkdir -p /run/splash/cache/
+  fbsplashd --theme=openelec --type=bootup
+
+  echo "set tty silent 2"  > /run/splash/cache/.splash
+  echo "set tty verbose 6" > /run/splash/cache/.splash
+  echo "set mode silent"   > /run/splash/cache/.splash
+  echo "set message `lsb_release`"   > /run/splash/cache/.splash
+  echo "repaint"           > /run/splash/cache/.splash
+  chvt 2
