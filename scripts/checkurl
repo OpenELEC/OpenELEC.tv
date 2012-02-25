@@ -23,14 +23,7 @@
 . config/options $1
 
 query_server() {
-  if [ "$HAVE_CURL" = "yes" ]; then
-    QUERY_CMD="curl -s -IL"
-  elif [ -z "$(echo $1 | grep '^ftp://')" ]; then
-    QUERY_CMD="wget -q -S --spider"
-  else
-    QUERY_CMD="echo NONE 501 Not Implemented"
-  fi
-  $QUERY_CMD "$1" 2>&1 | tr -d '\r'
+  curl -s -IL "$1" | tr -d '\r'
 }
 
 parse_response() {
@@ -70,13 +63,7 @@ parse_response() {
   echo $REASON
 }
 
-[ -n "$(which curl)" ] && HAVE_CURL="yes" || HAVE_CURL="no"
-
 if [ -z "$1" ]; then
-  if [ "$HAVE_CURL" != "yes" ]
-  then
-    echo "Warning: curl is not installed. ftp:// URLs will not be checked."
-  fi
   for i in `find packages/ -type f -name meta`; do
     CHECK_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
     $SCRIPTS/checkurl $CHECK_PKG
