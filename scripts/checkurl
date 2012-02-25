@@ -39,7 +39,7 @@ parse_response() {
   while read LINE
   do
     [ -z "$LINE" ] && continue
-    if [ -n "`echo $LINE | grep -v ':'`" ]; then
+    if [ -z "$(echo $LINE | grep ':')" ]; then
       STATUS=$LINE
       echo "Status: $STATUS" >&$VERBOSE_OUT
     else
