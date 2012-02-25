@@ -1,0 +1,104 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+query_server() {
+  if [ "$HAVE_CURL" = "yes" ]; then
+    QUERY_CMD="curl -s -IL"
+  elif [ -z "$(echo $1 | grep '^ftp://')" ]; then
+    QUERY_CMD="wget -q -S --spider"
+  else
+    QUERY_CMD="echo NONE 501 Not Implemented"
+  fi
+  $QUERY_CMD "$1" 2>&1 | tr -d '\r'
+}
+
+parse_response() {
+  local LINE STATUS HEADER SIZE MDATE PROTO_VER STATUSCODE REASON TEMP
+
+  while read LINE
+  do
+    [ -z "$LINE" ] && continue
+    if [ -n "`echo $LINE | grep -v ':'`" ]; then
+      STATUS=$LINE
+      echo "Status: $STATUS" >&$VERBOSE_OUT
+    else
+      HEADER=$LINE
+      echo "$HEADER" >&$VERBOSE_OUT
+      case "$HEADER" in
+        [Cc]ontent-[Ll]ength:*) SIZE=${HEADER#*: }
+                                ;;
+        [Ll]ast-[Mm]odified:*)  MDATE=${HEADER#*: }
+                                ;;
+      esac
+    fi
+  done
+
+  if [ -n "$STATUS" ]; then
+    TEMP=$STATUS
+    PROTO_VER=${TEMP%% *}
+    TEMP=${TEMP#* }
+    STATUSCODE=${TEMP%% *}
+    TEMP=${TEMP#* }
+    REASON=$TEMP
+  elif [ -n "$SIZE" ] && [ -n "$MDATE" ]; then
+    REASON="OK"
+  else
+    REASON="Unknown"
+  fi
+  echo "Reason: $REASON" >&$VERBOSE_OUT
+  echo $REASON
+}
+
+[ -n "$(which curl)" ] && HAVE_CURL="yes" || HAVE_CURL="no"
+
+if [ -z "$1" ]; then
+  if [ "$HAVE_CURL" != "yes" ]
+  then
+    echo "Warning: curl is not installed. ftp:// URLs will not be checked."
+  fi
+  for i in `find packages/ -type f -name meta`; do
+    CHECK_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
+    $SCRIPTS/checkurl $CHECK_PKG
+  done
+fi
+
+[ -z "$PKG_URL" ] && exit 0
+
+if [ -n "$PKG_URL" ]; then
+  URLS="$URLS `echo $PKG_URL | sed s%GEEXBOX_SRCS%$GEEXBOX_SRCS%`"
+
+  for i in $URLS; do
+    printf "%${INDENT}c CHECKURL $1\n" >&$SILENT_OUT
+    export INDENT=$((${INDENT:-1}+$INDENT_SIZE))
+
+    echo "URL: $i" >&$VERBOSE_OUT
+
+    RESULT=$(query_server "$i" | parse_response)
+    if [ "$RESULT" != "OK" ]; then
+      echo "$RESULT: $i" >&$SILENT_OUT
+    fi
+
+    echo >&$VERBOSE_OUT
+  done
+fi
