@@ -30,7 +30,6 @@
   username map = /var/run/samba.map
   guest account = root
   socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=65536 SO_SNDBUF=65536
-  smb ports = 445
   mangled names = no
   wins support = yes
   syslog only = yes
@@ -48,12 +47,13 @@
 
 # Using the following configurations as a template allows you to add
 # writable shares of disks and paths under /storage
+# public = yes -> share is accessible by everyone!
 
 [Update]
   path = /storage/.update
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/.update
 
@@ -61,7 +61,7 @@
   path = /storage/videos
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/videos
 
@@ -69,7 +69,7 @@
   path = /storage/music
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/music
 
@@ -77,7 +77,7 @@
   path = /storage/tvshows
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/tvshows
 
@@ -85,7 +85,7 @@
   path = /storage/downloads
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/downloads
 
@@ -93,7 +93,7 @@
   path = /storage/pictures
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/pictures
 
@@ -101,7 +101,7 @@
   path = /storage/emulators/mame/roms
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/emulators/mame/roms
 
@@ -109,7 +109,7 @@
   path = /storage/.config
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/.config
 
@@ -117,7 +117,7 @@
   path = /storage/.xbmc/userdata
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/.xbmc/userdata
 
@@ -125,7 +125,7 @@
   path = /storage/screenshots
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/screenshots
 
@@ -133,7 +133,7 @@
   path = /media
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /media
 
@@ -141,7 +141,7 @@
   path = /storage/logfiles
   available = yes
   browsable = yes
-  public = yes
+#  public = yes
   writable = yes
   root preexec = mkdir -p /storage/logfiles
 

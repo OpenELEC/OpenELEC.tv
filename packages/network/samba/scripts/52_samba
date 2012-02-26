@@ -28,16 +28,25 @@
 
     if [ "$SAMBA_START" = "true" ]; then
 
+      echo -e "$SAMBA_PASSWORD\n$SAMBA_PASSWORD" | smbpasswd -s -a root >/dev/null 2>&1
+      #username map: first line makes sure plain root does not work all the time
+      #processing continues, so if user chooses root as username, second line overrides the first
+      #this is done always in case user uses passwords in userconf.
+      echo -e "nobody = root\nroot = $SAMBA_USERNAME" > /var/run/samba.map
+  
     # sleep 2 sec to be ensure network is started
       usleep 2000000
 
       progress  "Starting Samba server"
 
       SMB_USERCONF="/storage/.config/samba.conf"
+      SMB_SECURECONF="/etc/samba/smb.conf.secure"
       SMB_DEFCONF="/etc/samba/smb.conf"
 
       if [ -f $SMB_USERCONF ]; then
         SMB_ARG="--configfile=$SMB_USERCONF"
+      elif [ "$SAMBA_SECURITY" = "true" ]; then
+        SMB_ARG="--configfile=$SMB_SECURECONF"
       else
         SMB_ARG="--configfile=$SMB_DEFCONF"
       fi
