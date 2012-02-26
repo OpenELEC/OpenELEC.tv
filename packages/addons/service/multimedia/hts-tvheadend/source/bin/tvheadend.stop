@@ -20,9 +20,10 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-ZLIB_DIR="$BUILD/zlib-*"
+ADDON_BIN="tvheadend"
 
-mkdir -p $INSTALL/lib
-  cp -R $ZLIB_DIR/*.so* $INSTALL/lib
+if [ $(pidof $ADDON_BIN) ];then
+  killall $ADDON_BIN
+fi

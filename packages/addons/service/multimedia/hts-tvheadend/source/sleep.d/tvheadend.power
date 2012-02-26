@@ -31,14 +31,14 @@ case "$1" in
       progress "Shutting down HTS TVHeadend for suspending..."
       mkdir -p "$LOCKDIR"
       touch "$LOCKDIR/$LOCKFILE"
-      killall tvheadend
+      tvheadend.stop
     fi
     ;;
 
   thaw|resume)
     if [ -f "$LOCKDIR/$LOCKFILE" ];then
       progress "Restarting HTS TVHeadend for wakeup..."
-      tvheadend.service
+      tvheadend.start
       rm -rf "$LOCKDIR/$LOCKFILE"
     fi
     ;;

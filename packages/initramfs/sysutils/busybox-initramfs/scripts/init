@@ -40,14 +40,15 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
 # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
+# clear screen and hide cursor
+  clear
+  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
 # parse command line arguments
   for arg in $(cat /proc/cmdline); do
     case $arg in
       debugging)
         DEBUG=yes
-        ;;
-      nosplash)
-        SPLASH=no
         ;;
       bootchart)
         BOOTCHART=yes
@@ -91,32 +92,16 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
     fi
   }
 
-  show_splash() {
-    if [ ! -e /dev/fb0 ]; then
-      SPLASH=no
-    fi
-
-    if [ -f /flash/oemsplash.ppm ]; then
-      SPLASHIMAGE="/flash/oemsplash.ppm"
-    elif [ -f /splash/splash.ppm ]; then
-      SPLASHIMAGE="/splash/splash.ppm"
-    else
-      SPLASH=no
-    fi
-
-    if [ "$SPLASH" = "no" ]; then
-      break
-    else
-      /bin/busybox fbsplash -c -s "$SPLASHIMAGE" -d /dev/fb0
-    fi
-  }
-
   error() {
     echo "Error Code: $1 that means: $2"
   }
 
   debug_shell() {
     echo "### Starting debugging shell... type  exit  to quit ###"
+
+    # show cursor
+      echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
     /bin/busybox sh </dev/tty1 >/dev/tty1 2>&1
   }
 
@@ -202,14 +187,12 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
   }
 
   mount_disk() {
-
   # deal with hfs partitions
     if [ -x /sbin/fsck_hfs ]; then
       hfsdiskprep
     fi
 
     mount_part "$boot" "/flash" "ro,noatime"
-    show_splash
 
     if [ -n "$disk" ]; then
       mount_part "$disk" "/storage" "rw,noatime"

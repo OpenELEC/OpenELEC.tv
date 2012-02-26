@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -18,23 +20,30 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="e2fsprogs-initramfs"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://e2fsprogs.sourceforge.net/"
-PKG_URL=""
-PKG_DEPENDS="util-linux-initramfs"
-PKG_BUILD_DEPENDS="toolchain e2fsprogs"
-PKG_PRIORITY="optional"
-PKG_SECTION="tools"
-PKG_SHORTDESC="e2fsprogs: Utilities for use with the ext2 filesystem"
-PKG_LONGDESC="The filesystem utilities for the EXT2 filesystem, including e2fsck, mke2fs, dumpe2fs, fsck, and others."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
+cd $PKG_BUILD
+./configure --host=$TARGET_NAME \
+            --build=$HOST_NAME \
+            --enable-shared \
+            --disable-static \
+            --disable-debug \
+            --disable-static-binaries \
+            --disable-deprecated \
+            --disable-fbcondecor \
+            --disable-helper \
+            --disable-misc \
+            --with-gnu-ld \
+            --without-gpm \
+            --without-mng \
+            --with-png \
+            --with-ttf \
+            --with-ttf-kernel \
+            --with-essential-prefix="/" \
+            --with-essential-bindir="/bin" \
+            --with-essential-sbindir="/sbin" \
+            --with-essential-libdir="/lib" \
+            --with-themedir="/etc/splash" \
+            --without-klibc
 
-if [ "$HFSTOOLS" = "yes" ]; then
-  PKG_DEPENDS="$PKG_DEPENDS diskdev_cmds-initramfs"
-fi
+make

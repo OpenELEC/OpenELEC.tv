@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
@@ -20,14 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+#
+# make variable directory structure
+#
+# runlevels: openelec, installer, textmode
 
-UTIL_LINUX_DIR="$BUILD/util-linux-*"
+progress "starting splash"
+  mkdir -p /run/splash/cache/
+  fbsplashd --theme=default --type=bootup
 
-mkdir -p $INSTALL/sbin
-  cp -P $UTIL_LINUX_DIR/misc-utils/.libs/blkid $INSTALL/sbin
-  cp -P $UTIL_LINUX_DIR/fsck/.libs/fsck $INSTALL/sbin
+  echo "set tty silent 2"            > /run/splash/cache/.splash
+  echo "set tty verbose 6"           > /run/splash/cache/.splash
+  echo "set mode silent"             > /run/splash/cache/.splash
+  echo "set message `lsb_release`"   > /run/splash/cache/.splash
+  echo "repaint"                     > /run/splash/cache/.splash
+  chvt 2
 
-mkdir -p $INSTALL/lib
-  cp -P $UTIL_LINUX_DIR/libblkid/src/.libs/libblkid.so* $INSTALL/lib
-  cp -P $UTIL_LINUX_DIR/libuuid/src/.libs/libuuid.so* $INSTALL/lib
