@@ -1,8 +1,6 @@
-#!/bin/sh
-
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2010 OpenELEC.tv
+#      http://www.openelec.tv
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,15 +18,11 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# this script is executed when userhdhomerun program is started
-  while [ -z "$(pidof userhdhomerun)" ]; do
-    usleep 200000
-  done
-  usleep 500000
+# setup sysctl
+#
+# runlevels: openelec, installer, textmode
 
-# restart the services
-  killall tvheadend
-  while [ -n "$(pidof tvheadend)" ]; do
-    usleep 200000
-  done
-  tvheadend.service
+progress "setup sysctl"
+  if [ -f /etc/sysctl.conf ]; then
+    sysctl -p /etc/sysctl.conf &
+  fi

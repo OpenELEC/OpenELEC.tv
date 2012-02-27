@@ -20,43 +20,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-ADDON_NAME="driver.dvb.hdhomerun"
-ADDON_DIR="$HOME/.xbmc/addons/$ADDON_NAME"
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/$ADDON_NAME"
+. /etc/profile
 
-mkdir -p $ADDON_HOME
-
-if [ ! -f "$ADDON_HOME/dvbhdhomerun.sample" ]; then
-  cp $ADDON_DIR/config/* $ADDON_HOME/
+if [ $(pidof vdr.bin) ];then
+  killall vdr.bin
 fi
 
-export LD_LIBRARY_PATH=$ADDON_DIR/lib:$LD_LIBRARY_PATH
-
-if [ -z "$(pidof userhdhomerun)" ]; then
-  rm -f /tmp/dvbhdhomerun
-  [ -f $ADDON_HOME/dvbhdhomerun ] && ln -s $ADDON_HOME/dvbhdhomerun /tmp/dvbhdhomerun
-
-  modprobe dvb_hdhomerun
-  modprobe dvb_hdhomerun_fe
-
-  mkdir -p /var/log/
-  rm -f /var/log/dvbhdhomerun.log
-
-  cd $ADDON_DIR/bin
-  userhdhomerun -f
-  sh $ADDON_HOME/userhdhomerun-started.sh >/dev/null 2>&1 &
-
-(
-  sleep 3
-
-  sn_old="dummy"
-  [ -f $ADDON_HOME/serial-number.txt ] && sn_old=$(cat $ADDON_HOME/serial-number.txt)
-
-  sn_new=$(grep "Name of device: " /var/log/dvbhdhomerun.log)
-
-  if [ "$sn_new" != "$sn_old" ]; then
-    grep "Name of device: " /var/log/dvbhdhomerun.log >$ADDON_HOME/serial-number.txt
-  fi
-)&
-
-fi

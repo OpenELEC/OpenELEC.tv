@@ -20,29 +20,30 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-ADDON_DIR="$HOME/.xbmc/addons/driver.dvb.sundtek-mediatv"
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/driver.dvb.sundtek-mediatv"
-SUNDTEK_CONFIG_FILE="$ADDON_HOME/sundtek.conf"
+. /etc/profile
 
-mkdir -p $ADDON_HOME
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.vdr-addon"
+ADDON_CONFIG_DIR="$ADDON_HOME/config"
 
-if [ ! -f "$SUNDTEK_CONFIG_FILE" ]; then
-  cp $ADDON_DIR/config/* $ADDON_HOME/
-fi
+if [ -f "$ADDON_CONFIG_DIR/vdr-sleep.conf" ]; then
+  . "$ADDON_CONFIG_DIR/vdr-sleep.conf"
 
-if [ ! -f "$ADDON_HOME/device_attach_detach.sh" ]; then
-  cp $ADDON_DIR/scripts/* $ADDON_HOME/
-  chmod +x $ADDON_HOME/*.sh
-fi
-
-if [ ! -x "$ADDON_HOME/device_attach_detach.sh" ]; then
-  chmod +x $ADDON_HOME/device_attach_detach.sh
-fi
-
-SUNDTEK_ARG="--pluginpath=$ADDON_DIR/bin --daemon"
-
-if [ -z "$(pidof mediasrv)" ]; then
-  rm $ADDON_HOME/attach_detach.log
-  ln -sf $SUNDTEK_CONFIG_FILE /tmp/sundtek.conf
-  mediasrv $SUNDTEK_ARG
+  if [ ! "$REMOVE_MODULES" == "" ] ; then
+    case "$1" in
+      hibernate|suspend)
+        vdr.stop
+        for module in $REMOVE_MODULES ; do
+          rmmod -w $module
+        done
+        ;;
+      thaw|resume)
+        for module in $REMOVE_MODULES ; do
+          modprobe $module
+        done
+        xbmc-send --host=127.0.0.1 -a "XBMC.RunScript(service.multimedia.vdr-addon)" &
+        ;;
+      *) exit $NA
+        ;;
+    esac
+  fi
 fi
