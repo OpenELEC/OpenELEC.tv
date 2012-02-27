@@ -4,7 +4,7 @@
  	{ USB_DEVICE(VENDOR_FORMOSA, 0xe015) },
  	/* Formosa21 / eHome Infrared Receiver */
  	{ USB_DEVICE(VENDOR_FORMOSA, 0xe016) },
-+	/* Formosa21 / eHome Infrared Receiver */
++	/* Formosa21 / eHome Infrared Receiver (IR606) */
 +	{ USB_DEVICE(VENDOR_FORMOSA, 0xe042) },
  	/* Formosa aim / Trust MCE Infrared Receiver */
  	{ USB_DEVICE(VENDOR_FORMOSA, 0xe017),
