@@ -1124,7 +1124,7 @@ diff -Naur xbmc-1fef727/xbmc/cores/dvdplayer/DVDCodecs/Video/XVBA.cpp xbmc-1fef7
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -2529,7 +2529,7 @@ diff -Naur xbmc-1fef727/xbmc/cores/dvdplayer/DVDCodecs/Video/XVBA.h xbmc-1fef727
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -4135,7 +4135,7 @@ diff -Naur xbmc-1fef727/xbmc/linux/XEventUtils.cpp xbmc-1fef727.patch/xbmc/linux
 - *
 - *  You should have received a copy of the GNU General Public License
 - *  along with XBMC; see the file COPYING.  If not, write to
-- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+- *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 - *  http://www.gnu.org/copyleft/gpl.html
 - *
 - */
@@ -4286,7 +4286,7 @@ diff -Naur xbmc-1fef727/xbmc/linux/XEventUtils.h xbmc-1fef727.patch/xbmc/linux/X
 - *
 - *  You should have received a copy of the GNU General Public License
 - *  along with XBMC; see the file COPYING.  If not, write to
-- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+- *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 - *  http://www.gnu.org/copyleft/gpl.html
 - *
 - */
@@ -4589,7 +4589,7 @@ diff -Naur xbmc-1fef727/xbmc/linux/XSyncUtils.cpp xbmc-1fef727.patch/xbmc/linux/
 - *
 - *  You should have received a copy of the GNU General Public License
 - *  along with XBMC; see the file COPYING.  If not, write to
-- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+- *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 - *  http://www.gnu.org/copyleft/gpl.html
 - *
 - */
@@ -4765,7 +4765,7 @@ diff -Naur xbmc-1fef727/xbmc/linux/XSyncUtils.h xbmc-1fef727.patch/xbmc/linux/XS
 - *
 - *  You should have received a copy of the GNU General Public License
 - *  along with XBMC; see the file COPYING.  If not, write to
-- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+- *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 - *  http://www.gnu.org/copyleft/gpl.html
 - *
 - */
@@ -4810,7 +4810,7 @@ diff -Naur xbmc-1fef727/xbmc/linux/XThreadUtils.cpp xbmc-1fef727.patch/xbmc/linu
 - *
 - *  You should have received a copy of the GNU General Public License
 - *  along with XBMC; see the file COPYING.  If not, write to
-- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+- *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 - *  http://www.gnu.org/copyleft/gpl.html
 - *
 - */
@@ -5246,7 +5246,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/darwin/ThreadSchedImpl.cpp xbmc-1f
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5297,7 +5297,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/linux/ThreadSchedImpl.cpp xbmc-1fe
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5331,7 +5331,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/pthreads/ThreadImpl.cpp xbmc-1fef7
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5555,7 +5555,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/pthreads/ThreadImpl.h xbmc-1fef727
 +*
 +* You should have received a copy of the GNU General Public License
 +* along with XBMC; see the file COPYING. If not, write to
-+* the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++* the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 +* http://www.gnu.org/copyleft/gpl.html
 +*
 +*/
@@ -5598,7 +5598,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/ThreadImpl.cpp xbmc-1fef727.patch/
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5636,7 +5636,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/ThreadImpl.h xbmc-1fef727.patch/xb
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5668,7 +5668,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/win/ThreadImpl.cpp xbmc-1fef727.pa
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
@@ -5879,7 +5879,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/platform/win/ThreadImpl.h xbmc-1fef727.patc
 +*
 +* You should have received a copy of the GNU General Public License
 +* along with XBMC; see the file COPYING. If not, write to
-+* the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++* the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 +* http://www.gnu.org/copyleft/gpl.html
 +*
 +*/
@@ -6602,7 +6602,7 @@ diff -Naur xbmc-1fef727/xbmc/threads/ThreadImpl.h xbmc-1fef727.patch/xbmc/thread
 + *
 + *  You should have received a copy of the GNU General Public License
 + *  along with XBMC; see the file COPYING.  If not, write to
-+ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 + *  http://www.gnu.org/copyleft/gpl.html
 + *
 + */
