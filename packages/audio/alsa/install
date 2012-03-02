@@ -24,8 +24,8 @@
 
 mkdir -p $INSTALL/etc/modprobe.d
 
-  if [[ $PROJECT = "ATV" || $PROJECT = "ATV_nvidia" ]]; then
-    cp -P $PKG_DIR/config/alsa-base_appletv.conf $PKG_DIR/config/alsa-base.conf
+  if [ $PROJECT = "ATV" ]; then
+    cp -P $PKG_DIR/config/alsa-base_appletv.conf $INSTALL/etc/modprobe.d/alsa-base.conf
   else
     cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
   fi
