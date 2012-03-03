@@ -219,9 +219,6 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
   
   do_iscsi_login ()
   {
-    
-    /bin/busybox modprobe iscsi_tcp
-
     if [ -z $ISCSI_AUTO ]; then
       for i in $ISCSI_TARGET_IP; do
         /sbin/iscsistart -i $ISCSI_INITIATOR -t $ISCSI_TARGET_NAME \
