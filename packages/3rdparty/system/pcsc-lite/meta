@@ -1,8 +1,7 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2011-2011 Gregor Fuis (gujs@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,34 +19,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
-
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
-
-case "$1" in
-  hibernate|suspend)
-    if [ "$(pidof tvheadend)" ];then
-      progress "Shutting down HTS TVHeadend for suspending..."
-      tvheadend.stop
-      for module in $REMOVE_MODULES ; do
-        rmmod -w $module
-      done      
-    fi
-    ;;
-
-  thaw|resume)
-    if [ -f "$LOCKDIR/$LOCKFILE" ];then
-      for module in $REMOVE_MODULES ; do
-        modprobe $module
-      done
-      progress "Restarting HTS TVHeadend for wakeup..."
-      xbmc-send --host=127.0.0.1 -a "XBMC.RunScript(service.multimedia.hts-tvheadend)" &
-    fi
-    ;;
-
-  *) exit $NA
-    ;;
-esac
-
+PKG_NAME="pcsc-lite"
+PKG_VERSION="1.8.2"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://pcsclite.alioth.debian.org/pcsclite.html"
+PKG_URL="https://alioth.debian.org/frs/download.php/3695/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain libusb"
+PKG_PRIORITY="optional"
+PKG_SECTION="service/system"
+PKG_SHORTDESC="Middleware to access a smart card using SCard API (PC/SC)"
+PKG_LONGDESC="Middleware to access a smart card using SCard API (PC/SC)"
+PKG_IS_ADDON="yes"
+PKG_AUTORECONF="yes"

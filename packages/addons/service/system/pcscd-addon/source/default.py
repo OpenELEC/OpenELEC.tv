@@ -1,8 +1,7 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2011-2011 Gregor Fuis (gujs@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,34 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
+import os
+import sys
+import xbmcaddon
+import time
+import subprocess
 
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
+__scriptname__ = "PCSC lite"
+__author__     = "OpenELEC"
+__url__        = "http://www.openelec.tv"
+__settings__   = xbmcaddon.Addon(id='service.system.pcscd-addon')
+__cwd__        = __settings__.getAddonInfo('path')
+__start__      = xbmc.translatePath( os.path.join( __cwd__, 'bin', "pcscd.start") )
+__stop__       = xbmc.translatePath( os.path.join( __cwd__, 'bin', "pcscd.stop") )
 
-case "$1" in
-  hibernate|suspend)
-    if [ "$(pidof tvheadend)" ];then
-      progress "Shutting down HTS TVHeadend for suspending..."
-      tvheadend.stop
-      for module in $REMOVE_MODULES ; do
-        rmmod -w $module
-      done      
-    fi
-    ;;
+#make binary files executable in adson bin folder
+subprocess.Popen("chmod -R +x " + __cwd__ + "/bin/*" , shell=True, close_fds=True)
 
-  thaw|resume)
-    if [ -f "$LOCKDIR/$LOCKFILE" ];then
-      for module in $REMOVE_MODULES ; do
-        modprobe $module
-      done
-      progress "Restarting HTS TVHeadend for wakeup..."
-      xbmc-send --host=127.0.0.1 -a "XBMC.RunScript(service.multimedia.hts-tvheadend)" &
-    fi
-    ;;
+subprocess.Popen(__start__, shell=True, close_fds=True)
 
-  *) exit $NA
-    ;;
-esac
+while (not xbmc.abortRequested):
+  time.sleep(0.250)
 
+subprocess.Popen(__stop__, shell=True, close_fds=True)

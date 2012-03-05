@@ -20,34 +20,36 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
+ADDON_NAME="service.system.pcscd-addon"
+ADDON_DIR="$HOME/.xbmc/addons/$ADDON_NAME"
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/$ADDON_NAME"
 
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
+ADDON_CONFIG_DIR="$ADDON_HOME/config"
 
-case "$1" in
-  hibernate|suspend)
-    if [ "$(pidof tvheadend)" ];then
-      progress "Shutting down HTS TVHeadend for suspending..."
-      tvheadend.stop
-      for module in $REMOVE_MODULES ; do
-        rmmod -w $module
-      done      
+LOCKDIR="/var/lock/"
+LOCKFILE="pcscd.disabled"
+
+mkdir -p $ADDON_HOME
+
+export PATH=$ADDON_DIR/bin:$PATH
+
+cd $ADDON_DIR/config
+mkdir -p $ADDON_CONFIG_DIR
+for config in `find . -type f -name "*.conf*"`; do
+  if [ ! -f $ADDON_CONFIG_DIR/$config ]; then
+    cp $config $ADDON_CONFIG_DIR/$config
+  fi
+done
+
+if [ ! "$(pidof pcscd.bin)" ];then
+  if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
+    rm -rf "$LOCKDIR/$LOCKFILE"
+  fi
+  while [ true ] ; do
+    if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
+      break
     fi
-    ;;
-
-  thaw|resume)
-    if [ -f "$LOCKDIR/$LOCKFILE" ];then
-      for module in $REMOVE_MODULES ; do
-        modprobe $module
-      done
-      progress "Restarting HTS TVHeadend for wakeup..."
-      xbmc-send --host=127.0.0.1 -a "XBMC.RunScript(service.multimedia.hts-tvheadend)" &
-    fi
-    ;;
-
-  *) exit $NA
-    ;;
-esac
-
+    pcscd.bin --foreground -c $ADDON_CONFIG_DIR/reader.conf
+    sleep 1
+  done &
+fi
