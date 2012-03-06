@@ -18,7 +18,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -41,7 +41,7 @@ export LD_LIBRARY_PATH="$ADDON_DIR/lib:$LD_LIBRARY_PATH"
 
 cp -R $ADDON_DIR/config/*.sample $ADDON_HOME > $LOG_FILE 2>&1
 
-if [ ! $(pidof boblightd) ]; then
+if [ ! "$(pidof boblightd)" ]; then
 	if [ -e $BOBLIGHT_CONFIG ]; then
 	
 		# Make sure the xserver has started up
@@ -53,7 +53,7 @@ if [ ! $(pidof boblightd) ]; then
 	fi
 fi
 
-if [ ! $(pidof boblight-X11) ]; then                                               
+if [ ! "$(pidof boblight-X11)" ]; then                                               
 	if [ -e $BOBLIGHT_X11 ]; then
 	
 	        # Make sure the xserver has started up
