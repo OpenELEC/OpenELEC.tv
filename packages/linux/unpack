@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -47,10 +47,15 @@ sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD
     sed -i -e "s|^CONFIG_VIDEO_DEV=.*$|# CONFIG_VIDEO_DEV is not set|" $LINUX/.config
   fi
 
-# wipe out nouveau if GRAPHICS_DRIVERS contains nvidia
-  echo $GRAPHIC_DRIVERS | grep "nvidia" &>/dev/null && \
-  sed -i '/NOUVEAU/ d' $LINUX/.config && \
-  echo "# CONFIG_DRM_NOUVEAU is not set" >> $LINUX/.config
+# dont install some debug stuff on release builds
+  if [ ! "$DEVTOOLS" = yes ]; then
+    sed -i -e "s|^CONFIG_DEBUG_FS=.*$|# CONFIG_DEBUG_FS is not set|" $LINUX/.config
+  fi
+
+# prevent nouveau from building unless it is the active graphics driver
+  if [ "$GRAPHIC_DRIVERS" != "nouveau" ]; then
+    sed -i -e "s|^CONFIG_DRM_NOUVEAU=.*$|# CONFIG_DRM_NOUVEAU is not set|" $LINUX/.config
+  fi
 
 # copy some extra firmware to linux tree
   cp -R $PKG_DIR/firmware/* $LINUX/firmware

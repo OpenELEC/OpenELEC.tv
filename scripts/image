@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
 . config/options $1
+
+show_config
 
 $SCRIPTS/checkdeps build
 $SCRIPTS/build toolchain
@@ -59,7 +61,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   mkdir -p $INSTALL/sbin
   mkdir -p $INSTALL/dev
   mkdir -p $INSTALL/proc
-  mkdir -p $INSTALL/run
+#  mkdir -p $INSTALL/run
+  ln -sf /var/run $INSTALL/run
   mkdir -p $INSTALL/sys
   mkdir -p $INSTALL/usr
   mkdir -p $INSTALL/var
@@ -94,11 +97,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     echo "$DISTRONAME git: $GIT_HASH" >> $INSTALL/etc/issue
   fi
 
-# copy project related files to filesystem
-  if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
-    cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
-  fi
-
 # Basissystem...
   $SCRIPTS/install eglibc
   $SCRIPTS/install gcc-final
@@ -110,7 +108,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
 
 # Graphic support
-  [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
+  [ "$XORG_SUPPORT" = "yes" ] && $SCRIPTS/install xorg-server
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
@@ -147,6 +145,11 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # OEM packages
   [ "$OEM_SUPPORT" = "yes" ] && $SCRIPTS/install oem
 
+# copy project related files to filesystem
+  if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
+  fi
+
 # run depmod
   KVER=`ls $BUILD/linux-*/modules/lib/modules`
   $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $KVER > /dev/null
@@ -182,9 +185,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   fi
 
 # create squashfs file
+  if [ -z "$SQUASHFS_COMPRESSION" ]; then
+    SQUASHFS_COMPRESSION="gzip"
+  fi
+
   echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT
-#  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp xz" >> $FAKEROOT_SCRIPT
-  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend" >> $FAKEROOT_SCRIPT
+  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT
 
 # run fakeroot
   $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT
@@ -203,8 +209,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
     # create release dir
       mkdir -p $RELEASE_DIR
-        cp $ROOT/README $RELEASE_DIR
-        cp $ROOT/CHANGELOG $RELEASE_DIR
+        cp $ROOT/README* $RELEASE_DIR
+        cp $ROOT/CHANGELOG* $RELEASE_DIR
 #      cp -R $CONFIG/image/* $RELEASE_DIR
         cp -R $CONFIG/release/* $RELEASE_DIR
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE

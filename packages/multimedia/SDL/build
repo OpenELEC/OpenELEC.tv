@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,29 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
 . config/options $1
+
+if [ "$XORG_SUPPORT" = yes ]; then
+  SDL_X11="--enable-video --enable-x11-shared --disable-video-x11-dgamouse"
+  SDL_X11="$SDL_X11 --disable-video-x11-xinerama --disable-video-x11-xme"
+  SDL_X11="$SDL_X11 --enable-video-x11-xrandr --enable-video-x11"
+  SDL_X11="$SDL_X11 --disable-video-x11-vm --disable-video-x11-xv --with-x"
+else
+  SDL_X11="--disable-video --disable-x11-shared --disable-video-x11-dgamouse"
+  SDL_X11="$SDL_X11 --disable-video-x11-xinerama --disable-video-x11-xme"
+  SDL_X11="$SDL_X11 --disable-video-x11-xrandr --disable-video-x11"
+  SDL_X11="$SDL_X11 --disable-video-x11-vm --disable-video-x11-xv --without-x"
+fi
+
+if [ "$OPENGL_SUPPORT" = yes ]; then
+  SDL_OPENGL="--enable-video-opengl"
+else
+  SDL_OPENGL="--disable-video-opengl"
+fi
 
 if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
   SDL_PULSEAUDIO="--enable-pulseaudio --enable-pulseaudio-shared"
@@ -45,7 +63,6 @@ rm -f acinclude/alsa.m4
             --disable-rpath \
             --enable-libc \
             --enable-audio \
-            --enable-video \
             --enable-events \
             --enable-joystick \
             --enable-cdrom \
@@ -74,17 +91,14 @@ rm -f acinclude/alsa.m4
             --enable-nasm \
             --disable-altivec \
             --disable-ipod \
+            $SDL_X11 \
+            $SDL_OPENGL \
             --disable-video-nanox \
             --disable-nanox-debug \
             --disable-nanox-share-memory \
             --disable-nanox-direct-fb \
-            --enable-x11-shared \
             --disable-dga \
             --disable-video-dga \
-            --disable-video-x11-dgamouse \
-            --disable-video-x11-xinerama \
-            --disable-video-x11-xme \
-            --enable-video-x11-xrandr \
             --disable-video-photon \
             --disable-video-carbon \
             --disable-video-cocoa \
@@ -99,7 +113,6 @@ rm -f acinclude/alsa.m4
             --disable-video-qtopia \
             --disable-video-picogui \
             --disable-video-dummy \
-            --enable-video-opengl \
             --disable-osmesa-shared \
             --enable-input-events \
             --disable-input-tslib \
@@ -111,20 +124,17 @@ rm -f acinclude/alsa.m4
             --enable-sdl-dlopen \
             --disable-atari-ldg \
             --disable-clock_gettime \
-            --enable-video-x11 \
-            --enable-video-x11-vm \
-            --enable-video-x11-xv \
-            --with-x
 
 make
 
 $MAKEINSTALL
 
-$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-  $SYSROOT_PREFIX/usr/bin/sdl-config
+mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
+#  cp sdl.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
 
-cp $SYSROOT_PREFIX/usr/bin/sdl-config $ROOT/$TOOLCHAIN/bin
+#$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/sdl-config
 
-$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-  $ROOT/$TOOLCHAIN/bin/sdl-config
+mkdir -p $ROOT/$TOOLCHAIN/bin
+  cp $SYSROOT_PREFIX/usr/bin/sdl-config $ROOT/$TOOLCHAIN/bin
+  $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $ROOT/$TOOLCHAIN/bin/sdl-config
 

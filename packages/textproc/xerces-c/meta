@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -25,8 +25,8 @@ PKG_ARCH="any"
 PKG_LICENSE="APL"
 PKG_SITE="http://xml.apache.org/xerces-c/"
 PKG_URL="http://mirror.switch.ch/mirror/apache/dist/xerces/c/3/sources/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="libiconv curl"
-PKG_BUILD_DEPENDS="toolchain libiconv curl"
+PKG_DEPENDS="$ICONV curl"
+PKG_BUILD_DEPENDS="toolchain $ICONV curl"
 PKG_PRIORITY="optional"
 PKG_SECTION="textproc"
 PKG_SHORTDESC="xerces-c: A C++ XML parser"

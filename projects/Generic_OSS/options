@@ -107,6 +107,9 @@
 # use linux-next (latest rc) instead latest released version
   LINUX_NEXT="no"
 
+# SquashFS compression method (gzip / lzo / xz)
+  SQUASHFS_COMPRESSION="gzip"
+
 # Mediacenter to use (xbmc / no)
   if [ "$PVR" = yes ]; then
     MEDIACENTER="xbmc-pvr"
@@ -160,7 +163,7 @@
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
   ADDITIONAL_DRIVERS="asix-ax887xx"
   if [ "$PVR" = yes ]; then
-    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 a867_drv aver_h826d"
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
 
 # build with network support (yes / no)
@@ -213,19 +216,19 @@
 # build and install hfs filesystem utilities (yes / no)
   HFSTOOLS="yes"
 
-# Displayserver to use (xorg-server / no)
-  DISPLAYSERVER="xorg-server"
+# OpenGL(X) implementation to use (no / Mesa)
+  OPENGL="Mesa"
+
+# OpenGL-ES implementation to use (no)
+  OPENGLES="no"
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
 
-# Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
+# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 nvidia nouveau"
   GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nouveau vmware"
-
-# Mesa to use (Mesa / mesa)
-  MESA="mesa"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
   VDPAU="no"
@@ -246,6 +249,12 @@
 # build and install ATV IR remote support (yes / no)
   ATVCLIENT_SUPPORT="yes"
 
+# build and install IRServer IR/LCD support (yes / no)
+  IRSERVER_SUPPORT="yes"
+
+# build and install Joystick support (yes / no)
+  JOYSTICK_SUPPORT="yes"
+
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
 
@@ -260,7 +269,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb"
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,

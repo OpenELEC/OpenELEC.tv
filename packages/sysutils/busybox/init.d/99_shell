@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -23,12 +23,6 @@
 # runlevels: textmode
 
 TTY="1"
-
-echo "###########################################"
-echo "## it seems we are running in Text mode. ##"
-echo "## .... starting shell on console $TTY .... ##"
-echo "## ...... switch with ctrl-alt-f$TTY ...... ##"
-echo "###########################################"
 
 while true; do
   openvt -w -c $TTY /bin/sh

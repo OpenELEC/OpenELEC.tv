@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,32 +16,29 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# mounting needed special filesystems
-# mount -n -t proc none /proc # mounted in initramfs
-# mount -n -t sysfs none /sys # mounted in initramfs
-# mount -n -t devtmpfs none /dev # mounted in initramfs
-
-  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
-
-  mkdir -p /dev/pts
-  mount -n -t devpts -o gid=5,mode=620 none /dev/pts
-
-  mkdir -p /dev/shm
-  mount -n -t tmpfs none /dev/shm
-
-  mount -n -t tmpfs none /run
-
-# showing version
-  lsb_release
-
-# starting init scripts for wanted runlevel
+if [ -f /etc/oem.conf ]; then
+  . /etc/oem.conf
+fi
 
 . /etc/profile
 
+# clear screen and set console
+  clear
+  export CONSOLE=/dev/tty3
+
+# starting framebuffer if it still not exist
+  if [ ! -e /dev/fb0 ]; then
+    modprobe uvesafb mode_option=1920x1080-32 mtrr=3 scroll=ywrap
+  fi
+
+# disable cursor
+  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
+# starting init scripts for wanted runlevel
   progress "Starting Init Scripts"
     RET=0
 

@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,17 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
 . config/options
+
+if [ "$ALSA_SUPPORT" = "yes" ]; then
+  BLUEZ_ALSA="--enable-audio --enable-alsa"
+else
+  BLUEZ_ALSA="--disable-audio --disable-alsa"
+fi
 
 if [ "$DEBUG" = "yes" ]; then
   DEBUG_CONFIG="--enable-debug"
@@ -28,9 +34,9 @@ else
   DEBUG_CONFIG="--disable-debug"
 fi
 if [ "$DEVTOOLS" = "yes" ]; then
-  DEVTOOLS_CONFIG="--enable-bccmd --enable-test --enable-tools"
+  DEVTOOLS_CONFIG="--enable-bccmd --enable-tools"
 else
-  DEVTOOLS_CONFIG="--disable-bccmd --disable-test --disable-tools"
+  DEVTOOLS_CONFIG="--disable-bccmd --disable-tools"
 fi 
 
 cd $PKG_BUILD
@@ -52,12 +58,11 @@ cd $PKG_BUILD
             --disable-proximity \
             --disable-serial \
             --enable-input \
-            --enable-audio \
             --enable-service \
             --enable-health \
             --disable-pnat \
             --disable-gstreamer \
-            --enable-alsa \
+            $BLUEZ_ALSA \
             --enable-usb \
             --disable-tracer \
             --enable-datafiles \
@@ -76,7 +81,8 @@ cd $PKG_BUILD
             --disable-capng \
             --with-gnu-ld \
             $DEBUG_CONFIG \
-            $DEVTOOLS_CONFIG
+            $DEVTOOLS_CONFIG \
+            --disable-test
 
 make
 

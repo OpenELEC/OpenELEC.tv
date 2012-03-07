@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -38,6 +38,10 @@ progress "make variable directory structure"
   touch /var/run/utmp
     chmod 1777 /var/run/utmp
 
+progress "make runtime directory structure"
+  ln -sf /storage/.config/modprobe.d /run/modprobe.d
+
+progress "make logging directory structure"
   if test "$DEBUG" = "yes"; then
     mkdir -p $HOME/log
     ln -sf $HOME/log /var/log
@@ -48,6 +52,7 @@ progress "make variable directory structure"
   touch /var/log/wtmp
     chmod 1777 /var/log/wtmp
 
+progress "make variable library directory structure"
 # others:
   mkdir -p /var/lib/polkit-1
     chmod 700 /var/lib/polkit-1
@@ -60,5 +65,6 @@ progress "make variable directory structure"
   mkdir -p /var/lib/udisks
   mkdir -p /var/lib/upower
 
+progress "make caching directory structure"
   mkdir -p $HOME/.cache/bluetooth
   ln -sf $HOME/.cache/bluetooth /var/lib/bluetooth

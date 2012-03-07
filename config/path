@@ -10,7 +10,9 @@ set -e
   ADDONS=addons
 
 # include ARCH specific options
-  . config/arch.$TARGET_ARCH
+  if [ -f config/arch.$TARGET_ARCH ]; then
+    . config/arch.$TARGET_ARCH
+  fi
 
 HOST_NAME=`$LOCAL_CC -dumpmachine`
 TARGET_NAME=$(echo $TARGET_SUBARCH | sed -e "s,-,,")-openelec-linux-gnu${TARGET_ABI}
@@ -71,6 +73,8 @@ XORG_PATH_RGB=/usr/lib/X11/rgb
 XORG_PATH_MODULES=/usr/lib/xorg/modules
 XORG_PATH_DRIVERS=/usr/lib/xorg/modules/drivers
 
+SSL_CERTIFICATES="/etc/pki/tls"
+
 TOOLCHAIN_LANGUAGES=c
 [ "$TOOLCHAIN_CXX" = yes ] && TOOLCHAIN_LANGUAGES=${TOOLCHAIN_LANGUAGES},c++
 
@@ -116,6 +120,8 @@ fi
 
 VERSION_SUFFIX=$TARGET_ARCH
 . config/functions
+
+check_config
 
 setup_toolchain target
 

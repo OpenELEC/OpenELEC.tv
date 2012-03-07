@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -40,17 +40,24 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
 # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
+# clear screen and hide cursor
+  /bin/busybox clear
+  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
 # parse command line arguments
   for arg in $(cat /proc/cmdline); do
     case $arg in
       debugging)
         DEBUG=yes
         ;;
-      nosplash)
-        SPLASH=no
-        ;;
       bootchart)
         BOOTCHART=yes
+        ;;
+      ssh)
+        SSH=yes
+        ;;
+      progress)
+        PROGRESS=yes
         ;;
       fastboot)
         FASTBOOT=yes
@@ -80,30 +87,8 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
   fi
 
   progress() {
-    if test "$DEBUG" = "yes"; then
+    if test "$PROGRESS" = "yes"; then
       echo "### $1 ###"
-    fi
-  }
-
-  show_splash() {
-    if [ ! -e /dev/fb0 ]; then
-      SPLASH=no
-    fi
-
-    if [ -f /flash/oemsplash.png ]; then
-      SPLASHIMAGE="/flash/oemsplash.png"
-    elif [ -f /splash/splash.png ]; then
-      SPLASHIMAGE="/splash/splash.png"
-    else
-      SPLASH=no
-    fi
-
-    if [ "$SPLASH" = "no" ]; then
-      break
-    else
-      if [ -f "/bin/ply-image" ]; then
-        /bin/ply-image "$SPLASHIMAGE" &
-      fi
     fi
   }
 
@@ -113,6 +98,10 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
 
   debug_shell() {
     echo "### Starting debugging shell... type  exit  to quit ###"
+
+    # show cursor
+      echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
     /bin/busybox sh </dev/tty1 >/dev/tty1 2>&1
   }
 
@@ -198,14 +187,12 @@ NFS_OVERLAY="192.168.1.1:/var/lib/overlay"
   }
 
   mount_disk() {
-
   # deal with hfs partitions
     if [ -x /sbin/fsck_hfs ]; then
       hfsdiskprep
     fi
 
     mount_part "$boot" "/flash" "ro,noatime"
-    show_splash
 
     if [ -n "$disk" ]; then
       mount_part "$disk" "/storage" "rw,noatime"
