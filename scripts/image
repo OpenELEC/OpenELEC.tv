@@ -246,4 +246,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
     # cleanup release dir
       rm -rf $RELEASE_DIR
+
+    # echo result
+      echo "Build competed: $TARGET_IMG/$IMAGE_NAME.tar.bz2"
   fi

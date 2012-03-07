@@ -43,9 +43,9 @@ SyslogFacility AUTHPRIV
 #MaxAuthTries 6
 #MaxSessions 10
 
-#RSAAuthentication yes
-#PubkeyAuthentication yes
-#AuthorizedKeysFile	.ssh/authorized_keys
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
 
 # For this to work you will also need host keys in /etc/ssh_known_hosts
 #RhostsRSAAuthentication no
