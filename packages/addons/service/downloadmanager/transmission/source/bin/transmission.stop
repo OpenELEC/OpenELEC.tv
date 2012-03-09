@@ -20,8 +20,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-cd $PKG_BUILD
+LOCKDIR="/var/lock/"
+LOCKFILE="transmission.disabled"
 
-$CC -Wall -O0 -g -o tvdump tvdump.c -lpciaccess
+if [ "$(pidof transmission-daemon)" ];then
+  mkdir -p "$LOCKDIR"
+  touch "$LOCKDIR/$LOCKFILE"
+  killall -9 transmission-daemon
+fi
