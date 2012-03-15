@@ -17,21 +17,18 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# Disklabel for System an Storage partition
-  DISKLABEL_SYSTEM="System"
-  DISKLABEL_STORAGE="Storage"
 
-# Defaultsize of system partition (Cylinder: 16=132MB, 31=255MB)
-  PARTSIZE_SYSTEM="31"
+#
+# make variable directory structure
+#
+# runlevels: openelec, installer, textmode
 
-# additional parameters to extlinux
-  EXTLINUX_PARAMETERS="vga=792"
+progress "setting timezone"
+  GUISETTINGS="/storage/.xbmc/userdata/guisettings.xml"
+  if [ -f "$GUISETTINGS" ] ; then
+    TIMEZONE=`sed -n -e 's/.*<timezone>\(.*\)<\/timezone>.*/\1/p' /storage/.xbmc/userdata/guisettings.xml`
+  fi
 
-# enable BIOS update function
-  BIOS_UPDATE="no"
-
-# BIOS file to program
-  BIOS_FILE=""
-
-# location for BIOS backup (with filename)
-  BIOS_BACKUP=""
+  if [ ! "$TIMEZONE" == "" -a -f "/usr/share/zoneinfo/$TIMEZONE" ] ; then
+    ln -sf "/usr/share/zoneinfo/$TIMEZONE" /var/run/localtime
+  fi
