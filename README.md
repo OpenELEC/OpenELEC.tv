@@ -1,4 +1,4 @@
-[OpenELEC](http://www.openelec.tv)
+[OpenELEC](http://openelec.tv)
 
 # OpenELEC - Open Embedded Linux Entertainment Center
 

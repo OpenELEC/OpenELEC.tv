@@ -1,5 +1,5 @@
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
+#      This file is part of OpenELEC - http://openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import subprocess
 
 __scriptname__ = "Boblightd"
 __author__ = "OpenELEC"
-__url__ = "http://www.openelec.tv"
+__url__ = "http://openelec.tv"
 __settings__   = xbmcaddon.Addon(id='service.multimedia.boblightd')
 __cwd__        = __settings__.getAddonInfo('path')
 __start__      = xbmc.translatePath( os.path.join( __cwd__, 'bin', "boblightd.start") )

@@ -1,5 +1,5 @@
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
+#      This file is part of OpenELEC - http://openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2011-2011 Gregor Fuis (gujs@openelec.tv)
 #
@@ -24,7 +24,7 @@ PKG_VERSION="2.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
+PKG_SITE="http://openelec.tv"
 PKG_URL=""
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS="toolchain pcsc-lite libusb libccid"

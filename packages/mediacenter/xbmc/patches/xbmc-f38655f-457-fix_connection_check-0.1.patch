@@ -6,7 +6,7 @@ diff -Naur xbmc-10.1-Dharma/xbmc/FileSystem/FileCurl.cpp xbmc-10.1-Dharma.patch/
  bool CFileCurl::IsInternet(bool checkDNS /* = true */)
  {
 -  CStdString strURL = "http://www.google.com";
-+  CStdString strURL = "http://www.openelec.tv";
++  CStdString strURL = "http://openelec.tv";
    if (!checkDNS)
 -    strURL = "http://74.125.19.103"; // www.google.com ip
 +    strURL = "http://212.101.13.10"; // www.openelec.tv ip

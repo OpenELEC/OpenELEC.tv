@@ -1,5 +1,5 @@
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
+#      This file is part of OpenELEC - http://openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import xbmcaddon
 
 __scriptname__ = "OpenELEC OS Settings Dialog"
 __author__ = "OpenELEC"
-__url__ = "http://www.openelec.tv"
+__url__ = "http://openelec.tv"
 __svn_url__ = ""
 __credits__ = ""
 __version__ = "0.0.13"

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
+#      This file is part of OpenELEC - http://openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -305,7 +305,7 @@ msg_not_implemented() {
 msg_oem_only() {
   # show a dialog that this function is only implemented on special builds
     MSG_TITLE="\Z2[ FOR OEM ONLY ]\Zn"
-    MSG_INFOBOX=" OEM only feature, this function is not implemented in this build. \n if you have questions about this feature \n visit http://www.openelec.tv"
+    MSG_INFOBOX=" OEM only feature, this function is not implemented in this build. \n if you have questions about this feature \n visit http://openelec.tv"
 
     dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 7 70
 }
