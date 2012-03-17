@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="dvb-firmware"
-PKG_VERSION="0.0.22"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="Free-to-use"
-PKG_SITE="https://github.com/OpenELEC/dvb-firmware"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="firmware"
-PKG_SHORTDESC="dvb-firmware: firmwares for various DVB drivers"
-PKG_LONGDESC="dvb-firmware: firmwares for various DVB drivers"
-PKG_IS_ADDON="no"
+. config/options
 
-PKG_AUTORECONF="no"
+mkdir -p $INSTALL/$XORG_PATH_MODULES/drivers
+  cp -P $PKG_BUILD/src/.libs/vmware_drv.so $INSTALL/$XORG_PATH_MODULES/drivers

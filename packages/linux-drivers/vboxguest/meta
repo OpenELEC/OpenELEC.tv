@@ -1,6 +1,6 @@
 ################################################################################
-#      Copyright (C) 2009-2010 OpenELEC.tv
-#      http://www.openelec.tv
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,12 +18,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# start text mode shell
-#
-# runlevels: textmode
-
-TTY="1"
-
-while true; do
-  openvt -w -c $TTY /bin/sh
-done
+PKG_NAME="vboxguest"
+PKG_VERSION="4.1.8"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.virtualbox.org"
+PKG_URL="${DISTRO_SRC}/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain linux"
+PKG_PRIORITY="optional"
+PKG_SECTION="driver"
+PKG_SHORTDESC="vboxguest"
+PKG_LONGDESC="vboxguest"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"

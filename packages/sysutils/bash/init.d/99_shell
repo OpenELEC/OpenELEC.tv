@@ -17,20 +17,12 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
+# start text mode shell
+#
+# runlevels: textmode
 
-PKG_NAME="dvb-firmware"
-PKG_VERSION="0.0.22"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="Free-to-use"
-PKG_SITE="https://github.com/OpenELEC/dvb-firmware"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="firmware"
-PKG_SHORTDESC="dvb-firmware: firmwares for various DVB drivers"
-PKG_LONGDESC="dvb-firmware: firmwares for various DVB drivers"
-PKG_IS_ADDON="no"
+TTY="1"
 
-PKG_AUTORECONF="no"
+while true; do
+  openvt -w -c $TTY /bin/sh
+done
