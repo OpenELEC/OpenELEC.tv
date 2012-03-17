@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,28 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
-
-mkdir -p $INSTALL/usr/lib
-  cp -P $PKG_BUILD/lib/libGL.so.1.2 $INSTALL/usr/lib/libGL_mesa.so.1 # rename for cooperate with nvidia drivers
-    ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
-    ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
-  cp -P $PKG_BUILD/lib/libGLU.so* $INSTALL/usr/lib
-  cp -P $PKG_BUILD/lib/libglapi.so* $INSTALL/usr/lib
-  if [ -f $PKG_BUILD/lib/gallium/libxatracker.so ] ; then
-    cp -P $PKG_BUILD/lib/gallium/libxatracker.so* $INSTALL/usr/lib || true
+echo "getting sources..."
+  if [ ! -d xbmc-addon-vuplus.git ]; then
+    git clone git://github.com/jdembski/xbmc-addon-vuplus.git xbmc-addon-vuplus.git
   fi
 
-mkdir -p $INSTALL/usr/lib/dri
-  cp -P $PKG_BUILD/lib/libdricore.so $INSTALL/usr/lib/dri
-  cp -P $PKG_BUILD/lib/libglsl.so $INSTALL/usr/lib/dri
-  cp -P $PKG_BUILD/lib/*_dri.so $INSTALL/usr/lib/dri || true
-  cp -P $PKG_BUILD/lib/gallium/*_dri.so $INSTALL/usr/lib/dri || true
+  cd xbmc-addon-vuplus.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-mkdir -p $INSTALL/usr/lib/xorg/modules/drivers
-  cp -P $PKG_BUILD/lib/gallium/*_drv.so $INSTALL/usr/lib/xorg/modules/drivers || true
+echo "copying sources..."
+  rm -rf xbmc-addon-vuplus-$GIT_REV
+  cp -R xbmc-addon-vuplus.git xbmc-addon-vuplus-$GIT_REV
 
-if [ "$MESA_VDPAU_SUPPORT" = "yes" ]; then
-  mkdir -p $INSTALL/usr/lib/vdpau
-    cp -P $PKG_BUILD/lib/gallium/libvdpau_*.so* $INSTALL/usr/lib/vdpau
-fi
+echo "cleaning sources..."
+  rm -rf xbmc-addon-vuplus-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf xbmc-addon-vuplus-$GIT_REV.tar.xz xbmc-addon-vuplus-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf xbmc-addon-vuplus-$GIT_REV
