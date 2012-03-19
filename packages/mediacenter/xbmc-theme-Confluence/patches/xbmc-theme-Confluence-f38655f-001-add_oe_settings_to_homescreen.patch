@@ -6,7 +6,7 @@
  			<include>ButtonHomeSubCommonValues</include>
 -			<label>5</label>
 -			<onclick>ActivateWindow(Settings)</onclick>
-+			<label>OpenELEC</label>
++			<label>OpenELEC OS Settings</label>
 +			<onclick>RunAddon(os.openelec.settings)</onclick>
  		</control>
  		<control type="button" id="90123">
