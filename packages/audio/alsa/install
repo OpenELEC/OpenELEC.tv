@@ -23,7 +23,12 @@
 . config/options $1
 
 mkdir -p $INSTALL/etc/modprobe.d
-  cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
+
+  if [ $PROJECT = "ATV" ]; then
+    cp -P $PKG_DIR/config/alsa-base_appletv.conf $INSTALL/etc/modprobe.d/alsa-base.conf
+  else
+    cp -P $PKG_DIR/config/alsa-base.conf $INSTALL/etc/modprobe.d
+  fi
 
 mkdir -p $INSTALL/usr/config
   cp -R $PKG_DIR/config/*.sample $INSTALL/usr/config
