@@ -31,6 +31,8 @@ cd $PKG_BUILD
             --disable-werror \
             --enable-swig \
 
+sed -i "s/AX_//" swig/Makefile
+
 make
 
 $MAKEINSTALL
