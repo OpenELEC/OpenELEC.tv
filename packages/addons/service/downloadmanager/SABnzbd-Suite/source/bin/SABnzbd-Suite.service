@@ -268,7 +268,7 @@ python $ADDON_DIR/bin/ini_tool --action=write \
   write_sickbeard_ini SABnzbd sab_username $SABNZBD_USER
   write_sickbeard_ini SABnzbd sab_password $SABNZBD_PWD
   write_sickbeard_ini SABnzbd sab_apikey $SABNZBD_APIKEY
-  write_sickbeard_ini SABnzbd sab_host "http://$SABNZBD_HOST:$SABNZBD_PORT/"
+  write_sickbeard_ini SABnzbd sab_host "$SABNZBD_HOST:$SABNZBD_PORT"
 
   write_sickbeard_ini XBMC use_xbmc $SICKBEARD_USEXBMC
   write_sickbeard_ini XBMC xbmc_host "$XBMC_HOST:$XBMC_PORT"
