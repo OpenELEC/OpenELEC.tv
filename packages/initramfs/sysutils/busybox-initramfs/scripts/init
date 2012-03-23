@@ -194,7 +194,7 @@ NBD_DEVS="0"
 
   update() {
     if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
-      echo "updating $1..."
+      echo "Updating the $1 file..."
         $IONICE /bin/busybox mount -o remount,rw /flash
         $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3
         $IONICE /bin/busybox mount -o remount,ro /flash
@@ -274,11 +274,11 @@ NBD_DEVS="0"
       IMAGE_KERNEL="MACH_KERNEL"
     fi
 
-    update "Kernel" "$IMAGE_KERNEL" "/flash/$IMAGE_KERNEL"
-    update "System" "$IMAGE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+    update "KERNEL" "$IMAGE_KERNEL" "/flash/$IMAGE_KERNEL"
+    update "SYSTEM" "$IMAGE_SYSTEM" "/flash/$IMAGE_SYSTEM"
 
     if test "$REBOOT" -eq "1"; then
-      echo "System reboots now..." && \
+      echo "The system is about to reboot..." && \
       /bin/busybox reboot
     fi
   }
