@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,18 +20,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xbmc-addon-vuplus"
-PKG_VERSION="fabcc93"
-PKG_REV="3"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/jdembski/xbmc-addon-vuplus"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="curl"
-PKG_BUILD_DEPENDS="toolchain curl"
-PKG_PRIORITY="optional"
-PKG_SECTION="mediacenter"
-PKG_SHORTDESC="vuplus addon for XBMC" 
-PKG_LONGDESC="This addon allows XBMC PVR to connect to the vu+ DVRs as a TV/PVR backend."
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+. config/options $1
+
+#mkdir -p $INSTALL/usr/lib
+#  cp -P $PKG_BUILD/src/.libs/libXcursor.so* $INSTALL/usr/lib
