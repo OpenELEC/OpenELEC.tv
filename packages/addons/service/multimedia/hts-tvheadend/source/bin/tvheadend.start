@@ -1,0 +1,89 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. /etc/profile
+
+LOCKDIR="/var/lock/"
+LOCKFILE="tvheadend.disabled"
+
+ADDON_DIR="$HOME/.xbmc/addons/service.multimedia.hts-tvheadend"
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
+ADDON_BIN="tvheadend"
+LOG_FILE="$ADDON_HOME/service.log"
+ADDON_SETTINGS="$ADDON_HOME/settings.xml"
+XMLTV_FILE="$ADDON_DIR/bin/tv_grab_file"
+XMLTV_SETTINGS_DIR="$ADDON_HOME/xmltv"
+XMLTV_SETTINGS_FILE="$XMLTV_SETTINGS_DIR/config"
+DVR_SETTINGS_DIR="$ADDON_HOME/dvr"
+DVR_SETTINGS_FILE="$DVR_SETTINGS_DIR/config"
+DVR_DIR="$HOME/recordings"
+
+if [ ! -f "$ADDON_SETTINGS" ]; then
+  cp $ADDON_DIR/settings-default.xml $ADDON_SETTINGS
+fi
+
+if [ ! -f "$XMLTV_SETTINGS_FILE" ]; then
+  mkdir -p $XMLTV_SETTINGS_DIR
+  cp $ADDON_DIR/xmltv-config $XMLTV_SETTINGS_FILE
+fi
+
+if [ ! -f "$DVR_SETTINGS_FILE" ]; then
+  mkdir -p $DVR_DIR
+  mkdir -p $DVR_SETTINGS_DIR
+  cp $ADDON_DIR/dvr-config $DVR_SETTINGS_FILE
+fi
+
+TVHEADEND_ARG="-C -s -u root -g video -c $ADDON_HOME"
+
+mkdir -p /var/config
+cat "$ADDON_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf.default
+cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf
+
+. /var/config/tvheadend.conf.default
+. /var/config/tvheadend.conf
+
+
+mkdir -p $ADDON_HOME
+  if [ ! "$(pidof $ADDON_BIN)" ]; then
+    # start userspace DVB driver/addon
+    for driver_dvb in $(find /storage/.xbmc/addons/driver.dvb.*/bin/userspace-driver.sh -type f 2>/dev/null); do
+      driver_dvb_name=$(echo $driver_dvb | awk 'BEGIN {FS="/"} {printf("%s", $5)}')
+      logger -t Tvheadend "### Loading userspace DVB driver: $driver_dvb_name ###"
+      # use ". " because of variable export
+      . $driver_dvb
+    done
+
+    if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
+      rm -rf "$LOCKDIR/$LOCKFILE"
+    fi
+
+    while [ true ] ; do
+      if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
+        break
+      fi
+      if [ "$WAIT_FOR_FEINIT" == "true" ] && [ ! -e /dev/dvb/adapter*/frontend* ] ; then
+        sleep 1
+        continue
+      fi
+      $ADDON_BIN $TVHEADEND_ARG &>$LOG_FILE
+    done &
+  fi

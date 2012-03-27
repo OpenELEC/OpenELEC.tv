@@ -14,7 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
@@ -28,6 +28,8 @@
 
   KEYGEN="/usr/bin/ssh-keygen"
   SSHD="/usr/sbin/sshd"
+
+  HOME="/storage"
 
   (
     if [ "$SSH" = yes -o -f /storage/.config/ssh_enable ]; then
@@ -59,12 +61,16 @@
           chmod 600 $DSA2_KEY
       fi
 
+    # ensure that $HOME/.ssh exists, is root-owned and not world-readable
+      mkdir -p $HOME/.ssh
+      chown root:root $HOME/.ssh
+      chmod 0700 $HOME/.ssh
+
     # Check for predefined known hosts file
       if [ -f /etc/ssh/known_hosts -a ! -f $HOME/.ssh/known_hosts ] ; then
         progress "SSH: setup predefined known hosts"
 
-        mkdir -p /$HOME/.ssh
-          cp /etc/ssh/known_hosts $HOME/.ssh
+        cp /etc/ssh/known_hosts $HOME/.ssh
       fi
 
       progress "Starting SSH Server"
