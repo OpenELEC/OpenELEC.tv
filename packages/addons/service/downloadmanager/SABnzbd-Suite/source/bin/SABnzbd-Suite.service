@@ -66,7 +66,6 @@
 ################################################################################
 # default sickbeard values
 ################################################################################
-  SICKBEARD_LOGDIR="log"
   SICKBEARD_CACHEDIR="cache"
   SICKBEARD_PORT="8082"
   SICKBEARD_LAUNCHBROWSER="0"
@@ -256,7 +255,7 @@ python $ADDON_DIR/bin/ini_tool --action=write \
 
   write_sickbeard_ini General launch_browser $SICKBEARD_LAUNCHBROWSER
   write_sickbeard_ini General version_notify $SICKBEARD_VERSIONCHECK
-  write_sickbeard_ini General log_dir $SICKBEARD_LOGDIR
+  write_sickbeard_ini General log_dir $SABNZBD_LOGDIR
   write_sickbeard_ini General cache_dir $SICKBEARD_CACHEDIR
   write_sickbeard_ini General web_port $SICKBEARD_PORT
   write_sickbeard_ini General web_host $SICKBEARD_IP
