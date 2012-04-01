@@ -22,10 +22,6 @@
 
 . config/options $1
 
-# dont build with GOLD and LTO support
-  strip_lto
-  strip_gold
-
 if [ "$AVAHI_DAEMON" = yes ]; then
   SMB_AVAHI="--enable-avahi"
 else
