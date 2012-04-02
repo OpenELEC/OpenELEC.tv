@@ -84,15 +84,6 @@
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="no"
 
-# GOLD (Google Linker) support
-  GOLD_SUPPORT="no"
-
-# Graphite Support
-  GRAPHITE_SUPPORT="yes"
-
-# LOOP optimazion support
-  LOOP_SUPPORT="yes"
-
 # Bootloader to use (syslinux / u-boot / atv-bootloader)
   BOOTLOADER="syslinux"
 
@@ -258,6 +249,9 @@
 
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
+
+# build and install iSCSI support - iscsistart (yes / no)
+  ISCSI_SUPPORT="yes"
 
 # LCD driver to Use - Possible drivers are ( Comma seperated:
 # bayrad,CFontz,CFontz633,CFontzPacket,curses,CwLnx,

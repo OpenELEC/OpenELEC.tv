@@ -34,3 +34,7 @@ PKG_LONGDESC="debug is a Metapackage for installing initramfs"
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
+
+if [ "$ISCSI_SUPPORT" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS open-iscsi"
+fi
