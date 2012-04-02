@@ -49,8 +49,8 @@ mkdir -p objdir-$1 && cd objdir-$1
              --disable-libmudflap \
              --disable-libssp \
              --disable-multilib \
-             --enable-gold=yes \
-             --enable-ld=default \
+             --disable-gold \
+             --enable-ld \
              --enable-plugin \
              --enable-lto \
              --disable-libquadmath \
@@ -59,6 +59,8 @@ mkdir -p objdir-$1 && cd objdir-$1
              --enable-c99 \
              --enable-long-long \
              --enable-threads=posix \
+             --disable-libstdcxx-pch \
+             --enable-clocale=gnu \
              --disable-nls
 
 make

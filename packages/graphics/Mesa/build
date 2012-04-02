@@ -24,12 +24,6 @@
 
 get_graphicdrivers
 
-# dont use gold linker because of compiling issues
-  strip_gold
-
-# Mesa fails to build with LTO optimization
-  strip_lto
-
 if [ "$LLVM_SUPPORT" = "yes" ]; then
   export LLVM_CONFIG="$SYSROOT_PREFIX/usr/bin/llvm-config"
   MESA_GALLIUM_LLVM="--enable-gallium-llvm"
@@ -56,6 +50,13 @@ HOST_OPT_FLAGS="$HOST_CFLAGS" \
 X11_INCLUDES= \
 DRI_DRIVER_INSTALL_DIR="$XORG_PATH_DRI" \
 DRI_DRIVER_SEARCH_DIR="$XORG_PATH_DRI" \
+
+XA_CONFIG="--disable-xa"
+for drv in $GRAPHIC_DRIVERS; do
+  [ "$drv" = "vmware" ] && \
+    XA_CONFIG="--enable-xa"
+done
+
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
@@ -85,6 +86,7 @@ DRI_DRIVER_SEARCH_DIR="$XORG_PATH_DRI" \
             --disable-gallium-gbm \
             --enable-shared-glapi \
             --enable-xcb \
+            $XA_CONFIG \
             --enable-shared-dricore \
             --disable-egl \
             $MESA_GALLIUM_LLVM \

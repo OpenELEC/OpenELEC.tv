@@ -22,10 +22,6 @@
 
 . config/options $1
 
-# dont build with GOLD and LTO support
-  strip_lto
-  strip_gold
-
 if [ "$AVAHI_DAEMON" = yes ]; then
   SMB_AVAHI="--enable-avahi"
 else
@@ -111,6 +107,7 @@ make bin/libsmbclient.so
 if [ "$SAMBA_SERVER" = yes ]; then
   make bin/smbd
   make bin/nmbd
+  make bin/smbpasswd
 fi
 
 mkdir -p $SYSROOT_PREFIX/usr/lib
