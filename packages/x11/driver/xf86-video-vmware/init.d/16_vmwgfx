@@ -1,6 +1,6 @@
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2010 OpenELEC.tv
+#      http://www.openelec.tv
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,21 +18,12 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
+#
+# load modules
+#
+# runlevels: openelec, textmode
+
 (
-  progress "### Starting VDR ###"
-
-  PLUGINS=""
-  for file in /storage/.config/vdr/plugins.d/*; do
-    PLUGIN=""
-    OPTIONS=""
-    INITCMD=""
-    ENABLED=yes
-    . $file
-    [ "$ENABLED" = yes ] && PLUGINS="$PLUGINS -P'$PLUGIN $OPTIONS'"
-    [ -n "$INITCMD" ] && eval $INITCMD
-  done
-
-  VDRCMD="vdr -g /tmp -s /usr/bin/vdrshutdown --vfat --no-kbd $PLUGINS > /tmp/vdr.out 2>&1"
-
-  runvdr "$VDRCMD"
+  progress "loading vmwgfx"
+    modprobe vmwgfx
 )&

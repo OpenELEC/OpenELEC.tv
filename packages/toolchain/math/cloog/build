@@ -24,18 +24,20 @@
 
 setup_toolchain host
 
-cd $BUILD/$1*
-
-mkdir -p objdir && cd objdir
-
+cd $PKG_BUILD
+mkdir -p objdir-host && cd objdir-host
 ../configure --host=$HOST_NAME \
              --build=$HOST_NAME \
              --target=$TARGET_NAME \
              --prefix=$ROOT/$TOOLCHAIN \
              --enable-shared \
              --disable-static \
-             --enable-interfaces="c,cxx" \
+             --disable-silent-rules \
+             --with-gnu-ld \
+             --with-isl=system \
+             --with-isl-prefix="$ROOT/$TOOLCHAIN" \
+             --with-gmp=system \
              --with-gmp-prefix="$ROOT/$TOOLCHAIN" \
 
-make -j1
+make
 make install
