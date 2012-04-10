@@ -23,6 +23,7 @@
 . config/options $1
 
 cd $PKG_BUILD
+sed -i 's/AM_GNU_GETTEXT_VERSION(\[0.17\])/AM_GNU_GETTEXT_VERSION([0.18])/' configure.ac
 autopoint -f
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
