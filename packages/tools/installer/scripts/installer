@@ -294,6 +294,60 @@ do_install_quick() {
     esac
 }
 
+do_update_quick() {
+    MSG_TITLE="\Z4[ QUICK UPDATE MENU ]\Zn"
+    MSG_MENU="\nTry to find an OpenELEC installation on this system and update it.\n\n "
+    MSG_CANCEL="Back"
+
+    dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
+      --title "$MSG_TITLE" --menu "$MSG_MENU" 20 70 5 \
+        1 "Quick Update of OpenELEC" \
+
+    case $? in
+      0)
+        # mount system partition
+          mkdir -p $TMPDIR/part1 >> $LOGFILE 2>&1
+
+          mount -t ext4 LABEL=$DISKLABEL_SYSTEM $TMPDIR/part1 >> $LOGFILE 2>&1
+	  if [ "$?" -ne "0" ]; then
+            #TODO: if mount by label fails, let user choose a partition
+	    msg_install_ready "Cannot find an OpenELEC filesystem"
+	  fi
+	  if [ ! -s $TMPDIR/part1/KERNEL ]; then
+            umount $TMPDIR/part1 >> $LOGFILE 2>&1
+	    msg_install_ready "Cannot find an OpenELEC KERNEL file"
+	  fi
+	  if [ ! -s $TMPDIR/part1/SYSTEM ]; then
+            umount $TMPDIR/part1 >> $LOGFILE 2>&1
+	    msg_install_ready "Cannot find an OpenELEC SYSTEM file"
+	  fi
+        # update system files
+          msg_progress_install "1" "updating Kernel"
+            cp -f /flash/KERNEL $TMPDIR/part1 >> $LOGFILE 2>&1
+            sync
+
+          msg_progress_install "30" "updating System"
+            cp -f /flash/SYSTEM $TMPDIR/part1 >> $LOGFILE 2>&1
+            sync
+
+        # umount system partition, remove mountpoint
+          msg_progress_install "95" "unmount $TMPDIR/part1"
+            umount $TMPDIR/part1 >> $LOGFILE 2>&1
+
+          msg_progress_install "100" "remove $TMPDIR/part1"
+            rmdir $TMPDIR/part1 >> $LOGFILE 2>&1
+
+	  msg_install_ready "Update successful"
+        ;;
+      1)
+        menu_main
+        ;;
+      255)
+        do_poweroff
+        ;;
+    esac
+}
+
 msg_not_implemented() {
   # show a dialog that this function is not yet implemented
     MSG_TITLE="\Z2[ WORK IN PROGRESS ]\Zn"
@@ -393,6 +447,7 @@ menu_main() {
     MSG_TITLE="\Z4[ MAIN MENU ]\Zn"
     MSG_MENU="\n\ZbQuick Install:\Zn do a default installation on a specific device \
               \Z1\Zb(this will delete ALL data on this device!)\Zn \
+              \n\ZbQuick Update:\Zn update a default installation on this system \
               \n\ZbCustom Install:\Zn do a custom installation \
               \n\ZbSetup:\Zn change some settings to run OpenELEC \
               \n\ZbBIOS Update:\Zn backup and update your BIOS (only for OEMs) \
@@ -404,20 +459,22 @@ menu_main() {
     dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
       --title "$MSG_TITLE" --menu "$MSG_MENU" 20 70 5 \
         1 "Quick Install of OpenELEC" \
-        2 "Custom Install of OpenELEC" \
-        3 "Setup OpenELEC" \
-        4 "BIOS update (only for OEM's)" \
-        5 "Show logfile" 2> $TMPDIR/mainmenu
+        2 "Quick Update of OpenELEC" \
+        3 "Custom Install of OpenELEC" \
+        4 "Setup OpenELEC" \
+        5 "BIOS update (only for OEM's)" \
+        6 "Show logfile" 2> $TMPDIR/mainmenu
 
     case $? in
       0)
         ITEM_MAINMENU=$(cat "$TMPDIR/mainmenu")
         case $ITEM_MAINMENU in
           1) do_install_quick; break;;
-          2) menu_custom; break;;
-          3) menu_setup; break;;
-          4) menu_bios; break;;
-          5) logfile_show; break;;
+          2) do_update_quick; break;;
+          3) menu_custom; break;;
+          4) menu_setup; break;;
+          5) menu_bios; break;;
+          6) logfile_show; break;;
         esac
         ;;
       1)
