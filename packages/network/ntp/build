@@ -38,3 +38,5 @@ cd $PKG_BUILD
 make -C sntp/libopts
 make -C ntpd
 make -C ntpdate
+make -C ntpdc
+make -C ntpq
