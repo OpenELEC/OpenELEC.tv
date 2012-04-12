@@ -243,6 +243,9 @@ index 0000000..0a5ce84
 +	{ 0x70, KEY_DOWN },   /* scrollwheel down 1 notch */
 +	/* 0x71..0x77: 2-8 notches, driver repeats 0x70 entry */
 +
++ { 0x22, KEY_DOWN },
++ { 0x1a, KEY_UP },
++
 +	{ 0x19, KEY_MENU },
 +	{ 0x1d, KEY_LEFT },
 +	{ 0x1e, KEY_OK },     /* scrollwheel press */
