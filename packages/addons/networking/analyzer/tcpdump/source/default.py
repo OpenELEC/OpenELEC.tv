@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,36 +18,6 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
-
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
-
-LOCKFILE="/var/lock/tvheadend.sleep"
-
-case "$1" in
-  hibernate|suspend)
-    if [ "$(pidof tvheadend)" ];then
-      progress "Shutting down HTS TVHeadend for suspending..."
-      tvheadend.stop
-      touch $LOCKFILE
-      for module in $REMOVE_MODULES ; do
-        rmmod -w $module
-      done
-    fi
-    ;;
-
-  thaw|resume)
-    for module in $REMOVE_MODULES ; do
-      modprobe $module
-    done
-    progress "Restarting HTS TVHeadend for wakeup..."
-    if [ -f "$LOCKFILE" ] ; then
-      rm -rf "$LOCKFILE"
-      tvheadend.start
-    fi
-    ;;
-  *) exit $NA
-    ;;
-esac
+import os
+import sys
+import xbmcaddon

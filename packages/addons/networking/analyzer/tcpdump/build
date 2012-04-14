@@ -20,36 +20,23 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
+. config/options $1
 
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.hts-tvheadend"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
+cd $PKG_BUILD
 
-LOCKFILE="/var/lock/tvheadend.sleep"
+# When cross-compiling, configure can't set linux version
+# forcing it
+sed -i -e 's/ac_cv_linux_vers=unknown/ac_cv_linux_vers=2/' configure
 
-case "$1" in
-  hibernate|suspend)
-    if [ "$(pidof tvheadend)" ];then
-      progress "Shutting down HTS TVHeadend for suspending..."
-      tvheadend.stop
-      touch $LOCKFILE
-      for module in $REMOVE_MODULES ; do
-        rmmod -w $module
-      done
-    fi
-    ;;
+./configure \
+       --host=$TARGET_NAME \
+       --build=$HOST_NAME \
+       --with-pcap=linux \
+       --with-crypto=yes \
+       --disable-ipv6
 
-  thaw|resume)
-    for module in $REMOVE_MODULES ; do
-      modprobe $module
-    done
-    progress "Restarting HTS TVHeadend for wakeup..."
-    if [ -f "$LOCKFILE" ] ; then
-      rm -rf "$LOCKFILE"
-      tvheadend.start
-    fi
-    ;;
-  *) exit $NA
-    ;;
-esac
+
+# discard native system includes
+sed -i "s%-I/usr/include%%g" Makefile
+
+$MAKE
