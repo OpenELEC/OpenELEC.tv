@@ -1,0 +1,15 @@
+2.1.10
+- Opera upgraded to 1362.x86_64 and 1360.i386
+  skipped licence window
+  extra plugins can be installed in addon home folder
+2.1.9
+- working again :)
+2.1.8
+- broken
+2.1.7
+- lower resolution when running addon
+2.1.6
+- finally working addon with settings
+2.1.1
+- initial addon based on Opera Next (12.00-1318.x86_64, 12.00-1317.i386)
+  and Adobe Flash Player 11

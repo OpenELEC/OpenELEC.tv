@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- XBMC labels -->
+    <string id="30010">XBMC</string>
+    <string id="30011">Pause/Resume</string>
+    <string id="30012">Kill/Start</string>
+    <!-- Window labels -->
+    <string id="30030">Window</string>
+    <string id="30031">Activate</string>
+    <string id="30032">Change resolution to 1280x720</string>
+    <!-- Padding labels -->
+    <string id="30050">Overscan</string>
+    <string id="30051">Enable</string>
+    <string id="30052">Left</string>
+    <string id="30053">Top</string>
+    <string id="30054">Right</string>
+    <string id="30055">Bottom</string>
+</strings>

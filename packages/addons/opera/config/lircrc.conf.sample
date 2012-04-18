@@ -1,0 +1,126 @@
+# BEGIN lircrc entry for Opera on OpenELEC
+#
+# /storage/.xbmc/addons/web.browser.opera/bin/opera -lirchelp >~/.lircrc
+#
+# This is an example configuration of a LIRC section for Opera.
+# It needs to be adjusted to match your remote control button names, and
+# otherwise configured for your needs. Save it in ~/.lircrc
+# The values to use with 'config' keys are the same as the allowed values
+# used in the Opera input action system (standard_keyboard.ini, etc.).
+
+
+begin
+	prog = opera
+	button = KEY_DOWN
+	config = Navigate down
+end
+
+begin
+	prog = opera
+	button = KEY_UP
+	config = Navigate up
+end
+
+begin
+	prog = opera
+	button = KEY_LEFT
+	config = Navigate left
+end
+
+begin
+	prog = opera
+	button = KEY_RIGHT
+	config = Navigate right
+end
+
+begin
+	prog = opera
+	button = KEY_OK
+	config = Activate element
+end
+
+begin
+	prog = opera
+	button = KEY_PLAY
+	config = Activate element | Open link
+end
+
+begin
+	prog = opera
+	button = KEY_REWIND
+	config = Go to start | Back
+end
+
+begin
+	prog = opera
+	button = KEY_FASTFORWARD
+	config = Go to end | Forward
+end
+
+begin
+	prog = opera
+	button = KEY_PREVIOUS
+	config = Page up | Back
+end
+
+begin
+	prog = opera
+	button = KEY_NEXT
+	config = Page down | Forward | Fast forward
+end
+
+begin
+	prog = opera
+	button = KEY_NUMERIC_6
+	config = Zoom to, 100
+end
+
+begin
+	prog = opera
+	button = KEY_NUMERIC_7
+	config = Zoom out, 100
+end
+
+begin
+	prog = opera
+	button = KEY_NUMERIC_8
+	config = Zoom in, 100
+end
+
+begin
+	prog = opera
+	button = KEY_NUMERIC_9
+	config = Zoom out, 10
+end
+
+begin
+	prog = opera
+	button = KEY_NUMERIC_0
+	config = Zoom in, 10
+end
+
+begin
+	prog = opera
+	button = KEY_CHANNELUP
+	config = Zoom in, 10
+end
+
+begin
+	prog = opera
+	button = KEY_CHANNELDOWN
+	config = Zoom out, 10
+end
+
+begin
+	prog = opera
+	button = KEY_GREEN
+	config = Enter fullscreen | Leave fullscreen
+end
+
+begin
+	prog = opera
+	button = KEY_EXIT
+	config = Exit
+end
+
+# END lircrc entry for Opera

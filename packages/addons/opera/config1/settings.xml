@@ -1,0 +1,11 @@
+<settings>
+    <setting id="XBMC_PAUSE" value="false" />
+    <setting id="XBMC_KILL" value="false" />
+    <setting id="WINDOW_ACTIVATE" value="false" />
+    <setting id="CHANGE_RESOLUTION" value="false" />
+    <setting id="OVERSCAN_ENABLE" value="false" />
+    <setting id="PADDING_LEFT" value="30" />
+    <setting id="PADDING_TOP" value="16" />
+    <setting id="PADDING_RIGHT" value="30" />
+    <setting id="PADDING_BOTTOM" value="16" />
+</settings>

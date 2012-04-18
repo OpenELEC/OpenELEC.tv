@@ -1,0 +1,125 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+LIBS=$ADDON_BUILD/$PKG_ADDON_ID/local
+ADDON_DIR="/storage/.xbmc/addons/web.browser.opera"
+
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config1/
+mkdir -p $LIBS/usr/bin
+mkdir -p $LIBS/usr/lib
+
+cp $PKG_DIR/config/* $ADDON_BUILD/$PKG_ADDON_ID/config/
+cp $PKG_DIR/config1/* $ADDON_BUILD/$PKG_ADDON_ID/config1/
+
+cp $ROOT/$BUILD/xdotool-*/xdotool $LIBS/usr/bin
+cp $ROOT/$BUILD/bbe-*/src/bbe $LIBS/usr/bin
+
+#cp $ROOT/$BUILD/lirc-*/tools/.libs/liblirc_client.so.0 $LIBS/usr/lib
+
+cp $ROOT/$BUILD/nss-*/mozilla/dist/Linux*/lib/lib*.so* $LIBS/usr/lib
+cp $ROOT/$BUILD/nss-*/mozilla/dist/lib*.chk $LIBS/usr/lib
+
+cp $ROOT/$BUILD/libXcomposite-*/src/.libs/libXcomposite.so.1 $LIBS/usr/lib
+cp $ROOT/$BUILD/libXcursor-*/src/.libs/libXcursor.so.1 $LIBS/usr/lib
+cp $ROOT/$BUILD/atk-*/atk/.libs/libatk-1.0.so.0 $LIBS/usr/lib
+# must use 1.2 version of libpng!
+cp $ROOT/$BUILD/libpng-1.2.*/.libs/libpng12.so.0 $LIBS/usr/lib
+cp $ROOT/$BUILD/cairo-*/src/.libs/libcairo.so.2 $LIBS/usr/lib
+
+rm -rf $LIBS/usr/lib/lib*.so*T
+
+#######################
+#cp $ROOT/$BUILD/gtk+-*/gtk/.libs/libgtk-x11-2.0.so.0 $LIBS/usr/lib
+#cp $ROOT/$BUILD/gtk+-*/gdk/.libs/libgdk-x11-2.0.so.0 $LIBS/usr/lib
+#cp $ROOT/$BUILD/gdk-pixbuf-*/gdk-pixbuf/.libs/libgdk_pixbuf-2.0.so.0 $LIBS/usr/lib
+#cp $ROOT/$BUILD/gdk-pixbuf-*/gdk-pixbuf/.libs/lib*.so $LIBS/usr/lib
+
+### gtk+
+GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
+GTK_LIB_DIR="gtk-2.0/$GTK_BINARY_VERSION"
+
+mkdir -p $LIBS/etc/gtk-2.0
+  cp $ROOT/$BUILD/gtk+-*/modules/input/im-multipress.conf $LIBS/etc/gtk-2.0
+
+mkdir -p $LIBS/usr/bin
+  cp $ROOT/$BUILD/gtk+-*/gtk/.libs/gtk-query-immodules-2.0 $LIBS/usr/bin
+
+mkdir -p $LIBS/usr/lib
+  cp $ROOT/$BUILD/gtk+-*/gtk/.libs/libgtk-x11-2.0.so.0 $LIBS/usr/lib
+    rm -rf $LIBS/usr/lib/libgtk*.so*T
+  cp $ROOT/$BUILD/gtk+-*/gdk/.libs/libgdk-x11-2.0.so.0 $LIBS/usr/lib
+    rm -rf $LIBS/usr/lib/libgdk*.so*T
+  cp -P $ROOT/$BUILD/gtk+-*/modules/other/gail/libgail-util/.libs/*.so* $LIBS/usr/lib
+    rm -rf $LIBS/usr/lib/libgailutil.so*T
+
+mkdir -p $LIBS/usr/lib/$GTK_LIB_DIR/engines
+  cp -P $ROOT/$BUILD/gtk+-*/modules/engines/pixbuf/.libs/*.so $LIBS/usr/lib/$GTK_LIB_DIR/engines
+mkdir -p $LIBS/usr/lib/$GTK_LIB_DIR/immodules
+  cp -P $ROOT/$BUILD/gtk+-*/modules/input/.libs/*.so $LIBS/usr/lib/$GTK_LIB_DIR/immodules
+mkdir -p $LIBS/usr/lib/$GTK_LIB_DIR/printbackends
+  cp -P $ROOT/$BUILD/gtk+-*/modules/printbackends/*/.libs/*.so $LIBS/usr/lib/$GTK_LIB_DIR/printbackends
+mkdir -p $LIBS/usr/lib/gtk-2.0/modules
+  cp -P $ROOT/$BUILD/gtk+-*/modules/other/gail/.libs/*.so $LIBS/usr/lib/gtk-2.0/modules
+  cp -P $ROOT/$BUILD/gtk+-*/modules/other/gail/tests/.libs/*.so $LIBS/usr/lib/gtk-2.0/modules
+
+### gdk-pixbuf
+GDK_BINARY_VERSION=`pkg-config gdk-pixbuf-2.0 --variable=gdk_pixbuf_binary_version`
+GDK_LIB_DIR="gdk-pixbuf-2.0/$GDK_BINARY_VERSION"
+
+mkdir -p $LIBS/etc/gdk_pixbuf-2.0
+  cp $ROOT/$PACKAGES/x11/toolkits/gdk-pixbuf/config/gdk-pixbuf.loaders $LIBS/etc/gdk_pixbuf-2.0
+  sed -i "s|/usr/lib/gdk-pixbuf-|$ADDON_DIR/local/usr/lib/gdk-pixbuf-|g" $LIBS/etc/gdk_pixbuf-2.0/gdk-pixbuf.loaders
+
+mkdir -p $LIBS/usr/bin
+  cp $ROOT/$BUILD/gdk-pixbuf-*/gdk-pixbuf/.libs/gdk-pixbuf-query-loaders $LIBS/usr/bin
+
+mkdir -p $LIBS/usr/lib
+  # non-existent
+  #cp -P $ROOT/$BUILD/gdk-pixbuf-*/contrib/gdk-pixbuf-xlib/.libs/libgdk_pixbuf_xlib*.so* $LIBS/usr/lib
+    rm -rf $LIBS/usr/lib/libgdk_pixbuf_xlib*.so*T
+  cp -P $ROOT/$BUILD/gdk-pixbuf-*/gdk-pixbuf/.libs/libgdk_pixbuf*.so* $LIBS/usr/lib
+
+mkdir -p $LIBS/usr/lib/$GDK_LIB_DIR/loaders
+  cp -P $ROOT/$BUILD/gdk-pixbuf-*/gdk-pixbuf/.libs/libpixbufloader*.so $LIBS/usr/lib/$GDK_LIB_DIR/loaders
+
+### pango
+
+MODULE_VERSION=`pkg-config pango --variable=pango_module_version`
+
+mkdir -p $LIBS/usr/lib
+  cp -P $ROOT/$BUILD/pango-*/pango/.libs/libpango*.so* $LIBS/usr/lib
+  rm -rf $LIBS/usr/lib/libpango*.so*T
+
+mkdir -p $LIBS/usr/lib/pango/$MODULE_VERSION/modules
+  cp -P $ROOT/$BUILD/pango-*/modules/*/.libs/*.so $LIBS/usr/lib/pango/$MODULE_VERSION/modules
+
+mkdir -p $LIBS/usr/bin
+  cp $ROOT/$BUILD/pango-*/pango/.libs/pango-querymodules $LIBS/usr/bin
+
+mkdir -p $LIBS/etc/pango
+  cp $ROOT/$BUILD/pango-*/pango/pangox.aliases $LIBS/etc/pango
+  cp $ROOT/$PACKAGES/x11/toolkits/pango/config/* $LIBS/etc/pango
+  sed -i "s|/usr/lib/pango|$ADDON_DIR/local/usr/lib/pango|g" $LIBS/etc/pango/pango.modules
+	sed -i "s|/etc/pango|$ADDON_DIR/local/etc/pango|g" $LIBS/etc/pango/pangorc
