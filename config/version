@@ -1,5 +1,5 @@
 # VERSION: set full version, use "devel" for development version
-  OPENELEC_VERSION="1.95.1"
+  OPENELEC_VERSION="1.95.2"
 
 # OS_VERSION: OS Version
   OS_VERSION="2.0"
