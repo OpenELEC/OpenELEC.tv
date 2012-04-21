@@ -32,7 +32,7 @@
   HOME="/storage"
 
   (
-    if [ "$SSH" = yes -o -f /storage/.config/ssh_enable ]; then
+    if [ "$SSH" = yes -o -f /storage/.config/ssh_enable -o -f /storage/.config/ssh_enable.txt ]; then
 
     # Check for the SSH1 RSA key
       if [ ! -s $RSA1_KEY ] ; then
