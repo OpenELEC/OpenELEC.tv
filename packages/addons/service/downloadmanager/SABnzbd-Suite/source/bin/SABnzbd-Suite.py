@@ -68,7 +68,7 @@ pDefaultSuiteSettings = os.path.join(pAddon, 'settings-default.xml')
 pSuiteSettings        = os.path.join(pAddonHome, 'settings.xml')
 pXbmcSettings         = '/storage/.xbmc/userdata/guisettings.xml'
 pSabNzbdSettings      = os.path.join(pAddonHome, 'sabnzbd.ini')
-pSickBeardSettings    = os.path.join(pAddonHome, 'config.ini')
+pSickBeardSettings    = os.path.join(pAddonHome, 'sickbeard.ini')
 pCouchPotatoSettings  = os.path.join(pAddonHome, 'couchpotato.ini')
 pHeadphonesSettings   = os.path.join(pAddonHome, 'headphones.ini')
 
@@ -87,7 +87,7 @@ pPylib                = os.path.join(pAddon, 'pylib')
 sabnzbd               = ['python', os.path.join(pAddon, 'SABnzbd/SABnzbd.py'),
                          '-d', '-f',  pSabNzbdSettings, '-l 0']
 sickBeard             = ['python', os.path.join(pAddon, 'SickBeard/SickBeard.py'),
-                         '--daemon', '--datadir', pAddonHome]
+                         '--daemon', '--config', pSickBeardSettings, '--datadir', pAddonHome]
 couchPotato           = ['python', os.path.join(pAddon, 'CouchPotato/CouchPotato.py'),
                          '-d', '--datadir', pAddonHome, '--config', pCouchPotatoSettings]
 headphones            = ['python', os.path.join(pAddon, 'Headphones/Headphones.py'),
