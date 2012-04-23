@@ -33,3 +33,4 @@ touch "$LOCKDIR/$LOCKFILE"
 if [ "$(pidof $ADDON_BIN)" ];then
   killall -9 $ADDON_BIN
 fi
+setwakeup
