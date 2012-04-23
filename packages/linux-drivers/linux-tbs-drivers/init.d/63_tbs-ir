@@ -24,13 +24,18 @@
 
 (
   progress "initializing tbs ir"
+    . /storage/.config/remote.conf
+    RC_KEYMAP="/etc/rc_keymaps/tbs_nec"
     while [ true ] ; do
       if [ ! -e /dev/dvb/adapter*/frontend* ] ; then
         sleep 1
         continue
       else
         ir-keytable -c
-        ir-keytable -s rc0 -p NEC,RC6 -w /etc/rc_keymaps/rc6_mce
+        if [ ! -z "$TBS_KEYMAP" ] ; then
+          RC_KEYMAP=$TBS_KEYMAP
+        fi
+        ir-keytable -s rc0 -p NEC,RC6 -w $RC_KEYMAP
         break
       fi
     done
