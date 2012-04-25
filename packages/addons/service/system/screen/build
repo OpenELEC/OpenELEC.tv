@@ -22,5 +22,20 @@
 
 . config/options $1
 
-mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp $PKG_BUILD/src/iperf $ADDON_BUILD/$PKG_ADDON_ID/bin
+cd $PKG_BUILD
+
+# When cross-compiling, configure can't set linux version
+# forcing it
+# sed -i -e 's/ac_cv_linux_vers=unknown/ac_cv_linux_vers=2/' configure
+
+./configure \
+       --host=$TARGET_NAME \
+       --build=$HOST_NAME \
+       --with-pcap=linux \
+       --disable-ipv6
+
+
+# discard native system includes
+# sed -i "s%-I/usr/include%%g" Makefile
+
+$MAKE

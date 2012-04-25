@@ -18,6 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-import os
-import sys
-import xbmcaddon
+PKG_NAME="screen"
+PKG_VERSION="4.0.3"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.gnu.org/software/screen"
+PKG_URL="http://ftp.gnu.org/gnu/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="screen: screen manager with VT100/ANSI terminal emulation"
+PKG_LONGDESC="Screen is a full-screen window manager that multiplexes a physical terminal between several processes (typically interactive shells).  Each virtual terminal provides the functions of a DEC VT100 terminal and,  in  addition,  several  control functions  from the ISO 6429 (ECMA 48, ANSI X3.64) and ISO 2022 standards (e.g. insert/delete line and support for multiple character sets)."
+PKG_IS_ADDON="no"
+
+PKG_AUTORECONF="no"
