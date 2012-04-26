@@ -1,3 +1,6 @@
+2.1.5
+- added epgsearch plugin
+
 2.1.4
 - added live plugin
 
