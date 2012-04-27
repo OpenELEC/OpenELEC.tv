@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,24 +18,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="rotorng"
+PKG_VERSION="0.1.0"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://projects.vdr-developer.org/projects/plg-rotor-ng"
+PKG_URL="http://projects.vdr-developer.org/attachments/download/631/rotorng-${PKG_VERSION}.tar.gz"
+PKG_DEPENDS="vdr"
+PKG_BUILD_DEPENDS="toolchain vdr"
+PKG_PRIORITY="optional"
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="Next generation of a VDR plugin design to drive a diseqc rotor"
+PKG_LONGDESC="Next generation of a VDR plugin design to drive a diseqc rotor"
 
-cd $PKG_BUILD
-mkdir -p m4 && do_autoreconf
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --enable-shared \
-            --disable-static \
-            --disable-log \
-            --disable-debug-log \
-            --disable-examples-build \
+PKG_IS_ADDON="no"
 
-make
-
-$MAKEINSTALL
-
-$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-  $SYSROOT_PREFIX/usr/bin/libusb-config
-
-mv $SYSROOT_PREFIX/usr/bin/libusb-config $ROOT/$TOOLCHAIN/bin
+PKG_AUTORECONF="no"

@@ -22,22 +22,5 @@
 
 . config/options $1
 
-cd $PKG_BUILD
-mkdir -p m4 && do_autoreconf
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --enable-shared \
-            --disable-static \
-            --disable-log \
-            --disable-debug-log \
-            --disable-examples-build \
-
-make
-
-$MAKEINSTALL
-
-$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-  $SYSROOT_PREFIX/usr/bin/libusb-config
-
-mv $SYSROOT_PREFIX/usr/bin/libusb-config $ROOT/$TOOLCHAIN/bin
+cd $BUILD
+mv control-${PKG_VERSION} ${PKG_NAME}-${PKG_VERSION}

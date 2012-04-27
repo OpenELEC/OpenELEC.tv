@@ -22,22 +22,12 @@
 
 . config/options $1
 
+CFLAGS="$CFLAGS -fPIC"
+CXXFLAGS="$CXXFLAGS -fPIC"
+LDFLAGS="$LDFLAGS -fPIC"
+
+VDR_DIR=`basename $BUILD/vdr-[0-9]*`
+
 cd $PKG_BUILD
-mkdir -p m4 && do_autoreconf
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --enable-shared \
-            --disable-static \
-            --disable-log \
-            --disable-debug-log \
-            --disable-examples-build \
-
-make
-
-$MAKEINSTALL
-
-$SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-  $SYSROOT_PREFIX/usr/bin/libusb-config
-
-mv $SYSROOT_PREFIX/usr/bin/libusb-config $ROOT/$TOOLCHAIN/bin
+  PWD=`pwd`
+  make VDRDIR="$PWD/../$VDR_DIR" LIBDIR="." LOCALEDIR="./locale"
