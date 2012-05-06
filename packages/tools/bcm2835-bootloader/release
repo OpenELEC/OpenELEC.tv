@@ -22,8 +22,7 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/$1 $INSTALL/usr/bin
-
-mkdir -p $INSTALL/lib/udev
-  cp $PKG_DIR/scripts/xkb-setup $INSTALL/lib/udev
+mkdir -p $RELEASE_DIR/3rdparty/bootloader
+  cp -PR $BUILD/bcm2835-driver-*/boot/arm128_start.elf $RELEASE_DIR/3rdparty/bootloader/start.elf
+  cp -PR $BUILD/bcm2835-driver-*/boot/bootcode.bin $RELEASE_DIR/3rdparty/bootloader/
+  cp -PR $BUILD/bcm2835-driver-*/boot/loader.bin $RELEASE_DIR/3rdparty/bootloader/
