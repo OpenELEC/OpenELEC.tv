@@ -17,16 +17,20 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# This file contains non-OpenELEC evironment variables as well as OpenELEC
-# evironment variables that are not user defined.
-################################################################################
 
-################################################################################
-# setup functions
-################################################################################
+PKG_NAME="tinyxml"
+PKG_VERSION="2.6.2"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.grinninglizard.com/tinyxml/"
+PKG_URL="$SOURCEFORGE_SRC/$PKG_NAME/$PKG_VERSION/${PKG_NAME}_`echo $PKG_VERSION | sed 's,\.,_,g'`.tar.gz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="textproc"
+PKG_SHORTDESC="tinyxml: XML parser library"
+PKG_LONGDESC="TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs."
+PKG_IS_ADDON="no"
 
-# stub function
-  wait_for_xorg () {
-    echo 0 >  /sys/class/vtconsole/vtcon1/bind
-    fbset -xres 1 -yres 1 -vxres 1 -vyres 1
-  }
+PKG_AUTORECONF="no"
