@@ -18,9 +18,6 @@
 	<string id="1041">Enable plugin: rotorng</string>
 	<string id="1044">Enable plugin: epgsearch</string>
 	<string id="1045">Enable plugin: xmltv2vdr</string>
-	<string id="1045">Enable plugin: xineliboutput</string>
-	<string id="1046">xineliboutput: listen on port</string>
-	<string id="1047">Enable plugin: text2skin</string>
 	<string id="1035">Enable plugin: dynamite</string>
 	<string id="1046">Enable epgdata.com</string>
 	<string id="1047">epgdata.com PIN</string>

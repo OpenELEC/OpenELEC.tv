@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="libaacs"
-PKG_VERSION="0.4.0"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.videolan.org/developers/libaacs.html"
-PKG_URL="ftp://ftp.videolan.org/pub/videolan/libaacs/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libgcrypt"
-PKG_BUILD_DEPENDS="toolchain libgcrypt"
-PKG_PRIORITY="optional"
-PKG_SECTION="multimedia"
-PKG_SHORTDESC="libaacs: a research project to implement the Advanced Access Content System specification."
-PKG_LONGDESC="libaacs is a research project to implement the Advanced Access Content System specification. This research project provides, through an open-source library, a way to understand how the AACS works. This research project is mainly developed by an international team of developers from Doom9."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="yes"
+cd $BUILD
+mv xmltv2vdr-${PKG_VERSION} ${PKG_NAME}-${PKG_VERSION}
