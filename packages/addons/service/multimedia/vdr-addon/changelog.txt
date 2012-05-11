@@ -1,3 +1,9 @@
+2.1.6
+- added xineliboutput plugin
+- added text2skin plugin
+- added required libraries for this two plugins
+- preparation for xine based VDR frontend as separate addon
+
 2.1.5
 - fixed rotorng
 - added wirbelscancontrol plugin
