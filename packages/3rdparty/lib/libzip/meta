@@ -18,19 +18,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="libaacs"
-PKG_VERSION="0.4.0"
+PKG_NAME="libzip"
+PKG_VERSION="0.10.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.videolan.org/developers/libaacs.html"
-PKG_URL="ftp://ftp.videolan.org/pub/videolan/libaacs/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libgcrypt"
-PKG_BUILD_DEPENDS="toolchain libgcrypt"
+PKG_SITE="http://www.nih.at/libzip/"
+PKG_URL="http://www.nih.at/libzip/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="multimedia"
-PKG_SHORTDESC="libaacs: a research project to implement the Advanced Access Content System specification."
-PKG_LONGDESC="libaacs is a research project to implement the Advanced Access Content System specification. This research project provides, through an open-source library, a way to understand how the AACS works. This research project is mainly developed by an international team of developers from Doom9."
+PKG_SHORTDESC="libzip"
+PKG_LONGDESC="libzip"
 PKG_IS_ADDON="no"
-
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
