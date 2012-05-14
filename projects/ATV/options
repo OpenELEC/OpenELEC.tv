@@ -1,5 +1,7 @@
 # Name of the Distro to build (full name, without special charcters)
-  if [ "$PVR" = yes ]; then
+  if [ "$XBMC" = frodo ]; then
+    DISTRONAME="OpenELEC_frodo"
+  elif [ "$PVR" = yes ]; then
     DISTRONAME="OpenELEC_PVR"
   else
     DISTRONAME="OpenELEC"
@@ -108,7 +110,9 @@
   SQUASHFS_COMPRESSION="gzip"
 
 # Mediacenter to use (xbmc / no)
-  if [ "$PVR" = yes ]; then
+  if [ "$XBMC" = frodo ]; then
+    MEDIACENTER="xbmc-frodo"
+  elif [ "$PVR" = yes ]; then
     MEDIACENTER="xbmc-pvr"
   else
     MEDIACENTER="xbmc"
@@ -149,6 +153,12 @@
 # build and install with DVDCSS support
 # (DVD decryption support in XBMC) (yes / no)
   DVDCSS_SUPPORT="yes"
+
+# build and install with LAME cdrip encoder support
+  ENCODER_LAME="yes"
+
+# build and install with VORBIS cdrip encoder support
+  ENCODER_VORBIS="yes"
 
 # build and install with BluRay support (yes / no)
   BLURAY_SUPPORT="yes"
@@ -273,6 +283,9 @@
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
   LCD_DRIVER="none"
+
+# Modules to install in initramfs for early boot
+  INITRAMFS_MODULES=""
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
