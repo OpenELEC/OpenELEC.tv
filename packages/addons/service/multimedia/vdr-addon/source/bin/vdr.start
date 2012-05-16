@@ -32,7 +32,6 @@ ADDON_SETTINGS="$ADDON_HOME/settings.xml"
 
 ADDON_CONFIG_DIR="$ADDON_HOME/config"
 ADDON_PLUGIN_DIR="$ADDON_DIR/plugin"
-ADDON_VIDEO_DIR="$HOME/videos"
 
 if [ ! -f "$ADDON_SETTINGS" ]; then
   mkdir -p $ADDON_HOME
@@ -48,6 +47,7 @@ cp $ADDON_DIR/config/epgsources/epgdata2xmltv/epgdata2xmltv.dist /var/lib/epgsou
 . /var/config/vdr.conf.default
 . /var/config/vdr.conf
 
+ADDON_VIDEO_DIR=`grep VDR_VIDEO_DIR $ADDON_SETTINGS | awk -F\" '{print $4}'`
 VDR_ARG="-g /tmp --no-kbd --log=3 --port=0"
 VDR_ARG="$VDR_ARG --config=$ADDON_CONFIG_DIR"
 VDR_ARG="$VDR_ARG --lib=$ADDON_PLUGIN_DIR"
