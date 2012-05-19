@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,27 +19,33 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+echo "getting sources..."
+  if [ ! -d lockdev.git ]; then
+    git clone git://anonscm.debian.org/lockdev/lockdev.git -b master lockdev.git
+  fi
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/misc-utils/.libs/blkid $INSTALL/usr/bin
-  cp $PKG_BUILD/sys-utils/fstrim $INSTALL/usr/bin
-  cp $PKG_BUILD/fsck/.libs/fsck $INSTALL/usr/bin
+  cd lockdev.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-mkdir -p $INSTALL/usr/lib
-  cp -PR $PKG_BUILD/libblkid/src/.libs/libblkid.so* $INSTALL/usr/lib
-  rm -rf $INSTALL/usr/lib/libblkid.so*T
-  cp -PR $PKG_BUILD/libuuid/src/.libs/libuuid.so* $INSTALL/usr/lib
-  rm -rf $INSTALL/usr/lib/libuuid.so*T
+echo "copying sources..."
+  rm -rf lockdev-$GIT_REV
+  cp -R lockdev.git lockdev-$GIT_REV
 
-if [ "$SWAP_SUPPORT" = "yes" ]; then
-  mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/sys-utils/.libs/swapon $INSTALL/usr/bin
-  ln -sf swapon $INSTALL/usr/bin/swapoff
+echo "creating VERSION and other needed files"
+  (
+    cd lockdev-$GIT_REV
+    LC_ALL=C ./scripts/git-version > VERSION
+    touch ChangeLog
+  ) 
 
-  mkdir -p $INSTALL/etc/init.d
-  cp $PKG_DIR/scripts/32_swapfile $INSTALL/etc/init.d
+echo "cleaning sources..."
+  rm -rf lockdev-$GIT_REV/.git
 
-  mkdir -p $INSTALL/etc
-  cat $PKG_DIR/config/swap.conf | sed -e "s,@SWAPFILESIZE@,$SWAPFILESIZE,g" > $INSTALL/etc/swap.conf
-fi
+
+echo "packing sources..."
+  tar cvJf lockdev-$GIT_REV.tar.xz lockdev-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  
