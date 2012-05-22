@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DEV=/sys/class/rtc/rtc0/wakealarm
+echo 0 > $DEV
+echo $1 > $DEV
+cat /proc/driver/rtc > /storage/nextboot
