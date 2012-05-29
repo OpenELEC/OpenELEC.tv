@@ -22,6 +22,4 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/usr/lib
-  cp -PR $PKG_BUILD/.build-target/src/.libs/*.so* $INSTALL/usr/lib
-
+cp -PR $PKG_BUILD/.install/* $INSTALL

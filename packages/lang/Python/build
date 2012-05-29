@@ -26,7 +26,7 @@ PY_DISABLED_MODULES="readline _curses _curses_panel _tkinter nis gdbm bsddb"
 
 # dont use some optimizations because of problems
 # this fixes problems with expat (maybe)
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
+#  LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 
 cd $PKG_BUILD
 mkdir -p .objdir-target && cd .objdir-target
@@ -36,10 +36,8 @@ ac_cv_file_dev_ptmx=yes \
 ac_cv_func_lchflags_works=no \
 ac_cv_func_chflags_works=no \
 ac_cv_func_printf_zd=yes \
-OPT="$CFLAGS -fno-strict-aliasing" \
 ../configure --host=$TARGET_NAME \
              --build=$HOST_NAME \
-             --cache-file=config.cache \
              --prefix=/usr \
              --sysconfdir=/etc \
              --enable-shared \
@@ -50,12 +48,15 @@ OPT="$CFLAGS -fno-strict-aliasing" \
              --without-pydebug \
              --without-doc-strings \
              --without-tsc \
-             --without-pymalloc \
+             --with-pymalloc \
              --without-fpectl \
-             --without-wctype-functions \
+             --with-wctype-functions \
              --without-cxx-main \
              --with-system-ffi \
              --with-system-expat \
+
+mkdir -p Modules
+  cp $ROOT/$PKG_DIR/config/Setup ./Modules
 
 make  -j1 CC="$TARGET_CC" \
       HOSTPYTHON=$ROOT/$TOOLCHAIN/bin/python \
@@ -84,3 +85,21 @@ make  -j1 CC="$TARGET_CC" \
 # python distutils per default adds -L$LIBDIR when linking binary extensions
 sed -e "s|^LIBDIR=.*|LIBDIR= $SYSROOT_PREFIX/usr/lib|" \
     -i $SYSROOT_PREFIX/usr/lib/python*/config/Makefile
+
+EXCLUDE_DIRS="bsddb curses idlelib lib-tk lib2to3 msilib wsgiref"
+INCLUDE_DIRS="compiler ctypes ctypes/macholib distutils distutils/command email"
+INCLUDE_DIRS="$INCLUDE_DIRS email/mime encodings hotshot importlib json logging"
+INCLUDE_DIRS="$INCLUDE_DIRS multiprocessing plat-linux2 sqlite3 xml xml/dom xml/etree"
+INCLUDE_DIRS="$INCLUDE_DIRS xml/parsers xml/sax"
+
+mkdir ./Lib
+cp ../Lib/*.py ./Lib
+
+for dirs in $INCLUDE_DIRS; do
+  mkdir -p ./Lib/$dirs
+  cp ../Lib/$dirs/*.py ./Lib/$dirs
+done
+
+python -Wi -t -B ../Lib/compileall.py ./Lib -f
+
+rm -rf `find ./Lib -name "*.py"`
