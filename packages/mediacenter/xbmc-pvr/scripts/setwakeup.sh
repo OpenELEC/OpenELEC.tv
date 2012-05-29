@@ -1,6 +1,8 @@
+#!/bin/sh
+
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2010 OpenELEC.tv
+#      http://www.openelec.tv
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,23 +16,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="sundtek-mediatv"
-PKG_VERSION="2.0"
-PKG_REV="2"
-PKG_ARCH="any"
-PKG_LICENSE="nonfree"
-PKG_SITE="http://support.sundtek.com/"
-PKG_URL=""
-PKG_DEPENDS="sundtek"
-PKG_BUILD_DEPENDS="sundtek"
-PKG_PRIORITY="optional"
-PKG_SECTION="driver/dvb"
-PKG_SHORTDESC="Sundtek USB Stick DVB userspace driver"
-PKG_LONGDESC="Driver for Sundtek MediaTV Pro (DVB-C, DVB-T, AnalogTV, Composite, S-Video, FM-Radio USB Stick) and Sundtek SkyTV Ultimate (DVB-S/S2 USB)."
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.python.script"
-PKG_AUTORECONF="no"
+if [ -f /sys/class/rtc/rtc0/wakealarm ]; then
+  logger -t setwakeup.sh "### Setting system wakeup time ###"
+  echo 0 > /sys/class/rtc/rtc0/wakealarm
+  echo $1 > /sys/class/rtc/rtc0/wakealarm
+  logger -t setwakeup.sh "### $(cat /proc/driver/rtc) ###"
+fi

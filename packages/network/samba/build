@@ -28,11 +28,13 @@ else
   SMB_AVAHI="--disable-avahi"
 fi
 
-export samba_cv_CC_NEGATIVE_ENUM_VALUES=no
+CFLAGS="$CFLAGS -fPIC -DPIC"
 
 cd $PKG_BUILD/source3
 
 sh autogen.sh
+samba_cv_CC_NEGATIVE_ENUM_VALUES=no \
+ac_cv_file__proc_sys_kernel_core_pattern=yes \
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
