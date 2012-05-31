@@ -20,7 +20,10 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+count=0
 
-mkdir -p $INSTALL/usr/share/xbmc/addons/skin.confluence
-  cp -R $PKG_BUILD/* $INSTALL/usr/share/xbmc/addons/skin.confluence
+while [ $(pidof xbmc.bin) -a $count -le 20 ]; do
+  usleep 250000
+  logger -t wait_on_xbmc_exit "### Waiting for XBMC to Exit - $count ###"
+  count=$((count+1))
+done

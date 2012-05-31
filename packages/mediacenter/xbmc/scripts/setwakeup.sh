@@ -20,15 +20,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
-
-case "$1" in
-  hibernate|suspend)
-    xbmc-send --host=127.0.0.1 -a "LIRC.Stop"
-    ;;
-  thaw|resume)
-    xbmc-send --host=127.0.0.1 -a "LIRC.Start"
-    ;;
-  *) exit $NA
-    ;;
-esac
+if [ -f /sys/class/rtc/rtc0/wakealarm ]; then
+  logger -t setwakeup.sh "### Setting system wakeup time ###"
+  echo 0 > /sys/class/rtc/rtc0/wakealarm
+  echo $1 > /sys/class/rtc/rtc0/wakealarm
+  logger -t setwakeup.sh "### $(cat /proc/driver/rtc) ###"
+fi
