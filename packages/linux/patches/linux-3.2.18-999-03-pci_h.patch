@@ -1,0 +1,20 @@
+--- linux-3.2.18/include/linux/pci.h.orig	2012-05-31 21:36:38.235978140 +0200
++++ linux-3.2.18/include/linux/pci.h	2012-05-31 21:42:20.456961633 +0200
+@@ -1647,5 +1647,17 @@ static inline void pci_release_bus_of_no
+  */
+ struct pci_dev *pci_find_upstream_pcie_bridge(struct pci_dev *pdev);
+ 
++/**
++ * module_pci_driver() - Helper macro for registering a PCI driver
++ * @__pci_driver: pci_driver struct
++ *
++ * Helper macro for PCI drivers which do not do anything special in module
++ * init/exit. This eliminates a lot of boilerplate. Each module may only
++ * use this macro once, and calling it replaces module_init() and module_exit()
++ */
++#define module_pci_driver(__pci_driver) \
++	        module_driver(__pci_driver, pci_register_driver, \
++				                       pci_unregister_driver)
++
+ #endif /* __KERNEL__ */
+ #endif /* LINUX_PCI_H */

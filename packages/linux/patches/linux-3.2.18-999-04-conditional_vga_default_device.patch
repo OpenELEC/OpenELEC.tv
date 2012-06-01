@@ -1,0 +1,20 @@
+--- linux-3.2.18/sound/pci/hda/hda_intel.c.orig	2012-05-31 23:22:53.351494829 +0200
++++ linux-3.2.18/sound/pci/hda/hda_intel.c	2012-05-31 23:28:02.666902715 +0200
+@@ -2666,6 +2666,7 @@ static struct pci_dev __devinit *get_bou
+ 
+ static bool __devinit check_hdmi_disabled(struct pci_dev *pci)
+ {
++#ifdef __ARCH_HAS_VGA_DEFAULT_DEVICE
+ 	bool vga_inactive = false;
+ 	struct pci_dev *p = get_bound_vga(pci);
+ 
+@@ -2675,6 +2676,9 @@ static bool __devinit check_hdmi_disable
+ 		pci_dev_put(p);
+ 	}
+ 	return vga_inactive;
++#else
++	return false;
++#endif
+ }
+ 
+ /*
