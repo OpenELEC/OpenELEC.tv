@@ -87,6 +87,9 @@ NBD_DEVS="0"
       break=*)
         BREAK="${arg#*=}"
         ;;
+      root_rw)
+        ROOTRW=yes
+        ;;
     esac
   done
 
@@ -433,9 +436,19 @@ NBD_DEVS="0"
     progress "Preparing system"
 
     if [ -f "/flash/$IMAGE_SYSTEM" ]; then
+     if [ -n "$ROOTRW" ]; then
+      mkdir -p /mnt/S
+      mount -t tmpfs tmpfs /mnt/S
+      mkdir -p /mnt/S/U /mnt/S/L
+      cat "/flash/$IMAGE_SYSTEM" > /mnt/S/SYSTEM
+      mount_part "/mnt/S/SYSTEM" "/mnt/S/L" "ro,loop"
+      mount -t overlayfs overlayfs -olowerdir=/mnt/S/L,upperdir=/mnt/S/U /sysroot
+      [ "$ERR_ENV" -ne "0" ] && debug_shell
+     else
     # /flash is filesystem with system image file
       mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
       /bin/busybox mount --move /flash /sysroot/flash
+     fi
     else
     # /flash is actual root filesystem
       /bin/busybox mount --move /flash /sysroot

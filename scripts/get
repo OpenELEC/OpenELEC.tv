@@ -21,7 +21,6 @@
 ################################################################################
 
 . config/options $1
-
 if [ -z "$1" ]; then
   for i in `find packages/ -type f -name meta`; do
     GET_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
@@ -58,7 +57,7 @@ if [ -n "$PKG_URL" ]; then
 
     rm -f $STAMP
 
-    printf "%${INDENT}c GET      $1\n" >&$SILENT_OUT
+    printf "%${INDENT}c GET      $1\n" ' '>&$SILENT_OUT
     export INDENT=$((${INDENT:-1}+$INDENT_SIZE))
 
     until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR; do
