@@ -24,6 +24,8 @@
 
 cd $PKG_BUILD
 
+setup_toolchain target
+
 ac_cv_file___xkbparse_c=yes \
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
@@ -31,3 +33,4 @@ ac_cv_file___xkbparse_c=yes \
             --sysconfdir=/etc \
 
 make
+make install
