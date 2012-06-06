@@ -45,6 +45,8 @@
 #  - sqlite3_table_column_metadata()
   CFLAGS="$CFLAGS -DSQLITE_ENABLE_COLUMN_METADATA=1"
 
+  CFLAGS="$CFLAGS -fPIC"
+
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
