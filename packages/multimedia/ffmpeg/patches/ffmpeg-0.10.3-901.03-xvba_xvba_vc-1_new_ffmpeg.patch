@@ -5,13 +5,13 @@ Subject: [PATCH] xvba: (VC-1) rename FF_P_TYPE, FF_B_TYPE and FF_I_TYPE to
  new ffmpeg conventions
 
 ---
- lib/ffmpeg/libavcodec/xvba_vc1.c |   10 +++-------
+ libavcodec/xvba_vc1.c |   10 +++-------
  1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/lib/ffmpeg/libavcodec/xvba_vc1.c b/lib/ffmpeg/libavcodec/xvba_vc1.c
+diff --git a/libavcodec/xvba_vc1.c b/libavcodec/xvba_vc1.c
 index c202b9c..7315b62 100644
---- a/lib/ffmpeg/libavcodec/xvba_vc1.c
-+++ b/lib/ffmpeg/libavcodec/xvba_vc1.c
+--- a/libavcodec/xvba_vc1.c
++++ b/libavcodec/xvba_vc1.c
 @@ -82,7 +82,7 @@ static int end_frame(AVCodecContext *avctx)
      // xvba-video set this to 1 only 4:2:0 supported
      // doc says: if not set, choose 1 - we try this

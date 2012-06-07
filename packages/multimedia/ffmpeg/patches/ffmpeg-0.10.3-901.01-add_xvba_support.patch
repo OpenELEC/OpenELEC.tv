@@ -1,6 +1,6 @@
-diff -Naur xbmc-11.0.1/lib/ffmpeg/configure xbmc-11.0.1.patch/lib/ffmpeg/configure
---- xbmc-11.0.1/lib/ffmpeg/configure	2012-05-12 21:45:47.005596234 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/configure	2012-05-12 21:46:03.902936436 +0200
+diff -Naur a/configure b/configure
+--- a/configure	2012-05-12 21:45:47.005596234 +0200
++++ b/configure	2012-05-12 21:46:03.902936436 +0200
 @@ -113,6 +113,7 @@
    --enable-vdpau           enable VDPAU code [autodetect]
    --disable-dxva2          disable DXVA2 code
@@ -65,9 +65,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/configure xbmc-11.0.1.patch/lib/ffmpeg/configu
  check_cpp_condition vdpau/vdpau.h "defined(VDP_DECODER_PROFILE_MPEG4_PART2_SP)" && enable vdpau_mpeg4_support
  
  check_header X11/extensions/XvMClib.h
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/allcodecs.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/allcodecs.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/allcodecs.c	2012-05-12 21:45:47.257601308 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/allcodecs.c	2012-05-12 21:46:03.905936496 +0200
+diff -Naur a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
+--- a/libavcodec/allcodecs.c	2012-05-12 21:45:47.257601308 +0200
++++ b/libavcodec/allcodecs.c	2012-05-12 21:46:03.905936496 +0200
 @@ -59,14 +59,18 @@
      REGISTER_HWACCEL (H264_VAAPI, h264_vaapi);
      REGISTER_HWACCEL (H264_VDA, h264_vda);
@@ -87,9 +87,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/allcodecs.c xbmc-11.0.1.patch/lib/f
  
      /* video codecs */
      REGISTER_ENCODER (A64MULTI, a64multi);
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/h264.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/h264.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/h264.c	2012-05-12 21:45:47.757611376 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/h264.c	2012-05-12 21:46:03.908936558 +0200
+diff -Naur a/libavcodec/h264.c b/libavcodec/h264.c
+--- a/libavcodec/h264.c	2012-05-12 21:45:47.757611376 +0200
++++ b/libavcodec/h264.c	2012-05-12 21:46:03.908936558 +0200
 @@ -60,6 +60,7 @@
      PIX_FMT_DXVA2_VLD,
      PIX_FMT_VAAPI_VLD,
@@ -98,9 +98,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/h264.c xbmc-11.0.1.patch/lib/ffmpeg
      PIX_FMT_YUVJ420P,
      PIX_FMT_NONE
  };
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/Makefile xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/Makefile
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/Makefile	2012-05-12 21:45:47.927614798 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/Makefile	2012-05-12 21:46:03.904936476 +0200
+diff -Naur a/libavcodec/Makefile b/libavcodec/Makefile
+--- a/libavcodec/Makefile	2012-05-12 21:45:47.927614798 +0200
++++ b/libavcodec/Makefile	2012-05-12 21:46:03.904936476 +0200
 @@ -3,7 +3,7 @@
  NAME = avcodec
  FFLIBS = avutil
@@ -150,9 +150,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/Makefile xbmc-11.0.1.patch/lib/ffmp
  SKIPHEADERS-$(CONFIG_VDPAU)            += vdpau.h
  SKIPHEADERS-$(CONFIG_XVMC)             += xvmc.h
  SKIPHEADERS-$(HAVE_W32THREADS)         += w32pthreads.h
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/mpegvideo.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/mpegvideo.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/mpegvideo.c	2012-05-12 21:45:48.027616812 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/mpegvideo.c	2012-05-12 21:46:03.910936598 +0200
+diff -Naur a/libavcodec/mpegvideo.c b/libavcodec/mpegvideo.c
+--- a/libavcodec/mpegvideo.c	2012-05-12 21:45:48.027616812 +0200
++++ b/libavcodec/mpegvideo.c	2012-05-12 21:46:03.910936598 +0200
 @@ -136,6 +136,7 @@
      PIX_FMT_DXVA2_VLD,
      PIX_FMT_VAAPI_VLD,
@@ -161,9 +161,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/mpegvideo.c xbmc-11.0.1.patch/lib/f
      PIX_FMT_YUV420P,
      PIX_FMT_NONE
  };
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.c	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba.c	2012-05-12 21:46:03.918936758 +0200
+diff -Naur a/libavcodec/xvba.c b/libavcodec/xvba.c
+--- a/libavcodec/xvba.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba.c	2012-05-12 21:46:03.918936758 +0200
 @@ -0,0 +1,66 @@
 +/*
 + * HW decode acceleration for MPEG-2, H.264 and VC-1
@@ -231,9 +231,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.c xbmc-11.0.1.patch/lib/ffmpeg
 +  render->num_slices++;
 +}
 +
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.h xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba.h
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.h	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba.h	2012-05-12 21:46:03.918936758 +0200
+diff -Naur a/libavcodec/xvba.h b/libavcodec/xvba.h
+--- a/libavcodec/xvba.h	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba.h	2012-05-12 21:46:03.918936758 +0200
 @@ -0,0 +1,71 @@
 +/*
 + * HW decode acceleration for MPEG-2, H.264 and VC-1
@@ -306,9 +306,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba.h xbmc-11.0.1.patch/lib/ffmpeg
 +};
 +
 +#endif /* AVCODEC_XVBA_H */
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_h264.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_h264.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_h264.c	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_h264.c	2012-05-12 21:46:03.919936778 +0200
+diff -Naur a/libavcodec/xvba_h264.c b/libavcodec/xvba_h264.c
+--- a/libavcodec/xvba_h264.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba_h264.c	2012-05-12 21:46:03.919936778 +0200
 @@ -0,0 +1,180 @@
 +/*
 + * H.264 HW decode acceleration through XVBA
@@ -490,9 +490,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_h264.c xbmc-11.0.1.patch/lib/f
 +    .decode_slice   = decode_slice,
 +    .priv_data_size = 0,
 +};
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_internal.h xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_internal.h
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_internal.h	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_internal.h	2012-05-12 21:46:03.920936798 +0200
+diff -Naur a/libavcodec/xvba_internal.h b/libavcodec/xvba_internal.h
+--- a/libavcodec/xvba_internal.h	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba_internal.h	2012-05-12 21:46:03.920936798 +0200
 @@ -0,0 +1,24 @@
 +/*
 + * HW decode acceleration for MPEG-2, H.264 and VC-1
@@ -518,9 +518,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_internal.h xbmc-11.0.1.patch/l
 +
 +int ff_xvba_translate_profile(int profile);
 +void ff_xvba_add_slice_data(struct xvba_render_state *render, const uint8_t *buffer, uint32_t size);
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_mpeg2.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_mpeg2.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_mpeg2.c	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_mpeg2.c	2012-05-12 21:46:03.920936798 +0200
+diff -Naur a/libavcodec/xvba_mpeg2.c b/libavcodec/xvba_mpeg2.c
+--- a/libavcodec/xvba_mpeg2.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba_mpeg2.c	2012-05-12 21:46:03.920936798 +0200
 @@ -0,0 +1,52 @@
 +/*
 + * MPEG-2 HW decode acceleration through XVBA
@@ -574,9 +574,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_mpeg2.c xbmc-11.0.1.patch/lib/
 +    .decode_slice   = decode_slice,
 +    .priv_data_size = 0,
 +};
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_vc1.c xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_vc1.c
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_vc1.c	1970-01-01 01:00:00.000000000 +0100
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvba_vc1.c	2012-05-12 21:46:03.921936819 +0200
+diff -Naur a/libavcodec/xvba_vc1.c b/libavcodec/xvba_vc1.c
+--- a/libavcodec/xvba_vc1.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libavcodec/xvba_vc1.c	2012-05-12 21:46:03.921936819 +0200
 @@ -0,0 +1,194 @@
 +/*
 + * VC-1 HW decode acceleration through XVBA
@@ -772,9 +772,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvba_vc1.c xbmc-11.0.1.patch/lib/ff
 +    .decode_slice   = decode_slice,
 +    .priv_data_size = 0,
 +};
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvmc_internal.h xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvmc_internal.h
---- xbmc-11.0.1/lib/ffmpeg/libavcodec/xvmc_internal.h	2012-05-12 21:45:48.572627784 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavcodec/xvmc_internal.h	2012-05-12 21:46:03.922936840 +0200
+diff -Naur a/libavcodec/xvmc_internal.h b/libavcodec/xvmc_internal.h
+--- a/libavcodec/xvmc_internal.h	2012-05-12 21:45:48.572627784 +0200
++++ b/libavcodec/xvmc_internal.h	2012-05-12 21:46:03.922936840 +0200
 @@ -1,5 +1,7 @@
  /*
 - * XVideo Motion Compensation internal functions
@@ -784,9 +784,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavcodec/xvmc_internal.h xbmc-11.0.1.patch/l
   *
   * This file is part of FFmpeg.
   *
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavutil/pixdesc.c xbmc-11.0.1.patch/lib/ffmpeg/libavutil/pixdesc.c
---- xbmc-11.0.1/lib/ffmpeg/libavutil/pixdesc.c	2012-05-12 21:45:49.442645301 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavutil/pixdesc.c	2012-05-12 21:46:03.923936860 +0200
+diff -Naur a/libavutil/pixdesc.c b/libavutil/pixdesc.c
+--- a/libavutil/pixdesc.c	2012-05-12 21:45:49.442645301 +0200
++++ b/libavutil/pixdesc.c	2012-05-12 21:46:03.923936860 +0200
 @@ -874,6 +874,12 @@
          .log2_chroma_h = 1,
          .flags = PIX_FMT_HWACCEL,
@@ -800,9 +800,9 @@ diff -Naur xbmc-11.0.1/lib/ffmpeg/libavutil/pixdesc.c xbmc-11.0.1.patch/lib/ffmp
      [PIX_FMT_YUV420P9LE] = {
          .name = "yuv420p9le",
          .nb_components = 3,
-diff -Naur xbmc-11.0.1/lib/ffmpeg/libavutil/pixfmt.h xbmc-11.0.1.patch/lib/ffmpeg/libavutil/pixfmt.h
---- xbmc-11.0.1/lib/ffmpeg/libavutil/pixfmt.h	2012-05-12 21:45:49.445645361 +0200
-+++ xbmc-11.0.1.patch/lib/ffmpeg/libavutil/pixfmt.h	2012-05-12 21:46:03.924936880 +0200
+diff -Naur a/libavutil/pixfmt.h b/libavutil/pixfmt.h
+--- a/libavutil/pixfmt.h	2012-05-12 21:45:49.445645361 +0200
++++ b/libavutil/pixfmt.h	2012-05-12 21:46:03.924936880 +0200
 @@ -129,6 +129,7 @@
      PIX_FMT_YUV444P16BE,  ///< planar YUV 4:4:4, 48bpp, (1 Cr & Cb sample per 1x1 Y samples), big-endian
      PIX_FMT_VDPAU_MPEG4,  ///< MPEG4 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers

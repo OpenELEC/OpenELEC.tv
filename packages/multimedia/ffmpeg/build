@@ -22,15 +22,23 @@
 
 . config/options $1
 
-export pkg_config="$ROOT/$TOOLCHAIN/bin/pkg-config"
-
-# libav fails building with LTO support
-  strip_lto
-
-if [ "$VDPAU" = yes ]; then
-  FFMPEG_VDPAU="--enable-vdpau"
+if [ "$DEBUG" = yes ]; then
+  FFMPEG_DEBUG="--enable-debug --disable-stripping"
 else
-  FFMPEG_VDPAU="--disable-vdpau"
+  FFMPEG_DEBUG="--disable-debug --enable-stripping"
+fi
+
+if [ "$OPTIMIZATIONS" = size ]; then
+  FFMPEG_OPTIM="--enable-small"
+else
+  FFMPEG_OPTIM="--disable-small"
+fi
+
+if [ "$CRYSTALHD" = yes ]; then
+# disabled, we use XBMC's internal solution
+  FFMPEG_CRYSTALHD="--disable-crystalhd"
+else
+  FFMPEG_CRYSTALHD="--disable-crystalhd"
 fi
 
 if [ "$VAAPI" = yes ]; then
@@ -39,9 +47,57 @@ else
   FFMPEG_VAAPI="--disable-vaapi"
 fi
 
+if [ "$VDPAU" = yes ]; then
+  FFMPEG_VDPAU="--enable-vdpau"
+else
+  FFMPEG_VDPAU="--disable-vdpau"
+fi
+
+if [ "$XVBA" = yes ]; then
+  FFMPEG_XVBA="--enable-xvba"
+else
+  FFMPEG_XVBA="--disable-xvba"
+fi
+
+case "$TARGET_ARCH" in
+  arm)
+      FFMPEG_CPU="--enable-armv5te --disable-armv6t2 --enable-armv6"
+      FFMPEG_TABLES="--enable-hardcoded-tables"
+      FFMPEG_PIC="--enable-pic"
+  ;;
+  i?86)
+      FFMPEG_CPU="--disable-armv5te --disable-armv6t2 --disable-armv6"
+      FFMPEG_TABLES="--disable-hardcoded-tables"
+      FFMPEG_PIC="--disable-pic"
+  ;;
+  x86_64)
+      FFMPEG_CPU="--disable-armv5te --disable-armv6t2 --disable-armv6"
+      FFMPEG_TABLES="--disable-hardcoded-tables"
+      FFMPEG_PIC="--enable-pic"
+  ;;
+esac
+
+case "$TARGET_FPU" in
+  neon*)
+      FFMPEG_FPU="--enable-neon --disable-armvfp"
+  ;;
+  vfp*)
+      FFMPEG_FPU="--enable-armvfp --disable-neon"
+  ;;
+  *)
+      FFMPEG_FPU="--disable-neon --disable-armvfp"
+  ;;
+esac
+
+export pkg_config="$ROOT/$TOOLCHAIN/bin/pkg-config"
+
+# libav fails building with LTO support
+  strip_lto
+
+#LDFLAGS="$(echo "$LDFLAGS" | sed "s/-Wl,-Bsymbolic-functions//g")"
+
 cd $PKG_BUILD/
-./configure --prefix=/storage/.xbmc/addons/lib.multimedia.$1 \
-            --datadir=/storage/.xbmc/addons/lib.multimedia.$1/ffmpeg \
+./configure --prefix=/usr \
             --cpu=$TARGET_CPU \
             --arch=$TARGET_ARCH \
             --enable-cross-compile \
@@ -57,19 +113,26 @@ cd $PKG_BUILD/
             --host-cc="$HOST_CC" \
             --host-cflags="$HOST_CFLAGS" \
             --host-ldflags="$HOST_LDFLAGS" \
-            --host-libs="" \
+            --host-libs="-lm" \
             --extra-cflags="$CFLAGS" \
             --extra-ldflags="$LDFLAGS" \
             --extra-libs="" \
             --extra-version="" \
             --build-suffix="" \
-            --enable-static \
-            --disable-shared \
+            --disable-static \
+            --enable-shared \
             --enable-gpl \
             --disable-version3 \
             --disable-nonfree \
             --enable-logging \
-            --enable-doc \
+            --disable-doc \
+            $FFMPEG_DEBUG \
+            $FFMPEG_PIC \
+            --enable-optimizations \
+            --disable-extra-warnings \
+            --disable-ffprobe \
+            --disable-ffplay \
+            --disable-ffserver \
             --enable-ffmpeg \
             --enable-avdevice \
             --enable-avcodec \
@@ -77,14 +140,15 @@ cd $PKG_BUILD/
             --enable-swscale \
             --enable-postproc \
             --enable-avfilter \
+            --disable-devices \
             --enable-pthreads \
             --disable-w32threads \
-            --enable-x11grab \
+            --disable-x11grab \
             --enable-network \
             --disable-gray \
             --enable-swscale-alpha \
             --enable-fastdiv \
-            --enable-small \
+            $FFMPEG_OPTIM \
             --enable-aandct \
             --enable-dct \
             --enable-fft \
@@ -93,22 +157,28 @@ cd $PKG_BUILD/
             --enable-lpc \
             --enable-mdct \
             --enable-rdft \
+            $FFMPEG_CRYSTALHD \
             $FFMPEG_VAAPI \
             $FFMPEG_VDPAU \
+            $FFMPEG_XVBA \
             --disable-dxva2 \
             --enable-runtime-cpudetect \
-            --disable-hardcoded-tables \
+            $FFMPEG_TABLES \
             --disable-memalign-hack \
-            --enable-encoders \
-            --enable-decoders \
+            --disable-encoders \
+            --enable-encoder=ac3 \
+            --enable-encoder=aac \
+            --disable-decoder=mpeg_xvmc \
             --enable-hwaccels \
-            --enable-muxers \
+            --disable-muxers \
+            --enable-muxer=spdif \
+            --enable-muxer=adts \
             --enable-demuxers \
             --enable-parsers \
             --enable-bsfs \
-            --enable-protocols \
-            --enable-indevs \
-            --enable-outdevs \
+            --enable-protocol=http \
+            --disable-indevs \
+            --disable-outdevs \
             --enable-filters \
             --disable-avisynth \
             --enable-bzlib \
@@ -124,13 +194,13 @@ cd $PKG_BUILD/
             --disable-libmp3lame \
             --disable-libnut \
             --disable-libopenjpeg \
-              --disable-librtmp \
+            --disable-librtmp \
             --disable-libschroedinger \
             --disable-libspeex \
             --disable-libtheora \
             --disable-libvo-aacenc \
             --disable-libvo-amrwbenc \
-            --disable-libvorbis \
+            --enable-libvorbis --enable-muxer=ogg --enable-encoder=libvorbis \
             --disable-libvpx \
             --disable-libx264 \
             --disable-libxavs \
@@ -139,26 +209,17 @@ cd $PKG_BUILD/
             --enable-zlib \
             --enable-asm \
             --disable-altivec \
-            --enable-amd3dnow \
-            --enable-amd3dnowext \
-            --enable-mmx \
-            --enable-mmx2 \
-            --enable-sse \
-            --enable-ssse3 \
-            --disable-avx \
-            --disable-armv5te \
-            --disable-armv6 \
-            --disable-armv6t2 \
-            --disable-armvfp \
+            $FFMPEG_CPU \
+            $FFMPEG_FPU \
             --disable-iwmmxt \
             --disable-mmi \
-            --disable-neon \
             --disable-vis \
             --enable-yasm \
             --disable-sram \
             --disable-symver \
-            --disable-debug \
-            --enable-optimizations \
-            --disable-extra-warnings \
 
-make
+#sed -i -e "s#define HAVE_SYMVER 1#define HAVE_SYMVER 0#" config.h &&
+#sed -i -e "s#define HAVE_SYMVER_GNU_ASM 1#define HAVE_SYMVER_GNU_ASM 0#" config.h
+
+make V=1
+$MAKEINSTALL

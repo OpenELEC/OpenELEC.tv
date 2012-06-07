@@ -4,13 +4,13 @@ Date: Mon, 30 Apr 2012 13:58:29 +0200
 Subject: [PATCH] ffmpeg: xvba, adapt to new ffmpeg, fix artifacts for h.264
 
 ---
- lib/ffmpeg/libavcodec/xvba_h264.c |    9 ++++-----
+ libavcodec/xvba_h264.c |    9 ++++-----
  1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/lib/ffmpeg/libavcodec/xvba_h264.c b/lib/ffmpeg/libavcodec/xvba_h264.c
+diff --git a/libavcodec/xvba_h264.c b/libavcodec/xvba_h264.c
 index 1f737b0..9be6ffb 100644
---- a/lib/ffmpeg/libavcodec/xvba_h264.c
-+++ b/lib/ffmpeg/libavcodec/xvba_h264.c
+--- a/libavcodec/xvba_h264.c
++++ b/libavcodec/xvba_h264.c
 @@ -91,7 +91,7 @@ static int end_frame(AVCodecContext *avctx)
    pic_descriptor->height_in_mb                                = s->mb_height;
    pic_descriptor->picture_structure                           = s->picture_structure;
