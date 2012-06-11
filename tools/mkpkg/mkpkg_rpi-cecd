@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,27 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+echo "getting sources..."
+  if [ ! -d rpi-cecd.git ]; then
+    git clone git://github.com/olajep/rpi-cecd.git -b master rpi-cecd.git
+  fi
 
-PYTHON_VERSION=2.7
-PYTHON_LIB_DIR=$INSTALL/usr/lib/python$PYTHON_VERSION
+  cd rpi-cecd.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/.objdir-target/python $INSTALL/usr/bin/
+echo "copying sources..."
+  rm -rf rpi-cecd-$GIT_REV
+  cp -R rpi-cecd.git rpi-cecd-$GIT_REV
 
-mkdir -p $INSTALL/usr/lib
-  cp -PR $PKG_BUILD/.objdir-target/libpython2.7.so.1.0 $INSTALL/usr/lib/
-  ln -sf libpython2.7.so.1.0 $INSTALL/usr/lib/libpython2.7.so
+echo "cleaning sources..."
+  rm -rf rpi-cecd-$GIT_REV/.git
 
-mkdir -p $PYTHON_LIB_DIR/config
-  cp $PKG_BUILD/.objdir-target/Makefile $PYTHON_LIB_DIR/config
-  cp $PKG_BUILD/.objdir-target/pyconfig.h $PYTHON_LIB_DIR/config
+echo "packing sources..."
+  tar cvJf rpi-cecd-$GIT_REV.tar.xz rpi-cecd-$GIT_REV
 
-mkdir -p $PYTHON_LIB_DIR/lib-dynload
-  cp $PKG_BUILD/.objdir-target/build/lib*/*.so $PYTHON_LIB_DIR/lib-dynload
-
-cp -R $PKG_BUILD/.objdir-target/Lib/* $PYTHON_LIB_DIR
-
-# For future 3rd-parties Python modules
-  mkdir -p $PYTHON_LIB_DIR/site-packages
-
+echo "remove temporary sourcedir..."
+  rm -rf rpi-cecd-$GIT_REV

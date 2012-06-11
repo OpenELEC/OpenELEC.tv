@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="libelf"
-PKG_VERSION="0.8.13"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.mr511.de/software/"
-PKG_URL="http://www.mr511.de/software/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="ccache"
-PKG_PRIORITY="optional"
-PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="libelf: ELF object file access library"
-PKG_LONGDESC="Libelf is a library to access ELF object files."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
+setup_toolchain host
+
+cd $PKG_BUILD
+mkdir -p objdir && cd objdir
+../configure --host=$HOST_NAME \
+             --build=$HOST_NAME \
+             --target=$TARGET_NAME \
+             --prefix=$ROOT/$TOOLCHAIN \
+             --program-prefix=eu_ \
+             --with-zlib \
+             --without-bzlib \
+             --with-lzma \
+
+make
+make install

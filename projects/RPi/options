@@ -85,7 +85,7 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="normal"
+  OPTIMIZATIONS="speed"
 
 # Project CFLAGS
   PROJECT_CFLAGS=""
@@ -235,6 +235,9 @@
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="none"
+
+# Displayserver to use (xorg-server / no)
+  DISPLAYSERVER="no"
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,
