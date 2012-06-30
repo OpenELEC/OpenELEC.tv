@@ -1,10 +1,12 @@
 # Name of the Distro to build (full name, without special charcters)
   if [ "$XBMC" = frodo ]; then
     DISTRONAME="OpenELEC_frodo"
-  elif [ "$PVR" = yes ]; then
-    DISTRONAME="OpenELEC_PVR"
   else
     DISTRONAME="OpenELEC"
+  fi
+
+  if [ "$PVR" = yes ]; then
+    DISTRONAME="${DISTRONAME}_PVR"
   fi
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
@@ -111,8 +113,6 @@
 # Mediacenter to use (xbmc / no)
   if [ "$XBMC" = frodo ]; then
     MEDIACENTER="xbmc-frodo"
-  elif [ "$PVR" = yes ]; then
-    MEDIACENTER="xbmc-pvr"
   else
     MEDIACENTER="xbmc"
   fi
@@ -142,6 +142,9 @@
 # build and install 'GOOM' Visualization (yes / no)
   XBMC_VIS_GOOM="yes"
 
+# build and install ALSA Audio support (yes / no)
+  ALSA_SUPPORT="yes"
+
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
 
@@ -167,7 +170,7 @@
 # asix-ax887xx:     Asix AX887xx USB LAN Driver
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
-  ADDITIONAL_DRIVERS="asix-ax887xx"
+  ADDITIONAL_DRIVERS="asix-ax887xx bcm_sta"
   if [ "$PVR" = yes ]; then
     ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
@@ -230,6 +233,9 @@
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
+
+# Displayserver to use (xorg-server / no)
+  DISPLAYSERVER="xorg-server"
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,

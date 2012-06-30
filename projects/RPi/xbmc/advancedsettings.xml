@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <advancedsettings>
+  <!--<loglevel>1</loglevel>-->
   <splash>false</splash>
   <showexitbutton>false</showexitbutton>
-  <cputempcommand>cputemp</cputempcommand>
-  <gputempcommand>gputemp</gputempcommand>
+
+  <destroywindowcontrols>false</destroywindowcontrols>
+  <fanartheight>512</fanartheight>
+  <thumbsize>256</thumbsize>
+  <bginfoloadermaxthreads>2</bginfoloadermaxthreads> 
+  <useddsfanart>true</useddsfanart>
+
   <gui>
     <algorithmdirtyregions>3</algorithmdirtyregions>
     <nofliptimeout>0</nofliptimeout>
     <visualizedirtyregions>off</visualizedirtyregions>
   </gui>
+
+  <audio>
+    <omxhwaudiodecode>1</omxhwaudiodecode>
+  </audio>
+
+  <network> 
+    <cachemembuffersize>30242880</cachemembuffersize> 
+  </network>
+
   <samba>
     <clienttimeout>30</clienttimeout>
   </samba>
+
 </advancedsettings>

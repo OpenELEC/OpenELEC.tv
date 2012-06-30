@@ -29,10 +29,13 @@ mkdir -p $INSTALL/usr/bin
   cp $PKG_DIR/scripts/gputemp $INSTALL/usr/bin
   cp $PKG_DIR/scripts/wait_on_xbmc_exit $INSTALL/usr/bin
   cp $PKG_BUILD/tools/EventClients/Clients/XBMC\ Send/xbmc-send.py $INSTALL/usr/bin/xbmc-send
+  if [ "$PVR" = yes ]; then
+    cp $PKG_DIR/scripts/setwakeup.sh $INSTALL/usr/bin
+  fi
 
 mkdir -p $INSTALL/usr/lib/xbmc
   cp $PKG_BUILD/xbmc.bin $INSTALL/usr/lib/xbmc
-  if [ "$XORG_SUPPORT" = yes ]; then
+  if [ "$DISPLAYSERVER" = "xorg-server" ]; then
     cp $PKG_BUILD/xbmc-xrandr $INSTALL/usr/lib/xbmc
   fi
 
@@ -71,10 +74,9 @@ mkdir -p $INSTALL/usr/share/xbmc/media
 #   fi
 
 # cleanup and python addon fixes
-  mkdir -p $INSTALL/usr/share/xbmc/addons/script.module.pil/lib
-  ln -s `ls -d $INSTALL/usr/lib/python*/site-packages | sed -e "s,$INSTALL,,"`/PIL \
-         $INSTALL/usr/share/xbmc/addons/script.module.pil/lib/PIL
+  rm -rf $INSTALL/usr/share/xbmc/addons/script.module.pil
   rm -rf $INSTALL/usr/share/xbmc/addons/script.module.pysqlite
+  rm -rf $INSTALL/usr/share/xbmc/addons/script.module.simplejson
 
 mkdir -p $INSTALL/usr/share/xbmc/addons
   cp -R $PKG_DIR/config/os.openelec.tv $INSTALL/usr/share/xbmc/addons

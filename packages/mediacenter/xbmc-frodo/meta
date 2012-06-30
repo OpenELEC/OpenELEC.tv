@@ -19,14 +19,18 @@
 ################################################################################
 
 PKG_NAME="xbmc-frodo"
-PKG_VERSION="eafb2f7"
+if [ "$PVR" = yes ]; then
+  PKG_VERSION="pvr-3486b24"
+else
+  PKG_VERSION="433f681"
+fi
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="boost Python zlib bzip2 lzo pcre libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 yajl sqlite mysql bc xbmc-addon-settings"
-PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 lzo pcre libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 yajl sqlite mysql"
+PKG_DEPENDS="boost Python zlib bzip2 systemd pcre ffmpeg libass curl libssh rtmpdump fontconfig tinyxml freetype libmad libogg libmodplug faad2 flac libmpeg2 yajl sqlite bc xbmc-addon-settings"
+PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 systemd lzo pcre ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 yajl sqlite mysql"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="xbmc: XBMC Mediacenter"
@@ -35,7 +39,14 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
 
-if [ "$XORG_SUPPORT" = yes ]; then
+# needed for hosttools (Texturepacker)
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS lzo-host SDL-host SDL_image-host"
+
+# some python stuff needed for various addons
+  PKG_DEPENDS="$PKG_DEPENDS Imaging"
+  PKG_DEPENDS="$PKG_DEPENDS simplejson"
+
+if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   # for libX11 support
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libX11 libXext"
   PKG_DEPENDS="$PKG_DEPENDS libX11 libXext"
@@ -78,6 +89,9 @@ fi
 if [ "$CEC_SUPPORT" = yes ]; then
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libcec"
   PKG_DEPENDS="$PKG_DEPENDS libcec"
+  if [ "$OPENMAX" = "bcm2835-driver" ]; then
+    PKG_DEPENDS="$PKG_DEPENDS rpi-cecd"
+  fi
 fi
 
 if [ "$XBMC_SCR_RSXS" = yes ]; then
@@ -137,7 +151,6 @@ fi
 
 if [ "$WEBSERVER" = yes ]; then
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libmicrohttpd"
-  PKG_DEPENDS="$PKG_DEPENDS libmicrohttpd"
 fi
 
 if [ "$OPENMAX_SUPPORT" = yes ]; then
@@ -160,7 +173,11 @@ if [ "$CRYSTALHD" = yes ]; then
   PKG_DEPENDS="$PKG_DEPENDS crystalhd"
 fi
 
-# some python stuff needed for various addons
-  PKG_DEPENDS="$PKG_DEPENDS Imaging"
-  PKG_DEPENDS="$PKG_DEPENDS simplejson"
+if [ "$XVBA" = yes ]; then
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS xf86-video-fglrx"
+fi
 
+if [ "$PVR" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr xbmc-addon-njoy"
+  PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr xbmc-addon-vuplus"
+fi

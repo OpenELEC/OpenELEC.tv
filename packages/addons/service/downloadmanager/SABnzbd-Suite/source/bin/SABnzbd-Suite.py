@@ -26,9 +26,11 @@ import xbmc
 import signal
 import subprocess
 import urllib2
+import hashlib
 from configobj import ConfigObj
 from xml.dom.minidom import parseString
 import logging
+import traceback
 
 logging.basicConfig(filename='/var/log/sabnzbd-suite.log',
                     filemode='w',
@@ -68,8 +70,9 @@ pDefaultSuiteSettings = os.path.join(pAddon, 'settings-default.xml')
 pSuiteSettings        = os.path.join(pAddonHome, 'settings.xml')
 pXbmcSettings         = '/storage/.xbmc/userdata/guisettings.xml'
 pSabNzbdSettings      = os.path.join(pAddonHome, 'sabnzbd.ini')
-pSickBeardSettings    = os.path.join(pAddonHome, 'config.ini')
+pSickBeardSettings    = os.path.join(pAddonHome, 'sickbeard.ini')
 pCouchPotatoSettings  = os.path.join(pAddonHome, 'couchpotato.ini')
+pCouchPotatoServerSettings  = os.path.join(pAddonHome, 'couchpotatoserver.ini')
 pHeadphonesSettings   = os.path.join(pAddonHome, 'headphones.ini')
 
 # directories
@@ -87,9 +90,11 @@ pPylib                = os.path.join(pAddon, 'pylib')
 sabnzbd               = ['python', os.path.join(pAddon, 'SABnzbd/SABnzbd.py'),
                          '-d', '-f',  pSabNzbdSettings, '-l 0']
 sickBeard             = ['python', os.path.join(pAddon, 'SickBeard/SickBeard.py'),
-                         '--daemon', '--datadir', pAddonHome]
+                         '--daemon', '--datadir', pAddonHome, '--config', pSickBeardSettings]
 couchPotato           = ['python', os.path.join(pAddon, 'CouchPotato/CouchPotato.py'),
                          '-d', '--datadir', pAddonHome, '--config', pCouchPotatoSettings]
+couchPotatoServer     = ['python', os.path.join(pAddon, 'CouchPotatoServer/CouchPotato.py'),
+                         '--daemon', '--pid_file', os.path.join(pAddonHome, 'couchpotato.pid'), '--config_file', pCouchPotatoServerSettings]
 headphones            = ['python', os.path.join(pAddon, 'Headphones/Headphones.py'),
                          '-d', '--datadir', pAddonHome, '--config', pHeadphonesSettings]
 
@@ -117,7 +122,10 @@ if firstLaunch:
         shutil.copy(pDefaultSuiteSettings, pSuiteSettings)
     # make utilities executable
     for utility in {'par2','unrar','unzip'}:
-        os.chmod(os.path.join(pAddon, 'bin', utility), 0755)
+        try:
+            os.chmod(os.path.join(pAddon, 'bin', utility), 0755)
+        except:
+            pass
 
 # read addon and xbmc settings
 # ----------------------------
@@ -127,10 +135,31 @@ fSuiteSettings = open(pSuiteSettings, 'r')
 data = fSuiteSettings.read()
 fSuiteSettings.close
 suiteSettings = parseString(data)
-user             = getAddonSetting(suiteSettings, 'SABNZBD_USER')
-pwd              = getAddonSetting(suiteSettings, 'SABNZBD_PWD')
-host             = getAddonSetting(suiteSettings, 'SABNZBD_IP')
-sabNzbdKeepAwake = getAddonSetting(suiteSettings, 'SABNZBD_KEEP_AWAKE')
+user                 = getAddonSetting(suiteSettings, 'SABNZBD_USER')
+pwd                  = getAddonSetting(suiteSettings, 'SABNZBD_PWD')
+host                 = getAddonSetting(suiteSettings, 'SABNZBD_IP')
+sabNzbdKeepAwake     = getAddonSetting(suiteSettings, 'SABNZBD_KEEP_AWAKE')
+sabnzbd_launch       = getAddonSetting(suiteSettings, 'SABNZBD_LAUNCH')
+sickbeard_launch     = getAddonSetting(suiteSettings, 'SICKBEARD_LAUNCH')
+couchpotato_launch   = getAddonSetting(suiteSettings, 'COUCHPOTATO_LAUNCH')
+couchpotato_version  = getAddonSetting(suiteSettings, 'COUCHPOTATO_VERSION')
+headphones_launch    = getAddonSetting(suiteSettings, 'HEADPHONES_LAUNCH')
+
+# merge defaults
+fDefaultSuiteSettings = open(pDefaultSuiteSettings, 'r')
+data = fDefaultSuiteSettings.read()
+fDefaultSuiteSettings.close
+DefaultSuiteSettings = parseString(data)
+if not sabnzbd_launch:
+    sabnzbd_launch       = getAddonSetting(DefaultSuiteSettings, 'SABNZBD_LAUNCH')
+if not sickbeard_launch:
+    sickbeard_launch     = getAddonSetting(DefaultSuiteSettings, 'SICKBEARD_LAUNCH')
+if not couchpotato_launch:
+    couchpotato_launch   = getAddonSetting(DefaultSuiteSettings, 'COUCHPOTATO_LAUNCH')
+if not couchpotato_version:
+    couchpotato_version  = getAddonSetting(DefaultSuiteSettings, 'COUCHPOTATO_VERSION')
+if not headphones_launch:
+    headphones_launch    = getAddonSetting(DefaultSuiteSettings, 'HEADPHONES_LAUNCH')
 
 # XBMC
 fXbmcSettings = open(pXbmcSettings, 'r')
@@ -154,208 +183,299 @@ except:
 signal.signal(signal.SIGCHLD, signal.SIG_DFL)
 os.environ['PYTHONPATH'] = str(os.environ.get('PYTHONPATH')) + ':' + pPylib
 
-# write SABnzbd settings
-# ----------------------
+# SABnzbd start
+try:
+    # write SABnzbd settings
+    # ----------------------
+    sabNzbdConfig = ConfigObj(pSabNzbdSettings,create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['misc'] = {}
+    defaultConfig['misc']['disable_api_key']   = '0'
+    defaultConfig['misc']['check_new_rel']     = '0'
+    defaultConfig['misc']['auto_browser']      = '0'
+    defaultConfig['misc']['username']          = user
+    defaultConfig['misc']['password']          = pwd
+    defaultConfig['misc']['port']              = '8081'
+    defaultConfig['misc']['https_port']        = '9081'
+    defaultConfig['misc']['https_cert']        = 'server.cert'
+    defaultConfig['misc']['https_key']         = 'server.key'
+    defaultConfig['misc']['host']              = host
+    defaultConfig['misc']['web_dir']           = 'Plush'
+    defaultConfig['misc']['web_dir2']          = 'Plush'
+    defaultConfig['misc']['web_color']         = 'gold'
+    defaultConfig['misc']['web_color2']        = 'gold'
+    defaultConfig['misc']['log_dir']           = 'logs'
+    defaultConfig['misc']['admin_dir']         = 'admin'
+    defaultConfig['misc']['nzb_backup_dir']    = 'backup'
+    defaultConfig['misc']['script_dir']        = 'scripts'
 
-sabNzbdConfig = ConfigObj(pSabNzbdSettings,create_empty=True)
-defaultConfig = ConfigObj()
-defaultConfig['misc'] = {}
-defaultConfig['misc']['disable_api_key']   = '0'
-defaultConfig['misc']['check_new_rel']     = '0'
-defaultConfig['misc']['auto_browser']      = '0'
-defaultConfig['misc']['username']          = user
-defaultConfig['misc']['password']          = pwd
-defaultConfig['misc']['port']              = '8081'
-defaultConfig['misc']['https_port']        = '9081'
-defaultConfig['misc']['https_cert']        = 'server.cert'
-defaultConfig['misc']['https_key']         = 'server.key'
-defaultConfig['misc']['host']              = host
-defaultConfig['misc']['web_dir']           = 'Plush'
-defaultConfig['misc']['web_dir2']          = 'Plush'
-defaultConfig['misc']['web_color']         = 'gold'
-defaultConfig['misc']['web_color2']        = 'gold'
-defaultConfig['misc']['log_dir']           = 'logs'
-defaultConfig['misc']['admin_dir']         = 'admin'
-defaultConfig['misc']['nzb_backup_dir']    = 'backup'
-defaultConfig['misc']['script_dir']        = 'scripts'
+    if firstLaunch:
+        defaultConfig['misc']['download_dir']  = pSabNzbdIncomplete
+        defaultConfig['misc']['complete_dir']  = pSabNzbdComplete
+        servers = {}
+        servers['localhost'] = {}
+        servers['localhost']['host']           = 'localhost'
+        servers['localhost']['port']           = '119'
+        servers['localhost']['enable']         = '0'
+        categories = {}
+        categories['tv'] = {}
+        categories['tv']['name']               = 'tv'
+        categories['tv']['script']             = 'sabToSickBeard.py'
+        categories['tv']['priority']           = '-100'
+        categories['movies'] = {}
+        categories['movies']['name']           = 'movies'
+        categories['movies']['dir']            = 'movies'
+        categories['movies']['priority']       = '-100'
+        categories['music'] = {}
+        categories['music']['name']            = 'music'
+        categories['music']['dir']             = 'music'
+        categories['music']['priority']        = '-100'
+        defaultConfig['servers'] = servers
+        defaultConfig['categories'] = categories
 
-if firstLaunch:
-    defaultConfig['misc']['download_dir']  = pSabNzbdIncomplete
-    defaultConfig['misc']['complete_dir']  = pSabNzbdComplete
-    servers = {}
-    servers['localhost'] = {}
-    servers['localhost']['host']           = 'localhost'
-    servers['localhost']['port']           = '119'
-    servers['localhost']['enable']         = '0'
-    categories = {}
-    categories['tv'] = {}
-    categories['tv']['name']               = 'tv'
-    categories['tv']['script']             = 'sabToSickBeard.py'
-    categories['tv']['priority']           = '-100'
-    categories['movies'] = {}
-    categories['movies']['name']           = 'movies'
-    categories['movies']['dir']            = 'movies'
-    categories['movies']['priority']       = '-100'
-    categories['music'] = {}
-    categories['music']['name']            = 'music'
-    categories['music']['dir']             = 'music'
-    categories['music']['priority']        = '-100'
-    defaultConfig['servers'] = servers
-    defaultConfig['categories'] = categories
+    sabNzbdConfig.merge(defaultConfig)
+    sabNzbdConfig.write()
 
-sabNzbdConfig.merge(defaultConfig)
-sabNzbdConfig.write()
+    # also keep the autoProcessTV config up to date
+    autoProcessConfig = ConfigObj(os.path.join(pSabNzbdScripts, 'autoProcessTV.cfg'), create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['SickBeard'] = {}
+    defaultConfig['SickBeard']['host']         = 'localhost'
+    defaultConfig['SickBeard']['port']         = '8082'
+    defaultConfig['SickBeard']['username']     = user
+    defaultConfig['SickBeard']['password']     = pwd
+    autoProcessConfig.merge(defaultConfig)
+    autoProcessConfig.write()
 
-# also keep the autoProcessTV config up to date
-autoProcessConfig = ConfigObj(os.path.join(pSabNzbdScripts, 'autoProcessTV.cfg'), create_empty=True)
-defaultConfig = ConfigObj()
-defaultConfig['SickBeard'] = {}
-defaultConfig['SickBeard']['host']         = 'localhost'
-defaultConfig['SickBeard']['port']         = '8082'
-defaultConfig['SickBeard']['username']     = user
-defaultConfig['SickBeard']['password']     = pwd
-autoProcessConfig.merge(defaultConfig)
-autoProcessConfig.write()
+    # launch SABnzbd and get the API key
+    # ----------------------------------
+    if "true" in sabnzbd_launch:
+        logging.debug('Launching SABnzbd...')
+        subprocess.call(sabnzbd,close_fds=True)
+        logging.debug('...done')
 
-# launch SABnzbd and get the API key
-# ----------------------------------
+        # SABnzbd will only complete the .ini file when we first access the web interface
+        if firstLaunch:
+            loadWebInterface('http://' + sabNzbdHost,user,pwd)
+        sabNzbdConfig.reload()
+        sabNzbdApiKey = sabNzbdConfig['misc']['api_key']
+        logging.debug('SABnzbd api key: ' + sabNzbdApiKey)
+except Exception,e:
+    print 'SABnzbd: exception occurred:', e
+    print traceback.format_exc()
+# SABnzbd end
 
-logging.debug('Launching SABnzbd...')
-subprocess.call(sabnzbd,close_fds=True)
-logging.debug('...done')
+# SickBeard start
+try:
+    # write SickBeard settings
+    # ------------------------
+    sickBeardConfig = ConfigObj(pSickBeardSettings,create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['General'] = {}
+    defaultConfig['General']['launch_browser'] = '0'
+    defaultConfig['General']['version_notify'] = '0'
+    defaultConfig['General']['log_dir']        = 'logs'
+    defaultConfig['General']['web_port']       = '8082'
+    defaultConfig['General']['web_host']       = host
+    defaultConfig['General']['web_username']   = user
+    defaultConfig['General']['web_password']   = pwd
+    if "true" in sabnzbd_launch:
+        defaultConfig['SABnzbd'] = {}
+        defaultConfig['SABnzbd']['sab_username']   = user
+        defaultConfig['SABnzbd']['sab_password']   = pwd
+        defaultConfig['SABnzbd']['sab_apikey']     = sabNzbdApiKey
+        defaultConfig['SABnzbd']['sab_host']       = 'http://' + sabNzbdHost + '/'
+    defaultConfig['XBMC'] = {}
+    defaultConfig['XBMC']['use_xbmc']          = '1'
+    defaultConfig['XBMC']['xbmc_host']         = '127.0.0.1:' + xbmcPort
+    defaultConfig['XBMC']['xbmc_username']     = xbmcUser
+    defaultConfig['XBMC']['xbmc_password']     = xbmcPwd
 
-# SABnzbd will only complete the .ini file when we first access the web interface
-if firstLaunch:
-    loadWebInterface('http://' + sabNzbdHost,user,pwd)
-sabNzbdConfig.reload()
-sabNzbdApiKey = sabNzbdConfig['misc']['api_key']
-logging.debug('SABnzbd api key: ' + sabNzbdApiKey)
+    if firstLaunch:
+        defaultConfig['General']['metadata_xbmc']         = '1|1|1|1|1|1'
+        defaultConfig['General']['nzb_method']            = 'sabnzbd'
+        defaultConfig['General']['keep_processed_dir']    = '0'
+        defaultConfig['General']['use_banner']            = '1'
+        defaultConfig['General']['rename_episodes']       = '1'
+        defaultConfig['General']['naming_ep_name']        = '0'
+        defaultConfig['General']['naming_use_periods']    = '1'
+        defaultConfig['General']['naming_sep_type']       = '1'
+        defaultConfig['General']['naming_ep_type']        = '1'
+        defaultConfig['General']['root_dirs']             = '0|/storage/tvshows'
+        defaultConfig['SABnzbd']['sab_category']          = 'tv'
+        # workaround: on first launch, sick beard will always add 
+        # 'http://' and trailing '/' on its own
+        defaultConfig['SABnzbd']['sab_host']              = sabNzbdHost
+        defaultConfig['XBMC']['xbmc_notify_ondownload']   = '1'
+        defaultConfig['XBMC']['xbmc_update_library']      = '1'
 
-# write SickBeard settings
-# ------------------------
+    sickBeardConfig.merge(defaultConfig)
+    sickBeardConfig.write()
 
-sickBeardConfig = ConfigObj(pSickBeardSettings,create_empty=True)
-defaultConfig = ConfigObj()
-defaultConfig['General'] = {}
-defaultConfig['General']['launch_browser'] = '0'
-defaultConfig['General']['version_notify'] = '0'
-defaultConfig['General']['log_dir']        = 'logs'
-defaultConfig['General']['web_port']       = '8082'
-defaultConfig['General']['web_host']       = host
-defaultConfig['General']['web_username']   = user
-defaultConfig['General']['web_password']   = pwd
-defaultConfig['SABnzbd'] = {}
-defaultConfig['SABnzbd']['sab_username']   = user
-defaultConfig['SABnzbd']['sab_password']   = pwd
-defaultConfig['SABnzbd']['sab_apikey']     = sabNzbdApiKey
-defaultConfig['SABnzbd']['sab_host']       = 'http://' + sabNzbdHost + '/'
-defaultConfig['XBMC'] = {}
-defaultConfig['XBMC']['use_xbmc']          = '1'
-defaultConfig['XBMC']['xbmc_host']         = '127.0.0.1:' + xbmcPort
-defaultConfig['XBMC']['xbmc_username']     = xbmcUser
-defaultConfig['XBMC']['xbmc_password']     = xbmcPwd
+    # launch SickBeard
+    # ----------------
+    if "true" in sickbeard_launch:
+        logging.debug('Launching SickBeard...')
+        subprocess.call(sickBeard,close_fds=True)
+        logging.debug('...done')
+except Exception,e:
+    print 'SickBeard: exception occurred:', e
+    print traceback.format_exc()
+# SickBeard end
 
-if firstLaunch:
-    defaultConfig['General']['metadata_xbmc']         = '1|1|1|1|1|1'
-    defaultConfig['General']['nzb_method']            = 'sabnzbd'
-    defaultConfig['General']['keep_processed_dir']    = '0'
-    defaultConfig['General']['use_banner']            = '1'
-    defaultConfig['General']['rename_episodes']       = '1'
-    defaultConfig['General']['naming_ep_name']        = '0'
-    defaultConfig['General']['naming_use_periods']    = '1'
-    defaultConfig['General']['naming_sep_type']       = '1'
-    defaultConfig['General']['naming_ep_type']        = '1'
-    defaultConfig['General']['root_dirs']             = '0|/storage/tvshows'
-    defaultConfig['SABnzbd']['sab_category']          = 'tv'
-    # workaround: on first launch, sick beard will always add 
-    # 'http://' and trailing '/' on its own
-    defaultConfig['SABnzbd']['sab_host']              = sabNzbdHost
-    defaultConfig['XBMC']['xbmc_notify_ondownload']   = '1'
-    defaultConfig['XBMC']['xbmc_update_library']      = '1'
+# CouchPotato start
+try:
+    # write CouchPotato settings
+    # --------------------------
+    couchPotatoConfig = ConfigObj(pCouchPotatoSettings,create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['global'] = {}
+    defaultConfig['global']['launchbrowser'] = 'False'
+    defaultConfig['global']['updater']       = 'False'
+    defaultConfig['global']['password']      = pwd
+    defaultConfig['global']['username']      = user
+    defaultConfig['global']['port']          = '8083'
+    defaultConfig['global']['host']          = host
+    if "true" in sabnzbd_launch:
+        defaultConfig['Sabnzbd'] = {}
+        defaultConfig['Sabnzbd']['username']     = user
+        defaultConfig['Sabnzbd']['password']     = pwd
+        defaultConfig['Sabnzbd']['apikey']       = sabNzbdApiKey
+        defaultConfig['Sabnzbd']['host']         = sabNzbdHost
+    defaultConfig['XBMC'] = {}
+    defaultConfig['XBMC']['enabled']         = 'True'
+    defaultConfig['XBMC']['host']            = '127.0.0.1:' + xbmcPort
+    defaultConfig['XBMC']['username']        = xbmcUser
+    defaultConfig['XBMC']['password']        = xbmcPwd
 
-sickBeardConfig.merge(defaultConfig)
-sickBeardConfig.write()
+    if firstLaunch:
+        defaultConfig['Sabnzbd']['category']     = 'movies'
+        defaultConfig['Sabnzbd']['ppdir']        = pSabNzbdCompleteMov
+        defaultConfig['Renamer'] = {}
+        defaultConfig['Renamer']['enabled']      = 'True'
+        defaultConfig['Renamer']['download']     = pSabNzbdCompleteMov
+        defaultConfig['Renamer']['destination']  = '/storage/videos'
+        defaultConfig['Renamer']['separator']    = '.'
+        defaultConfig['Renamer']['cleanup']      = 'True'
 
-# launch SickBeard
-# ----------------
-logging.debug('Launching SickBeard...')
-subprocess.call(sickBeard,close_fds=True)
-logging.debug('...done')
+    couchPotatoConfig.merge(defaultConfig)
+    couchPotatoConfig.write()
 
-# write CouchPotato settings
-# --------------------------
+    # launch CouchPotato
+    # ------------------
+    if "true" in couchpotato_launch and "0" in couchpotato_version:
+        logging.debug('Launching CouchPotato...')
+        subprocess.call(couchPotato,close_fds=True)
+        logging.debug('...done')
+except Exception,e:
+    print 'CouchPotato: exception occurred:', e
+    print traceback.format_exc()
+# CouchPotato end
 
-couchPotatoConfig = ConfigObj(pCouchPotatoSettings,create_empty=True)
-defaultConfig = ConfigObj()
-defaultConfig['global'] = {}
-defaultConfig['global']['launchbrowser'] = 'False'
-defaultConfig['global']['updater']       = 'False'
-defaultConfig['global']['password']      = pwd
-defaultConfig['global']['username']      = user
-defaultConfig['global']['port']          = '8083'
-defaultConfig['global']['host']          = host
-defaultConfig['Sabnzbd'] = {}
-defaultConfig['Sabnzbd']['username']     = user
-defaultConfig['Sabnzbd']['password']     = pwd
-defaultConfig['Sabnzbd']['apikey']       = sabNzbdApiKey
-defaultConfig['Sabnzbd']['host']         = sabNzbdHost
-defaultConfig['XBMC'] = {}
-defaultConfig['XBMC']['enabled']         = 'True'
-defaultConfig['XBMC']['host']            = '127.0.0.1:' + xbmcPort
-defaultConfig['XBMC']['username']        = xbmcUser
-defaultConfig['XBMC']['password']        = xbmcPwd
+# CouchPotatoServer start
+try:
+    # empty password hack
+    if pwd == '':
+        md5pwd = ''
+    else:
+        #convert password to md5
+        md5pwd =  hashlib.md5(str(pwd)).hexdigest()
 
-if firstLaunch:
-    defaultConfig['Sabnzbd']['category']     = 'movies'
-    defaultConfig['Sabnzbd']['ppdir']        = pSabNzbdCompleteMov
-    defaultConfig['Renamer'] = {}
-    defaultConfig['Renamer']['enabled']      = 'True'
-    defaultConfig['Renamer']['download']     = pSabNzbdCompleteMov
-    defaultConfig['Renamer']['destination']  = '/storage/videos'
-    defaultConfig['Renamer']['separator']    = '.'
-    defaultConfig['Renamer']['cleanup']      = 'True'
+    # write CouchPotatoServer settings
+    # --------------------------
+    couchPotatoServerConfig = ConfigObj(pCouchPotatoServerSettings,create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['newznab'] = {}
+    defaultConfig['newznab']['api_key']      = ''
+    defaultConfig['core'] = {}
+    defaultConfig['core']['username']            = user
+    defaultConfig['core']['password']            = md5pwd
+    defaultConfig['core']['port']                = '8083'
+    defaultConfig['core']['launchbrowser']       = '0'
+    defaultConfig['core']['host']                = host
+    defaultConfig['core']['data_dir']            = pAddonHome
+    defaultConfig['core']['permission_folder']   = '0644'
+    defaultConfig['core']['permission_file']     = '0644'
+    defaultConfig['core']['show_wizard']         = '0'
+    defaultConfig['core']['debug']               = '0'
+    defaultConfig['core']['development']         = '0'
+    defaultConfig['updater'] = {}
+    defaultConfig['updater']['enabled']          = '0'
+    defaultConfig['updater']['notification']     = '0'
+    defaultConfig['updater']['automatic']        = '0'
+    if "true" in sabnzbd_launch:
+        defaultConfig['Sabnzbd'] = {}
+        defaultConfig['Sabnzbd']['username']     = user
+        defaultConfig['Sabnzbd']['password']     = pwd
+        defaultConfig['Sabnzbd']['api_key']      = sabNzbdApiKey
+        defaultConfig['Sabnzbd']['host']         = sabNzbdHost
+    defaultConfig['xbmc'] = {}
+    defaultConfig['xbmc']['enabled']         = '1'
+    defaultConfig['xbmc']['host']            = '127.0.0.1:' + xbmcPort
+    defaultConfig['xbmc']['username']        = xbmcUser
+    defaultConfig['xbmc']['password']        = xbmcPwd
 
-couchPotatoConfig.merge(defaultConfig)
-couchPotatoConfig.write()
+    if firstLaunch:
+        defaultConfig['Sabnzbd']['category']     = 'movies'
+        defaultConfig['Sabnzbd']['pp_directory'] = pSabNzbdCompleteMov
+        defaultConfig['Renamer'] = {}
+        defaultConfig['Renamer']['enabled']      = 'True'
+        defaultConfig['Renamer']['download']     = pSabNzbdCompleteMov
+        defaultConfig['Renamer']['destination']  = '/storage/videos'
+        defaultConfig['Renamer']['separator']    = '.'
+        defaultConfig['Renamer']['cleanup']      = 'False'
 
-# launch CouchPotato
-# ------------------
+    couchPotatoServerConfig.merge(defaultConfig)
+    couchPotatoServerConfig.write()
 
-logging.debug('Launching CouchPotato...')
-subprocess.call(couchPotato,close_fds=True)
-logging.debug('...done')
+    # launch CouchPotatoServer
+    # ------------------
+    if "true" in couchpotato_launch and "1" in couchpotato_version:
+        logging.debug('Launching CouchPotatoServer...')
+        subprocess.call(couchPotatoServer,close_fds=True)
+        logging.debug('...done')
+except Exception,e:
+    print 'CouchPotatoServer: exception occurred:', e
+    print traceback.format_exc()
+# CouchPotatoServer end
 
-# write Headphones settings
-# -------------------------
+# Headphones start
+try:
+    # write Headphones settings
+    # -------------------------
+    headphonesConfig = ConfigObj(pHeadphonesSettings,create_empty=True)
+    defaultConfig = ConfigObj()
+    defaultConfig['General'] = {}
+    defaultConfig['General']['launch_browser']   = '0'
+    defaultConfig['General']['http_port']        = '8084'
+    defaultConfig['General']['http_host']        = host
+    defaultConfig['General']['http_username']    = user
+    defaultConfig['General']['http_password']    = pwd
+    if "true" in sabnzbd_launch:
+        defaultConfig['SABnzbd'] = {}
+        defaultConfig['SABnzbd']['sab_apikey']       = sabNzbdApiKey
+        defaultConfig['SABnzbd']['sab_host']         = sabNzbdHost
+        defaultConfig['SABnzbd']['sab_username']     = user
+        defaultConfig['SABnzbd']['sab_password']     = pwd
 
-headphonesConfig = ConfigObj(pHeadphonesSettings,create_empty=True)
-defaultConfig = ConfigObj()
-defaultConfig['General'] = {}
-defaultConfig['General']['launch_browser']   = '0'
-defaultConfig['General']['http_port']        = '8084'
-defaultConfig['General']['http_host']        = host
-defaultConfig['General']['http_username']    = user
-defaultConfig['General']['http_password']    = pwd
-defaultConfig['SABnzbd'] = {}
-defaultConfig['SABnzbd']['sab_apikey']       = sabNzbdApiKey
-defaultConfig['SABnzbd']['sab_host']         = sabNzbdHost
-defaultConfig['SABnzbd']['sab_username']     = user
-defaultConfig['SABnzbd']['sab_password']     = pwd
+    if firstLaunch:
+        defaultConfig['SABnzbd']['sab_category']     = 'music'
+        defaultConfig['General']['music_dir']        = '/storage/music'
+        defaultConfig['General']['destination_dir']  = '/storage/music'
+        defaultConfig['General']['download_dir']     = '/storage/downloads/music'
+        defaultConfig['General']['move_files']       = '1'
+        defaultConfig['General']['rename_files']     = '1'
 
-if firstLaunch:
-    defaultConfig['SABnzbd']['sab_category']     = 'music'
-    defaultConfig['General']['music_dir']        = '/storage/music'
-    defaultConfig['General']['destination_dir']  = '/storage/music'
-    defaultConfig['General']['download_dir']     = '/storage/downloads/music'
-    defaultConfig['General']['move_files']       = '1'
-    defaultConfig['General']['rename_files']     = '1'
+    headphonesConfig.merge(defaultConfig)
+    headphonesConfig.write()
 
-headphonesConfig.merge(defaultConfig)
-headphonesConfig.write()
-
-# launch Headphones
-# -----------------
-
-logging.debug('Launching Headphones...')
-subprocess.call(headphones,close_fds=True)
-logging.debug('...done')
+    # launch Headphones
+    # -----------------
+    if "true" in headphones_launch:
+        logging.debug('Launching Headphones...')
+        subprocess.call(headphones,close_fds=True)
+        logging.debug('...done')
+except Exception,e:
+    print 'Headphones: exception occurred:', e
+    print traceback.format_exc()
+# Headphones end

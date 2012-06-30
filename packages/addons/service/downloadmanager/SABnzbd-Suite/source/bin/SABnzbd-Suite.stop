@@ -1,0 +1,6 @@
+#!/bin/sh
+kill -9 `ps | grep -E 'python.*/SABnzbd-Suite.py' | awk '{print $1}'` 2>/dev/null
+kill -9 `ps | grep -E 'python.*/SABnzbd.py' | awk '{print $1}'` 2>/dev/null
+kill -9 `ps | grep -E 'python.*/SickBeard.py' | awk '{print $1}'` 2>/dev/null
+kill -9 `ps | grep -E 'python.*/CouchPotato.py' | awk '{print $1}'` 2>/dev/null
+kill -9 `ps | grep -E 'python.*/Headphones.py' | awk '{print $1}'` 2>/dev/null

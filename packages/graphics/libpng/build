@@ -22,14 +22,18 @@
 
 . config/options $1
 
+CFLAGS="$CFLAGS -fPIC -DPIC"
+
 cd $PKG_BUILD
+mkdir -p .build-target && cd .build-target
+
 ac_cv_lib_z_zlibVersion=yes \
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --enable-static \
-            --enable-shared \
+../configure --host=$TARGET_NAME \
+             --build=$HOST_NAME \
+             --prefix=/usr \
+             --sysconfdir=/etc \
+             --enable-static \
+             --disable-shared \
 
 make
 

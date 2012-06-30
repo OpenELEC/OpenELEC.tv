@@ -1,10 +1,12 @@
 # Name of the Distro to build (full name, without special charcters)
   if [ "$XBMC" = frodo ]; then
     DISTRONAME="OpenELEC_frodo"
-  elif [ "$PVR" = yes ]; then
-    DISTRONAME="OpenELEC_PVR"
   else
     DISTRONAME="OpenELEC"
+  fi
+
+  if [ "$PVR" = yes ]; then
+    DISTRONAME="${DISTRONAME}_PVR"
   fi
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
@@ -82,8 +84,6 @@
       ;;
   esac
 
-
-
 # Build optimizations (size/normal/speed)
   OPTIMIZATIONS="speed"
 
@@ -91,7 +91,7 @@
   PROJECT_CFLAGS=""
 
 # LTO (Link Time Optimization) support
-  LTO_SUPPORT="no"
+  LTO_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
   BOOTLOADER="bcm2835-bootloader"
@@ -102,7 +102,7 @@
 # Kernel to use. values can be:
 # default:  default mainline kernel
 # ti-omap4: Ti's OMAP4 kernel
-  LINUX="3.1.10"
+  LINUX="default"
 
 # use linux-next (latest rc) instead latest released version
   LINUX_NEXT="no"
@@ -115,8 +115,6 @@
     MEDIACENTER="xbmc-frodo"
   elif [ "$PROJECT" = RPi ]; then
     MEDIACENTER="xbmc-rpi"
-  elif [ "$PVR" = yes ]; then
-    MEDIACENTER="xbmc-pvr"
   else
     MEDIACENTER="xbmc"
   fi
@@ -145,6 +143,9 @@
 
 # build and install 'GOOM' Visualization (yes / no)
   XBMC_VIS_GOOM="no"
+
+# build and install ALSA Audio support (yes / no)
+  ALSA_SUPPORT="yes"
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
@@ -234,6 +235,9 @@
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="none"
+
+# Displayserver to use (xorg-server / no)
+  DISPLAYSERVER="no"
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,

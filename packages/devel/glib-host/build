@@ -24,6 +24,11 @@
 
 $SCRIPTS/unpack glib
 
+# hack: we need pkg.m4 for autoreconf, but pkgconfig depends on glib so install
+# pkg.m4 first
+  $SCRIPTS/unpack pkg-config
+  cp $BUILD/pkg-config-*/pkg.m4 $TOOLCHAIN/share/aclocal
+
 setup_toolchain host
 export ZLIB_CFLAGS=""
 export ZLIB_LIBS=""
@@ -31,6 +36,9 @@ export LIBFFI_CFLAGS="-I$ROOT/$TOOLCHAIN/include/libffi"
 export LIBFFI_LIBS="-L$ROOT/$TOOLCHAIN/lib -lffi"
 
 cd $BUILD/glib*
+
+do_autoreconf
+
 mkdir -p .build-host && cd .build-host
 ../configure --host=$HOST_NAME \
              --build=$HOST_NAME \

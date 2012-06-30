@@ -26,10 +26,6 @@ if [ "$ICONV" = "libiconv" ]; then
   CONFIG_GLIB="--with-libiconv"
 fi
 
-# Fails to compile with GCC link time optimization, outputing the error:
-# "mem-overflow.c:137:1: sorry, unimplemented: gimple bytecode streams do not support the optimization attribute".
-  strip_lto
-
 cd $PKG_BUILD
 mkdir -p .build-target && cd .build-target
 
@@ -37,7 +33,6 @@ ac_cv_func_mmap_fixed_mapped='yes' \
 ac_cv_func_posix_getpwuid_r='yes' \
 ac_cv_func_posix_getgrgid_r='yes' \
 ac_cv_func_printf_unix98='yes' \
-ac_cv_func_qsort_r='no' \
 ac_cv_func_snprintf_c99='yes' \
 ac_cv_func_vsnprintf_c99='yes' \
 glib_cv_stack_grows='no' \

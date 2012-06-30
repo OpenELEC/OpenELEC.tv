@@ -22,7 +22,7 @@
 
 . config/options $1
 
-if [ "$XORG_SUPPORT" = yes ]; then
+if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   XBMC_XORG="--enable-x11 --enable-xrandr"
 else
   XBMC_XORG="--disable-x11 --disable-xrandr"
@@ -68,6 +68,12 @@ else
   XBMC_GOOM="--disable-goom"
 fi
 
+if [ "$ALSA_SUPPORT" = yes ]; then
+  XBMC_ALSA="--enable-alsa"
+else
+  XBMC_ALSA="--disable-alsa"
+fi
+
 if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
   XBMC_PULSEAUDIO="--enable-pulse"
 else
@@ -75,9 +81,9 @@ else
 fi
 
 if [ "$CEC_SUPPORT" = yes ]; then
-  XBMC_CEC="--enable-libcec --enable-external-libcec --enable-udev --disable-libusb"
+  XBMC_CEC="--enable-libcec"
 else
-  XBMC_CEC="--disable-libcec --disable-udev --disable-libusb"
+  XBMC_CEC="--disable-libcec"
 fi
 
 if [ "$JOYSTICK_SUPPORT" = yes ]; then
@@ -148,6 +154,7 @@ fi
 
 if [ "$SAMBA_CLIENT" = yes ]; then
   XBMC_SAMBA="--enable-samba"
+  export LIBS="$LIBS -ltalloc -ltdb -lwbclient"
 else
   XBMC_SAMBA="--disable-samba"
 fi
@@ -162,6 +169,8 @@ if [ "$OPENMAX_SUPPORT" = yes ]; then
   XBMC_OPENMAX="--enable-openmax"
   if [ "$OPENMAX" = "bcm2835-driver" ]; then
     XBMC_PLATFORM_SUPPORT="--with-platform=raspberry-pi"
+    CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads/"
+    CXXFLAGS="$CXXFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads/"
   fi
 else
   XBMC_OPENMAX="--disable-openmax"
@@ -191,15 +200,14 @@ else
   XBMC_CRYSTALHD="--disable-crystalhd"
 fi
 
-# dont build parallel
-  MAKEFLAGS=-j1
-
-# xbmc (ffmpeg) fails to build with LTO optimization
+# xbmc fails to build with LTO optimization
   strip_lto
 
-# dont use some optimizations because of problems
-# this fixes problems with faac implementation of ffmpeg
+# dont use some optimizations because of build problems
   LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
+
+# dont build parallel
+  MAKEFLAGS=-j1
 
   export PYTHON_VERSION="2.7"
   export PYTHON_CPPFLAGS="-I$SYSROOT_PREFIX/usr/include/python$PYTHON_VERSION"
@@ -256,11 +264,14 @@ cd $PKG_BUILD
             --disable-profiling \
             $XBMC_JOYSTICK \
             $XBMC_CEC \
+            --enable-udev \
+            --disable-libusb \
             $XBMC_GOOM \
             $XBMC_RSXS \
             $XBMC_PROJECTM \
             $XBMC_XORG \
             --disable-ccache \
+            $XBMC_ALSA \
             $XBMC_PULSEAUDIO \
             --enable-rtmp \
             $XBMC_SAMBA \
@@ -280,9 +291,9 @@ cd $PKG_BUILD
             $XBMC_WEBSERVER \
             --enable-optical-drive \
             $XBMC_BLURAY \
-            --enable-texturepacker \
+            --enable-texturepacker --with-texturepacker-root="$ROOT/$TOOLCHAIN" \
             --disable-external-libraries \
-            --disable-external-ffmpeg \
+            --enable-external-ffmpeg \
             $XBMC_PLATFORM_SUPPORT \
 
 # setup default skin inside the sources
@@ -291,6 +302,9 @@ cd $PKG_BUILD
 make externals
 make xbmc.bin
 
-if [ "$XORG_SUPPORT" = yes ]; then
+if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   make xbmc-xrandr
 fi
+
+make -C tools/TexturePacker
+cp -PR tools/TexturePacker/TexturePacker $ROOT/$TOOLCHAIN/bin
