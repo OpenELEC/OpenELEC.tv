@@ -1,8 +1,8 @@
 #!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
 
-cd $PKG_BUILD/linux_lib/libcrystalhd
-
-make BCGCC=$TARGET_CXX
-$MAKEINSTALL
+for i in `ls ffmpeg-$1-*.patch`; do
+  mv $i `echo $i | sed "s,$1,$2,g"`
+done
