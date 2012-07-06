@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,11 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="fuse-exfat"
+PKG_VERSION="0.9.7"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://code.google.com/p/exfat"
+PKG_URL="http://exfat.googlecode.com/files/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS="fuse"
+PKG_BUILD_DEPENDS="toolchain scons fuse"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="fuse-exfat: aims to provide a full-featured exFAT file system implementation for GNU/Linux other Unix-like systems as a FUSE module."
+PKG_LONGDESC="This project aims to provide a full-featured exFAT file system implementation for GNU/Linux other Unix-like systems as a FUSE module."
+PKG_IS_ADDON="no"
 
-echo "### Applying project based patches ###"
-
-for patch in `ls $PROJECT_DIR/$PROJECT/patches/$1`; do
-  cat $PROJECT_DIR/$PROJECT/patches/$1/$patch | patch -d \
-    `echo $PKG_BUILD | cut -f1 -d\ ` -p1
-done
+PKG_AUTORECONF="no"

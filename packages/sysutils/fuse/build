@@ -22,15 +22,19 @@
 
 . config/options $1
 
-cd $PKG_BUILD/driver/linux
+cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
-            --with-kernel-path=$(kernel_path) \
+            --enable-shared \
+            --disable-static \
+            --with-libiconv-prefix="$SYSROOT_PREFIX/usr" \
+            --enable-lib \
+            --enable-util \
+            --disable-example \
+            --enable-mtab \
+            --disable-rpath \
+            --with-gnu-ld \
 
-make V=1
-
-cd ../../linux_lib/libcrystalhd
-
-make BCGCC=$TARGET_CXX
+make
 $MAKEINSTALL

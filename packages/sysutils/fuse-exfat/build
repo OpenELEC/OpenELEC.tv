@@ -22,15 +22,8 @@
 
 . config/options $1
 
-cd $PKG_BUILD/driver/linux
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --with-kernel-path=$(kernel_path) \
+export CCFLAGS="$CFLAGS"
 
-make V=1
+cd $PKG_BUILD
 
-cd ../../linux_lib/libcrystalhd
-
-make BCGCC=$TARGET_CXX
-$MAKEINSTALL
+scons

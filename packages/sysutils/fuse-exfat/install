@@ -22,15 +22,6 @@
 
 . config/options $1
 
-cd $PKG_BUILD/driver/linux
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --with-kernel-path=$(kernel_path) \
-
-make V=1
-
-cd ../../linux_lib/libcrystalhd
-
-make BCGCC=$TARGET_CXX
-$MAKEINSTALL
+mkdir -p $INSTALL/usr/bin
+  cp $PKG_BUILD/fuse/mount.exfat-fuse $INSTALL/usr/bin
+  ln -sf mount.exfat-fuse $INSTALL/usr/bin/mount.exfat

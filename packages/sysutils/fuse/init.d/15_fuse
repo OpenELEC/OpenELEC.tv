@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,18 +17,10 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
+#
+# mounting fuse filesystem
+#
+# runlevels: openelec, textmode
 
-. config/options $1
-
-cd $PKG_BUILD/driver/linux
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --with-kernel-path=$(kernel_path) \
-
-make V=1
-
-cd ../../linux_lib/libcrystalhd
-
-make BCGCC=$TARGET_CXX
-$MAKEINSTALL
+progress "Starting Fuse"
+  mount -t fusectl fusectl /sys/fs/fuse/connections >/dev/null 2>&1

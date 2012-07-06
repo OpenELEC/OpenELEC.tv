@@ -22,15 +22,19 @@
 
 . config/options $1
 
-cd $PKG_BUILD/driver/linux
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --with-kernel-path=$(kernel_path) \
+mkdir -p $INSTALL/etc
+  cp $PKG_DIR/config/fuse.conf $INSTALL/etc
 
-make V=1
+mkdir -p $INSTALL/lib/udev/rules.d
+  cp $PKG_BUILD/util/udev.rules $INSTALL/lib/udev/rules.d/99-fuse.rules
 
-cd ../../linux_lib/libcrystalhd
+mkdir -p $INSTALL/sbin
+  cp $PKG_BUILD/util/mount.fuse $INSTALL/sbin
 
-make BCGCC=$TARGET_CXX
-$MAKEINSTALL
+mkdir -p $INSTALL/bin
+  cp $PKG_BUILD/util/fusermount $INSTALL/bin
+  cp $PKG_BUILD/util/ulockmgr_server $INSTALL/bin
+
+mkdir -p $INSTALL/lib
+  cp -P $PKG_BUILD/lib/.libs/*.so* $INSTALL/lib
+
