@@ -129,6 +129,7 @@ fi
 VERSION_SUFFIX=$TARGET_ARCH
 . config/functions
 
+check_path
 check_config
 
 setup_toolchain target
