@@ -32,7 +32,13 @@ case $TARGET_ARCH in
     TARGET=linux-x86_64
     ;;
   arm)
-    TARGET=linux-armv4
+    if [ "$TARGET_FLOAT" = "softfp" ]; then
+      TARGET=linux-armv4sfp
+    elif [ "$TARGET_FLOAT" = "soft" ]; then
+      TARGET=linux-armv4soft
+    else
+      TARGET=linux-armv4
+    fi
     ;;
   powerpc)
     TARGET=linux-ppc
