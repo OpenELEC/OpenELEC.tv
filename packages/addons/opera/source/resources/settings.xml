@@ -21,4 +21,9 @@
         <setting id="PADDING_RIGHT" type="slider" label="30054" default="30" range="0,1,50" option="int" />
         <setting id="PADDING_BOTTOM" type="slider" label="30055" default="16" range="0,1,50" option="int" />
     </category>
+
+    <!-- Flash -->
+    <category label="30060">
+        <setting id="FLASH_ACCELERATION" type="bool" label="30061" default="false" />
+    </category>
 </settings>

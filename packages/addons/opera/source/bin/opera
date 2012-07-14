@@ -20,34 +20,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-### on first run without arguments exec this script
-if [ "$1" = "run" ]; then
-  # remove 'run' parameter and continue
-  shift
-else
-  exec /storage/.xbmc/addons/web.browser.opera/bin/opera run "$@"
-  exit 0
-fi
+################################################################################
+OPERA_URL_x86_64="http://get.geo.opera.com/pub/opera/linux/1200/opera-12.00-1467.x86_64.linux.tar.bz2"
+OPERA_URL_i386="http://get.geo.opera.com/pub/opera/linux/1200/opera-12.00-1467.i386.linux.tar.bz2"
 
-VER_THIS="2"
+FLASH_URL_x86_64="http://fpdownload.macromedia.com/get/flashplayer/pdc/11.2.202.236/install_flash_player_11_linux.x86_64.tar.gz"
+FLASH_URL_i386="http://fpdownload.macromedia.com/get/flashplayer/pdc/11.2.202.236/install_flash_player_11_linux.i386.tar.gz"
+
+DROPBOX_LIBRARIES="http://dl.dropbox.com/u/8224157/OpenELEC-Ultra/opera/final/libraries"
+EXTRA_URL="http://dl.dropbox.com/u/8224157/OpenELEC-Ultra/opera/final/extra.zip"
+
+################################################################################
+
+VER_THIS="3"
 
 ADDON_DIR="$HOME/.xbmc/addons/web.browser.opera"
 ADDON_HOME="$HOME/.xbmc/userdata/addon_data/web.browser.opera"
 
-### Opera 11 & Flash 10.2
-#OPERA_URL_x86_64="ftp://get.opera.com/pub/opera/linux/1162/opera-11.62-1347.x86_64.linux.tar.xz"
-#OPERA_URL_i386="ftp://get.opera.com/pub/opera/linux/1162/opera-11.62-1347.i386.linux.tar.xz"
-#FLASH_URL_x86_64=""
-#FLASH_URL_i386=""
-
-#OPERA_URL_x86_64="http://snapshot.opera.com/unix/retentionrate_12.00-1317/opera-next-12.00-1318.x86_64.linux.tar.xz"
-#OPERA_URL_i386="http://snapshot.opera.com/unix/retentionrate_12.00-1317/opera-next-12.00-1317.i386.linux.tar.xz"
-
-OPERA_URL_x86_64="http://snapshot.opera.com/unix/4949_12.00-1360/opera-next-12.00-1362.x86_64.linux.tar.xz"
-OPERA_URL_i386="http://snapshot.opera.com/unix/4949_12.00-1360/opera-next-12.00-1360.i386.linux.tar.xz"
-
-FLASH_URL_x86_64="http://fpdownload.macromedia.com/get/flashplayer/pdc/11.1.102.63/install_flash_player_11_linux.x86_64.tar.gz"
-FLASH_URL_i386="http://fpdownload.macromedia.com/get/flashplayer/pdc/11.1.102.63/install_flash_player_11_linux.i386.tar.gz"
+STORAGE_FONTS="/storage/.fonts"
 
 ADDON_VERSION_FILE="$ADDON_DIR/addon.version"
 
@@ -56,8 +46,10 @@ INSTALL_TMP_OPERA_END="/tmp/install-tmp-opera-end"
 INSTALL_TMP_OPERA_TEXT="/tmp/install-tmp-opera-text"
 
 DOWNLOADS_OPERA="$ADDON_DIR/download"
-FILE_OPERA="$DOWNLOADS_OPERA/opera-next-12.tar.xz"
-FILE_FLASH="$DOWNLOADS_OPERA/install_flash_player_11.tar.gz"
+FILE_OPERA="$DOWNLOADS_OPERA/opera-12.tar.bz2"
+FILE_FLASH="$DOWNLOADS_OPERA/flash_11.tar.gz"
+FILE_LIBRRAIES="$DOWNLOADS_OPERA/libraries.zip"
+FILE_EXTRA="$DOWNLOADS_OPERA/extra.zip"
 
 LIBDIR="$ADDON_DIR/local"
 PROGDIR="$ADDON_DIR/opera12"
@@ -72,17 +64,21 @@ XBMC_LOCKFILE="$LOCKDIR/$LOCKFILE"
 
 CURRENT_RESOLUTION_FILE="/tmp/current-resolution.dat"
 
-export LD_LIBRARY_PATH=$LIBDIR/usr/lib:$LD_LIBRARY_PATH
+LIBFLASHPLAYER_SO="$ADDON_HOME/plugins/libflashplayer.so"
+
+### Adobe Flash player works more stable?
+if [ -f "$LIBDIR/usr/lib/libgtk-x11-2.0.so.0" ]; then
+	export LD_PRELOAD=$LIBDIR/usr/lib/libgtk-x11-2.0.so.0
+fi
+
 export PANGO_RC_FILE=$LIBDIR/etc/pango/pangorc
 export GDK_PIXBUF_MODULE_FILE=$LIBDIR/etc/gdk_pixbuf-2.0/gdk-pixbuf.loaders
 
-export OPERA_DIR=${OPERA_DIR:-$PROGDIR/share/opera-next}
-export LD_LIBRARY_PATH=$PROGDIR/usr/lib:$LD_LIBRARY_PATH
+export OPERA_DIR=${OPERA_DIR:-$PROGDIR/share/opera}
 export OPERA_PERSONALDIR=${OPERA_PERSONALDIR:-$PERSONALDIR}
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADDON_HOME/lib
-
 export PATH=$PATH:$LIBDIR/usr/bin
+export LD_LIBRARY_PATH=$LIBDIR/usr/lib:$ADDON_HOME/lib
 
 OPERA_SUCCESS="0"
 
@@ -103,10 +99,10 @@ fi
 if [ $VER_THIS -gt $VER_INSTALLED ]; then
   # new version
   rm -fr "$PROGDIR"
-  rm -f  "$DOWNLOADS_OPERA"
+  rm -fr "$DOWNLOADS_OPERA"
 fi
 
-function osd_msg() {
+osd_msg() {
   if [ -z "$2" ]; then
     xbmc-send -a "Notification(Opera, $1, 2000, $OPERAICON)"
   else
@@ -114,11 +110,11 @@ function osd_msg() {
   fi
 }
 
-function progress() {
+progress() {
   echo "$*" >"$INSTALL_TMP_OPERA_TEXT"
 }
 
-function trap_exit_install() {
+trap_exit_install() {
   touch "$INSTALL_TMP_OPERA_END"
   osd_msg "Installation failed!"
   rm -fr "$INSTALL_TMP_OPERA"
@@ -130,8 +126,7 @@ function trap_exit_install() {
 if [ ! -d "$PROGDIR" ]; then
   trap trap_exit_install EXIT
 
-  progress "Installing Opera..."
-  chmod +x "$LIBDIR"/usr/bin/*
+  progress "Start installing Opera addon..."
 
 (
   # don't exit on errors
@@ -161,28 +156,54 @@ if [ ! -d "$PROGDIR" ]; then
     FLASH_URL="$FLASH_URL_i386"
   fi
 
+  OE_NAME=$(cat /etc/release | awk 'BEGIN {FS="-" } {printf("%s",$1)}')
+  OE_VER=$(cat /etc/release | awk 'BEGIN {FS="-" } {printf("%s",$2)}')
+  LIBRARIES_URL=$DROPBOX_LIBRARIES/libraries-$OE_NAME-$OE_VER.zip
+
   mkdir -p "$DOWNLOADS_OPERA/"
 
   if [ ! -f "$FILE_OPERA" ]; then
-    progress "Downloading Opera..."
+    progress "Downloading Opera archive..."
     wget -O "$FILE_OPERA" "$OPERA_URL"
   fi
 
   if [ ! -f "$FILE_FLASH" ]; then
-    progress "Downloading Flash..."
+    progress "Downloading Flash archive..."
     wget -O "$FILE_FLASH" "$FLASH_URL"
   fi
 
-  xz -d -c "$FILE_OPERA" | tar xf -
-  cd opera-next-*
+  if [ ! -f "$FILE_LIBRRAIES" ]; then
+    progress "Downloading libraries archive..."
+    wget -O "$FILE_LIBRRAIES" "$LIBRARIES_URL"
+  fi
+
+  if [ ! -f "$FILE_EXTRA" ]; then
+    progress "Downloading extra stuff..."
+    wget -O "$FILE_EXTRA" "$EXTRA_URL"
+  fi
+
+  progress "Unpacking Opera archive..."
+  tar xjf "$FILE_OPERA"
+  cd opera-12*
   progress "Installing Opera..."
   sh install --unattended --quiet --prefix "$PROGDIR"
+  rm -f "$PROGDIR/bin/opera"
   cd ..
 
-  tar xzf "$FILE_FLASH" libflashplayer.so
-  progress "Installing Flash..."
-  mkdir -p "$PROGDIR/lib/opera-next/plugins"
-  bbe -e "s#/etc/adobe/#/tmp/adobe/#" libflashplayer.so -o "$PROGDIR/lib/opera-next/plugins/libflashplayer.so"
+  progress "Unpacking Flash archive..."
+  tar xzf "$FILE_FLASH" -C "$ADDON_HOME/plugins/" libflashplayer.so
+
+  progress "Unpacking libraries archive..."
+  unzip "$FILE_LIBRRAIES" -d "$ADDON_DIR"
+  chmod +x "$LIBDIR"/usr/bin/*
+
+  progress "Unpacking extra stuff..."
+  unzip "$FILE_EXTRA" -d "$ADDON_DIR"
+  
+  ### my personal config - or even beter: buy new TV and delete this lines :-)
+  if [ -f /storage/.config/edid.bin.ultra2.TX-SR508 ]; then
+    sed -i 's|<setting id="OVERSCAN_ENABLE" value="false" />|<setting id="OVERSCAN_ENABLE" value="true" />|' $ADDON_DIR/config1/settings.xml
+  fi
 
   cd ..
   [ ! -d "$INSTALL_TMP_OPERA" ] && exit
@@ -191,12 +212,15 @@ if [ ! -d "$PROGDIR" ]; then
   touch "$INSTALL_TMP_OPERA_END"
   osd_msg "Installation succeeded."
   echo -n "$VER_THIS" > "$ADDON_VERSION_FILE"
+
+  ### to install same version again from changed zip file
+  rm -f /storage/.xbmc/addons/packages/web.browser.opera-*
 fi
 ### installation end
 
 ### application start
 
-function trap_exit_exec() {
+trap_exit_exec() {
   if [ -f $ADDON_HOME/lircrc.conf -a -f $LIRC_CONF_FILE ]; then
     rm -f $LIRC_CONF_FILE
 
@@ -223,13 +247,16 @@ function trap_exit_exec() {
     #killall -CONT xbmc.bin
   fi
 
+  # enable navigation sounds
+  xbmc-send -a "RunScript(/storage/.xbmc/addons/web.browser.opera/bin/navsounds-toggle.py, True)"
+
   if [ "$OPERA_SUCCESS" = "1" ]; then
     osd_msg "Opera completed."
   else
     osd_msg "Opera failed to start."
   fi
 
-  # script ends
+  # script ends here
 }
 
 trap trap_exit_exec EXIT
@@ -238,9 +265,6 @@ cp "$ADDON_DIR"/config/* "$ADDON_HOME/"
 
 if [ ! -f "$ADDON_HOME/lircrc.conf" ]; then
   cp "$ADDON_DIR/config/lircrc.conf.sample" "$ADDON_HOME/lircrc.conf"
-fi
-if [ ! -f "$ADDON_HOME/mms.cfg" ]; then
-  cp "$ADDON_DIR/config/mms.cfg.sample" "$ADDON_HOME/mms.cfg"
 fi
 if [ ! -f "$ADDON_HOME/settings.xml" ]; then
   cp "$ADDON_DIR/config1/settings.xml" "$ADDON_HOME/settings.xml"
@@ -273,12 +297,11 @@ if [ ! -f $PERSONALDIR/operaprefs.ini -a -f $ADDON_DIR/config1/operaprefs.ini ];
   mkdir -p $PERSONALDIR/
   cp $ADDON_DIR/config1/operaprefs.ini $PERSONALDIR/
   OPERA_START_URL="-activetab http://openelec.tv/"
-fi
 
-rm -fr /tmp/adobe/
-if [ -f $ADDON_HOME/mms.cfg ]; then
-  mkdir -p /tmp/adobe/
-  cp $ADDON_HOME/mms.cfg /tmp/adobe/
+  tar xjf $ADDON_DIR/extra/adblock.tbz2 -C $PERSONALDIR/
+
+  mkdir -p "$STORAGE_FONTS"
+  tar xjf $ADDON_DIR/extra/fonts.tbz2 -C "$STORAGE_FONTS"
 fi
 
 ### put window on whole screen
@@ -347,7 +370,29 @@ else
   #killall -STOP xbmc.bin
 fi
 
-$PROGDIR/lib/opera-next/opera-next "$@" $OPERA_START_URL
+# Flash acceleration
+rm -fr /tmp/adobe/
+if [ "$FLASH_ACCELERATION" = "true" ]; then
+  if [ ! -f "$ADDON_HOME/plugins/accelerated.flash" ];then
+    touch "$ADDON_HOME/plugins/accelerated.flash"
+    bbe -e "s#/etc/adobe/#/tmp/adobe/#" "$LIBFLASHPLAYER_SO" -o "$ADDON_HOME/plugins/flash.tmp"
+    mv "$ADDON_HOME/plugins/flash.tmp" "$LIBFLASHPLAYER_SO"
+  fi
+
+  mkdir -p /tmp/adobe/
+  echo -e "EnableLinuxHWVideoDecode=1\nOverrideGPUValidation=true" >/tmp/adobe/mms.cfg
+else
+  if [ -f "$ADDON_HOME/plugins/accelerated.flash" ];then
+    rm -f "$ADDON_HOME/plugins/accelerated.flash"
+    bbe -e "s#/tmp/adobe/#/etc/adobe/#" "$LIBFLASHPLAYER_SO" -o "$ADDON_HOME/plugins/flash.tmp"
+     mv "$ADDON_HOME/plugins/flash.tmp" "$LIBFLASHPLAYER_SO"
+  fi
+fi
+
+# disable navigation sounds
+xbmc-send -a "RunScript(/storage/.xbmc/addons/web.browser.opera/bin/navsounds-toggle.py, False)"
+
+$PROGDIR/lib/opera/opera "$@" $OPERA_START_URL
 
 OPERA_SUCCESS="1"
 

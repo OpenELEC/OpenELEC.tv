@@ -8,4 +8,5 @@
     <setting id="PADDING_TOP" value="16" />
     <setting id="PADDING_RIGHT" value="30" />
     <setting id="PADDING_BOTTOM" value="16" />
+    <setting id="FLASH_ACCELERATION" value="false" />
 </settings>

@@ -27,11 +27,13 @@ ADDON_DIR="/storage/.xbmc/addons/web.browser.opera"
 
 mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/
 mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config1/
+#mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/extra/
 mkdir -p $LIBS/usr/bin
 mkdir -p $LIBS/usr/lib
 
 cp $PKG_DIR/config/* $ADDON_BUILD/$PKG_ADDON_ID/config/
 cp $PKG_DIR/config1/* $ADDON_BUILD/$PKG_ADDON_ID/config1/
+#cp $PKG_DIR/extra/* $ADDON_BUILD/$PKG_ADDON_ID/extra/
 
 cp $ROOT/$BUILD/xdotool-*/xdotool $LIBS/usr/bin
 cp $ROOT/$BUILD/bbe-*/src/bbe $LIBS/usr/bin
@@ -49,6 +51,10 @@ cp $ROOT/$BUILD/libpng-1.2.*/.libs/libpng12.so.0 $LIBS/usr/lib
 cp $ROOT/$BUILD/cairo-*/src/.libs/libcairo.so.2 $LIBS/usr/lib
 
 rm -rf $LIBS/usr/lib/lib*.so*T
+
+cp $SYSROOT_PREFIX/usr/lib/libfreetype.so.6 $LIBS/usr/lib
+cp $SYSROOT_PREFIX/usr/lib/libfontconfig.so.1 $LIBS/usr/lib
+
 
 #######################
 #cp $ROOT/$BUILD/gtk+-*/gtk/.libs/libgtk-x11-2.0.so.0 $LIBS/usr/lib
@@ -122,4 +128,11 @@ mkdir -p $LIBS/etc/pango
   cp $ROOT/$BUILD/pango-*/pango/pangox.aliases $LIBS/etc/pango
   cp $ROOT/$PACKAGES/x11/toolkits/pango/config/* $LIBS/etc/pango
   sed -i "s|/usr/lib/pango|$ADDON_DIR/local/usr/lib/pango|g" $LIBS/etc/pango/pango.modules
-	sed -i "s|/etc/pango|$ADDON_DIR/local/etc/pango|g" $LIBS/etc/pango/pangorc
+  sed -i "s|/etc/pango|$ADDON_DIR/local/etc/pango|g" $LIBS/etc/pango/pangorc
+
+cd $LIBS/../ >/dev/null
+mkdir -p $ROOT/$TARGET/$ADDONS
+zip -rq $ROOT/$TARGET/$ADDONS/libraries-$PROJECT.$ARCH-devel.zip local/
+cd - >/dev/null
+
+rm -fr $LIBS

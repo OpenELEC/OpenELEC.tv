@@ -15,4 +15,8 @@
     <string id="30053">Top</string>
     <string id="30054">Right</string>
     <string id="30055">Bottom</string>
+    <!-- Flash labels -->
+    <string id="30060">Flash</string>
+    <string id="30061">Use Acceleration</string>
+
 </strings>

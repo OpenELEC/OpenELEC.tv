@@ -102,13 +102,13 @@ end
 begin
 	prog = opera
 	button = KEY_CHANNELUP
-	config = Zoom in, 10
+	config = Forward
 end
 
 begin
 	prog = opera
 	button = KEY_CHANNELDOWN
-	config = Zoom out, 10
+	config = Back
 end
 
 begin

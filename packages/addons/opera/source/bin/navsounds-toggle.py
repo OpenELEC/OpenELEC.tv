@@ -18,24 +18,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-import os
 import sys
 import xbmcaddon
-import time
-import subprocess
+  
+if len(sys.argv) >= 1:
+	if sys.argv[1] == 'True':
+		xbmc.enableNavSounds(True)
+	else:
+		xbmc.enableNavSounds(False)
+else:
+	xbmc.enableNavSounds(False)
 
-__scriptname__ = "Opera Web Browser"
-__author__     = "OpenELEC"
-__url__        = "http://www.openelec.tv"
-__settings__   = xbmcaddon.Addon(id='web.browser.opera')
-__cwd__        = __settings__.getAddonInfo('path')
-__start__      = xbmc.translatePath( os.path.join( __cwd__, 'bin', "opera") )
-__stop__       = xbmc.translatePath( os.path.join( __cwd__, 'bin', "") )
+# http://passion-xbmc.org/gros_fichiers/XBMC%20Python%20Doc/xbmc_svn/xbmc.html
 
-#make binary files executable in adson bin folder
-subprocess.Popen("chmod -R +x " + __cwd__ + "/bin/*" , shell=True, close_fds=True)
-
-subprocess.Popen(__start__, shell=True, close_fds=True)
-
-while (not xbmc.abortRequested):
-  time.sleep(0.250)
+# enable navigation sound
+# xbmc-send -a "RunScript(/storage/.xbmc/addons/web.browser.opera/bin/navsounds-toggle.py, True)"
+# disable navigation sound
+# xbmc-send -a "RunScript(/storage/.xbmc/addons/web.browser.opera/bin/navsounds-toggle.py, False)"
