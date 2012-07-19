@@ -38,6 +38,8 @@ cd $(kernel_path)
 rm -rf modules
 mkdir -p modules
 
+export CFLAGS="$TARGET_FPU_FLAGS"
+
 make modules
 make INSTALL_MOD_PATH=modules DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
 rm -f modules/lib/modules/*/build
@@ -56,7 +58,7 @@ make $KERNEL_IMAGE
 
 ( cd tools/power/cpupower
 
-  export CFLAGS="-I$SYSROOT_PREFIX/usr/include"
+  export CFLAGS="-I$SYSROOT_PREFIX/usr/include $TARGET_FPU_FLAGS"
   export LDFLAGS="-L$SYSROOT_PREFIX/lib -L$SYSROOT_PREFIX/usr/lib"
 
   make CROSS="$TARGET_PREFIX" \
