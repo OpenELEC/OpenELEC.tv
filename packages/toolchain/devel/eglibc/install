@@ -47,6 +47,13 @@ mkdir -p $INSTALL/usr/bin
   sed -i 's%bash%sh%g' $INSTALL/usr/bin/ldd
 
   cp $PKG_BUILD/objdir-$1/locale/locale $INSTALL/usr/bin
+  cp $PKG_BUILD/objdir-$1/locale/localedef $INSTALL/usr/bin
+  mkdir -p $INSTALL/usr/share/i18n/locales/
+  cp $PKG_BUILD/localedata/locales/* $INSTALL/usr/share/i18n/locales/
+  mkdir -p $INSTALL/usr/share/i18n/charmaps
+  cp $PKG_BUILD/localedata/charmaps/* $INSTALL/usr/share/i18n/charmaps/
+  cp $PKG_BUILD/localedata/SUPPORTED $INSTALL/usr/share/i18n/
+  ln -s /storage/locale $INSTALL/usr/lib/locale
 
 # libiconv replacement:
   mkdir -p $INSTALL/usr/lib/gconv
