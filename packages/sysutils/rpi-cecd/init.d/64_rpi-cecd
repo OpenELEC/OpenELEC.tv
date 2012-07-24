@@ -21,5 +21,9 @@
 #
 # runlevels: openelec
 
-progress "starting RPi-CEC daemon"
-  rpi-cecd &>/var/log/rpi-cecd.log &
+if [[ `tvservice -s | sed 's/.*HDMI //; s/|.*//'` == "off" ]]; then
+  progress "not starting RPi-CEC daemon because HDMI is off"
+else
+  progress "starting RPi-CEC daemon"
+    rpi-cecd &>/var/log/rpi-cecd.log &
+fi
