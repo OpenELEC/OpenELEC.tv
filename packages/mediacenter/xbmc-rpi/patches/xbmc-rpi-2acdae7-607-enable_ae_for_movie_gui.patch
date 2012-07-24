@@ -1,8 +1,7 @@
-diff --git a/configure.in b/configure.in
-index 4639609..8110a98 100755
---- a/configure.in
-+++ b/configure.in
-@@ -585,7 +585,7 @@ case $use_platform in
+diff -Naur xbmc-rpi-2acdae7/configure.in xbmc-rpi-2acdae7.patch/configure.in
+--- xbmc-rpi-2acdae7/configure.in	2012-07-20 00:27:10.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/configure.in	2012-07-20 03:55:07.680124127 +0200
+@@ -591,7 +591,7 @@
       use_armv6="yes"
       use_armvfp="yes"
       use_hardcoded_tables="yes"
@@ -11,11 +10,10 @@ index 4639609..8110a98 100755
       USE_TEXTUREPACKER_NATIVE_ROOT="$TEXTUREPACKER_NATIVE_ROOT"
       ARCH="arm"
       AC_SUBST(ARCH_DEFINES, "-DTARGET_POSIX -DTARGET_LINUX -D_LINUX -D_ARMEL -DTARGET_RASPBERRY_PI")
-diff --git a/xbmc/cores/AudioEngine/AEFactory.cpp b/xbmc/cores/AudioEngine/AEFactory.cpp
-index 78b22d5..fdf797e 100644
---- a/xbmc/cores/AudioEngine/AEFactory.cpp
-+++ b/xbmc/cores/AudioEngine/AEFactory.cpp
-@@ -115,10 +115,6 @@ void CAEFactory::UnLoadEngine()
+diff -Naur xbmc-rpi-2acdae7/xbmc/cores/AudioEngine/AEFactory.cpp xbmc-rpi-2acdae7.patch/xbmc/cores/AudioEngine/AEFactory.cpp
+--- xbmc-rpi-2acdae7/xbmc/cores/AudioEngine/AEFactory.cpp	2012-07-20 00:27:35.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/xbmc/cores/AudioEngine/AEFactory.cpp	2012-07-20 03:55:07.680124127 +0200
+@@ -119,10 +119,6 @@
  
  bool CAEFactory::StartEngine()
  {
@@ -26,11 +24,10 @@ index 78b22d5..fdf797e 100644
    if (!AE)
      return false;
  
-diff --git a/xbmc/cores/AudioEngine/AESinkFactory.cpp b/xbmc/cores/AudioEngine/AESinkFactory.cpp
-index cab4ff8..020ce3d 100644
---- a/xbmc/cores/AudioEngine/AESinkFactory.cpp
-+++ b/xbmc/cores/AudioEngine/AESinkFactory.cpp
-@@ -27,7 +27,7 @@
+diff -Naur xbmc-rpi-2acdae7/xbmc/cores/AudioEngine/AESinkFactory.cpp xbmc-rpi-2acdae7.patch/xbmc/cores/AudioEngine/AESinkFactory.cpp
+--- xbmc-rpi-2acdae7/xbmc/cores/AudioEngine/AESinkFactory.cpp	2012-07-20 00:27:35.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/xbmc/cores/AudioEngine/AESinkFactory.cpp	2012-07-20 03:55:07.723124715 +0200
+@@ -28,7 +28,7 @@
  #if defined(TARGET_WINDOWS)
    #include "Sinks/AESinkWASAPI.h"
    #include "Sinks/AESinkDirectSound.h"
@@ -39,7 +36,7 @@ index cab4ff8..020ce3d 100644
    #if defined(HAS_ALSA)
      #include "Sinks/AESinkALSA.h"
    #endif
-@@ -105,7 +105,7 @@ IAESink *CAESinkFactory::Create(std::string &device, AEAudioFormat &desiredForma
+@@ -106,7 +106,7 @@
    else
      TRY_SINK(DirectSound) /* Always fall back to DirectSound */
  
@@ -48,7 +45,7 @@ index cab4ff8..020ce3d 100644
  
    #if defined(HAS_ALSA)
    if (driver.empty() || driver == "ALSA")
-@@ -153,7 +153,7 @@ void CAESinkFactory::EnumerateEx(AESinkInfoList &list)
+@@ -154,7 +154,7 @@
    ENUMERATE_SINK(ALSA);
  #endif
  
@@ -57,10 +54,9 @@ index cab4ff8..020ce3d 100644
    ENUMERATE_SINK(OSS);
  #endif
  
-diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index 7e26b38..b192f48 100644
---- a/xbmc/cores/omxplayer/OMXPlayer.cpp
-+++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
+diff -Naur xbmc-rpi-2acdae7/xbmc/cores/omxplayer/OMXPlayer.cpp xbmc-rpi-2acdae7.patch/xbmc/cores/omxplayer/OMXPlayer.cpp
+--- xbmc-rpi-2acdae7/xbmc/cores/omxplayer/OMXPlayer.cpp	2012-07-20 00:27:35.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/xbmc/cores/omxplayer/OMXPlayer.cpp	2012-07-20 03:55:07.743124988 +0200
 @@ -73,6 +73,9 @@
  
  #include "LangInfo.h"
@@ -71,7 +67,7 @@ index 7e26b38..b192f48 100644
  using namespace XFILE;
  
  // ****************************************************************
-@@ -920,6 +923,9 @@ void COMXPlayer::Process()
+@@ -920,6 +923,9 @@
        return;
      }
  
@@ -81,7 +77,7 @@ index 7e26b38..b192f48 100644
      m_player_video.EnableFullscreen(true);
  
      OpenDefaultStreams();
-@@ -1882,6 +1888,13 @@ void COMXPlayer::OnExit()
+@@ -1862,6 +1868,13 @@
  
    // set event to inform openfile something went wrong in case openfile is still waiting for this event
    m_ready.Set();
@@ -95,27 +91,10 @@ index 7e26b38..b192f48 100644
  }
  
  void COMXPlayer::HandleMessages()
-diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
-index c9c366c..eecc18e 100644
---- a/xbmc/settings/AdvancedSettings.cpp
-+++ b/xbmc/settings/AdvancedSettings.cpp
-@@ -72,11 +72,7 @@ void CAdvancedSettings::Initialize()
-   m_karaokeAlwaysEmptyOnCdgs = 1;
-   m_karaokeUseSongSpecificBackground = 0;
- 
--#if defined(HAVE_OMXPLAYER)
--  m_audioDefaultPlayer = "omxplayer";
--#else
-   m_audioDefaultPlayer = "paplayer";
--#endif
-   m_audioPlayCountMinimumPercent = 90.0f;
-   m_audioHost = "default";
- 
-diff --git a/xbmc/settings/GUISettings.cpp b/xbmc/settings/GUISettings.cpp
-index a18b102..4e664d3 100644
---- a/xbmc/settings/GUISettings.cpp
-+++ b/xbmc/settings/GUISettings.cpp
-@@ -476,7 +476,7 @@ void CGUISettings::Initialize()
+diff -Naur xbmc-rpi-2acdae7/xbmc/settings/GUISettings.cpp xbmc-rpi-2acdae7.patch/xbmc/settings/GUISettings.cpp
+--- xbmc-rpi-2acdae7/xbmc/settings/GUISettings.cpp	2012-07-20 00:27:26.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/xbmc/settings/GUISettings.cpp	2012-07-20 03:55:07.745125016 +0200
+@@ -476,7 +476,7 @@
  #if !defined(TARGET_DARWIN_IOS) && !defined(TARGET_RASPBERRY_PI)
    AddBool(aocat, "audiooutput.multichannellpcm" , 348, true );
  #endif
@@ -124,7 +103,7 @@ index a18b102..4e664d3 100644
    AddBool(aocat, "audiooutput.truehdpassthrough", 349, true );
    AddBool(aocat, "audiooutput.dtshdpassthrough" , 347, true );
  #endif
-@@ -490,11 +490,6 @@ void CGUISettings::Initialize()
+@@ -490,11 +490,6 @@
    #endif
    AddString(ao, "audiooutput.audiodevice", 545, defaultDeviceName.c_str(), SPIN_CONTROL_TEXT);
    AddString(NULL, "audiooutput.passthroughdevice", 546, defaultDeviceName.c_str(), SPIN_CONTROL_TEXT);
@@ -136,11 +115,10 @@ index a18b102..4e664d3 100644
    AddSeparator(ao, "audiooutput.sep1");
    AddString   (ao, "audiooutput.audiodevice"      , 545, CStdString(CAEFactory::GetDefaultDevice(false)), SPIN_CONTROL_TEXT);
    AddString   (ao, "audiooutput.passthroughdevice", 546, CStdString(CAEFactory::GetDefaultDevice(true )), SPIN_CONTROL_TEXT);
-diff --git a/xbmc/settings/GUIWindowSettingsCategory.cpp b/xbmc/settings/GUIWindowSettingsCategory.cpp
-index 19e5e00..84f92f7 100644
---- a/xbmc/settings/GUIWindowSettingsCategory.cpp
-+++ b/xbmc/settings/GUIWindowSettingsCategory.cpp
-@@ -1838,13 +1838,13 @@ void CGUIWindowSettingsCategory::OnSettingChanged(CBaseSettingControl *pSettingC
+diff -Naur xbmc-rpi-2acdae7/xbmc/settings/GUIWindowSettingsCategory.cpp xbmc-rpi-2acdae7.patch/xbmc/settings/GUIWindowSettingsCategory.cpp
+--- xbmc-rpi-2acdae7/xbmc/settings/GUIWindowSettingsCategory.cpp	2012-07-20 00:27:26.000000000 +0200
++++ xbmc-rpi-2acdae7.patch/xbmc/settings/GUIWindowSettingsCategory.cpp	2012-07-20 03:55:07.746125030 +0200
+@@ -1849,13 +1849,13 @@
      if (strSetting.Equals("audiooutput.audiodevice"))
      {
        CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
@@ -156,7 +134,7 @@ index 19e5e00..84f92f7 100644
      else if (strSetting.Equals("audiooutput.passthroughdevice"))
      {
        CGUISpinControlEx *pControl = (CGUISpinControlEx *)GetControl(pSettingControl->GetID());
-@@ -2708,7 +2708,7 @@ void CGUIWindowSettingsCategory::FillInAudioDevices(CSetting* pSetting, bool Pas
+@@ -2719,7 +2719,7 @@
    int selectedValue = -1;
    AEDeviceList sinkList;
    CAEFactory::EnumerateOutputDevices(sinkList, Passthrough);
@@ -165,7 +143,7 @@ index 19e5e00..84f92f7 100644
    if (sinkList.size()==0)
    {
      pControl->AddLabel("Error - no devices found", 0);
-@@ -2737,7 +2737,7 @@ void CGUIWindowSettingsCategory::FillInAudioDevices(CSetting* pSetting, bool Pas
+@@ -2748,7 +2748,7 @@
      }
  
      numberSinks = sinkList.size();
