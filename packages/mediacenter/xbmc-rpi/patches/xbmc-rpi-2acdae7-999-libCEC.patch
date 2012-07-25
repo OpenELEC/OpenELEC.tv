@@ -1,0 +1,387 @@
+commit 4c0970ec3a946f4fbf8a54b108456dc1879d60c8
+Author: Lars Op den Kamp <lars@opdenkamp.eu>
+Date:   Fri Jul 13 13:03:24 2012 +0200
+
+    cec: added support for the Raspberry Pi. needs libCEC v1.8.0+. other targets are still supported by libCEC 1.7.0
+
+diff --git a/configure.in b/configure.in
+index 950ca83..e936d03 100755
+--- a/configure.in
++++ b/configure.in
+@@ -135,7 +135,8 @@ libusb_disabled="== libusb disabled. Plug and play USB device support will not b
+ libusb_disabled_udev_found="== libusb disabled. =="
+ libcec_enabled="== libcec enabled. =="
+ libcec_disabled="== libcec disabled. CEC adapter support will not be available. =="
+-libcec_disabled_missing_libs="== libcec disabled because both libudev and libusb are not available. CEC adapter support will not be available. =="
++libcec_disabled_missing_libs="== libcec disabled because it either needs libudev, or libusb a compatible version of the RPi API. CEC adapter support will not be available. =="
++cec_rpi_api_missing="== no compatible RPi API found =="
+ 
+ # External library message strings
+ external_libraries_enabled="== Use of all supported external libraries enabled. =="
+@@ -442,6 +443,12 @@ AC_ARG_ENABLE([libcec],
+   [use_libcec=$enableval],
+   [use_libcec=auto])
+ 
++AC_ARG_ENABLE([rpi-cec-api],
++  [AS_HELP_STRING([--enable-rpi-cec-api],
++  [enable support for the Raspberry Pi (default is auto)])],
++  [use_rpi_cec_api=$enableval],
++  [use_rpi_cec_api=auto])
++
+ AC_ARG_ENABLE([libmp3lame],
+   [AS_HELP_STRING([--enable-libmp3lame],
+   [enable lame mp3 encoder support (default is auto)])],
+@@ -1303,9 +1310,65 @@ fi
+ 
+ # libcec
+ USE_LIBCEC=0
++USE_CEC_RPI_API=0
+ if test "x$use_libcec" != "xno"; then
+-  # libcec needs libudev or libusb under linux, or the device will never be detected.
+-  if test "$host_vendor" != "apple" && test "$use_libusb" = "no" && test "$use_libudev" = "no"; then
++  case "${host_cpu}" in
++    arm*)
++      echo "will check for RPi support"
++      ;;
++    *)
++      echo "will not check for RPi support (unsupported cpu: ${host_cpu})"
++      use_rpi_cec_api="no"
++      ;;
++  esac
++
++  if test "x$use_rpi_cec_api" != "xno"; then
++    if test "x$use_rpi_cec_api" = "xyes"; then
++      AC_CHECK_HEADER(interface/vmcs_host/vc_cec.h,,
++        AC_MSG_ERROR($cec_rpi_api_missing))
++    else
++      AC_CHECK_HEADER(interface/vmcs_host/vc_cec.h,,
++        use_rpi_cec_api="no")
++    fi
++
++    if test "x$use_rpi_cec_api" != "xno"; then
++      # check if the headers contain support for libCEC
++      AC_MSG_CHECKING([interface/vmcs_host/vc_cec.h compatibility])
++
++      check_rpi_cec_service="yes"
++      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <interface/vmcs_host/vc_cecservice.h>
++#include <interface/vchiq_arm/vchiq_if.h>
++#if !defined(VC_CECSERVICE_VER)
++#error RPi headers doesn't contain libCEC support
++#endif]], [[]])],[AC_MSG_RESULT([yes])],[check_rpi_cec_service="no"; AC_MSG_RESULT([no])])
++
++      if test "x$check_rpi_cec_service" != "xyes" && test "x$use_rpi_cec_api" = "xyes"; then
++        AC_MSG_ERROR($cec_rpi_api_missing)
++      fi
++
++      if test "x$check_rpi_cec_service" != "xyes"; then
++        use_rpi_cec_api="no"
++      fi 
++    fi
++
++    if test "x$use_rpi_cec_api" != "xno"; then
++      # check for vc_cec_poll_address, to ensure that we got the correct version of bcm_host that supports libCEC
++      if test "x$use_rpi_cec_api" = "xyes"; then
++        AC_CHECK_LIB(bcm_host,vc_cec_poll_address,,
++          AC_MSG_ERROR($cec_rpi_api_missing),-lvcos -lvchiq_arm)
++      else
++        AC_CHECK_LIB(bcm_host,vc_cec_poll_address,,
++          use_rpi_cec_api="no",-lvcos -lvchiq_arm)
++      fi
++    fi
++
++    if test "x$use_rpi_cec_api" != "xno"; then
++      LIBS+=" -lvcos -lvchiq_arm"
++    fi
++  fi
++
++  # libcec needs libudev, libusb or the RPi API under linux, or the device will never be detected.
++  if test "$host_vendor" != "apple" && test "$use_libusb" = "no" && test "$use_libudev" = "no" && test "$use_rpi_cec_api" = "no"; then
+     if test "x$use_libcec" != "xauto"; then
+       AC_MSG_ERROR($libcec_disabled_missing_libs)
+     else
+@@ -1316,11 +1379,27 @@ if test "x$use_libcec" != "xno"; then
+ 
+   # libcec is dyloaded, so we need to check for its headers and link any depends.
+   if test "x$use_libcec" != "xno"; then
+-    PKG_CHECK_MODULES([CEC],[libcec >= 1.7.0],,[use_libcec="no";AC_MSG_RESULT($libcec_disabled)])
++    if test "x$use_libcec" != "xauto"; then
++      if test "x$use_rpi_cec_api" != "xno"; then
++        PKG_CHECK_MODULES([CEC],[libcec >= 1.8.0],,[use_libcec="no";AC_MSG_ERROR($libcec_disabled)])
++      else
++        PKG_CHECK_MODULES([CEC],[libcec >= 1.7.0],,[use_libcec="no";AC_MSG_ERROR($libcec_disabled)])
++      fi
++    else
++      if test "x$use_rpi_cec_api" != "xno"; then
++        PKG_CHECK_MODULES([CEC],[libcec >= 1.8.0],,[use_libcec="no";AC_MSG_RESULT($libcec_disabled)])
++      else
++        PKG_CHECK_MODULES([CEC],[libcec >= 1.7.0],,[use_libcec="no";AC_MSG_RESULT($libcec_disabled)])
++      fi
++    fi
+ 
+     if test "x$use_libcec" != "xno"; then
+       INCLUDES="$INCLUDES $CEC_CFLAGS"
+       USE_LIBCEC=1;AC_DEFINE([HAVE_LIBCEC],[1],["Define to 1 if libcec is installed"])
++      if test "x$use_rpi_cec_api" != "xno"; then
++        AC_DEFINE([HAVE_CEC_RPI_API],[1],["Define to 1 if the CEC RPi API is installed"])
++        USE_CEC_RPI_API=1
++      fi
+       XB_FIND_SONAME([LIBCEC],[cec],[use_libcec])
+       AC_MSG_NOTICE($libcec_enabled)
+     else
+@@ -2013,6 +2092,11 @@ fi
+ 
+ if test "x$use_libcec" != "xno"; then
+   final_message="$final_message\n  libcec support:\tYes"
++  if test "x$use_rpi_cec_api" != "xno"; then
++    final_message="$final_message\n  libcec RPi support:\tYes"
++  else
++    final_message="$final_message\n  libcec RPi support:\tNo"
++  fi
+ else
+   final_message="$final_message\n  libcec support:\tNo"
+ fi
+@@ -2177,6 +2261,7 @@ AC_SUBST(USE_AIRTUNES)
+ AC_SUBST(USE_LIBUDEV)
+ AC_SUBST(USE_LIBUSB)
+ AC_SUBST(USE_LIBCEC)
++AC_SUBST(USE_CEC_RPI_API)
+ AC_SUBST(USE_MYSQL)
+ AC_SUBST(USE_WEB_SERVER)
+ AC_SUBST(USE_OMXPLAYER)
+diff --git a/system/peripherals.xml b/system/peripherals.xml
+index 9589295..60d8d60 100644
+--- a/system/peripherals.xml
++++ b/system/peripherals.xml
+@@ -9,6 +9,26 @@
+     <setting key="key_power" value="XBMC.ShutDown()" label="13015" order="6" />
+   </peripheral>
+ 
++  <peripheral vendor_product="2708:1001" bus="rpi" name="Raspberry Pi CEC Adapter" mapTo="cec">
++    <setting key="enabled" type="bool" value="1" label="305" order="1" />
++    <setting key="activate_source" type="bool" value="1" label="36020" order="2" />
++    <setting key="wake_devices" type="string" value="0" label="36007" order="3" />
++    <setting key="standby_devices" type="string" value="0" label="36008" order="4" />
++    <setting key="cec_standby_screensaver" type="bool" value="1" label="36009" order="5" />
++    <setting key="standby_pc_on_tv_standby" type="enum" value="13011" label="36029" order="6" lvalues="36028|13005|13011" />
++    <setting key="standby_tv_on_pc_standby" type="bool" value="1" label="36026" order="7" />
++    <setting key="send_inactive_source" type="bool" value="1" label="36025" order="8" />
++    <setting key="use_tv_menu_language" type="bool" value="1" label="36018" order="9" />
++
++    <setting key="tv_vendor" type="int" value="0" configurable="0" />
++    <setting key="device_name" type="string" value="XBMC" configurable="0" />
++    <setting key="device_type" type="int" value="1" configurable="0" />
++    <setting key="physical_address" type="string" label="36021" value="0" configurable="0" />
++    <setting key="cec_hdmi_port" type="int" value="1" label="36015" configurable="0" />
++    <setting key="connected_device" type="int" label="36019" value="0" configurable="0" />
++    <setting key="port" type="string" value="" label="36022" configurable="0" />
++  </peripheral>
++
+   <peripheral vendor_product="2548:1001" bus="usb" name="Pulse-Eight CEC Adapter" mapTo="cec">
+     <setting key="enabled" type="bool" value="1" label="305" order="1" />
+     <setting key="activate_source" type="bool" value="1" label="36020" order="2" />
+diff --git a/xbmc/peripherals/PeripheralTypes.h b/xbmc/peripherals/PeripheralTypes.h
+index 53831fc..75dd3da 100644
+--- a/xbmc/peripherals/PeripheralTypes.h
++++ b/xbmc/peripherals/PeripheralTypes.h
+@@ -35,7 +35,8 @@ namespace PERIPHERALS
+   {
+     PERIPHERAL_BUS_UNKNOWN = 0,
+     PERIPHERAL_BUS_USB,
+-    PERIPHERAL_BUS_PCI
++    PERIPHERAL_BUS_PCI,
++    PERIPHERAL_BUS_RPI
+   };
+ 
+   enum PeripheralFeature
+@@ -135,6 +136,8 @@ namespace PERIPHERALS
+         return "usb";
+       case PERIPHERAL_BUS_PCI:
+         return "pci";
++      case PERIPHERAL_BUS_RPI:
++        return "rpi";
+       default:
+         return "unknown";
+       }
+@@ -149,6 +152,8 @@ namespace PERIPHERALS
+         return PERIPHERAL_BUS_USB;
+       else if (strTypeLowerCase.Equals("pci"))
+         return PERIPHERAL_BUS_PCI;
++      else if (strTypeLowerCase.Equals("rpi"))
++        return PERIPHERAL_BUS_RPI;
+ 
+       return PERIPHERAL_BUS_UNKNOWN;
+     };
+diff --git a/xbmc/peripherals/Peripherals.cpp b/xbmc/peripherals/Peripherals.cpp
+index 46ddb03..a430e08 100644
+--- a/xbmc/peripherals/Peripherals.cpp
++++ b/xbmc/peripherals/Peripherals.cpp
+@@ -31,6 +31,10 @@
+ #include "bus/PeripheralBusUSB.h"
+ #include "dialogs/GUIDialogPeripheralManager.h"
+ 
++#ifdef HAVE_CEC_RPI_API
++#include "bus/linux/PeripheralBusRPi.h"
++#endif
++
+ #include "threads/SingleLock.h"
+ #include "utils/log.h"
+ #include "utils/XMLUtils.h"
+@@ -79,6 +83,9 @@ void CPeripherals::Initialise(void)
+ #if defined(HAVE_PERIPHERAL_BUS_USB)
+     m_busses.push_back(new CPeripheralBusUSB(this));
+ #endif
++#ifdef HAVE_CEC_RPI_API
++    m_busses.push_back(new CPeripheralBusRPi(this));
++#endif
+ 
+     /* initialise all known busses */
+     for (int iBusPtr = (int)m_busses.size() - 1; iBusPtr >= 0; iBusPtr--)
+diff --git a/xbmc/peripherals/bus/Makefile.in b/xbmc/peripherals/bus/Makefile.in
+index 2595a9c..ed62c99 100644
+--- a/xbmc/peripherals/bus/Makefile.in
++++ b/xbmc/peripherals/bus/Makefile.in
+@@ -12,6 +12,10 @@ ifeq ($(findstring osx,@ARCH@),osx)
+ SRCS+=osx/PeripheralBusUSB.cpp
+ endif
+ 
++ifeq (@USE_CEC_RPI_API@,1)
++SRCS+=linux/PeripheralBusRPi.cpp
++endif
++
+ LIB=peripheral-bus.a
+ 
+ include ../../../Makefile.include
+diff --git a/xbmc/peripherals/bus/linux/PeripheralBusRPi.cpp b/xbmc/peripherals/bus/linux/PeripheralBusRPi.cpp
+new file mode 100644
+index 0000000..fe8e420
+--- /dev/null
++++ b/xbmc/peripherals/bus/linux/PeripheralBusRPi.cpp
+@@ -0,0 +1,66 @@
++/*
++ *      Copyright (C) 2005-2012 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include "PeripheralBusRPi.h"
++
++extern "C" {
++#include <interface/vmcs_host/vc_cecservice.h>
++#include <interface/vchiq_arm/vchiq_if.h>
++}
++
++using namespace PERIPHERALS;
++
++CPeripheralBusRPi::CPeripheralBusRPi(CPeripherals *manager) :
++    CPeripheralBus(manager, PERIPHERAL_BUS_RPI)
++{
++  m_bNeedsPolling = false;
++}
++
++bool CPeripheralBusRPi::PerformDeviceScan(PeripheralScanResults &results)
++{
++  if (FindAdapter())
++  {
++    PeripheralScanResult result;
++    result.m_iVendorId   = 0x2708;
++    result.m_iProductId  = 0x1001;
++    result.m_type        = PERIPHERAL_CEC;
++    result.m_strLocation = "RPI";
++
++    if (!results.ContainsResult(result))
++      results.m_results.push_back(result);
++  }
++
++  return true;
++}
++
++bool CPeripheralBusRPi::FindAdapter(void)
++{
++  uint8_t iResult;
++
++  VCHI_INSTANCE_T vchiq_instance;
++  if ((iResult = vchi_initialise(&vchiq_instance)) != VCHIQ_SUCCESS)
++    return false;
++
++  if ((iResult = vchi_connect(NULL, 0, vchiq_instance)) != VCHIQ_SUCCESS)
++    return false;
++
++  return true;
++}
+diff --git a/xbmc/peripherals/bus/linux/PeripheralBusRPi.h b/xbmc/peripherals/bus/linux/PeripheralBusRPi.h
+new file mode 100644
+index 0000000..f2b8877
+--- /dev/null
++++ b/xbmc/peripherals/bus/linux/PeripheralBusRPi.h
+@@ -0,0 +1,41 @@
++#pragma once
++/*
++ *      Copyright (C) 2005-2012 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include "peripherals/bus/PeripheralBus.h"
++#include "peripherals/devices/Peripheral.h"
++
++namespace PERIPHERALS
++{
++  class CPeripherals;
++
++  class CPeripheralBusRPi : public CPeripheralBus
++  {
++  public:
++    CPeripheralBusRPi(CPeripherals *manager);
++    virtual ~CPeripheralBusRPi(void) {};
++
++    bool PerformDeviceScan(PeripheralScanResults &results);
++
++  private:
++    bool FindAdapter(void);
++  };
++}
+diff --git a/xbmc/peripherals/devices/PeripheralCecAdapter.cpp b/xbmc/peripherals/devices/PeripheralCecAdapter.cpp
+index 6c5e9e6..7d6d980 100644
+--- a/xbmc/peripherals/devices/PeripheralCecAdapter.cpp
++++ b/xbmc/peripherals/devices/PeripheralCecAdapter.cpp
+@@ -1159,7 +1159,9 @@ int CPeripheralCecAdapter::CecLogMessage(void *cbParam, const cec_log_message &m
+ 
+ bool CPeripheralCecAdapter::TranslateComPort(CStdString &strLocation)
+ {
+-  if (strLocation.Left(18).Equals("peripherals://usb/") && strLocation.Right(4).Equals(".dev"))
++  if ((strLocation.Left(18).Equals("peripherals://usb/") ||
++         strLocation.Left(18).Equals("peripherals://rpi/")) &&
++       strLocation.Right(4).Equals(".dev"))
+   {
+     strLocation = strLocation.Right(strLocation.length() - 18);
+     strLocation = strLocation.Left(strLocation.length() - 4);

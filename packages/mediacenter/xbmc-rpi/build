@@ -81,7 +81,7 @@ else
 fi
 
 if [ "$CEC_SUPPORT" = yes ]; then
-  XBMC_CEC="--enable-libcec"
+  XBMC_CEC="--enable-libcec --enable-rpi-cec-api"
 else
   XBMC_CEC="--disable-libcec"
 fi
