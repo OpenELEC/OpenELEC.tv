@@ -22,6 +22,10 @@
 
 . config/options $1
 
+if [ "$OPENMAX" = "bcm2835-driver" ]; then
+  rpi_config_flags="--enable-rpi --with-rpi-include-path=$SYSROOT_PREFIX/usr/include --with-rpi-lib-path=$SYSROOT_PREFIX/usr/lib"
+fi
+
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
@@ -29,6 +33,7 @@ cd $PKG_BUILD
             --sysconfdir=/etc \
             --disable-static \
             --enable-shared \
+            $rpi_config_flags \
 
 make
 
