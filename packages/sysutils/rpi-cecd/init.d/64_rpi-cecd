@@ -21,5 +21,17 @@
 #
 # runlevels: openelec
 
-progress "starting RPi-CEC daemon"
-  rpi-cecd &>/var/log/rpi-cecd.log &
+# Test setting
+if [ ! -f /storage/.config/cec_disable ]; then
+  # Test HDMI
+  if [[ `tvservice -s | sed 's/.*HDMI //; s/|.*//'` == "off" ]]; then
+    # Not enabling because it would break composite output
+    progress "not starting RPi-CEC daemon because HDMI is off"
+  else
+    # Enabling
+    progress "starting RPi-CEC daemon"
+    rpi-cecd &>/var/log/rpi-cecd.log &
+  fi
+else
+  # Not enabling daemon because of setting
+fi
