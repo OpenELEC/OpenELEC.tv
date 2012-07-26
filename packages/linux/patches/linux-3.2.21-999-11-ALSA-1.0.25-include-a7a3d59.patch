@@ -1,0 +1,2240 @@
+diff -Nupr linux-3.2.21/include/sound/asoundef.h alsa-kernel/include/sound/asoundef.h
+--- linux-3.2.21/include/sound/asoundef.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/asoundef.h	2012-06-25 14:17:11.684071886 +0200
+@@ -170,6 +170,47 @@
+ #define IEC958_AES5_CON_CGMSA_COPYNOMORE (2<<0)	/* condition not be used */
+ #define IEC958_AES5_CON_CGMSA_COPYNEVER	(3<<0)	/* no copying is permitted */
+ 
++/****************************************************************************
++ *                                                                          *
++ *        CEA-861 Audio InfoFrame. Used in HDMI and DisplayPort		    *
++ *                                                                          *
++ ****************************************************************************/
++#define CEA861_AUDIO_INFOFRAME_DB1CC		(7<<0) /* mask - channel count */
++#define CEA861_AUDIO_INFOFRAME_DB1CT		(0xf<<4) /* mask - coding type */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_FROM_STREAM (0<<4) /* refer to stream */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_IEC60958	(1<<4) /* IEC-60958 L-PCM */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_AC3	(2<<4) /* AC-3 */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_MPEG1	(3<<4) /* MPEG1 Layers 1 & 2 */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_MP3	(4<<4) /* MPEG1 Layer 3 */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_MPEG2_MULTICH (5<<4) /* MPEG2 Multichannel */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_AAC	(6<<4) /* AAC */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_DTS	(7<<4) /* DTS */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_ATRAC	(8<<4) /* ATRAC */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_ONEBIT	(9<<4) /* One Bit Audio */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_DOLBY_DIG_PLUS (10<<4) /* Dolby Digital + */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_DTS_HD	(11<<4) /* DTS-HD */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_MAT	(12<<4) /* MAT (MLP) */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_DST	(13<<4) /* DST */
++#define CEA861_AUDIO_INFOFRAME_DB1CT_WMA_PRO	(14<<4) /* WMA Pro */
++#define CEA861_AUDIO_INFOFRAME_DB2SF		(7<<2) /* mask - sample frequency */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_FROM_STREAM (0<<2) /* refer to stream */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_32000	(1<<2) /* 32kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_44100	(2<<2) /* 44.1kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_48000	(3<<2) /* 48kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_88200	(4<<2) /* 88.2kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_96000	(5<<2) /* 96kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_176400	(6<<2) /* 176.4kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SF_192000	(7<<2) /* 192kHz */
++#define CEA861_AUDIO_INFOFRAME_DB2SS		(3<<0) /* mask - sample size */
++#define CEA861_AUDIO_INFOFRAME_DB2SS_FROM_STREAM (0<<0) /* refer to stream */
++#define CEA861_AUDIO_INFOFRAME_DB2SS_16BIT	(1<<0) /* 16 bits */
++#define CEA861_AUDIO_INFOFRAME_DB2SS_20BIT	(2<<0) /* 20 bits */
++#define CEA861_AUDIO_INFOFRAME_DB2SS_24BIT	(3<<0) /* 24 bits */
++#define CEA861_AUDIO_INFOFRAME_DB5_DM_INH	(1<<7) /* mask - inhibit downmixing */
++#define CEA861_AUDIO_INFOFRAME_DB5_DM_INH_PERMITTED (0<<7) /* stereo downmix permitted */
++#define CEA861_AUDIO_INFOFRAME_DB5_DM_INH_PROHIBITED (1<<7) /* stereo downmis prohibited */
++#define CEA861_AUDIO_INFOFRAME_DB5_LSV		(0xf<<3) /* mask - level-shift values */
++
+ /*****************************************************************************
+  *                                                                           *
+  *                            MIDI v1.0 interface                            *
+diff -Nupr linux-3.2.21/include/sound/asound.h alsa-kernel/include/sound/asound.h
+--- linux-3.2.21/include/sound/asound.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/asound.h	2012-06-25 14:17:11.684071886 +0200
+@@ -70,6 +70,20 @@ struct snd_aes_iec958 {
+ 
+ /****************************************************************************
+  *                                                                          *
++ *        CEA-861 Audio InfoFrame. Used in HDMI and DisplayPort		    *
++ *                                                                          *
++ ****************************************************************************/
++
++struct snd_cea_861_aud_if {
++	unsigned char db1_ct_cc; /* coding type and channel count */
++	unsigned char db2_sf_ss; /* sample frequency and size */
++	unsigned char db3; /* not used, all zeros */
++	unsigned char db4_ca; /* channel allocation code */
++	unsigned char db5_dminh_lsv; /* downmix inhibit & level-shit values */
++};
++
++/****************************************************************************
++ *                                                                          *
+  *      Section for driver hardware dependent interface - /dev/snd/hw?      *
+  *                                                                          *
+  ****************************************************************************/
+diff -Nupr linux-3.2.21/include/sound/compress_driver.h alsa-kernel/include/sound/compress_driver.h
+--- linux-3.2.21/include/sound/compress_driver.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/compress_driver.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,167 @@
++/*
++ *  compress_driver.h - compress offload driver definations
++ *
++ *  Copyright (C) 2011 Intel Corporation
++ *  Authors:	Vinod Koul <vinod.koul@linux.intel.com>
++ *		Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
++ *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; version 2 of the License.
++ *
++ *  This program is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ */
++#ifndef __COMPRESS_DRIVER_H
++#define __COMPRESS_DRIVER_H
++
++#include <linux/types.h>
++#include <linux/sched.h>
++#include <sound/compress_offload.h>
++#include <sound/asound.h>
++#include <sound/pcm.h>
++
++struct snd_compr_ops;
++
++/**
++ * struct snd_compr_runtime: runtime stream description
++ * @state: stream state
++ * @ops: pointer to DSP callbacks
++ * @buffer: pointer to kernel buffer, valid only when not in mmap mode or
++ *	DSP doesn't implement copy
++ * @buffer_size: size of the above buffer
++ * @fragment_size: size of buffer fragment in bytes
++ * @fragments: number of such fragments
++ * @hw_pointer: offset of last location in buffer where DSP copied data
++ * @app_pointer: offset of last location in buffer where app wrote data
++ * @total_bytes_available: cumulative number of bytes made available in
++ *	the ring buffer
++ * @total_bytes_transferred: cumulative bytes transferred by offload DSP
++ * @sleep: poll sleep
++ */
++struct snd_compr_runtime {
++	snd_pcm_state_t state;
++	struct snd_compr_ops *ops;
++	void *buffer;
++	u64 buffer_size;
++	u32 fragment_size;
++	u32 fragments;
++	u64 hw_pointer;
++	u64 app_pointer;
++	u64 total_bytes_available;
++	u64 total_bytes_transferred;
++	wait_queue_head_t sleep;
++};
++
++/**
++ * struct snd_compr_stream: compressed stream
++ * @name: device name
++ * @ops: pointer to DSP callbacks
++ * @runtime: pointer to runtime structure
++ * @device: device pointer
++ * @direction: stream direction, playback/recording
++ * @private_data: pointer to DSP private data
++ */
++struct snd_compr_stream {
++	const char *name;
++	struct snd_compr_ops *ops;
++	struct snd_compr_runtime *runtime;
++	struct snd_compr *device;
++	enum snd_compr_direction direction;
++	void *private_data;
++};
++
++/**
++ * struct snd_compr_ops: compressed path DSP operations
++ * @open: Open the compressed stream
++ * This callback is mandatory and shall keep dsp ready to receive the stream
++ * parameter
++ * @free: Close the compressed stream, mandatory
++ * @set_params: Sets the compressed stream parameters, mandatory
++ * This can be called in during stream creation only to set codec params
++ * and the stream properties
++ * @get_params: retrieve the codec parameters, mandatory
++ * @trigger: Trigger operations like start, pause, resume, drain, stop.
++ * This callback is mandatory
++ * @pointer: Retrieve current h/w pointer information. Mandatory
++ * @copy: Copy the compressed data to/from userspace, Optional
++ * Can't be implemented if DSP supports mmap
++ * @mmap: DSP mmap method to mmap DSP memory
++ * @ack: Ack for DSP when data is written to audio buffer, Optional
++ * Not valid if copy is implemented
++ * @get_caps: Retrieve DSP capabilities, mandatory
++ * @get_codec_caps: Retrieve capabilities for a specific codec, mandatory
++ */
++struct snd_compr_ops {
++	int (*open)(struct snd_compr_stream *stream);
++	int (*free)(struct snd_compr_stream *stream);
++	int (*set_params)(struct snd_compr_stream *stream,
++			struct snd_compr_params *params);
++	int (*get_params)(struct snd_compr_stream *stream,
++			struct snd_codec *params);
++	int (*trigger)(struct snd_compr_stream *stream, int cmd);
++	int (*pointer)(struct snd_compr_stream *stream,
++			struct snd_compr_tstamp *tstamp);
++	int (*copy)(struct snd_compr_stream *stream, const char __user *buf,
++		       size_t count);
++	int (*mmap)(struct snd_compr_stream *stream,
++			struct vm_area_struct *vma);
++	int (*ack)(struct snd_compr_stream *stream, size_t bytes);
++	int (*get_caps) (struct snd_compr_stream *stream,
++			struct snd_compr_caps *caps);
++	int (*get_codec_caps) (struct snd_compr_stream *stream,
++			struct snd_compr_codec_caps *codec);
++};
++
++/**
++ * struct snd_compr: Compressed device
++ * @name: DSP device name
++ * @dev: Device pointer
++ * @ops: pointer to DSP callbacks
++ * @private_data: pointer to DSP pvt data
++ * @card: sound card pointer
++ * @direction: Playback or capture direction
++ * @lock: device lock
++ * @device: device id
++ */
++struct snd_compr {
++	const char *name;
++	struct device *dev;
++	struct snd_compr_ops *ops;
++	void *private_data;
++	struct snd_card *card;
++	unsigned int direction;
++	struct mutex lock;
++	int device;
++};
++
++/* compress device register APIs */
++int snd_compress_register(struct snd_compr *device);
++int snd_compress_deregister(struct snd_compr *device);
++int snd_compress_new(struct snd_card *card, int device,
++			int type, struct snd_compr *compr);
++
++/* dsp driver callback apis
++ * For playback: driver should call snd_compress_fragment_elapsed() to let the
++ * framework know that a fragment has been consumed from the ring buffer
++ *
++ * For recording: we want to know when a frame is available or when
++ * at least one frame is available so snd_compress_frame_elapsed()
++ * callback should be called when a encodeded frame is available
++ */
++static inline void snd_compr_fragment_elapsed(struct snd_compr_stream *stream)
++{
++	wake_up(&stream->runtime->sleep);
++}
++
++#endif
+diff -Nupr linux-3.2.21/include/sound/compress_offload.h alsa-kernel/include/sound/compress_offload.h
+--- linux-3.2.21/include/sound/compress_offload.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/compress_offload.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,161 @@
++/*
++ *  compress_offload.h - compress offload header definations
++ *
++ *  Copyright (C) 2011 Intel Corporation
++ *  Authors:	Vinod Koul <vinod.koul@linux.intel.com>
++ *		Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
++ *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; version 2 of the License.
++ *
++ *  This program is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ */
++#ifndef __COMPRESS_OFFLOAD_H
++#define __COMPRESS_OFFLOAD_H
++
++#include <linux/types.h>
++#include <sound/asound.h>
++#include <sound/compress_params.h>
++
++
++#define SNDRV_COMPRESS_VERSION SNDRV_PROTOCOL_VERSION(0, 1, 0)
++/**
++ * struct snd_compressed_buffer: compressed buffer
++ * @fragment_size: size of buffer fragment in bytes
++ * @fragments: number of such fragments
++ */
++struct snd_compressed_buffer {
++	__u32 fragment_size;
++	__u32 fragments;
++};
++
++/**
++ * struct snd_compr_params: compressed stream params
++ * @buffer: buffer description
++ * @codec: codec parameters
++ * @no_wake_mode: dont wake on fragment elapsed
++ */
++struct snd_compr_params {
++	struct snd_compressed_buffer buffer;
++	struct snd_codec codec;
++	__u8 no_wake_mode;
++};
++
++/**
++ * struct snd_compr_tstamp: timestamp descriptor
++ * @byte_offset: Byte offset in ring buffer to DSP
++ * @copied_total: Total number of bytes copied from/to ring buffer to/by DSP
++ * @pcm_frames: Frames decoded or encoded by DSP. This field will evolve by
++ *	large steps and should only be used to monitor encoding/decoding
++ *	progress. It shall not be used for timing estimates.
++ * @pcm_io_frames: Frames rendered or received by DSP into a mixer or an audio
++ * output/input. This field should be used for A/V sync or time estimates.
++ * @sampling_rate: sampling rate of audio
++ */
++struct snd_compr_tstamp {
++	__u32 byte_offset;
++	__u32 copied_total;
++	snd_pcm_uframes_t pcm_frames;
++	snd_pcm_uframes_t pcm_io_frames;
++	__u32 sampling_rate;
++};
++
++/**
++ * struct snd_compr_avail: avail descriptor
++ * @avail: Number of bytes available in ring buffer for writing/reading
++ * @tstamp: timestamp infomation
++ */
++struct snd_compr_avail {
++	__u64 avail;
++	struct snd_compr_tstamp tstamp;
++};
++
++enum snd_compr_direction {
++	SND_COMPRESS_PLAYBACK = 0,
++	SND_COMPRESS_CAPTURE
++};
++
++/**
++ * struct snd_compr_caps: caps descriptor
++ * @codecs: pointer to array of codecs
++ * @direction: direction supported. Of type snd_compr_direction
++ * @min_fragment_size: minimum fragment supported by DSP
++ * @max_fragment_size: maximum fragment supported by DSP
++ * @min_fragments: min fragments supported by DSP
++ * @max_fragments: max fragments supported by DSP
++ * @num_codecs: number of codecs supported
++ * @reserved: reserved field
++ */
++struct snd_compr_caps {
++	__u32 num_codecs;
++	__u32 direction;
++	__u32 min_fragment_size;
++	__u32 max_fragment_size;
++	__u32 min_fragments;
++	__u32 max_fragments;
++	__u32 codecs[MAX_NUM_CODECS];
++	__u32 reserved[11];
++};
++
++/**
++ * struct snd_compr_codec_caps: query capability of codec
++ * @codec: codec for which capability is queried
++ * @num_descriptors: number of codec descriptors
++ * @descriptor: array of codec capability descriptor
++ */
++struct snd_compr_codec_caps {
++	__u32 codec;
++	__u32 num_descriptors;
++	struct snd_codec_desc descriptor[MAX_NUM_CODEC_DESCRIPTORS];
++};
++
++/**
++ * compress path ioctl definitions
++ * SNDRV_COMPRESS_GET_CAPS: Query capability of DSP
++ * SNDRV_COMPRESS_GET_CODEC_CAPS: Query capability of a codec
++ * SNDRV_COMPRESS_SET_PARAMS: Set codec and stream parameters
++ * Note: only codec params can be changed runtime and stream params cant be
++ * SNDRV_COMPRESS_GET_PARAMS: Query codec params
++ * SNDRV_COMPRESS_TSTAMP: get the current timestamp value
++ * SNDRV_COMPRESS_AVAIL: get the current buffer avail value.
++ * This also queries the tstamp properties
++ * SNDRV_COMPRESS_PAUSE: Pause the running stream
++ * SNDRV_COMPRESS_RESUME: resume a paused stream
++ * SNDRV_COMPRESS_START: Start a stream
++ * SNDRV_COMPRESS_STOP: stop a running stream, discarding ring buffer content
++ * and the buffers currently with DSP
++ * SNDRV_COMPRESS_DRAIN: Play till end of buffers and stop after that
++ * SNDRV_COMPRESS_IOCTL_VERSION: Query the API version
++ */
++#define SNDRV_COMPRESS_IOCTL_VERSION	_IOR('C', 0x00, int)
++#define SNDRV_COMPRESS_GET_CAPS		_IOWR('C', 0x10, struct snd_compr_caps)
++#define SNDRV_COMPRESS_GET_CODEC_CAPS	_IOWR('C', 0x11,\
++						struct snd_compr_codec_caps)
++#define SNDRV_COMPRESS_SET_PARAMS	_IOW('C', 0x12, struct snd_compr_params)
++#define SNDRV_COMPRESS_GET_PARAMS	_IOR('C', 0x13, struct snd_codec)
++#define SNDRV_COMPRESS_TSTAMP		_IOR('C', 0x20, struct snd_compr_tstamp)
++#define SNDRV_COMPRESS_AVAIL		_IOR('C', 0x21, struct snd_compr_avail)
++#define SNDRV_COMPRESS_PAUSE		_IO('C', 0x30)
++#define SNDRV_COMPRESS_RESUME		_IO('C', 0x31)
++#define SNDRV_COMPRESS_START		_IO('C', 0x32)
++#define SNDRV_COMPRESS_STOP		_IO('C', 0x33)
++#define SNDRV_COMPRESS_DRAIN		_IO('C', 0x34)
++/*
++ * TODO
++ * 1. add mmap support
++ *
++ */
++#define SND_COMPR_TRIGGER_DRAIN 7 /*FIXME move this to pcm.h */
++#endif
+diff -Nupr linux-3.2.21/include/sound/compress_params.h alsa-kernel/include/sound/compress_params.h
+--- linux-3.2.21/include/sound/compress_params.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/compress_params.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,399 @@
++/*
++ *  compress_params.h - codec types and parameters for compressed data
++ *  streaming interface
++ *
++ *  Copyright (C) 2011 Intel Corporation
++ *  Authors:	Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
++ *              Vinod Koul <vinod.koul@linux.intel.com>
++ *
++ *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; version 2 of the License.
++ *
++ *  This program is distributed in the hope that it will be useful, but
++ *  WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * The definitions in this file are derived from the OpenMAX AL version 1.1
++ * and OpenMAX IL v 1.1.2 header files which contain the copyright notice below.
++ *
++ * Copyright (c) 2007-2010 The Khronos Group Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining
++ * a copy of this software and/or associated documentation files (the
++ * "Materials "), to deal in the Materials without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sublicense, and/or sell copies of the Materials, and to
++ * permit persons to whom the Materials are furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included
++ * in all copies or substantial portions of the Materials.
++ *
++ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
++ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
++ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
++ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
++ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
++ *
++ */
++#ifndef __SND_COMPRESS_PARAMS_H
++#define __SND_COMPRESS_PARAMS_H
++
++#include <linux/types.h>
++
++/* AUDIO CODECS SUPPORTED */
++#define MAX_NUM_CODECS 32
++#define MAX_NUM_CODEC_DESCRIPTORS 32
++#define MAX_NUM_BITRATES 32
++
++/* Codecs are listed linearly to allow for extensibility */
++#define SND_AUDIOCODEC_PCM                   ((__u32) 0x00000001)
++#define SND_AUDIOCODEC_MP3                   ((__u32) 0x00000002)
++#define SND_AUDIOCODEC_AMR                   ((__u32) 0x00000003)
++#define SND_AUDIOCODEC_AMRWB                 ((__u32) 0x00000004)
++#define SND_AUDIOCODEC_AMRWBPLUS             ((__u32) 0x00000005)
++#define SND_AUDIOCODEC_AAC                   ((__u32) 0x00000006)
++#define SND_AUDIOCODEC_WMA                   ((__u32) 0x00000007)
++#define SND_AUDIOCODEC_REAL                  ((__u32) 0x00000008)
++#define SND_AUDIOCODEC_VORBIS                ((__u32) 0x00000009)
++#define SND_AUDIOCODEC_FLAC                  ((__u32) 0x0000000A)
++#define SND_AUDIOCODEC_IEC61937              ((__u32) 0x0000000B)
++#define SND_AUDIOCODEC_G723_1                ((__u32) 0x0000000C)
++#define SND_AUDIOCODEC_G729                  ((__u32) 0x0000000D)
++
++/*
++ * Profile and modes are listed with bit masks. This allows for a
++ * more compact representation of fields that will not evolve
++ * (in contrast to the list of codecs)
++ */
++
++#define SND_AUDIOPROFILE_PCM                 ((__u32) 0x00000001)
++
++/* MP3 modes are only useful for encoders */
++#define SND_AUDIOCHANMODE_MP3_MONO           ((__u32) 0x00000001)
++#define SND_AUDIOCHANMODE_MP3_STEREO         ((__u32) 0x00000002)
++#define SND_AUDIOCHANMODE_MP3_JOINTSTEREO    ((__u32) 0x00000004)
++#define SND_AUDIOCHANMODE_MP3_DUAL           ((__u32) 0x00000008)
++
++#define SND_AUDIOPROFILE_AMR                 ((__u32) 0x00000001)
++
++/* AMR modes are only useful for encoders */
++#define SND_AUDIOMODE_AMR_DTX_OFF            ((__u32) 0x00000001)
++#define SND_AUDIOMODE_AMR_VAD1               ((__u32) 0x00000002)
++#define SND_AUDIOMODE_AMR_VAD2               ((__u32) 0x00000004)
++
++#define SND_AUDIOSTREAMFORMAT_UNDEFINED	     ((__u32) 0x00000000)
++#define SND_AUDIOSTREAMFORMAT_CONFORMANCE    ((__u32) 0x00000001)
++#define SND_AUDIOSTREAMFORMAT_IF1            ((__u32) 0x00000002)
++#define SND_AUDIOSTREAMFORMAT_IF2            ((__u32) 0x00000004)
++#define SND_AUDIOSTREAMFORMAT_FSF            ((__u32) 0x00000008)
++#define SND_AUDIOSTREAMFORMAT_RTPPAYLOAD     ((__u32) 0x00000010)
++#define SND_AUDIOSTREAMFORMAT_ITU            ((__u32) 0x00000020)
++
++#define SND_AUDIOPROFILE_AMRWB               ((__u32) 0x00000001)
++
++/* AMRWB modes are only useful for encoders */
++#define SND_AUDIOMODE_AMRWB_DTX_OFF          ((__u32) 0x00000001)
++#define SND_AUDIOMODE_AMRWB_VAD1             ((__u32) 0x00000002)
++#define SND_AUDIOMODE_AMRWB_VAD2             ((__u32) 0x00000004)
++
++#define SND_AUDIOPROFILE_AMRWBPLUS           ((__u32) 0x00000001)
++
++#define SND_AUDIOPROFILE_AAC                 ((__u32) 0x00000001)
++
++/* AAC modes are required for encoders and decoders */
++#define SND_AUDIOMODE_AAC_MAIN               ((__u32) 0x00000001)
++#define SND_AUDIOMODE_AAC_LC                 ((__u32) 0x00000002)
++#define SND_AUDIOMODE_AAC_SSR                ((__u32) 0x00000004)
++#define SND_AUDIOMODE_AAC_LTP                ((__u32) 0x00000008)
++#define SND_AUDIOMODE_AAC_HE                 ((__u32) 0x00000010)
++#define SND_AUDIOMODE_AAC_SCALABLE           ((__u32) 0x00000020)
++#define SND_AUDIOMODE_AAC_ERLC               ((__u32) 0x00000040)
++#define SND_AUDIOMODE_AAC_LD                 ((__u32) 0x00000080)
++#define SND_AUDIOMODE_AAC_HE_PS              ((__u32) 0x00000100)
++#define SND_AUDIOMODE_AAC_HE_MPS             ((__u32) 0x00000200)
++
++/* AAC formats are required for encoders and decoders */
++#define SND_AUDIOSTREAMFORMAT_MP2ADTS        ((__u32) 0x00000001)
++#define SND_AUDIOSTREAMFORMAT_MP4ADTS        ((__u32) 0x00000002)
++#define SND_AUDIOSTREAMFORMAT_MP4LOAS        ((__u32) 0x00000004)
++#define SND_AUDIOSTREAMFORMAT_MP4LATM        ((__u32) 0x00000008)
++#define SND_AUDIOSTREAMFORMAT_ADIF           ((__u32) 0x00000010)
++#define SND_AUDIOSTREAMFORMAT_MP4FF          ((__u32) 0x00000020)
++#define SND_AUDIOSTREAMFORMAT_RAW            ((__u32) 0x00000040)
++
++#define SND_AUDIOPROFILE_WMA7                ((__u32) 0x00000001)
++#define SND_AUDIOPROFILE_WMA8                ((__u32) 0x00000002)
++#define SND_AUDIOPROFILE_WMA9                ((__u32) 0x00000004)
++#define SND_AUDIOPROFILE_WMA10               ((__u32) 0x00000008)
++
++#define SND_AUDIOMODE_WMA_LEVEL1             ((__u32) 0x00000001)
++#define SND_AUDIOMODE_WMA_LEVEL2             ((__u32) 0x00000002)
++#define SND_AUDIOMODE_WMA_LEVEL3             ((__u32) 0x00000004)
++#define SND_AUDIOMODE_WMA_LEVEL4             ((__u32) 0x00000008)
++#define SND_AUDIOMODE_WMAPRO_LEVELM0         ((__u32) 0x00000010)
++#define SND_AUDIOMODE_WMAPRO_LEVELM1         ((__u32) 0x00000020)
++#define SND_AUDIOMODE_WMAPRO_LEVELM2         ((__u32) 0x00000040)
++#define SND_AUDIOMODE_WMAPRO_LEVELM3         ((__u32) 0x00000080)
++
++#define SND_AUDIOSTREAMFORMAT_WMA_ASF        ((__u32) 0x00000001)
++/*
++ * Some implementations strip the ASF header and only send ASF packets
++ * to the DSP
++ */
++#define SND_AUDIOSTREAMFORMAT_WMA_NOASF_HDR  ((__u32) 0x00000002)
++
++#define SND_AUDIOPROFILE_REALAUDIO           ((__u32) 0x00000001)
++
++#define SND_AUDIOMODE_REALAUDIO_G2           ((__u32) 0x00000001)
++#define SND_AUDIOMODE_REALAUDIO_8            ((__u32) 0x00000002)
++#define SND_AUDIOMODE_REALAUDIO_10           ((__u32) 0x00000004)
++#define SND_AUDIOMODE_REALAUDIO_SURROUND     ((__u32) 0x00000008)
++
++#define SND_AUDIOPROFILE_VORBIS              ((__u32) 0x00000001)
++
++#define SND_AUDIOMODE_VORBIS                 ((__u32) 0x00000001)
++
++#define SND_AUDIOPROFILE_FLAC                ((__u32) 0x00000001)
++
++/*
++ * Define quality levels for FLAC encoders, from LEVEL0 (fast)
++ * to LEVEL8 (best)
++ */
++#define SND_AUDIOMODE_FLAC_LEVEL0            ((__u32) 0x00000001)
++#define SND_AUDIOMODE_FLAC_LEVEL1            ((__u32) 0x00000002)
++#define SND_AUDIOMODE_FLAC_LEVEL2            ((__u32) 0x00000004)
++#define SND_AUDIOMODE_FLAC_LEVEL3            ((__u32) 0x00000008)
++#define SND_AUDIOMODE_FLAC_LEVEL4            ((__u32) 0x00000010)
++#define SND_AUDIOMODE_FLAC_LEVEL5            ((__u32) 0x00000020)
++#define SND_AUDIOMODE_FLAC_LEVEL6            ((__u32) 0x00000040)
++#define SND_AUDIOMODE_FLAC_LEVEL7            ((__u32) 0x00000080)
++#define SND_AUDIOMODE_FLAC_LEVEL8            ((__u32) 0x00000100)
++
++#define SND_AUDIOSTREAMFORMAT_FLAC           ((__u32) 0x00000001)
++#define SND_AUDIOSTREAMFORMAT_FLAC_OGG       ((__u32) 0x00000002)
++
++/* IEC61937 payloads without CUVP and preambles */
++#define SND_AUDIOPROFILE_IEC61937            ((__u32) 0x00000001)
++/* IEC61937 with S/PDIF preambles+CUVP bits in 32-bit containers */
++#define SND_AUDIOPROFILE_IEC61937_SPDIF      ((__u32) 0x00000002)
++
++/*
++ * IEC modes are mandatory for decoders. Format autodetection
++ * will only happen on the DSP side with mode 0. The PCM mode should
++ * not be used, the PCM codec should be used instead.
++ */
++#define SND_AUDIOMODE_IEC_REF_STREAM_HEADER  ((__u32) 0x00000000)
++#define SND_AUDIOMODE_IEC_LPCM		     ((__u32) 0x00000001)
++#define SND_AUDIOMODE_IEC_AC3		     ((__u32) 0x00000002)
++#define SND_AUDIOMODE_IEC_MPEG1		     ((__u32) 0x00000004)
++#define SND_AUDIOMODE_IEC_MP3		     ((__u32) 0x00000008)
++#define SND_AUDIOMODE_IEC_MPEG2		     ((__u32) 0x00000010)
++#define SND_AUDIOMODE_IEC_AACLC		     ((__u32) 0x00000020)
++#define SND_AUDIOMODE_IEC_DTS		     ((__u32) 0x00000040)
++#define SND_AUDIOMODE_IEC_ATRAC		     ((__u32) 0x00000080)
++#define SND_AUDIOMODE_IEC_SACD		     ((__u32) 0x00000100)
++#define SND_AUDIOMODE_IEC_EAC3		     ((__u32) 0x00000200)
++#define SND_AUDIOMODE_IEC_DTS_HD	     ((__u32) 0x00000400)
++#define SND_AUDIOMODE_IEC_MLP		     ((__u32) 0x00000800)
++#define SND_AUDIOMODE_IEC_DST		     ((__u32) 0x00001000)
++#define SND_AUDIOMODE_IEC_WMAPRO	     ((__u32) 0x00002000)
++#define SND_AUDIOMODE_IEC_REF_CXT            ((__u32) 0x00004000)
++#define SND_AUDIOMODE_IEC_HE_AAC	     ((__u32) 0x00008000)
++#define SND_AUDIOMODE_IEC_HE_AAC2	     ((__u32) 0x00010000)
++#define SND_AUDIOMODE_IEC_MPEG_SURROUND	     ((__u32) 0x00020000)
++
++#define SND_AUDIOPROFILE_G723_1              ((__u32) 0x00000001)
++
++#define SND_AUDIOMODE_G723_1_ANNEX_A         ((__u32) 0x00000001)
++#define SND_AUDIOMODE_G723_1_ANNEX_B         ((__u32) 0x00000002)
++#define SND_AUDIOMODE_G723_1_ANNEX_C         ((__u32) 0x00000004)
++
++#define SND_AUDIOPROFILE_G729                ((__u32) 0x00000001)
++
++#define SND_AUDIOMODE_G729_ANNEX_A           ((__u32) 0x00000001)
++#define SND_AUDIOMODE_G729_ANNEX_B           ((__u32) 0x00000002)
++
++/* <FIXME: multichannel encoders aren't supported for now. Would need
++   an additional definition of channel arrangement> */
++
++/* VBR/CBR definitions */
++#define SND_RATECONTROLMODE_CONSTANTBITRATE  ((__u32) 0x00000001)
++#define SND_RATECONTROLMODE_VARIABLEBITRATE  ((__u32) 0x00000002)
++
++/* Encoder options */
++
++struct snd_enc_wma {
++	__u32 super_block_align; /* WMA Type-specific data */
++};
++
++
++/**
++ * struct snd_enc_vorbis
++ * @quality: Sets encoding quality to n, between -1 (low) and 10 (high).
++ * In the default mode of operation, the quality level is 3.
++ * Normal quality range is 0 - 10.
++ * @managed: Boolean. Set  bitrate  management  mode. This turns off the
++ * normal VBR encoding, but allows hard or soft bitrate constraints to be
++ * enforced by the encoder. This mode can be slower, and may also be
++ * lower quality. It is primarily useful for streaming.
++ * @max_bit_rate: Enabled only if managed is TRUE
++ * @min_bit_rate: Enabled only if managed is TRUE
++ * @downmix: Boolean. Downmix input from stereo to mono (has no effect on
++ * non-stereo streams). Useful for lower-bitrate encoding.
++ *
++ * These options were extracted from the OpenMAX IL spec and Gstreamer vorbisenc
++ * properties
++ *
++ * For best quality users should specify VBR mode and set quality levels.
++ */
++
++struct snd_enc_vorbis {
++	__s32 quality;
++	__u32 managed;
++	__u32 max_bit_rate;
++	__u32 min_bit_rate;
++	__u32 downmix;
++};
++
++
++/**
++ * struct snd_enc_real
++ * @quant_bits: number of coupling quantization bits in the stream
++ * @start_region: coupling start region in the stream
++ * @num_regions: number of regions value
++ *
++ * These options were extracted from the OpenMAX IL spec
++ */
++
++struct snd_enc_real {
++	__u32 quant_bits;
++	__u32 start_region;
++	__u32 num_regions;
++};
++
++/**
++ * struct snd_enc_flac
++ * @num: serial number, valid only for OGG formats
++ *	needs to be set by application
++ * @gain: Add replay gain tags
++ *
++ * These options were extracted from the FLAC online documentation
++ * at http://flac.sourceforge.net/documentation_tools_flac.html
++ *
++ * To make the API simpler, it is assumed that the user will select quality
++ * profiles. Additional options that affect encoding quality and speed can
++ * be added at a later stage if needed.
++ *
++ * By default the Subset format is used by encoders.
++ *
++ * TAGS such as pictures, etc, cannot be handled by an offloaded encoder and are
++ * not supported in this API.
++ */
++
++struct snd_enc_flac {
++	__u32 num;
++	__u32 gain;
++};
++
++struct snd_enc_generic {
++	__u32 bw;	/* encoder bandwidth */
++	__s32 reserved[15];
++};
++
++union snd_codec_options {
++	struct snd_enc_wma wma;
++	struct snd_enc_vorbis vorbis;
++	struct snd_enc_real real;
++	struct snd_enc_flac flac;
++	struct snd_enc_generic generic;
++};
++
++/** struct snd_codec_desc - description of codec capabilities
++ * @max_ch: Maximum number of audio channels
++ * @sample_rates: Sampling rates in Hz, use SNDRV_PCM_RATE_xxx for this
++ * @bit_rate: Indexed array containing supported bit rates
++ * @num_bitrates: Number of valid values in bit_rate array
++ * @rate_control: value is specified by SND_RATECONTROLMODE defines.
++ * @profiles: Supported profiles. See SND_AUDIOPROFILE defines.
++ * @modes: Supported modes. See SND_AUDIOMODE defines
++ * @formats: Supported formats. See SND_AUDIOSTREAMFORMAT defines
++ * @min_buffer: Minimum buffer size handled by codec implementation
++ * @reserved: reserved for future use
++ *
++ * This structure provides a scalar value for profiles, modes and stream
++ * format fields.
++ * If an implementation supports multiple combinations, they will be listed as
++ * codecs with different descriptors, for example there would be 2 descriptors
++ * for AAC-RAW and AAC-ADTS.
++ * This entails some redundancy but makes it easier to avoid invalid
++ * configurations.
++ *
++ */
++
++struct snd_codec_desc {
++	__u32 max_ch;
++	__u32 sample_rates;
++	__u32 bit_rate[MAX_NUM_BITRATES];
++	__u32 num_bitrates;
++	__u32 rate_control;
++	__u32 profiles;
++	__u32 modes;
++	__u32 formats;
++	__u32 min_buffer;
++	__u32 reserved[15];
++};
++
++/** struct snd_codec
++ * @id: Identifies the supported audio encoder/decoder.
++ *		See SND_AUDIOCODEC macros.
++ * @ch_in: Number of input audio channels
++ * @ch_out: Number of output channels. In case of contradiction between
++ *		this field and the channelMode field, the channelMode field
++ *		overrides.
++ * @sample_rate: Audio sample rate of input data
++ * @bit_rate: Bitrate of encoded data. May be ignored by decoders
++ * @rate_control: Encoding rate control. See SND_RATECONTROLMODE defines.
++ *               Encoders may rely on profiles for quality levels.
++ *		 May be ignored by decoders.
++ * @profile: Mandatory for encoders, can be mandatory for specific
++ *		decoders as well. See SND_AUDIOPROFILE defines.
++ * @level: Supported level (Only used by WMA at the moment)
++ * @ch_mode: Channel mode for encoder. See SND_AUDIOCHANMODE defines
++ * @format: Format of encoded bistream. Mandatory when defined.
++ *		See SND_AUDIOSTREAMFORMAT defines.
++ * @align: Block alignment in bytes of an audio sample.
++ *		Only required for PCM or IEC formats.
++ * @options: encoder-specific settings
++ * @reserved: reserved for future use
++ */
++
++struct snd_codec {
++	__u32 id;
++	__u32 ch_in;
++	__u32 ch_out;
++	__u32 sample_rate;
++	__u32 bit_rate;
++	__u32 rate_control;
++	__u32 profile;
++	__u32 level;
++	__u32 ch_mode;
++	__u32 format;
++	__u32 align;
++	union snd_codec_options options;
++	__u32 reserved[3];
++};
++
++#endif
+diff -Nupr linux-3.2.21/include/sound/control.h alsa-kernel/include/sound/control.h
+--- linux-3.2.21/include/sound/control.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/control.h	2012-06-25 14:17:11.684071886 +0200
+@@ -40,7 +40,7 @@ struct snd_kcontrol_new {
+ 	snd_ctl_elem_iface_t iface;	/* interface identifier */
+ 	unsigned int device;		/* device/client number */
+ 	unsigned int subdevice;		/* subdevice (substream) number */
+-	unsigned char *name;		/* ASCII name of item */
++	const unsigned char *name;	/* ASCII name of item */
+ 	unsigned int index;		/* index of item */
+ 	unsigned int access;		/* access rights */
+ 	unsigned int count;		/* count of same elements */
+@@ -227,4 +227,17 @@ snd_ctl_add_slave_uncached(struct snd_kc
+ 	return _snd_ctl_add_slave(master, slave, SND_CTL_SLAVE_NEED_UPDATE);
+ }
+ 
++int snd_ctl_add_vmaster_hook(struct snd_kcontrol *kctl,
++			     void (*hook)(void *private_data, int),
++			     void *private_data);
++void snd_ctl_sync_vmaster_hook(struct snd_kcontrol *kctl);
++
++/*
++ * Helper functions for jack-detection controls
++ */
++struct snd_kcontrol *
++snd_kctl_jack_new(const char *name, int idx, void *private_data);
++void snd_kctl_jack_report(struct snd_card *card,
++			  struct snd_kcontrol *kctl, bool status);
++
+ #endif	/* __SOUND_CONTROL_H */
+diff -Nupr linux-3.2.21/include/sound/core.h alsa-kernel/include/sound/core.h
+--- linux-3.2.21/include/sound/core.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/core.h	2012-06-25 14:17:11.684071886 +0200
+@@ -26,7 +26,6 @@
+ #include <linux/mutex.h>		/* struct mutex */
+ #include <linux/rwsem.h>		/* struct rw_semaphore */
+ #include <linux/pm.h>			/* pm_message_t */
+-#include <linux/device.h>
+ #include <linux/stringify.h>
+ 
+ /* number of supported soundcards */
+@@ -39,10 +38,10 @@
+ #define CONFIG_SND_MAJOR	116	/* standard configuration */
+ 
+ /* forward declarations */
+-#ifdef CONFIG_PCI
+ struct pci_dev;
+-#endif
+ struct module;
++struct device;
++struct device_attribute;
+ 
+ /* device allocation stuff */
+ 
+@@ -62,6 +61,7 @@ typedef int __bitwise snd_device_type_t;
+ #define	SNDRV_DEV_BUS		((__force snd_device_type_t) 0x1007)
+ #define	SNDRV_DEV_CODEC		((__force snd_device_type_t) 0x1008)
+ #define	SNDRV_DEV_JACK          ((__force snd_device_type_t) 0x1009)
++#define	SNDRV_DEV_COMPRESS	((__force snd_device_type_t) 0x100A)
+ #define	SNDRV_DEV_LOWLEVEL	((__force snd_device_type_t) 0x2000)
+ 
+ typedef int __bitwise snd_device_state_t;
+@@ -325,6 +325,13 @@ void release_and_free_resource(struct re
+ 
+ /* --- */
+ 
++/* sound printk debug levels */
++enum {
++	SND_PR_ALWAYS,
++	SND_PR_DEBUG,
++	SND_PR_VERBOSE,
++};
++
+ #if defined(CONFIG_SND_DEBUG) || defined(CONFIG_SND_VERBOSE_PRINTK)
+ __printf(4, 5)
+ void __snd_printk(unsigned int level, const char *file, int line,
+@@ -354,6 +361,8 @@ void __snd_printk(unsigned int level, co
+  */
+ #define snd_printd(fmt, args...) \
+ 	__snd_printk(1, __FILE__, __LINE__, fmt, ##args)
++#define _snd_printd(level, fmt, args...) \
++	__snd_printk(level, __FILE__, __LINE__, fmt, ##args)
+ 
+ /**
+  * snd_BUG - give a BUG warning message and stack trace
+@@ -383,6 +392,7 @@ void __snd_printk(unsigned int level, co
+ #else /* !CONFIG_SND_DEBUG */
+ 
+ #define snd_printd(fmt, args...)	do { } while (0)
++#define _snd_printd(level, fmt, args...) do { } while (0)
+ #define snd_BUG()			do { } while (0)
+ static inline int __snd_bug_on(int cond)
+ {
+@@ -416,6 +426,7 @@ static inline int __snd_bug_on(int cond)
+ #define gameport_get_port_data(gp) (gp)->port_data
+ #endif
+ 
++#ifdef CONFIG_PCI
+ /* PCI quirk list helper */
+ struct snd_pci_quirk {
+ 	unsigned short subvendor;	/* PCI subvendor ID */
+@@ -455,5 +466,6 @@ snd_pci_quirk_lookup(struct pci_dev *pci
+ const struct snd_pci_quirk *
+ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
+ 			const struct snd_pci_quirk *list);
++#endif
+ 
+ #endif /* __SOUND_CORE_H */
+diff -Nupr linux-3.2.21/include/sound/cs42l52.h alsa-kernel/include/sound/cs42l52.h
+--- linux-3.2.21/include/sound/cs42l52.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/cs42l52.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,36 @@
++/*
++ * linux/sound/cs42l52.h -- Platform data for CS42L52
++ *
++ * Copyright (c) 2012 Cirrus Logic Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __CS42L52_H
++#define __CS42L52_H
++
++struct cs42l52_platform_data {
++
++	/* MICBIAS Level. Check datasheet Pg48 */
++	unsigned int micbias_lvl;
++
++	/* MICA mode selection 0=Single 1=Differential */
++	unsigned int mica_cfg;
++
++	/* MICB mode selection 0=Single 1=Differential */
++	unsigned int micb_cfg;
++
++	/* MICA Select 0=MIC1A 1=MIC2A */
++	unsigned int mica_sel;
++
++	/* MICB Select 0=MIC2A 1=MIC2B */
++	unsigned int micb_sel;
++
++	/* Charge Pump Freq. Check datasheet Pg73 */
++	unsigned int chgfreq;
++
++};
++
++#endif /* __CS42L52_H */
+diff -Nupr linux-3.2.21/include/sound/dmaengine_pcm.h alsa-kernel/include/sound/dmaengine_pcm.h
+--- linux-3.2.21/include/sound/dmaengine_pcm.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/dmaengine_pcm.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,49 @@
++/*
++ *  Copyright (C) 2012, Analog Devices Inc.
++ *	Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ *  This program is free software; you can redistribute it and/or modify it
++ *  under  the terms of the GNU General  Public License as published by the
++ *  Free Software Foundation;  either version 2 of the License, or (at your
++ *  option) any later version.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  675 Mass Ave, Cambridge, MA 02139, USA.
++ *
++ */
++#ifndef __SOUND_DMAENGINE_PCM_H__
++#define __SOUND_DMAENGINE_PCM_H__
++
++#include <sound/pcm.h>
++#include <linux/dmaengine.h>
++
++/**
++ * snd_pcm_substream_to_dma_direction - Get dma_transfer_direction for a PCM
++ *   substream
++ * @substream: PCM substream
++ */
++static inline enum dma_transfer_direction
++snd_pcm_substream_to_dma_direction(const struct snd_pcm_substream *substream)
++{
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
++		return DMA_MEM_TO_DEV;
++	else
++		return DMA_DEV_TO_MEM;
++}
++
++void snd_dmaengine_pcm_set_data(struct snd_pcm_substream *substream, void *data);
++void *snd_dmaengine_pcm_get_data(struct snd_pcm_substream *substream);
++
++int snd_hwparams_to_dma_slave_config(const struct snd_pcm_substream *substream,
++	const struct snd_pcm_hw_params *params, struct dma_slave_config *slave_config);
++int snd_dmaengine_pcm_trigger(struct snd_pcm_substream *substream, int cmd);
++snd_pcm_uframes_t snd_dmaengine_pcm_pointer(struct snd_pcm_substream *substream);
++
++int snd_dmaengine_pcm_open(struct snd_pcm_substream *substream,
++	dma_filter_fn filter_fn, void *filter_data);
++int snd_dmaengine_pcm_close(struct snd_pcm_substream *substream);
++
++struct dma_chan *snd_dmaengine_pcm_get_chan(struct snd_pcm_substream *substream);
++
++#endif
+diff -Nupr linux-3.2.21/include/sound/info.h alsa-kernel/include/sound/info.h
+--- linux-3.2.21/include/sound/info.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/info.h	2012-06-25 14:17:11.684071886 +0200
+@@ -72,7 +72,7 @@ struct snd_info_entry_ops {
+ 
+ struct snd_info_entry {
+ 	const char *name;
+-	mode_t mode;
++	umode_t mode;
+ 	long size;
+ 	unsigned short content;
+ 	union {
+diff -Nupr linux-3.2.21/include/sound/jack.h alsa-kernel/include/sound/jack.h
+--- linux-3.2.21/include/sound/jack.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/jack.h	2012-06-25 14:17:11.684071886 +0200
+@@ -53,6 +53,9 @@ enum snd_jack_types {
+ 	SND_JACK_BTN_5		= 0x0200,
+ };
+ 
++/* Keep in sync with definitions above */
++#define SND_JACK_SWITCH_TYPES 6
++
+ struct snd_jack {
+ 	struct input_dev *input_dev;
+ 	int registered;
+diff -Nupr linux-3.2.21/include/sound/Kbuild alsa-kernel/include/sound/Kbuild
+--- linux-3.2.21/include/sound/Kbuild	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/Kbuild	2012-06-25 14:17:11.680071851 +0200
+@@ -6,3 +6,5 @@ header-y += hdsp.h
+ header-y += hdspm.h
+ header-y += sb16_csp.h
+ header-y += sfnt_info.h
++header-y += compress_params.h
++header-y += compress_offload.h
+diff -Nupr linux-3.2.21/include/sound/max9768.h alsa-kernel/include/sound/max9768.h
+--- linux-3.2.21/include/sound/max9768.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/max9768.h	2012-06-25 14:17:11.684071886 +0200
+@@ -0,0 +1,24 @@
++/*
++ * Platform data for MAX9768
++ * Copyright (C) 2011, 2012 by Wolfram Sang, Pengutronix e.K.
++ * same licence as the driver
++ */
++
++#ifndef __SOUND_MAX9768_PDATA_H__
++#define __SOUND_MAX9768_PDATA_H__
++
++/**
++ * struct max9768_pdata - optional platform specific MAX9768 configuration
++ * @shdn_gpio:	GPIO to SHDN pin. If not valid, pin must be hardwired HIGH
++ * @mute_gpio:	GPIO to MUTE pin. If not valid, control for mute won't be added
++ * @flags: configuration flags, e.g. set classic PWM mode (check datasheet
++ *         regarding "filterless modulation" which is default).
++ */
++struct max9768_pdata {
++	int shdn_gpio;
++	int mute_gpio;
++	unsigned flags;
++#define MAX9768_FLAG_CLASSIC_PWM	(1 << 0)
++};
++
++#endif /* __SOUND_MAX9768_PDATA_H__*/
+diff -Nupr linux-3.2.21/include/sound/max98095.h alsa-kernel/include/sound/max98095.h
+--- linux-3.2.21/include/sound/max98095.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/max98095.h	2012-06-25 14:17:11.684071886 +0200
+@@ -49,6 +49,18 @@ struct max98095_pdata {
+ 	 */
+ 	unsigned int digmic_left_mode:1;
+ 	unsigned int digmic_right_mode:1;
++
++	/* Pin5 is the mechanical method of sensing jack insertion
++	 * but it is something that might not be supported.
++	 * 0 = PIN5 not supported
++	 * 1 = PIN5 supported
++	 */
++	unsigned int jack_detect_pin5en:1;
++
++	/* Slew amount for jack detection. Calculated as 4 * (delay + 1).
++	 * Default delay is 24 to get a time of 100ms.
++	 */
++	unsigned int jack_detect_delay;
+ };
+ 
+ #endif
+diff -Nupr linux-3.2.21/include/sound/minors.h alsa-kernel/include/sound/minors.h
+--- linux-3.2.21/include/sound/minors.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/minors.h	2012-06-25 14:17:11.684071886 +0200
+@@ -35,7 +35,7 @@
+ #define SNDRV_MINOR_TIMER		33	/* SNDRV_MINOR_GLOBAL + 1 * 32 */
+ 
+ #ifndef CONFIG_SND_DYNAMIC_MINORS
+-						/* 2 - 3 (reserved) */
++#define SNDRV_MINOR_COMPRESS		2	/* 2 - 3 */
+ #define SNDRV_MINOR_HWDEP		4	/* 4 - 7 */
+ #define SNDRV_MINOR_RAWMIDI		8	/* 8 - 15 */
+ #define SNDRV_MINOR_PCM_PLAYBACK	16	/* 16 - 23 */
+@@ -49,6 +49,7 @@
+ #define SNDRV_DEVICE_TYPE_PCM_CAPTURE	SNDRV_MINOR_PCM_CAPTURE
+ #define SNDRV_DEVICE_TYPE_SEQUENCER	SNDRV_MINOR_SEQUENCER
+ #define SNDRV_DEVICE_TYPE_TIMER		SNDRV_MINOR_TIMER
++#define SNDRV_DEVICE_TYPE_COMPRESS	SNDRV_MINOR_COMPRESS
+ 
+ #else /* CONFIG_SND_DYNAMIC_MINORS */
+ 
+@@ -60,6 +61,7 @@ enum {
+ 	SNDRV_DEVICE_TYPE_RAWMIDI,
+ 	SNDRV_DEVICE_TYPE_PCM_PLAYBACK,
+ 	SNDRV_DEVICE_TYPE_PCM_CAPTURE,
++	SNDRV_DEVICE_TYPE_COMPRESS,
+ };
+ 
+ #endif /* CONFIG_SND_DYNAMIC_MINORS */
+diff -Nupr linux-3.2.21/include/sound/pcm.h alsa-kernel/include/sound/pcm.h
+--- linux-3.2.21/include/sound/pcm.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/pcm.h	2012-06-25 14:17:11.688071921 +0200
+@@ -264,7 +264,7 @@ struct snd_pcm_hw_constraint_ratdens {
+ 
+ struct snd_pcm_hw_constraint_list {
+ 	unsigned int count;
+-	unsigned int *list;
++	const unsigned int *list;
+ 	unsigned int mask;
+ };
+ 
+@@ -454,6 +454,7 @@ struct snd_pcm {
+ 	void *private_data;
+ 	void (*private_free) (struct snd_pcm *pcm);
+ 	struct device *dev; /* actual hw device this belongs to */
++	bool internal; /* pcm is for internal use only */
+ #if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
+ 	struct snd_pcm_oss oss;
+ #endif
+@@ -475,6 +476,9 @@ extern const struct file_operations snd_
+ int snd_pcm_new(struct snd_card *card, const char *id, int device,
+ 		int playback_count, int capture_count,
+ 		struct snd_pcm **rpcm);
++int snd_pcm_new_internal(struct snd_card *card, const char *id, int device,
++		int playback_count, int capture_count,
++		struct snd_pcm **rpcm);
+ int snd_pcm_new_stream(struct snd_pcm *pcm, int stream, int substream_count);
+ 
+ int snd_pcm_notify(struct snd_pcm_notify *notify, int nfree);
+@@ -781,7 +785,8 @@ void snd_interval_muldivk(const struct s
+ 			  unsigned int k, struct snd_interval *c);
+ void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
+ 			  const struct snd_interval *b, struct snd_interval *c);
+-int snd_interval_list(struct snd_interval *i, unsigned int count, unsigned int *list, unsigned int mask);
++int snd_interval_list(struct snd_interval *i, unsigned int count,
++		      const unsigned int *list, unsigned int mask);
+ int snd_interval_ratnum(struct snd_interval *i,
+ 			unsigned int rats_count, struct snd_ratnum *rats,
+ 			unsigned int *nump, unsigned int *denp);
+@@ -888,6 +893,7 @@ extern const struct snd_pcm_hw_constrain
+ 
+ int snd_pcm_limit_hw_rates(struct snd_pcm_runtime *runtime);
+ unsigned int snd_pcm_rate_to_rate_bit(unsigned int rate);
++unsigned int snd_pcm_rate_bit_to_rate(unsigned int rate_bit);
+ 
+ static inline void snd_pcm_set_runtime_buffer(struct snd_pcm_substream *substream,
+ 					      struct snd_dma_buffer *bufp)
+diff -Nupr linux-3.2.21/include/sound/pcm_params.h alsa-kernel/include/sound/pcm_params.h
+--- linux-3.2.21/include/sound/pcm_params.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/pcm_params.h	2012-06-25 14:17:11.688071921 +0200
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#include <sound/pcm.h>
++
+ int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm, 
+ 			   struct snd_pcm_hw_params *params,
+ 			   snd_pcm_hw_param_t var, int *dir);
+diff -Nupr linux-3.2.21/include/sound/saif.h alsa-kernel/include/sound/saif.h
+--- linux-3.2.21/include/sound/saif.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/saif.h	2012-06-25 14:17:11.688071921 +0200
+@@ -10,7 +10,7 @@
+ #define __SOUND_SAIF_H__
+ 
+ struct mxs_saif_platform_data {
+-	int (*init) (void);
+-	int (*get_master_id) (unsigned int saif_id);
++	bool master_mode;	/* if true use master mode */
++	int master_id;		/* id of the master if in slave mode */
+ };
+ #endif
+diff -Nupr linux-3.2.21/include/sound/sh_fsi.h alsa-kernel/include/sound/sh_fsi.h
+--- linux-3.2.21/include/sound/sh_fsi.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/sh_fsi.h	2012-06-25 14:17:11.688071921 +0200
+@@ -21,10 +21,11 @@
+ /*
+  * flags format
+  *
+- * 0x000000BA
++ * 0x00000CBA
+  *
+  * A:  inversion
+  * B:  format mode
++ * C:  chip specific
+  */
+ 
+ /* A: clock inversion */
+@@ -39,6 +40,9 @@
+ #define SH_FSI_FMT_DAI		(0 << 4)
+ #define SH_FSI_FMT_SPDIF	(1 << 4)
+ 
++/* C: chip specific */
++#define SH_FSI_OPTION_MASK	0x00000F00
++#define SH_FSI_ENABLE_STREAM_MODE	(1 << 8) /* for 16bit data */
+ 
+ /*
+  * set_rate return value
+@@ -72,10 +76,16 @@
+ #define SH_FSI_BPFMD_32		(5 << 4)
+ #define SH_FSI_BPFMD_16		(6 << 4)
+ 
++struct sh_fsi_port_info {
++	unsigned long flags;
++	int tx_id;
++	int rx_id;
++	int (*set_rate)(struct device *dev, int rate, int enable);
++};
++
+ struct sh_fsi_platform_info {
+-	unsigned long porta_flags;
+-	unsigned long portb_flags;
+-	int (*set_rate)(struct device *dev, int is_porta, int rate, int enable);
++	struct sh_fsi_port_info port_a;
++	struct sh_fsi_port_info port_b;
+ };
+ 
+ #endif /* __SOUND_FSI_H */
+diff -Nupr linux-3.2.21/include/sound/simple_card.h alsa-kernel/include/sound/simple_card.h
+--- linux-3.2.21/include/sound/simple_card.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/simple_card.h	2012-06-25 14:17:11.688071921 +0200
+@@ -0,0 +1,38 @@
++/*
++ * ASoC simple sound card support
++ *
++ * Copyright (C) 2012 Renesas Solutions Corp.
++ * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __SIMPLE_CARD_H
++#define __SIMPLE_CARD_H
++
++#include <sound/soc.h>
++
++struct asoc_simple_dai_init_info {
++	unsigned int fmt;
++	unsigned int cpu_daifmt;
++	unsigned int codec_daifmt;
++	unsigned int sysclk;
++};
++
++struct asoc_simple_card_info {
++	const char *name;
++	const char *card;
++	const char *cpu_dai;
++	const char *codec;
++	const char *platform;
++	const char *codec_dai;
++	struct asoc_simple_dai_init_info *init; /* for snd_link.init */
++
++	/* used in simple-card.c */
++	struct snd_soc_dai_link snd_link;
++	struct snd_soc_card snd_card;
++};
++
++#endif /* __SIMPLE_CARD_H */
+diff -Nupr linux-3.2.21/include/sound/soc-dai.h alsa-kernel/include/sound/soc-dai.h
+--- linux-3.2.21/include/sound/soc-dai.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/soc-dai.h	2012-06-25 14:17:11.688071921 +0200
+@@ -17,6 +17,7 @@
+ #include <linux/list.h>
+ 
+ struct snd_pcm_substream;
++struct snd_soc_dapm_widget;
+ 
+ /*
+  * DAI hardware audio formats.
+@@ -172,6 +173,8 @@ struct snd_soc_dai_ops {
+ 		struct snd_soc_dai *);
+ 	int (*trigger)(struct snd_pcm_substream *, int,
+ 		struct snd_soc_dai *);
++	int (*bespoke_trigger)(struct snd_pcm_substream *, int,
++		struct snd_soc_dai *);
+ 	/*
+ 	 * For hardware based FIFO caused delay reporting.
+ 	 * Optional.
+@@ -195,6 +198,7 @@ struct snd_soc_dai_driver {
+ 	const char *name;
+ 	unsigned int id;
+ 	int ac97_control;
++	unsigned int base;
+ 
+ 	/* DAI driver callbacks */
+ 	int (*probe)(struct snd_soc_dai *dai);
+@@ -238,6 +242,10 @@ struct snd_soc_dai {
+ 	unsigned char pop_wait:1;
+ 	unsigned char probed:1;
+ 
++	struct snd_soc_dapm_widget *playback_widget;
++	struct snd_soc_dapm_widget *capture_widget;
++	struct snd_soc_dapm_context dapm;
++
+ 	/* DAI DMA data */
+ 	void *playback_dma_data;
+ 	void *capture_dma_data;
+@@ -246,10 +254,9 @@ struct snd_soc_dai {
+ 	unsigned int rate;
+ 
+ 	/* parent platform/codec */
+-	union {
+-		struct snd_soc_platform *platform;
+-		struct snd_soc_codec *codec;
+-	};
++	struct snd_soc_platform *platform;
++	struct snd_soc_codec *codec;
++
+ 	struct snd_soc_card *card;
+ 
+ 	struct list_head list;
+diff -Nupr linux-3.2.21/include/sound/soc-dapm.h alsa-kernel/include/sound/soc-dapm.h
+--- linux-3.2.21/include/sound/soc-dapm.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/soc-dapm.h	2012-06-25 14:17:11.688071921 +0200
+@@ -13,10 +13,11 @@
+ #ifndef __LINUX_SND_SOC_DAPM_H
+ #define __LINUX_SND_SOC_DAPM_H
+ 
+-#include <linux/device.h>
+ #include <linux/types.h>
+ #include <sound/control.h>
+ 
++struct device;
++
+ /* widget has no PM register bit */
+ #define SND_SOC_NOPM	-1
+ 
+@@ -43,6 +44,9 @@
+ 	.num_kcontrols = 0}
+ 
+ /* platform domain */
++#define SND_SOC_DAPM_SIGGEN(wname) \
++{	.id = snd_soc_dapm_siggen, .name = wname, .kcontrol_news = NULL, \
++	.num_kcontrols = 0, .reg = SND_SOC_NOPM }
+ #define SND_SOC_DAPM_INPUT(wname) \
+ {	.id = snd_soc_dapm_input, .name = wname, .kcontrol_news = NULL, \
+ 	.num_kcontrols = 0, .reg = SND_SOC_NOPM }
+@@ -137,10 +141,6 @@
+ {       .id = snd_soc_dapm_mixer, .name = wname, .reg = wreg, .shift = wshift, \
+ 	.invert = winvert, .kcontrol_news = wcontrols, \
+ 	.num_kcontrols = wncontrols, .event = wevent, .event_flags = wflags}
+-#define SND_SOC_DAPM_MICBIAS_E(wname, wreg, wshift, winvert, wevent, wflags) \
+-{	.id = snd_soc_dapm_micbias, .name = wname, .reg = wreg, .shift = wshift, \
+-	.invert = winvert, .kcontrol_news = NULL, .num_kcontrols = 0, \
+-	.event = wevent, .event_flags = wflags}
+ #define SND_SOC_DAPM_SWITCH_E(wname, wreg, wshift, winvert, wcontrols, \
+ 	wevent, wflags) \
+ {	.id = snd_soc_dapm_switch, .name = wname, .reg = wreg, .shift = wshift, \
+@@ -240,6 +240,10 @@
+ {	.id = snd_soc_dapm_supply, .name = wname, .reg = wreg,	\
+ 	.shift = wshift, .invert = winvert, .event = wevent, \
+ 	.event_flags = wflags}
++#define SND_SOC_DAPM_REGULATOR_SUPPLY(wname, wdelay) \
++{	.id = snd_soc_dapm_regulator_supply, .name = wname, \
++	.reg = SND_SOC_NOPM, .shift = wdelay, .event = dapm_regulator_event, \
++	.event_flags = SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD }
+ 
+ /* dapm kcontrol types */
+ #define SOC_DAPM_SINGLE(xname, reg, shift, max, invert) \
+@@ -316,9 +320,13 @@ struct snd_soc_dapm_path;
+ struct snd_soc_dapm_pin;
+ struct snd_soc_dapm_route;
+ struct snd_soc_dapm_context;
++struct regulator;
++struct snd_soc_dapm_widget_list;
+ 
+ int dapm_reg_event(struct snd_soc_dapm_widget *w,
+ 		   struct snd_kcontrol *kcontrol, int event);
++int dapm_regulator_event(struct snd_soc_dapm_widget *w,
++			 struct snd_kcontrol *kcontrol, int event);
+ 
+ /* dapm controls */
+ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
+@@ -343,11 +351,16 @@ int snd_soc_dapm_get_pin_switch(struct s
+ 	struct snd_ctl_elem_value *uncontrol);
+ int snd_soc_dapm_put_pin_switch(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_value *uncontrol);
+-int snd_soc_dapm_new_control(struct snd_soc_dapm_context *dapm,
+-	const struct snd_soc_dapm_widget *widget);
+ int snd_soc_dapm_new_controls(struct snd_soc_dapm_context *dapm,
+ 	const struct snd_soc_dapm_widget *widget,
+ 	int num);
++int snd_soc_dapm_new_dai_widgets(struct snd_soc_dapm_context *dapm,
++				 struct snd_soc_dai *dai);
++int snd_soc_dapm_link_dai_widgets(struct snd_soc_card *card);
++int snd_soc_dapm_new_pcm(struct snd_soc_card *card,
++			 const struct snd_soc_pcm_stream *params,
++			 struct snd_soc_dapm_widget *source,
++			 struct snd_soc_dapm_widget *sink);
+ 
+ /* dapm path setup */
+ int snd_soc_dapm_new_widgets(struct snd_soc_dapm_context *dapm);
+@@ -358,10 +371,16 @@ int snd_soc_dapm_weak_routes(struct snd_
+ 			     const struct snd_soc_dapm_route *route, int num);
+ 
+ /* dapm events */
+-int snd_soc_dapm_stream_event(struct snd_soc_pcm_runtime *rtd,
+-	const char *stream, int event);
++void snd_soc_dapm_stream_event(struct snd_soc_pcm_runtime *rtd, int stream,
++	int event);
+ void snd_soc_dapm_shutdown(struct snd_soc_card *card);
+ 
++/* external DAPM widget events */
++int snd_soc_dapm_mixer_update_power(struct snd_soc_dapm_widget *widget,
++		struct snd_kcontrol *kcontrol, int connect);
++int snd_soc_dapm_mux_update_power(struct snd_soc_dapm_widget *widget,
++				 struct snd_kcontrol *kcontrol, int mux, struct soc_enum *e);
++
+ /* dapm sys fs - used by the core */
+ int snd_soc_dapm_sys_add(struct device *dev);
+ void snd_soc_dapm_debugfs_init(struct snd_soc_dapm_context *dapm,
+@@ -380,10 +399,15 @@ int snd_soc_dapm_force_enable_pin(struct
+ 				  const char *pin);
+ int snd_soc_dapm_ignore_suspend(struct snd_soc_dapm_context *dapm,
+ 				const char *pin);
++void snd_soc_dapm_auto_nc_codec_pins(struct snd_soc_codec *codec);
+ 
+ /* Mostly internal - should not normally be used */
+ void dapm_mark_dirty(struct snd_soc_dapm_widget *w, const char *reason);
+ 
++/* dapm path query */
++int snd_soc_dapm_dai_get_connected_widgets(struct snd_soc_dai *dai, int stream,
++	struct snd_soc_dapm_widget_list **list);
++
+ /* dapm widget types */
+ enum snd_soc_dapm_type {
+ 	snd_soc_dapm_input = 0,		/* input pin */
+@@ -407,8 +431,17 @@ enum snd_soc_dapm_type {
+ 	snd_soc_dapm_pre,			/* machine specific pre widget - exec first */
+ 	snd_soc_dapm_post,			/* machine specific post widget - exec last */
+ 	snd_soc_dapm_supply,		/* power/clock supply */
++	snd_soc_dapm_regulator_supply,	/* external regulator */
+ 	snd_soc_dapm_aif_in,		/* audio interface input */
+ 	snd_soc_dapm_aif_out,		/* audio interface output */
++	snd_soc_dapm_siggen,		/* signal generator */
++	snd_soc_dapm_dai,		/* link to DAI structure */
++	snd_soc_dapm_dai_link,		/* link between two DAI structures */
++};
++
++enum snd_soc_dapm_subclass {
++	SND_SOC_DAPM_CLASS_INIT		= 0,
++	SND_SOC_DAPM_CLASS_RUNTIME	= 1,
+ };
+ 
+ /*
+@@ -429,8 +462,8 @@ struct snd_soc_dapm_route {
+ 
+ /* dapm audio path between two widgets */
+ struct snd_soc_dapm_path {
+-	char *name;
+-	char *long_name;
++	const char *name;
++	const char *long_name;
+ 
+ 	/* source (input) and sink (output) widgets */
+ 	struct snd_soc_dapm_widget *source;
+@@ -453,15 +486,19 @@ struct snd_soc_dapm_path {
+ /* dapm widget */
+ struct snd_soc_dapm_widget {
+ 	enum snd_soc_dapm_type id;
+-	char *name;		/* widget name */
+-	char *sname;	/* stream name */
++	const char *name;		/* widget name */
++	const char *sname;	/* stream name */
+ 	struct snd_soc_codec *codec;
+ 	struct snd_soc_platform *platform;
+ 	struct list_head list;
+ 	struct snd_soc_dapm_context *dapm;
+ 
++	void *priv;				/* widget specific data */
++	struct regulator *regulator;		/* attached regulator */
++	const struct snd_soc_pcm_stream *params; /* params for dai links */
++
+ 	/* dapm control */
+-	short reg;						/* negative reg = no direct dapm */
++	int reg;				/* negative reg = no direct dapm */
+ 	unsigned char shift;			/* bits to shift */
+ 	unsigned int saved_value;		/* widget saved value */
+ 	unsigned int value;				/* widget current value */
+diff -Nupr linux-3.2.21/include/sound/soc-dpcm.h alsa-kernel/include/sound/soc-dpcm.h
+--- linux-3.2.21/include/sound/soc-dpcm.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/soc-dpcm.h	2012-06-25 14:17:11.688071921 +0200
+@@ -0,0 +1,138 @@
++/*
++ * linux/sound/soc-dpcm.h -- ALSA SoC Dynamic PCM Support
++ *
++ * Author:		Liam Girdwood <lrg@ti.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __LINUX_SND_SOC_DPCM_H
++#define __LINUX_SND_SOC_DPCM_H
++
++#include <linux/list.h>
++#include <sound/pcm.h>
++
++struct snd_soc_pcm_runtime;
++
++/*
++ * Types of runtime_update to perform. e.g. originated from FE PCM ops
++ * or audio route changes triggered by muxes/mixers.
++ */
++enum snd_soc_dpcm_update {
++	SND_SOC_DPCM_UPDATE_NO	= 0,
++	SND_SOC_DPCM_UPDATE_BE,
++	SND_SOC_DPCM_UPDATE_FE,
++};
++
++/*
++ * Dynamic PCM Frontend -> Backend link management states.
++ */
++enum snd_soc_dpcm_link_state {
++	SND_SOC_DPCM_LINK_STATE_NEW	= 0,	/* newly created link */
++	SND_SOC_DPCM_LINK_STATE_FREE,		/* link to be dismantled */
++};
++
++/*
++ * Dynamic PCM Frontend -> Backend link PCM states.
++ */
++enum snd_soc_dpcm_state {
++	SND_SOC_DPCM_STATE_NEW	= 0,
++	SND_SOC_DPCM_STATE_OPEN,
++	SND_SOC_DPCM_STATE_HW_PARAMS,
++	SND_SOC_DPCM_STATE_PREPARE,
++	SND_SOC_DPCM_STATE_START,
++	SND_SOC_DPCM_STATE_STOP,
++	SND_SOC_DPCM_STATE_PAUSED,
++	SND_SOC_DPCM_STATE_SUSPEND,
++	SND_SOC_DPCM_STATE_HW_FREE,
++	SND_SOC_DPCM_STATE_CLOSE,
++};
++
++/*
++ * Dynamic PCM trigger ordering. Triggering flexibility is required as some
++ * DSPs require triggering before/after their CPU platform and DAIs.
++ *
++ * i.e. some clients may want to manually order this call in their PCM
++ * trigger() whilst others will just use the regular core ordering.
++ */
++enum snd_soc_dpcm_trigger {
++	SND_SOC_DPCM_TRIGGER_PRE		= 0,
++	SND_SOC_DPCM_TRIGGER_POST,
++	SND_SOC_DPCM_TRIGGER_BESPOKE,
++};
++
++/*
++ * Dynamic PCM link
++ * This links together a FE and BE DAI at runtime and stores the link
++ * state information and the hw_params configuration.
++ */
++struct snd_soc_dpcm {
++	/* FE and BE DAIs*/
++	struct snd_soc_pcm_runtime *be;
++	struct snd_soc_pcm_runtime *fe;
++
++	/* link state */
++	enum snd_soc_dpcm_link_state state;
++
++	/* list of BE and FE for this DPCM link */
++	struct list_head list_be;
++	struct list_head list_fe;
++
++	/* hw params for this link - may be different for each link */
++	struct snd_pcm_hw_params hw_params;
++#ifdef CONFIG_DEBUG_FS
++	struct dentry *debugfs_state;
++#endif
++};
++
++/*
++ * Dynamic PCM runtime data.
++ */
++struct snd_soc_dpcm_runtime {
++	struct list_head be_clients;
++	struct list_head fe_clients;
++
++	int users;
++	struct snd_pcm_runtime *runtime;
++	struct snd_pcm_hw_params hw_params;
++
++	/* state and update */
++	enum snd_soc_dpcm_update runtime_update;
++	enum snd_soc_dpcm_state state;
++};
++
++/* can this BE stop and free */
++int snd_soc_dpcm_can_be_free_stop(struct snd_soc_pcm_runtime *fe,
++		struct snd_soc_pcm_runtime *be, int stream);
++
++/* can this BE perform a hw_params() */
++int snd_soc_dpcm_can_be_params(struct snd_soc_pcm_runtime *fe,
++		struct snd_soc_pcm_runtime *be, int stream);
++
++/* is the current PCM operation for this FE ? */
++int snd_soc_dpcm_fe_can_update(struct snd_soc_pcm_runtime *fe, int stream);
++
++/* is the current PCM operation for this BE ? */
++int snd_soc_dpcm_be_can_update(struct snd_soc_pcm_runtime *fe,
++		struct snd_soc_pcm_runtime *be, int stream);
++
++/* get the substream for this BE */
++struct snd_pcm_substream *
++	snd_soc_dpcm_get_substream(struct snd_soc_pcm_runtime *be, int stream);
++
++/* get the BE runtime state */
++enum snd_soc_dpcm_state
++	snd_soc_dpcm_be_get_state(struct snd_soc_pcm_runtime *be, int stream);
++
++/* set the BE runtime state */
++void snd_soc_dpcm_be_set_state(struct snd_soc_pcm_runtime *be, int stream,
++	enum snd_soc_dpcm_state state);
++
++/* internal use only */
++int soc_dpcm_be_digital_mute(struct snd_soc_pcm_runtime *fe, int mute);
++int soc_dpcm_debugfs_add(struct snd_soc_pcm_runtime *rtd);
++int soc_dpcm_runtime_update(struct snd_soc_dapm_widget *);
++
++#endif
+diff -Nupr linux-3.2.21/include/sound/soc.h alsa-kernel/include/sound/soc.h
+--- linux-3.2.21/include/sound/soc.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/soc.h	2012-06-25 14:17:11.688071921 +0200
+@@ -55,6 +55,18 @@
+ 	.info = snd_soc_info_volsw, .get = snd_soc_get_volsw,\
+ 	.put = snd_soc_put_volsw, \
+ 	.private_value =  SOC_SINGLE_VALUE(reg, shift, max, invert) }
++#define SOC_SINGLE_SX_TLV(xname, xreg, xshift, xmin, xmax, tlv_array) \
++{       .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
++	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
++	SNDRV_CTL_ELEM_ACCESS_READWRITE, \
++	.tlv.p  = (tlv_array),\
++	.info = snd_soc_info_volsw, \
++	.get = snd_soc_get_volsw_sx,\
++	.put = snd_soc_put_volsw_sx, \
++	.private_value = (unsigned long)&(struct soc_mixer_control) \
++		{.reg = xreg, .rreg = xreg, \
++		.shift = xshift, .rshift = xshift, \
++		.max = xmax, .min = xmin} }
+ #define SOC_DOUBLE(xname, reg, shift_left, shift_right, max, invert) \
+ {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname),\
+ 	.info = snd_soc_info_volsw, .get = snd_soc_get_volsw, \
+@@ -85,6 +97,18 @@
+ 	.get = snd_soc_get_volsw, .put = snd_soc_put_volsw, \
+ 	.private_value = SOC_DOUBLE_R_VALUE(reg_left, reg_right, xshift, \
+ 					    xmax, xinvert) }
++#define SOC_DOUBLE_R_SX_TLV(xname, xreg, xrreg, xshift, xmin, xmax, tlv_array) \
++{       .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
++	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
++	SNDRV_CTL_ELEM_ACCESS_READWRITE, \
++	.tlv.p  = (tlv_array), \
++	.info = snd_soc_info_volsw, \
++	.get = snd_soc_get_volsw_sx, \
++	.put = snd_soc_put_volsw_sx, \
++	.private_value = (unsigned long)&(struct soc_mixer_control) \
++		{.reg = xreg, .rreg = xrreg, \
++		.shift = xshift, .rshift = xshift, \
++		.max = xmax, .min = xmin} }
+ #define SOC_DOUBLE_S8_TLV(xname, xreg, xmin, xmax, tlv_array) \
+ {	.iface  = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
+ 	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
+@@ -171,20 +195,33 @@
+ 	.get = xhandler_get, .put = xhandler_put, \
+ 	.private_value = (unsigned long)&xenum }
+ 
+-#define SOC_DOUBLE_R_SX_TLV(xname, xreg_left, xreg_right, xshift,\
+-		xmin, xmax, tlv_array) \
+-{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
+-	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
+-		  SNDRV_CTL_ELEM_ACCESS_READWRITE, \
+-	.tlv.p = (tlv_array), \
+-	.info = snd_soc_info_volsw_2r_sx, \
+-	.get = snd_soc_get_volsw_2r_sx, \
+-	.put = snd_soc_put_volsw_2r_sx, \
+-	.private_value = (unsigned long)&(struct soc_mixer_control) \
+-		{.reg = xreg_left, \
+-		 .rreg = xreg_right, .shift = xshift, \
+-		 .min = xmin, .max = xmax} }
++#define SND_SOC_BYTES(xname, xbase, xregs)		      \
++{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname,   \
++	.info = snd_soc_bytes_info, .get = snd_soc_bytes_get, \
++	.put = snd_soc_bytes_put, .private_value =	      \
++		((unsigned long)&(struct soc_bytes)           \
++		{.base = xbase, .num_regs = xregs }) }
++
++#define SND_SOC_BYTES_MASK(xname, xbase, xregs, xmask)	      \
++{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname,   \
++	.info = snd_soc_bytes_info, .get = snd_soc_bytes_get, \
++	.put = snd_soc_bytes_put, .private_value =	      \
++		((unsigned long)&(struct soc_bytes)           \
++		{.base = xbase, .num_regs = xregs,	      \
++		 .mask = xmask }) }
+ 
++#define SOC_SINGLE_XR_SX(xname, xregbase, xregcount, xnbits, \
++		xmin, xmax, xinvert) \
++{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
++	.info = snd_soc_info_xr_sx, .get = snd_soc_get_xr_sx, \
++	.put = snd_soc_put_xr_sx, \
++	.private_value = (unsigned long)&(struct soc_mreg_control) \
++		{.regbase = xregbase, .regcount = xregcount, .nbits = xnbits, \
++		.invert = xinvert, .min = xmin, .max = xmax} }
++
++#define SOC_SINGLE_STROBE(xname, xreg, xshift, xinvert) \
++	SOC_SINGLE_EXT(xname, xreg, xshift, 1, xinvert, \
++		snd_soc_get_strobe, snd_soc_put_strobe)
+ 
+ /*
+  * Simplified versions of above macros, declaring a struct and calculating
+@@ -231,6 +268,7 @@ enum snd_soc_bias_level {
+ 	SND_SOC_BIAS_ON = 3,
+ };
+ 
++struct device_node;
+ struct snd_jack;
+ struct snd_soc_card;
+ struct snd_soc_pcm_stream;
+@@ -249,6 +287,7 @@ struct snd_soc_jack_zone;
+ struct snd_soc_jack_pin;
+ struct snd_soc_cache_ops;
+ #include <sound/soc-dapm.h>
++#include <sound/soc-dpcm.h>
+ 
+ #ifdef CONFIG_GPIOLIB
+ struct snd_soc_jack_gpio;
+@@ -266,8 +305,6 @@ enum snd_soc_control_type {
+ 
+ enum snd_soc_compress_type {
+ 	SND_SOC_FLAT_COMPRESSION = 1,
+-	SND_SOC_LZO_COMPRESSION,
+-	SND_SOC_RBTREE_COMPRESSION
+ };
+ 
+ enum snd_soc_pcm_subclass {
+@@ -275,6 +312,11 @@ enum snd_soc_pcm_subclass {
+ 	SND_SOC_PCM_CLASS_BE	= 1,
+ };
+ 
++enum snd_soc_card_subclass {
++	SND_SOC_CARD_CLASS_INIT		= 0,
++	SND_SOC_CARD_CLASS_RUNTIME	= 1,
++};
++
+ int snd_soc_codec_set_sysclk(struct snd_soc_codec *codec, int clk_id,
+ 			     int source, unsigned int freq, int dir);
+ int snd_soc_codec_set_pll(struct snd_soc_codec *codec, int pll_id, int source,
+@@ -318,6 +360,12 @@ int snd_soc_platform_read(struct snd_soc
+ 					unsigned int reg);
+ int snd_soc_platform_write(struct snd_soc_platform *platform,
+ 					unsigned int reg, unsigned int val);
++int soc_new_pcm(struct snd_soc_pcm_runtime *rtd, int num);
++
++struct snd_pcm_substream *snd_soc_get_dai_substream(struct snd_soc_card *card,
++		const char *dai_link, int stream);
++struct snd_soc_pcm_runtime *snd_soc_get_pcm_runtime(struct snd_soc_card *card,
++		const char *dai_link);
+ 
+ /* Utility functions to get clock rates from various things */
+ int snd_soc_calc_frame_size(int sample_size, int channels, int tdm_slots);
+@@ -329,6 +377,9 @@ int snd_soc_params_to_bclk(struct snd_pc
+ int snd_soc_set_runtime_hwparams(struct snd_pcm_substream *substream,
+ 	const struct snd_pcm_hardware *hw);
+ 
++int snd_soc_platform_trigger(struct snd_pcm_substream *substream,
++		int cmd, struct snd_soc_platform *platform);
++
+ /* Jack reporting */
+ int snd_soc_jack_new(struct snd_soc_codec *codec, const char *id, int type,
+ 		     struct snd_soc_jack *jack);
+@@ -366,12 +417,16 @@ void snd_soc_free_ac97_codec(struct snd_
+  *Controls
+  */
+ struct snd_kcontrol *snd_soc_cnew(const struct snd_kcontrol_new *_template,
+-				  void *data, char *long_name,
++				  void *data, const char *long_name,
+ 				  const char *prefix);
+-int snd_soc_add_controls(struct snd_soc_codec *codec,
++int snd_soc_add_codec_controls(struct snd_soc_codec *codec,
+ 	const struct snd_kcontrol_new *controls, int num_controls);
+ int snd_soc_add_platform_controls(struct snd_soc_platform *platform,
+ 	const struct snd_kcontrol_new *controls, int num_controls);
++int snd_soc_add_card_controls(struct snd_soc_card *soc_card,
++	const struct snd_kcontrol_new *controls, int num_controls);
++int snd_soc_add_dai_controls(struct snd_soc_dai *dai,
++	const struct snd_kcontrol_new *controls, int num_controls);
+ int snd_soc_info_enum_double(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_info *uinfo);
+ int snd_soc_info_enum_ext(struct snd_kcontrol *kcontrol,
+@@ -395,6 +450,10 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	struct snd_ctl_elem_value *ucontrol);
+ #define snd_soc_get_volsw_2r snd_soc_get_volsw
+ #define snd_soc_put_volsw_2r snd_soc_put_volsw
++int snd_soc_get_volsw_sx(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol);
++int snd_soc_put_volsw_sx(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol);
+ int snd_soc_info_volsw_s8(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_info *uinfo);
+ int snd_soc_get_volsw_s8(struct snd_kcontrol *kcontrol,
+@@ -403,11 +462,21 @@ int snd_soc_put_volsw_s8(struct snd_kcon
+ 	struct snd_ctl_elem_value *ucontrol);
+ int snd_soc_limit_volume(struct snd_soc_codec *codec,
+ 	const char *name, int max);
+-int snd_soc_info_volsw_2r_sx(struct snd_kcontrol *kcontrol,
++int snd_soc_bytes_info(struct snd_kcontrol *kcontrol,
++		       struct snd_ctl_elem_info *uinfo);
++int snd_soc_bytes_get(struct snd_kcontrol *kcontrol,
++		      struct snd_ctl_elem_value *ucontrol);
++int snd_soc_bytes_put(struct snd_kcontrol *kcontrol,
++		      struct snd_ctl_elem_value *ucontrol);
++int snd_soc_info_xr_sx(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_info *uinfo);
+-int snd_soc_get_volsw_2r_sx(struct snd_kcontrol *kcontrol,
++int snd_soc_get_xr_sx(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol);
++int snd_soc_put_xr_sx(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol);
++int snd_soc_get_strobe(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_value *ucontrol);
+-int snd_soc_put_volsw_2r_sx(struct snd_kcontrol *kcontrol,
++int snd_soc_put_strobe(struct snd_kcontrol *kcontrol,
+ 	struct snd_ctl_elem_value *ucontrol);
+ 
+ /**
+@@ -488,6 +557,7 @@ struct snd_soc_jack_gpio {
+ #endif
+ 
+ struct snd_soc_jack {
++	struct mutex mutex;
+ 	struct snd_jack *jack;
+ 	struct snd_soc_codec *codec;
+ 	struct list_head pins;
+@@ -505,6 +575,7 @@ struct snd_soc_pcm_stream {
+ 	unsigned int rate_max;		/* max rate */
+ 	unsigned int channels_min;	/* min channels */
+ 	unsigned int channels_max;	/* max channels */
++	unsigned int sig_bits;		/* number of bits of content */
+ };
+ 
+ /* SoC audio ops */
+@@ -559,6 +630,7 @@ struct snd_soc_codec {
+ 	unsigned int ac97_created:1; /* Codec has been created by SoC */
+ 	unsigned int sysfs_registered:1; /* codec has been sysfs registered */
+ 	unsigned int cache_init:1; /* codec cache has been initialized */
++	unsigned int using_regmap:1; /* using regmap access */
+ 	u32 cache_only;  /* Suppress writes to hardware */
+ 	u32 cache_sync; /* Cache needs to be synced to hardware */
+ 
+@@ -593,8 +665,7 @@ struct snd_soc_codec_driver {
+ 	/* driver ops */
+ 	int (*probe)(struct snd_soc_codec *);
+ 	int (*remove)(struct snd_soc_codec *);
+-	int (*suspend)(struct snd_soc_codec *,
+-			pm_message_t state);
++	int (*suspend)(struct snd_soc_codec *);
+ 	int (*resume)(struct snd_soc_codec *);
+ 
+ 	/* Default control and setup, added after probe() is run */
+@@ -638,6 +709,8 @@ struct snd_soc_codec_driver {
+ 	/* codec stream completion event */
+ 	int (*stream_event)(struct snd_soc_dapm_context *dapm, int event);
+ 
++	bool ignore_pmdown_time;  /* Doesn't benefit from pmdown delay */
++
+ 	/* probe ordering - for components with runtime dependencies */
+ 	int probe_order;
+ 	int remove_order;
+@@ -683,6 +756,7 @@ struct snd_soc_platform_driver {
+ 	/* platform IO - used for platform DAPM */
+ 	unsigned int (*read)(struct snd_soc_platform *, unsigned int);
+ 	int (*write)(struct snd_soc_platform *, unsigned int, unsigned int);
++	int (*bespoke_trigger)(struct snd_pcm_substream *, int);
+ };
+ 
+ struct snd_soc_platform {
+@@ -690,6 +764,7 @@ struct snd_soc_platform {
+ 	int id;
+ 	struct device *dev;
+ 	struct snd_soc_platform_driver *driver;
++	struct mutex mutex;
+ 
+ 	unsigned int suspended:1; /* platform is suspended */
+ 	unsigned int probed:1;
+@@ -699,6 +774,11 @@ struct snd_soc_platform {
+ 	struct list_head card_list;
+ 
+ 	struct snd_soc_dapm_context dapm;
++
++#ifdef CONFIG_DEBUG_FS
++	struct dentry *debugfs_platform_root;
++	struct dentry *debugfs_dapm;
++#endif
+ };
+ 
+ struct snd_soc_dai_link {
+@@ -706,21 +786,42 @@ struct snd_soc_dai_link {
+ 	const char *name;			/* Codec name */
+ 	const char *stream_name;		/* Stream name */
+ 	const char *codec_name;		/* for multi-codec */
++	const struct device_node *codec_of_node;
+ 	const char *platform_name;	/* for multi-platform */
++	const struct device_node *platform_of_node;
+ 	const char *cpu_dai_name;
++	const struct device_node *cpu_dai_of_node;
+ 	const char *codec_dai_name;
++	int be_id;	/* optional ID for machine driver BE identification */
++
++	const struct snd_soc_pcm_stream *params;
+ 
+ 	unsigned int dai_fmt;           /* format to set on init */
+ 
++	enum snd_soc_dpcm_trigger trigger[2]; /* trigger type for DPCM */
++
+ 	/* Keep DAI active over suspend */
+ 	unsigned int ignore_suspend:1;
+ 
+ 	/* Symmetry requirements */
+ 	unsigned int symmetric_rates:1;
+ 
++	/* Do not create a PCM for this DAI link (Backend link) */
++	unsigned int no_pcm:1;
++
++	/* This DAI link can route to other DAI links at runtime (Frontend)*/
++	unsigned int dynamic:1;
++
++	/* pmdown_time is ignored at stop */
++	unsigned int ignore_pmdown_time:1;
++
+ 	/* codec/machine specific init - e.g. add machine controls */
+ 	int (*init)(struct snd_soc_pcm_runtime *rtd);
+ 
++	/* optional hw_params re-writing for BE and FE sync */
++	int (*be_hw_params_fixup)(struct snd_soc_pcm_runtime *rtd,
++			struct snd_pcm_hw_params *params);
++
+ 	/* machine stream operations */
+ 	struct snd_soc_ops *ops;
+ };
+@@ -760,6 +861,7 @@ struct snd_soc_card {
+ 
+ 	struct list_head list;
+ 	struct mutex mutex;
++	struct mutex dapm_mutex;
+ 
+ 	bool instantiated;
+ 
+@@ -813,6 +915,7 @@ struct snd_soc_card {
+ 	int num_dapm_widgets;
+ 	const struct snd_soc_dapm_route *dapm_routes;
+ 	int num_dapm_routes;
++	bool fully_routed;
+ 
+ 	struct work_struct deferred_resume_work;
+ 
+@@ -840,17 +943,19 @@ struct snd_soc_card {
+ };
+ 
+ /* SoC machine DAI configuration, glues a codec and cpu DAI together */
+-struct snd_soc_pcm_runtime  {
+-	struct device dev;
++struct snd_soc_pcm_runtime {
++	struct device *dev;
+ 	struct snd_soc_card *card;
+ 	struct snd_soc_dai_link *dai_link;
+ 	struct mutex pcm_mutex;
+ 	enum snd_soc_pcm_subclass pcm_subclass;
+ 	struct snd_pcm_ops ops;
+ 
+-	unsigned int complete:1;
+ 	unsigned int dev_registered:1;
+ 
++	/* Dynamic PCM BE runtime data */
++	struct snd_soc_dpcm_runtime dpcm[2];
++
+ 	long pmdown_time;
+ 
+ 	/* runtime devices */
+@@ -861,6 +966,10 @@ struct snd_soc_pcm_runtime  {
+ 	struct snd_soc_dai *cpu_dai;
+ 
+ 	struct delayed_work delayed_work;
++#ifdef CONFIG_DEBUG_FS
++	struct dentry *debugfs_dpcm_root;
++	struct dentry *debugfs_dpcm_state;
++#endif
+ };
+ 
+ /* mixer control */
+@@ -869,6 +978,18 @@ struct soc_mixer_control {
+ 	unsigned int reg, rreg, shift, rshift, invert;
+ };
+ 
++struct soc_bytes {
++	int base;
++	int num_regs;
++	u32 mask;
++};
++
++/* multi register control */
++struct soc_mreg_control {
++	long min, max;
++	unsigned int regbase, regcount, nbits, invert;
++};
++
+ /* enumerated kcontrol */
+ struct soc_enum {
+ 	unsigned short reg;
+@@ -927,12 +1048,12 @@ static inline void *snd_soc_platform_get
+ static inline void snd_soc_pcm_set_drvdata(struct snd_soc_pcm_runtime *rtd,
+ 		void *data)
+ {
+-	dev_set_drvdata(&rtd->dev, data);
++	dev_set_drvdata(rtd->dev, data);
+ }
+ 
+ static inline void *snd_soc_pcm_get_drvdata(struct snd_soc_pcm_runtime *rtd)
+ {
+-	return dev_get_drvdata(&rtd->dev);
++	return dev_get_drvdata(rtd->dev);
+ }
+ 
+ static inline void snd_soc_initialize_card_lists(struct snd_soc_card *card)
+@@ -960,6 +1081,11 @@ static inline bool snd_soc_volsw_is_ster
+ int snd_soc_util_init(void);
+ void snd_soc_util_exit(void);
+ 
++int snd_soc_of_parse_card_name(struct snd_soc_card *card,
++			       const char *propname);
++int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
++				   const char *propname);
++
+ #include <sound/soc-dai.h>
+ 
+ #ifdef CONFIG_DEBUG_FS
+diff -Nupr linux-3.2.21/include/sound/sta32x.h alsa-kernel/include/sound/sta32x.h
+--- linux-3.2.21/include/sound/sta32x.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/sta32x.h	2012-06-25 14:17:11.688071921 +0200
+@@ -0,0 +1,35 @@
++/*
++ * Platform data for ST STA32x ASoC codec driver.
++ *
++ * Copyright: 2011 Raumfeld GmbH
++ * Author: Johannes Stezenbach <js@sig21.net>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++#ifndef __LINUX_SND__STA32X_H
++#define __LINUX_SND__STA32X_H
++
++#define STA32X_OCFG_2CH		0
++#define STA32X_OCFG_2_1CH	1
++#define STA32X_OCFG_1CH		3
++
++#define STA32X_OM_CH1		0
++#define STA32X_OM_CH2		1
++#define STA32X_OM_CH3		2
++
++#define STA32X_THERMAL_ADJUSTMENT_ENABLE	1
++#define STA32X_THERMAL_RECOVERY_ENABLE		2
++
++struct sta32x_platform_data {
++	int output_conf;
++	int ch1_output_mapping;
++	int ch2_output_mapping;
++	int ch3_output_mapping;
++	int thermal_conf;
++	int needs_esd_watchdog;
++};
++
++#endif /* __LINUX_SND__STA32X_H */
+diff -Nupr linux-3.2.21/include/sound/tea575x-tuner.h alsa-kernel/include/sound/tea575x-tuner.h
+--- linux-3.2.21/include/sound/tea575x-tuner.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/tea575x-tuner.h	2012-07-02 22:33:52.776120311 +0200
+@@ -25,6 +25,7 @@
+ #include <linux/videodev2.h>
+ #include <media/v4l2-ctrls.h>
+ #include <media/v4l2-dev.h>
++#include <media/v4l2-device.h>
+ 
+ #define TEA575X_FMIF	10700
+ 
+@@ -42,13 +43,17 @@ struct snd_tea575x_ops {
+ };
+ 
+ struct snd_tea575x {
++	struct v4l2_device *v4l2_dev;
++	struct v4l2_file_operations fops;
+ 	struct video_device vd;		/* video device */
++	int radio_nr;			/* radio_nr */
+ 	bool tea5759;			/* 5759 chip is present */
++	bool cannot_read_data;		/* Device cannot read the data pin */
+ 	bool mute;			/* Device is muted? */
+ 	bool stereo;			/* receiving stereo */
+ 	bool tuned;			/* tuned to a station */
+ 	unsigned int val;		/* hw value */
+-	unsigned long freq;		/* frequency */
++	u32 freq;			/* frequency */
+ 	struct mutex mutex;
+ 	struct snd_tea575x_ops *ops;
+ 	void *private_data;
+@@ -58,7 +63,7 @@ struct snd_tea575x {
+ 	int (*ext_init)(struct snd_tea575x *tea);
+ };
+ 
+-int snd_tea575x_init(struct snd_tea575x *tea);
++int snd_tea575x_init(struct snd_tea575x *tea, struct module *owner);
+ void snd_tea575x_exit(struct snd_tea575x *tea);
+ 
+ #endif /* __SOUND_TEA575X_TUNER_H */
+diff -Nupr linux-3.2.21/include/sound/version.h alsa-kernel/include/sound/version.h
+--- linux-3.2.21/include/sound/version.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/version.h	2012-06-25 14:17:11.688071921 +0200
+@@ -1,3 +1,3 @@
+ /* include/version.h */
+-#define CONFIG_SND_VERSION "1.0.24"
++#define CONFIG_SND_VERSION "1.0.25"
+ #define CONFIG_SND_DATE ""
+diff -Nupr linux-3.2.21/include/sound/wm2200.h alsa-kernel/include/sound/wm2200.h
+--- linux-3.2.21/include/sound/wm2200.h	1970-01-01 01:00:00.000000000 +0100
++++ alsa-kernel/include/sound/wm2200.h	2012-06-25 14:17:11.688071921 +0200
+@@ -0,0 +1,41 @@
++/*
++ * linux/sound/wm2200.h -- Platform data for WM2200
++ *
++ * Copyright 2012 Wolfson Microelectronics. PLC.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef __LINUX_SND_WM2200_H
++#define __LINUX_SND_WM2200_H
++
++#define WM2200_GPIO_SET 0x10000
++
++enum wm2200_in_mode {
++	WM2200_IN_SE = 0,
++	WM2200_IN_DIFF = 1,
++	WM2200_IN_DMIC = 2,
++};
++
++enum wm2200_dmic_sup {
++	WM2200_DMIC_SUP_MICVDD = 0,
++	WM2200_DMIC_SUP_MICBIAS1 = 1,
++	WM2200_DMIC_SUP_MICBIAS2 = 2,
++};
++
++struct wm2200_pdata {
++	int reset;      /** GPIO controlling /RESET, if any */
++	int ldo_ena;    /** GPIO controlling LODENA, if any */
++	int irq_flags;
++
++	int gpio_defaults[4];
++
++	enum wm2200_in_mode in_mode[3];
++	enum wm2200_dmic_sup dmic_sup[3];
++
++	int micbias_cfg[2];  /** Register value to configure MICBIAS */
++};
++
++#endif
+diff -Nupr linux-3.2.21/include/sound/wm8903.h alsa-kernel/include/sound/wm8903.h
+--- linux-3.2.21/include/sound/wm8903.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/wm8903.h	2012-06-25 14:17:11.692071956 +0200
+@@ -11,8 +11,11 @@
+ #ifndef __LINUX_SND_WM8903_H
+ #define __LINUX_SND_WM8903_H
+ 
+-/* Used to enable configuration of a GPIO to all zeros */
+-#define WM8903_GPIO_NO_CONFIG 0x8000
++/*
++ * Used to enable configuration of a GPIO to all zeros; a gpio_cfg value of
++ * zero in platform data means "don't touch this pin".
++ */
++#define WM8903_GPIO_CONFIG_ZERO 0x8000
+ 
+ /*
+  * R6 (0x06) - Mic Bias Control 0
+diff -Nupr linux-3.2.21/include/sound/wm8962.h alsa-kernel/include/sound/wm8962.h
+--- linux-3.2.21/include/sound/wm8962.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/wm8962.h	2012-06-25 14:17:11.692071956 +0200
+@@ -49,6 +49,12 @@ struct wm8962_pdata {
+ 	bool irq_active_low;
+ 
+ 	bool spk_mono;   /* Speaker outputs tied together as mono */
++
++	/**
++	 * This flag should be set if one or both IN4 inputs is wired
++	 * in a DC measurement configuration.
++	 */
++	bool in4_dc_measure;
+ };
+ 
+ #endif
+diff -Nupr linux-3.2.21/include/sound/ymfpci.h alsa-kernel/include/sound/ymfpci.h
+--- linux-3.2.21/include/sound/ymfpci.h	2012-06-20 00:18:30.000000000 +0200
++++ alsa-kernel/include/sound/ymfpci.h	2012-06-25 14:17:11.692071956 +0200
+@@ -366,6 +366,8 @@ struct snd_ymfpci {
+ #ifdef CONFIG_PM
+ 	u32 *saved_regs;
+ 	u32 saved_ydsxgr_mode;
++	u16 saved_dsxg_legacy;
++	u16 saved_dsxg_elegacy;
+ #endif
+ };
+ 

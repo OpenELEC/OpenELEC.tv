@@ -22,7 +22,7 @@
 
 . config/options $1
 
-if [ "$DEBUG" = yes ]; then
+if [ "$OE_DEBUG" = yes ]; then
   DEBUG_CONFIG="--enable-debug"
 else
   DEBUG_CONFIG="--disable-debug"

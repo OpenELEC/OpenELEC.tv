@@ -29,7 +29,7 @@ cd $PKG_BUILD
 make CC=$HOST_CC AR="$HOST_AR rcu"
 
 mkdir -p $ROOT/$TOOLCHAIN/bin
-  if [ "$DEBUG" = "yes" ]; then
+  if [ "$OE_DEBUG" = "yes" ]; then
     cp bin.linux*/g/jam $ROOT/$TOOLCHAIN/bin
   else
     cp bin.linux*/jam $ROOT/$TOOLCHAIN/bin

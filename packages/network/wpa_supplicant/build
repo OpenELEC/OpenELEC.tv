@@ -33,6 +33,6 @@ echo "CFLAGS += $CFLAGS -I$SYSROOT_PREFIX/usr/include/libnl3/" >> .config
 # echo "CONFIG_TLS=gnutls" >> .config
 # echo "CONFIG_GNUTLS_EXTRA=y" >> .config
 echo "CONFIG_LIBNL32=y" >> .config
-[ ! "$DEBUG" = "yes" ] && echo "CONFIG_NO_STDOUT_DEBUG=y" >> .config
+[ ! "$OE_DEBUG" = "yes" ] && echo "CONFIG_NO_STDOUT_DEBUG=y" >> .config
 
 make V=1 LIBDIR=/usr/lib BINDIR=/usr/bin

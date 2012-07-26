@@ -24,7 +24,7 @@
 . config/options $1
 
 cd $PKG_BUILD
-if [ "$DEBUG" = yes ]; then
+if [ "$OE_DEBUG" = yes ]; then
   ATTR_DEBUG=-DDEBUG
 else
   ATTR_DEBUG=-DNDEBUG
