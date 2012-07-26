@@ -22,7 +22,7 @@
 
 . config/options $1
 
-if [ "$DEBUG" = yes ]; then
+if [ "$OE_DEBUG" = yes ]; then
   FFMPEG_DEBUG="--enable-debug --disable-stripping"
 else
   FFMPEG_DEBUG="--disable-debug --enable-stripping"

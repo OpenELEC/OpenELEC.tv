@@ -29,7 +29,7 @@ if [ "$LTO_SUPPORT" = yes ];then
   LD_OPTIM="$LD_OPTIM -flto"
 fi
 
-if [ "$DEBUG" = yes ]; then
+if [ "$OE_DEBUG" = yes ]; then
   TARGET_CFLAGS="$TARGET_CFLAGS -ggdb"
   TARGET_CXXFLAGS="$TARGET_CXXFLAGS -ggdb"
   TARGET_LDFLAGS="$TARGET_LDFLAGS -ggdb"

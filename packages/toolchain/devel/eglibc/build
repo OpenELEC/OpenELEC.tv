@@ -47,7 +47,7 @@
 export BUILD_CC=$HOST_CC
 export OBJDUMP_FOR_HOST=objdump
 
-if [ "$DEBUG" = yes ]; then
+if [ "$OE_DEBUG" = yes ]; then
   DEBUG_CONFIG="--enable-debug"
 else
   DEBUG_CONFIG="--disable-debug"
