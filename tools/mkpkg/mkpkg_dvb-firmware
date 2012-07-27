@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="jam"
-PKG_VERSION="2.5"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="OSS"
-PKG_SITE="http://www.perforce.com/jam/jam.html"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="ccache"
-PKG_PRIORITY="optional"
-PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="jam: A make-like program"
-PKG_LONGDESC="Jam is a portable build tool with its own interpreted language, allowing to implement rather complex logic in a readable way and without resorting to external programs."
-PKG_IS_ADDON="no"
+echo "getting sources..."
+  if [ ! -d dvb-firmware.git ]; then
+    git clone git://github.com/OpenELEC/dvb-firmware.git dvb-firmware.git
+  fi
 
-PKG_AUTORECONF="no"
+  cd dvb-firmware.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
+
+echo "copying sources..."
+  rm -rf dvb-firmware-$GIT_REV
+  cp -R dvb-firmware.git dvb-firmware-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf dvb-firmware-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf dvb-firmware-$GIT_REV.tar.xz dvb-firmware-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf dvb-firmware-$GIT_REV
