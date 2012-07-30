@@ -1,0 +1,10 @@
+--- a/drivers/net/wireless/rtlwifi/rtl8192cu/sw.c	2012-07-25 05:11:50.000000000 +0200
++++ b/drivers/net/wireless/rtlwifi/rtl8192cu/sw.c	2012-07-30 11:22:44.000000000 +0200
+@@ -326,7 +326,6 @@
+ 	{RTL_USB_DEVICE(0x2019, 0xab2e, rtl92cu_hal_cfg)},
+ 	{RTL_USB_DEVICE(0x2019, 0xed17, rtl92cu_hal_cfg)}, /*PCI - Edimax*/
+ 	{RTL_USB_DEVICE(0x20f4, 0x648b, rtl92cu_hal_cfg)}, /*TRENDnet - Cameo*/
+-	{RTL_USB_DEVICE(0x7392, 0x7811, rtl92cu_hal_cfg)}, /*Edimax - Edimax*/
+ 	{RTL_USB_DEVICE(0x13d3, 0x3358, rtl92cu_hal_cfg)}, /*Azwave 8188CE-VAU*/
+ 	/* Russian customer -Azwave (8188CE-VAU  b/g mode only) */
+ 	{RTL_USB_DEVICE(0x13d3, 0x3359, rtl92cu_hal_cfg)},
