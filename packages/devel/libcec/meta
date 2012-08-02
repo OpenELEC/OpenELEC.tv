@@ -19,12 +19,12 @@
 ################################################################################
 
 PKG_NAME="libcec"
-PKG_VERSION="ab37938"
+PKG_VERSION="1.8.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://libcec.pulse-eight.com/"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="http://packages.pulse-eight.net/pulse/sources/libcec/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS="systemd lockdev"
 PKG_BUILD_DEPENDS="toolchain systemd lockdev"
 PKG_PRIORITY="optional"
@@ -34,3 +34,8 @@ PKG_LONGDESC="libCEC is an open-source dual licensed library designed for commun
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="yes"
+
+if [ "$OPENMAX" = "bcm2835-driver" ]; then
+  PKG_DEPENDS="$PKG_DEPENDS bcm2835-driver"
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS bcm2835-driver"
+fi
