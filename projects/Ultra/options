@@ -85,13 +85,13 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="speed"
+  OPTIMIZATIONS="size"
 
 # Project CFLAGS
   PROJECT_CFLAGS="-mfpmath=sse -msse2 -mssse3 -mmovbe"
 
 # LTO (Link Time Optimization) support
-  LTO_SUPPORT="no"
+  LTO_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader)
   BOOTLOADER="syslinux"
@@ -170,7 +170,7 @@
 # asix-ax887xx:     Asix AX887xx USB LAN Driver
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
-  ADDITIONAL_DRIVERS="asix-ax887xx"
+  ADDITIONAL_DRIVERS="asix-ax887xx RTL8192CU"
   if [ "$PVR" = yes ]; then
     ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
@@ -290,7 +290,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="imon,imonlcd,MtxOrb"
+  LCD_DRIVER="imon,imonlcd,MtxOrb,lis"
 
 # Modules to install in initramfs for early boot
   INITRAMFS_MODULES="uvesafb xhci-hcd"
@@ -328,6 +328,7 @@
   COREBOOT="no"
 
 # Distribution Specific source location
+  DISTRO_MIRROR="http://sources.openelec.tv/mirror"
   DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url

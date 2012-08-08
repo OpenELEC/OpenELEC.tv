@@ -5,9 +5,9 @@
   <showexitbutton>false</showexitbutton>
 
   <destroywindowcontrols>false</destroywindowcontrols>
-  <fanartheight>512</fanartheight>
+  <fanartheight>540</fanartheight>
   <thumbsize>256</thumbsize>
-  <bginfoloadermaxthreads>2</bginfoloadermaxthreads> 
+  <bginfoloadermaxthreads>2</bginfoloadermaxthreads>
   <useddsfanart>true</useddsfanart>
 
   <gui>
@@ -16,12 +16,8 @@
     <visualizedirtyregions>off</visualizedirtyregions>
   </gui>
 
-  <audio>
-    <omxhwaudiodecode>1</omxhwaudiodecode>
-  </audio>
-
-  <network> 
-    <cachemembuffersize>30242880</cachemembuffersize> 
+  <network>
+    <cachemembuffersize>5282880</cachemembuffersize>
   </network>
 
   <samba>

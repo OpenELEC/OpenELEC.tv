@@ -80,13 +80,13 @@
   esac
 
 # Build optimizations (size/speed)
-  OPTIMIZATIONS="speed"
+  OPTIMIZATIONS="size"
 
 # Project CFLAGS
   PROJECT_CFLAGS="-mfpmath=sse -msse2 -mssse3"
 
 # LTO (Link Time Optimization) support
-  LTO_SUPPORT="no"
+  LTO_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader)
   BOOTLOADER="syslinux"
@@ -166,7 +166,7 @@
 # vboxguest:        Oracle VM VirtualBox Guest Additions / Graphics Card
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035 vboxguest"
-  ADDITIONAL_DRIVERS="asix-ax887xx vboxguest"
+  ADDITIONAL_DRIVERS="asix-ax887xx RTL8192CU vboxguest"
   if [ "$PVR" = yes ]; then
     ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
@@ -286,7 +286,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis"
 
 # Modules to install in initramfs for early boot
   INITRAMFS_MODULES=""
@@ -324,6 +324,7 @@
   COREBOOT="no"
 
 # Distribution Specific source location
+  DISTRO_MIRROR="http://sources.openelec.tv/mirror"
   DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url

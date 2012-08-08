@@ -186,6 +186,20 @@ fix_module_depends() {
   rm new.modinfo*
 }
 
+check_path() {
+dashes="==========================="
+  if [ "${PWD##/usr}" != "${PWD}" ]; then
+    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
+    check_pathmessage="$check_pathmessage\n ERROR: You try to build inside /usr"
+    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
+    check_pathmessage="$check_pathmessage\n This is not supported with our buildsystem."
+    check_pathmessage="$check_pathmessage\n Please use another dir (for example your \$HOME) to build $DISTRONAME"
+
+    echo -e $check_pathmessage
+    exit 1
+  fi
+}
+
 check_config() {
 dashes="==========================="
   if [ ! -d $PROJECT_DIR/$PROJECT ]; then
@@ -230,6 +244,7 @@ show_config() {
   config_message="$config_message\n - CPU (ARCH):\t\t\t\t $TARGET_CPU ($TARGET_ARCH)"
   config_message="$config_message\n - FLOAT:\t\t\t\t $TARGET_FLOAT"
   config_message="$config_message\n - FPU:\t\t\t\t\t $TARGET_FPU"
+  config_message="$config_message\n - SIMD support:\t\t\t $SIMD_SUPPORT"
   config_message="$config_message\n - Optimizations:\t\t\t $OPTIMIZATIONS"
   config_message="$config_message\n - LTO (Link Time Optimization) support: $LTO_SUPPORT"
   config_message="$config_message\n - LLVM support:\t\t\t $LLVM_SUPPORT"
