@@ -42,11 +42,6 @@ mkdir -p $INSTALL/lib/udev
 # not needed:  chmod +x $INSTALL/lib/udev/bluetooth_serial
   cp $PKG_BUILD/tools/hid2hci $INSTALL/lib/udev
 
-mkdir -p $INSTALL/lib/udev/rules.d
-  cp $PKG_BUILD/scripts/97-bluetooth.rules $INSTALL/lib/udev/rules.d
-# todo:        cp $PKG_BUILD/scripts/97-bluetooth-hid2hci.rules $INSTALL/lib/udev/rules.d
-# not needed:  cp $PKG_BUILD/scripts/97-bluetooth-serial.rules $INSTALL/lib/udev/rules.d
-
 mkdir -p $INSTALL/usr/lib
   cp -P $PKG_BUILD/lib/.libs/libbluetooth.so* $INSTALL/usr/lib
 
