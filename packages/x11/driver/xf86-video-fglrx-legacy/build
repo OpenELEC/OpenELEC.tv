@@ -103,6 +103,21 @@ cd $ROOT/$PKG_BUILD
   mkdir -p $INSTALL_DIR/lib/xorg/modules/linux
     cp -P $BASEDIR/usr/X11R6/$LIBDIR/modules/linux/*.so $INSTALL_DIR/lib/xorg/modules/linux
 
+# Apply hack to remove watermark
+  DRIVER="$INSTALL_DIR/lib/xorg/modules/drivers/fglrx_drv.so"
+  echo "Applying watermark hack. This might take a while.."
+  for x in $(objdump -d "$DRIVER" | awk '/call/&&/EnableLogo/{print "\\x"$2"\\x"$3"\\x"$4"\\x"$5"\\x"$6}'); do
+    cp -p "$DRIVER" "$DRIVER.1"
+    sed -i "s/$x/\x90\x90\x90\x90\x90/g" "$DRIVER"
+    if [ ! -z "$(objdump -d "$DRIVER" 2>&1 1>/dev/null)" ]; then
+      echo "rewriting $x has damaged the driver, restoring backup.."
+      mv "$DRIVER.1" "$DRIVER"
+    else
+      echo "$x has been rewritten"
+    fi
+  done
+  rm "$DRIVER.1"
+
 if [ "$XVBA" = yes ]; then
   cp arch/$FGLRX_ARCH/usr/X11R6/$LIBDIR/libAMDXvBA.cap $INSTALL_DIR/lib
   cp arch/$FGLRX_ARCH/usr/X11R6/$LIBDIR/libAMDXvBA.so* $INSTALL_DIR/lib/libAMDXvBA.so.1
