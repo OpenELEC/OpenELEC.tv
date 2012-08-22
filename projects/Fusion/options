@@ -175,6 +175,11 @@
     ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
   fi
 
+# build with TBS driver support
+  if [ "$TBS_SUPPORT" = yes ]; then
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS linux-tbs-drivers"
+  fi
+
 # build with network support (yes / no)
   NETWORK="yes"
 
