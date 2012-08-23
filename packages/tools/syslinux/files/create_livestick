@@ -1,0 +1,260 @@
+#!/bin/sh
+
+################################################################################
+#      Copyright (C) 2009-2010 OpenELEC.tv
+#      http://www.openelec.tv
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+# usage:   sudo ./create_livestick <drive>
+# example: sudo ./create_livestick /dev/sdb
+
+if [ "$(id -u)" != "0" ]; then
+  clear
+  echo "#########################################################"
+  echo "# please execute with 'sudo' or -DANGEROUS!!!- as root  #"
+  echo "# example: sudo ./create_virtualmachine <path>          #"
+  echo "#########################################################"
+  exit 1
+fi
+
+if [ -z "$1" ]; then
+  clear
+  echo "#########################################################"
+  echo "# please execute with target folder drive as option     #"
+  echo "# example: sudo ./create_virtualmachine /home/test/VM/  #"
+  echo "#########################################################"
+  exit 1
+fi
+
+DISK="$1"
+PART1="${DISK}1"
+PART2="${DISK}2"
+
+clear
+echo "#########################################################"
+echo "#                                                       #"
+echo "#             OpenELEC.tv USB Installer                 #"
+echo "#                                                       #"
+echo "#########################################################"
+echo "#                                                       #"
+echo "#     This will wipe any data off your chosen drive     #"
+echo "# Please read the instructions and use very carefully.. #"
+echo "#                                                       #"
+echo "#########################################################"
+
+# check for some required tools
+
+  # this is needed to create a bootloader
+  which syslinux > /dev/null
+  if [ "$?" = "1" ]; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"syslinux\"       #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+ 
+  # check for syslinux dir ...
+  if [ -d /usr/lib/syslinux ]; then
+    SYSLINUX="/usr/lib/syslinux"       # example: debian, ubuntu
+  elif [ -f /usr/share/syslinux/mbr.bin ]; then
+    SYSLINUX="/usr/share/syslinux"     # example: fedora
+  else
+    echo "Can't find syslinux's dir on Host OS"
+    exit 1
+  fi
+  # ... and files
+  for slf in mbr.bin menu.c32 vesamenu.c32; do
+    if [ ! -f "${SYSLINUX}/${slf}" ]; then
+      echo "Can't find ${SYSLINUX}/${slf}"
+      exit 1
+    fi
+  done
+
+  # this is needed by syslinux
+  which mcopy > /dev/null
+    if [ "$?" = "1" ]; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"mcopy\"          #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#      NOTE: Some distributions call this package       #"
+    echo "#      \"mtools\".                                        #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+
+  # this is needed to partion the drive
+  which parted > /dev/null
+  if [ "$?" = "1" ]; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"parted\"         #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+
+  # this is needed to install bootloader
+  which extlinux > /dev/null
+  if [ "$?" = "1" ]; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"extlinux\"       #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+
+
+# check MD5 sums
+  echo "checking MD5 sum..."
+
+  md5sumFailed()
+  {
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv failed md5 check - Installation will quit #"
+    echo "#                                                       #"
+    echo "#      Your original download was probably corrupt.     #"
+    echo "#   Please visit www.openelec.tv and get another copy   #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  }
+
+  md5sum -c target/KERNEL.md5
+  if [ "$?" = "1" ]; then
+    md5sumFailed
+  fi
+
+  md5sum -c target/SYSTEM.md5
+  if [ "$?" = "1" ]; then
+    md5sumFailed
+  fi
+
+# umount everything (if more than one partition)
+  umount "$DISK"
+  umount "${DISK}?*"
+
+# remove all partitions from the drive
+  echo "writing new disklabel on $DISK (removing all partitions)..."
+  dd if=/dev/zero of="$DISK" bs=4096 count=1024
+  parted -s "$DISK" mklabel msdos
+
+# create partition1
+  echo "creating partition1 on $DISK..."
+  parted -s "$DISK" -a min unit s mkpart primary ext4 64 262208
+
+# create partition2
+  echo "creating partition2 on $DISK..."
+  parted -s "$DISK" -a min unit s mkpart primary ext4 262209 100%
+
+# make partition1 active (bootable)
+  echo "marking partition1 active..."
+  parted -s "$DISK" set 1 boot on
+
+# tell kernel we have a new partition table
+  echo "telling kernel we have a new partition table..."
+  partprobe "$DISK"
+
+# write mbr
+  echo "writing mbr..."
+  cat "${SYSLINUX}/mbr.bin" > "$DISK"
+
+# create filesystem on partition1
+  echo "creating filesystem on partition1..."
+  mke2fs -t ext4 -m 0 "$PART1"
+  tune2fs -U random -L "LiveSystem" "$PART1"
+  sync
+
+# mount partition
+  echo "mounting partition1 on /tmp/livestick_install..."
+  mkdir -p /tmp/livestick_install
+  mount "$PART1" /tmp/livestick_install
+
+# create bootloader configuration
+  echo "creating bootloader configuration..."
+  cp ${SYSLINUX}/menu.c32 /tmp/livestick_install/
+  cp ${SYSLINUX}/vesamenu.c32 /tmp/livestick_install/
+
+  echo "DEFAULT menu.c32" > /tmp/livestick_install/syslinux.cfg
+  echo "PROMPT 10" >> /tmp/livestick_install/syslinux.cfg
+  echo "MENU TITLE OpenELEC Live Stick" >> /tmp/livestick_install/syslinux.cfg
+  echo " " >> /tmp/livestick_install/syslinux.cfg
+  echo "LABEL livestorage" >> /tmp/livestick_install/syslinux.cfg
+  echo "  MENU LABEL ^Live Storage (use storage on live stick)" >> /tmp/livestick_install/syslinux.cfg
+  echo "  KERNEL /KERNEL" >> /tmp/livestick_install/syslinux.cfg
+  echo "  APPEND boot=LABEL=LiveSystem disk=LABEL=LiveStorage quiet ssh" >> /tmp/livestick_install/syslinux.cfg
+  echo " " >> /tmp/livestick_install/syslinux.cfg
+  echo "LABEL storage" >> /tmp/livestick_install/syslinux.cfg
+  echo "  MENU LABEL ^Storage (use your local storage - may be dangerous)" >> /tmp/livestick_install/syslinux.cfg
+  echo "  KERNEL /KERNEL" >> /tmp/livestick_install/syslinux.cfg
+  echo "  APPEND boot=LABEL=LiveSystem disk=LABEL=Storage quiet ssh" >> /tmp/livestick_install/syslinux.cfg
+
+# install extlinux
+  echo "installing extlinux to partition1..."
+  extlinux --heads=4 --sector=32 -i /tmp/livestick_install
+
+# copy files
+  echo "copying files to partition1..."
+  cp target/KERNEL /tmp/livestick_install
+  cp target/SYSTEM /tmp/livestick_install
+
+# sync disk
+  echo "syncing disk..."
+  sync
+
+# unmount partition1
+  echo "unmounting partition1..."
+  umount "$PART1"
+  sync
+
+# create filesystem on partition2
+  echo "creating filesystem on partition2..."
+  mke2fs -t ext4 -m 0 "$PART2"
+  tune2fs -U random -L "LiveStorage" "$PART2"
+  sync
+
+# cleaning
+  echo "cleaning tempdir..."
+  rm -rf /tmp/livestick_install
+
+echo "...installation finished"
