@@ -136,8 +136,9 @@ echo "#########################################################"
     md5sumFailed
   fi
 
-# (TODO) umount everything (if more than one partition)
-  umount "$PART"
+# umount everything (if more than one partition)
+  umount "$DISK"
+  umount "${DISK}?*"
 
 # remove all partitions from the drive
   echo "writing new disklabel on $DISK (removing all partitions)..."
