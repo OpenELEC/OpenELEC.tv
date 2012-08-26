@@ -20,12 +20,32 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-mkdir -p $ADDON_BUILD/$PKG_ADDON_ID
-  cp -PR $PKG_DIR/config/settings.xml $ADDON_BUILD/$PKG_ADDON_ID/settings-default.xml
-  cp -PR $PKG_DIR/config/xmltv-config $ADDON_BUILD/$PKG_ADDON_ID/xmltv-config
-  cp -PR $PKG_DIR/config/dvr-config $ADDON_BUILD/$PKG_ADDON_ID/dvr-config
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.softcam.oscam"
+ADDON_SETTINGS="$ADDON_HOME/settings.xml"
+RESTART_ON_RESUME=`grep RESTART_ON_RESUME $ADDON_SETTINGS | awk '{print $3}' | sed -e "s,value=,," -e "s,\",,g"`
 
-mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp -P $PKG_BUILD/build.linux/tvheadend $ADDON_BUILD/$PKG_ADDON_ID/bin/tvheadend
+LOCKFILE="/var/lock/oscam.sleep"
+
+if [ "$RESTART_ON_RESUME" == "true" ] ; then
+  case "$1" in
+    hibernate|suspend)
+      if [ "$(pidof oscam)" ];then
+        progress "Shutting down oscam for suspending..."
+        oscam.stop
+        touch $LOCKFILE
+      fi
+      ;;
+
+    thaw|resume)
+      progress "Restarting oscam for wakeup..."
+      if [ -f "$LOCKFILE" ] ; then
+        rm -rf "$LOCKFILE"
+        oscam.start
+      fi
+      ;;
+    *) exit $NA
+      ;;
+  esac
+fi
