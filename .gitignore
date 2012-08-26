@@ -25,6 +25,3 @@ mkpkg-temp
 
 # backup files
 *.orig
-
-# Vagrant
-Vagrantfile
