@@ -103,6 +103,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   $SCRIPTS/install linux system
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
+  
+  # NodeJS support
+  $SCRIPTS/install node
 
 # Network support
   [ "$NETWORK" = "yes" ] && $SCRIPTS/install network

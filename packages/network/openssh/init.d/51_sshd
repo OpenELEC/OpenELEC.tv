@@ -36,8 +36,6 @@
       . /etc/ssh.conf
     fi
 
-    if [ "$SSH" = yes -o -f /storage/.config/ssh_enable ]; then
-
     # Check for the SSH1 RSA key
       if [ ! -s $RSA1_KEY ] ; then
         progress "SSH: generating SSH1 RSA key"
@@ -82,5 +80,4 @@
       mkdir -p /var/empty
       chmod -R 600 /var/empty
       $SSHD
-    fi
   )&
