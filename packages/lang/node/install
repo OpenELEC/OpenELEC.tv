@@ -24,7 +24,7 @@
 
 
 mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/.objdir-target/node $INSTALL/usr/bin/
+  cp $PKG_BUILD/out/Release/node $INSTALL/usr/bin/
 
 # For future 3rd-parties Python modules
   mkdir -p $INSTALL/usr/lib/npm_modules
