@@ -1,0 +1,80 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+cd $PKG_BUILD
+mkdir -p .objdir-target && cd .objdir-target
+
+ac_cv_file_dev_ptc=no \
+ac_cv_file_dev_ptmx=yes \
+ac_cv_func_lchflags_works=no \
+ac_cv_func_chflags_works=no \
+ac_cv_func_printf_zd=yes \
+../configure --host=$TARGET_NAME \
+             --build=$HOST_NAME \
+             --prefix=/usr \
+             --sysconfdir=/etc \
+
+make  -j1 CC="$TARGET_CC" \
+      HOSTPYTHON=$ROOT/$TOOLCHAIN/bin/python \
+      HOSTPGEN=$ROOT/$TOOLCHAIN/bin/pgen \
+      BLDSHARED="$CC -shared" \
+      RUNSHARED="LD_LIBRARY_PATH=$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH" \
+      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
+      CROSS_COMPILE="$TARGET_NAME" \
+      CROSS_COMPILE_TARGET="yes" \
+
+make  -j1 CC="$TARGET_CC" \
+      DESTDIR=$SYSROOT_PREFIX \
+      HOSTPYTHON=$ROOT/$TOOLCHAIN/bin/python \
+      HOSTPGEN=$ROOT/$TOOLCHAIN/bin/pgen \
+      BLDSHARED="$CC -shared" \
+      RUNSHARED="LD_LIBRARY_PATH=$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH" \
+      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
+      CROSS_COMPILE="$TARGET_NAME" \
+      CROSS_COMPILE_TARGET="yes" \
+      PYTHON_MODULES_INCLUDE="$TARGET_INCDIR" \
+      PYTHON_MODULES_LIB="$TARGET_LIBDIR" \
+      install
+
+# python distutils per default adds -L$LIBDIR when linking binary extensions
+sed -e "s|^LIBDIR=.*|LIBDIR= $SYSROOT_PREFIX/usr/lib|" \
+    -i $SYSROOT_PREFIX/usr/lib/python*/config/Makefile
+
+EXCLUDE_DIRS="bsddb curses idlelib lib-tk lib2to3 msilib wsgiref"
+INCLUDE_DIRS="compiler ctypes ctypes/macholib distutils distutils/command email"
+INCLUDE_DIRS="$INCLUDE_DIRS email/mime encodings hotshot importlib json logging"
+INCLUDE_DIRS="$INCLUDE_DIRS multiprocessing plat-linux2 sqlite3 xml xml/dom xml/etree"
+INCLUDE_DIRS="$INCLUDE_DIRS xml/parsers xml/sax"
+
+mkdir ./Lib
+cp ../Lib/*.py ./Lib
+
+for dirs in $INCLUDE_DIRS; do
+  mkdir -p ./Lib/$dirs
+  cp ../Lib/$dirs/*.py ./Lib/$dirs
+done
+
+python -Wi -t -B ../Lib/compileall.py ./Lib -f
+
+rm -rf `find ./Lib -name "*.py"`
