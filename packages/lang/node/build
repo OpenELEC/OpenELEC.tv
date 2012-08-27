@@ -23,58 +23,12 @@
 . config/options $1
 
 cd $PKG_BUILD
-mkdir -p .objdir-target && cd .objdir-target
+./configure --host=$TARGET_NAME \
+            --build=$HOST_NAME \
+            --prefix=/usr \
+            --sysconfdir=/etc \
 
-ac_cv_file_dev_ptc=no \
-ac_cv_file_dev_ptmx=yes \
-ac_cv_func_lchflags_works=no \
-ac_cv_func_chflags_works=no \
-ac_cv_func_printf_zd=yes \
-../configure --host=$TARGET_NAME \
-             --build=$HOST_NAME \
-             --prefix=/usr \
-             --sysconfdir=/etc \
+make CFLAGS="$TARGET_CFLAGS"
 
-make  -j1 CC="$TARGET_CC" \
-      HOSTPYTHON=$ROOT/$TOOLCHAIN/bin/python \
-      HOSTPGEN=$ROOT/$TOOLCHAIN/bin/pgen \
-      BLDSHARED="$CC -shared" \
-      RUNSHARED="LD_LIBRARY_PATH=$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH" \
-      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
-      CROSS_COMPILE="$TARGET_NAME" \
-      CROSS_COMPILE_TARGET="yes" \
+$MAKEINSTALL
 
-make  -j1 CC="$TARGET_CC" \
-      DESTDIR=$SYSROOT_PREFIX \
-      HOSTPYTHON=$ROOT/$TOOLCHAIN/bin/python \
-      HOSTPGEN=$ROOT/$TOOLCHAIN/bin/pgen \
-      BLDSHARED="$CC -shared" \
-      RUNSHARED="LD_LIBRARY_PATH=$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH" \
-      PYTHON_DISABLE_MODULES="$PY_DISABLED_MODULES" \
-      CROSS_COMPILE="$TARGET_NAME" \
-      CROSS_COMPILE_TARGET="yes" \
-      PYTHON_MODULES_INCLUDE="$TARGET_INCDIR" \
-      PYTHON_MODULES_LIB="$TARGET_LIBDIR" \
-      install
-
-# python distutils per default adds -L$LIBDIR when linking binary extensions
-sed -e "s|^LIBDIR=.*|LIBDIR= $SYSROOT_PREFIX/usr/lib|" \
-    -i $SYSROOT_PREFIX/usr/lib/python*/config/Makefile
-
-EXCLUDE_DIRS="bsddb curses idlelib lib-tk lib2to3 msilib wsgiref"
-INCLUDE_DIRS="compiler ctypes ctypes/macholib distutils distutils/command email"
-INCLUDE_DIRS="$INCLUDE_DIRS email/mime encodings hotshot importlib json logging"
-INCLUDE_DIRS="$INCLUDE_DIRS multiprocessing plat-linux2 sqlite3 xml xml/dom xml/etree"
-INCLUDE_DIRS="$INCLUDE_DIRS xml/parsers xml/sax"
-
-mkdir ./Lib
-cp ../Lib/*.py ./Lib
-
-for dirs in $INCLUDE_DIRS; do
-  mkdir -p ./Lib/$dirs
-  cp ../Lib/$dirs/*.py ./Lib/$dirs
-done
-
-python -Wi -t -B ../Lib/compileall.py ./Lib -f
-
-rm -rf `find ./Lib -name "*.py"`
