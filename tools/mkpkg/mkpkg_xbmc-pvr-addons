@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="hdhomerun"
-PKG_VERSION="2.0"
-PKG_REV="3"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.silicondust.com/products/hdhomerun/dvbt/"
-PKG_URL=""
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain libhdhomerun dvbhdhomerun"
-PKG_PRIORITY="optional"
-PKG_SECTION="driver/dvb"
-PKG_SHORTDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
-PKG_LONGDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.python.script"
-PKG_AUTORECONF="no"
+echo "getting sources..."
+  if [ ! -d xbmc-pvr-addons.git ]; then
+    git clone git://github.com/opdenkamp/xbmc-pvr-addons.git xbmc-pvr-addons.git
+  fi
+
+  cd xbmc-pvr-addons.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
+
+echo "copying sources..."
+  rm -rf xbmc-pvr-addons-$GIT_REV
+  cp -R xbmc-pvr-addons.git xbmc-pvr-addons-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf xbmc-pvr-addons-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf xbmc-pvr-addons-$GIT_REV.tar.xz xbmc-pvr-addons-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf xbmc-pvr-addons-$GIT_REV

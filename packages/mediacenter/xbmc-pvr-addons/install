@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="hdhomerun"
-PKG_VERSION="2.0"
-PKG_REV="3"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.silicondust.com/products/hdhomerun/dvbt/"
-PKG_URL=""
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain libhdhomerun dvbhdhomerun"
-PKG_PRIORITY="optional"
-PKG_SECTION="driver/dvb"
-PKG_SHORTDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
-PKG_LONGDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.python.script"
-PKG_AUTORECONF="no"
+. config/options $1
+
+for addon in `find $PKG_BUILD/addons/ -type d -name "pvr.*"`; do
+  ADDON=`basename $addon`
+  mkdir -p $INSTALL/usr/share/xbmc/addons/$ADDON
+    cp -PRf $PKG_BUILD/addons/$ADDON/addon/* $INSTALL/usr/share/xbmc/addons/$ADDON
+
+  mkdir -p $INSTALL/usr/lib/xbmc/addons/$ADDON
+    cp -Pf $PKG_BUILD/addons/$ADDON/*.pvr $INSTALL/usr/lib/xbmc/addons/$ADDON
+done
