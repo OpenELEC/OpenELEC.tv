@@ -162,7 +162,7 @@
 # vboxguest:        Oracle VM VirtualBox Guest Additions / Graphics Card
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035 vboxguest"
-  ADDITIONAL_DRIVERS="asix-ax887xx RTL8192CU vboxguest AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
+  ADDITIONAL_DRIVERS="asix-ax887xx RTL8192CU vboxguest AF9035 A867 aver_h826d RTL2832 dvbhdhomerun vtuner-driver"
 
 # build with network support (yes / no)
   NETWORK="yes"

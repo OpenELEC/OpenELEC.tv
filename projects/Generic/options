@@ -166,7 +166,7 @@
 # asix-ax887xx:     Asix AX887xx USB LAN Driver
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
-  ADDITIONAL_DRIVERS="asix-ax887xx bcm_sta RTL8192CU AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
+  ADDITIONAL_DRIVERS="asix-ax887xx bcm_sta RTL8192CU AF9035 A867 aver_h826d RTL2832 dvbhdhomerun vtuner-driver"
 
 # build with network support (yes / no)
   NETWORK="yes"
