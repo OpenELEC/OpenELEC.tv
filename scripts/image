@@ -252,6 +252,15 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         fi
       )
 
+    # automatic deployment 
+    if [ -z "$DEPLOY_TO_OPENELEC_APPLIANCE" ]; then
+      echo "You can define the DEPLOY_TO_OPENELEC_APPLIANCE variable to contain the IP/hostname of your OpenELEC machine for automatic deployment of the new image to it."
+    else
+      echo "Deploying the new image to $DEPLOY_TO_OPENELEC_APPLIANCE"
+      scp $RELEASE_DIR/target/* root@$DEPLOY_TO_OPENELEC_APPLIANCE:/storage/.update/
+      ssh root@$DEPLOY_TO_OPENELEC_APPLIANCE reboot &
+    fi
+
     # create target directory
       mkdir -p $TARGET_IMG
 
