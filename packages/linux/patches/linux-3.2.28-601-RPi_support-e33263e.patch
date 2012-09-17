@@ -1,8 +1,8 @@
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 987c72d..5285fbf 100644
+index 987c72d..b58af94 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -955,6 +955,22 @@ config PLAT_SPEAR
+@@ -955,6 +955,23 @@ config PLAT_SPEAR
  	help
  	  Support for ST's SPEAr platform (SPEAr3xx, SPEAr6xx and SPEAr13xx).
  
@@ -14,6 +14,7 @@ index 987c72d..5285fbf 100644
 +	select HAVE_SCHED_CLOCK
 +	select NEED_MACH_MEMORY_H
 +	select CLKDEV_LOOKUP
++	select ARCH_HAS_CPUFREQ
 +	select GENERIC_CLOCKEVENTS
 +	select ARM_ERRATA_411920
 +	select MACH_BCM2708
@@ -25,7 +26,7 @@ index 987c72d..5285fbf 100644
  config ARCH_VT8500
  	bool "VIA/WonderMedia 85xx"
  	select CPU_ARM926T
-@@ -1098,6 +1114,7 @@ source "arch/arm/plat-versatile/Kconfig"
+@@ -1098,6 +1115,7 @@ source "arch/arm/plat-versatile/Kconfig"
  source "arch/arm/mach-vt8500/Kconfig"
  
  source "arch/arm/mach-w90x900/Kconfig"
@@ -618,10 +619,10 @@ index 0000000..3b8bd74
 +CONFIG_LIBCRC32C=y
 diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
 new file mode 100644
-index 0000000..5ed9c30
+index 0000000..35c5042
 --- /dev/null
 +++ b/arch/arm/configs/bcmrpi_defconfig
-@@ -0,0 +1,907 @@
+@@ -0,0 +1,913 @@
 +# CONFIG_ARM_PATCH_PHYS_VIRT is not set
 +CONFIG_EXPERIMENTAL=y
 +# CONFIG_LOCALVERSION_AUTO is not set
@@ -670,6 +671,12 @@ index 0000000..5ed9c30
 +CONFIG_ZBOOT_ROM_BSS=0x0
 +CONFIG_CMDLINE="dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 root=/dev/mmcblk0p2 rootfstype=ext3 rootwait"
 +CONFIG_KEXEC=y
++CONFIG_CPU_FREQ=y
++CONFIG_CPU_FREQ_STAT=m
++CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND=y
++CONFIG_CPU_FREQ_GOV_POWERSAVE=y
++CONFIG_CPU_FREQ_GOV_USERSPACE=y
++CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
 +CONFIG_CPU_IDLE=y
 +CONFIG_VFP=y
 +CONFIG_BINFMT_MISC=m
@@ -2103,6 +2110,20 @@ index 207f9d6..5233d54 100644
 +ENTRY(__FIQ_Branch)
 +	mov pc, r8
 +ENDPROC(__FIQ_Branch)
+diff --git a/arch/arm/kernel/vmlinux.lds.S b/arch/arm/kernel/vmlinux.lds.S
+index 20b3041..e952a30 100644
+--- a/arch/arm/kernel/vmlinux.lds.S
++++ b/arch/arm/kernel/vmlinux.lds.S
+@@ -174,7 +174,9 @@ SECTIONS
+ 	}
+ #endif
+ 
++#ifdef CONFIG_SMP
+ 	PERCPU_SECTION(32)
++#endif
+ 
+ #ifdef CONFIG_XIP_KERNEL
+ 	__data_loc = ALIGN(4);		/* location in binary */
 diff --git a/arch/arm/mach-bcm2708/Kconfig b/arch/arm/mach-bcm2708/Kconfig
 new file mode 100644
 index 0000000..5593167
@@ -2621,10 +2642,10 @@ index 0000000..0aa916e
 +#endif
 diff --git a/arch/arm/mach-bcm2708/bcm2708.c b/arch/arm/mach-bcm2708/bcm2708.c
 new file mode 100644
-index 0000000..6f63532
+index 0000000..b3dbbd1
 --- /dev/null
 +++ b/arch/arm/mach-bcm2708/bcm2708.c
-@@ -0,0 +1,814 @@
+@@ -0,0 +1,825 @@
 +/*
 + *  linux/arch/arm/mach-bcm2708/bcm2708.c
 + *
@@ -3219,6 +3240,14 @@ index 0000000..6f63532
 +	.resource = bcm2708_bsc1_resources,
 +};
 +
++static struct platform_device bcm2835_hwmon_device = {
++	.name = "bcm2835_hwmon",
++};
++
++static struct platform_device bcm2835_thermal_device = {
++	.name = "bcm2835_thermal",
++};
++
 +int __init bcm_register_device(struct platform_device *pdev)
 +{
 +	int ret;
@@ -3282,6 +3311,9 @@ index 0000000..6f63532
 +	bcm_register_device(&bcm2708_spi_device);
 +	bcm_register_device(&bcm2708_bsc0_device);
 +	bcm_register_device(&bcm2708_bsc1_device);
++
++	bcm_register_device(&bcm2835_hwmon_device);
++	bcm_register_device(&bcm2835_thermal_device);
 +
 +#ifdef CONFIG_BCM2708_VCMEM
 +	{
@@ -5964,10 +5996,10 @@ index 0000000..9d41c3a
 +
 diff --git a/arch/arm/mach-bcm2708/include/mach/vcio.h b/arch/arm/mach-bcm2708/include/mach/vcio.h
 new file mode 100644
-index 0000000..ace4ea4
+index 0000000..7dfd14e
 --- /dev/null
 +++ b/arch/arm/mach-bcm2708/include/mach/vcio.h
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,108 @@
 +/*
 + *  arch/arm/mach-bcm2708/include/mach/vcio.h
 + *
@@ -5997,18 +6029,83 @@ index 0000000..ace4ea4
 +#define BCM_VCIO_DRIVER_NAME "bcm2708_vcio"
 +
 +/* Constants shared with the ARM identifying separate mailbox channels */
-+#define MBOX_CHAN_POWER   0 /* for use by the power management interface */
-+#define MBOX_CHAN_FB      1 /* for use by the frame buffer */
-+#define MBOX_CHAN_VUART   2 /* for use by the virtual UART */
-+#define MBOX_CHAN_VCHIQ   3 /* for use by the VCHIQ interface */
-+#define MBOX_CHAN_LEDS    4 /* for use by the leds interface */
-+#define MBOX_CHAN_BUTTONS 5 /* for use by the buttons interface */
-+#define MBOX_CHAN_TOUCH   6 /* for use by the touchscreen interface */
++#define MBOX_CHAN_POWER    0 /* for use by the power management interface */
++#define MBOX_CHAN_FB       1 /* for use by the frame buffer */
++#define MBOX_CHAN_VCHIQ    3 /* for use by the VCHIQ interface */
 +#define MBOX_CHAN_PROPERTY 8 /* for use by the property channel */
-+#define MBOX_CHAN_COUNT   9
++#define MBOX_CHAN_COUNT    9
++
++/* Mailbox property tags */
++enum {
++	VCMSG_PROPERTY_END               = 0x00000000,
++	VCMSG_GET_FIRMWARE_REVISION      = 0x00000001,
++	VCMSG_GET_BOARD_MODEL            = 0x00010001,
++	VCMSG_GET_BOARD_REVISION	 = 0x00020002,
++	VCMSG_GET_BOARD_MAC_ADDRESS	 = 0x00020003,
++	VCMSG_GET_BOARD_SERIAL		 = 0x00020004,
++	VCMSG_GET_ARM_MEMORY		 = 0x00020005,
++	VCMSG_GET_VC_MEMORY		 = 0x00020006,
++	VCMSG_GET_CLOCKS		 = 0x00020007,
++	VCMSG_GET_COMMAND_LINE           = 0x00050001,
++	VCMSG_GET_DMA_CHANNELS           = 0x00060001,
++	VCMSG_GET_POWER_STATE            = 0x00020001,
++	VCMSG_GET_TIMING		 = 0x00020002,
++	VCMSG_SET_POWER_STATE            = 0x00028001,
++	VCMSG_GET_CLOCK_STATE            = 0x00030001,
++	VCMSG_SET_CLOCK_STATE            = 0x00038001,
++	VCMSG_GET_CLOCK_RATE             = 0x00030002,
++	VCMSG_SET_CLOCK_RATE             = 0x00038002,
++	VCMSG_GET_VOLTAGE                = 0x00030003,
++	VCMSG_SET_VOLTAGE                = 0x00038003,
++	VCMSG_GET_MAX_CLOCK              = 0x00030004,
++	VCMSG_GET_MAX_VOLTAGE            = 0x00030005,
++	VCMSG_GET_TEMPERATURE            = 0x00030006,
++	VCMSG_GET_MIN_CLOCK              = 0x00030007,
++	VCMSG_GET_MIN_VOLTAGE            = 0x00030008,
++	VCMSG_GET_TURBO                  = 0x00030009,
++	VCMSG_SET_TURBO                  = 0x00038009,
++	VCMSG_SET_ALLOCATE_BUFFER        = 0x00040001,
++	VCMSG_SET_RELEASE_BUFFER         = 0x00048001,
++	VCMSG_SET_BLANK_SCREEN           = 0x00040002,
++	VCMSG_TST_BLANK_SCREEN           = 0x00044002,
++	VCMSG_GET_PHYSICAL_WIDTH_HEIGHT  = 0x00040003,
++	VCMSG_TST_PHYSICAL_WIDTH_HEIGHT  = 0x00044003,
++	VCMSG_SET_PHYSICAL_WIDTH_HEIGHT  = 0x00048003,
++	VCMSG_GET_VIRTUAL_WIDTH_HEIGHT   = 0x00040004,
++	VCMSG_TST_VIRTUAL_WIDTH_HEIGHT   = 0x00044004,
++	VCMSG_SET_VIRTUAL_WIDTH_HEIGHT   = 0x00048004,
++	VCMSG_GET_DEPTH                  = 0x00040005,
++	VCMSG_TST_DEPTH                  = 0x00044005,
++	VCMSG_SET_DEPTH                  = 0x00048005,
++	VCMSG_GET_PIXEL_ORDER            = 0x00040006,
++	VCMSG_TST_PIXEL_ORDER            = 0x00044006,
++	VCMSG_SET_PIXEL_ORDER            = 0x00048006,
++	VCMSG_GET_ALPHA_MODE             = 0x00040007,
++	VCMSG_TST_ALPHA_MODE             = 0x00044007,
++	VCMSG_SET_ALPHA_MODE             = 0x00048007,
++	VCMSG_GET_PITCH                  = 0x00040008,
++	VCMSG_TST_PITCH                  = 0x00044008,
++	VCMSG_SET_PITCH                  = 0x00048008,
++	VCMSG_GET_VIRTUAL_OFFSET         = 0x00040009,
++	VCMSG_TST_VIRTUAL_OFFSET         = 0x00044009,
++	VCMSG_SET_VIRTUAL_OFFSET         = 0x00048009,
++	VCMSG_GET_OVERSCAN               = 0x0004000a,
++	VCMSG_TST_OVERSCAN               = 0x0004400a,
++	VCMSG_SET_OVERSCAN               = 0x0004800a,
++	VCMSG_GET_PALETTE                = 0x0004000b,
++	VCMSG_TST_PALETTE                = 0x0004400b,
++	VCMSG_SET_PALETTE                = 0x0004800b,
++	VCMSG_GET_LAYER                  = 0x0004000c,
++	VCMSG_TST_LAYER                  = 0x0004400c,
++	VCMSG_SET_LAYER                  = 0x0004800c,
++	VCMSG_GET_TRANSFORM              = 0x0004000d,
++	VCMSG_TST_TRANSFORM              = 0x0004400d,
++	VCMSG_SET_TRANSFORM              = 0x0004800d,
++};
 +
 +extern int /*rc*/ bcm_mailbox_read(unsigned chan, uint32_t *data28);
 +extern int /*rc*/ bcm_mailbox_write(unsigned chan, uint32_t data28);
++extern int /*rc*/ bcm_mailbox_property(void *data, int size);
 +
 +#endif
 diff --git a/arch/arm/mach-bcm2708/include/mach/vmalloc.h b/arch/arm/mach-bcm2708/include/mach/vmalloc.h
@@ -6239,10 +6336,10 @@ index 0000000..256bf1a
 +MODULE_LICENSE("GPL");
 diff --git a/arch/arm/mach-bcm2708/vc_mem.c b/arch/arm/mach-bcm2708/vc_mem.c
 new file mode 100644
-index 0000000..775c213
+index 0000000..ae1810c
 --- /dev/null
 +++ b/arch/arm/mach-bcm2708/vc_mem.c
-@@ -0,0 +1,510 @@
+@@ -0,0 +1,499 @@
 +/*****************************************************************************
 +* Copyright 2010 - 2011 Broadcom Corporation.  All rights reserved.
 +*
@@ -6373,44 +6470,33 @@ index 0000000..775c213
 +	uint32_t end_tag;			/* an end identifier, should be set to NULL */
 +};
 +
-+#define VCMSG_GET_ARM_MEMORY 0x00010005
-+#define VCMSG_GET_VC_MEMORY  0x00010006
-+
 +static void vc_mem_update(void)
 +{
-+	uint32_t success;
-+	dma_addr_t vc_mem;						/* the memory address accessed from videocore */
-+	struct vc_set_msg *get_mem;					/* the memory address accessed from driver */
++	struct vc_set_msg msg;					/* the memory address accessed from driver */
++	uint32_t s;
 +
-+	/* allocate some memory for the messages to use throughout the lifetime of the driver, use the larger of the two message structures */
-+	get_mem = (struct vc_set_msg *)dma_alloc_coherent(NULL, PAGE_ALIGN(sizeof(struct vc_set_msg)), &vc_mem, GFP_ATOMIC); 
-+	/* clear any garbage */
-+	memset(get_mem, 0, sizeof(struct vc_set_msg));
++	memset(&msg, 0, sizeof msg);
 +	/* create the message */
-+	get_mem->msg_size = sizeof(struct vc_set_msg);
-+	get_mem->tag[0].tag_id = VCMSG_GET_VC_MEMORY;
-+	get_mem->tag[0].buffer_size = 8;
-+	get_mem->tag[0].data_size   = 0;
-+	get_mem->tag[1].tag_id = VCMSG_GET_ARM_MEMORY;
-+	get_mem->tag[1].buffer_size = 8;
-+	get_mem->tag[1].data_size   = 0;
++	msg.msg_size = sizeof msg;
++	msg.tag[0].tag_id = VCMSG_GET_VC_MEMORY;
++	msg.tag[0].buffer_size = 8;
++	msg.tag[0].data_size   = 0;
++	msg.tag[1].tag_id = VCMSG_GET_ARM_MEMORY;
++	msg.tag[1].buffer_size = 8;
++	msg.tag[1].data_size   = 0;
 +
 +	/* send the message */
-+	wmb();
-+	bcm_mailbox_write(MBOX_CHAN_PROPERTY,(uint32_t)vc_mem);
-+	bcm_mailbox_read(MBOX_CHAN_PROPERTY, &success);
-+	rmb();
++	s = bcm_mailbox_property(&msg, sizeof msg);
 +
-+	LOG_DBG("%s: resp %x, vcbase=%x vcsize=%x armbase=%x armsize=%x", __func__, get_mem->request_code, 
-+		get_mem->tag[0].base, get_mem->tag[0].size, get_mem->tag[1].base, get_mem->tag[1].size);
++	LOG_DBG("%s: success=%d resp %x, vcbase=%x vcsize=%x armbase=%x armsize=%x", __func__, s, msg.request_code, 
++		msg.tag[0].base, msg.tag[0].size, msg.tag[1].base, msg.tag[1].size);
 +
 +	/* check we're all good */
-+	if (get_mem->request_code & 0x80000000) {
-+		mm_vc_mem_base = get_mem->tag[0].base;
-+		mm_vc_mem_size = get_mem->tag[0].size+get_mem->tag[1].size;
-+		mm_vc_mem_phys_addr = get_mem->tag[1].base;
++	if (s == 0 && msg.request_code & 0x80000000) {
++		mm_vc_mem_base = msg.tag[0].base;
++		mm_vc_mem_size = msg.tag[0].size+msg.tag[1].size;
++		mm_vc_mem_phys_addr = msg.tag[1].base;
 +	}
-+	dma_free_coherent(NULL, PAGE_ALIGN(sizeof(struct vc_set_msg)), (void *)get_mem, vc_mem);
 +}
 +
 +
@@ -6755,10 +6841,10 @@ index 0000000..775c213
 +MODULE_AUTHOR("Broadcom Corporation");
 diff --git a/arch/arm/mach-bcm2708/vcio.c b/arch/arm/mach-bcm2708/vcio.c
 new file mode 100644
-index 0000000..3874051
+index 0000000..468fdef
 --- /dev/null
 +++ b/arch/arm/mach-bcm2708/vcio.c
-@@ -0,0 +1,304 @@
+@@ -0,0 +1,338 @@
 +/*
 + *  linux/arch/arm/mach-bcm2708/vcio.c
 + *
@@ -6977,6 +7063,40 @@ index 0000000..3874051
 +	mbox_dev = dev;
 +}
 +
++extern int bcm_mailbox_property(void *data, int size)
++{
++	uint32_t success;
++	dma_addr_t mem_bus;				/* the memory address accessed from videocore */
++	void *mem_kern;					/* the memory address accessed from driver */
++	int s = 0;
++
++	/* allocate some memory for the messages communicating with GPU */
++	mem_kern = dma_alloc_coherent(NULL, PAGE_ALIGN(size), &mem_bus, GFP_ATOMIC);
++	if (mem_kern) {
++		/* create the message */
++		memcpy(mem_kern, data, size);
++
++		/* send the message */
++		wmb();
++		s = bcm_mailbox_write(MBOX_CHAN_PROPERTY, (uint32_t)mem_bus);
++		if (s == 0) {
++			s = bcm_mailbox_read(MBOX_CHAN_PROPERTY, &success);
++		}
++		if (s == 0) {
++			/* copy the response */
++			rmb();
++			memcpy(data, mem_kern, size);
++		}
++		dma_free_coherent(NULL, PAGE_ALIGN(size), mem_kern, mem_bus);
++	} else {
++		s = -ENOMEM;
++	}
++	if (s != 0)
++		printk(KERN_ERR DRIVER_NAME ": %s failed (%d)\n", __func__, s);
++	return s;
++}
++EXPORT_SYMBOL_GPL(bcm_mailbox_property);
++
 +/* ----------------------------------------------------------------------
 + *	Platform Device for Mailbox
 + * -------------------------------------------------------------------- */
@@ -7121,6 +7241,528 @@ index d061d2f..436dc2c 100644
  	mov	pc, lr
  
  ENTRY(cpu_v6_dcache_clean_area)
+diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
+index 72a0044..c28423d 100644
+--- a/drivers/cpufreq/Kconfig.arm
++++ b/drivers/cpufreq/Kconfig.arm
+@@ -30,3 +30,11 @@ config ARM_EXYNOS4210_CPUFREQ
+ 	  SoC (S5PV310 or S5PC210).
+ 
+ 	  If in doubt, say N.
++
++config ARM_BCM2835_CPUFREQ
++	bool "BCM2835 Driver"
++	default y
++	help
++	  This adds the CPUFreq driver for BCM2835
++
++	  If in doubt, say N.
+diff --git a/drivers/cpufreq/Makefile b/drivers/cpufreq/Makefile
+index a48bc02..51ebbb3 100644
+--- a/drivers/cpufreq/Makefile
++++ b/drivers/cpufreq/Makefile
+@@ -43,6 +43,7 @@ obj-$(CONFIG_UX500_SOC_DB8500)		+= db8500-cpufreq.o
+ obj-$(CONFIG_ARM_S3C64XX_CPUFREQ)	+= s3c64xx-cpufreq.o
+ obj-$(CONFIG_ARM_S5PV210_CPUFREQ)	+= s5pv210-cpufreq.o
+ obj-$(CONFIG_ARM_EXYNOS4210_CPUFREQ)	+= exynos4210-cpufreq.o
++obj-$(CONFIG_ARM_BCM2835_CPUFREQ)	+= bcm2835-cpufreq.o
+ 
+ ##################################################################################
+ # PowerPC platform drivers
+diff --git a/drivers/cpufreq/bcm2835-cpufreq.c b/drivers/cpufreq/bcm2835-cpufreq.c
+new file mode 100755
+index 0000000..aa6fc66
+--- /dev/null
++++ b/drivers/cpufreq/bcm2835-cpufreq.c
+@@ -0,0 +1,239 @@
++/*****************************************************************************
++* Copyright 2011 Broadcom Corporation.  All rights reserved.
++*
++* Unless you and Broadcom execute a separate written software license
++* agreement governing use of this software, this software is licensed to you
++* under the terms of the GNU General Public License version 2, available at
++* http://www.broadcom.com/licenses/GPLv2.php (the "GPL").
++*	
++* Notwithstanding the above, under no circumstances may you combine this
++* software in any way with any other Broadcom software provided under a
++* license other than the GPL, without Broadcom's express prior written
++* consent.
++*****************************************************************************/
++
++/*****************************************************************************
++* FILENAME: bcm2835-cpufreq.h
++* DESCRIPTION: This driver dynamically manages the CPU Frequency of the ARM
++* processor. Messages are sent to Videocore either setting or requesting the
++* frequency of the ARM in order to match an appropiate frequency to the current
++* usage of the processor. The policy which selects the frequency to use is
++* defined in the kernel .config file, but can be changed during runtime.
++*****************************************************************************/
++
++/* ---------- INCLUDES ---------- */
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/cpufreq.h>
++#include <mach/vcio.h>
++
++/* ---------- DEFINES ---------- */
++/*#define CPUFREQ_DEBUG_ENABLE*/		/* enable debugging */
++#define MODULE_NAME "bcm2835-cpufreq"
++
++#define VCMSG_ID_ARM_CLOCK 0x000000003		/* Clock/Voltage ID's */
++
++/* debug printk macros */
++#ifdef CPUFREQ_DEBUG_ENABLE
++#define print_debug(fmt,...) pr_debug("%s:%s:%d: "fmt, MODULE_NAME, __func__, __LINE__, ##__VA_ARGS__)
++#else
++#define print_debug(fmt,...)
++#endif
++#define print_err(fmt,...) pr_err("%s:%s:%d: "fmt, MODULE_NAME, __func__,__LINE__, ##__VA_ARGS__)
++#define print_info(fmt,...) pr_info("%s: "fmt, MODULE_NAME, ##__VA_ARGS__)
++
++/* tag part of the message */
++struct vc_msg_tag {
++	uint32_t tag_id;		/* the message id */
++	uint32_t buffer_size;		/* size of the buffer (which in this case is always 8 bytes) */
++	uint32_t data_size;		/* amount of data being sent or received */
++	uint32_t dev_id;		/* the ID of the clock/voltage to get or set */
++	uint32_t val;			/* the value (e.g. rate (in Hz)) to set */
++};
++
++/* message structure to be sent to videocore */
++struct vc_msg {
++	uint32_t msg_size;		/* simply, sizeof(struct vc_msg) */
++	uint32_t request_code;		/* holds various information like the success and number of bytes returned (refer to mailboxes wiki) */
++	struct vc_msg_tag tag;		/* the tag structure above to make */
++	uint32_t end_tag;		/* an end identifier, should be set to NULL */
++};
++
++/* ---------- GLOBALS ---------- */
++static struct cpufreq_driver bcm2835_cpufreq_driver;	/* the cpufreq driver global */
++
++/*
++ ===============================================
++  clk_rate either gets or sets the clock rates.
++ ===============================================
++*/
++static uint32_t bcm2835_cpufreq_set_clock(int cur_rate, int arm_rate)
++{
++	int s, actual_rate=0;
++	struct vc_msg msg;
++	
++	/* wipe all previous message data */
++	memset(&msg, 0, sizeof msg);
++	
++	msg.msg_size = sizeof msg;
++			
++	msg.tag.tag_id = VCMSG_SET_CLOCK_RATE;
++	msg.tag.buffer_size = 8;
++	msg.tag.data_size = 8;   /* we're sending the clock ID and the new rates which is a total of 2 words */
++	msg.tag.dev_id = VCMSG_ID_ARM_CLOCK;
++	msg.tag.val = arm_rate * 1000;
++			
++	/* send the message */
++	s = bcm_mailbox_property(&msg, sizeof msg);
++	
++	/* check if it was all ok and return the rate in KHz */
++	if (s == 0 && (msg.request_code & 0x80000000))
++		actual_rate = msg.tag.val/1000;
++
++	print_debug("Setting new frequency = %d -> %d (actual %d)", cur_rate, arm_rate, actual_rate);	
++	return actual_rate;
++}
++
++static uint32_t bcm2835_cpufreq_get_clock(int tag)
++{
++	int s;
++	int arm_rate = 0;
++	struct vc_msg msg;
++	
++	/* wipe all previous message data */
++	memset(&msg, 0, sizeof msg);
++	
++	msg.msg_size = sizeof msg;
++	msg.tag.tag_id = tag;
++	msg.tag.buffer_size = 8;
++	msg.tag.data_size = 4; /* we're just sending the clock ID which is one word long */
++	msg.tag.dev_id = VCMSG_ID_ARM_CLOCK;
++	
++	/* send the message */
++	s = bcm_mailbox_property(&msg, sizeof msg);
++
++	/* check if it was all ok and return the rate in KHz */
++	if (s == 0 && (msg.request_code & 0x80000000))
++		arm_rate = msg.tag.val/1000;
++
++	print_debug("%s frequency = %d",
++		tag == VCMSG_GET_CLOCK_RATE ? "Current":
++		tag == VCMSG_GET_MIN_CLOCK ? "Min":
++		tag == VCMSG_GET_MAX_CLOCK ? "Max":
++		"Unexpected", arm_rate);
++	
++	return arm_rate;
++}
++
++/*
++ ====================================================
++  Module Initialisation registers the cpufreq driver
++ ====================================================
++*/
++static int __init bcm2835_cpufreq_module_init(void)
++{	
++	print_debug("IN");
++	return cpufreq_register_driver(&bcm2835_cpufreq_driver);
++}
++
++/*
++ =============
++  Module exit
++ =============
++*/
++static void __exit bcm2835_cpufreq_module_exit(void)
++{
++	print_debug("IN");
++	cpufreq_unregister_driver(&bcm2835_cpufreq_driver);
++	return;
++}
++
++/*
++ ==============================================================
++  Initialisation function sets up the CPU policy for first use
++ ==============================================================
++*/
++static int bcm2835_cpufreq_driver_init(struct cpufreq_policy *policy)
++{
++	/* measured value of how long it takes to change frequency */	
++	policy->cpuinfo.transition_latency = 355000; /* ns */
++
++	/* now find out what the maximum and minimum frequencies are */
++	policy->min = policy->cpuinfo.min_freq = bcm2835_cpufreq_get_clock(VCMSG_GET_MIN_CLOCK);
++	policy->max = policy->cpuinfo.max_freq = bcm2835_cpufreq_get_clock(VCMSG_GET_MAX_CLOCK);
++	policy->cur = bcm2835_cpufreq_get_clock(VCMSG_GET_CLOCK_RATE);
++	
++	print_info("min=%d max=%d cur=%d", policy->min, policy->max, policy->cur);
++	return 0;
++}
++
++/*
++ =================================================================================
++  Target function chooses the most appropriate frequency from the table to enable
++ =================================================================================
++*/
++
++static int bcm2835_cpufreq_driver_target(struct cpufreq_policy *policy, unsigned int target_freq, unsigned int relation)
++{
++	unsigned int target = target_freq;
++	unsigned int cur = policy->cur;
++	print_debug("%s: min=%d max=%d cur=%d target=%d",policy->governor->name,policy->min,policy->max,policy->cur,target_freq);
++	
++	/* if we are above min and using ondemand, then just use max */
++	if (strcmp("ondemand", policy->governor->name)==0 && target > policy->min)
++		target = policy->max;
++	/* if the frequency is the same, just quit */
++	if (target == policy->cur)
++		return 0;
++
++	/* otherwise were good to set the clock frequency */
++	policy->cur = bcm2835_cpufreq_set_clock(policy->cur, target);
++	
++	if (!policy->cur)
++	{
++		print_err("Error occurred setting a new frequency (%d)!", target);
++		policy->cur = bcm2835_cpufreq_get_clock(VCMSG_GET_CLOCK_RATE);
++		return -EINVAL;
++	}
++	print_info("Freq %d->%d (min=%d max=%d target=%d request=%d)", cur, policy->cur, policy->min, policy->max, target_freq, target);
++	return 0;
++}
++
++static unsigned int bcm2835_cpufreq_driver_get(unsigned int cpu)
++{
++	unsigned int actual_rate = bcm2835_cpufreq_get_clock(VCMSG_GET_CLOCK_RATE);
++	print_debug("%d", actual_rate);
++	return actual_rate;
++}
++
++/*
++ =================================================================================
++  Verify ensures that when a policy is changed, it is suitable for the CPU to use
++ =================================================================================
++*/
++
++static int bcm2835_cpufreq_driver_verify(struct cpufreq_policy *policy)
++{
++	print_info("switching to governor %s", policy->governor->name);
++	return 0;
++}
++
++
++/* the CPUFreq driver */
++static struct cpufreq_driver bcm2835_cpufreq_driver = {
++		.name   = "BCM2835 CPUFreq",
++		.owner  = THIS_MODULE,
++		.init   = bcm2835_cpufreq_driver_init,
++		.verify = bcm2835_cpufreq_driver_verify,
++		.target = bcm2835_cpufreq_driver_target,
++		.get    = bcm2835_cpufreq_driver_get
++};
++
++MODULE_AUTHOR("Dorian Peake and Dom Cobley");
++MODULE_DESCRIPTION("CPU frequency driver for BCM2835 chip");
++MODULE_LICENSE("GPL");
++
++module_init(bcm2835_cpufreq_module_init);
++module_exit(bcm2835_cpufreq_module_exit);
++
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 83e3e9d..761b528 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1361,6 +1361,15 @@ config SENSORS_MC13783_ADC
+         help
+           Support for the A/D converter on MC13783 PMIC.
+ 
++config SENSORS_BCM2835
++	tristate "Broadcom BCM2835 HWMON Driver"
++	help
++	  If you say yes here you get support for the hardware
++	  monitoring features of the BCM2835 Chip
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called bcm2835-hwmon.
++
+ if ACPI
+ 
+ comment "ACPI drivers"
+diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+index 8251ce8..8f2743b 100644
+--- a/drivers/hwmon/Makefile
++++ b/drivers/hwmon/Makefile
+@@ -125,6 +125,7 @@ obj-$(CONFIG_SENSORS_W83L785TS)	+= w83l785ts.o
+ obj-$(CONFIG_SENSORS_W83L786NG)	+= w83l786ng.o
+ obj-$(CONFIG_SENSORS_WM831X)	+= wm831x-hwmon.o
+ obj-$(CONFIG_SENSORS_WM8350)	+= wm8350-hwmon.o
++obj-$(CONFIG_SENSORS_BCM2835)	+= bcm2835-hwmon.o
+ 
+ obj-$(CONFIG_PMBUS)		+= pmbus/
+ 
+diff --git a/drivers/hwmon/bcm2835-hwmon.c b/drivers/hwmon/bcm2835-hwmon.c
+new file mode 100644
+index 0000000..4976387
+--- /dev/null
++++ b/drivers/hwmon/bcm2835-hwmon.c
+@@ -0,0 +1,211 @@
++//bcm2835-hwmon.c
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/hwmon.h>
++#include <linux/hwmon-sysfs.h>
++#include <linux/platform_device.h>
++#include <linux/sysfs.h>
++#include <mach/vcio.h>
++#include <linux/slab.h>
++#include <linux/err.h>
++
++#define MODULE_NAME "bcm2835_hwmon"
++
++/*#define HWMON_DEBUG_ENABLE*/
++
++#ifdef HWMON_DEBUG_ENABLE
++#define print_debug(fmt,...) printk(KERN_INFO "%s:%s:%d: "fmt"\n", MODULE_NAME, __func__, __LINE__, ##__VA_ARGS__)
++#else
++#define print_debug(fmt,...)
++#endif
++#define print_err(fmt,...) printk(KERN_ERR "%s:%s:%d: "fmt"\n", MODULE_NAME, __func__,__LINE__, ##__VA_ARGS__)
++#define print_info(fmt,...) printk(KERN_INFO "%s: "fmt"\n", MODULE_NAME, ##__VA_ARGS__)
++
++#define VC_TAG_GET_TEMP 0x00030006
++#define VC_TAG_GET_MAX_TEMP 0x0003000A
++struct bcm2835_hwmon_data {
++	struct device *hwmon_dev;
++};
++
++/* --- STRUCTS --- */
++
++/* tag part of the message */
++struct vc_msg_tag {
++	uint32_t tag_id;		/* the tag ID for the temperature */
++	uint32_t buffer_size;	/* size of the buffer (should be 8) */
++	uint32_t request_code;	/* identifies message as a request (should be 0) */
++	uint32_t id;			/* extra ID field (should be 0) */
++	uint32_t val;			/* returned value of the temperature */
++};
++
++/* message structure to be sent to videocore */
++struct vc_msg {
++	uint32_t msg_size;		/* simply, sizeof(struct vc_msg) */
++	uint32_t request_code;		/* holds various information like the success and number of bytes returned (refer to mailboxes wiki) */
++	struct vc_msg_tag tag;		/* the tag structure above to make */
++	uint32_t end_tag;		/* an end identifier, should be set to NULL */
++};
++
++typedef enum {
++	TEMP,
++	MAX_TEMP,
++} temp_type;
++
++/* --- PROTOTYPES --- */
++static ssize_t bcm2835_get_temp(struct device *dev, struct device_attribute *attr, char *buf);
++static ssize_t bcm2835_get_name(struct device *dev, struct device_attribute *attr, char *buf);
++
++/* --- GLOBALS --- */
++
++static struct bcm2835_hwmon_data *bcm2835_data;
++static struct platform_driver bcm2835_hwmon_driver;
++
++static SENSOR_DEVICE_ATTR(name, S_IRUGO,bcm2835_get_name,NULL,0);
++static SENSOR_DEVICE_ATTR(temp1_input,S_IRUGO,bcm2835_get_temp,NULL,TEMP);
++static SENSOR_DEVICE_ATTR(temp,S_IRUGO,bcm2835_get_temp,NULL,TEMP);
++static SENSOR_DEVICE_ATTR(temp1_max,S_IRUGO,bcm2835_get_temp,NULL,MAX_TEMP);
++static SENSOR_DEVICE_ATTR(trip_point_0_temp,S_IRUGO,bcm2835_get_temp,NULL,MAX_TEMP);
++
++static struct attribute* bcm2835_attributes[] = {
++	&sensor_dev_attr_name.dev_attr.attr,
++	&sensor_dev_attr_temp1_input.dev_attr.attr,
++	&sensor_dev_attr_temp1_max.dev_attr.attr,
++	&sensor_dev_attr_temp.dev_attr.attr,
++	&sensor_dev_attr_trip_point_0_temp.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group bcm2835_attr_group = {
++	.attrs = bcm2835_attributes,
++};
++
++/* --- FUNCTIONS --- */
++
++static ssize_t bcm2835_get_name(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf,"bcm2835_hwmon\n");
++}
++
++static ssize_t bcm2835_get_temp(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct vc_msg msg;
++	int result;
++	uint temp = 0;
++	int index = ((struct sensor_device_attribute*)to_sensor_dev_attr(attr))->index;
++
++	print_debug("IN");
++
++	/* wipe all previous message data */
++	memset(&msg, 0, sizeof msg);
++
++	/* determine the message type */
++	if(index == TEMP)
++		msg.tag.tag_id = VC_TAG_GET_TEMP;
++	else if (index == MAX_TEMP)
++		msg.tag.tag_id = VC_TAG_GET_MAX_TEMP;
++	else
++	{
++		print_debug("Unknown temperature message!");
++		return -EINVAL;
++	}
++
++	msg.msg_size = sizeof msg;
++	msg.tag.buffer_size = 8;
++
++	/* send the message */
++	result = bcm_mailbox_property(&msg, sizeof msg);
++
++	/* check if it was all ok and return the rate in milli degrees C */
++	if (result == 0 && (msg.request_code & 0x80000000))
++		temp = (uint)msg.tag.val;
++	#ifdef HWMON_DEBUG_ENABLE
++	else
++		print_debug("Failed to get temperature!");
++	#endif
++	print_debug("Got temperature as %u",temp);
++	print_debug("OUT");
++	return sprintf(buf, "%u\n", temp);
++}
++
++
++static int bcm2835_hwmon_probe(struct platform_device *pdev)
++{
++	int err;
++
++	print_debug("IN");
++	print_debug("HWMON Driver has been probed!");
++
++	/* check that the device isn't null!*/
++	if(pdev == NULL)
++	{
++		print_debug("Platform device is empty!");
++		return -ENODEV;
++	}
++
++	/* allocate memory for neccessary data */
++	bcm2835_data = kzalloc(sizeof(struct bcm2835_hwmon_data),GFP_KERNEL);
++	if(!bcm2835_data)
++	{
++		print_debug("Unable to allocate memory for hwmon data!");
++		err = -ENOMEM;
++		goto kzalloc_error;
++	}
++
++	/* create the sysfs files */
++	if(sysfs_create_group(&pdev->dev.kobj, &bcm2835_attr_group))
++	{
++		print_debug("Unable to create sysfs files!");
++		err = -EFAULT;
++		goto sysfs_error;
++	}
++
++	/* register the hwmon device */
++	bcm2835_data->hwmon_dev = hwmon_device_register(&pdev->dev);
++	if (IS_ERR(bcm2835_data->hwmon_dev))
++	{
++		err = PTR_ERR(bcm2835_data->hwmon_dev);
++		goto hwmon_error;
++	}
++	print_debug("OUT");
++	return 0;
++
++	/* error goto's */
++	hwmon_error:
++	sysfs_remove_group(&pdev->dev.kobj, &bcm2835_attr_group);
++
++	sysfs_error:
++	kfree(bcm2835_data);
++
++	kzalloc_error:
++
++	return err;
++
++}
++
++static int bcm2835_hwmon_remove(struct platform_device *pdev)
++{
++	print_debug("IN");
++	hwmon_device_unregister(bcm2835_data->hwmon_dev);
++
++	sysfs_remove_group(&pdev->dev.kobj, &bcm2835_attr_group);
++	print_debug("OUT");
++	return 0;
++}
++
++/* Hwmon Driver */
++static struct platform_driver bcm2835_hwmon_driver = {
++	.probe = bcm2835_hwmon_probe,
++	.remove = bcm2835_hwmon_remove,
++	.driver = {
++				.name = "bcm2835_hwmon",
++				.owner = THIS_MODULE,
++			},
++};
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Dorian Peake");
++MODULE_DESCRIPTION("HW Monitor driver for bcm2835 chip");
++
++module_platform_driver(bcm2835_hwmon_driver);
 diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
 index a3afac4..cbc62ff 100644
 --- a/drivers/i2c/busses/Kconfig
@@ -31676,6 +32318,234 @@ index 0000000..ef8fef0
 +MODULE_AUTHOR("Chris Boot <bootc@bootc.net>");
 +MODULE_LICENSE("GPL v2");
 +MODULE_ALIAS("platform:" DRV_NAME);
+diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+index f7f71b2..a5017b4 100644
+--- a/drivers/thermal/Kconfig
++++ b/drivers/thermal/Kconfig
+@@ -18,3 +18,13 @@ config THERMAL_HWMON
+ 	depends on THERMAL
+ 	depends on HWMON=y || HWMON=THERMAL
+ 	default y
++
++if THERMAL
++
++config THERMAL_BCM2835
++	tristate "BCM2835 Thermal Driver"
++	help
++	  This will enable temperature monitoring for the Broadcom BCM2835
++	  chip. If built as a module, it will be called 'bcm2835-thermal'.
++
++endif # THERMAL_BCM2835
+diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
+index 31108a0..48081d1 100644
+--- a/drivers/thermal/Makefile
++++ b/drivers/thermal/Makefile
+@@ -3,3 +3,4 @@
+ #
+ 
+ obj-$(CONFIG_THERMAL)		+= thermal_sys.o
++obj-$(CONFIG_THERMAL_BCM2835)	+= bcm2835-thermal.o
+diff --git a/drivers/thermal/bcm2835-thermal.c b/drivers/thermal/bcm2835-thermal.c
+new file mode 100644
+index 0000000..c6420de
+--- /dev/null
++++ b/drivers/thermal/bcm2835-thermal.c
+@@ -0,0 +1,195 @@
++//bcm2835-thermal.c
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <mach/vcio.h>
++#include <linux/thermal.h>
++
++
++/* --- DEFINITIONS --- */
++#define MODULE_NAME "bcm2835_thermal"
++
++/*#define THERMAL_DEBUG_ENABLE*/
++
++#ifdef THERMAL_DEBUG_ENABLE
++#define print_debug(fmt,...) printk(KERN_INFO "%s:%s:%d: "fmt"\n", MODULE_NAME, __func__, __LINE__, ##__VA_ARGS__)
++#else
++#define print_debug(fmt,...)
++#endif
++#define print_err(fmt,...) printk(KERN_ERR "%s:%s:%d: "fmt"\n", MODULE_NAME, __func__,__LINE__, ##__VA_ARGS__)
++#define print_info(fmt,...) printk(KERN_INFO "%s: "fmt"\n", MODULE_NAME, ##__VA_ARGS__)
++
++#define VC_TAG_GET_TEMP 0x00030006
++#define VC_TAG_GET_MAX_TEMP 0x0003000A
++
++typedef enum {
++	TEMP,
++	MAX_TEMP,
++} temp_type;
++
++/* --- STRUCTS --- */
++/* tag part of the message */
++struct vc_msg_tag {
++	uint32_t tag_id;		/* the tag ID for the temperature */
++	uint32_t buffer_size;	/* size of the buffer (should be 8) */
++	uint32_t request_code;	/* identifies message as a request (should be 0) */
++	uint32_t id;			/* extra ID field (should be 0) */
++	uint32_t val;			/* returned value of the temperature */
++};
++
++/* message structure to be sent to videocore */
++struct vc_msg {
++	uint32_t msg_size;		/* simply, sizeof(struct vc_msg) */
++	uint32_t request_code;		/* holds various information like the success and number of bytes returned (refer to mailboxes wiki) */
++	struct vc_msg_tag tag;		/* the tag structure above to make */
++	uint32_t end_tag;		/* an end identifier, should be set to NULL */
++};
++
++struct bcm2835_thermal_data {
++	struct thermal_zone_device *thermal_dev;
++	struct vc_msg msg;
++};
++
++/* --- PROTOTYPES --- */
++static int bcm2835_get_temp(struct thermal_zone_device *thermal_dev, unsigned long *);
++static int bcm2835_get_max_temp(struct thermal_zone_device *thermal_dev, int, unsigned long *);
++static int bcm2835_get_trip_type(struct thermal_zone_device *thermal_dev, int trip_num, enum thermal_trip_type *trip_type);
++static int bcm2835_get_mode(struct thermal_zone_device *thermal_dev, enum thermal_device_mode *dev_mode);
++
++/* --- GLOBALS --- */
++static struct bcm2835_thermal_data bcm2835_data;
++
++/* Thermal Device Operations */
++static struct thermal_zone_device_ops ops;
++
++/* --- FUNCTIONS --- */
++static int bcm2835_get_max_temp(struct thermal_zone_device *thermal_dev, int trip_num, unsigned long *temp)
++{
++	int result;
++
++	print_debug("IN");
++
++	/* wipe all previous message data */
++	memset(&bcm2835_data.msg, 0, sizeof bcm2835_data.msg);
++
++	/* prepare message */
++	bcm2835_data.msg.msg_size = sizeof bcm2835_data.msg;
++	bcm2835_data.msg.tag.buffer_size = 8;
++	bcm2835_data.msg.tag.tag_id = VC_TAG_GET_MAX_TEMP;
++
++	/* send the message */
++	result = bcm_mailbox_property(&bcm2835_data.msg, sizeof bcm2835_data.msg);
++
++	/* check if it was all ok and return the rate in milli degrees C */
++	if (result == 0 && (bcm2835_data.msg.request_code & 0x80000000))
++		*temp = (uint)bcm2835_data.msg.tag.val;
++	#ifdef THERMAL_DEBUG_ENABLE
++	else
++		print_debug("Failed to get temperature!");
++	#endif
++	print_debug("Got temperature as %u",(uint)*temp);
++	print_debug("OUT");
++	return 0;
++}
++
++static int bcm2835_get_temp(struct thermal_zone_device *thermal_dev, unsigned long *temp)
++{
++	int result;
++
++	print_debug("IN");
++
++	/* wipe all previous message data */
++	memset(&bcm2835_data.msg, 0, sizeof bcm2835_data.msg);
++
++	/* prepare message */
++	bcm2835_data.msg.msg_size = sizeof bcm2835_data.msg;
++	bcm2835_data.msg.tag.buffer_size = 8;
++	bcm2835_data.msg.tag.tag_id = VC_TAG_GET_TEMP;
++
++	/* send the message */
++	result = bcm_mailbox_property(&bcm2835_data.msg, sizeof bcm2835_data.msg);
++
++	/* check if it was all ok and return the rate in milli degrees C */
++	if (result == 0 && (bcm2835_data.msg.request_code & 0x80000000))
++		*temp = (uint)bcm2835_data.msg.tag.val;
++	#ifdef THERMAL_DEBUG_ENABLE
++	else
++		print_debug("Failed to get temperature!");
++	#endif
++	print_debug("Got temperature as %u",(uint)*temp);
++	print_debug("OUT");
++	return 0;
++}
++
++
++static int bcm2835_get_trip_type(struct thermal_zone_device * thermal_dev, int trip_num, enum thermal_trip_type *trip_type)
++{
++	*trip_type = THERMAL_TRIP_HOT;
++	return 0;
++}
++
++
++static int bcm2835_get_mode(struct thermal_zone_device *thermal_dev, enum thermal_device_mode *dev_mode)
++{
++	*dev_mode = THERMAL_DEVICE_ENABLED;
++	return 0;
++}
++
++
++static int bcm2835_thermal_probe(struct platform_device *pdev)
++{
++	print_debug("IN");
++	print_debug("THERMAL Driver has been probed!");
++
++	/* check that the device isn't null!*/
++	if(pdev == NULL)
++	{
++		print_debug("Platform device is empty!");
++		return -ENODEV;
++	}
++
++	if(!(bcm2835_data.thermal_dev = thermal_zone_device_register("bcm2835_thermal",	1, NULL, &ops,1,1,1000,1000)))
++	{
++		print_debug("Unable to register the thermal device!");
++		return -EFAULT;
++	}
++	return 0;
++}
++
++
++static int bcm2835_thermal_remove(struct platform_device *pdev)
++{
++	print_debug("IN");
++
++	thermal_zone_device_unregister(bcm2835_data.thermal_dev);
++
++	print_debug("OUT");
++
++	return 0;
++}
++
++static struct thermal_zone_device_ops ops  = {
++	.get_temp = bcm2835_get_temp,
++	.get_trip_temp = bcm2835_get_max_temp,
++	.get_trip_type = bcm2835_get_trip_type,
++	.get_mode = bcm2835_get_mode,
++};
++
++/* Thermal Driver */
++static struct platform_driver bcm2835_thermal_driver = {
++	.probe = bcm2835_thermal_probe,
++	.remove = bcm2835_thermal_remove,
++	.driver = {
++				.name = "bcm2835_thermal",
++				.owner = THIS_MODULE,
++			},
++};
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Dorian Peake");
++MODULE_DESCRIPTION("Thermal driver for bcm2835 chip");
++
++module_platform_driver(bcm2835_thermal_driver);
 diff --git a/drivers/usb/Makefile b/drivers/usb/Makefile
 index 75eca76..a6b7e41 100644
 --- a/drivers/usb/Makefile
@@ -32338,7 +33208,7 @@ index 7ca290f..802dda6 100644
  obj-$(CONFIG_USB_OCTEON2_COMMON) += octeon2-common.o
 diff --git a/drivers/usb/host/dwc_common_port/Makefile b/drivers/usb/host/dwc_common_port/Makefile
 new file mode 100644
-index 0000000..203c7ea
+index 0000000..63e3485
 --- /dev/null
 +++ b/drivers/usb/host/dwc_common_port/Makefile
 @@ -0,0 +1,58 @@
@@ -32374,9 +33244,9 @@ index 0000000..203c7ea
 +
 +else
 +
-+ifeq ($(KDIR),)
-+$(error Must give "KDIR=/path/to/kernel/source" on command line or in environment)
-+endif
++#ifeq ($(KDIR),)
++#$(error Must give "KDIR=/path/to/kernel/source" on command line or in environment)
++#endif
 +
 +ifeq ($(ARCH),)
 +$(error Must give "ARCH=<arch>" on command line or in environment. Also, if \
@@ -60320,10 +61190,10 @@ index 0000000..2ff1532
 +#endif
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_driver.c b/drivers/usb/host/dwc_otg/dwc_otg_driver.c
 new file mode 100644
-index 0000000..b618f4b
+index 0000000..d5d8c4b
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_driver.c
-@@ -0,0 +1,1727 @@
+@@ -0,0 +1,1732 @@
 +/* ==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_driver.c $
 + * $Revision: #92 $
@@ -60567,7 +61437,10 @@ index 0000000..b618f4b
 +};
 +
 +//Global variable to switch the fiq fix on or off
-+bool fiq_fix_enable = false;
++bool fiq_fix_enable = true;
++
++//Global variable to switch the nak holdoff on or off
++bool nak_holdoff_enable = true;
 +
 +
 +/**
@@ -61412,6 +62285,7 @@ index 0000000..b618f4b
 +		return retval;
 +	}
 +	printk(KERN_DEBUG "dwc_otg: FIQ %s\n", fiq_fix_enable ? "enabled":"disabled");
++	printk(KERN_DEBUG "dwc_otg: NAK holdoff %s\n", nak_holdoff_enable ? "enabled":"disabled");
 +
 +	error = driver_create_file(drv, &driver_attr_version);
 +#ifdef DEBUG
@@ -61692,9 +62566,10 @@ index 0000000..b618f4b
 +module_param(microframe_schedule, bool, 0444);
 +MODULE_PARM_DESC(microframe_schedule, "Enable the microframe scheduler");
 +
-+
 +module_param(fiq_fix_enable, bool, 0444);
 +MODULE_PARM_DESC(fiq_fix_enable, "Enable the fiq fix");
++module_param(nak_holdoff_enable, bool, 0444);
++MODULE_PARM_DESC(nak_holdoff_enable, "Enable the NAK holdoff");
 +
 +/** @page "Module Parameters"
 + *
@@ -62145,10 +63020,10 @@ index 0000000..8a0e41b
 +#endif
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd.c
 new file mode 100644
-index 0000000..20f989e
+index 0000000..2b7945a
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd.c
-@@ -0,0 +1,3478 @@
+@@ -0,0 +1,3498 @@
 +
 +/* ==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_hcd.c $
@@ -62678,6 +63553,8 @@ index 0000000..20f989e
 +{
 +	dwc_otg_qh_t *qh;
 +	dwc_otg_qtd_t *urb_qtd;
++	BUG_ON(!hcd);
++	BUG_ON(!dwc_otg_urb);
 +
 +#ifdef DEBUG /* integrity checks (Broadcom) */
 +
@@ -62694,14 +63571,17 @@ index 0000000..20f989e
 +		return -DWC_E_INVALID;
 +	}
 +	urb_qtd = dwc_otg_urb->qtd;
++	BUG_ON(!urb_qtd);
 +	if (urb_qtd->qh == NULL) { 
 +		DWC_ERROR("**** DWC OTG HCD URB Dequeue with QTD with NULL Q handler\n");
 +		return -DWC_E_INVALID;
 +	}
 +#else
 +	urb_qtd = dwc_otg_urb->qtd;
++	BUG_ON(!urb_qtd);
 +#endif
 +	qh = urb_qtd->qh;
++	BUG_ON(!qh);
 +	if (CHK_DEBUG_LEVEL(DBG_HCDV | DBG_HCD_URB)) {
 +		if (urb_qtd->in_process) {
 +			dump_channel_info(hcd, qh);
@@ -62973,6 +63853,7 @@ index 0000000..20f989e
 +	} else if (dwc_otg_hcd->status_buf != NULL) {
 +		DWC_FREE(dwc_otg_hcd->status_buf);
 +	}
++	DWC_SPINLOCK_FREE(dwc_otg_hcd->channel_lock);
 +	DWC_SPINLOCK_FREE(dwc_otg_hcd->lock);
 +	/* Set core_if's lock pointer to NULL */
 +	dwc_otg_hcd->core_if->lock = NULL;
@@ -62999,6 +63880,7 @@ index 0000000..20f989e
 +	dwc_hc_t *channel;
 +
 +	hcd->lock = DWC_SPINLOCK_ALLOC();
++	hcd->channel_lock = DWC_SPINLOCK_ALLOC();
 +        DWC_DEBUGPL(DBG_HCDV, "init of HCD %p given core_if %p\n",
 +                    hcd, core_if);
 +	if (!hcd->lock) {
@@ -63399,7 +64281,7 @@ index 0000000..20f989e
 +	dwc_otg_qh_t *qh;
 +	int num_channels;
 +	dwc_irqflags_t flags;
-+	dwc_spinlock_t *channel_lock = DWC_SPINLOCK_ALLOC();
++	dwc_spinlock_t *channel_lock = hcd->channel_lock;
 +	dwc_otg_transaction_type_e ret_val = DWC_OTG_TRANSACTION_NONE;
 +
 +#ifdef DEBUG_SOF
@@ -63458,6 +64340,22 @@ index 0000000..20f989e
 +		num_channels - hcd->periodic_channels) &&
 +	       !DWC_CIRCLEQ_EMPTY(&hcd->free_hc_list)) {
 +
++		qh = DWC_LIST_ENTRY(qh_ptr, dwc_otg_qh_t, qh_list_entry);
++
++		/*
++		 * Check to see if this is a NAK'd retransmit, in which case ignore for retransmission
++		 * we hold off on bulk retransmissions to reduce NAK interrupt overhead for
++		 * cheeky devices that just hold off using NAKs
++		 */
++		if (dwc_full_frame_num(qh->nak_frame) == dwc_full_frame_num(dwc_otg_hcd_get_frame_number(hcd))) {
++			// Make fiq interrupt run on next frame (i.e. 8 uframes)
++			g_next_sched_frame = ((qh->nak_frame + 8) & ~7) & DWC_HFNUM_MAX_FRNUM;
++			qh_ptr = DWC_LIST_NEXT(qh_ptr);
++			continue;
++		}
++		else
++			qh->nak_frame = 0xffff;
++
 +		if (microframe_schedule) {
 +				DWC_SPINLOCK_IRQSAVE(channel_lock, &flags);
 +				if (hcd->available_host_channels < 1) {
@@ -63470,7 +64368,6 @@ index 0000000..20f989e
 +				last_sel_trans_num_nonper_scheduled++;
 +#endif /* DEBUG_HOST_CHANNELS */
 +		}
-+		qh = DWC_LIST_ENTRY(qh_ptr, dwc_otg_qh_t, qh_list_entry);
 +
 +		assign_and_init_hc(hcd, qh);
 +
@@ -63499,8 +64396,6 @@ index 0000000..20f989e
 +#ifdef DEBUG_HOST_CHANNELS
 +	last_sel_trans_num_avail_hc_at_end = hcd->available_host_channels;
 +#endif /* DEBUG_HOST_CHANNELS */
-+
-+	DWC_SPINLOCK_FREE(channel_lock);
 +	return ret_val;
 +}
 +
@@ -65629,10 +66524,10 @@ index 0000000..20f989e
 +#endif /* DWC_DEVICE_ONLY */
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd.h b/drivers/usb/host/dwc_otg/dwc_otg_hcd.h
 new file mode 100644
-index 0000000..dd30f47
+index 0000000..45e44ea
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd.h
-@@ -0,0 +1,824 @@
+@@ -0,0 +1,829 @@
 +/* ==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_hcd.h $
 + * $Revision: #58 $
@@ -65956,6 +66851,11 @@ index 0000000..dd30f47
 +	 */
 +	uint16_t sched_frame;
 +
++	/*
++	** Frame a NAK was received on this queue head, used to minimise NAK retransmission
++	*/
++	uint16_t nak_frame;
++
 +	/** (micro)frame at which last start split was initialized. */
 +	uint16_t start_split_frame;
 +
@@ -66183,7 +67083,7 @@ index 0000000..dd30f47
 +
 +	/*  */
 +	dwc_spinlock_t *lock;
-+
++	dwc_spinlock_t *channel_lock;
 +	/**
 +	 * Private data that could be used by OS wrapper.
 +	 */
@@ -66459,10 +67359,10 @@ index 0000000..dd30f47
 +#endif /* DWC_DEVICE_ONLY */
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_ddma.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_ddma.c
 new file mode 100644
-index 0000000..d0d5fa1
+index 0000000..a2ceb77
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_ddma.c
-@@ -0,0 +1,1133 @@
+@@ -0,0 +1,1132 @@
 +/*==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_hcd_ddma.c $
 + * $Revision: #10 $
@@ -66741,7 +67641,7 @@ index 0000000..d0d5fa1
 +static void release_channel_ddma(dwc_otg_hcd_t * hcd, dwc_otg_qh_t * qh)
 +{
 +	dwc_irqflags_t flags;
-+	dwc_spinlock_t *channel_lock = DWC_SPINLOCK_ALLOC();
++	dwc_spinlock_t *channel_lock = hcd->channel_lock;
 +
 +	dwc_hc_t *hc = qh->channel;
 +	if (dwc_qh_is_non_per(qh)) {
@@ -66771,7 +67671,6 @@ index 0000000..d0d5fa1
 +		dwc_memset(qh->desc_list, 0x00,
 +			   sizeof(dwc_otg_host_dma_desc_t) * max_desc_num(qh));
 +	}
-+	DWC_SPINLOCK_FREE(channel_lock);
 +}
 +
 +/** 
@@ -68021,10 +68920,10 @@ index 0000000..04ca4c2
 +#endif /* DWC_DEVICE_ONLY */
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
 new file mode 100644
-index 0000000..f1658fa
+index 0000000..3e762e2
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
-@@ -0,0 +1,2230 @@
+@@ -0,0 +1,2246 @@
 +/* ==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_hcd_intr.c $
 + * $Revision: #89 $
@@ -68083,7 +68982,12 @@ index 0000000..f1658fa
 +int g_next_sched_frame, g_np_count, g_np_sent, g_work_expected;
 +static int mphi_int_count = 0 ;
 +
-+extern bool fiq_fix_enable;
++extern bool fiq_fix_enable, nak_holdoff_enable;
++
++hcchar_data_t nak_hcchar;
++hctsiz_data_t nak_hctsiz;
++hcsplt_data_t nak_hcsplt;
++int nak_count;
 +
 +void __attribute__ ((naked)) dwc_otg_hcd_handle_fiq(void)
 +{
@@ -68257,7 +69161,7 @@ index 0000000..f1658fa
 +			DWC_WRITE_REG32(c_mphi_regs.ctrl, (1<<31));
 +			mphi_int_count = 0;
 +		}
-+			int_done++;
++		int_done++;
 +		if((jiffies / HZ) > last_time)
 +		{
 +			/* Once a second output the fiq and irq numbers, useful for debug */
@@ -68949,7 +69853,7 @@ index 0000000..f1658fa
 +	dwc_otg_transaction_type_e tr_type;
 +	int free_qtd;
 +	dwc_irqflags_t flags;
-+	dwc_spinlock_t *channel_lock = DWC_SPINLOCK_ALLOC();
++	dwc_spinlock_t *channel_lock = hcd->channel_lock;
 +
 +	DWC_DEBUGPL(DBG_HCDV, "  %s: channel %d, halt_status %d, xfer_len %d\n",
 +		    __func__, hc->hc_num, halt_status, hc->xfer_len);
@@ -69036,7 +69940,6 @@ index 0000000..f1658fa
 +	if (tr_type != DWC_OTG_TRANSACTION_NONE) {
 +		dwc_otg_hcd_queue_transactions(hcd, tr_type);
 +	}
-+	DWC_SPINLOCK_FREE(channel_lock);
 +}
 +
 +/**
@@ -69445,6 +70348,18 @@ index 0000000..f1658fa
 +{
 +	DWC_DEBUGPL(DBG_HCDI, "--Host Channel %d Interrupt: "
 +		    "NAK Received--\n", hc->hc_num);
++
++	/*
++	 * When we get bulk NAKs then remember this so we holdoff on this qh until
++	 * the beginning of the next frame
++	 */
++	switch(dwc_otg_hcd_get_pipe_type(&qtd->urb->pipe_info)) {
++		case UE_BULK:
++		//case UE_INTERRUPT:
++		//case UE_CONTROL:
++		if (nak_holdoff_enable)
++			hc->qh->nak_frame = dwc_otg_hcd_get_frame_number(hcd);
++	}
 +
 +	/*
 +	 * Handle NAK for IN/OUT SSPLIT/CSPLIT transfers, bulk, control, and
@@ -71201,10 +72116,10 @@ index 0000000..f91c4b1
 +#endif /* DWC_DEVICE_ONLY */
 diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_queue.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_queue.c
 new file mode 100644
-index 0000000..ac10323
+index 0000000..e6b2a7b
 --- /dev/null
 +++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_queue.c
-@@ -0,0 +1,938 @@
+@@ -0,0 +1,957 @@
 +/* ==========================================================================
 + * $File: //dwh/usb_iip/dev/software/otg/linux/drivers/dwc_otg_hcd_queue.c $
 + * $Revision: #44 $
@@ -71388,6 +72303,7 @@ index 0000000..ac10323
 +	if (microframe_schedule)
 +		qh->speed = dev_speed;
 +
++	qh->nak_frame = 0xffff;
 +
 +	if (((dev_speed == USB_SPEED_LOW) ||
 +	     (dev_speed == USB_SPEED_FULL)) &&
@@ -71971,6 +72887,24 @@ index 0000000..ac10323
 +			       int sched_next_periodic_split)
 +{	
 +	if (dwc_qh_is_non_per(qh)) {
++
++	dwc_otg_qh_t *qh_tmp;
++	dwc_list_link_t *qh_list;
++	DWC_LIST_FOREACH(qh_list, &hcd->non_periodic_sched_inactive)
++	{
++		qh_tmp = DWC_LIST_ENTRY(qh_list, struct dwc_otg_qh, qh_list_entry);
++		if(qh_tmp == qh)
++		{
++			/*
++			 *  FIQ is being disabled because this one nevers gets a np_count increment
++			 *  This is still not absolutely correct, but it should fix itself with
++			 *  just an unnecessary extra interrupt
++			 */
++			g_np_sent = g_np_count;
++		}
++	}
++
++
 +		dwc_otg_hcd_qh_remove(hcd, qh);
 +		if (!DWC_CIRCLEQ_EMPTY(&qh->qtd_list)) {
 +			/* Add back to inactive non-periodic schedule. */
@@ -90656,10 +91590,10 @@ index 0000000..68d838d
 +}
 diff --git a/sound/arm/bcm2835.c b/sound/arm/bcm2835.c
 new file mode 100755
-index 0000000..3f6b0ea
+index 0000000..44bedb5
 --- /dev/null
 +++ b/sound/arm/bcm2835.c
-@@ -0,0 +1,424 @@
+@@ -0,0 +1,418 @@
 +/*****************************************************************************
 +* Copyright 2011 Broadcom Corporation.  All rights reserved.
 +*
@@ -90749,10 +91683,7 @@ index 0000000..3f6b0ea
 +	bcm2835_chip_t *chip;
 +	struct snd_card *card;
 +	int err;
-+	printk(KERN_INFO "### snd_bcm2835_alsa_probe %p ###", pdev);
-+
-+	printk
-+	    ("############ PROBING FOR bcm2835 ALSA device (%d):(%d) ###############\n",
++	printk(KERN_INFO "Probing FOR bcm2835 ALSA device (%d):(%d)\n",
 +	     dev, enable[dev]);
 +
 +	if (dev >= MAX_SUBSTREAMS)
@@ -90776,7 +91707,6 @@ index 0000000..3f6b0ea
 +	strcpy(g_card->shortname, "bcm2835 ALSA");
 +	sprintf(g_card->longname, "%s", g_card->shortname);
 +
-+	printk("Creating device/chip ..\n");
 +	err = snd_bcm2835_create(g_card, pdev, &chip);
 +	if (err < 0) {
 +		printk(KERN_ERR "Failed to create bcm2835 chip\n");
@@ -90790,7 +91720,6 @@ index 0000000..3f6b0ea
 +		goto out_bcm2835_new_pcm;
 +	}
 +
-+	printk("Adding controls ..\n");
 +	err = snd_bcm2835_new_ctl(chip);
 +	if (err < 0) {
 +		printk(KERN_ERR "Failed to create new BCM2835 ctl\n");
@@ -90807,7 +91736,6 @@ index 0000000..3f6b0ea
 +	chip->pdev[dev] = pdev;
 +
 +	if (dev == 0) {
-+		printk("Registering card ....\n");
 +		err = snd_card_register(card);
 +		if (err < 0) {
 +			printk(KERN_ERR
@@ -90815,9 +91743,9 @@ index 0000000..3f6b0ea
 +			goto out_card_register;
 +		}
 +		platform_set_drvdata(pdev, card);
-+		printk("bcm2835 ALSA CARD CREATED!\n");
++		printk(KERN_INFO "bcm2835 ALSA card created!\n");
 +	} else {
-+		printk("bcm2835 ALSA CHIP CREATED!\n");
++		printk(KERN_INFO "bcm2835 ALSA chip created!\n");
 +		platform_set_drvdata(pdev, (void *)dev);
 +	}
 +
@@ -91042,7 +91970,7 @@ index 0000000..3f6b0ea
 +		printk("Error registering bcm2835_alsa7_driver %d .\n", err);
 +		goto unregister_6;
 +	}
-+	printk(KERN_INFO "### BCM2835 ALSA driver init %s ### \n",
++	printk(KERN_INFO "BCM2835 ALSA driver init %s\n",
 +	       err ? "FAILED" : "OK");
 +
 +	return 0;
