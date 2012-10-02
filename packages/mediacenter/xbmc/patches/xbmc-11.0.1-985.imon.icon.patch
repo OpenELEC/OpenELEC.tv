@@ -1,0 +1,2622 @@
+diff -Nr -U3 xbmc-11.0.1/xbmc/Application.cpp xbmc-11.0.1.new/xbmc/Application.cpp
+--- xbmc-11.0.1/xbmc/Application.cpp	2012-03-23 15:30:27.481237565 +1030
++++ xbmc-11.0.1.new/xbmc/Application.cpp	2012-03-26 10:22:46.063810593 +1030
+@@ -2667,7 +2667,7 @@
+ 
+   if (!g_lcd || !g_guiSettings.GetBool("videoscreen.haslcd"))
+     return ;
+-  unsigned int lTimeOut = 1000;
++  unsigned int lTimeOut = 1000/g_advancedSettings.m_lcdRefreshRate;
+   if ( m_iPlaySpeed != 1)
+     lTimeOut = 0;
+   if ( (XbmcThreads::SystemClockMillis() - lTickCount) >= lTimeOut)
+diff -Nr -U3 xbmc-11.0.1/xbmc/Application.h xbmc-11.0.1.new/xbmc/Application.h
+--- xbmc-11.0.1/xbmc/Application.h	2012-03-23 15:30:27.449239642 +1030
++++ xbmc-11.0.1.new/xbmc/Application.h	2012-03-26 10:22:46.067810334 +1030
+@@ -282,6 +282,7 @@
+   bool IsPresentFrame();
+ 
+   void Minimize();
++  float NavigationIdleTime();
+   bool ToggleDPMS(bool manual);
+ 
+   float GetDimScreenSaverLevel() const;
+@@ -366,7 +367,6 @@
+   bool ProcessJsonRpcButtons();
+   bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount);
+ 
+-  float NavigationIdleTime();
+   static bool AlwaysProcess(const CAction& action);
+ 
+   void SaveCurrentFileSettings();
+diff -Nr -U3 xbmc-11.0.1/xbmc/addons/Visualisation.cpp xbmc-11.0.1.new/xbmc/addons/Visualisation.cpp
+--- xbmc-11.0.1/xbmc/addons/Visualisation.cpp	2012-03-22 09:27:32.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/addons/Visualisation.cpp	2012-03-26 10:22:46.067810334 +1030
+@@ -31,6 +31,10 @@
+ #include <dlfcn.h>
+ #include "filesystem/SpecialProtocol.h"
+ #endif
++#ifdef HAS_LCD
++#include "settings/AdvancedSettings.h"
++#include "utils/LCDFactory.h"
++#endif
+ 
+ using namespace std;
+ using namespace MUSIC_INFO;
+@@ -313,10 +317,27 @@
+ 
+     // Transfer data to our visualisation
+     AudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, m_fFreq, AUDIO_BUFFER_SIZE);
++
++#ifdef HAS_LCD
++    if (g_advancedSettings.m_lcdSpectrumAnalyzer)
++    {
++      g_lcd->SetSpectrumAnalyzerAudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, m_fFreq, AUDIO_BUFFER_SIZE);
++    }
++#endif
++
+   }
+   else
+-  { // Transfer data to our visualisation
++  {
++    // Transfer data to our visualisation
+     AudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, NULL, 0);
++
++#ifdef HAS_LCD
++    if (g_advancedSettings.m_lcdSpectrumAnalyzer)
++    {
++      g_lcd->SetSpectrumAnalyzerAudioData(ptrAudioBuffer->Get(), AUDIO_BUFFER_SIZE, NULL, 0);
++    }
++#endif
++
+   }
+   return ;
+ }
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/Makefile.in xbmc-11.0.1.new/xbmc/linux/Makefile.in
+--- xbmc-11.0.1/xbmc/linux/Makefile.in	2012-03-23 15:30:27.525234709 +1030
++++ xbmc-11.0.1.new/xbmc/linux/Makefile.in	2012-03-26 10:22:46.067810334 +1030
+@@ -13,6 +13,8 @@
+      XFileUtils.cpp \
+      XHandle.cpp \
+      XLCDproc.cpp \
++     XLCDProc_imon.cpp \
++     XLCDProc_mdm166a.cpp \
+      XMemUtils.cpp \
+      XTimeUtils.cpp \
+ 
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDProc_imon.cpp xbmc-11.0.1.new/xbmc/linux/XLCDProc_imon.cpp
+--- xbmc-11.0.1/xbmc/linux/XLCDProc_imon.cpp	1970-01-01 09:30:00.000000000 +0930
++++ xbmc-11.0.1.new/xbmc/linux/XLCDProc_imon.cpp	2012-03-26 10:22:46.067810334 +1030
+@@ -0,0 +1,450 @@
++#ifndef __XLCDProc_imon_CPP__
++#define __XLCDProc_imon_CPP__
++
++/*
++ *      Copyright (C) 2005-2008 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include "XLCDProc_imon.h"
++#include "../utils/log.h"
++
++XLCDProc_imon::XLCDProc_imon()
++{
++  m_outputTimer.StartZero();
++}
++
++XLCDProc_imon::~XLCDProc_imon(void)
++{
++}
++
++bool XLCDProc_imon::SendIconStatesToDisplay()
++{
++  char cmd[64];
++
++  if (outputValue != outputValueOld || isOutputValuesTurn())
++  {
++    // A tweak for the imon-lcd-driver: There is no icon for this bit.
++    // Needed because the driver sets ALL symbols (icons and progress bars) to "off", if there is an outputValue == 0
++    outputValue |= 1 << 30;
++    outputValueOld = outputValue;
++    sprintf(cmd, "output %d\n", outputValue);
++  }
++  else if (outputValueProgressBars != outputValueProgressBarsOld)
++  {
++    outputValueProgressBarsOld = outputValueProgressBars;
++    sprintf(cmd, "output %d\n", outputValueProgressBars);
++  }
++  else
++  {
++    return true;
++  }
++
++  ResetModeIcons();
++
++  if (write(m_sockfd, cmd, strlen(cmd)) < 0)
++  {
++    CLog::Log(
++        LOGERROR,
++        "XLCDproc::%s - Unable to write 'outputValue' to socket, LCDd not running?",
++        __FUNCTION__);
++  }
++
++  return true;
++}
++
++void XLCDProc_imon::ResetModeIcons(void)
++{
++  outputValue &= ~(7 << IMON_OUTPUT_TOP_ROW); // reset entire row
++  outputValue &= ~(7 << IMON_OUTPUT_BL_ICONS); // reset entire row
++  outputValue &= ~(7 << IMON_OUTPUT_BM_ICONS); // reset entire row
++  outputValue &= ~(7 << IMON_OUTPUT_BR_ICONS); // reset entire row
++  outputValue &= ~(3 << IMON_OUTPUT_SPKR); // reset entire block
++}
++
++void XLCDProc_imon::SetIconMovie(bool on)
++{
++  if (on)
++    outputValue |= 2 << IMON_OUTPUT_TOP_ROW;
++  else
++    outputValue &= ~(2 << IMON_OUTPUT_TOP_ROW);
++}
++
++void XLCDProc_imon::SetIconMusic(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_TOP_ROW;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_TOP_ROW);
++}
++
++void XLCDProc_imon::SetIconWeather(bool on)
++{
++  if (on)
++    outputValue |= 7 << IMON_OUTPUT_TOP_ROW;
++  else
++    outputValue &= ~(7 << IMON_OUTPUT_TOP_ROW);
++}
++
++void XLCDProc_imon::SetIconTV(bool on)
++{
++  if (on)
++    outputValue |= 5 << IMON_OUTPUT_TOP_ROW;
++  else
++    outputValue &= ~(5 << IMON_OUTPUT_TOP_ROW);
++}
++
++void XLCDProc_imon::SetIconPhoto(bool on)
++{
++  if (on)
++    outputValue |= 3 << IMON_OUTPUT_TOP_ROW;
++  else
++    outputValue &= ~(3 << IMON_OUTPUT_TOP_ROW);
++}
++
++void XLCDProc_imon::SetIconResolution(ILCD::LCD_RESOLUTION resolution)
++{
++  // reset both icons to avoid that they may be lit at the same time
++  outputValue &= ~(1 << IMON_OUTPUT_TV);
++  outputValue &= ~(1 << IMON_OUTPUT_HDTV);
++
++  if (resolution == LCD_RESOLUTION_SD)
++    outputValue |= 1 << IMON_OUTPUT_TV;
++  else if (resolution == LCD_RESOLUTION_HD)
++    outputValue |= 1 << IMON_OUTPUT_HDTV;
++}
++
++void XLCDProc_imon::SetProgressBar1(double progress)
++{
++  XLCDproc::outputValueProgressBars = TopProgressBar(
++      XLCDproc::outputValueProgressBars, progress);
++}
++
++void XLCDProc_imon::SetProgressBar2(double progress)
++{
++  XLCDproc::outputValueProgressBars = BottomProgressBar(
++      XLCDproc::outputValueProgressBars, progress);
++}
++
++void XLCDProc_imon::SetProgressBar3(double progress)
++{
++  XLCDproc::outputValueProgressBars = TopLine(
++      XLCDproc::outputValueProgressBars, progress);
++}
++
++void XLCDProc_imon::SetProgressBar4(double progress)
++{
++  XLCDproc::outputValueProgressBars = BottomLine(
++      XLCDproc::outputValueProgressBars, progress);
++}
++
++inline int XLCDProc_imon::TopProgressBar(int oldValue, double newValue)
++{
++  oldValue &= ~0x00000FC0;
++  oldValue |= ((int) (32 * (newValue / 100)) << 6) & 0x00000FC0;
++  oldValue |= 1 << IMON_OUTPUT_PBARS;
++  return oldValue;
++}
++
++inline int XLCDProc_imon::BottomProgressBar(int oldValue, double newValue)
++{
++  oldValue &= ~0x00FC0000;
++  oldValue |= ((int) (32 * (newValue / 100)) << 18) & 0x00FC0000;
++  oldValue |= 1 << IMON_OUTPUT_PBARS;
++  return oldValue;
++}
++
++inline int XLCDProc_imon::TopLine(int oldValue, double newValue)
++{
++  oldValue &= ~0x0000003F;
++  oldValue |= ((int) (32 * (newValue / 100)) << 0) & 0x0000003F;
++  oldValue |= 1 << IMON_OUTPUT_PBARS;
++  return oldValue;
++}
++
++inline int XLCDProc_imon::BottomLine(int oldValue, double newValue)
++{
++  oldValue &= ~0x0003F000;
++  oldValue |= ((int) (32 * (newValue / 100)) << 12) & 0x0003F000;
++  oldValue |= 1 << IMON_OUTPUT_PBARS;
++  return oldValue;
++}
++
++bool XLCDProc_imon::isOutputValuesTurn()
++{
++  if (m_outputTimer.GetElapsedMilliseconds() > 1000)
++  {
++    m_outputTimer.Reset();
++    return true;
++  }
++  else
++  {
++    return false;
++  }
++}
++
++void XLCDProc_imon::SetIconMute(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_imon::SetIconPlaying(bool on)
++{
++  if (on)
++  {
++    outputValue |= 1 << IMON_OUTPUT_DISC;
++  }
++  else
++  {
++    outputValue &= ~(1 << IMON_OUTPUT_DISC);
++  }
++}
++
++void XLCDProc_imon::SetIconPause(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_imon::SetIconRepeat(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_REP;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_REP);
++}
++
++void XLCDProc_imon::SetIconShuffle(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_SFL;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_SFL);
++}
++
++void XLCDProc_imon::SetIconAlarm(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_ALARM;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_ALARM);
++}
++
++void XLCDProc_imon::SetIconRecord(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_REC;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_REC);
++}
++
++void XLCDProc_imon::SetIconVolume(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_VOL;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_VOL);
++}
++
++void XLCDProc_imon::SetIconTime(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_TIME;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_TIME);
++}
++
++void XLCDProc_imon::SetIconSPDIF(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_SPDIF;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_SPDIF);
++}
++
++void XLCDProc_imon::SetIconDiscIn(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_DISK_IN;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_DISK_IN);
++}
++
++void XLCDProc_imon::SetIconSource(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_SRC;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_SRC);
++}
++
++void XLCDProc_imon::SetIconFit(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_FIT;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_FIT);
++}
++
++void XLCDProc_imon::SetIconSCR1(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_SCR1;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_SCR1);
++}
++
++void XLCDProc_imon::SetIconSCR2(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_SCR2;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_SCR2);
++}
++
++// codec icons - video: video stream format ###################################
++void XLCDProc_imon::SetIconMPEG(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_BL_ICONS;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_BL_ICONS);
++}
++
++void XLCDProc_imon::SetIconDIVX(bool on)
++{
++  if (on)
++    outputValue |= 2 << IMON_OUTPUT_BL_ICONS;
++  else
++    outputValue &= ~(2 << IMON_OUTPUT_BL_ICONS);
++}
++
++void XLCDProc_imon::SetIconXVID(bool on)
++{
++  if (on)
++    outputValue |= 3 << IMON_OUTPUT_BL_ICONS;
++  else
++    outputValue &= ~(3 << IMON_OUTPUT_BL_ICONS);
++}
++
++void XLCDProc_imon::SetIconWMV(bool on)
++{
++  if (on)
++    outputValue |= 4 << IMON_OUTPUT_BL_ICONS;
++  else
++    outputValue &= ~(4 << IMON_OUTPUT_BL_ICONS);
++}
++// codec icons - video: audio stream format #################################
++void XLCDProc_imon::SetIconMPGA(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_BM_ICONS;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_BM_ICONS);
++}
++
++void XLCDProc_imon::SetIconAC3(bool on)
++{
++  if (on)
++    outputValue |= 2 << IMON_OUTPUT_BM_ICONS;
++  else
++    outputValue &= ~(2 << IMON_OUTPUT_BM_ICONS);
++}
++
++void XLCDProc_imon::SetIconDTS(bool on)
++{
++  if (on)
++    outputValue |= 3 << IMON_OUTPUT_BM_ICONS;
++  else
++    outputValue &= ~(3 << IMON_OUTPUT_BM_ICONS);
++}
++
++void XLCDProc_imon::SetIconVWMA(bool on)
++{
++  if (on)
++    outputValue |= 4 << IMON_OUTPUT_BM_ICONS;
++  else
++    outputValue &= ~(4 << IMON_OUTPUT_BM_ICONS);
++}
++// codec icons - audio format ###############################################
++void XLCDProc_imon::SetIconMP3(bool on)
++{
++  if (on)
++    outputValue |= 1 << IMON_OUTPUT_BR_ICONS;
++  else
++    outputValue &= ~(1 << IMON_OUTPUT_BR_ICONS);
++}
++
++void XLCDProc_imon::SetIconOGG(bool on)
++{
++  if (on)
++    outputValue |= 2 << IMON_OUTPUT_BR_ICONS;
++  else
++    outputValue &= ~(2 << IMON_OUTPUT_BR_ICONS);
++}
++
++void XLCDProc_imon::SetIconAWMA(bool on)
++{
++  if (on)
++    outputValue |= 3 << IMON_OUTPUT_BR_ICONS;
++  else
++    outputValue &= ~(3 << IMON_OUTPUT_BR_ICONS);
++}
++
++void XLCDProc_imon::SetIconWAV(bool on)
++{
++  if (on)
++    outputValue |= 4 << IMON_OUTPUT_BR_ICONS;
++  else
++    outputValue &= ~(4 << IMON_OUTPUT_BR_ICONS);
++}
++
++void XLCDProc_imon::SetIconAudioChannels(int channels)
++{
++  switch (channels)
++  {
++  case 1:
++  case 2:
++  case 3:
++    outputValue |= 1 << IMON_OUTPUT_SPKR;
++    break;
++  case 5:
++  case 6:
++    outputValue |= 2 << IMON_OUTPUT_SPKR;
++    break;
++  case 7:
++  case 8:
++    outputValue |= 3 << IMON_OUTPUT_SPKR;
++    break;
++  default:
++    outputValue &= ~(3 << IMON_OUTPUT_SPKR);
++    break;
++  }
++}
++
++void XLCDProc_imon::InitializeSpectrumAnalyzer()
++{
++  // no need to do anything here
++}
++
++void XLCDProc_imon::SetSpectrumAnalyzerData()
++{
++  // no need to do anything here
++}
++
++#endif // __XLCDProc_imon_CPP__
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDProc_imon.h xbmc-11.0.1.new/xbmc/linux/XLCDProc_imon.h
+--- xbmc-11.0.1/xbmc/linux/XLCDProc_imon.h	1970-01-01 09:30:00.000000000 +0930
++++ xbmc-11.0.1.new/xbmc/linux/XLCDProc_imon.h	2012-03-26 10:22:46.067810334 +1030
+@@ -0,0 +1,162 @@
++#ifndef __XLCDProc_imon_H__
++#define __XLCDProc_imon_H__
++
++/*
++ *      Copyright (C) 2005-2008 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include <SDL/SDL_thread.h>
++#include "../utils/LCD.h"
++#include "XLCDproc.h"
++#include "../utils/Stopwatch.h"
++
++#define IMON_OUTPUT_DISC        0
++#define IMON_OUTPUT_TOP_ROW     1
++#define IMON_OUTPUT_SPKR        4
++#define IMON_OUTPUT_SPDIF       6
++#define IMON_OUTPUT_SRC         7
++#define IMON_OUTPUT_FIT         8
++#define IMON_OUTPUT_TV          9
++#define IMON_OUTPUT_HDTV        10
++#define IMON_OUTPUT_SCR1        11
++#define IMON_OUTPUT_SCR2        12
++#define IMON_OUTPUT_BR_ICONS    13
++#define IMON_OUTPUT_BM_ICONS    16
++#define IMON_OUTPUT_BL_ICONS    19
++#define IMON_OUTPUT_VOL         22
++#define IMON_OUTPUT_TIME        23
++#define IMON_OUTPUT_ALARM       24
++#define IMON_OUTPUT_REC         25
++#define IMON_OUTPUT_REP         26
++#define IMON_OUTPUT_SFL         27
++#define IMON_OUTPUT_PBARS       28
++#define IMON_OUTPUT_DISK_IN     29
++
++/**
++ * Sets the "output state" for the device. We use this to control the icons around the outside the
++ * display. The bits in \c outputValue correspond to the icons as follows:
++ *
++ * Bit     : Icon/Function
++ * 0       : disc icon (0=off, 1='spin') , if Toprow==4, use CD-animation, else use "HDD-recording-animation"
++ * 1,2,3   : top row (0=none, 1=music, 2=movie, 3=photo, 4=CD/DVD, 5=TV, 6=Web, 7=News/Weather)
++ * 4,5     : 'speaker' icons (0=off, 1=L+R, 2=5.1ch, 3=7.1ch)
++ * 6       : S/PDIF icon
++ * 7       : 'SRC'
++ * 8       : 'FIT'
++ * 9       : 'TV'
++ * 10      : 'HDTV'
++ * 11      : 'SRC1'
++ * 12      : 'SRC2'
++ * 13,14,15: bottom-right icons (0=off, 1=MP3, 2=OGG, 3=WMA, 4=WAV)
++ * 16,17,18: bottom-middle icons (0=off, 1=MPG, 2=AC3, 3=DTS, 4=WMA)
++ * 19,20,21: bottom-left icons (0=off, 1=MPG, 2=DIVX, 3=XVID, 4=WMV)
++ * 22      : 'VOL' (volume)
++ * 23      : 'TIME'
++ * 24      : 'ALARM'
++ * 25      : 'REC' (recording)
++ * 26      : 'REP' (repeat)
++ * 27      : 'SFL' (shuffle)
++ * 28      : Abuse this for progress bars (if set to 1), lower bits represent
++ *               the length (6 bits each: P|6xTP|6xTL|6xBL|6xBP with P = bit 28,
++ *               TP=Top Progress, TL = Top Line, BL = Bottom Line, BP = Bottom Progress).
++ *               If bit 28 is set to 1, lower bits are interpreted as
++ *               lengths; otherwise setting the symbols as usual.
++ *               0 <= length <= 32, bars extend from left to right.
++ *               length > 32, bars extend from right to left, length is counted
++ *               from 32 up (i.e. 35 means a length of 3).
++ *
++ *     Remember: There are two kinds of calls!
++ *               With bit 28 set to 1: Set all bars (leaving the symbols as is),
++ *               with bit 28 set to 0: Set the symbols (leaving the bars as is).
++ *     Beware:   TODO: May become a race condition, if both calls are executed
++ *                     before the display gets updated. Keep this in mind in your
++ *                     client-code.
++ * 29      : 'disc-in icon' - half ellipsoid under the disc symbols (0=off, 1=on)
++ */
++
++class XLCDProc_imon: public XLCDproc
++{
++public:
++  XLCDProc_imon();
++  virtual ~XLCDProc_imon(void);
++
++  // States whether this device sends the icon-information by itself.
++  // Returns true, if the caller does not have to care about sending the information.
++  virtual bool SendIconStatesToDisplay();
++
++  virtual void ResetModeIcons(void);
++  virtual void SetIconMovie(bool on);
++  virtual void SetIconMusic(bool on);
++  virtual void SetIconWeather(bool on);
++  virtual void SetIconTV(bool on);
++  virtual void SetIconPhoto(bool on);
++  virtual void SetIconResolution(ILCD::LCD_RESOLUTION resolution);
++  virtual void SetProgressBar1(double progress); // range from 0 - 100
++  virtual void SetProgressBar2(double progress); // range from 0 - 100
++  virtual void SetProgressBar3(double progress); // range from 0 - 100
++  virtual void SetProgressBar4(double progress); // range from 0 - 100
++  virtual void SetIconMute(bool on);
++  virtual void SetIconPlaying(bool on);
++  virtual void SetIconPause(bool on);
++  virtual void SetIconRepeat(bool on);
++  virtual void SetIconShuffle(bool on);
++  virtual void SetIconAlarm(bool on);
++  virtual void SetIconRecord(bool on);
++  virtual void SetIconVolume(bool on);
++  virtual void SetIconTime(bool on);
++  virtual void SetIconSPDIF(bool on);
++  virtual void SetIconDiscIn(bool on);
++  virtual void SetIconSource(bool on);
++  virtual void SetIconFit(bool on);
++  virtual void SetIconSCR1(bool on);
++  virtual void SetIconSCR2(bool on);
++
++  // codec icons - video: video stream format
++  virtual void SetIconMPEG(bool on);
++  virtual void SetIconDIVX(bool on);
++  virtual void SetIconXVID(bool on);
++  virtual void SetIconWMV(bool on);
++  // codec icons - video: audio stream format
++  virtual void SetIconMPGA(bool on);
++  virtual void SetIconAC3(bool on);
++  virtual void SetIconDTS(bool on);
++  virtual void SetIconVWMA(bool on);
++  // codec icons - audio format
++  virtual void SetIconMP3(bool on);
++  virtual void SetIconOGG(bool on);
++  virtual void SetIconAWMA(bool on);
++  virtual void SetIconWAV(bool on);
++
++  virtual void SetIconAudioChannels(int channels);
++
++  virtual void InitializeSpectrumAnalyzer(void);
++  virtual void SetSpectrumAnalyzerData(void);
++
++private:
++  CStopWatch m_outputTimer;
++
++  int TopProgressBar(int oldValue, double newValue);
++  int BottomProgressBar(int oldValue, double newValue);
++  int TopLine(int oldValue, double newValue);
++  int BottomLine(int oldValue, double newValue);
++  bool isOutputValuesTurn();
++};
++
++#endif // __XLCDProc_imon_H__
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDProc_mdm166a.cpp xbmc-11.0.1.new/xbmc/linux/XLCDProc_mdm166a.cpp
+--- xbmc-11.0.1/xbmc/linux/XLCDProc_mdm166a.cpp	1970-01-01 09:30:00.000000000 +0930
++++ xbmc-11.0.1.new/xbmc/linux/XLCDProc_mdm166a.cpp	2012-03-26 10:22:46.067810334 +1030
+@@ -0,0 +1,310 @@
++#ifndef __XLCDProc_mdm166a_CPP__
++#define __XLCDProc_mdm166a_CPP__
++
++/*
++ *      Copyright (C) 2005-2008 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include "XLCDProc_mdm166a.h"
++#include "../utils/log.h"
++
++XLCDProc_mdm166a::XLCDProc_mdm166a()
++{
++}
++
++XLCDProc_mdm166a::~XLCDProc_mdm166a(void)
++{
++}
++
++bool XLCDProc_mdm166a::SendIconStatesToDisplay()
++{
++  char cmd[64];
++
++  if (outputValue != outputValueOld)
++  {
++    outputValueOld = outputValue;
++    sprintf(cmd, "output %d\n", outputValue);
++  }
++  else
++    return true;
++
++  ResetModeIcons();
++
++  if (write(m_sockfd, cmd, strlen(cmd)) < 0)
++  {
++    CLog::Log(
++        LOGERROR,
++        "XLCDproc::%s - Unable to write 'outputValue' to socket, LCDd not running?",
++        __FUNCTION__);
++  }
++
++  return true;
++}
++
++void XLCDProc_mdm166a::ResetModeIcons(void)
++{
++  outputValue &= ~(3 << MDM166A_OUTPUT_WLAN_STR); // reset entire block
++}
++
++void XLCDProc_mdm166a::SetIconMovie(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconMusic(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconWeather(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconTV(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconPhoto(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconResolution(ILCD::LCD_RESOLUTION resolution)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetProgressBar1(double progress)
++{
++  outputValue = progressBar(outputValue, progress);
++}
++
++void XLCDProc_mdm166a::SetProgressBar2(double progress)
++{
++  outputValue = volumeBar(outputValue, progress);
++}
++
++inline int XLCDProc_mdm166a::volumeBar(int oldValue, double newValue)
++{
++  oldValue &= ~0x1F00;
++  oldValue |= ((int) (28 * (newValue / 100)) << MDM166A_OUTPUT_VOLUME) & 0x1F00;
++  return oldValue;
++}
++
++inline int XLCDProc_mdm166a::progressBar(int oldValue, double newValue)
++{
++  oldValue &= ~0x3F8000;
++  oldValue |= ((int) (96 * (newValue / 100)) << MDM166A_OUTPUT_PROGRESS) & 0x3F8000;
++  return oldValue;
++}
++
++void XLCDProc_mdm166a::SetIconMute(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_MUTE;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_MUTE);
++}
++
++void XLCDProc_mdm166a::SetIconPlaying(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_PLAY;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_PLAY);
++}
++
++void XLCDProc_mdm166a::SetIconPause(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_PAUSE;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_PAUSE);
++}
++
++void XLCDProc_mdm166a::SetIconRepeat(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconShuffle(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconAlarm(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_ALARM;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_ALARM);
++}
++
++void XLCDProc_mdm166a::SetIconRecord(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_REC;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_REC);
++}
++
++void XLCDProc_mdm166a::SetIconVolume(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_VOL;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_VOL);
++}
++
++void XLCDProc_mdm166a::SetIconTime(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconSPDIF(bool on)
++{
++  if (on)
++    outputValue |= 1 << MDM166A_OUTPUT_WLAN_ANT;
++  else
++    outputValue &= ~(1 << MDM166A_OUTPUT_WLAN_ANT);
++}
++
++void XLCDProc_mdm166a::SetIconDiscIn(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconSource(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconFit(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconSCR1(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconSCR2(bool on)
++{
++  // icon not supported by display
++}
++
++// codec icons - video: video stream format ###################################
++void XLCDProc_mdm166a::SetIconMPEG(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconDIVX(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconXVID(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconWMV(bool on)
++{
++  // icon not supported by display
++}
++// codec icons - video: audio stream format #################################
++void XLCDProc_mdm166a::SetIconMPGA(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconAC3(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconDTS(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconVWMA(bool on)
++{
++  // icon not supported by display
++}
++// codec icons - audio format ###############################################
++void XLCDProc_mdm166a::SetIconMP3(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconOGG(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconAWMA(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconWAV(bool on)
++{
++  // icon not supported by display
++}
++
++void XLCDProc_mdm166a::SetIconAudioChannels(int channels)
++{
++  switch (channels)
++  {
++  case 1:
++  case 2:
++  case 3:
++    outputValue |= 1 << MDM166A_OUTPUT_WLAN_STR;
++    break;
++  case 5:
++  case 6:
++    outputValue |= 2 << MDM166A_OUTPUT_WLAN_STR;
++    break;
++  case 7:
++  case 8:
++    outputValue |= 3 << MDM166A_OUTPUT_WLAN_STR;
++    break;
++  default:
++    outputValue &= ~(3 << MDM166A_OUTPUT_WLAN_STR);
++    break;
++  }
++}
++
++void XLCDProc_mdm166a::InitializeSpectrumAnalyzer()
++{
++  // no need to do anything here
++}
++
++void XLCDProc_mdm166a::SetSpectrumAnalyzerData()
++{
++  // no need to do anything here
++}
++
++#endif // __XLCDProc_mdm166a_CPP__
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDProc_mdm166a.h xbmc-11.0.1.new/xbmc/linux/XLCDProc_mdm166a.h
+--- xbmc-11.0.1/xbmc/linux/XLCDProc_mdm166a.h	1970-01-01 09:30:00.000000000 +0930
++++ xbmc-11.0.1.new/xbmc/linux/XLCDProc_mdm166a.h	2012-03-26 10:22:46.067810334 +1030
+@@ -0,0 +1,120 @@
++#ifndef __XLCDProc_mdm166a_H__
++#define __XLCDProc_mdm166a_H__
++
++/*
++ *      Copyright (C) 2005-2008 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, write to
++ *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
++ *  http://www.gnu.org/copyleft/gpl.html
++ *
++ */
++
++#include <SDL/SDL_thread.h>
++#include "../utils/LCD.h"
++#include "XLCDproc.h"
++#include "../utils/Stopwatch.h"
++
++#define MDM166A_OUTPUT_PLAY     0
++#define MDM166A_OUTPUT_PAUSE    1
++#define MDM166A_OUTPUT_REC      2
++#define MDM166A_OUTPUT_ALARM    3
++#define MDM166A_OUTPUT_AT       4
++#define MDM166A_OUTPUT_MUTE     5
++#define MDM166A_OUTPUT_WLAN_ANT 6
++#define MDM166A_OUTPUT_VOL      7
++#define MDM166A_OUTPUT_VOLUME   8
++#define MDM166A_OUTPUT_WLAN_STR 13
++#define MDM166A_OUTPUT_PROGRESS 15
++
++/**
++ * Sets the "output state" for the device. We use this to control the icons around the outside the
++ * display. The bits in \c outputValue correspond to the icons as follows:
++ *
++ * Bit     : Icon/Function
++ * 0       : Play
++ * 1       : Pause
++ * 2       : Record
++ * 3       : Message
++ * 4       : @ (in the envelope (=Message symbol))
++ * 5       : Mute
++ * 6       : WLAN tower
++ * 7       : Volume (the word "Vol.")
++ * 8...12  : Volume value (which may be 0-28)
++ * 13...14 : WLAN signal strength (which may be 0-3)
++ */
++
++class XLCDProc_mdm166a: public XLCDproc
++{
++public:
++  XLCDProc_mdm166a();
++  virtual ~XLCDProc_mdm166a(void);
++
++  // States whether this device sends the icon-information by itself.
++  // Returns true, if the caller does not have to care about sending the information.
++  virtual bool SendIconStatesToDisplay();
++
++  virtual void ResetModeIcons(void);
++  virtual void SetIconMovie(bool on);
++  virtual void SetIconMusic(bool on);
++  virtual void SetIconWeather(bool on);
++  virtual void SetIconTV(bool on);
++  virtual void SetIconPhoto(bool on);
++  virtual void SetIconResolution(ILCD::LCD_RESOLUTION resolution);
++  virtual void SetProgressBar1(double progress); // range from 0 - 100
++  virtual void SetProgressBar2(double progress); // range from 0 - 100
++  virtual void SetIconMute(bool on);
++  virtual void SetIconPlaying(bool on);
++  virtual void SetIconPause(bool on);
++  virtual void SetIconRepeat(bool on);
++  virtual void SetIconShuffle(bool on);
++  virtual void SetIconAlarm(bool on);
++  virtual void SetIconRecord(bool on);
++  virtual void SetIconVolume(bool on);
++  virtual void SetIconTime(bool on);
++  virtual void SetIconSPDIF(bool on);
++  virtual void SetIconDiscIn(bool on);
++  virtual void SetIconSource(bool on);
++  virtual void SetIconFit(bool on);
++  virtual void SetIconSCR1(bool on);
++  virtual void SetIconSCR2(bool on);
++
++  // codec icons - video: video stream format
++  virtual void SetIconMPEG(bool on);
++  virtual void SetIconDIVX(bool on);
++  virtual void SetIconXVID(bool on);
++  virtual void SetIconWMV(bool on);
++  // codec icons - video: audio stream format
++  virtual void SetIconMPGA(bool on);
++  virtual void SetIconAC3(bool on);
++  virtual void SetIconDTS(bool on);
++  virtual void SetIconVWMA(bool on);
++  // codec icons - audio format
++  virtual void SetIconMP3(bool on);
++  virtual void SetIconOGG(bool on);
++  virtual void SetIconAWMA(bool on);
++  virtual void SetIconWAV(bool on);
++
++  virtual void SetIconAudioChannels(int channels);
++
++  virtual void InitializeSpectrumAnalyzer(void);
++  virtual void SetSpectrumAnalyzerData(void);
++
++private:
++  int volumeBar(int oldValue, double newValue);
++  int progressBar(int oldValue, double newValue);
++};
++
++#endif // __XLCDProc_mdm166a_H__
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDproc.cpp xbmc-11.0.1.new/xbmc/linux/XLCDproc.cpp
+--- xbmc-11.0.1/xbmc/linux/XLCDproc.cpp	2012-03-22 09:27:32.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/linux/XLCDproc.cpp	2012-03-26 10:22:46.071810075 +1030
+@@ -26,6 +26,8 @@
+ #include "../utils/TimeUtils.h"
+ #include "settings/AdvancedSettings.h"
+ #include "settings/GUISettings.h"
++#include "XLCDProc_imon.h"
++#include "XLCDProc_mdm166a.h"
+ 
+ #include <sys/types.h>
+ #include <sys/socket.h>
+@@ -34,6 +36,13 @@
+ 
+ #define SCROLL_SPEED_IN_MSEC 250
+ 
++// initialize class variables
++int XLCDproc::outputValue = 0;
++int XLCDproc::outputValueProgressBars = 0;
++int XLCDproc::outputValueOld = 1; // for correct icon-initialization this needs to be different to the actual value
++int XLCDproc::outputValueProgressBarsOld = 1; // for correct icon-initialization this needs to be different to the actual value
++int XLCDproc::m_sockfd = -1;
++int XLCDproc::saChanger = 0;
+ 
+ XLCDproc::XLCDproc()
+ {
+@@ -43,14 +52,21 @@
+   m_iColumns     = 0;
+   m_iRows        = 0;
+   m_bStop        = true;
+-  m_sockfd       = -1;
+   m_lastInitAttempt = 0;
+   m_initRetryInterval = INIT_RETRY_INTERVAL;
+   m_used = true;
++  m_lcdprocIconDevice = NULL;
++  scale = 1.0 / log(256.0);
++  audioDataBeforeDisplaying = 1;
++  m_iColumns = 0;
++  m_iRows = 0;
++  m_iCellWidth = 0;
++  m_iCellHeight = 0;
+ }
+ 
+ XLCDproc::~XLCDproc()
+ {
++  delete m_lcdprocIconDevice;
+ }
+ 
+ void XLCDproc::Initialize()
+@@ -72,6 +88,8 @@
+     m_initRetryInterval = INIT_RETRY_INTERVAL;
+ 
+     m_bStop = false;
++
++    RecognizeAndSetDriver();
+   }
+   else
+   {
+@@ -143,8 +161,14 @@
+ 
+   unsigned int i=0;
+   while ((strncmp("lcd",reply + i,3) != 0 ) && (i < (strlen(reply) - 5))) i++;
+-  if(sscanf(reply+i,"lcd wid %u hgt %u", &m_iColumns, &m_iRows))
+-    CLog::Log(LOGDEBUG, "XLCDproc::%s - LCDproc data: Columns %i - Rows %i.", __FUNCTION__, m_iColumns, m_iRows);
++  if (sscanf(reply + i, "lcd wid %u hgt %u cellwid %u cellhgt %u", &m_iColumns,
++      &m_iRows, &m_iCellWidth, &m_iCellHeight))
++  {
++    CLog::Log(
++        LOGDEBUG,
++        "XLCDproc::%s - LCDproc data: Columns %i - Rows %i - Cellheight %i - Cellwidth %i.",
++        __FUNCTION__, m_iColumns, m_iRows, m_iCellHeight, m_iCellWidth);
++  }
+ 
+   //Build command to setup screen
+   CStdString cmd;
+@@ -176,10 +200,63 @@
+   return true;
+ }
+ 
++void XLCDproc::RecognizeAndSetDriver()
++{
++  // Receive LCDproc data to determine the driver
++  char reply[1024];
++
++  // Get information about the driver
++  CStdString info;
++  info = "info\n";
++
++  writeSocketAndLog(info, __FUNCTION__);
++
++  for (unsigned int ms = 0; ms < msTimeout; ms += msWaitTime)
++  {
++    usleep(msWaitTime); // wait for the answer
++
++    // Receive server's reply
++    if (read(m_sockfd, reply, 1024) < 0)
++    {
++      CLog::Log(LOGERROR, "XLCDproc::%s - Unable to read from socket",
++          __FUNCTION__);
++    }
++    else
++    {
++      CLog::Log(LOGINFO, "XLCDproc::%s - Plain driver name is: %s",
++          __FUNCTION__, reply);
++    }
++
++    // to support older and newer versions of the lcdproc driver for the imon-lcd:
++    CStdString driverStringImonLcd = "SoundGraph iMON";
++    CStdString driverStringImonLcd2 = "LCD";
++
++    CStdString driverStringMdm166a = "mdm166a";
++
++    if ((strstr(reply, driverStringImonLcd.c_str()) != NULL) && (strstr(reply,
++        driverStringImonLcd2.c_str()) != NULL))
++    {
++      CLog::Log(LOGINFO, "XLCDproc::%s - Driver is: %s", __FUNCTION__,
++          "SoundGraph iMON LCD driver");
++      m_lcdprocIconDevice = new XLCDProc_imon();
++      break;
++    } else if (strstr(reply, driverStringMdm166a.c_str()) != NULL)
++    {
++      CLog::Log(LOGINFO, "XLCDproc::%s - Driver is: %s", __FUNCTION__,
++                "Targa USB Graphic Vacuum Fluorescent Display (mdm166a)");
++      m_lcdprocIconDevice = new XLCDProc_mdm166a();
++      break;
++    }
++    //CLog::Log(LOGERROR, "XLCDproc::%s - Driver is: %s", __FUNCTION__, reply);
++  }
++}
++
+ void XLCDproc::CloseSocket()
+ {
+   if (m_sockfd != -1)
+   {
++    //CLog::Log(LOGINFO, "XLCDproc::%s - %s", __FUNCTION__,"Closing socket.");
++
+     shutdown(m_sockfd, SHUT_RDWR);
+     close(m_sockfd);
+     m_sockfd = -1;
+@@ -214,12 +291,13 @@
+ 
+   if (iLight == 0)
+   {
+-    m_bStop = true;
+     cmd = "screen_set xbmc -backlight off\n";
+     cmd.append("widget_del xbmc line1\n");
+     cmd.append("widget_del xbmc line2\n");
+     cmd.append("widget_del xbmc line3\n");
+     cmd.append("widget_del xbmc line4\n");
++    writeSocketAndLog(cmd, __FUNCTION__);
++    m_bStop = true;
+   }
+   else if (iLight > 0)
+   {
+@@ -239,15 +317,10 @@
+       cmd.append("widget_add xbmc line3 string\n");
+       cmd.append("widget_add xbmc line4 string\n");
+     }
+-  }
+-
+-  //Send to server
+-  if (write(m_sockfd,cmd.c_str(),cmd.size()) == -1)
+-  {
+-    CLog::Log(LOGERROR, "XLCDproc::%s - Unable to write to socket", __FUNCTION__);
+-    CloseSocket();
++    writeSocketAndLog(cmd, __FUNCTION__);
+   }
+ }
++
+ void XLCDproc::SetContrast(int iContrast)
+ {
+   //TODO: Not sure if you can control contrast from client
+@@ -255,6 +328,27 @@
+ 
+ void XLCDproc::Stop()
+ {
++  //CLog::Log(LOGINFO, "XLCDproc::%s - %s", __FUNCTION__,
++  //          "Stopping communication.");
++
++  if (m_lcdprocIconDevice != NULL)
++  {
++    // clear any icons
++    outputValue = 0;
++
++    CStdString clearcmd = "";
++    clearcmd.Format("output %d\n", outputValue);
++
++    if (write(m_sockfd, clearcmd.c_str(), clearcmd.size()) < 0)
++      CLog::Log(LOGERROR, "XLCDproc::%s - Unable to write to socket",
++                __FUNCTION__);
++
++    usleep(100000); // we have to wait a bit until the message has been sent to the display
++
++    //CLog::Log(LOGINFO, "XLCDproc::%s - %s", __FUNCTION__,
++    //        "Cleared any icons.");
++  }
++
+   CloseSocket();
+   m_bStop = true;
+ }
+@@ -269,11 +363,10 @@
+   cmd = "screen_set xbmc -priority hidden\n";
+ 
+   //Send to server
+-  if (write(m_sockfd,cmd.c_str(),cmd.size()) == -1)
+-  {
+-    CLog::Log(LOGERROR, "XLCDproc::%s - Unable to write to socket", __FUNCTION__);
+-    CloseSocket();
+-  }
++  writeSocketAndLog(cmd, __FUNCTION__);
++
++  //CLog::Log(LOGINFO, "XLCDproc::%s - %s", __FUNCTION__,
++  //          "Suspended.");
+ }
+ 
+ void XLCDproc::Resume()
+@@ -286,11 +379,7 @@
+   cmd = "screen_set xbmc -priority info\n";
+ 
+   //Send to server
+-  if (write(m_sockfd,cmd.c_str(),cmd.size()) == -1)
+-  {
+-    CLog::Log(LOGERROR, "XLCDproc::%s - Unable to write to socket", __FUNCTION__);
+-    CloseSocket();
+-  }
++  writeSocketAndLog(cmd, __FUNCTION__);
+ }
+ 
+ int XLCDproc::GetColumns()
+@@ -320,7 +409,7 @@
+     strLineLong.append(m_iColumns - strLineLong.size(), ' ');
+   //else if the string doesn't fit the display, lcdproc will scroll it, so we need a space
+   else if (strLineLong.size() > m_iColumns)
+-    strLineLong += " ";
++    strLineLong += " * ";
+ 
+   if (strLineLong != m_strLine[iLine])
+   {
+@@ -328,9 +417,25 @@
+     int ln = iLine + 1;
+ 
+     if (g_advancedSettings.m_lcdScrolldelay != 0)
+-      cmd.Format("widget_set xbmc line%i 1 %i %i %i m %i \"%s\"\n", ln, ln, m_iColumns, ln, g_advancedSettings.m_lcdScrolldelay, strLineLong.c_str());
++    {
++      if (GetIsSpectrumAnalyzerWorking() && ln == 1) // needed in order to allow navigation while playing back music
++      { // unfortunately this is needed. If this is not active, the first line (its content) is missing when playing back a song the very first time
++        cmd.Format("widget_set xbmc SaScroller 1 %i %i %i m %i \"%s\"\n", ln,
++            m_iColumns, ln, g_advancedSettings.m_lcdScrolldelay,
++            strLineLong.c_str());
++        //    	  cmd.Format("widget_set xbmc line%i 1 %i %i %i m %i \"%s\"\n", ln, ln, m_iColumns, ln, g_advancedSettings.m_lcdScrolldelay, strLineLong.c_str());
++      }
++      else if (!GetIsSpectrumAnalyzerWorking())
++      {
++        cmd.Format("widget_set xbmc line%i 1 %i %i %i m %i \"%s\"\n", ln, ln,
++            m_iColumns, ln, g_advancedSettings.m_lcdScrolldelay,
++            strLineLong.c_str());
++      }
++    }
+     else
++    {
+       cmd.Format("widget_set xbmc line%i 1 %i \"%s\"\n", ln, ln, strLineLong.c_str());
++    }
+ 
+     if (write(m_sockfd, cmd.c_str(), cmd.size()) == -1)
+     {
+@@ -348,3 +453,399 @@
+ {
+ }
+ 
++bool XLCDproc::SendIconStatesToDisplay()
++{
++  CStdString cmd = "";
++
++  if (    (m_lcdprocIconDevice != NULL)
++       && (!m_lcdprocIconDevice->SendIconStatesToDisplay())
++     )
++  {
++    outputValueOld = outputValue;
++    cmd.Format("output %d\n", outputValue);
++
++    writeSocketAndLog(cmd, __FUNCTION__);
++
++    return true;
++  }
++  return false;
++}
++
++void XLCDproc::SetIconMovie(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconMovie(on);
++}
++
++void XLCDproc::SetIconMusic(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconMusic(on);
++}
++
++void XLCDproc::SetIconWeather(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconWeather(on);
++}
++
++void XLCDproc::SetIconTV(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconTV(on);
++}
++
++void XLCDproc::SetIconPhoto(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconPhoto(on);
++}
++
++void XLCDproc::SetIconResolution(LCD_RESOLUTION resolution)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconResolution(resolution);
++}
++
++void XLCDproc::SetProgressBar1(double progress)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetProgressBar1(progress);
++}
++
++void XLCDproc::SetProgressBar2(double progress)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetProgressBar2(progress);
++}
++
++void XLCDproc::SetProgressBar3(double progress)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetProgressBar3(progress);
++}
++
++void XLCDproc::SetProgressBar4(double progress)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetProgressBar4(progress);
++}
++
++void XLCDproc::SetIconMute(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++      m_lcdprocIconDevice->SetIconMute(on);
++}
++
++void XLCDproc::SetIconPlaying(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconPlaying(on);
++}
++
++void XLCDproc::SetIconPause(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconPause(on);
++}
++
++void XLCDproc::SetIconRepeat(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconRepeat(on);
++}
++
++void XLCDproc::SetIconShuffle(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconShuffle(on);
++}
++
++void XLCDproc::SetIconAlarm(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconAlarm(on);
++}
++
++void XLCDproc::SetIconRecord(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconRecord(on);
++}
++
++void XLCDproc::SetIconVolume(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconVolume(on);
++}
++
++void XLCDproc::SetIconTime(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconTime(on);
++}
++
++void XLCDproc::SetIconSPDIF(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconSPDIF(on);
++}
++
++void XLCDproc::SetIconDiscIn(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconDiscIn(on);
++}
++
++void XLCDproc::SetIconSource(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconSource(on);
++}
++
++void XLCDproc::SetIconFit(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconFit(on);
++}
++
++void XLCDproc::SetIconSCR1(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconSCR1(on);
++}
++
++void XLCDproc::SetIconSCR2(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconSCR2(on);
++}
++
++// codec icons - video: video stream format ###################################
++void XLCDproc::SetIconMPEG(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconMPEG(on);
++}
++
++void XLCDproc::SetIconDIVX(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconDIVX(on);
++}
++
++void XLCDproc::SetIconXVID(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconXVID(on);
++}
++
++void XLCDproc::SetIconWMV(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconWMV(on);
++}
++// codec icons - video: audio stream format #################################
++void XLCDproc::SetIconMPGA(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconMPGA(on);
++}
++
++void XLCDproc::SetIconAC3(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconAC3(on);
++}
++
++void XLCDproc::SetIconDTS(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconDTS(on);
++}
++
++void XLCDproc::SetIconVWMA(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconVWMA(on);
++}
++// codec icons - audio format ###############################################
++void XLCDproc::SetIconMP3(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconMP3(on);
++}
++
++void XLCDproc::SetIconOGG(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconOGG(on);
++}
++
++void XLCDproc::SetIconAWMA(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconAWMA(on);
++}
++
++void XLCDproc::SetIconWAV(bool on)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconWAV(on);
++}
++
++void XLCDproc::SetIconAudioChannels(int channels)
++{
++  if (m_lcdprocIconDevice != NULL)
++    m_lcdprocIconDevice->SetIconAudioChannels(channels);
++}
++
++void XLCDproc::writeSocketAndLog(CStdString & cmd, const char *functionName)
++{
++  // Send to server
++  if (!m_bStop)
++    if (write(m_sockfd, cmd.c_str(), cmd.size()) < 0)
++      CLog::Log(LOGERROR, "XLCDproc::%s - Unable to write to socket",
++          functionName);
++}
++
++void XLCDproc::InitializeSpectrumAnalyzer()
++{
++  CStdString cmd = ""; // for the SpAn-Bars
++  unsigned int i = 0;
++  CLog::Log(LOGINFO, "XLCDproc::%s!", __FUNCTION__);
++
++  cmd.append("widget_del xbmc line1\n");
++  cmd.append("widget_del xbmc line2\n");
++  cmd.append("widget_del xbmc line3\n");
++  cmd.append("widget_del xbmc line4\n");
++  writeSocketAndLog(cmd, __FUNCTION__);
++
++  for (i = 0; i < m_iColumns; i++)
++  {
++    cmd.Format("widget_add xbmc SaBar%d vbar\n", i + 1);
++    writeSocketAndLog(cmd, __FUNCTION__);
++  }
++
++  cmd.Format("widget_add xbmc SaScroller scroller\n");
++  writeSocketAndLog(cmd, __FUNCTION__);
++}
++
++void XLCDproc::RemoveSpectrumAnalyzer()
++{
++  char reply[1024];
++  CStdString cmd = ""; // for the SpAn-Bars
++  unsigned int i = 0;
++
++  for (i = 0; i < m_iColumns; i++)
++  {
++    cmd.Format("widget_del xbmc SaBar%d\n", i + 1);
++    writeSocketAndLog(cmd, __FUNCTION__);
++    if (!m_bStop)
++    {
++      ssize_t temp;
++      temp = read(m_sockfd, reply, 1024);
++    }
++  }
++
++  cmd.Format("widget_del xbmc SaScroller\n");
++  writeSocketAndLog(cmd, __FUNCTION__);
++
++  cmd = "";
++  if (!g_advancedSettings.m_lcdHeartbeat)
++  {
++    cmd.append("screen_set xbmc -heartbeat off\n");
++  }
++  if (g_advancedSettings.m_lcdScrolldelay != 0)
++  {
++    cmd.append("widget_add xbmc line1 scroller\n");
++    cmd.append("widget_add xbmc line2 scroller\n");
++    cmd.append("widget_add xbmc line3 scroller\n");
++    cmd.append("widget_add xbmc line4 scroller\n");
++  }
++  else
++  {
++    cmd.append("widget_add xbmc line1 string\n");
++    cmd.append("widget_add xbmc line2 string\n");
++    cmd.append("widget_add xbmc line3 string\n");
++    cmd.append("widget_add xbmc line4 string\n");
++  }
++
++  writeSocketAndLog(cmd, __FUNCTION__);
++}
++
++void XLCDproc::SetSpectrumAnalyzerData()
++{
++  unsigned int i = 0;
++  CStdString cmd = "";
++  //  CLog::Log(LOGINFO, "XLCDproc::%s!", __FUNCTION__);
++
++  saChanger = (saChanger + 1) % 10;
++
++  for (i = 0; i < m_iColumns; i++)
++  {
++    cmd.Format("widget_set xbmc SaBar%d %d %d %d\n", i + 1, i + 1, m_iRows,
++        (int) ((m_iCellHeight * (m_iRows / 2)/*1 or 2 lines high*/)
++            * /*barHeights[i]*/((heights[i] * 30.0f
++                / (float) audioDataBeforeDisplaying))) / 100);
++
++    //      CLog::Log(LOGINFO, "XLCDproc::%s %s f%f", __FUNCTION__, cmd.c_str(), heights[i]);
++
++    writeSocketAndLog(cmd, __FUNCTION__);
++  }
++  audioDataBeforeDisplaying = 1;
++}
++
++void XLCDproc::SetSpectrumAnalyzerAudioData(const short* psAudioData,
++    int piAudioDataLength, float *pfFreqData, int piFreqDataLength)
++{
++  unsigned int i = 0;
++  int c = 0, y = 0;
++  float val;
++  int* xscale;
++
++  // scaling for the spectrum analyzer
++  if (m_iColumns == 16)
++  {
++    // for 16 char-displays
++    int scales[] =
++    { 0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255 };
++    xscale = scales;
++  }
++  else //if (m_iColumns == 20)
++  {
++    // for 20 char-displays
++    int scales[] =
++    { 0, 1, 3, 5, 9, 13, 19, 26, 34, 43, 53, 64, 76, 89, 105, 120, 140, 160,
++        187, 220, 255 };
++    xscale = scales;
++  }
++
++  //  CLog::Log(LOGINFO, "XLCDproc::%s", __FUNCTION__);
++
++  for (i = 0; i < m_iColumns; i++)
++  {
++    for (c = xscale[i], y = 0; c < xscale[i + 1]; c++)
++    {
++      if (c < piAudioDataLength)
++      {
++        if (psAudioData[c] > y)
++          y = (int) psAudioData[c];
++      }
++      else
++        continue;
++    }
++    y >>= 7;
++    if (y > 0)
++      val = (logf(y) * scale);
++    else
++      val = 0;
++    if (audioDataBeforeDisplaying == 1)
++      heights[i] = val;
++    else
++      heights[i] += val;
++
++    //    CLog::Log(LOGINFO, "XLCDproc::%s y=%d f%f, i=%d", __FUNCTION__, y, heights[i], i);
++  }
++  audioDataBeforeDisplaying++;
++}
+diff -Nr -U3 xbmc-11.0.1/xbmc/linux/XLCDproc.h xbmc-11.0.1.new/xbmc/linux/XLCDproc.h
+--- xbmc-11.0.1/xbmc/linux/XLCDproc.h	2012-03-22 09:27:32.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/linux/XLCDproc.h	2012-03-26 10:22:46.071810075 +1030
+@@ -28,7 +28,7 @@
+ #define INIT_RETRY_INTERVAL 2000
+ #define INIT_RETRY_INTERVAL_MAX 60000
+ 
+-class XLCDproc : public ILCD
++class XLCDproc: public ILCD
+ {
+ public:
+   XLCDproc();
+@@ -43,14 +43,62 @@
+   virtual int  GetColumns();
+   virtual int  GetRows(); 
+ 
++  bool SendIconStatesToDisplay();
++  void SetIconMovie(bool on);
++  void SetIconMusic(bool on);
++  void SetIconWeather(bool on);
++  void SetIconTV(bool on);
++  void SetIconPhoto(bool on);
++  void SetIconResolution(LCD_RESOLUTION resolution);
++  void SetProgressBar1(double progress);
++  void SetProgressBar2(double progress);
++  void SetProgressBar3(double progress);
++  void SetProgressBar4(double progress);
++  void SetIconMute(bool on);
++  void SetIconPlaying(bool on);
++  void SetIconPause(bool on);
++  void SetIconRepeat(bool on);
++  void SetIconShuffle(bool on);
++  void SetIconAlarm(bool on);
++  void SetIconRecord(bool on);
++  void SetIconVolume(bool on);
++  void SetIconTime(bool on);
++  void SetIconSPDIF(bool on);
++  void SetIconDiscIn(bool on);
++  void SetIconSource(bool on);
++  void SetIconFit(bool on);
++  void SetIconSCR1(bool on);
++  void SetIconSCR2(bool on);
++  void SetIconMPEG(bool on);
++  void SetIconDIVX(bool on);
++  void SetIconXVID(bool on);
++  void SetIconWMV(bool on);
++  void SetIconMPGA(bool on);
++  void SetIconAC3(bool on);
++  void SetIconDTS(bool on);
++  void SetIconVWMA(bool on);
++  void SetIconMP3(bool on);
++  void SetIconOGG(bool on);
++  void SetIconAWMA(bool on);
++  void SetIconWAV(bool on);
++  void SetIconAudioChannels(int channels);
++  void InitializeSpectrumAnalyzer();
++  void RemoveSpectrumAnalyzer();
++  void SetSpectrumAnalyzerData();
++  virtual void SetSpectrumAnalyzerAudioData(const short* psAudioData,
++      int piAudioDataLength, float *pfFreqData, int piFreqDataLength);
++
+ protected:
+   virtual void Process();
+   virtual void SetLine(int iLine, const CStdString& strLine);
++  void         RecognizeAndSetDriver();
+   bool         Connect();
+   void         CloseSocket();
+   unsigned int m_iColumns;        // display columns for each line
+   unsigned int m_iRows;           // total number of rows
+   unsigned int m_iActualpos;      // actual cursor possition
++  unsigned int m_iCellWidth;
++  unsigned int m_iCellHeight;
+   int          m_iBackLight;
+   int          m_iLCDContrast;
+   bool         m_bUpdate[MAX_ROWS];
+@@ -58,12 +106,24 @@
+   int          m_iPos[MAX_ROWS];
+   DWORD        m_dwSleep[MAX_ROWS];
+   CEvent       m_event;
+-  int          m_sockfd;
++  static int   m_sockfd;
++  static int   outputValue;
++  static int   outputValueProgressBars;
++  static int   outputValueOld;
++  static int   outputValueProgressBarsOld;
++  static int   saChanger;
++  static const unsigned int msWaitTime = 10000;
++  static const unsigned int msTimeout = 250000;
++  void writeSocketAndLog(CStdString &cmd, const char *functionName);
+ 
+ private:
+   int          m_lastInitAttempt;
+   int          m_initRetryInterval;
+   bool         m_used; //set to false when trying to connect has failed
++  XLCDproc    *m_lcdprocIconDevice;
++  float        heights[20], scale;
++  int          audioDataBeforeDisplaying;
++
+ };
+ 
+ #endif
+diff -Nr -U3 xbmc-11.0.1/xbmc/settings/AdvancedSettings.cpp xbmc-11.0.1.new/xbmc/settings/AdvancedSettings.cpp
+--- xbmc-11.0.1/xbmc/settings/AdvancedSettings.cpp	2012-03-22 09:27:32.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/settings/AdvancedSettings.cpp	2012-03-26 10:22:46.071810075 +1030
+@@ -122,6 +122,12 @@
+   m_lcdDimOnScreenSave = false;
+   m_lcdScrolldelay = 1;
+   m_lcdHostName = "localhost";
++  m_lcdSpectrumAnalyzer = false;
++  m_lcdRefreshRate = 4; // in Hertz
++  m_lcdProgressBar1 = "progress";
++  m_lcdProgressBar2 = "volume";
++  m_lcdProgressBar3 = "none";
++  m_lcdProgressBar4 = "none";
+ 
+   m_autoDetectPingTime = 30;
+ 
+@@ -636,6 +642,12 @@
+     XMLUtils::GetBoolean(pElement, "dimonscreensave", m_lcdDimOnScreenSave);
+     XMLUtils::GetInt(pElement, "scrolldelay", m_lcdScrolldelay, -8, 8);
+     XMLUtils::GetString(pElement, "hostname", m_lcdHostName);
++    XMLUtils::GetBoolean(pElement, "spectrumanalyzer", m_lcdSpectrumAnalyzer);
++    XMLUtils::GetInt(pElement, "refreshrate", m_lcdRefreshRate, 1, 20);
++    XMLUtils::GetString(pElement, "progressbar1", m_lcdProgressBar1);
++    XMLUtils::GetString(pElement, "progressbar2", m_lcdProgressBar2);
++    XMLUtils::GetString(pElement, "progressbar3", m_lcdProgressBar3);
++    XMLUtils::GetString(pElement, "progressbar4", m_lcdProgressBar4);
+   }
+   pElement = pRootElement->FirstChildElement("network");
+   if (pElement)
+diff -Nr -U3 xbmc-11.0.1/xbmc/settings/AdvancedSettings.h xbmc-11.0.1.new/xbmc/settings/AdvancedSettings.h
+--- xbmc-11.0.1/xbmc/settings/AdvancedSettings.h	2012-03-22 09:27:32.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/settings/AdvancedSettings.h	2012-03-26 10:22:46.071810075 +1030
+@@ -156,6 +156,12 @@
+     bool m_lcdDimOnScreenSave;
+     int m_lcdScrolldelay;
+     CStdString m_lcdHostName;
++    bool m_lcdSpectrumAnalyzer;
++    int m_lcdRefreshRate;
++    CStdString m_lcdProgressBar1;
++    CStdString m_lcdProgressBar2;
++    CStdString m_lcdProgressBar3;
++    CStdString m_lcdProgressBar4;
+ 
+     int m_autoDetectPingTime;
+ 
+diff -Nr -U3 xbmc-11.0.1/xbmc/utils/LCD.cpp xbmc-11.0.1.new/xbmc/utils/LCD.cpp
+--- xbmc-11.0.1/xbmc/utils/LCD.cpp	2012-03-22 09:27:33.000000000 +1030
++++ xbmc-11.0.1.new/xbmc/utils/LCD.cpp	2012-03-27 10:22:41.510768948 +1030
+@@ -22,21 +22,34 @@
+ #include "LCD.h"
+ #include "settings/AdvancedSettings.h"
+ #include "settings/Settings.h"
++#include "settings/GUISettings.h"
+ #include "CharsetConverter.h"
+ #include "log.h"
++#include "Application.h"
++#include "../guilib/GUIWindowManager.h"
++#include "../GUIInfoManager.h"
++#ifdef USE_PVR
++#include "../pvr/PVRManager.h"
++#endif
++#include "../storage/MediaManager.h"
++#include "../cores/playercorefactory/PlayerCoreFactory.h"
+ #include "XMLUtils.h"
++#include "StreamDetails.h"
+ 
+ using namespace std;
+-
++#ifdef USE_PVR
++using namespace PVR;
++#endif
+ void ILCD::StringToLCDCharSet(CStdString& strText)
+ {
+ 
+   //0 = HD44780, 1=KS0073
+-  unsigned int iLCDContr = 0;
++  unsigned int iLCDContr = 2;
++//  iLCDContr = g_guiSettings.GetInt("lcd.type") == LCD_TYPE_LCDPROC ? 2 : iLCDContr;
+   //the timeline is using blocks
+   //a block is used at address 0xA0, smallBlocks at address 0xAC-0xAF
+ 
+-  unsigned char LCD[2][256] = {
++  unsigned char LCD[3][256] = {
+                                 { //HD44780 charset ROM code A00
+                                   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+                                   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+@@ -73,6 +86,25 @@
+                                   0x44, 0x5d, 0x4f, 0xe0, 0xec, 0x4f, 0x5c, 0x78, 0xab, 0xee, 0xe5, 0xee, 0x5e, 0xe6, 0x20, 0xbe,
+                                   0x7f, 0xe7, 0xaf, 0xaf, 0x7b, 0xaf, 0xbd, 0xc8, 0xa4, 0xa5, 0xc7, 0x65, 0xa7, 0xe8, 0x69, 0x69,
+                                   0x6f, 0x7d, 0xa8, 0xe9, 0xed, 0x6f, 0x7c, 0x25, 0xac, 0xa6, 0xea, 0xef, 0x7e, 0xeb, 0x70, 0x79
++                                },
++
++                                { //Soundgraph iMon-LCD / Targa MDM166A VFD (play-icons are mapped, others not yet)
++                                  0x00, 0x01, 0x12, 0x16, 0x15, 0x10, 0x11, 0x12, 0x14, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
++                                  0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
++                                  0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
++                                  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
++                                  0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
++                                  0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f,
++                                  0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
++                                  0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f,
++                                  0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
++                                  0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
++                                  0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0x8c, 0x8a, 0x89, 0x88, 0x87, // Custom characters??? Should be here?
++                                  0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
++                                  0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
++                                  0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf,
++                                  0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef,
++                                  0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
+                                 }
+                               };
+ 
+@@ -343,7 +375,7 @@
+     for ( UINT nX = 0; nX < arrSizes[ _nCharset ][0]; nX++ )
+     {
+       // Add a space if we have more than one digit, and the given
+-      // digit is smaller than the current value (base numer) we are dealing with
++      // digit is smaller than the current value (base number) we are dealing with
+       if ( _bSpacePadding && ((nCurrentValue / 10) > (UINT)_nDigit ) && ( nCurrentSize > 1 ) )
+       {
+         strCurrentDigit += " ";
+@@ -385,6 +417,8 @@
+ void ILCD::Initialize()
+ {
+   CStdString lcdPath;
++  m_disableOnPlay = 0;
++  SetIsSpectrumAnalyzerWorking(false);
+   lcdPath = g_settings.GetUserDataItem("LCD.xml");
+   LoadSkin(lcdPath);
+   m_eCurrentCharset = CUSTOM_CHARSET_DEFAULT;
+@@ -484,6 +518,30 @@
+ {
+   unsigned int outLine = 0;
+   unsigned int inLine = 0;
++
++  if (g_advancedSettings.m_lcdSpectrumAnalyzer)
++  {
++    CStdString currentVis = g_guiSettings.GetString("musicplayer.visualisation");
++
++    if ((currentVis.Equals("None") || mode != LCD_MODE_MUSIC) && GetIsSpectrumAnalyzerWorking())
++    {
++      SetIsSpectrumAnalyzerWorking(false);
++      RemoveSpectrumAnalyzer();
++    }
++    else if (!currentVis.Equals("None") && g_application.IsPlayingAudio() && g_application.m_pPlayer && mode == LCD_MODE_MUSIC)
++    {
++      if (!GetIsSpectrumAnalyzerWorking())
++      {
++        InitializeSpectrumAnalyzer();
++        SetIsSpectrumAnalyzerWorking(true);
++      }
++      else
++      {
++        SetSpectrumAnalyzerData();
++      }
++    }
++  }
++
+   while (outLine < 4 && inLine < m_lcdMode[mode].size())
+   {
+     CStdString line = m_lcdMode[mode][inLine++].GetLabel(0);
+@@ -496,7 +554,11 @@
+   }
+   // fill remainder with empty space
+   while (outLine < 4)
++  {
+     SetLine(outLine++, "");
++  }
++
++  RenderIcons();
+ }
+ 
+ void ILCD::DisableOnPlayback(bool playingVideo, bool playingAudio)
+@@ -505,3 +567,446 @@
+       (playingAudio && (m_disableOnPlay & DISABLE_ON_PLAY_MUSIC)))
+     SetBackLight(0);
+ }
++
++void ILCD::RenderIcons() {
++
++  static bool rendericons = false;
++
++  ResetCodecIcons();
++
++  if (g_application.NavigationIdleTime() > 0.1)
++  {
++    rendericons = true;
++  }
++
++  if (    (!m_bStop)
++       && (rendericons)
++     )
++  {
++    if (g_application.IsPlayingVideo() && g_application.m_pPlayer)
++    {
++      SetLCDPlayingState(true);
++
++#ifdef USE_PVR
++      if (g_PVRManager.TranslateBoolInfo(PVR_IS_PLAYING_TV))
++      {
++        SetIconTV(true);
++      }
++      else 
++      { // playing e.g. a video
++#endif
++        SetIconMovie(true);
++#ifdef USE_PVR
++      }
++#endif
++      if (g_application.m_pPlayer->GetPictureWidth() <= 720)
++      {
++        SetIconResolution(LCD_RESOLUTION_SD);
++      }
++      else
++      {
++        SetIconResolution(LCD_RESOLUTION_HD);
++      }
++
++      int iResolution = g_graphicsContext.GetVideoResolution();
++
++      // tolerate 10% difference from current resolution to state that it is "in original resolution"
++      if (    (g_application.m_pPlayer->GetPictureWidth() <= g_settings.m_ResInfo[iResolution].iWidth + ((g_settings.m_ResInfo[iResolution].iWidth)*0.1))
++           && (g_application.m_pPlayer->GetPictureWidth() >= g_settings.m_ResInfo[iResolution].iWidth - ((g_settings.m_ResInfo[iResolution].iWidth)*0.1)) )
++      {
++        SetIconSource(true);
++      }
++      else
++      {
++        SetIconFit(true);
++      }
++    } 
++    else if (g_application.IsPlayingAudio() && g_application.m_pPlayer)
++    {
++      SetLCDPlayingState(true);
++      SetIconMusic(true);
++
++      if (GetIsSpectrumAnalyzerWorking())
++      {
++        SetSpectrumAnalyzerData();
++      }
++    }
++    else
++    {
++      SetLCDPlayingState(false);
++      SetIconResolution(LCD_RESOLUTION_NONE);
++
++      if (GetIsSpectrumAnalyzerWorking() == true)
++      {
++        RemoveSpectrumAnalyzer();
++        SetIsSpectrumAnalyzerWorking(false);
++      }
++
++      if (g_windowManager.GetActiveWindow() == WINDOW_WEATHER)
++      {
++        SetIconWeather(true);
++      }
++#ifdef USE_PVR
++      else if (    (g_windowManager.GetActiveWindow() >=  WINDOW_PVR           )
++                && (g_windowManager.GetActiveWindow() <  (WINDOW_PVR+100)      )
++              )
++      {
++        SetIconTV(true);
++      }
++#endif
++      else if (    (g_windowManager.GetActiveWindow() == WINDOW_VIDEOS         )
++                || (g_windowManager.GetActiveWindow() == WINDOW_VIDEO_FILES    )
++                || (g_windowManager.GetActiveWindow() == WINDOW_VIDEO_NAV      )
++                || (g_windowManager.GetActiveWindow() == WINDOW_VIDEO_PLAYLIST )
++              )
++      {
++        SetIconMovie(true);
++      }
++      else if (    (g_windowManager.GetActiveWindow() == WINDOW_MUSIC                 )
++                || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_PLAYLIST        )
++                || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_FILES           )
++                || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_NAV             )
++                || (g_windowManager.GetActiveWindow() == WINDOW_MUSIC_PLAYLIST_EDITOR )
++              )
++      {
++        SetIconMusic(true);
++      }
++      else if (g_windowManager.GetActiveWindow() == WINDOW_PICTURES)
++      {
++        SetIconPhoto(true);
++      }
++    }
++
++    SetCodecInformationIcons();
++
++    if (g_application.GetVolume() == 0)
++    {
++      SetIconMute(true);
++    }
++    else
++    {
++      SetIconMute(false);
++    }
++
++    if (g_application.IsPaused())
++    {
++      SetIconPause(true);
++    }
++    else
++    {
++      SetIconPause(false);
++    }
++
++    // Set the volume icon accordingly
++    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_VOLUME_BAR))
++    {
++      SetIconVolume(true);
++    }
++    else
++    {
++      SetIconVolume(false);
++    }
++
++    // Set the alarm icon accordingly - if a pop-up is displayed
++    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_KAI_TOAST))
++    {
++      SetIconAlarm(true);
++    }
++    else
++    {
++      SetIconAlarm(false);
++    }
++
++#ifdef USE_PVR
++    // Set the record icon accordingly
++    if ((g_application.m_pPlayer != NULL && g_application.m_pPlayer->IsRecording()) || g_PVRManager.TranslateBoolInfo(PVR_IS_RECORDING))
++    {
++      SetIconRecord(true);
++    }
++    else
++    {
++      SetIconRecord(false);
++    }
++#endif
++
++    // Set the repeat icon accordingly
++    if (    (g_playlistPlayer.GetRepeat(g_playlistPlayer.GetCurrentPlaylist()) == PLAYLIST::REPEAT_ALL)
++         || (g_playlistPlayer.GetRepeat(g_playlistPlayer.GetCurrentPlaylist()) == PLAYLIST::REPEAT_ONE)
++       )
++    {
++      SetIconRepeat(true);
++    }
++    else 
++    {
++      SetIconRepeat(false);
++    }
++
++    // Set the shuffle icon accordingly
++    if (g_playlistPlayer.IsShuffled(g_playlistPlayer.GetCurrentPlaylist()))
++    {
++      SetIconShuffle(true);
++    }
++    else
++    {
++      SetIconShuffle(false);
++    }
++
++    // Set the time icon accordingly
++    if ((!g_application.IsPlaying() && g_application.NavigationIdleTime() >= 5) && g_application.IsInScreenSaver())
++    {
++      SetIconTime(true);
++    }
++    else
++    {
++      SetIconTime(false);
++    }
++
++    if (g_mediaManager.IsDiscInDrive()) {
++      SetIconDiscIn(true);
++    }
++
++    // Set the SCR1/2 icons accordingly
++    SetIconSCR1(false);
++    SetIconSCR2(false);
++  }
++  else
++  {
++    SetIsSpectrumAnalyzerWorking(false);
++  }
++
++  SendIconStatesToDisplay();
++}
++
++void ILCD::SetCodecInformationIcons()
++{
++  if (g_application.IsPlaying() && g_application.m_pPlayer)
++  {
++    if (g_application.m_pPlayer->IsPassthrough())
++    {
++      SetIconSPDIF(true);
++    }
++    else
++    {
++      SetIconSPDIF(false);
++    }
++
++    if (g_application.IsPlayingVideo())
++    {
++      CStdString videoCodec = g_application.m_pPlayer->GetVideoCodecName();
++      //CLog::Log(LOGDEBUG, "XLCDproc::%s - Videocodec = '%s'", __FUNCTION__, videoCodec.c_str());
++      if (    (videoCodec.CompareNoCase("mpg")         == 0)
++           || (videoCodec.CompareNoCase("mpeg")        == 0)
++           || (videoCodec.CompareNoCase("mpeg2video")  == 0)
++           || (videoCodec.CompareNoCase("h264")        == 0)
++           || (videoCodec.CompareNoCase("x264")        == 0)
++           || (videoCodec.CompareNoCase("mpeg4")       == 0)
++#ifdef USE_PVR
++           || (g_PVRManager.TranslateBoolInfo(PVR_IS_PLAYING_TV))
++#endif
++         )
++      { //g_application.m_pPlayer->GetVideoCodecName() returns "" in TV-mode, so we have to cheat a bit
++        SetIconMPEG(true);
++      }
++      else if (    (videoCodec.CompareNoCase("divx") == 0)
++                || (videoCodec.CompareNoCase("dx50") == 0)
++                || (videoCodec.CompareNoCase("div3") == 0)
++              )
++      {
++        SetIconDIVX(true);
++      }
++      else if (videoCodec.CompareNoCase("xvid")      == 0)
++      {
++        SetIconXVID(true);
++      }
++      else if (videoCodec.CompareNoCase("wmv")       == 0)
++      {
++        SetIconWMV(true);
++      }
++    }
++
++    CStdString audioCodec = g_application.m_pPlayer->GetAudioCodecName();
++    //CLog::Log(LOGDEBUG, "XLCDproc::%s - Audiocodec = '%s'", __FUNCTION__, audioCodec.c_str());
++    if (    (audioCodec.CompareNoCase("mpga")        == 0)
++         || (audioCodec.CompareNoCase("mp2")         == 0)
++       )
++    {
++      SetIconMPGA(true);
++    }
++    else if (    (audioCodec.CompareNoCase("ac3")    == 0)
++              || (audioCodec.CompareNoCase("truehd") == 0)
++            )
++    {
++      SetIconAC3(true);
++    }
++    else if (    (audioCodec.CompareNoCase("dts")      == 0)
++              || (audioCodec.CompareNoCase("dtshd_ma") == 0)
++              || (audioCodec.CompareNoCase("dca")      == 0)
++            )
++    {
++      SetIconDTS(true);
++    }
++    else if (audioCodec.CompareNoCase("mp3")         == 0)
++    {
++      SetIconMP3(true);
++    }
++    else if (    (audioCodec.CompareNoCase("ogg")    == 0)
++              || (audioCodec.CompareNoCase("vorbis") == 0)
++            )
++    {
++      SetIconOGG(true);
++    }
++    else if (    (audioCodec.CompareNoCase("wma")    == 0)
++              || (audioCodec.CompareNoCase("wmav2")  == 0)
++            )
++    {
++      if (g_application.IsPlayingVideo())
++      {
++        SetIconVWMA(true);
++      }
++      else if (g_application.IsPlayingAudio())
++      {
++        SetIconAWMA(true);
++      }
++    }
++    else if (    (audioCodec.CompareNoCase("wav")    == 0)
++              || (audioCodec.Find("pcm")             >= 0)
++            )
++    {
++      SetIconWAV(true);
++    }
++
++    CStreamDetails streamDetails;
++
++    if (g_application.m_pPlayer->GetStreamDetails(streamDetails)) {
++      SetIconAudioChannels(streamDetails.GetAudioChannels());
++    }
++    else if (!audioCodec.IsEmpty()) {
++      SetIconAudioChannels(2); // Let's assume stereo if there is audio being played but no stream details are available (e.g. while playing music)
++    }
++  }
++  else {
++    ResetCodecIcons();
++  }
++}
++
++void ILCD::ResetCodecIcons()
++{
++  SetIconSPDIF(false);
++
++  SetIconMPEG(false);
++  SetIconDIVX(false);
++  SetIconXVID(false);
++  SetIconWMV(false);
++
++  SetIconMPGA(false);
++  SetIconAC3(false);
++  SetIconDTS(false);
++  SetIconMP3(false);
++
++  SetIconOGG(false);
++  SetIconVWMA(false);
++  SetIconAWMA(false);
++  SetIconWAV(false);
++
++  SetIconTV(false);
++  SetIconMovie(false);
++  SetIconMusic(false);
++  SetIconRecord(false);
++  SetIconWeather(false);
++  SetIconPhoto(false);
++
++  SetIconAlarm(false);
++  SetIconDiscIn(false);
++  SetIconFit(false);
++
++  SetIconMute(false);
++  SetIconVolume(false);
++
++  SetIconRepeat(false);
++  SetIconShuffle(false);
++  SetIconSource(false);
++  SetIconTime(false);
++}
++
++bool ILCD::GetIsSpectrumAnalyzerWorking()
++{
++  return m_bIsSpectrumAnalyzerWorking;
++}
++
++void ILCD::SetIsSpectrumAnalyzerWorking(bool working)
++{
++  m_bIsSpectrumAnalyzerWorking = working;
++}
++
++void ILCD::SetLCDPlayingState(bool on)
++{
++  SetIconPlaying(on);
++
++  if (g_advancedSettings.m_lcdProgressBar1 == "progress")
++  {
++    SetProgressBar1((on) ? g_application.GetPercentage() : 0.0);
++  }
++  else if (g_advancedSettings.m_lcdProgressBar1 == "volume")
++  {
++    SetProgressBar1(g_application.GetVolume());
++  }
++  else if (g_advancedSettings.m_lcdProgressBar1 == "menu")
++  {
++    SetProgressBar1((on) ? 0.0 : 100.0);
++  }
++  else
++  {
++    SetProgressBar1(0.0);
++  }
++
++  if (g_advancedSettings.m_lcdProgressBar2 == "progress")
++  {
++    SetProgressBar2((on) ? g_application.GetPercentage() : 0.0);
++  }
++  else if (g_advancedSettings.m_lcdProgressBar2 == "volume")
++  {
++    SetProgressBar2(g_application.GetVolume());
++  }
++  else if (g_advancedSettings.m_lcdProgressBar2 == "menu")
++  {
++    SetProgressBar2((on) ? 0.0 : 100.0);
++  }
++  else
++  {
++    SetProgressBar2(0.0);
++  }
++
++  if (g_advancedSettings.m_lcdProgressBar3 == "progress")
++  {
++    SetProgressBar3((on) ? g_application.GetPercentage() : 0.0);
++  }
++  else if (g_advancedSettings.m_lcdProgressBar3 == "volume")
++  {
++    SetProgressBar3(g_application.GetVolume());
++  }
++  else if (g_advancedSettings.m_lcdProgressBar3 == "menu")
++  {
++    SetProgressBar3((on) ? 0.0 : 100.0);
++  }
++  else
++  {
++    SetProgressBar3(0.0);
++  }
++
++  if (g_advancedSettings.m_lcdProgressBar4 == "progress")
++  {
++    SetProgressBar4((on) ? g_application.GetPercentage() : 0.0);
++  }
++  else if (g_advancedSettings.m_lcdProgressBar4 == "volume")
++  {
++    SetProgressBar4(g_application.GetVolume());
++  }
++  else if (g_advancedSettings.m_lcdProgressBar4 == "menu")
++  {
++    SetProgressBar4((on) ? 0.0 : 100.0);
++  }
++  else
++  {
++    SetProgressBar4(0.0);
++  }
++}
+diff -Nr -U3 xbmc-11.0.1/xbmc/utils/LCD.h xbmc-11.0.1.new/xbmc/utils/LCD.h
+--- xbmc-11.0.1/xbmc/utils/LCD.h	2012-03-23 15:30:27.565232113 +1030
++++ xbmc-11.0.1.new/xbmc/utils/LCD.h	2012-03-26 10:24:29.989078270 +1030
+@@ -51,6 +51,11 @@
+                         CUSTOM_CHARSET_BIGCHAR,
+                         CUSTOM_CHARSET_MAX
+                 };
++  enum LCD_RESOLUTION {
++                        LCD_RESOLUTION_NONE = 0,
++                        LCD_RESOLUTION_SD,
++                        LCD_RESOLUTION_HD
++    };
+   virtual void Initialize();
+   virtual bool IsConnected();
+   virtual void Stop() = 0;
+@@ -68,6 +73,8 @@
+   void LoadSkin(const CStdString &xmlFile);
+   void Reset();
+   void Render(LCD_MODE mode);
++  bool GetIsSpectrumAnalyzerWorking();
++  virtual void SetSpectrumAnalyzerAudioData(const short* psAudioData, int piAudioDataLength, float *pfFreqData, int piFreqDataLength) =0;
+  ILCD() : CThread("ILCD"),
+           m_disableOnPlay(DISABLE_ON_PLAY_NONE), 
+           m_eCurrentCharset(CUSTOM_CHARSET_DEFAULT) {}
+@@ -77,10 +84,67 @@
+   unsigned char GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset=-1);
+   void LoadMode(TiXmlNode *node, LCD_MODE mode);
+ 
++  void RenderIcons();
++  virtual bool SendIconStatesToDisplay(void) =0;
++  virtual void SetIconMovie(bool on) =0;
++  virtual void SetIconMusic(bool on) =0;
++  virtual void SetIconWeather(bool on) =0;
++  virtual void SetIconTV(bool on) =0;
++  virtual void SetIconPhoto(bool on) =0;
++  virtual void SetIconResolution(LCD_RESOLUTION resolution) =0;
++  virtual void SetProgressBar1(double progress) =0;
++  virtual void SetProgressBar2(double progress) =0;
++  virtual void SetProgressBar3(double progress) =0;
++  virtual void SetProgressBar4(double progress) =0;
++  virtual void SetIconMute(bool on) =0;
++  virtual void SetIconPlaying(bool on) =0;
++  virtual void SetIconPause(bool on) =0;
++  virtual void SetIconRepeat(bool on) =0;
++  virtual void SetIconShuffle(bool on) =0;
++  virtual void SetIconAlarm(bool on) =0;
++  virtual void SetIconRecord(bool on) =0;
++  virtual void SetIconVolume(bool on) =0;
++  virtual void SetIconTime(bool on) =0;
++  virtual void SetIconSPDIF(bool on) =0;
++  virtual void SetIconDiscIn(bool on) =0;
++  virtual void SetIconSource(bool on) =0;
++  virtual void SetIconFit(bool on) =0;
++  virtual void SetIconSCR1(bool on) =0;
++  virtual void SetIconSCR2(bool on) =0;
++  // codec icons - video: video stream format
++  virtual void SetIconMPEG(bool on) =0;
++  virtual void SetIconDIVX(bool on) =0;
++  virtual void SetIconXVID(bool on) =0;
++  virtual void SetIconWMV(bool on) =0;
++  // codec icons - video: audio stream format
++  virtual void SetIconMPGA(bool on) =0;
++  virtual void SetIconAC3(bool on) =0;
++  virtual void SetIconDTS(bool on) =0;
++  virtual void SetIconVWMA(bool on) =0;
++  // codec icons - audio format
++  virtual void SetIconMP3(bool on) =0;
++  virtual void SetIconOGG(bool on) =0;
++  virtual void SetIconAWMA(bool on) =0;
++  virtual void SetIconWAV(bool on) =0;
++
++  virtual void SetIconAudioChannels(int channels) =0;
++
++  virtual void InitializeSpectrumAnalyzer(void) =0;
++  virtual void RemoveSpectrumAnalyzer(void) =0;
++  virtual void SetSpectrumAnalyzerData(void) =0;
++
++  void SetIsSpectrumAnalyzerWorking(bool working);
++
+ private:
+   int m_disableOnPlay;
+ 
+   std::vector<CGUIInfoLabel> m_lcdMode[LCD_MODE_MAX];
+   UINT m_eCurrentCharset;
++
++  bool m_bIsSpectrumAnalyzerWorking;
++
++  void SetCodecInformationIcons();
++  void ResetCodecIcons();
++  void SetLCDPlayingState(bool on);
+ };
+ extern ILCD* g_lcd;
