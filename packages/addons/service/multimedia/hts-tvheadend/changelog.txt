@@ -1,3 +1,6 @@
+2.1.6
+- update to hts-tvheadend-1d15fb9 (3.2-beta)
+
 2.1.5
 - add an option to wait for more than 1 adapters to appear
 
