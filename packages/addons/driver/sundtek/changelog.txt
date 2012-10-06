@@ -1,3 +1,10 @@
+2.1.5
+  addon renamed to just sundtek
+  added addon settings
+  sundtek's binaries are downloaded on first run
+  automatically download new version of the binaries if available
+  added preload library to .profile (to run mediaclient, w_scan, ... from console)
+  
 2.1.4
   support for Raspberry Pi
 
