@@ -130,6 +130,12 @@ MYDATA
 
 )
 
+export PYTHONPATH=/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs:/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/fuse-python
+export PATH=$PATH:/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs/bin
+mkdir /media/Recordings
+chmod +x /storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs/bin/vdrnfofs
+vdrnfofs /media/Recordings -o video="$VDR_VIDEO_DIR"
+
 if [ ! "$(pidof vdr.bin)" ];then
   # start userspace DVB driver/addon
   for driver_dvb in $(find /storage/.xbmc/addons/driver.dvb.*/bin/userspace-driver.sh -type f 2>/dev/null); do

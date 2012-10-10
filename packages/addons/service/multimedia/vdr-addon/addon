@@ -100,3 +100,13 @@ mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/text2skin/anthra_1280_OS/
 
 mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/themes
   cp -P $BUILD/vdr-skinanthra_1280_OS-*/themes/* $ADDON_BUILD/$PKG_ADDON_ID/config/themes/
+
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/fuse-python/fuseparts/
+  cp -Pr $BUILD/fuse-python-*/fuseparts/*.so $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/fuse-python/fuseparts/
+  cp -Pr $BUILD/fuse-python-*/fuseparts/*.py $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/fuse-python/fuseparts/
+  cp -P $BUILD/fuse-python-*/fuse.py $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/fuse-python/
+
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/vdrnfofs/
+  cp -Pr $BUILD/vdrnfofs*/vdrnfofs $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/vdrnfofs/
+  cp -Pr $BUILD/vdrnfofs*/bin $ADDON_BUILD/$PKG_ADDON_ID/vdr-nfofs/vdrnfofs/
+

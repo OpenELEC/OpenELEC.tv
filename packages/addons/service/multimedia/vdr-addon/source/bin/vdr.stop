@@ -27,6 +27,7 @@ LOCKFILE="vdr.disabled"
 
 mkdir -p "$LOCKDIR"
 touch "$LOCKDIR/$LOCKFILE"
+umount /media/Recordings
 
 if [ "$(pidof vdr.bin)" ];then
   killall -9 vdr.bin
