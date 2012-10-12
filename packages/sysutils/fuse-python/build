@@ -24,7 +24,7 @@
 
 cd $PKG_BUILD
 cd fuseparts
-cflags=` pkg-config pkg-config --cflags fuse` 
-cflags="$cflags ` pkg-config pkg-config --cflags python`"
-libs=` pkg-config --libs fuse` 
+cflags=`$PKG_CONFIG pkg-config --cflags fuse` 
+cflags="$cflags ` $PKG_CONFIG pkg-config --cflags python`"
+libs=` $PKG_CONFIG --libs fuse` 
 $CC -shared $CCFLAGS $cflags $libs _fusemodule.c -o _fusemodule.so
