@@ -27,7 +27,13 @@ LOCKFILE="vdr.disabled"
 
 mkdir -p "$LOCKDIR"
 touch "$LOCKDIR/$LOCKFILE"
-umount /media/Recordings
+. /var/config/vdr.conf.default
+. /var/config/vdr.confA
+if [ "$ENABLE_VDRNFOFS" == "true" ] ; then
+  umount "$MOUNTPOINT_VDRNFOFS"
+fi
+
+
 
 if [ "$(pidof vdr.bin)" ];then
   killall -9 vdr.bin
