@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,25 +20,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="linux"
-PKG_VERSION="3.2.31"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-#PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/testing/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="busybox linux-drivers linux-firmware pciutils $BOOTLOADER"
-PKG_BUILD_DEPENDS="toolchain module-init-tools xz cpio pciutils"
-PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
+mkdir -p $INSTALL/etc
+  cp $PKG_BUILD/protocols $INSTALL/etc
+  cp $PKG_BUILD/services $INSTALL/etc
 
-if [ "$LINUX" = "ti-omap4" ]; then
-  PKG_VERSION="2.6.38-ti-omap4"
-  PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-fi

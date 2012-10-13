@@ -18,25 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="linux"
-PKG_VERSION="3.2.31"
+PKG_NAME="iana-etc"
+PKG_VERSION="2.30"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-#PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/testing/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="busybox linux-drivers linux-firmware pciutils $BOOTLOADER"
-PKG_BUILD_DEPENDS="toolchain module-init-tools xz cpio pciutils"
+PKG_SITE="http://www.linuxfromscratch.org/lfs/view/development/chapter06/iana-etc.html"
+PKG_URL="http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration/iana-etc/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
+PKG_SECTION="network"
+PKG_SHORTDESC="iana-etc: The Iana-Etc package provides data for network services and protocols."
+PKG_LONGDESC="The Iana-Etc package provides data for network services and protocols."
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
-
-if [ "$LINUX" = "ti-omap4" ]; then
-  PKG_VERSION="2.6.38-ti-omap4"
-  PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-fi
