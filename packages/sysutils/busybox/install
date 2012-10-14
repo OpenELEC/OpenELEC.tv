@@ -38,6 +38,7 @@ USER_PWD="`$ROOT/$TOOLCHAIN/bin/cryptpw -m sha512 $USER_PASSWORD`"
   mkdir -p $INSTALL/usr/bin
     cp $PKG_DIR/scripts/createlog $INSTALL/usr/bin/
     cp $PKG_DIR/scripts/lsb_release $INSTALL/usr/bin/
+    cp $PKG_DIR/scripts/apt-get $INSTALL/usr/bin/
     ln -sf /bin/busybox $INSTALL/usr/bin/env          #/usr/bin/env is needed for most python scripts
 
   mkdir -p $INSTALL/sbin
@@ -60,12 +61,6 @@ USER_PWD="`$ROOT/$TOOLCHAIN/bin/cryptpw -m sha512 $USER_PASSWORD`"
 
   # create /etc/hostname
     ln -sf /proc/sys/kernel/hostname $INSTALL/etc/hostname
-
-  mkdir -p $INSTALL/etc/modprobe.d
-    cp $PKG_DIR/modprobe.d/* $INSTALL/etc/modprobe.d
-
-  # add user modprobe.d dir
-    mkdir -p $INSTALL/usr/config/modprobe.d
 
   # add webroot
     mkdir -p $INSTALL/usr/www

@@ -1,3 +1,35 @@
+2.1.8
+- rebuild due to some static libs in latest git
+
+2.1.7
+- update to vdr-plugin-streamdev-6a47e20
+- update to vdr-sc-613
+
+2.1.6
+- update to vdr-plugin-dvbapi-e3200c8
+- added vdr-xmltv2vdr plugin
+- added xineliboutput plugin
+- added text2skin plugin
+- preparation for xine based VDR frontend as separate addon
+
+2.1.5
+- fixed rotorng
+- added wirbelscancontrol plugin
+
+2.1.4
+- added live plugin
+- added rotorng plugin
+- added control plugin
+- added epgsearch plugin
+- update to vdr-iptv-0.5.2
+- update to vdr-plugin-streamdev-8719007
+- update to vdr-plugin-xvdr-b62ccbd
+
+2.1.3
+- adjust for fontconfig 2.9.0
+- update patchset 
+- suspend/resume fixes
+
 2.1.2
 - update to vdr-1.7.27
 - update to vdr-dynamite-10d78a8

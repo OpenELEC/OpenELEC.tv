@@ -108,7 +108,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
 
 # Graphic support
-  [ "$XORG_SUPPORT" = "yes" ] && $SCRIPTS/install xorg-server
+  [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
@@ -119,6 +119,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Powermanagement support
   [ "$UPOWER" = "yes" ] && $SCRIPTS/install upower
   [ "$UPOWER" = "yes" ] && $SCRIPTS/install ConsoleKit
+
+# NTFS 3G support
+  [ "$EXFAT" = "yes" ] && $SCRIPTS/install fuse-exfat
 
 # NTFS 3G support
   [ "$NTFS3G" = "yes" ] && $SCRIPTS/install ntfs-3g_ntfsprogs
@@ -167,6 +170,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # copy kernel to target dir
   if [ "$BOOTLOADER" = "u-boot" ]; then
     KERNEL_IMAGE="uImage"
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    KERNEL_IMAGE="zImage"
   else
     KERNEL_IMAGE="bzImage"
   fi
@@ -209,17 +214,23 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
     # create release dir
       mkdir -p $RELEASE_DIR
-        if [ "$BOOTLOADER" = "syslinux" ]; then
-          cp -R $CONFIG/release/3rdparty $RELEASE_DIR
-          cp -R $CONFIG/release/sample.conf $RELEASE_DIR
-          cp -R $CONFIG/release/Autorun.inf $RELEASE_DIR
-          cp -R $CONFIG/release/create_installstick* $RELEASE_DIR
+        if [ -n "$BOOTLOADER" ]; then
+          BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+          if [ -d "$BOOTLOADER_DIR"/files ]; then
+            cp -R $BOOTLOADER_DIR/files/* $RELEASE_DIR
+          fi
+          if [ -f "$BOOTLOADER_DIR"/release ]; then
+            . $BOOTLOADER_DIR/release
+          fi
         fi
         cp $ROOT/README* $RELEASE_DIR
         cp $ROOT/CHANGELOG* $RELEASE_DIR
         cp -R $CONFIG/release/openelec.ico $RELEASE_DIR
-        cp -R $CONFIG/release/INSTALL $RELEASE_DIR
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
+
+        if [ -n "$MEDIACENTER" ] ; then
+          echo "XBMC commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
+        fi
 
       mkdir -p $RELEASE_DIR/licenses
         cp $ROOT/licenses/* $RELEASE_DIR/licenses

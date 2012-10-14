@@ -42,7 +42,6 @@ mkdir -p objdir-$1 && cd objdir-$1
              --with-ppl=$ROOT/$TOOLCHAIN \
              --disable-ppl-version-check \
              --with-cloog=$ROOT/$TOOLCHAIN \
-             --with-libelf=$ROOT/$TOOLCHAIN \
              --with-gnu-as \
              --with-gnu-ld \
              --enable-languages=c \
@@ -63,6 +62,7 @@ mkdir -p objdir-$1 && cd objdir-$1
              --without-headers \
              --with-newlib \
              --disable-decimal-float \
+             $GCC_OPTS \
              --disable-nls
 
 make

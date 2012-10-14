@@ -23,7 +23,6 @@
 . config/options $1
 
 cd $PKG_BUILD
-
-make KDIR=$(kernel_path) CC=$CC
-fix_module_depends vtunerc.ko "dvb_core"
+  LDFLAGS="" make KDIR=$(kernel_path) CC=$CC
+  fix_module_depends vtunerc.ko "dvb_core"
 

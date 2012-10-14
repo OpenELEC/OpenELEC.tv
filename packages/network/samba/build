@@ -28,11 +28,27 @@ else
   SMB_AVAHI="--disable-avahi"
 fi
 
-export samba_cv_CC_NEGATIVE_ENUM_VALUES=no
+CFLAGS="$CFLAGS -fPIC -DPIC"
 
 cd $PKG_BUILD/source3
 
 sh autogen.sh
+
+ac_cv_file__proc_sys_kernel_core_pattern=yes \
+libreplace_cv_HAVE_C99_VSNPRINTF=yes \
+libreplace_cv_HAVE_GETADDRINFO=yes \
+libreplace_cv_HAVE_IFACE_IFCONF=yes \
+LINUX_LFS_SUPPORT=yes \
+samba_cv_CC_NEGATIVE_ENUM_VALUES=yes \
+samba_cv_HAVE_GETTIMEOFDAY_TZ=yes \
+samba_cv_HAVE_IFACE_IFCONF=yes \
+samba_cv_HAVE_KERNEL_OPLOCKS_LINUX=yes \
+samba_cv_HAVE_SECURE_MKSTEMP=yes \
+samba_cv_HAVE_WRFILE_KEYTAB=no \
+samba_cv_USE_SETREUID=yes \
+samba_cv_USE_SETRESUID=yes \
+samba_cv_have_setreuid=yes \
+samba_cv_have_setresuid=yes \
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
@@ -40,22 +56,27 @@ sh autogen.sh
             --sysconfdir=/etc \
             --with-configdir=/etc/samba \
             --with-privatedir=/var/run \
+            --with-codepagedir=/etc/samba \
+            --with-lockdir=/var/lock \
+            --with-logfilebase=/var/log \
+            --with-nmbdsocketdir=/var/nmbd \
+            --with-piddir=/var/run \
             --enable-shared \
             --disable-static \
-            --enable-debug \
+            --disable-shared-libs \
+            --disable-debug \
+            --with-libiconv="$SYSROOT_PREFIX/usr" \
             --disable-krb5developer \
             --disable-picky-developer \
             --enable-largefile \
+            --with-pthreads \
             --disable-socket-wrapper \
             --disable-nss-wrapper \
             --disable-swat \
             --disable-cups \
             --disable-iprint \
-            --enable-pie \
-            --enable-relro \
-            --enable-shared-libs \
-            --disable-external-libtalloc \
-            --disable-external-libtdb \
+            --disable-pie \
+            --disable-relro \
             --disable-fam \
             --disable-dnssd \
             $SMB_AVAHI \
@@ -65,10 +86,12 @@ sh autogen.sh
             --disable-dmalloc \
             --with-fhs \
             --without-libtalloc \
+            --disable-external-libtalloc \
             --without-libtdb \
+            --disable-external-libtdb \
             --without-libnetapi \
             --with-libsmbclient \
-            --with-libsmbsharemodes \
+            --without-libsmbsharemodes \
             --without-libaddns \
             --without-afs \
             --without-fake-kaserver \
@@ -81,6 +104,7 @@ sh autogen.sh
             --without-cifsmount \
             --without-cifsumount \
             --without-cifsupcall \
+            --without-krb5 \
             --without-pam \
             --without-pam_smbpass \
             --without-nisplus-home \
@@ -94,24 +118,22 @@ sh autogen.sh
             --with-sendfile-support \
             --without-wbclient \
             --without-winbind \
-            --with-static-modules=charset_CP437,charset_CP850 \
             --with-included-popt \
             --with-included-iniparser \
-            --with-libiconv="$SYSROOT_PREFIX/usr" \
-            --with-sqlite3 \
-            --with-pthreads \
+            --without-sqlite3 \
             --without-setproctitle \
 
-make bin/libsmbclient.so
+make bin/libtalloc.a
+make bin/libwbclient.a
+make bin/libtdb.a
+make bin/libsmbclient.a
 
-if [ "$SAMBA_SERVER" = yes ]; then
-  make bin/smbd
-  make bin/nmbd
-  make bin/smbpasswd
+if [ "$SAMBA_SERVER" = "yes" ]; then
+  make bin/samba_multicall
 fi
 
 mkdir -p $SYSROOT_PREFIX/usr/lib
-  cp -P bin/*.so* $SYSROOT_PREFIX/usr/lib
+  cp -P bin/*.a $SYSROOT_PREFIX/usr/lib
 
 mkdir -p $SYSROOT_PREFIX/usr/include
   cp include/libsmbclient.h $SYSROOT_PREFIX/usr/include

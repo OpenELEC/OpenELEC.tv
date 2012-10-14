@@ -1,6 +1,6 @@
 # Name of the Distro to build (full name, without special charcters)
-  if [ "$PVR" = yes ]; then
-    DISTRONAME="OpenELEC_PVR"
+  if [ "$XBMC" = frodo ]; then
+    DISTRONAME="OpenELEC_frodo"
   else
     DISTRONAME="OpenELEC"
   fi
@@ -65,6 +65,11 @@
       #
       TARGET_CPU="cortex-a9"
 
+      # TARGET_FLOAT:
+      # Specifies which floating-point ABI to use. Permissible values are:
+      # soft softfp hard
+      TARGET_FLOAT="softfp"
+
       # TARGET_FPU:
       # This specifies what floating point hardware (or hardware emulation) is
       # available on the target. Permissible names are:
@@ -76,13 +81,13 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="speed"
+  OPTIMIZATIONS="size"
 
 # Project CFLAGS
   PROJECT_CFLAGS="-mfpmath=sse -msse2 -mssse3 -mmovbe"
 
 # LTO (Link Time Optimization) support
-  LTO_SUPPORT="no"
+  LTO_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader)
   BOOTLOADER="syslinux"
@@ -102,8 +107,8 @@
   SQUASHFS_COMPRESSION="gzip"
 
 # Mediacenter to use (xbmc / no)
-  if [ "$PVR" = yes ]; then
-    MEDIACENTER="xbmc-pvr"
+  if [ "$XBMC" = frodo ]; then
+    MEDIACENTER="xbmc-frodo"
   else
     MEDIACENTER="xbmc"
   fi
@@ -133,6 +138,9 @@
 # build and install 'GOOM' Visualization (yes / no)
   XBMC_VIS_GOOM="yes"
 
+# build and install ALSA Audio support (yes / no)
+  ALSA_SUPPORT="yes"
+
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
 
@@ -144,6 +152,12 @@
 # (DVD decryption support in XBMC) (yes / no)
   DVDCSS_SUPPORT="yes"
 
+# build and install with LAME cdrip encoder support
+  ENCODER_LAME="yes"
+
+# build and install with VORBIS cdrip encoder support
+  ENCODER_VORBIS="yes"
+
 # build and install with BluRay support (yes / no)
   BLURAY_SUPPORT="yes"
 
@@ -152,10 +166,7 @@
 # asix-ax887xx:     Asix AX887xx USB LAN Driver
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="asix-ax887xx AF9035"
-  ADDITIONAL_DRIVERS="asix-ax887xx"
-  if [ "$PVR" = yes ]; then
-    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
-  fi
+  ADDITIONAL_DRIVERS="asix-ax887xx RTL8192CU AF9035 A867 aver_h826d RTL2832 hdhomerun-driver vtuner-driver"
 
 # build with network support (yes / no)
   NETWORK="yes"
@@ -201,6 +212,9 @@
 # build and install powermanagement support (upower) (yes / no)
   UPOWER="yes"
 
+# build and install exFAT fuse support (yes / no)
+  EXFAT="yes"
+
 # build and install NTFS-3G fuse support (yes / no)
   NTFS3G="yes"
 
@@ -216,10 +230,16 @@
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
 
+# Displayserver to use (xorg-server / no)
+  DISPLAYSERVER="xorg-server"
+
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,fglrx,nvidia,nouveau,vmware)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon nvidia nouveau"
   GRAPHIC_DRIVERS="nvidia"
+
+# OpenMAX implementation to use (no / bcm2835-driver)
+  OPENMAX="no"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
   VDPAU="yes"
@@ -263,18 +283,24 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="imon,imonlcd,MtxOrb"
+  LCD_DRIVER="imon,imonlcd,MtxOrb,lis"
+
+# Modules to install in initramfs for early boot
+  INITRAMFS_MODULES="uvesafb xhci-hcd"
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
 # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-  FIRMWARE="misc-firmware wlan-firmware"
-  if [ "$PVR" = yes ]; then
-    FIRMWARE="$FIRMWARE dvb-firmware"
-  fi
+  FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
 
 # build with lm_sensors hardware monitoring support (yes / no)
   SENSOR_SUPPORT="yes"
+
+# build with swap support (yes / no)
+  SWAP_SUPPORT="no"
+
+# swapfile size if SWAP_SUPPORT=yes in kB (example: 262144 = 256MB )
+  SWAPFILESIZE="262144"
 
 # build with automatic update support (yes / no)
   UPDATE_SUPPORT="yes"
@@ -292,6 +318,7 @@
   COREBOOT="no"
 
 # Distribution Specific source location
+  DISTRO_MIRROR="http://sources.openelec.tv/mirror"
   DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url

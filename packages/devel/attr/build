@@ -24,7 +24,17 @@
 . config/options $1
 
 cd $PKG_BUILD
+if [ "$DEBUG" = yes ]; then
+  ATTR_DEBUG=-DDEBUG
+else
+  ATTR_DEBUG=-DNDEBUG
+fi
+
+DEBUG=$ATTR_DEBUG \
+OPTIMIZER=" " \
 CONFIG_SHELL=/bin/bash \
+INSTALL_USER=root \
+INSTALL_GROUP=root \
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \

@@ -22,6 +22,8 @@
 
 . config/options $1
 
+CFLAGS="$CFLAGS -fPIC -DPIC"
+
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
@@ -29,8 +31,8 @@ cd $PKG_BUILD
             --sysconfdir=/etc \
             --enable-cxx \
             --disable-cpp-progs \
-            --enable-shared \
-            --disable-static \
+            --disable-shared \
+            --enable-static \
             --enable-joliet \
             --disable-rpath \
             --enable-rock \

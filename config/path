@@ -54,7 +54,14 @@ SED="sed -i"
   PKG_LONGDESC=""
   PKG_IS_ADDON="no"
 
-  [ -n "$1" ] && PKG_DIR=`find $PACKAGES -type d -name $1 2>/dev/null`
+  if [ -n "$1" ]; then
+    PKG_DIR=`find $PACKAGES -type d -name $1 ! -wholename \*\/source\/\* 2>/dev/null`
+    if [ "${PKG_DIR}" != "$(echo $PKG_DIR | tr -d '\n')" ]; then
+      echo "Error - multiple package folders:"
+      echo "$PKG_DIR"
+      exit 1
+    fi
+  fi
 
   [ -r $PKG_DIR/meta ] && . $PKG_DIR/meta
   [ "$PKG_IS_ADDON" = "yes" ] && PKG_ADDON_ID="`echo $PKG_SECTION | sed 's,/,.,g'`.$PKG_NAME"
@@ -106,7 +113,9 @@ HOST_PKG_CONFIG_PATH=""
 HOST_PKG_CONFIG_LIBDIR="$ROOT/$TOOLCHAIN/lib/pkgconfig:$ROOT/$TOOLCHAIN/share/pkgconfig"
 HOST_PKG_CONFIG_SYSROOT_DIR=""
 
-export CCACHE_DIR=$ROOT/$BUILD/.ccache
+if [ -z "$CCACHE_DIR" ]; then
+    export CCACHE_DIR=$HOME/.ccache-openelec
+fi
 export MAKEFLAGS=-j$CONCURRENCY_MAKE_LEVEL
 export PKG_CONFIG=$ROOT/$TOOLCHAIN/bin/pkg-config
 
@@ -114,9 +123,14 @@ if [ -z "$PATH" -o "$PATH" = "${PATH#$ROOT/$TOOLCHAIN/bin:}" ]; then
   export PATH="$ROOT/$TOOLCHAIN/bin:$PATH"
 fi
 
+if [ -z "$LD_LIBRARY_PATH" -o "$LD_LIBRARY_PATH" = "${LD_LIBRARY_PATH#$ROOT/$TOOLCHAIN/lib:}" ]; then
+  export LD_LIBRARY_PATH="$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH"
+fi
+
 VERSION_SUFFIX=$TARGET_ARCH
 . config/functions
 
+check_path
 check_config
 
 setup_toolchain target

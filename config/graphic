@@ -1,17 +1,35 @@
-ALSA_SUPPORT="yes"
+if [ "$DISPLAYSERVER" = "xorg-server" ]; then
+  SDL_SUPPORT="yes"
+else
+  SDL_SUPPORT="no"
+fi
 
 if [ "$OPENGL" = no ]; then
   OPENGL_SUPPORT="no"
-  XORG_SUPPORT="no"
 else
   OPENGL_SUPPORT="yes"
-  XORG_SUPPORT="yes"
 fi
 
 if [ "$OPENGLES" = no ]; then
   OPENGLES_SUPPORT="no"
 else
   OPENGLES_SUPPORT="yes"
+fi
+
+if [ "$SDL_SUPPORT" = no ]; then
+  JOYSTICK_SUPPORT="no"
+fi
+
+if [ "$OPENMAX" = no ]; then
+  OPENMAX_SUPPORT="no"
+else
+  OPENMAX_SUPPORT="yes"
+fi
+
+if [ "$OPENGL_SUPPORT" = no ]; then
+  XBMC_SCR_RSXS="no"
+  XBMC_VIS_PROJECTM="no"
+  XBMC_VIS_GOOM="no"
 fi
 
 get_graphicdrivers() {
@@ -22,6 +40,12 @@ get_graphicdrivers() {
   for drv in $GRAPHIC_DRIVERS; do
     if [ "$drv" = "fglrx" ]; then
       XORG_DRIVERS="$XORG_DRIVERS fglrx"
+      COMPOSITE_SUPPORT="yes"
+      XINERAMA_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "fglrx-legacy" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS fglrx-legacy"
       COMPOSITE_SUPPORT="yes"
       XINERAMA_SUPPORT="yes"
     fi

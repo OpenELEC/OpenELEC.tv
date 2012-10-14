@@ -43,7 +43,7 @@ if [ "$RUNLEVEL" = openelec ]; then
 
   logger -t Xorg "### creating start options ###"
 
-  XORG_ARGS="-s 0 -noreset -allowMouseOpenFail -nolisten tcp"
+  XORG_ARGS="-s 0 -noreset -allowMouseOpenFail"
 
   if [ "$DEBUG" = yes ]; then
     XORG_ARGS="$XORG_ARGS -logverbose 6 -verbose 6"
@@ -78,6 +78,13 @@ if [ "$RUNLEVEL" = openelec ]; then
     ln -sf /usr/lib/xorg/modules/extensions/libglx_nvidia.so /var/lib/libglx.so
     XORG_ARGS="$XORG_ARGS -ignoreABI"
   elif [ "${xorg_driver}" = "fglrx" ]; then
+    mkdir -p /var/run
+    ln -sf /usr/lib/fglrx /var/run/fglrx
+    ln -sf /usr/lib/libGL_fglrx.so.1 /var/lib/libGL.so
+    ln -sf /usr/lib/xorg/modules/extensions/libglx_fglrx.so /var/lib/libglx.so
+  elif [ "${xorg_driver}" = "fglrx-legacy" ]; then
+    mkdir -p /var/run
+    ln -sf /usr/lib/fglrx-legacy /var/run/fglrx
     ln -sf /usr/lib/libGL_fglrx.so.1 /var/lib/libGL.so
     ln -sf /usr/lib/xorg/modules/extensions/libglx_fglrx.so /var/lib/libglx.so
   else

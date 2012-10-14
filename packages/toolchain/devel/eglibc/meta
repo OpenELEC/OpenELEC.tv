@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="eglibc"
-PKG_VERSION="2.15-17022"
+PKG_VERSION="2.15-20165"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -34,3 +34,7 @@ PKG_LONGDESC="The Embedded GLIBC (EGLIBC) is a variant of the GNU C Library (GLI
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
+
+if [ "$OPENMAX" = "bcm2835-driver" ]; then
+  PKG_DEPENDS="$PKG_DEPENDS libcofi"
+fi

@@ -19,17 +19,14 @@
 ################################################################################
 
 PKG_NAME="connman"
-PKG_VERSION="0.77"
+PKG_VERSION="1.7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.connman.net"
-#PKG_URL="http://www.kernel.org/pub/linux/network/connman/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_URL="http://www.mirrorservice.org/sites/ftp.kernel.org/pub/linux/network/connman/$PKG_NAME-$PKG_VERSION.tar.bz2"
-#PKG_URL="ftp://ftp.pgpi.com/linux/kernel/pub/linux/network/connman//$PKG_NAME-$PKG_VERSION.tar.bz2"
-#PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="glib dbus udev iptables wpa_supplicant ntp"
-PKG_BUILD_DEPENDS="toolchain glib dbus udev iptables"
+PKG_URL="http://www.kernel.org/pub/linux/network/connman/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS="glib readline dbus systemd iptables wpa_supplicant ntp Python pygobject dbus-python"
+PKG_BUILD_DEPENDS="toolchain glib readline dbus systemd iptables"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="connman: Network manager daemon"
@@ -37,7 +34,3 @@ PKG_LONGDESC="The ConnMan project provides a daemon for managing internet connec
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="yes"
-
-if [ "$DEVTOOLS" = yes ]; then
- PKG_DEPENDS="$PKG_DEPENDS Python pygobject dbus-python"
-fi

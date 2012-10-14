@@ -32,15 +32,17 @@ ADDON_SETTINGS="$ADDON_HOME/settings.xml"
 
 ADDON_CONFIG_DIR="$ADDON_HOME/config"
 ADDON_PLUGIN_DIR="$ADDON_DIR/plugin"
-ADDON_VIDEO_DIR="$HOME/videos"
 
 if [ ! -f "$ADDON_SETTINGS" ]; then
+  mkdir -p $ADDON_HOME
   cp $ADDON_DIR/settings-default.xml $ADDON_SETTINGS
 fi
 
 mkdir -p /var/config
 cat "$ADDON_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/vdr.conf.default
 cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/vdr.conf
+mkdir -p /var/lib/epgsources
+cp $ADDON_DIR/config/epgsources/epgdata2xmltv/epgdata2xmltv.dist /var/lib/epgsources/epgdata2xmltv
 
 . /var/config/vdr.conf.default
 . /var/config/vdr.conf
@@ -48,7 +50,7 @@ cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/co
 VDR_ARG="-g /tmp --no-kbd --log=3 --port=0"
 VDR_ARG="$VDR_ARG --config=$ADDON_CONFIG_DIR"
 VDR_ARG="$VDR_ARG --lib=$ADDON_PLUGIN_DIR"
-VDR_ARG="$VDR_ARG --video=$ADDON_VIDEO_DIR"
+VDR_ARG="$VDR_ARG --video=\"$VDR_VIDEO_DIR\""
 VDR_ARG="$VDR_ARG -P xvdr"
 
 if [ "$ENABLE_SOFTCAM" == "true" ] ; then
@@ -64,7 +66,28 @@ if [ "$ENABLE_STREAMDEV_CLIENT" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P streamdev-client"
 fi
 if [ "$ENABLE_WIRBELSCAN" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P wirbelscan"
+  VDR_ARG="$VDR_ARG -P wirbelscan -P wirbelscancontrol"
+fi
+if [ "$ENABLE_LIVE" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P 'live -i $LIVE_IP -p $LIVE_PORT'"
+fi
+if [ "$ENABLE_ROTORNG" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P rotorng"
+fi
+if [ "$ENABLE_CONTROL" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P 'control -p $CONTROL_PORT'"
+fi
+if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P epgsearch"
+fi
+if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P xmltv2vdr"
+fi
+if [ "$ENABLE_XINELIBOUTPUT" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P 'xineliboutput --local=none --remote=$XINELIBOUTPUT_PORT' -s $ADDON_HOME/vdr-shutdown.sh"
+fi
+if [ "$ENABLE_TEXT2SKIN" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P text2skin"
 fi
 # dynamite must be LAST loaded plugin
 if [ "$ENABLE_DYNAMITE" == "true" ] ; then
@@ -79,11 +102,32 @@ fi
     mkdir -p $ADDON_CONFIG_DIR/$dir
   done
 
-  for config in `find . -type f -name "*.conf*"`; do
+  for config in `find . -type f`; do
     if [ ! -f $ADDON_CONFIG_DIR/$config ]; then
       cp $config $ADDON_CONFIG_DIR/$config
     fi
   done
+
+  if [ -f "$ADDON_CONFIG_DIR/setup.conf" ]; then
+    sed -i -e '/^$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^OSDHeight.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^OSDSkin.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^OSDTheme.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^xineliboutput.OSD.Blending.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^xineliboutput.OSD.Size.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^xineliboutput.OSD.SoftOSD.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^epgsearch.SVDRPPort.*$/d' $ADDON_CONFIG_DIR/setup.conf
+  fi
+  cat >>$ADDON_CONFIG_DIR/setup.conf << MYDATA
+OSDHeight = 1080
+OSDSkin = anthra_1280_OS
+OSDTheme = yabluelight
+xineliboutput.OSD.Blending = 1
+xineliboutput.OSD.Size = 1280x720
+xineliboutput.OSD.SoftOSD = 1
+epgsearch.SVDRPPort = 2004
+MYDATA
+
 )
 
 if [ ! "$(pidof vdr.bin)" ];then
@@ -101,10 +145,12 @@ if [ ! "$(pidof vdr.bin)" ];then
     if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
       break
     fi
-    if [ "$WAIT_FOR_FEINIT" == "true" ] && [ ! -e /dev/dvb/adapter*/frontend* ] ; then
+    # (wait for) at least 1 adapter (xbmc allows to set 0)
+    [ $NUM_ADAPTERS -lt 1 ] && NUM_ADAPTERS=1
+    if [ "$WAIT_FOR_FEINIT" == "true" ] && [ ! -e /dev/dvb/adapter$((NUM_ADAPTERS-1))/frontend* ] ; then
       sleep 1
       continue
     fi
-    LANG=en_US.UTF-8 LD_LIBRARY_PATH="$ADDON_DIR/lib:$LD_LIBRARY_PATH" vdr.bin $VDR_ARG &>$LOG_FILE
+    LANG=en_US.UTF-8 LD_LIBRARY_PATH="$ADDON_DIR/lib:$LD_LIBRARY_PATH" eval vdr.bin $VDR_ARG &>$LOG_FILE
   done &
 fi

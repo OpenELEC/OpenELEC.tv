@@ -23,4 +23,4 @@
 . config/options $1
 
 cd $PKG_BUILD
-  make V=1 CC=$CC KDIR=$(kernel_path)
+  LDFLAGS="" make V=1 CC=$CC KDIR=$(kernel_path)

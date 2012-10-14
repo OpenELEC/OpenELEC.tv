@@ -36,6 +36,8 @@
 
   LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 
+  unset LD_LIBRARY_PATH
+
 # set some CFLAGS we need
   CFLAGS="$CFLAGS -g -fno-stack-protector -fgnu89-inline"
 
@@ -98,15 +100,16 @@ cat >option-groups.config <<EOF
 # needed for PAM and Mysql:
   OPTION_EGLIBC_GETLOGIN = y
 
-# needed for dropbear:
+# needed for systemd and dropbear:
   OPTION_EGLIBC_UTMP = y
-  OPTION_EGLIBC_UTMPX = n
+  OPTION_EGLIBC_UTMPX = y
 
 # debugging options:
   $DEBUG_OPTIONS
 EOF
 
 cat >config.cache <<EOF
+ac_cv_header_cpuid_h=yes
 libc_cv_forced_unwind=yes
 libc_cv_c_cleanup=yes
 libc_cv_gnu89_inline=yes
@@ -116,6 +119,7 @@ EOF
 
 cat >configparms <<EOF
 slibdir=/lib
+libdir=/usr/lib
 EOF
 
 ../configure --host=$TARGET_NAME \

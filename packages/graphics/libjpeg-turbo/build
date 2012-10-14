@@ -22,15 +22,23 @@
 
 . config/options $1
 
+CFLAGS="$CFLAGS -fPIC -DPIC"
+
+if [ $SIMD_SUPPORT = "no" ]; then
+  LIBJPEG_SIMD="--without-simd"
+fi
+
 cd $PKG_BUILD
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sysconfdir=/etc \
-            --localstatedir=/var \
-            --disable-static \
-            --enable-shared \
-            --with-jpeg8
+mkdir -p .build-target && cd .build-target
+../configure --host=$TARGET_NAME \
+             --build=$HOST_NAME \
+             --prefix=/usr \
+             --sysconfdir=/etc \
+             --localstatedir=/var \
+             --enable-static \
+             --disable-shared \
+             --with-jpeg8 \
+             $LIBJPEG_SIMD
 
 make
 
