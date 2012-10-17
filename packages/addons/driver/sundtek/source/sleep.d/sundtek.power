@@ -23,12 +23,12 @@
 . /etc/profile
 
 LOCKDIR="/var/lock/"
-LOCKFILE="sundtek-mediatv"
+LOCKFILE="sundtek"
 
 case "$1" in
   hibernate|suspend)
     if [ -n "$(pidof mediasrv)" ]; then
-      progress "Shutting down Sundtek MediaTV DVB driver for suspending..."
+      progress "Shutting down Sundtek DVB driver for suspending..."
       mkdir -p "$LOCKDIR"
       touch "$LOCKDIR/$LOCKFILE"
       mediaclient --shutdown
