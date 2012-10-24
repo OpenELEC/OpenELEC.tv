@@ -93,6 +93,15 @@ fi
 if [ "$ENABLE_DYNAMITE" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P dynamite"
 fi
+if [ "$ENABLE_VDRNFOFS" == "true" ] ; then
+  export PYTHONPATH=/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs:/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/fuse-python
+  export PATH=$PATH:/storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs/bin
+  if [ ! -e "$MOUNTPOINT_VDRNFOFS" ] ; then
+    mkdir "$MOUNTPOINT_VDRNFOFS"
+  fi
+  chmod +x /storage/.xbmc/addons/service.multimedia.vdr-addon/vdr-nfofs/vdrnfofs/bin/vdrnfofs
+  vdrnfofs "$MOUNTPOINT_VDRNFOFS" -o video="$VDR_VIDEO_DIR"
+fi
 
 (
   cd $ADDON_DIR/config

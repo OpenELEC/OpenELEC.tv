@@ -1,4 +1,5 @@
 2.1.8
+- add vdrnfofs support
 - rebuild due to some static libs in latest git
 
 2.1.7

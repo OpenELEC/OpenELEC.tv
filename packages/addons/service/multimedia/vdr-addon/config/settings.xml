@@ -20,4 +20,6 @@
     <setting id="ENABLE_TEXT2SKIN" value="false" />
     <setting id="ENABLE_XINELIBOUTPUT" value="false" />
     <setting id="XINELIBOUTPUT_PORT" value="37890" />
+    <setting id="ENABLE_VDRNFOFS" value="false" />
+    <setting id="MOUNTPOINT_VDRNFOFS" value="/media/Recordings" />
 </settings>

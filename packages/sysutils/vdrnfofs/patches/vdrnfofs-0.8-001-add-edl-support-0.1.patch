@@ -1,0 +1,104 @@
+diff --git a/vdrnfofs/filesystemnodes.py b/vdrnfofs/filesystemnodes.py
+index e783c89..2bf89a4 100644
+--- a/vdrnfofs/filesystemnodes.py
++++ b/vdrnfofs/filesystemnodes.py
+@@ -34,6 +34,7 @@ import fuse
+ import stat
+ import datetime
+ import time
++import re
+ 
+ from concatenated_file_reader import *
+ from vdr import *
+@@ -123,6 +124,61 @@ class NfoNode(FileNode):
+ 
+     def release(self):
+         pass
++        
++class EdlNode(FileNode):
++    def __init__(self, path):
++        super(EdlNode, self).__init__(path, 'edl')
++        self._edl_content = None
++        self.timecode = re.compile('^(\d+:+)+\d+(.\d+)')
++        self.nullcode = re.compile("^(0+:)*0+(.+0+)$")
++
++    def edl_content(self):
++        if not self._edl_content:
++            info_path = self.path + '/marks'
++            if not os.path.exists(info_path):
++                info_path = self.path + '/marks.vdr'
++                if not os.path.exists(info_path):
++                    info_path = None
++            with open(info_path,'r') as marks_vdr:
++                marks = marks_vdr.readlines()
++            matches = []
++            for mark in marks:
++                a = self.timecode.search(mark)
++                if a:
++                    matches.append(a.group(0))
++            if self.nullcode.match(matches[0]):
++                # starts at 0
++                start = 0
++            else:
++                matches.insert(0,"00:00:00.000")
++                start = 1
++            matches.append("99:99:99.99")
++            edl_list = []
++            for i in xrange(0,len(matches)-1,1):
++                if i % 2 == 0:
++                    if start == 1:
++                        mode = "3"
++                    else:
++                        mode = "2"
++                    edl_list.append("%s %s %s"%(matches[i],matches[i+1],mode))
++                else:
++                    if start == 1:
++                        mode = "2"
++                    else:
++                        mode = "3"
++                    edl_list.append("%s %s %s"%(matches[i],matches[i+1],mode))
++            
++            self._edl_content = "\n".join(edl_list)
++        return self._edl_content
++
++    def size(self):
++        return len(self.edl_content())
++
++    def read(self, offset, size):
++       return self.edl_content()[offset:offset+size]
++
++    def release(self):
++        pass
+ 
+ class DirNode:
+     def __init__(self, path):
+@@ -145,6 +201,7 @@ class DirNode:
+                     if os.path.exists(recording + '/info.vdr') or os.path.exists(recording + '/info'):
+                         self.cache.append(MpgNode(recording))
+                         self.cache.append(NfoNode(recording))
++                        self.cache.append(EdlNode(recording))
+         return self.cache
+ 
+     def is_sub_folder(self, dir):
+diff --git a/vdrnfofs/vdrnfofs.py b/vdrnfofs/vdrnfofs.py
+index 9f62156..a8774e7 100644
+--- a/vdrnfofs/vdrnfofs.py
++++ b/vdrnfofs/vdrnfofs.py
+@@ -50,7 +50,7 @@ def format_exception_info(level = 6):
+ 
+ def get_node(video, path):
+     virtual_path, virtual_file_extension = os.path.splitext(path)
+-    if virtual_file_extension in ['.mpg', '.nfo']:
++    if virtual_file_extension in ['.mpg', '.nfo', '.edl']:
+         p = virtual_path.rfind('_')
+         if p > 0:
+             video_path = '/'.join((video, virtual_path[1:p], virtual_path[p+1:]))
+@@ -60,6 +60,8 @@ def get_node(video, path):
+                 return MpgNode(video_path)
+             elif virtual_file_extension == '.nfo':
+                 return NfoNode(video_path)
++            elif virtual_file_extension == '.edl':
++                return EdlNode(video_path)
+     else:
+         dir = video + path
+         if os.path.isdir(dir):
