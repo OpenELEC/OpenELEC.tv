@@ -24,6 +24,7 @@
 
 for addon in `find $PKG_BUILD/addons/ -type d -name "pvr.*"`; do
   ADDON=`basename $addon`
+  [ "$SAMBA_CLIENT" = no -a "$ADDON" = pvr.fortherecord.argus ] && continue
   mkdir -p $INSTALL/usr/share/xbmc/addons/$ADDON
     cp -PRf $PKG_BUILD/addons/$ADDON/addon/* $INSTALL/usr/share/xbmc/addons/$ADDON
 
