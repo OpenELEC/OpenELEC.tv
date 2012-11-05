@@ -27,6 +27,12 @@
 # create an empty image file for use with loop device like this:
 # dd if=/dev/zero of=~/vSD.img bs=1M count=910
 
+platform='linux'
+unamestr=`uname`
+if [[ "$unamestr" = 'Darwin' ]]; then
+  platform='osx'
+fi
+
 if [ "$(id -u)" != "0" ]; then
   clear
   echo "#########################################################"
@@ -50,17 +56,22 @@ if [ -z "$1" ]; then
 fi
 
 DISK="$1"
-if [ "$DISK" = "/dev/mmcblk0" ]; then
-  PART1="${DISK}p1"
-  PART2="${DISK}p2"
-elif [ "$DISK" = "/dev/loop0" ]; then
-  PART1="${DISK}p1"
-  PART2="${DISK}p2"
-  IMGFILE="$2"
-  losetup $DISK $IMGFILE
+if [ "$platform" = "osx" ]; then
+  PART1="${DISK}s1"
+  PART2="${DISK}s2"
 else
-  PART1="${DISK}1"
-  PART2="${DISK}2"
+  if [ "$DISK" = "/dev/mmcblk0" ]; then
+    PART1="${DISK}p1"
+    PART2="${DISK}p2"
+  elif [ "$DISK" = "/dev/loop0" ]; then
+    PART1="${DISK}p1"
+    PART2="${DISK}p2"
+    IMGFILE="$2"
+    losetup $DISK $IMGFILE
+  else
+    PART1="${DISK}1"
+    PART2="${DISK}2"
+  fi
 fi
 
 clear
@@ -77,79 +88,109 @@ echo "#########################################################"
 
 # check for some required tools
 
-  # this is needed to partion the drive
-  which parted > /dev/null
-  if [ "$?" = "1" ]; then
-    clear
-    echo "#########################################################"
-    echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
-    echo "#                                                       #"
-    echo "#      We can't find the required tool \"parted\"         #"
-    echo "#      on your system.                                  #"
-    echo "#      Please install it via your package manager.      #"
-    echo "#                                                       #"
-    echo "#########################################################"
-    exit 1
-  fi
+  # Mac dependencies
+  if [ "$platform" == "osx" ]; then
 
-  # this is needed to format the drive
-  which mkfs.vfat > /dev/null
-  if [ "$?" = "1" ]; then
-    clear
-    echo "#########################################################"
-    echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
-    echo "#                                                       #"
-    echo "#      We can't find the required tool \"mkfs.vfat\"       #"
-    echo "#      on your system.                                  #"
-    echo "#      Please install it via your package manager.      #"
-    echo "#                                                       #"
-    echo "#########################################################"
-    exit 1
-  fi
+    diskutil listFilesystems | grep "fuse-ext2" > /dev/null
+    if [ "$?" -eq "1" ]; then
+      clear
+      echo "#########################################################"
+      echo "#                                                       #"
+      echo "# OpenELEC.tv missing depency - Installation will quit  #"
+      echo "#                                                       #"
+      echo "#      We couldn't find the 'fuse-ext2' filesystem      #"
+      echo "#      on your system.                                  #"
+      echo "#      Please install OSXFuse and fuse-ext2 from the    #"
+      echo "#      following websites:                              #"
+      echo "#         - http://osxfuse.github.com/                  #"
+      echo "#         - http://sourceforge.net/projects/fuse-ext2/  #"
+      echo "#                                                       #"
+      echo "#########################################################"
+      exit 1
+    fi
 
-  # this is needed to format the drive
-  which mkfs.ext4 > /dev/null
-  if [ "$?" = "1" ]; then
-    clear
-    echo "#########################################################"
-    echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
-    echo "#                                                       #"
-    echo "#      We can't find the required tool \"mkfs.ext4\"       #"
-    echo "#      on your system.                                  #"
-    echo "#      Please install it via your package manager.      #"
-    echo "#                                                       #"
-    echo "#########################################################"
-    exit 1
+  # Linux dependencies
+  else
+
+    # this is needed to partion the drive
+    which parted > /dev/null
+    if [ "$?" = "1" ]; then
+      clear
+      echo "#########################################################"
+      echo "#                                                       #"
+      echo "# OpenELEC.tv missing tool - Installation will quit     #"
+      echo "#                                                       #"
+      echo "#      We can't find the required tool \"parted\"       #"
+      echo "#      on your system.                                  #"
+      echo "#      Please install it via your package manager.      #"
+      echo "#                                                       #"
+      echo "#########################################################"
+      exit 1
+    fi
+
+    # this is needed to format the drive
+    which mkfs.vfat > /dev/null
+    if [ "$?" = "1" ]; then
+      clear
+      echo "#########################################################"
+      echo "#                                                       #"
+      echo "# OpenELEC.tv missing tool - Installation will quit     #"
+      echo "#                                                       #"
+      echo "#      We can't find the required tool \"mkfs.vfat\"    #"
+      echo "#      on your system.                                  #"
+      echo "#      Please install it via your package manager.      #"
+      echo "#                                                       #"
+      echo "#########################################################"
+      exit 1
+    fi
+
+    # this is needed to format the drive
+    which mkfs.ext4 > /dev/null
+    if [ "$?" = "1" ]; then
+      clear
+      echo "#########################################################"
+      echo "#                                                       #"
+      echo "# OpenELEC.tv missing tool - Installation will quit     #"
+      echo "#                                                       #"
+      echo "#      We can't find the required tool \"mkfs.ext4\"    #"
+      echo "#      on your system.                                  #"
+      echo "#      Please install it via your package manager.      #"
+      echo "#                                                       #"
+      echo "#########################################################"
+      exit 1
+    fi
+
+    # this is needed to tell the kernel for partition changes
+    which partprobe > /dev/null
+    if [ "$?" = "1" ]; then
+      clear
+      echo "#########################################################"
+      echo "#                                                       #"
+      echo "# OpenELEC.tv missing tool - Installation will quit     #"
+      echo "#                                                       #"
+      echo "#      We can't find the required tool \"partprobe\"    #"
+      echo "#      on your system.                                  #"
+      echo "#      Please install it via your package manager.      #"
+      echo "#                                                       #"
+      echo "#########################################################"
+      exit 1
+    fi
   fi
 
   # this is needed to tell the kernel for partition changes
-  which partprobe > /dev/null
-  if [ "$?" = "1" ]; then
-    clear
-    echo "#########################################################"
-    echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
-    echo "#                                                       #"
-    echo "#      We can't find the required tool \"partprobe\"       #"
-    echo "#      on your system.                                  #"
-    echo "#      Please install it via your package manager.      #"
-    echo "#                                                       #"
-    echo "#########################################################"
-    exit 1
+  if [ "$platform" == "osx" ]; then
+    which md5 > /dev/null
+  else
+    which md5sum > /dev/null
   fi
 
-  # this is needed to tell the kernel for partition changes
-  which md5sum > /dev/null
   if [ "$?" = "1" ]; then
     clear
     echo "#########################################################"
     echo "#                                                       #"
     echo "# OpenELEC.tv missing tool - Installation will quit     #"
     echo "#                                                       #"
-    echo "#      We can't find the required tool \"md5sum\"         #"
+    echo "#      We can't find the required tool \"md5sum\"       #"
     echo "#      on your system.                                  #"
     echo "#      Please install it via your package manager.      #"
     echo "#                                                       #"
@@ -174,6 +215,22 @@ echo "#########################################################"
     exit 1
   }
 
+if [ "$platform" == "osx" ]; then
+
+  real=`md5 -r target/KERNEL | cut -c 1-32`
+  expected=`cat target/KERNEL.md5 | cut -c 1-32`
+  if [ "$real" != "$expected" ]; then
+    md5sumFailed
+  fi
+
+  real=`md5 -r target/SYSTEM | cut -c 1-32`
+  expected=`cat target/SYSTEM.md5 | cut -c 1-32`
+  if [ "$real" != "$expected" ]; then
+    md5sumFailed
+  fi
+
+else
+
   md5sum -c target/KERNEL.md5
   if [ "$?" = "1" ]; then
     md5sumFailed
@@ -184,34 +241,58 @@ echo "#########################################################"
     md5sumFailed
   fi
 
+fi
+
 # (TODO) umount everything (if more than one partition)
   umount ${DISK}*
 
-# remove all partitions from the drive
+if [ "$platform" == "osx" ]; then
+
+  unmount_partition()
+  {
+    partition=$1
+    echo "unmounting partition $partition..."
+    return_code=0
+    while [ "$return_code" == "0" ]; do
+      sleep 1
+      diskutil unmount force 2>&1 $partition | grep failed
+      return_code=$?
+    done
+  }
+
+  # Formating
+  echo "erasing $DISK and creating partitions..."
+  diskutil partitionDisk $1 2 MBRFormat "MS-DOS FAT32" "DOS" 128M "fuse-ext2" "OPENELEC" R
+
+  unmount_partition $PART1
+  unmount_partition $PART2
+
+else
+  # remove all partitions from the drive
   echo "writing new disklabel on $DISK (removing all partitions)..."
   parted -s "$DISK" mklabel msdos
 
-# create a single partition
+  # create a single partition
   echo "creating partitions on $DISK..."
   parted -s "$DISK" unit cyl mkpart primary fat32 -- 0 16
   parted -s "$DISK" unit cyl mkpart primary ext2 -- 16 -2
 
-# make partition active (bootable)
+  # make partition active (bootable)
   echo "marking partition active..."
   parted -s "$DISK" set 1 boot on
 
-# tell kernel we have a new partition table
+  # tell kernel we have a new partition table
   echo "telling kernel we have a new partition table..."
   partprobe "$DISK"
 
-# create filesystem
+  # create filesystem
   echo "creating filesystem on $PART1..."
   mkfs.vfat "$PART1" -I -n System
 
   echo "creating filesystem on $PART2..."
   mkfs.ext4 "$PART2" -L Storage
 
-# remount loopback device
+  # remount loopback device
   if [ "$DISK" = "/dev/loop0" ]; then
     sync
     losetup -d $DISK
@@ -219,8 +300,20 @@ echo "#########################################################"
     PART1=$DISK
   fi
 
+fi
+
 # mount partition
-  echo "mounting partition $PART1 ..."
+echo "mounting partition $PART1 ..."
+
+if [ "$platform" == "osx" ]; then
+
+  rm -rf /tmp/openelec_install
+  mkdir -p /tmp/openelec_install
+  mount -t msdos "$PART1" /tmp/openelec_install
+  MOUNTPOINT=/tmp/openelec_install
+
+else
+
   if [ -d /dev/shm ]; then
     rm -rf /dev/shm/openelec_install
     mkdir -p /dev/shm/openelec_install
@@ -232,6 +325,8 @@ echo "#########################################################"
     mount -t vfat "$PART1" /tmp/openelec_install
     MOUNTPOINT=/tmp/openelec_install
   fi
+
+fi
 
 # create bootloader configuration
   echo "creating bootloader configuration..."
