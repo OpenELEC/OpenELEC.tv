@@ -1,3 +1,12 @@
+3.0.2
+- update to SABnzbd-0.7.5
+- update to CouchPotato-135b333
+- update to CouchPotatoServer-3ecc826
+- update to Headphones-15b9d98
+- switched to bricky's fork SickBeard-34ed9ac for much better torrent support
+- moved sickbeards cache folder so new version of couchpotatoserver doesnt clean it
+- corrected a typo in couchpotatoserver's config
+
 3.0.1
 - bump addon version
 

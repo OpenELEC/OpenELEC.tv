@@ -20,11 +20,11 @@
 ################################################################################
 
 PKG_NAME="SickBeard"
-PKG_VERSION="b7cf06e"
+PKG_VERSION="34ed9ac"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
-PKG_SITE="https://github.com/midgetspy/Sick-Beard"
+PKG_SITE="https://github.com/bricky/Sick-Beard"
 PKG_URL="$DISTRO_SRC/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS="Python SABnzbd Cheetah"
 PKG_BUILD_DEPENDS="toolchain Python Cheetah"
