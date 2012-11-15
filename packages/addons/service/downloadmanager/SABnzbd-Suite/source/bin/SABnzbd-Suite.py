@@ -275,6 +275,7 @@ try:
     defaultConfig['General']['launch_browser'] = '0'
     defaultConfig['General']['version_notify'] = '0'
     defaultConfig['General']['log_dir']        = 'logs'
+    defaultConfig['General']['cache_dir']       = 'sbcache'
     defaultConfig['General']['web_port']       = '8082'
     defaultConfig['General']['web_host']       = host
     defaultConfig['General']['web_username']   = user
@@ -391,7 +392,7 @@ try:
     defaultConfig['core']['username']            = user
     defaultConfig['core']['password']            = md5pwd
     defaultConfig['core']['port']                = '8083'
-    defaultConfig['core']['launchbrowser']       = '0'
+    defaultConfig['core']['launch_browser']       = '0'
     defaultConfig['core']['host']                = host
     defaultConfig['core']['data_dir']            = pAddonHome
     defaultConfig['core']['permission_folder']   = '0644'

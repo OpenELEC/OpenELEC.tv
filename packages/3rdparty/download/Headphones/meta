@@ -20,7 +20,7 @@
 ################################################################################
 
 PKG_NAME="Headphones"
-PKG_VERSION="d07dc39"
+PKG_VERSION="15b9d98"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"

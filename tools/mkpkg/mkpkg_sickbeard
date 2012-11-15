@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d SickBeard.git ]; then
-    git clone git://github.com/midgetspy/Sick-Beard.git SickBeard.git
+    git clone git://github.com/bricky/Sick-Beard.git SickBeard.git
   fi
 
   cd SickBeard.git
