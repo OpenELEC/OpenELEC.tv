@@ -91,7 +91,7 @@ if [ "$ENABLE_STREAMDEV_CLIENT" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P streamdev-client"
 fi
 if [ "$ENABLE_LIVE" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P 'live -i $LIVE_IP -p $LIVE_PORT'"
+  VDR_ARG="$VDR_ARG -P 'live -i $LIVE_IP -p $LIVE_PORT --epgimages=$ADDON_CACHE_DIR/epgimages'"
 fi
 if [ "$ENABLE_CONTROL" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P 'control -p $CONTROL_PORT'"
@@ -109,18 +109,23 @@ if [ "$ENABLE_SATIP" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P satip"
 fi
 if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P 'xmltv2vdr --epgfile=$ADDON_CACHE_DIR/epg.db'"
+  VDR_ARG="$VDR_ARG -P 'xmltv2vdr --epgfile=$ADDON_CACHE_DIR/epg.db --images=$ADDON_CACHE_DIR/epgimages'"
   # xmltv2vdr needs /var/run/vdr
   grep -q " /var/run/vdr " /proc/mounts || ( mkdir -p /var/run/vdr && mount -t tmpfs -o size=10% tmpfs /var/run/vdr )
   #handle epgsources
   mkdir -p /var/lib/epgsources
-  mkdir -p $ADDON_HOME/config/epgsources
+  mkdir -p ${ADDON_HOME}/config/epgsources
+  mkdir -p ${ADDON_CACHE_DIR}/epgimages
   for source in `find $ADDON_DIR/config/epgsources -type f`; do
-    if [ ! -e $ADDON_HOME/config/epgsources/`basename $source` ] ; then
+    if [ ! -e $ADDON_HOME/config/epgsources/$source ] ; then
       cp $source $ADDON_HOME/config/epgsources/
     fi
   done
   for source in `find $ADDON_HOME/config/epgsources -type f`; do
+    mkdir -p ${ADDON_CACHE_DIR}/`basename $source`-img
+    if [ ! -e /var/lib/epgsources/`basename $source`-img ] ; then
+      ln -fs ${ADDON_CACHE_DIR}/`basename $source`-img /var/lib/epgsources/`basename $source`-img
+    fi
     cp $source /var/lib/epgsources
   done
 fi
