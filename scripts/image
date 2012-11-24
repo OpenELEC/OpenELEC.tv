@@ -153,6 +153,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
   fi
 
+# copy extra files to filesystem
+  if [ -d "extra" ]; then
+    echo "copying extra files to filesystem"
+    cp -PR extra/* $INSTALL
+  fi
+
 # run depmod
   KVER=`ls $BUILD/linux-*/modules/lib/modules`
   $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $KVER > /dev/null

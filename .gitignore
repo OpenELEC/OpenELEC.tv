@@ -26,3 +26,5 @@ mkpkg-temp
 # backup files
 *.orig
 
+# extra files
+/extra
