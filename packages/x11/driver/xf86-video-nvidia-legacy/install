@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,29 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.20.14"
-PKG_REV="1"
-PKG_ARCH="i386 x86_64"
-PKG_LICENSE="OSS"
-PKG_SITE="http://intellinuxgraphics.org/"
-PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="systemd"
-PKG_BUILD_DEPENDS="toolchain util-macros fontsproto systemd xorg-server"
-PKG_PRIORITY="optional"
-PKG_SECTION="x11/driver"
-PKG_SHORTDESC="xf86-video-intel: The Xorg driver for Intel video chips"
-PKG_LONGDESC="The Xorg driver for Intel i810, i815, 830M, 845G, 852GM, 855GM, 865G, 915G, 915GM and 965G video chips."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="yes"
+VER=`ls $BUILD/linux*/modules/lib/modules`
+
+mkdir -p $INSTALL/$XORG_PATH_MODULES/drivers
+  cp -P $PKG_BUILD/nvidia_drv.so $INSTALL/$XORG_PATH_MODULES/drivers
+
+mkdir -p $INSTALL/$XORG_PATH_MODULES/extensions
+# rename to not conflicting with Mesa libGL.so
+  cp -P $PKG_BUILD/libglx.so* $INSTALL/$XORG_PATH_MODULES/extensions/libglx_nvidia.so
+
+mkdir -p $INSTALL/etc/X11
+  cp $PKG_DIR/config/*.conf $INSTALL/etc/X11
+
+mkdir -p $INSTALL/usr/lib
+  cp -P $PKG_BUILD/libnvidia-glcore.so* $INSTALL/usr/lib
+  cp -P $PKG_BUILD/libnvidia-ml.so* $INSTALL/usr/lib
+  cp -P $PKG_BUILD/tls/libnvidia-tls.so* $INSTALL/usr/lib
+# rename to not conflicting with Mesa libGL.so
+  cp -P $PKG_BUILD/libGL.so* $INSTALL/usr/lib/libGL_nvidia.so.1
+
+mkdir -p $INSTALL/lib/modules/$VER/nvidia
+  cp $PKG_BUILD/kernel/nvidia.ko $INSTALL/lib/modules/$VER/nvidia
+
+mkdir -p $INSTALL/usr/bin
+  cp $PKG_BUILD/nvidia-smi $INSTALL/usr/bin

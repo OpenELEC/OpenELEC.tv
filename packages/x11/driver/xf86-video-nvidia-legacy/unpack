@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,21 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.20.14"
-PKG_REV="1"
-PKG_ARCH="i386 x86_64"
-PKG_LICENSE="OSS"
-PKG_SITE="http://intellinuxgraphics.org/"
-PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="systemd"
-PKG_BUILD_DEPENDS="toolchain util-macros fontsproto systemd xorg-server"
-PKG_PRIORITY="optional"
-PKG_SECTION="x11/driver"
-PKG_SHORTDESC="xf86-video-intel: The Xorg driver for Intel video chips"
-PKG_LONGDESC="The Xorg driver for Intel i810, i815, 830M, 845G, 852GM, 855GM, 865G, 915G, 915GM and 965G video chips."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="yes"
+require_eglibc $1
+
+NV_ARCH=x86
+[ "$TARGET_ARCH" = x86_64 ] && NV_ARCH=x86_64
+
+NV_PKG="`echo $PKG_URL | sed 's%.*/\(.*\)$%\1%'`"
+[ -d $PKG_BUILD ] && rm -rf $PKG_BUILD
+
+sh $SOURCES/$1/$NV_PKG --extract-only --target $BUILD/$PKG_NAME-$PKG_VERSION
+
+echo "### Applying upstream patches ###"
+
+for patch in `ls $PKG_DIR/patches.upstream/*.patch`; do
+  cat $patch | patch -d \
+    `echo $BUILD/$PKG_NAME-$PKG_VERSION | cut -f1 -d\ ` -p1
+done

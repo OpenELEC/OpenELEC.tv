@@ -22,16 +22,9 @@
 
 . config/options $1
 
-require_eglibc $1
+cd $PKG_BUILD/kernel
+  LDFLAGS="" make module CC=$CC SYSSRC=$(kernel_path) SYSOUT=$(kernel_path)
 
-ATI_PKG="`echo $PKG_URL | sed 's%.*/\(.*\)$%\1%'`"
-[ -d $PKG_BUILD ] && rm -rf $PKG_BUILD
-
-sh $SOURCES/$1/$ATI_PKG --extract $BUILD/$PKG_NAME-$PKG_VERSION
-
-echo "### Applying upstream patches ###"
-
-for patch in `ls $PKG_DIR/patches.upstream/*.patch`; do
-  cat $patch | patch -d \
-    `echo $BUILD/$PKG_NAME-$PKG_VERSION | cut -f1 -d\ ` -p1
-done
+cd ..
+# linking libnvidia-ml.so.$PKG_VERSION to libnvidia-ml.so.1
+  ln -sf libnvidia-ml.so.$PKG_VERSION libnvidia-ml.so.1
