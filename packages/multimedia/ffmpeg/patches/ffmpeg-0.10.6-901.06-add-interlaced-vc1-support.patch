@@ -1832,19 +1832,6 @@ diff -ur a/libavcodec/vc1dec.c e/libavcodec/vc1dec.c
          if (v->field_mode) {
              uint8_t *tmp[2];
              s->current_picture.f.linesize[0] <<= 1;
-@@ -5713,6 +5648,12 @@
-         mb_height = s->mb_height >> v->field_mode;
-         for (i = 0; i <= n_slices; i++) {
-             if (i > 0 &&  slices[i - 1].mby_start >= mb_height) {
-+                if (v->field_mode <= 0) {
-+                    av_log(v->s.avctx, AV_LOG_ERROR, "Slice %d starts beyond "
-+                           "picture boundary (%d >= %d)\n", i,
-+                           slices[i - 1].mby_start, mb_height);
-+                    continue;
-+                }
-                 v->second_field = 1;
-                 v->blocks_off   = s->mb_width  * s->mb_height << 1;
-                 v->mb_off       = s->mb_stride * s->mb_height >> 1;
 @@ -5723,19 +5664,34 @@
              }
              if (i) {
