@@ -37,4 +37,6 @@
 	<string id="5010">Samba</string>
 	<string id="5011">Start Samba under oppstart</string>
 
+	<string id="5031">Start MySql under oppstart</string>
+
 </strings>

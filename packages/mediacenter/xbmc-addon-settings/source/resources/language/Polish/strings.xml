@@ -37,4 +37,6 @@
 	<string id="5010">Samba</string>
 	<string id="5011">Uruchom Sambę przy starcie systemu</string>
 
+	<string id="5031">Uruchom MySql przy starcie systemu</string>
+
 </strings>

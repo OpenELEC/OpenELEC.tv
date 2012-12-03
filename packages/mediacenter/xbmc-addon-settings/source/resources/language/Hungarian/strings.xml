@@ -36,4 +36,6 @@
 	<string id="5000">Services</string>
 	<string id="5010">Samba</string>
 	<string id="5011">Samba megosztás indítása bootoláskor</string>
+
+	<string id="5031">MySql megosztás indítása bootoláskor</string>
 </strings>

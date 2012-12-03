@@ -78,5 +78,7 @@
 		<setting type="sep" />
 		<setting id="SSHD_START" type="bool" label="5021" default="false" />
 		<setting id="SSHD_DISABLE_PW_AUTH" type="bool" label="5022" default="false" visible="eq(-1,true)"/>
+		<setting type="sep" />
+                <setting id="MYSQL_START" type="bool" label="5031" default="false" />
     </category>
 </settings>

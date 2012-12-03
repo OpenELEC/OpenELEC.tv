@@ -40,4 +40,5 @@
 	<string id="5013">Utilisateur Samba</string>
 	<string id="5014">Mot de passe Samba</string>
 
+	<string id="5031">Lancer MySql au démarrage</string>
 </strings>
