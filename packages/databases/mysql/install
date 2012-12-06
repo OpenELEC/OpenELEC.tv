@@ -1,0 +1,48 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+if [ "$MYSQL_SERVER" = "yes" ]; then
+
+  mkdir -p $INSTALL/usr/bin
+  mkdir -p $INSTALL/usr/share/mysql
+
+  find $PKG_BUILD/sql/share -type d -exec cp -R \{\} $INSTALL/usr/share/mysql \;
+
+  cp $PKG_BUILD/sql/mysqld $INSTALL/usr/sbin
+
+  cp $PKG_BUILD/extra/resolveip $INSTALL/usr/bin
+  cp $PKG_BUILD/extra/my_print_defaults $INSTALL/usr/bin
+
+  cp $PKG_BUILD/client/mysql $INSTALL/usr/bin
+  cp $PKG_BUILD/client/mysqladmin $INSTALL/usr/bin
+
+  cp $PKG_BUILD/scripts/*.sql $INSTALL/usr/share/mysql
+  cp $PKG_BUILD/scripts/mysql_install_db $INSTALL/usr/bin
+
+  mkdir -p $INSTALL/etc/init.d
+  sed 's/#ROOT_PASSWORD#/'$ROOT_PASSWORD'/g' $PKG_DIR/scripts/54_mysql>$INSTALL/etc/init.d/54_mysql
+fi
+
+
+

@@ -22,6 +22,12 @@
 
 . config/options $1
 
+if [ "$MYSQL_SERVER" = yes ]; then
+  OPT_MYSQL_SERVER="--with-server"
+else
+  OPT_MYSQL_SERVER="--without-server"
+fi
+
 CFLAGS="$CFLAGS -fPIC -DPIC"
 
 cd $PKG_BUILD
@@ -56,7 +62,7 @@ ac_cv_sys_restartable_syscalls=yes \
             --with-readline \
             --without-libwrap \
             --without-pstack \
-            --without-server \
+            $OPT_MYSQL_SERVER \
             --without-embedded-server \
             --without-libedit \
             --with-query-cache \

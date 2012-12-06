@@ -46,4 +46,6 @@
 	<string id="5020">SSH</string>
 	<string id="5021">Start ssh server at boot</string>
 	<string id="5022">Disable password authentication</string>
+
+	<string id="5031">Start MySql server at boot</string>
 </strings>
