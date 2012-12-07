@@ -36,6 +36,16 @@ fi
 # hack: make addon-bins executable
   chmod +x /storage/.xbmc/addons/*/bin/* > /dev/null 2>&1
 
+# pre starting XBMC binary addons
+  ADDON_DIR=/storage/.xbmc/addons/
+  for ADDON_INIT in $(ls -d $ADDON_DIR/*/bin/init.d/* 2>/dev/null)
+  do
+    if [ ! -f $ADDON/start.service ]; then
+      progress "Addon init.d found : $ADDON_INIT"
+      sh $ADDON_INIT >/dev/null 2>/dev/null         
+    fi
+  done
+
 # starting autostart script (will be removed later again, dont use it!!!)
   AUTOSTART="/storage/.config/autostart.sh"
   if [ -f $AUTOSTART ]; then
