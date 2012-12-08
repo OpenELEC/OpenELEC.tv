@@ -23,6 +23,7 @@
 . config/options $1
 
 cd $PKG_BUILD/driver/linux
+autoreconf -vif
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
