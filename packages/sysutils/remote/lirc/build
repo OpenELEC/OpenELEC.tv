@@ -33,6 +33,9 @@ export ac_cv_func_forkpty=no
 export ac_cv_lib_util_forkpty=no
 export MAKEFLAGS=-j1
 
+# specify ONE driver to use
+DRIVER_NAME=xbox
+
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
@@ -43,8 +46,7 @@ cd $PKG_BUILD
             --enable-sandboxed \
             --with-gnu-ld \
             --without-x \
-            --with-driver=userspace \
-            --with-driver=xbox \
+            --with-driver=$DRIVER_NAME \
             --with-syslog=LOG_DAEMON \
             --with-kerneldir=$(kernel_path) \
             $DEBUG_CONFIG

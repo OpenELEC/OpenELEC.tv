@@ -1,0 +1,824 @@
+diff -uNr lirc-0.9.0-orig/configure.ac lirc-0.9.0-new/configure.ac
+--- lirc-0.9.0-orig/configure.ac	2012-12-05 18:27:52.000000000 +0100
++++ lirc-0.9.0-new/configure.ac	2012-12-05 18:20:28.000000000 +0100
+@@ -172,7 +172,8 @@
+ 	(lirc_dev lirc_serial) \
+ 	(lirc_dev lirc_sir) \
+ 	(lirc_dev lirc_wpc8769l) \
+-	(lirc_dev lirc_xbox)"
++	(lirc_dev lirc_xbox) \
++	(lirc_dev ya_usbir)"
+ fi
+ 
+ AH_TEMPLATE([DAEMONIZE],
+@@ -316,7 +317,7 @@
+ )
+ AC_CHECK_HEADER(usb.h,
+   AC_DEFINE(HAVE_LIBUSB)
+-  possible_drivers="${possible_drivers} (atilibusb) (awlibusb) (dfclibusb) (commandir) (srm7500libusb)" 
++  possible_drivers="${possible_drivers} (atilibusb) (awlibusb) (dfclibusb) (commandir) (srm7500libusb) (ya_usbir)" 
+ )
+ AC_CHECK_HEADER(ftdi.h,
+   AC_DEFINE(HAVE_FTDI)
+@@ -444,7 +445,7 @@
+                           srm7500libusb, tekram,
+                           tekram_bt829, tira, tira_raw, ttusbir,
+                           tuxbox, udp, uirt2, uirt2_raw,
+-                          usb_uirt_raw, usbx, wpc8769l, xbox],
++                          usb_uirt_raw, usbx, wpc8769l, xbox, ya_usbir],
+ driver=${withval},
+ driver="unset"
+ )
+@@ -465,6 +466,7 @@
+ awlibusb_lib=""
+ dfclibusb_lib=""
+ srm7500libusb_lib=""
++ya_usbir_lib=""
+ hw_module="hw_default.o receive.o transmit.o"
+ HW_DEFAULT="hw_default"
+ kernel_module=""
+@@ -680,6 +682,11 @@
+ 	usbx)
+ 		hw_module="${hw_module} hw_usbx.o serial.o"
+ 		;;
++	ya_usbir)
++		hw_module="${hw_module} hw_ya_usbir.o receive.o transmit.o"
++		ya_usbir_lib=`${LIBUSB_CONFIG} --libs`
++		CFLAGS="$CFLAGS `${LIBUSB_CONFIG} --cflags`"
++		;;
+   esac
+   done
+   #remove duplicates
+@@ -1353,6 +1360,16 @@
+   lircd_conf="xbox/lircd.conf.xbox"
+ fi
+ 
++if test "$driver" = "ya_usbir"; then
++  lirc_driver="$driver"
++  hw_module="hw_ya_usbir.o receive.o transmit.o"
++  HW_DEFAULT="hw_ya_usbir"
++  if test -n "${LIBUSB_CONFIG}"; then
++    ya_usbir_lib=`${LIBUSB_CONFIG} --libs`
++    CFLAGS="$CFLAGS `${LIBUSB_CONFIG} --cflags`"
++  fi
++fi
++
+ #END HARDWARE HEURISTIC
+ 
+ AC_DEFINE_UNQUOTED(HW_DEFAULT, ${HW_DEFAULT})
+@@ -1383,7 +1400,7 @@
+     AC_MSG_ERROR([*** you need to have the Linux kernel source installed
+ 	for this driver])
+     ;;
+-  atilibusb|awlibusb|commandir|dfclibusb|srm7500libusb)
++  atilibusb|awlibusb|commandir|dfclibusb|srm7500libusb|ya_usbir)
+     AC_MSG_ERROR([*** you need to have libusb installed for this driver.
+ 
+ Get it at:
+@@ -1444,6 +1461,7 @@
+ 	test "$lirc_driver" = "samsung" || \
+ 	test "$lirc_driver" = "sb0540" || \
+ 	test "$lirc_driver" = "srm7500libusb" || \
++	test "$lirc_driver" = "ya_usbir" || \
+ 	test "$lirc_driver" = "userspace"; then
+   lirc_driver=
+ elif test "$lirc_driver" = "all"; then
+@@ -1608,7 +1626,7 @@
+ 	receive="receive.o"
+ fi
+ 
+-hw_module_libs="${alsa_lib} ${atilibusb_lib} ${awlibusb_lib} ${caraca_lib} ${commandir_lib} ${dfclibusb_lib} ${ftdi_lib} ${iguanaIR_lib} ${irman_lib} ${portaudio_lib} ${srm7500libusb_lib} ${atwf83_lib}"
++hw_module_libs="${alsa_lib} ${atilibusb_lib} ${awlibusb_lib} ${caraca_lib} ${commandir_lib} ${dfclibusb_lib} ${ftdi_lib} ${iguanaIR_lib} ${irman_lib} ${portaudio_lib} ${srm7500libusb_lib} ${atwf83_lib} ${ya_usbir_lib}"
+ 
+ dnl tell the Makefiles what we decided
+ AC_SUBST(daemon)
+diff -uNr lirc-0.9.0-orig/daemons/hw-types.c lirc-0.9.0-new/daemons/hw-types.c
+--- lirc-0.9.0-orig/daemons/hw-types.c	2011-03-25 23:28:18.000000000 +0100
++++ lirc-0.9.0-new/daemons/hw-types.c	2012-12-05 18:14:40.000000000 +0100
+@@ -59,6 +59,7 @@
+ extern struct hardware hw_uirt2_raw;
+ extern struct hardware hw_usb_uirt_raw;
+ extern struct hardware hw_usbx;
++extern struct hardware hw_ya_usbir;
+ 
+ #ifndef HW_DEFAULT
+ # define HW_DEFAULT hw_default
+@@ -173,6 +174,9 @@
+ 	&hw_uirt2_raw,
+ 	&hw_usb_uirt_raw,
+ 	&hw_usbx,
++#ifdef HAVE_LIBUSB
++	&hw_ya_usbir,
++#endif
+ #else
+ 	&HW_DEFAULT,
+ #endif
+diff -uNr lirc-0.9.0-orig/daemons/hw_ya_usbir.c lirc-0.9.0-new/daemons/hw_ya_usbir.c
+--- lirc-0.9.0-orig/daemons/hw_ya_usbir.c	1970-01-01 01:00:00.000000000 +0100
++++ lirc-0.9.0-new/daemons/hw_ya_usbir.c	2012-12-05 18:14:40.000000000 +0100
+@@ -0,0 +1,623 @@
++/*****************************************************************************
++ ** hw_yausbir.c *************************************************************
++ *****************************************************************************
++ *
++ * Mode2 receiver + transmitter using the yaUsbIr with power switch
++ * Copyright (C) 2012 Uwe Guenther
++ *
++ * change: 15.04.2012 speed up send_func 
++ *
++ * Inspired by the hw_ftdi driver.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published
++ *  by the Free Software Foundation; either version 2 of the License,
++ *  or (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU Library General Public License for more details. You should
++ *  have received a copy of the GNU General Public License along with
++ *  this program; if not, write to:
++ *		Free Software Foundation, Inc.,
++ *		59 Temple Place - Suite 330,
++ *		Boston, MA 02111-1307, USA
++ *
++ ****************************************************************************/
++
++#ifdef HAVE_CONFIG_H
++#  include <config.h>
++#endif
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <sys/types.h>
++#include <fcntl.h>
++#include <errno.h>
++#include <string.h>
++#include <termios.h>
++#include <sys/ioctl.h>
++#include <usb.h>
++#include <stdint.h>
++#include <linux/hiddev.h>
++#include <linux/input.h>
++#include <sys/wait.h>
++#include <signal.h>
++
++#include "lircd.h"
++#include "hardware.h"
++#include "ir_remote.h"
++#include "serial.h"
++#include "receive.h"
++#include "transmit.h"
++#include "hw_default.h"
++#include "drivers/lirc.h"
++
++#define CMD_NONE	       0x00
++#define CMD_IRDATA	       0x01
++#define CMD_COMDATA	       0x02
++#define CMD_SETCOMBAUD	       0x03
++#define CMD_GETCOMBAUD	       0x04
++#define CMD_GETIOS	       0x05
++#define CMD_GETIO	       0x06
++#define CMD_SETIOS	       0x07
++#define CMD_SETIO	       0x08
++#define IRRX_NODATA 0x0000
++
++//*** raw hid interface ******************************************************
++
++typedef struct {
++	usb_dev_handle *usb;
++	int iface;
++	int ep_in;
++	int ep_out;
++} raw_hid;
++
++//****************************************************************************
++
++static raw_hid *ya_usbir_dev = NULL;
++static int usb_vendor = 0x10c4;
++static int usb_product = 0x876c;
++static int pipe_main2tx[2] = { -1, -1 };
++static int pipe_tx2main[2] = { -1, -1 };
++static pid_t child_pid = -1;// PID of the child process
++static int first = 1;
++
++/*****************************************************************************
++ *  rawhidrecv - receive a packet
++ *    Inputs:
++ *  hid = device to receive from
++ *  buf = buffer to receive packet
++ *  len = buffer's size
++ *  timeout = time to wait, in milliseconds
++ *    Output:
++ *  number of bytes received, or -1 on error
++ *
++ ****************************************************************************/
++int rawhidrecv(raw_hid *hid, void *buf, int len, int timeout)
++{
++	int r;
++	if (hid==NULL) return -1;
++	r = usb_interrupt_read(hid->usb, hid->ep_in, (char*)buf, len, timeout);
++	if (r >= 0) return r;
++	if (r == -110) return 0;// timeout
++	//logprintf(LOG_NOTICE,"yaUsbIr: Interrupt read (%d: %m) (%s).\n", r, usb_strerror());
++	return -1;
++}
++
++/*****************************************************************************
++ *  rawhidsend - send a packet
++ *    Inputs:
++ *  hid = device to transmit to
++ *  buf = buffer containing packet to send
++ *  len = number of bytes to transmit
++ *  timeout = time to wait, in milliseconds
++ *    Output:
++ *  number of bytes sent, or -1 on error
++ *
++ ****************************************************************************/
++int rawhidsend(raw_hid *hid, void *buf, int len, int timeout)
++{
++	if (hid==NULL) return -1;
++	if (hid->ep_out) {
++		return usb_interrupt_write(hid->usb, hid->ep_out, (char*)buf, len, timeout);
++	} else {
++		return usb_control_msg(hid->usb, 0x21, 9, 0, hid->iface, (char*)buf, len, timeout);
++	}
++}
++
++/*****************************************************************************
++ *  rawhidOpen - open first device
++ *
++ *    Inputs:
++ *  vid = Vendor ID
++ *  pid = Product ID
++ *    Output:
++ *  first openend device
++ *
++ *****************************************************************************/
++raw_hid *rawhidopen(int vid, int pid, int info)
++{
++	struct usb_bus *bus;
++	struct usb_device *dev;
++	struct usb_interface *iface;
++	struct usb_interface_descriptor *desc;
++	struct usb_endpoint_descriptor *ep;
++	usb_dev_handle *usb;
++	uint8_t buf[1024];
++	int ifacenum, n, len, ep_in, ep_out;
++	raw_hid *hid;
++	char text[512];
++
++	//usb_set_debug(3);
++	
++	usb_init();
++	usb_find_busses();
++	usb_find_devices();
++	for (bus = usb_get_busses(); bus; bus = bus->next) {
++		for (dev = bus->devices; dev; dev = dev->next) {
++			if (dev->descriptor.idVendor != vid) continue;
++			if (dev->descriptor.idProduct != pid) continue;
++			if (!dev->config) continue;
++			if (dev->config->bNumInterfaces < 1) continue;
++			if (info)
++				logprintf(LOG_NOTICE,"yaUsbIr: device: vid=%04X, pic=%04X, with %d interface",
++					dev->descriptor.idVendor,dev->descriptor.idProduct,dev->config->bNumInterfaces);
++
++			iface = dev->config->interface;
++			usb = NULL;
++			for (ifacenum=0; ifacenum<dev->config->bNumInterfaces && iface; ifacenum++, iface++) {
++				desc = iface->altsetting;
++				if (!desc) continue;
++				//logprintf(LOG_NOTICE,"yaUsbIr:   type %d, %d, %d\n", desc->bInterfaceClass, desc->bInterfaceSubClass, desc->bInterfaceProtocol);
++				if (desc->bInterfaceClass != 3) continue;
++				if (desc->bInterfaceSubClass != 0) continue;
++				if (desc->bInterfaceProtocol != 0) continue;
++				ep = desc->endpoint;
++				ep_in = ep_out = 0;
++				for (n = 0; n < desc->bNumEndpoints; n++, ep++) {
++					if (ep->bEndpointAddress & 0x80) {
++						if (!ep_in) ep_in = ep->bEndpointAddress & 0x7F;
++						ep_in |= USB_ENDPOINT_IN;
++						//logprintf(LOG_NOTICE,"yaUsbIr:     IN endpoint 0x%02x\n", ep_in);
++					} else {
++						if (!ep_out) ep_out = ep->bEndpointAddress;
++						//logprintf(LOG_NOTICE,"yaUsbIr:     OUT endpoint 0x%02x\n", ep_out);
++					}
++				}
++				if (!ep_in) continue;
++				if (!usb) {
++					usb = usb_open(dev);
++					if (!usb) {
++						logprintf(LOG_ERR,"yaUsbIr: unable to open device");
++						break;
++					}
++				}
++
++				usb_get_string_simple(usb, 1,(char *)buf, sizeof(buf));
++				usb_get_string_simple(usb, 2,text, sizeof(text));
++				if (info)
++					logprintf(LOG_NOTICE,"         Manufacturer: %s\n                Product: %s\n                hid interface (generic)", buf,text);
++
++				if (usb_get_driver_np(usb, ifacenum, (char *)buf, sizeof(buf)) >= 0) {
++					if (info)
++						logprintf(LOG_NOTICE,"yaUsbIr: in use by driver \"%s\"", buf);
++
++					if (usb_detach_kernel_driver_np(usb, ifacenum) < 0) {
++						logprintf(LOG_ERR,"yaUsbIr: unable to detach from kernel");
++						continue;
++					}
++				}
++				
++				if (usb_claim_interface(usb, ifacenum) < 0) {
++					logprintf(LOG_ERR,"yaUsbIr: unable claim interface %d", ifacenum);
++					continue;
++				}
++/*				
++				len = usb_control_msg(usb, 0x81, 6, 0x2200, ifacenum, (char *)buf, sizeof(buf), 250);
++				//logprintf(LOG_NOTICE,"descriptor, len=%d\n", len);
++				if (len < 2) {
++					usb_release_interface(usb, ifacenum);
++					continue;
++				}
++*/				
++				hid = (raw_hid *)malloc(sizeof(raw_hid));
++				if (!hid) {
++					usb_release_interface(usb, ifacenum);
++					continue;
++				}
++				hid->usb = usb;
++				hid->iface = ifacenum;
++				hid->ep_in = ep_in;
++				hid->ep_out = ep_out;
++				return hid;
++			}
++			if (usb) usb_close(usb);
++		}
++    }
++    return NULL;
++}
++
++/*****************************************************************************
++ *   rawhidClose - close a device
++ *
++ *    Inputs:
++ *  hid = device to close
++ *    Output
++ *  (nothing)
++ *
++ ****************************************************************************/
++void rawhidclose(raw_hid **hid)
++{
++	if ((hid==NULL)||(*hid==NULL)) return;
++	usb_release_interface((*hid)->usb, (*hid)->iface);
++	usb_close((*hid)->usb);
++	free(*hid);
++	*hid = NULL;
++}
++
++/*****************************************************************************
++ *
++ *
++ ****************************************************************************/
++static int parsesamples(int pipe_rxir_w)
++{
++	lirc_t rcvdata = 0;
++	int num, n;
++	uint8_t ya_usbir_rxbuf[64];
++
++	if (ya_usbir_dev == NULL) return 0;
++	num = rawhidrecv(ya_usbir_dev, ya_usbir_rxbuf, sizeof(ya_usbir_rxbuf), 1);
++	if (num < 0) {
++		logprintf(LOG_ERR,"yaUsbIr: error reading, device went offline");
++		return 0;
++	}
++
++	if ((num > 2) && (ya_usbir_rxbuf[0] == CMD_IRDATA)) {
++		for (n=2; n < sizeof(ya_usbir_rxbuf) ;n += 2) {
++			rcvdata = ((int)ya_usbir_rxbuf[n]&0x7F)<<8;// MSB
++			rcvdata |= ya_usbir_rxbuf[n+1];// LSB
++			rcvdata *= ya_usbir_rxbuf[1];// us step
++			if (rcvdata==IRRX_NODATA) break;
++			if ((ya_usbir_rxbuf[n] & 0x80)==0x80)
++				rcvdata |= PULSE_BIT;
++			write(pipe_rxir_w, &rcvdata, sizeof(rcvdata));// Send the sample
++			//logprintf(LOG_NOTICE, "yaUsbIr: i=%2d, data=0x%08lx (0x%02x%02x)", n, rcvdata, ya_usbir_rxbuf[n], ya_usbir_rxbuf[n+1]);
++		}
++	}
++
++	return 1;
++}
++
++/*****************************************************************************
++ *
++ *
++ ****************************************************************************/
++static void child_process(int fd_rx2main, int fd_main2tx, int fd_tx2main)
++{
++	int ret;
++	int ya_usbir_ok = 0;
++	unsigned char buf[64];
++	int transmit_ir;
++
++	alarm(0);
++	signal(SIGTERM, SIG_DFL);
++	signal(SIGPIPE, SIG_DFL);
++	signal(SIGINT, SIG_DFL);
++	signal(SIGHUP, SIG_IGN);
++	signal(SIGALRM, SIG_IGN);
++
++	while (1) {
++   	     	if (ya_usbir_dev!=NULL) {
++			rawhidclose(&ya_usbir_dev);
++			ya_usbir_dev = NULL;
++                }
++		ya_usbir_dev = rawhidopen(usb_vendor, usb_product, first);// Open the USB device
++
++		if ((ya_usbir_dev == NULL) && (ya_usbir_ok == 0)) {
++			if (first > 0)
++				logprintf(LOG_ERR, "yaUsbIr: unable to open yaUsbIr device '%04x:%04x'", usb_vendor, usb_product);
++			ya_usbir_ok = 1;
++		}
++		if ((ya_usbir_dev != NULL) && (ya_usbir_ok == 1)) {
++			logprintf(LOG_NOTICE, "yaUsbIr: connect to yaUsbIr device '%04x:%04x'", usb_vendor, usb_product);
++			ya_usbir_ok = 0;
++		}
++		if (first==1) {
++			ret = write(fd_tx2main, &ret, 1);// indicate we're started
++			first = 0;
++		}
++
++                if (ya_usbir_dev != NULL) {
++			transmit_ir = 0;
++			do {
++				// transmit IR
++				ret = read(fd_main2tx, buf, sizeof(buf));
++				if (ret > 0) {
++					/*
++					char text[1024];
++					int t;
++					text[0] = 0;
++					for (t=0;t<sizeof(buf);t++) {
++						sprintf(text+strlen(text),"%02x ",buf[t]);
++					}
++					text[(3*32)-1] = '\n';
++					logprintf(LOG_NOTICE, "yaUsbIr: transmit IR =\n%s", text);
++					*/
++					rawhidsend(ya_usbir_dev, buf, sizeof(buf), 2000);// send it
++					transmit_ir = 1;
++					continue;
++				}
++				if (transmit_ir == 1) {
++					transmit_ir = 0;
++					ret = write(fd_tx2main, &ret, 1);// signal transmission ready
++					usleep(5000);
++					continue;
++				}
++				
++				// receive IR
++				ret = parsesamples(fd_rx2main);
++
++			} while (ret > 0);
++                }
++
++		usleep(500000);// Wait a while and try again
++	}
++}
++
++/*****************************************************************************
++ * This function is called by the LIRC daemon when the first client
++ * registers itself.
++ * Returns 1 on success, 0 on error.
++ *
++ ****************************************************************************/
++static int ya_usbir_init()
++{
++	int flags;
++	int pipe_rx2main[2] = { -1, -1 };
++	unsigned char buf[1];
++
++	logprintf(LOG_INFO, "yaUsbIr: Initializing yaUsbIr");
++
++	init_rec_buffer();
++
++	// Allocate a pipe for lircd to read from
++	if (pipe(pipe_rx2main) == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to create pipe_rx2main");
++		goto fail_start;
++	}
++	if (pipe(pipe_main2tx) == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to create pipe_main2tx");
++		goto fail_main2tx;
++	}
++	if (pipe(pipe_tx2main) == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to create pipe_tx2main");
++		goto fail_tx2main;
++	}
++
++	hw.fd = pipe_rx2main[0];
++
++	flags = fcntl(hw.fd, F_GETFL);
++
++	// make the read end of the pipe non-blocking
++	if (fcntl(hw.fd, F_SETFL, flags | O_NONBLOCK) == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to make pipe read end non-blocking");
++		goto fail;
++	}
++
++	// Make the read end of the send pipe non-blocking
++	flags = fcntl(pipe_main2tx[0], F_GETFL);
++	if (fcntl(pipe_main2tx[0], F_SETFL, flags | O_NONBLOCK) == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to make pipe read end non-blocking");
++		goto fail;
++	}
++
++	// Spawn the child process
++	child_pid = fork();
++	if (child_pid == -1) {
++		logprintf(LOG_ERR, "yaUsbIr: unable to fork child process");
++		goto fail;
++	} else if (child_pid == 0) {
++		// we're the child
++		close(pipe_rx2main[0]);
++		close(pipe_main2tx[1]);
++		close(pipe_tx2main[0]);
++		child_process(pipe_rx2main[1], pipe_main2tx[0], pipe_tx2main[1]);
++	}
++
++	// we're the parent
++	close(pipe_rx2main[1]);
++	close(pipe_main2tx[0]);
++	pipe_main2tx[0] = -1;
++	close(pipe_tx2main[1]);
++	pipe_tx2main[1] = -1;
++
++	read(pipe_tx2main[0], &buf, 1);// wait for child to be started
++
++	//logprintf(LOG_INFO, "yaUsbIr: child started");
++
++	return 1;
++
++fail:
++	hw.fd = -1;
++
++	close(pipe_tx2main[0]);
++	close(pipe_tx2main[1]);
++	pipe_tx2main[0] = -1;
++	pipe_tx2main[1] = -1;
++
++fail_tx2main:
++	close(pipe_main2tx[0]);
++	close(pipe_main2tx[1]);
++	pipe_main2tx[0] = -1;
++	pipe_main2tx[1] = -1;
++
++fail_main2tx:
++	close(pipe_rx2main[0]);
++	close(pipe_rx2main[1]);
++
++fail_start:
++	return 0;
++}
++
++/*****************************************************************************
++ * Close and release the serial line.
++ * Returns 1 on success, 0 on error.
++ *
++ ****************************************************************************/
++static int ya_usbir_deinit(void)
++{
++	//logprintf(LOG_NOTICE, "yaUsbIr: Entering deinit()");
++	if (child_pid != -1) {
++		// Kill the child process, and wait for it to exit
++		if (kill(child_pid, SIGTERM) == -1)
++			return 0;
++
++		if (waitpid(child_pid, NULL, 0) == 0)
++			return 0;
++
++		child_pid = -1;
++	}
++
++	close(hw.fd);
++	hw.fd = -1;
++
++	close(pipe_main2tx[1]);
++	pipe_main2tx[1] = -1;
++	close(pipe_tx2main[0]);
++	pipe_tx2main[0] = -1;
++
++	rawhidclose(&ya_usbir_dev);
++	ya_usbir_dev = NULL;
++
++	return 1;
++}
++
++/*****************************************************************************
++ * Receive code from the remote.
++ * This function is called by the LIRC daemon when I/O is pending
++ * from a registered client, e.g. irw.
++ *
++ * Returns NULL if nothing has been received, lirc code otherwise
++ *
++ ****************************************************************************/
++static char *ya_usbir_rec(struct ir_remote *remotes)
++{
++	if (!clear_rec_buffer()) return (NULL);
++	return (decode_all(remotes));
++}
++
++/*****************************************************************************
++ * Read data from the remote. timeout is in us.
++ *
++ * Returns lirc_t type data; 0 on error or timeout
++ *
++ ****************************************************************************/
++static lirc_t ya_usbir_readdata(lirc_t timeout)
++{
++	int n;
++	lirc_t res = 0;
++
++	if (!waitfordata((long)timeout))
++		return 0;
++
++	n = read(hw.fd, &res, sizeof res);
++	if (n != sizeof res)
++		res = 0;
++
++	return res;
++}
++
++/*****************************************************************************
++ * Send to the remote.
++ * This function is called by the LIRC daemon
++ *
++ * Returns number of bytes sent
++ *
++ ****************************************************************************/
++int ya_usbir_send(struct ir_remote *remote, struct ir_ncode *code)
++{
++	int length, i;
++	lirc_t txbuf;
++	uint8_t ya_usbir_txbuf[64];
++	int ya_usbir_txbufpos;
++
++	logprintf(LOG_NOTICE, "yaUsbIr: entering send()");
++
++	// initialize decoded buffer
++	if (!init_send(remote, code)) {
++		logprintf(LOG_ERR, "yaUsbIr: init_send() failed");
++		return 0;
++	}
++	if ((send_buffer.wptr == 0)||(send_buffer.data == 0)) {
++		logprintf(LOG_ERR, "yaUsbIr: nothing to send");
++		return 0;
++	}
++	length = send_buffer.wptr;
++
++	ya_usbir_txbufpos = 0;
++	for ( i=0; i<length; i++) {
++		if (ya_usbir_txbufpos==0) {
++			memset(ya_usbir_txbuf, 0, sizeof(ya_usbir_txbuf));
++			ya_usbir_txbuf[ya_usbir_txbufpos++] = CMD_IRDATA;
++			
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 85;// 35,21 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 84;// 35,71 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 83;// 36,24 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 82;// 36,50 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 81;// 37,04 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 80;// 37,50 Khz
++			ya_usbir_txbuf[ya_usbir_txbufpos++] = 79;// 37,88 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 78;// 38,46 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 77;// 39,06 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 76;// 39,38 Khz
++//			ya_usbir_txbuf[ya_usbir_txbufpos++] = 75;// 40Khz
++		}
++
++		txbuf = send_buffer.data[i];
++		txbuf /= ya_usbir_txbuf[1];
++		if (txbuf>0x7FFF) txbuf = 0x7FFF;
++		txbuf |= (i%2 == 0) ? 0x8000:0x0000;// Pulse:Space
++
++		ya_usbir_txbuf[ya_usbir_txbufpos++] = (txbuf>>8) & 0xFF;// MSB
++		ya_usbir_txbuf[ya_usbir_txbufpos++] =  txbuf	& 0xFF;// LSB
++		logprintf(LOG_NOTICE, "yaUsbIr: i=%2d, data=0x%08lx (0x%04x)", i, send_buffer.data[i], txbuf);
++
++		if (ya_usbir_txbufpos >= sizeof(ya_usbir_txbuf)) {// send it
++			// let the child process transmit the pattern
++			write(pipe_main2tx[1], ya_usbir_txbuf, sizeof(ya_usbir_txbuf));
++			ya_usbir_txbufpos = 0;
++		}
++	}
++	if (ya_usbir_txbufpos > 2) // send it
++		// let the child process transmit the pattern
++		write(pipe_main2tx[1], ya_usbir_txbuf, sizeof(ya_usbir_txbuf));
++
++	read(pipe_tx2main[0], ya_usbir_txbuf, 1);// wait for child process to be ready with it
++
++	return 1;
++}
++
++/*****************************************************************************
++ * Definition of the standard internal hardware interface
++ * used by lirc for the yaUsbIr device
++ *
++ ****************************************************************************/
++struct hardware hw_ya_usbir = {
++	"",						// default device
++	-1,						// file descriptor
++	LIRC_CAN_REC_MODE2 | LIRC_CAN_SEND_PULSE,	// features
++	LIRC_MODE_PULSE,				// send_mode
++	LIRC_MODE_MODE2,				// rec_mode
++	0,						// code_length
++	ya_usbir_init,					// init_func
++	ya_usbir_deinit,				// deinit_func
++	ya_usbir_send,					// send_func
++	ya_usbir_rec,					// rec_func
++	receive_decode,					// decode_func (external)
++	NULL,						// ioctl_func
++	ya_usbir_readdata,				// readdata_func
++	"ya_usbir"					// name
++};
+diff -uNr lirc-0.9.0-orig/daemons/Makefile.am lirc-0.9.0-new/daemons/Makefile.am
+--- lirc-0.9.0-orig/daemons/Makefile.am	2011-03-25 23:28:18.000000000 +0100
++++ lirc-0.9.0-new/daemons/Makefile.am	2012-12-05 18:14:40.000000000 +0100
+@@ -56,6 +56,7 @@
+ 			hw_uirt2.c hw_uirt2_raw.c \
+ 			hw_uirt2_common.c hw_uirt2_common.h \
+ 			hw_usbx.c hw_usbx.h \
++			hw_ya_usbir.c \
+ 			receive.c receive.h \
+ 			transmit.c transmit.h \
+ 			serial.c serial.h
+diff -uNr lirc-0.9.0-orig/daemons/Makefile.in lirc-0.9.0-new/daemons/Makefile.in
+--- lirc-0.9.0-orig/daemons/Makefile.in	2011-03-25 23:28:53.000000000 +0100
++++ lirc-0.9.0-new/daemons/Makefile.in	2012-12-05 18:14:40.000000000 +0100
+@@ -342,6 +342,7 @@
+ 			hw_uirt2.c hw_uirt2_raw.c \
+ 			hw_uirt2_common.c hw_uirt2_common.h \
+ 			hw_usbx.c hw_usbx.h \
++			hw_ya_usbir.c \
+ 			receive.c receive.h \
+ 			transmit.c transmit.h \
+ 			serial.c serial.h
+@@ -607,6 +608,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hw_uirt2_common.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hw_uirt2_raw.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hw_usbx.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hw_ya_usbir.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input_map.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ir_remote.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irrecord.Po@am__quote@
+diff -uNr lirc-0.9.0-orig/setup.data lirc-0.9.0-new/setup.data
+--- lirc-0.9.0-orig/setup.data	2012-12-05 18:27:52.000000000 +0100
++++ lirc-0.9.0-new/setup.data	2012-12-05 18:22:39.000000000 +0100
+@@ -147,6 +147,7 @@
+ 	mplay: "VLSystem MPlay Blast"
+ 	mplay: "VLSystem MPlay Mini"
+  	xbox: "XBOX DVD Dongle"
++	ya_usbir: "yaUsbIr USB IR Transceiver with power switch (userspace)"
+     
+ param_type: \
+ 	act200l \
+@@ -262,7 +263,8 @@
+ 	tvbox \
+ 	udp \
+ 	wpc8769l \
+-	xbox
++	xbox \
++	ya_usbir
+ 	none:
+ 
+ default_param: \
+@@ -334,7 +336,8 @@
+ 	tvbox \
+ 	udp \
+ 	wpc8769l \
+- 	xbox
++ 	xbox \
++ 	ya_usbir
+ 	none:
+ 
+ default_param: \
+diff -uNr lirc-0.9.0-orig/setup-driver.sh lirc-0.9.0-new/setup-driver.sh
+--- lirc-0.9.0-orig/setup-driver.sh	2011-03-25 23:28:58.000000000 +0100
++++ lirc-0.9.0-new/setup-driver.sh	2012-12-05 18:14:40.000000000 +0100
+@@ -286,7 +286,8 @@
+ 			w "TechnoTrend USB IR receiver" \
+ 			x "USB-UIRT" \
+ 			y "VLSystem MPlay Blast" \
+-			z "VLSystem MPlay Mini" 2> $TEMP
++			z "VLSystem MPlay Mini" \
++			A "yaUsbIr USB IR Transceiver with power switch (userspace)" 2> $TEMP
+             if test "$?" = "0"; then
+                 {
+                 set `cat $TEMP`
+@@ -327,6 +328,7 @@
+                 elif test "$1" = "x"; then LIRC_DRIVER=usb_uirt_raw;	DRIVER_PARAMETER=ttyUSB1; DRIVER_PARAM_TYPE=ttyUSB;
+                 elif test "$1" = "y"; then LIRC_DRIVER=mplay;		DRIVER_PARAMETER=ttyUSB1; DRIVER_PARAM_TYPE=ttyUSB;
+                 elif test "$1" = "z"; then LIRC_DRIVER=mplay;		DRIVER_PARAMETER=ttyUSB1; DRIVER_PARAM_TYPE=ttyUSB;
++                elif test "$1" = "A"; then LIRC_DRIVER=ya_usbir;	DRIVER_PARAMETER=none; DRIVER_PARAM_TYPE=none;
+                 fi
+                 }
+                 else
