@@ -20,14 +20,14 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# usage:   sudo ./create_installstick <drive>
-# example: sudo ./create_installstick /dev/sdb
+# usage:   sudo ./create_livestick <drive>
+# example: sudo ./create_livestick /dev/sdb
 
 if [ "$(id -u)" != "0" ]; then
   clear
   echo "#########################################################"
   echo "# please execute with 'sudo' or -DANGEROUS!!!- as root  #"
-  echo "# example: sudo ./create_installstick <drive>           #"
+  echo "# example: sudo ./create_virtualmachine <path>          #"
   echo "#########################################################"
   exit 1
 fi
@@ -35,14 +35,15 @@ fi
 if [ -z "$1" ]; then
   clear
   echo "#########################################################"
-  echo "# please execute with your drive as option              #"
-  echo "# example: sudo ./create_installstick /dev/sdb          #"
+  echo "# please execute with target folder drive as option     #"
+  echo "# example: sudo ./create_virtualmachine /home/test/VM/  #"
   echo "#########################################################"
   exit 1
 fi
 
 DISK="$1"
-PART="${DISK}1"
+PART1="${DISK}1"
+PART2="${DISK}2"
 
 clear
 echo "#########################################################"
@@ -73,6 +74,23 @@ echo "#########################################################"
     echo "#########################################################"
     exit 1
   fi
+ 
+  # check for syslinux dir ...
+  if [ -d /usr/lib/syslinux ]; then
+    SYSLINUX="/usr/lib/syslinux"       # example: debian, ubuntu
+  elif [ -f /usr/share/syslinux/mbr.bin ]; then
+    SYSLINUX="/usr/share/syslinux"     # example: fedora
+  else
+    echo "Can't find syslinux's dir on Host OS"
+    exit 1
+  fi
+  # ... and files
+  for slf in mbr.bin menu.c32 vesamenu.c32; do
+    if [ ! -f "${SYSLINUX}/${slf}" ]; then
+      echo "Can't find ${SYSLINUX}/${slf}"
+      exit 1
+    fi
+  done
 
   # this is needed by syslinux
   which mcopy > /dev/null
@@ -101,6 +119,22 @@ echo "#########################################################"
     echo "# OpenELEC.tv missing tool - Installation will quit     #"
     echo "#                                                       #"
     echo "#      We can't find the required tool \"parted\"         #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+
+  # this is needed to install bootloader
+  which extlinux > /dev/null
+  if [ "$?" = "1" ]; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"extlinux\"       #"
     echo "#      on your system.                                  #"
     echo "#      Please install it via your package manager.      #"
     echo "#                                                       #"
@@ -145,87 +179,82 @@ echo "#########################################################"
   dd if=/dev/zero of="$DISK" bs=4096 count=1024
   parted -s "$DISK" mklabel msdos
 
-# create a single partition
-  echo "creating a partition on $DISK..."
-  parted -s "$DISK" unit cyl mkpart primary fat32 -- 0 -0
+# create partition1
+  echo "creating partition1 on $DISK..."
+  parted -s "$DISK" -a min unit s mkpart primary ext4 64 262208
 
-# make partition active (bootable)
-  echo "marking partition active..."
+# create partition2
+  echo "creating partition2 on $DISK..."
+  parted -s "$DISK" -a min unit s mkpart primary ext4 262209 100%
+
+# make partition1 active (bootable)
+  echo "marking partition1 active..."
   parted -s "$DISK" set 1 boot on
 
 # tell kernel we have a new partition table
   echo "telling kernel we have a new partition table..."
   partprobe "$DISK"
 
-# create filesystem
-  echo "creating filesystem on $PART..."
-  mkfs.vfat "$PART" -n OpenELEC
+# write mbr
+  echo "writing mbr..."
+  cat "${SYSLINUX}/mbr.bin" > "$DISK"
 
-# install syslinux
-  echo "installing syslinux to $PART..."
-  syslinux -f "$PART"
+# create filesystem on partition1
+  echo "creating filesystem on partition1..."
+  mke2fs -t ext4 -m 0 "$PART1"
+  tune2fs -U random -L "LiveSystem" "$PART1"
+  sync
 
 # mount partition
-  echo "mounting partition $PART on /tmp/usb_install..."
-  mkdir -p /tmp/usb_install
-  mount "$PART" /tmp/usb_install
-
-# find UUID
-  echo -n "finding partition UUID for $PART ..."
-  UUID=`blkid $PART -s UUID -o value`
-  echo "$UUID"
+  echo "mounting partition1 on /tmp/livestick_install..."
+  mkdir -p /tmp/livestick_install
+  mount "$PART1" /tmp/livestick_install
 
 # create bootloader configuration
   echo "creating bootloader configuration..."
+  cp ${SYSLINUX}/menu.c32 /tmp/livestick_install/
+  cp ${SYSLINUX}/vesamenu.c32 /tmp/livestick_install/
 
-  echo "DEFAULT linux" > /tmp/usb_install/syslinux.cfg
-  echo "PROMPT 0" >> /tmp/usb_install/syslinux.cfg
-  echo " " >> /tmp/usb_install/syslinux.cfg
-  echo "LABEL linux" >> /tmp/usb_install/syslinux.cfg
-  echo "  KERNEL /KERNEL" >> /tmp/usb_install/syslinux.cfg
-  echo "  APPEND boot=UUID=$UUID installer quiet" >> /tmp/usb_install/syslinux.cfg
+  echo "DEFAULT menu.c32" > /tmp/livestick_install/syslinux.cfg
+  echo "PROMPT 10" >> /tmp/livestick_install/syslinux.cfg
+  echo "MENU TITLE OpenELEC Live Stick" >> /tmp/livestick_install/syslinux.cfg
+  echo " " >> /tmp/livestick_install/syslinux.cfg
+  echo "LABEL livestorage" >> /tmp/livestick_install/syslinux.cfg
+  echo "  MENU LABEL ^Live Storage (use storage on live stick)" >> /tmp/livestick_install/syslinux.cfg
+  echo "  KERNEL /KERNEL" >> /tmp/livestick_install/syslinux.cfg
+  echo "  APPEND boot=LABEL=LiveSystem disk=LABEL=LiveStorage quiet ssh" >> /tmp/livestick_install/syslinux.cfg
+  echo " " >> /tmp/livestick_install/syslinux.cfg
+  echo "LABEL storage" >> /tmp/livestick_install/syslinux.cfg
+  echo "  MENU LABEL ^Storage (use your local storage - may be dangerous)" >> /tmp/livestick_install/syslinux.cfg
+  echo "  KERNEL /KERNEL" >> /tmp/livestick_install/syslinux.cfg
+  echo "  APPEND boot=LABEL=LiveSystem disk=LABEL=Storage quiet ssh" >> /tmp/livestick_install/syslinux.cfg
+
+# install extlinux
+  echo "installing extlinux to partition1..."
+  extlinux --heads=4 --sector=32 -i /tmp/livestick_install
 
 # copy files
-  echo "copying files to $PART..."
-  cp target/KERNEL /tmp/usb_install
-  cp target/KERNEL.md5 /tmp/usb_install
-  cp target/SYSTEM /tmp/usb_install
-  cp target/SYSTEM.md5 /tmp/usb_install
-  cp Autorun.inf /tmp/usb_install
-  cp openelec.ico /tmp/usb_install
-  cp CHANGELOG /tmp/usb_install
-  cp INSTALL /tmp/usb_install
-  cp README.md /tmp/usb_install
-  cp RELEASE /tmp/usb_install
+  echo "copying files to partition1..."
+  cp target/KERNEL /tmp/livestick_install
+  cp target/SYSTEM /tmp/livestick_install
 
 # sync disk
   echo "syncing disk..."
   sync
 
-# unmount partition
-  echo "unmounting partition $PART..."
-  umount "$PART"
+# unmount partition1
+  echo "unmounting partition1..."
+  umount "$PART1"
+  sync
 
-# write mbr
-  echo "writing mbr..."
-  if [ -f /usr/lib/syslinux/mbr.bin ]; then
-    MBR="/usr/lib/syslinux/mbr.bin"       # example: debian, ubuntu
-  elif [ -f /usr/share/syslinux/mbr.bin ]; then
-    MBR="/usr/share/syslinux/mbr.bin"     # example: fedora
-  else
-    echo "Can't find syslinux's mbr.bin on Host OS"
-  fi
-
-  if [ -n "$MBR" ]; then
-    cat "$MBR" > "$DISK"
-  fi
-
-# syncing disk
-  echo "syncing disk..."
+# create filesystem on partition2
+  echo "creating filesystem on partition2..."
+  mke2fs -t ext4 -m 0 "$PART2"
+  tune2fs -U random -L "LiveStorage" "$PART2"
   sync
 
 # cleaning
   echo "cleaning tempdir..."
-  rmdir /tmp/usb_install
+  rm -rf /tmp/livestick_install
 
 echo "...installation finished"
