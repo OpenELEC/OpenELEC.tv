@@ -1,0 +1,45 @@
+diff --git a/src/connection.c b/src/connection.c
+index c7b1f62..3caeb47 100644
+--- a/src/connection.c
++++ b/src/connection.c
+@@ -413,6 +413,20 @@ static struct gateway_data *add_gateway(struct connman_service *service,
+ 	return data;
+ }
+ 
++static void linklocal_add_routes(int index)
++{
++	DBG("169.254.0.0/16 index %d", index);
++	connman_inet_add_network_route(index, "169.254.0.0",
++					NULL,
++					"255.255.0.0");
++}
++
++static void linklocal_del_routes(int index)
++{
++	DBG("del 169.254.0.0/16 index %d", index);
++	connman_inet_del_network_route(index, "169.254.0.0");
++}
++
+ static void set_default_gateway(struct gateway_data *data,
+ 				enum connman_ipconfig_type type)
+ {
+@@ -681,6 +695,9 @@ static void connection_newgateway(int index, const char *gateway)
+ 		if (data->ipv4_gateway != NULL)
+ 			set_default_gateway(data, CONNMAN_IPCONFIG_TYPE_IPV4);
+ 
++		if (data->ipv4_gateway != NULL)
++			linklocal_add_routes(index);
++
+ 		if (data->ipv6_gateway != NULL)
+ 			set_default_gateway(data, CONNMAN_IPCONFIG_TYPE_IPV6);
+ 	}
+@@ -725,6 +742,9 @@ static void connection_delgateway(int index, const char *gateway)
+ 	data = find_default_gateway();
+ 	if (data != NULL)
+ 		set_default_gateway(data, CONNMAN_IPCONFIG_TYPE_ALL);
++
++	if (data != NULL)
++		linklocal_del_routes(index);
+ }
+ 
+ static struct connman_rtnl connection_rtnl = {
