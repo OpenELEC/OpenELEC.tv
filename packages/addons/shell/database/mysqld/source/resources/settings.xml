@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <category label="30000">
+    <setting id="MYSQLD_ENABLED" type="bool"   label="30001" default="false" />
+    <setting type="sep"/>
+    <setting id="MYSQLD_START"   type="action" label="30002" action="RunScript($CWD/resources/lib/startMysql.py)" />
+    <setting id="MYSQLD_STOP"    type="action" label="30003" action="RunScript($CWD/resources/lib/stopMysql.py)" />
+    <setting type="sep"/>
+  </category>
+</settings>
