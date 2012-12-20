@@ -18,18 +18,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="nss"
-PKG_VERSION="3.13.3"
+PKG_NAME="cups"
+PKG_VERSION="1.6.1"
 PKG_REV="1"
-PKG_ARCH="i386 x86_64"
-PKG_LICENSE="Mozilla Public License"
-PKG_SITE="http://ftp.mozilla.org/"
-PKG_URL="http://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_13_3_RTM/src/$PKG_NAME-$PKG_VERSION-with-nspr-4.9.tar.gz"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.cups.org/software.php"
+PKG_URL="http://sources.openelec.tv/devel/$PKG_NAME-$PKG_VERSION-source.tar.bz2"
 PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain zlib"
+PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
-PKG_SECTION="security"
-PKG_SHORTDESC="nss: Network Security Services (NSS) is a set of libraries designed to support cross-platform development of security-enabled client and server applications."
-PKG_LONGDESC="Network Security Services (NSS) is a set of libraries designed to support cross-platform development of security-enabled client and server applications."
+PKG_SECTION="other"
+PKG_SHORTDESC=""
+PKG_LONGDESC=""
 PKG_IS_ADDON="no"
+
 PKG_AUTORECONF="no"
+
