@@ -22,10 +22,19 @@
 
 . config/options $1
 
+PYTHON_LIBDIR="`ls -d $SYSROOT_PREFIX/usr/lib/python*`"
 export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
 export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/usr/lib -L$SYSROOT_PREFIX/lib"
 
 cd $PKG_BUILD
+ac_cv_func_realloc_0_nonnull=yes \
+ac_cv_func_malloc_0_nonnull=yes \
+./configure --host=$TARGET_NAME \
+            --build=$HOST_NAME \
+            --prefix=/usr \
+            --sysconfdir=/etc \
+            --without-gmp \
+            --without-mpir
 
 python setup.py build --cross-compile
 python setup.py install --root=./.install --prefix=/usr

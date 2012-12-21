@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="ae60d24"
+PKG_VERSION="74b907c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -41,6 +41,7 @@ PKG_AUTORECONF="no"
 # some python stuff needed for various addons
   PKG_DEPENDS="$PKG_DEPENDS Imaging"
   PKG_DEPENDS="$PKG_DEPENDS simplejson"
+  PKG_DEPENDS="$PKG_DEPENDS pycrypto"
 
 # various PVR clients
   PKG_DEPENDS="$PKG_DEPENDS xbmc-pvr-addons"
