@@ -102,7 +102,7 @@ set_hwclock() {
       # sleep 30 seconds before hw clock is synced
       usleep 30000000
       progress "syncing hardware clock with system clock"
-      /sbin/hwclock --systohc --utc
+      /sbin/hwclock --systohc --localtime
     )&
   fi
 }
