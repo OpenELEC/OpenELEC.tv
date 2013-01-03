@@ -306,7 +306,11 @@ NBD_DEVS="0"
   update_bootloader() {
     if [ -f "/flash/$IMAGE_SYSTEM" ]; then
     # /flash is filesystem with system image file
-      export BOOT_ROOT="/flash"
+      if [ "$netboot" == "nfs" ] ; then
+        export BOOT_ROOT="/bootroot"
+      else
+        export BOOT_ROOT="/flash"
+      fi
       export SYSTEM_ROOT="/sysroot"
 
       mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
@@ -442,9 +446,17 @@ NBD_DEVS="0"
 
       # update if md5 check is ok or .nocheck exists
       if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-        update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+        if [ "$netboot" == "nfs" ] ; then
+          mkdir /bootroot
+          # Need sane alternative solution for non-RPi devices, if non-RPi devices boot over NFS
+          [ -b /dev/mmcblk0p1 ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
+          update "Kernel" "$UPDATE_KERNEL" "/bootroot/$IMAGE_KERNEL"
+        else
+          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+        fi
         update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
         update_bootloader
+        [ "$netboot" == "nfs" ] && umount /bootroot
         REBOOT="1"
       else
         /bin/busybox rm "$UPDATE_DIR/$UPDATE_KERNEL"
