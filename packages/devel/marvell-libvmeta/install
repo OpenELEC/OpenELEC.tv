@@ -20,21 +20,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. /etc/profile
-. /var/config/settings.conf
+. config/options $1
 
-if [ -z $X11_KEYMAP ]; then
-  X11_KEYMAP="us"
-fi
-
-if [ ! "$X11_KEYMAP2" == "-none-" ]; then
-  XKBLAYOUT="$X11_KEYMAP,$X11_KEYMAP2"
-  XKBOPTIONS="grp:alt_shift_toggle"
-else
-  XKBLAYOUT="$X11_KEYMAP"
-fi
-
-echo "XKBMODEL=\"pc105\""
-echo "XKBVARIANT=\"\""
-echo "XKBLAYOUT=\"$XKBLAYOUT\""
-echo "XKBOPTIONS=\"$XKBOPTIONS\""
+mkdir -p $INSTALL/usr/lib
+  cp -P $PKG_BUILD/libvmeta.so* $INSTALL/usr/lib
