@@ -20,24 +20,24 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d hts-tvheadend.git ]; then
-    git clone https://github.com/tvheadend/tvheadend.git hts-tvheadend.git
+  if [ ! -d tvheadend.git ]; then
+    git clone https://github.com/tvheadend/tvheadend.git tvheadend.git
   fi
 
-  cd hts-tvheadend.git
+  cd tvheadend.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf hts-tvheadend-$GIT_REV
-  cp -R hts-tvheadend.git hts-tvheadend-$GIT_REV
+  rm -rf tvheadend-$GIT_REV
+  cp -R tvheadend.git tvheadend-$GIT_REV
 
 #echo "cleaning sources..."
-#  rm -rf hts-tvheadend-$GIT_REV/.git
+#  rm -rf tvheadend-$GIT_REV/.git
 
 echo "packing sources..."
-  tar cvJf hts-tvheadend-$GIT_REV.tar.xz hts-tvheadend-$GIT_REV
+  tar cvJf tvheadend-$GIT_REV.tar.xz tvheadend-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf hts-tvheadend-$GIT_REV
+  rm -rf tvheadend-$GIT_REV
