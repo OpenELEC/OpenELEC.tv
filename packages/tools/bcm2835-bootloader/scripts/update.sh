@@ -23,8 +23,9 @@
 [ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
 [ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
 
-# mount $BOOT_ROOT r/w
-  mount -o remount,rw $BOOT_ROOT
+# mount $BOOT_ROOT r/w if required
+  READ_ONLY=$(cat /proc/mounts | grep " $BOOT_ROOT " | awk '$4~/(^|,)ro($|,)/')
+  [ -n "$READ_ONLY" ] && mount -o remount,rw $BOOT_ROOT
 
 # update bootloader files
   cp -p $SYSTEM_ROOT/usr/share/bootloader/LICENCE* $BOOT_ROOT
@@ -44,6 +45,6 @@
         $BOOT_ROOT/config.txt.bk > $BOOT_ROOT/config.txt
   fi
 
-# mount $BOOT_ROOT r/o
+# mount $BOOT_ROOT r/o if previously mounted r/w
   sync
-  mount -o remount,ro $BOOT_ROOT
+  [ -n "$READ_ONLY" ] && mount -o remount,ro $BOOT_ROOT

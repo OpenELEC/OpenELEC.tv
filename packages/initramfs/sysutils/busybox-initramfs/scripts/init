@@ -64,9 +64,17 @@ NBD_DEVS="0"
         ;;
       boot=*)
         boot="${arg#*=}"
+        # BOOT_TYPE: local, nfs, nbd, iscsi, cifs etc.
+        BOOT_TYPE="$(echo "${boot}" | /bin/busybox sed -r "s/(.*)=.*/\1/" | /bin/busybox tr '[A-Z]' '[a-z]')"
+        [ -n "$(echo "${BOOT_TYPE}" | /bin/busybox grep -E "^/|^label|^uuid")" ] && BOOT_TYPE="local"
+        BOOT_OPTIONS="$(echo "${boot}" | sed -r "s/.*=(.*)/\1/")"
         ;;
       disk=*)
         disk="${arg#*=}"
+        # DISK_TYPE: local, nfs, nbd, iscsi, cifs etc.
+        DISK_TYPE="$(echo "${disk}" | sed -r "s/(.*)=.*/\1/" | /bin/busybox tr '[A-Z]' '[a-z]')"
+        [ -n "$(echo "${DISK_TYPE}" | /bin/busybox grep -E "^/|^label|^uuid")" ] && DISK_TYPE="local"
+        DISK_OPTIONS="$(echo "${disk}" | sed -r "s/.*=(.*)/\1/")"
         ;;
       debugging)
         DEBUG=yes
@@ -294,31 +302,30 @@ NBD_DEVS="0"
   }
 
   update() {
-    if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
-      echo "updating $1..."
-        $IONICE /bin/busybox mount -o remount,rw /flash
-        $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3
-        $IONICE /bin/busybox mount -o remount,ro /flash
-        $IONICE /bin/busybox sync
+    if [ -f "$UPDATE_DIR/$2" -a -f "$3/$4" ]; then
+      [ "$3" == "/flash" ] && TARGET=$BOOT_TYPE || TARGET="local"
+      echo "Updating $1 on $TARGET..."
+      READ_ONLY=$(cat /proc/mounts | grep " $3 " | awk '$4~/(^|,)ro($|,)/')
+      [ -n "$READ_ONLY" ] && $IONICE /bin/busybox mount -o remount,rw /$3
+      $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3/$4
+      $IONICE /bin/busybox sync
+      [ -n "$READ_ONLY" ] && $IONICE /bin/busybox mount -o remount,ro /$3
     fi
   }
 
   update_bootloader() {
     if [ -f "/flash/$IMAGE_SYSTEM" ]; then
-    # /flash is filesystem with system image file
-      if [ "$netboot" == "nfs" ] ; then
-        export BOOT_ROOT="/bootroot"
-      else
-        export BOOT_ROOT="/flash"
-      fi
+      [ "$1" == "/flash" ] && TARGET=$BOOT_TYPE || TARGET="local"
+    # /flash is normally filesystem with system image file
+      export BOOT_ROOT="$1"
       export SYSTEM_ROOT="/sysroot"
 
       mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
 
       if [ -f $SYSTEM_ROOT/usr/share/bootloader/update.sh ]; then
-        echo "updating Bootloader..."
-          $IONICE /bin/busybox sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
-          $IONICE /bin/busybox sync
+        echo "Updating Bootloader on $TARGET..."
+        $IONICE /bin/busybox sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
+        $IONICE /bin/busybox sync
       fi
 
       umount /sysroot
@@ -446,17 +453,25 @@ NBD_DEVS="0"
 
       # update if md5 check is ok or .nocheck exists
       if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-        if [ "$netboot" == "nfs" ] ; then
-          mkdir /bootroot
-          # Need sane alternative solution for non-RPi devices, if non-RPi devices boot over NFS
-          [ -b /dev/mmcblk0p1 ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
-          update "Kernel" "$UPDATE_KERNEL" "/bootroot/$IMAGE_KERNEL"
+        if [ "$BOOT_TYPE" == "local" ] ; then
+          update "Kernel" "$UPDATE_KERNEL" "/flash" "$IMAGE_KERNEL"
+          update "System" "$UPDATE_SYSTEM" "/flash" "$IMAGE_SYSTEM"
+          update_bootloader "/flash"
         else
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+          # Booted from remote fs, need mountpoint for boot media
+          # in order to update kernel and any associated boot files
+          mkdir /bootroot
+
+          #TODO: Where does PXE mount device with kernel?
+          # Need sane alternative solution for non-RPi devices in order to update kernel.img
+          [ -b /dev/mmcblk0p1 ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
+
+          update "Kernel" "$UPDATE_KERNEL" "/bootroot" "$IMAGE_KERNEL"
+          update "System" "$UPDATE_SYSTEM" "/flash" "$IMAGE_SYSTEM"
+          update_bootloader "/bootroot"
+
+          umount /bootroot && rm -fr /bootroot
         fi
-        update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
-        update_bootloader
-        [ "$netboot" == "nfs" ] && umount /bootroot
         REBOOT="1"
       else
         /bin/busybox rm "$UPDATE_DIR/$UPDATE_KERNEL"
