@@ -31,48 +31,129 @@ fi
 
 [ -z "$PKG_URL" ] && exit 0
 
-if [ -n "$PKG_URL" ]; then
-  URLS="$URLS `echo $PKG_URL | sed s%GEEXBOX_SRCS%$GEEXBOX_SRCS%`"
-
-  for i in $URLS; do
-    SOURCE_NAME="`basename $i`"
-    PACKAGE="$SOURCES/$1/$SOURCE_NAME"
-    PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
-    [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
-    WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
-
-    NBWGET="1"
-
-    STAMP="$PACKAGE.url"
-    MD5SUM="$PACKAGE.md5"
-
-    mkdir -p $SOURCES/$1
-
-    if [ -f "$STAMP" ]; then
-      [ `cat $STAMP` = "$i" ] && continue
+PKG_URL_PROTO=$(echo $PKG_URL | sed -n 's|\([^,]*\),.*$|\1|p')    # get proto
+case $PKG_URL_PROTO in
+  git|svn)
+    PKG_URL_BRANCH=$(echo $PKG_URL | sed -n 's|\([^,]*\),\([^,:]*\),.*$|\2|p')  # get branch
+    if [ -z "$PKG_URL_BRANCH" ]; then
+      PKG_URL_BRANCH=master
+      PKG_URL=$(echo $PKG_URL | sed -n 's|\([^,]*\),\(.*\)$|\2|p')              # get url
+    else
+      PKG_URL=$(echo $PKG_URL | sed -n 's|\([^,]*\),\([^,:]*\),\(.*\)$|\3|p')   # get url
     fi
-    DL="yes"
+    SOURCE_NAME="$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
+  file)
+    PKG_URL=$(echo $PKG_URL | sed -n 's|\([^,]*\),\(.*\)$|\2|p')  # get file
+    PKG_URL=${PKG_URL// /_spc_}     # replace spaces
+    eval PKG_URL=${PKG_URL}         # put spaces back
+    PKG_URL=${PKG_URL//_spc_/ }
+    SOURCE_NAME="$(basename $PKG_URL)"
+    ;;
+  *)
+    SOURCE_NAME="$(basename $PKG_URL)"
+    ;;
+esac
 
-    $SCRIPTS/checkdeps get
+if [ -n "$PKG_URL" ]; then
+  PACKAGE="$SOURCES/$1/$SOURCE_NAME"
+  PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
+  [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
+  WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
 
-    rm -f $STAMP
+  NBWGET="1"
 
-    printf "%${BUILD_INDENT}c GET      $1\n" ' '>&$SILENT_OUT
-    export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
+  STAMP="$PACKAGE.url"
+  MD5SUM="$PACKAGE.md5"
 
-    until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR; do
-      NBWGET=$(($NBWGET+1))
-      if [ "$NBWGET" -gt "10" ]; then
-        echo -e "\nCant't get $1 sources : $i\n Try later !!"
+  mkdir -p $SOURCES/$1
+
+  if [ -f "$STAMP" ]; then
+    [ `cat $STAMP` = "$PKG_URL" ] && exit 0
+  fi
+  DL="yes"
+
+  $SCRIPTS/checkdeps get
+
+  rm -f $STAMP
+
+  printf "%${BUILD_INDENT}c GET      $1\n" ' '>&$SILENT_OUT
+  export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
+
+  case $PKG_URL_PROTO in
+    file)
+      # local file must always exist without using stamp & md5sum
+      exit 0
+      ;;
+    git)
+      cd $SOURCES/$1
+
+      rm -fr $PKG_NAME-$PKG_VERSION
+      echo "Getting sources from git..."
+      git clone $PKG_URL -b $PKG_URL_BRANCH $PKG_NAME-$PKG_VERSION
+      if [ $? != 0 ]; then
+        rm -fr $PKG_NAME-$PKG_VERSION
         exit 1
       fi
-    done
 
-    echo $i > $STAMP
-    md5sum -t $PACKAGE > $MD5SUM
+      cd $PKG_NAME-$PKG_VERSION
+      if [ "$PKG_VERSION" = "latest" ]; then
+      	GIT_REV=$(git log -n1 --format=%h)
+      	echo "Latest revison: $GIT_REV"
+      else
+      	git checkout $PKG_VERSION
+      	if [ $? != 0 ]; then
+      	  cd - >/dev/null 2>&1
+      	  rm -fr $PKG_NAME-$PKG_VERSION
+      	  exit 1
+      	fi
+      fi
+      cd - >/dev/null 2>&1
 
-    rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/unpack
-    rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/build
+      echo "Packing sources..."
+      tar cJf $PKG_NAME-$PKG_VERSION.tar.xz $PKG_NAME-$PKG_VERSION
 
-  done
+      echo "Removing temporary folder..."
+      rm -rf $PKG_NAME-$PKG_VERSION
+      ;;
+    svn)
+      cd $SOURCES/$1
+
+      rm -fr $PKG_NAME-$PKG_VERSION
+      echo "Getting sources from svn..."
+      if [ "$PKG_VERSION" = "latest" ]; then
+      	svn checkout $PKG_URL $PKG_NAME-$PKG_VERSION
+      else
+      	svn checkout -r $PKG_VERSION $PKG_URL $PKG_NAME-$PKG_VERSION
+      fi
+      if [ $? != 0 ]; then
+        rm -fr $PKG_NAME-$PKG_VERSION
+        exit 1
+      fi
+
+      echo "Cleaning sources..."
+      find $PKG_NAME-$PKG_VERSION -name .svn -type d | xargs rm -rf
+
+      echo "Packing sources..."
+      tar cJf $PKG_NAME-$PKG_VERSION.tar.xz $PKG_NAME-$PKG_VERSION
+
+      echo "Removing temporary folder..."
+      rm -rf $PKG_NAME-$PKG_VERSION
+      ;;
+    *)
+      until [ -f "$STAMP" ] || $WGET_CMD $PKG_URL || $WGET_CMD $PACKAGE_MIRROR; do
+        NBWGET=$(($NBWGET+1))
+        if [ "$NBWGET" -gt "10" ]; then
+          echo -e "\nCant't get $1 sources : $PKG_URL\n Try later !!"
+          exit 1
+        fi
+      done
+      ;;
+  esac
+
+  echo $PKG_URL > $STAMP
+  md5sum -t $PACKAGE > $MD5SUM
+
+  rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/unpack
+  rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/build
 fi

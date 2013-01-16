@@ -30,47 +30,63 @@ fi
 [ -z "$PKG_URL" ] && exit 1
 [ ! -d "$SOURCES/$1" -o ! -d "$3" ] && exit 1
 
-for i in $PKG_URL; do
-  FILE="`basename $i`"
-
-  case $FILE in
-  $2)
+PKG_URL_PROTO=$(echo $PKG_URL | sed -n 's|\([^,]*\),.*$|\1|p')   # get proto
+case $PKG_URL_PROTO in
+  git|svn)
+    PKG_URL="$PKG_NAME-$PKG_VERSION.tar.xz"
+    FILE="$PKG_URL"
     f="$SOURCES/$1/$FILE"
-    if [ ! -f $f ]; then
-      echo "error: File $FILE doesn't exists in package $1 sources directory"
-      echo "have you called scripts/extract before scripts/get ?"
-      exit 1
-    fi
-    case $FILE in
-      *.tar)
-        tar xf $f -C $3
-        ;;
-      *.tar.bz2 | *.tbz)
-        tar xjf $f -C $3
-        ;;
-      *.tar.gz | *.tgz)
-        tar xzf $f -C $3
-        ;;
-      *.tar.xz | *.txz)
-        tar xJf $f -C $3
-        ;;
-      *.7z)
-        mkdir -p $3/$1
-        7z x -o$3/$1 $f
-        ;;
-      *.diff | *.patch)
-        cat $f | patch -d $3 -p1
-        ;;
-      *.diff.bz2 | *.patch.bz2 | patch-*.bz2)
-        bzcat $f | patch -d $3 -p1
-        ;;
-      *.diff.gz | *.patch.gz | patch-*.gz)
-        zcat $f | patch -d $3 -p1
-        ;;
-      *)
-        cp -pPR $f $3
-        ;;
-    esac
     ;;
+  file)
+    PKG_URL=$(echo $PKG_URL | sed -n 's|\([^,]*\),\(.*\)$|\2|p')   # get file
+    PKG_URL=${PKG_URL// /_spc_}     # replace spaces
+    eval PKG_URL=${PKG_URL}         # put spaces back
+    PKG_URL=${PKG_URL//_spc_/ }
+    FILE="$(basename $PKG_URL)"
+    f="$PKG_URL"
+    ;;
+  *)
+    FILE="$(basename $PKG_URL)"
+    f="$SOURCES/$1/$FILE"
+    ;;
+esac
+
+case $FILE in
+$2)
+  if [ ! -f $f ]; then
+    echo "error: File $FILE doesn't exists in package $1 sources directory"
+    echo "have you called scripts/extract before scripts/get ?"
+    exit 1
+  fi
+  case $FILE in
+    *.tar)
+      tar xf $f -C $3
+      ;;
+    *.tar.bz2 | *.tbz)
+      tar xjf $f -C $3
+      ;;
+    *.tar.gz | *.tgz)
+      tar xzf $f -C $3
+      ;;
+    *.tar.xz | *.txz)
+      tar xJf $f -C $3
+      ;;
+    *.7z)
+      mkdir -p $3/$1
+      7z x -o$3/$1 $f
+      ;;
+    *.diff | *.patch)
+      cat $f | patch -d $3 -p1
+      ;;
+    *.diff.bz2 | *.patch.bz2 | patch-*.bz2)
+      bzcat $f | patch -d $3 -p1
+      ;;
+    *.diff.gz | *.patch.gz | patch-*.gz)
+      zcat $f | patch -d $3 -p1
+      ;;
+    *)
+      cp -pPR $f $3
+      ;;
   esac
-done
+  ;;
+esac
