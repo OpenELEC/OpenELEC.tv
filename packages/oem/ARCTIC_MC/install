@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +20,11 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="gtk-doc"
-PKG_VERSION="1.18"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.gtk.org/gtk-doc/"
-PKG_URL="http://ftp.gnome.org/pub/gnome/sources/gtk-doc/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="x11/toolkits"
-PKG_SHORTDESC="gtk-doc: a project which was started to generate API documentation from comments added to C code."
-PKG_LONGDESC="GTK-Doc is a project which was started to generate API documentation from comments added to C code. It is typically used to document the public API of GTK+ and GNOME libraries, but it can also be used to document application code."
-PKG_IS_ADDON="no"
+. config/options $1
 
-PKG_AUTORECONF="no"
+$SCRIPTS/create_addon tvheadend
+
+OEM_ADDON_DIR="$INSTALL/usr/lib/xbmc/addons/"
+
+mkdir -p $OEM_ADDON_DIR
+  cp -PR $BUILD/addons/tvheadend/service.multimedia.tvheadend $OEM_ADDON_DIR
