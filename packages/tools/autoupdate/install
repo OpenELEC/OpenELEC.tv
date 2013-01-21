@@ -23,11 +23,7 @@
 . config/options $1
 
 mkdir -p $INSTALL/usr/bin
-  if [ "$OPENELEC_VERSION" = devel ]; then
-    cp $PKG_DIR/scripts/autoupdate.devel $INSTALL/usr/bin/autoupdate
-  else
-    cp $PKG_DIR/scripts/autoupdate.release $INSTALL/usr/bin/autoupdate
-  fi
+  cp $PKG_DIR/scripts/autoupdate $INSTALL/usr/bin/autoupdate
 
 mkdir -p $INSTALL/etc
   if [ -f $PROJECT_DIR/$PROJECT/autoupdate/repo.conf ]; then
