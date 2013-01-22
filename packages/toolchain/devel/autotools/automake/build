@@ -29,7 +29,9 @@ cd $PKG_BUILD
             --build=$HOST_NAME \
             --target=$TARGET_NAME \
             --prefix=$ROOT/$TOOLCHAIN \
+            --disable-silent-rules
 
 make
 make install
 make prefix=$SYSROOT_PREFIX/usr install
+cp -P $ROOT/$PKG_DIR/files/*.m4 $SYSROOT_PREFIX/usr/share/aclocal
