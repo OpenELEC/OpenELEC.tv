@@ -27,6 +27,11 @@
 # create an empty image file for use with loop device like this:
 # dd if=/dev/zero of=~/vSD.img bs=1M count=910
 
+# exit if error or unknown variable
+set -e
+
+OS=`uname -s`
+
 if [ "$(id -u)" != "0" ]; then
   clear
   echo "#########################################################"
@@ -40,11 +45,16 @@ if [ -z "$1" ]; then
   clear
   echo "#########################################################"
   echo "# please execute with your drive as option              #"
-  echo "# example: sudo ./create_sdcard /dev/sdb                #"
-  echo "# or:      sudo ./create_sdcard /dev/mmcblk0            #"
-  echo "# or:      sudo ./create_sdcard /dev/loop0 ~/vSD.img    #"
-  echo "# to create an image file for /dev/loop0 option:        #"
-  echo "#   sudo dd if=/dev/zero of=~/vSD.img bs=1M count=910   #"
+  if [ "$OS" = "FreeBSD" ];then 
+    echo "# example: sudo ./create_sdcard /dev/da0               #"
+    echo "# or:      sudo ./create_sdcard /dev/mmcsd0            #"
+  else
+    echo "# example: sudo ./create_sdcard /dev/sdb                #"
+    echo "# or:      sudo ./create_sdcard /dev/mmcblk0            #"
+    echo "# or:      sudo ./create_sdcard /dev/loop0 ~/vSD.img    #"
+    echo "# to create an image file for /dev/loop0 option:        #"
+    echo "#   sudo dd if=/dev/zero of=~/vSD.img bs=1M count=910   #"
+  fi
   echo "#########################################################"
   exit 1
 fi
@@ -62,6 +72,10 @@ else
   PART1="${DISK}1"
   PART2="${DISK}2"
 fi
+if [ "$OS" = "FreeBSD" ];then
+  PART1="${DISK}s1"
+  PART2="${DISK}s2"
+fi
 
 clear
 echo "#########################################################"
@@ -76,10 +90,10 @@ echo "#                                                       #"
 echo "#########################################################"
 
 # check for some required tools
-
+if [ "$OS" != "FreeBSD" ]; then
+  MD5_CMD=md5sum
   # this is needed to partion the drive
-  which parted > /dev/null
-  if [ "$?" = "1" ]; then
+  if ! which parted > /dev/null; then
     clear
     echo "#########################################################"
     echo "#                                                       #"
@@ -94,8 +108,7 @@ echo "#########################################################"
   fi
 
   # this is needed to format the drive
-  which mkfs.vfat > /dev/null
-  if [ "$?" = "1" ]; then
+  if ! which mkfs.vfat > /dev/null; then
     clear
     echo "#########################################################"
     echo "#                                                       #"
@@ -109,9 +122,26 @@ echo "#########################################################"
     exit 1
   fi
 
+  # this is needed to tell the kernel for partition changes
+  if ! which partprobe > /dev/null; then
+    clear
+    echo "#########################################################"
+    echo "#                                                       #"
+    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "#                                                       #"
+    echo "#      We can't find the required tool \"partprobe\"       #"
+    echo "#      on your system.                                  #"
+    echo "#      Please install it via your package manager.      #"
+    echo "#                                                       #"
+    echo "#########################################################"
+    exit 1
+  fi
+else
+  MD5_CMD=md5
+fi # if not FreeBSD
+
   # this is needed to format the drive
-  which mkfs.ext4 > /dev/null
-  if [ "$?" = "1" ]; then
+  if ! which mkfs.ext4 > /dev/null; then
     clear
     echo "#########################################################"
     echo "#                                                       #"
@@ -126,24 +156,7 @@ echo "#########################################################"
   fi
 
   # this is needed to tell the kernel for partition changes
-  which partprobe > /dev/null
-  if [ "$?" = "1" ]; then
-    clear
-    echo "#########################################################"
-    echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
-    echo "#                                                       #"
-    echo "#      We can't find the required tool \"partprobe\"       #"
-    echo "#      on your system.                                  #"
-    echo "#      Please install it via your package manager.      #"
-    echo "#                                                       #"
-    echo "#########################################################"
-    exit 1
-  fi
-
-  # this is needed to tell the kernel for partition changes
-  which md5sum > /dev/null
-  if [ "$?" = "1" ]; then
+  if ! which ${MD5_CMD} > /dev/null; then
     clear
     echo "#########################################################"
     echo "#                                                       #"
@@ -174,42 +187,62 @@ echo "#########################################################"
     exit 1
   }
 
-  md5sum -c target/KERNEL.md5
-  if [ "$?" = "1" ]; then
+  if ! ${MD5_CMD} -c target/KERNEL.md5; then
     md5sumFailed
   fi
 
-  md5sum -c target/SYSTEM.md5
-  if [ "$?" = "1" ]; then
+  if ! ${MD5_CMD} -c target/SYSTEM.md5; then
     md5sumFailed
   fi
 
-# (TODO) umount everything (if more than one partition)
-  umount ${DISK}*
+# umount everything related to ${DISK}
+  __a=`mount | grep ${DISK} | awk '{print length($3), $3;}' | sort -rn | awk '{$1=""; print;}'`
+  if [ -n "$__a" ]; then
+    echo "unmounting $__a"
+    umount $__a
+  fi
 
 # remove all partitions from the drive
   echo "writing new disklabel on $DISK (removing all partitions)..."
-  parted -s "$DISK" mklabel msdos
+  if [ "$OS" = "FreeBSD" ]; then
+	gpart destroy -F "$DISK"
+	gpart create -s MBR "$DISK"
+  else
+    parted -s "$DISK" mklabel msdos
+  fi
 
 # create a single partition
   echo "creating partitions on $DISK..."
-  parted -s "$DISK" unit cyl mkpart primary fat32 -- 0 16
-  parted -s "$DISK" unit cyl mkpart primary ext2 -- 16 -2
-
+  if [ "$OS" = "FreeBSD" ]; then
+    gpart add -t '!12' -i 1 -s 128M "$DISK"
+    gpart add -t '!83' -i 2 "$DISK"
+  else
+    parted -s "$DISK" unit cyl mkpart primary fat32 -- 0 16
+    parted -s "$DISK" unit cyl mkpart primary ext2 -- 16 -2
+  fi
 # make partition active (bootable)
   echo "marking partition active..."
-  parted -s "$DISK" set 1 boot on
+  if [ "$OS" = "FreeBSD" ]; then
+    gpart set -a active -i 1 "$DISK"
+  else
+    parted -s "$DISK" set 1 boot on
+  fi
 
 # tell kernel we have a new partition table
-  echo "telling kernel we have a new partition table..."
-  partprobe "$DISK"
+  if [ "$OS" != "FreeBSD" ]; then
+    echo "telling kernel we have a new partition table..."
+    partprobe "$DISK"
+  fi
 
 # create filesystem
   echo "creating filesystem on $PART1..."
-  mkfs.vfat "$PART1" -I -n System
-
+  if [ "$OS" = "FreeBSD" ]; then
+	newfs_msdos -F 16 -L System "$PART1"
+  else
+    mkfs.vfat "$PART1" -I -n System
+  fi
   echo "creating filesystem on $PART2..."
-  mkfs.ext4 "$PART2" -L Storage
+  mkfs.ext4 -L Storage "$PART2"
 
 # remount loopback device
   if [ "$DISK" = "/dev/loop0" ]; then
@@ -223,7 +256,11 @@ echo "#########################################################"
   echo "mounting partition $PART1 ..."
   rm -rf /tmp/openelec_install
   mkdir -p /tmp/openelec_install
-  mount -t vfat "$PART1" /tmp/openelec_install
+  if [ "$OS" = "FreeBSD" ]; then
+	mount -t msdosfs "$PART1" /tmp/openelec_install
+  else
+    mount -t vfat "$PART1" /tmp/openelec_install
+  fi
   MOUNTPOINT=/tmp/openelec_install
 
 # create bootloader configuration
