@@ -57,6 +57,9 @@
   /bin/busybox clear
   echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
 
+# is current device a Raspberry Pi?
+  [ -n "$(/bin/busybox cat /proc/cpuinfo | /bin/busybox grep -E "Hardware.*:.*BCM2708")" ] && IS_RPI=Y
+
 # parse command line arguments
   for arg in $(cat /proc/cmdline); do
     case $arg in
@@ -71,6 +74,8 @@
         # BOOT_TYPE: local, nfs, nbd, iscsi, cifs etc.
         BOOT_TYPE="$(echo "${boot}" | /bin/busybox sed -r "s/(.*)=.*/\1/" | /bin/busybox tr '[A-Z]' '[a-z]')"
         [ -n "$(echo "${BOOT_TYPE}" | /bin/busybox grep -E "^/|^label|^uuid")" ] && BOOT_TYPE="local"
+        # Booting a Raspberry Pi from direct attached media, but not from SD card... so USB
+        [ "${IS_RPI}" = "Y" -a "${BOOT_TYPE}" = "local" -a "${boot}" != "/dev/mmcblk0p1" ] && BOOT_TYPE="usb"
         BOOT_OPTIONS="$(echo "${boot}" | sed -r "s/.*=(.*)/\1/")"
         ;;
       disk=*)
@@ -468,7 +473,7 @@
 
           #TODO: Where does PXE mount device with kernel?
           # Need sane alternative solution for non-RPi devices in order to update kernel.img
-          [ -b /dev/mmcblk0p1 ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
+          [ "${IS_RPI}" = "Y" ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
 
           update "Kernel" "$UPDATE_KERNEL" "/bootroot" "$IMAGE_KERNEL"
           update "System" "$UPDATE_SYSTEM" "/flash" "$IMAGE_SYSTEM"
