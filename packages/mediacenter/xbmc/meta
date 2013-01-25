@@ -19,7 +19,11 @@
 ################################################################################
 
 PKG_NAME="xbmc"
+<<<<<<< HEAD
 PKG_VERSION="6fc42b2"
+=======
+PKG_VERSION="aea93c3"
+>>>>>>> 368e0600981e10f722fed115a93e954e46ff2e67
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
