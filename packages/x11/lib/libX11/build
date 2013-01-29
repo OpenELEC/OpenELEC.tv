@@ -24,13 +24,10 @@
 
 export CC_FOR_BUILD="$HOST_CC"
 export CPPFLAGS_FOR_BUILD="$HOST_CPPFLAGS"
-export CFLAGS_FOR_BUILD="$HOST_CFLAGS -I$SYSROOT_PREFIX/usr/include"
+export CFLAGS_FOR_BUILD="$HOST_CFLAGS"
 export LDFLAGS_FOR_BUILD="$HOST_LDFLAGS"
 
-export PKG_CONFIG="$PKG_CONFIG --define-variable=prefix=$SYSROOT_PREFIX/usr"
-
 cd $PKG_BUILD
-
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
             --prefix=/usr \
@@ -43,8 +40,8 @@ cd $PKG_BUILD
             --enable-xthreads \
             --disable-xcms \
             --enable-xlocale \
-            --enable-xkb \
             --disable-xlocaledir \
+            --enable-xkb \
             --disable-xf86bigfont \
             --enable-malloc0returnsnull \
             --disable-specs \
@@ -57,5 +54,7 @@ cd $PKG_BUILD
             --without-lint
 
 make
+make -C nls DESTDIR=`pwd`/.install install
 
 $MAKEINSTALL
+
