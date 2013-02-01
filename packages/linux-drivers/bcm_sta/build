@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,28 +20,11 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# setup keyboard layout
-#
-# runlevels: openelec
+. config/options $1
 
-(
-  if [ -f /var/config/settings.conf ]; then
-    . /var/config/settings.conf
+cd $PKG_BUILD
 
-    progress "setup keyboard layout"
+[ "$TARGET_ARCH" = "i386" ] && cd x86-32
+[ "$TARGET_ARCH" = "x86_64" ] && cd x86-64
 
-    if [ -z $X11_KEYMAP ]; then
-      X11_KEYMAP="us"
-    fi
-
-    # waiting for Xorg to start
-      wait_for_xorg
-
-    # setup keymap
-      if [ -z $X11_KEYMAP2 ]; then
-        setxkbmap -display $DISPLAY $X11_KEYMAP;
-      else
-        setxkbmap -display $DISPLAY -layout "$X11_KEYMAP,$X11_KEYMAP2" -option "grp:alt_shift_toggle";
-      fi
-  fi
-)&
+KBUILD_NOPEDANTIC=1 make V=1 CC=$CC -C $(kernel_path) M=`pwd`

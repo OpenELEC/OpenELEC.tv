@@ -1,6 +1,8 @@
+#!/bin/sh
+
 ################################################################################
-#      Copyright (C) 2009-2010 OpenELEC.tv
-#      http://www.openelec.tv
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,10 +20,21 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-# starting Bluetooth
-#
-# runlevels: openelec, textmode
+. /etc/profile
+. /var/config/settings.conf
 
-# starting Bluetooth manager
-  progress "starting Bluetooth manager"
-  /usr/lib/bluetooth/bluetoothd > /dev/null 2>&1 &
+if [ -z $X11_KEYMAP ]; then
+  X11_KEYMAP="us"
+fi
+
+if [ ! "$X11_KEYMAP2" == "-none-" ]; then
+  XKBLAYOUT="$X11_KEYMAP,$X11_KEYMAP2"
+  XKBOPTIONS="grp:alt_shift_toggle"
+else
+  XKBLAYOUT="$X11_KEYMAP"
+fi
+
+echo "XKBMODEL=\"pc105\""
+echo "XKBVARIANT=\"\""
+echo "XKBLAYOUT=\"$XKBLAYOUT\""
+echo "XKBOPTIONS=\"$XKBOPTIONS\""
