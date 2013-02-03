@@ -3,7 +3,7 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
-#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
 #
 #  This Program is free software; you can redistribute it and/or modify
@@ -36,19 +36,13 @@
   IMAGE_KERNEL="KERNEL"
   IMAGE_SYSTEM="SYSTEM"
 
-  REBOOT="0"
-  MD5_FAILED="0"
-  MD5_NOCHECK="0"
-
   NBD_DEVS="0"
 
-  INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
+  INSTALLED_MEMORY=$(/bin/busybox cat /proc/meminfo | /bin/busybox grep 'MemTotal:' | /bin/busybox awk '{print $2}')
   SYSTEM_TORAM_LIMIT=1024000
 
 # load any configuration
-  if [ -f "/etc/initramfs.conf" ]; then
-    . /etc/initramfs.conf
-  fi
+  [ -f "/etc/initramfs.conf" ] && . /etc/initramfs.conf
 
 # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
@@ -57,8 +51,11 @@
   /bin/busybox clear
   echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
 
+# is current device a Raspberry Pi?
+  [ -n "$(/bin/busybox cat /proc/cpuinfo | /bin/busybox grep -E "Hardware.*:.*BCM2708")" ] && IS_RPI=Y
+
 # parse command line arguments
-  for arg in $(cat /proc/cmdline); do
+  for arg in $(/bin/busybox cat /proc/cmdline); do
     case $arg in
       BOOT_IMAGE=*)
         IMAGE_KERNEL="${arg#*=}"
@@ -68,9 +65,19 @@
         ;;
       boot=*)
         boot="${arg#*=}"
+        # BOOT_TYPE: local, nfs, nbd, iscsi, cifs etc.
+        BOOT_TYPE="$(echo "${boot}" | /bin/busybox sed -r "s/(.*)=.*/\1/" | /bin/busybox tr '[A-Z]' '[a-z]')"
+        [ -n "$(echo "${BOOT_TYPE}" | /bin/busybox grep -E "^/|^label|^uuid")" ] && BOOT_TYPE="local"
+        # Booting a Raspberry Pi from direct attached media, but not from SD card... so USB
+        [ "${IS_RPI}" = "Y" -a "${BOOT_TYPE}" = "local" -a "${boot}" != "/dev/mmcblk0p1" ] && BOOT_TYPE="usb"
+        BOOT_OPTIONS="$(echo "${boot}" | /bin/busybox sed -r "s/.*=(.*)/\1/")"
         ;;
       disk=*)
         disk="${arg#*=}"
+        # DISK_TYPE: local, nfs, nbd, iscsi, cifs etc.
+        DISK_TYPE="$(echo "${disk}" | /bin/busybox sed -r "s/(.*)=.*/\1/" | /bin/busybox tr '[A-Z]' '[a-z]')"
+        [ -n "$(echo "${DISK_TYPE}" | /bin/busybox grep -E "^/|^label|^uuid")" ] && DISK_TYPE="local"
+        DISK_OPTIONS="$(echo "${disk}" | /bin/busybox sed -r "s/.*=(.*)/\1/")"
         ;;
       debugging)
         DEBUG=yes
@@ -102,28 +109,21 @@
     esac
   done
 
-  if test "$FASTBOOT" = "yes"; then
-    IONICE="/bin/busybox ionice -c 1 -n 0"
-  fi
+  [ "$FASTBOOT" = "yes" ] && IONICE="/bin/busybox ionice -c 1 -n 0" || IONICE=""
 
-  if test "$DEBUG" = "yes"; then
-    exec 3>&1
-  else
-    exec 3>/dev/null
-  fi
+  [ "$DEBUG" = "yes" ] && exec 3>&1 || exec 3>/dev/null
+
   SILENT_OUT=3
 
   progress() {
-    if test "$PROGRESS" = "yes"; then
-      echo "### $1 ###"
-    fi
+    [ "$PROGRESS" = "yes" ] && echo "### $1 ###"
   }
 
   debug_shell() {
     echo "### Starting debugging shell... type  exit  to quit ###"
 
     # show cursor
-      echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
 
     /bin/busybox sh </dev/tty1 >/dev/tty1 2>&1
   }
@@ -146,6 +146,18 @@
         debug_shell
         ;;
     esac
+  }
+
+  countdown() {
+    MESSAGE="$1"
+    COUNT=${2:-10}
+    while [ $COUNT -ge 0 ]; do
+      [ $COUNT -eq 1 ] && S="" || S="s"
+      echo -ne "${MESSAGE} \033[1;36m$COUNT second${S}\033[m\017...    \r"
+      COUNT=$((${COUNT}-1))
+      /bin/busybox usleep 1000000
+    done
+    echo
   }
 
   # Mount handlers
@@ -297,34 +309,44 @@
     $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
   }
 
+  mount_remount() {
+  # Remount mount point ($1) with new rw/ro mode ($2) only when required.
+    NEW_MODE="$2"
+    if [ -z "$(/bin/busybox grep " $1 " /proc/mounts | /bin/busybox awk -v MODE="$NEW_MODE" '$4~"(^|,)"MODE"($|,)"')" ]; then
+       /bin/busybox sync
+       $IONICE /bin/busybox mount -o remount,$NEW_MODE /$1
+    fi
+  }
+
   update() {
-    if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
-      echo "updating $1..."
-        $IONICE /bin/busybox mount -o remount,rw /flash
-        $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3
-        $IONICE /bin/busybox mount -o remount,ro /flash
-        $IONICE /bin/busybox sync
+    if [ -f "$UPDATE_DIR/$2" -a -f "$3/$4" ]; then
+      [ "$3" = "/flash" ] && TARGET=$BOOT_TYPE || TARGET="local"
+      echo "Updating $1 on $TARGET..."
+      mount_remount "$3" "rw"
+      $IONICE /bin/busybox mv $UPDATE_DIR/$2 $3/$4
+      $IONICE /bin/busybox sync
+      mount_remount "$3" "ro"
     fi
   }
 
   update_bootloader() {
     if [ -f "/flash/$IMAGE_SYSTEM" ]; then
-    # /flash is filesystem with system image file
-      export BOOT_ROOT="/flash"
+    # /flash is normally filesystem with system image file
+      export BOOT_ROOT="$1"
       export SYSTEM_ROOT="/sysroot"
 
       mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
 
       if [ -f $SYSTEM_ROOT/usr/share/bootloader/update.sh ]; then
-        echo "updating Bootloader..."
-          $IONICE /bin/busybox sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
-          $IONICE /bin/busybox sync
+        [ "$1" = "/flash" ] && TARGET=$BOOT_TYPE || TARGET="local"
+        echo "Updating Bootloader on $TARGET..."
+        $IONICE /bin/busybox sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
+        $IONICE /bin/busybox sync
       fi
 
-      umount /sysroot
+      /bin/busybox umount /sysroot
     fi
   }
-
 
   hfsdiskprep() {
     for DEVICE in /dev/sd*; do
@@ -347,7 +369,7 @@
     progress "Loading kernel modules"
 
     [ ! -f "/etc/modules" ] && return
-    for module in $(cat /etc/modules); do
+    for module in $(/bin/busybox cat /etc/modules); do
       progress "Loading kernel module $module"
       /bin/busybox insmod "$MODULE_DIR/$module.ko" || \
         progress "... Failed to load kernel module $module, skipping"
@@ -373,7 +395,7 @@
           SPLASHIMAGE="/splash/splash.png"
         fi
 
-        ply-image $SPLASHIMAGE > /dev/null 2>&1 &
+        ply-image $SPLASHIMAGE > /dev/null 2>&1
     fi
   }
 
@@ -397,10 +419,10 @@
 
     if [ -n "$disk" ]; then
       if [ -n "$OVERLAY" ]; then
-        OVERLAY_DIR=`cat /sys/class/net/eth0/address | /bin/busybox tr -d :`
+        OVERLAY_DIR="$(/bin/busybox cat /sys/class/net/eth0/address | /bin/busybox tr -d :)"
 
         mount_part "$disk" "/storage" "rw,noatime"
-        mkdir -p /storage/$OVERLAY_DIR
+        /bin/busybox mkdir -p /storage/$OVERLAY_DIR
         /bin/busybox umount /storage
 
       # split $disk into $target,$options so we can append $OVERLAY_DIR
@@ -424,6 +446,10 @@
 #      IMAGE_KERNEL="MACH_KERNEL"
 #    fi
 
+    DO_REBOOT="0"
+    MD5_NOCHECK="0"
+    MD5_FAILED="0"
+
     if [ -f "$UPDATE_DIR/$UPDATE_KERNEL" -a -f "$UPDATE_DIR/$UPDATE_SYSTEM" ] ; then
       if [ -f "$UPDATE_DIR/.nocheck" ] ; then
         MD5_NOCHECK="1"
@@ -446,23 +472,38 @@
 
       # update if md5 check is ok or .nocheck exists
       if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-        update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-        update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
-        update_bootloader
-        REBOOT="1"
+        if [ "$BOOT_TYPE" = "local" ] ; then
+          update "Kernel" "$UPDATE_KERNEL" "/flash" "$IMAGE_KERNEL"
+          update "System" "$UPDATE_SYSTEM" "/flash" "$IMAGE_SYSTEM"
+          update_bootloader "/flash"
+        else
+          # Booted from remote fs, need mountpoint for boot media
+          # in order to update kernel and any associated boot files
+          /bin/busybox mkdir /bootroot
+
+          #TODO: Where does PXE mount device with kernel?
+          # Need sane alternative solution for non-RPi devices in order to update kernel.img
+          [ "${IS_RPI}" = "Y" ] && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
+
+          update "Kernel" "$UPDATE_KERNEL" "/bootroot" "$IMAGE_KERNEL"
+          update "System" "$UPDATE_SYSTEM" "/flash" "$IMAGE_SYSTEM"
+          update_bootloader "/bootroot"
+
+          /bin/busybox umount /bootroot && /bin/busybox rm -fr /bootroot
+        fi
+        DO_REBOOT="1"
       else
         /bin/busybox rm "$UPDATE_DIR/$UPDATE_KERNEL"
         /bin/busybox rm "$UPDATE_DIR/$UPDATE_SYSTEM"
-        echo "md5 check failed. normal startup in 30s..."
         /bin/busybox sync
-        /bin/busybox usleep 30000000
+        countdown "md5 check failed. normal startup in" 30
       fi
       /bin/busybox rm "$UPDATE_DIR/${UPDATE_KERNEL}.md5" &>/dev/null
       /bin/busybox rm "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" &>/dev/null
     fi
 
-    if test "$REBOOT" -eq "1"; then
-      echo "System reboots now..." && \
+    if [ "$DO_REBOOT" -eq "1" ]; then
+      countdown "System rebooting in" 5
       /bin/busybox reboot
     fi
   }
@@ -475,7 +516,8 @@
       if [ "$SYSTEM_TORAM" = "no" -o "$INSTALLED_MEMORY" -lt "$SYSTEM_TORAM_LIMIT" ]; then
         mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
       else
-        cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
+        progress "Loading System to RAM"
+        /bin/busybox cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
         mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
       fi
 
