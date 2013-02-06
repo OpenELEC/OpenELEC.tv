@@ -22,5 +22,5 @@
 
 . config/options $1
 
-mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp $PKG_BUILD/src/sispmctl  $ADDON_BUILD/$PKG_ADDON_ID/bin
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/resources/
+  cp $PKG_BUILD/src/sispmctl  $ADDON_BUILD/$PKG_ADDON_ID/resources/

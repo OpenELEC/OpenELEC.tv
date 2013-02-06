@@ -20,7 +20,7 @@
 
 PKG_NAME="sispmctl"
 PKG_VERSION="3.1"
-PKG_REV="1"
+PKG_REV="1.1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://sispmctl.sourceforge.net"
@@ -28,11 +28,11 @@ PKG_URL="http://downloads.sourceforge.net/project/sispmctl/sispmctl/sispmctl-3.1
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS="toolchain libusb-compat"
 PKG_PRIORITY="optional"
-PKG_SECTION="tools"
-PKG_SHORTDESC="SiS-PM  (Silver Shield PM) Control for Linux"
-PKG_LONGDESC="SiS-PM  (Silver Shield PM) Control for Linux"
+PKG_SECTION="service"
+PKG_SHORTDESC="Switch off SiS-PM Silver Shield prepherials when screensaver is activated."
+PKG_LONGDESC="Switch off SiS-PM Silver Shield prepherials when screensaver is activated."
 
 PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.python.script"
+PKG_ADDON_TYPE="xbmc.service"
 
 PKG_AUTORECONF="no"
