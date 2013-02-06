@@ -135,6 +135,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Sensors support
   [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
 
+# I2C Tools support
+  [ "$I2CTOOLS_SUPPORT" = "yes" ] && $SCRIPTS/install i2c-tools
+
 # Update support
   [ "$UPDATE_SUPPORT" = "yes" ] && $SCRIPTS/install autoupdate
 

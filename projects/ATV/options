@@ -309,6 +309,9 @@
 # build with lm_sensors hardware monitoring support (yes / no)
   SENSOR_SUPPORT="yes"
 
+# build with i2c-tools SMBus support (yes / no)
+  I2CTOOLS_SUPPORT="yes"
+
 # build with swap support (yes / no)
   SWAP_SUPPORT="yes"
 
