@@ -309,6 +309,12 @@
 # build with lm_sensors hardware monitoring support (yes / no)
   SENSOR_SUPPORT="yes"
 
+# build with ACPI pmtools support (yes / no)
+  PMTOOLS_SUPPORT="yes"
+
+# build with ACPICA tools support (yes / no)
+  ACPICA_SUPPORT="yes"
+
 # build with swap support (yes / no)
   SWAP_SUPPORT="yes"
 
