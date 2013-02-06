@@ -135,6 +135,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Sensors support
   [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
 
+# ACPI pmtools support
+  [ "$PMTOOLS_SUPPORT" = "yes" ] && $SCRIPTS/install pmtools
+
+# ACPI tables tools
+  [ "$ACPICA_SUPPORT" = "yes" ] && $SCRIPTS/install acpica
+
 # Update support
   [ "$UPDATE_SUPPORT" = "yes" ] && $SCRIPTS/install autoupdate
 
