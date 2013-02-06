@@ -135,6 +135,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Sensors support
   [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
 
+# Watchdog support
+  [ "$WATCHDOG_SUPPORT" = "yes" ] && $SCRIPTS/install watchdog
+
 # Update support
   [ "$UPDATE_SUPPORT" = "yes" ] && $SCRIPTS/install autoupdate
 
