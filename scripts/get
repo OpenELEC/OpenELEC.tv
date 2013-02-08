@@ -39,6 +39,7 @@ if [ -n "$PKG_URL" ]; then
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
     PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
     [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
+    # FIXME: Newer wget supports --trust-server-names which helps to get proper file names when redirected
     WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
 
     NBWGET="1"
