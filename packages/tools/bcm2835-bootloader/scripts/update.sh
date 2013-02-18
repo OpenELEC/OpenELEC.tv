@@ -46,7 +46,7 @@
     /bin/busybox cat $SYSTEM_ROOT/usr/share/bootloader/config.txt \
                      $BOOT_ROOT/config.txt.bk > $BOOT_ROOT/config.txt
   else
-    /bin/busybox sed -e "s,# gpu_mem_256=128,gpu_mem_256=100,g" -i $BOOT_ROOT/config.txt
+    /bin/busybox sed -e "s,# gpu_mem_256=128,gpu_mem_256=128,g" -i $BOOT_ROOT/config.txt
     /bin/busybox sed -e "s,# gpu_mem_512=128,gpu_mem_512=128,g" -i $BOOT_ROOT/config.txt
   fi
 
