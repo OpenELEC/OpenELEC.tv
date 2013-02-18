@@ -36,6 +36,9 @@
   IMAGE_KERNEL="KERNEL"
   IMAGE_SYSTEM="SYSTEM"
 
+# iotimeout for media_check, disabled by default. typical value 5000.
+  IO_TIMEOUT=0
+
   NBD_DEVS="0"
 
   INSTALLED_MEMORY=$(/bin/busybox cat /proc/meminfo | /bin/busybox grep 'MemTotal:' | /bin/busybox awk '{print $2}')
@@ -99,6 +102,9 @@
         ;;
       noram)
         SYSTEM_TORAM=no
+        ;;
+      iotimeout=*)
+        IO_TIMEOUT="${arg#*=}"
         ;;
       overlay)
         OVERLAY=yes
@@ -414,6 +420,75 @@
     mount_part "$boot" "/flash" "ro,noatime"
   }
 
+  media_check() {
+    if [ "$IO_TIMEOUT" -gt "0" ]; then
+      progress "Media integrity check"
+
+      [ "$IS_RPI" = "Y" ] && media_check_rpi
+    fi
+  }
+
+#
+# Determine how long it takes to write libc.so.6 (~1.2MB) to the
+# Raspberry Pi SD memory card. This IO operation should complete in
+# under 5 seconds - any longer and the SD card is likely to end
+# up with corrupted boot files and/or secondary partition.
+#
+# To avoid this corruption, system will reboot and check again.
+#
+# Enable media_check by setting iotimeout > 0, eg. 5000.
+#
+  media_check_rpi() {
+
+    # Show the following message which will appear momentarily when there
+    # is no problem, but remain visible for entire duration of slow I/O
+    # operation when there is a performance issue.
+    echo "Media check - please wait..."
+
+    # any decent sized (>512KB) file will do
+    SOURCE="/lib/libc.so.6"
+
+    # Get current time in miliseconds (discard remaining digits)
+    IO_START=$(/bin/busybox grep "now at [0-9]* nsecs" /proc/timer_list | /bin/busybox sed -e "s/now at \(.*\)[0-9][0-9][0-9][0-9][0-9][0-9] nsecs/\1/")
+
+    if [ "$BOOT_TYPE" = "local" ] ; then
+      mount_remount "/flash" "rw"
+      /bin/busybox cp "$SOURCE" "/flash/.openelec" 2>/dev/null
+      CP_RES=$?
+      /bin/busybox sync
+      [ -f "/flash/.openelec" ] && ( /bin/busybox rm "/flash/.openelec" && /bin/busybox sync )
+      mount_remount "/flash" "ro"
+     else
+      /bin/busybox mkdir /bootroot && mount_part "/dev/mmcblk0p1" "/bootroot" "rw,noatime"
+      /bin/busybox cp "$SOURCE" "/bootroot/.openelec" 2>/dev/null
+      CP_RES=$?
+      /bin/busybox sync
+      [ -f "/bootroot/.openelec" ] && ( /bin/busybox rm "/bootroot/.openelec" && /bin/busybox sync )
+      /bin/busybox umount /bootroot && /bin/busybox rm -fr /bootroot
+    fi
+
+    IO_END=$(/bin/busybox grep "now at [0-9]* nsecs" /proc/timer_list | /bin/busybox sed -e "s/now at \(.*\)[0-9][0-9][0-9][0-9][0-9][0-9] nsecs/\1/")
+    IO_TIME=$((${IO_END}-${IO_START}))
+
+    progress "media_check: i/o time [$IO_TIME], timeout [$IO_TIMEOUT]"
+
+    if [ $IO_TIME -gt $IO_TIMEOUT -o $CP_RES -ne 0 ]; then
+      if [ $CP_RES -eq 0 ]; then
+        echo "media_check: Write I/O interval ${IO_TIME}ms has exceeded iotimeout ${IO_TIMEOUT}ms"
+      else
+        echo "media_check: Write I/O failed, most likely due to mount point failure"
+      fi
+      echo "media_check: SD Card performance is low."
+      countdown "media_check: Rebooting to improve performance in" 10
+      /bin/busybox reboot
+    fi
+
+    # Use ESC M (reverse linefeed) to remove previous "Please wait"
+    # message, leaving cursor on same line (top line of screen) ready
+    # for version/build number.
+    [ "$PROGRESS" != "yes" ] && echo -ne "\033M                            \r"
+  }
+
   mount_storage() {
     progress "Mounting storage"
 
@@ -540,6 +615,7 @@
       check_disks \
       mount_flash \
       load_splash \
+      media_check \
       mount_storage \
       check_update \
       prepare_sysroot; do
