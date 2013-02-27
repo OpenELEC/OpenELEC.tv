@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,24 +20,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-#
-# OEM scripts
-#
-# runlevels: openelec, installer, textmode
+. /etc/profile
 
-if [ ! -f /etc/asound.conf -a ! -f $HOME/.config/asound.conf ]; then
+ADDON_DIR="$HOME/.xbmc/addons/driver.dvb.hdhomerun"
 
-  DMI_BOARD_VENDOR=`cat /sys/class/dmi/id/board_vendor`
-# DMI_BOARD_VERSION=`cat /sys/class/dmi/id/board_version`
-  SYSTEM_CPU=`grep -m1 model /proc/cpuinfo | awk '{print $3}'`
-
-  if [ "$DMI_BOARD_VENDOR" = "XtReAmEr" ]; then
-    if [ "$SYSTEM_CPU" = "28" ]; then
-      # Xtreamer Ultra 1
-      cp /usr/share/xtreamer/asound.conf.ultra1 /run/asound.conf
-    elif [ "$SYSTEM_CPU" = "54" ]; then
-      # Xtreamer Ultra 2
-      cp /usr/share/xtreamer/asound.conf.ultra2 /run/asound.conf
-    fi
-  fi
-fi
+logger -t Hdhomerun "### Hdhomerun manual start ###"
+. $ADDON_DIR/bin/userspace-driver.sh
