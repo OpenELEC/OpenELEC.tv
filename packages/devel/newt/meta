@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2013 Dag Wieers (dag@wieers.com)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,29 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="linux"
-PKG_VERSION="3.7.10"
+PKG_NAME="newt"
+PKG_VERSION="0.52.14"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="busybox linux-drivers linux-firmware newt pciutils $BOOTLOADER"
-PKG_BUILD_DEPENDS="toolchain cpio module-init-tools newt pciutils xz"
+PKG_LICENSE="LGPL"
+PKG_SITE="https://fedorahosted.org/newt/"
+PKG_URL="https://fedorahosted.org/releases/n/e/newt/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS="popt slang"
+PKG_BUILD_DEPENDS="popt slang"
 PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
+PKG_SECTION="devel"
+PKG_SHORTDESC="newt: library for color text mode, widget based user interfaces"
+PKG_LONGDESC="Newt is a programming library for color text mode, widget based user interfaces. Newt can be used to add stacked windows, entry widgets, checkboxes, radio buttons, labels, plain text fields, scrollbars, etc., to text mode user interfaces. Newt is based on the S-Lang library."
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
-
-if [ "$LINUX" = "3.6" ]; then
-  PKG_VERSION="3.6.11"
-  PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-fi
-
-if [ "$LINUX" = "ti-omap4" ]; then
-  PKG_VERSION="2.6.38-ti-omap4"
-  PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
-fi
