@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2013 Dag Wieers (dag@wieers.com)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,10 @@
 
 . config/options $1
 
-mkdir -p $INSTALL/etc/pastebin.d
-  cp $PKG_BUILD/pastebin.d/sprunge.us.conf $INSTALL/etc/pastebin.d
+cd $PKG_BUILD
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_BUILD/pastebinit $INSTALL/usr/bin
-  ln -sf pastebinit $INSTALL/usr/bin/paste      # link for a shorter command
+make PREFIX=/usr \
+     CC="$TARGET_CC" \
+     AR="$TARGET_AR" \
+     CFLAGS="$TARGET_CFLAGS" \
+     CPPFLAGS="$TARGET_CPPFLAGS" \

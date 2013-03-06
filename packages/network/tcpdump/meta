@@ -1,6 +1,7 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2011 Anthony Nash (nash.ant@gmail.com)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,24 +19,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="busybox"
-PKG_VERSION="1.21.0"
+PKG_NAME="tcpdump"
+PKG_VERSION="4.3.0"
 PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.busybox.net"
-PKG_URL="http://busybox.net/downloads/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="bash kexec-tools hdparm speedcontrol zip pciutils usbutils"
-PKG_BUILD_DEPENDS="toolchain busybox-hosttools"
-PKG_PRIORITY="required"
-PKG_SECTION="system"
-PKG_SHORTDESC="BusyBox: The Swiss Army Knife of Embedded Linux"
-PKG_LONGDESC="BusyBox combines tiny versions of many common UNIX utilities into a single small executable. It provides replacements for most of the utilities you usually find in GNU fileutils, shellutils, etc. The utilities in BusyBox generally have fewer options than their full-featured GNU cousins; however, the options that are included provide the expected functionality and behave very much like their GNU counterparts. BusyBox provides a fairly complete environment for any small or embedded system."
+PKG_SITE="http://www.tcpdump.org/"
+PKG_URL="http://www.tcpdump.org/release/tcpdump-${PKG_VERSION}.tar.gz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS="toolchain libpcap"
+PKG_PRIORITY=optional
+PKG_SECTION="network"
+PKG_SHORTDESC="powerful tool for network monitoring and data acquisition"
+PKG_LONGDESC="This program allows you to dump the traffic on a network. tcpdump is able to examine IPv4, ICMPv4, IPv6, ICMPv6, UDP, TCP, SNMP, AFS BGP, RIP, PIM, DVMRP, IGMP, SMB, OSPF, NFS and many other packet types."
 PKG_IS_ADDON="no"
 
-PKG_AUTORECONF="no"
-
-# nano text editor
-  if [ "$NANO_EDITOR" = "yes" ]; then
-    PKG_DEPENDS="$PKG_DEPENDS nano"
-  fi
+PKG_AUTORECONF="yes"
