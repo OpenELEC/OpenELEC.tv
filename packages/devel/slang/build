@@ -31,6 +31,13 @@ cd $PKG_BUILD
             --exec-prefix=/usr \
             --sysconfdir=/etc \
             --datadir=/usr/share \
+            --without-iconv \
+            --without-onig \
+            --without-pcre \
+            --without-png \
+            --without-zlib \
+            --without-x \
+            --without-z \
 
 make
 $MAKEINSTALL
