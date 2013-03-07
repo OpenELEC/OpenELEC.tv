@@ -38,5 +38,5 @@ cd $PKG_BUILD
             --disable-static \
             --enable-shared \
 
-make COPTS="$CFLAGS" -C pppd
+make COPTS="$CFLAGS" LIBS="$LIBS -lpthread -lusb-1.0 -lpcap -ldl -lcrypt" -C pppd
 make DESTDIR=$SYSROOT_PREFIX/usr -C pppd install-devel
