@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,21 +20,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="SABnzbd-Suite"
-PKG_VERSION="3.0"
-PKG_REV="6"
-PKG_ARCH="any"
-PKG_LICENSE="OSS"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="Python"
-PKG_BUILD_DEPENDS="toolchain Python SABnzbd SickBeard CouchPotato Headphones CouchPotatoServer"
-PKG_PRIORITY="optional"
-PKG_SECTION="service/downloadmanager"
-PKG_SHORTDESC="SABnzbd-Suite is a Metapackage which combines SABnzbd, SickBeard, Couchpotato and Headphones in one Addon"
-PKG_LONGDESC="SABnzbd-Suite makes Usenet as simple and streamlined as possible by automating everything we can. All you have to do is add a .nzb file. SABnzbd+ takes over from there, where it will be automatically downloaded, verified, repaired, extracted and filed away with zero human interaction."
+. config/options $1
 
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.service"
+echo "### Applying architecture based patches ###"
 
-PKG_AUTORECONF="no"
+if [ ! $TARGET_ARCH = arm ]; then
+  for patch in `ls $PKG_DIR/patches.x86`; do
+    cat $PKG_DIR/patches.x86/$patch | patch -d \
+      `echo $PKG_BUILD | cut -f1 -d\ ` -p1
+  done
+fi

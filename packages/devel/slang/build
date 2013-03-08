@@ -35,9 +35,8 @@ cd $PKG_BUILD
             --without-onig \
             --without-pcre \
             --without-png \
-            --without-zlib \
-            --without-x \
             --without-z \
+            --without-x \
 
 make
 $MAKEINSTALL
