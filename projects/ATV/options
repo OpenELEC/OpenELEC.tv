@@ -241,7 +241,7 @@
   OPENGLES="no"
 
 # Windowmanager to use (ratpoison / none)
-  WINDOWMANAGER="ratpoison"
+  WINDOWMANAGER="none"
 
 # Displayserver to use (xorg-server / no)
   DISPLAYSERVER="xorg-server"
