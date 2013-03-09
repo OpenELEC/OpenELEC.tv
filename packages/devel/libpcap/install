@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2012 Dag Wieers (dag@wieers.com)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,20 +22,5 @@
 
 . config/options $1
 
-cd $BUILD/$1*
-
-# When cross-compiling, configure can't set linux version
-# forcing it
-sed -i -e 's/ac_cv_linux_vers=unknown/ac_cv_linux_vers=2/' configure
-
-LIBS="-lpthread" \
-./configure \
-       --host=$TARGET_NAME \
-       --build=$HOST_NAME \
-       --prefix=/usr \
-       --with-pcap=linux \
-       --disable-bluetooth \
-       --disable-can \
-       --disable-canusb \
-
-$MAKEINSTALL
+mkdir -p $INSTALL/usr/lib/
+  cp -P $PKG_BUILD/libpcap*.so* $INSTALL/usr/lib/
