@@ -40,6 +40,10 @@ mkdir -p $INSTALL/usr/bin
 mkdir -p $INSTALL/usr/sbin
   cp $PKG_BUILD/sshd $INSTALL/usr/sbin/
 
+mkdir -p $INSTALL/usr/config/.ssh
+  echo -n '' > $INSTALL/usr/config/.ssh/authorized_keys
+  chmod 700 -R $INSTALL/usr/config/.ssh
+
 if [ $SFTP_SERVER = "yes" ]; then
   mkdir -p $INSTALL/usr/libexec
     cp $PKG_BUILD/sftp-server $INSTALL/usr/libexec
