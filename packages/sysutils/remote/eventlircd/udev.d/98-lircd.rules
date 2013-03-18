@@ -18,7 +18,7 @@ LABEL="begin"
 #-------------------------------------------------------------------------------
 SUBSYSTEM=="lirc", \
   ENV{lircd_driver}="default", \
-  ENV{lircd_conf}="/storage/.config/lircd.conf"
+  ENV{lircd_conf}="/etc/lirc/lircd.conf"
 
 ### Microsoft Xbox DVD dongle
 SUBSYSTEM=="lirc", DRIVERS=="lirc_xbox", \
