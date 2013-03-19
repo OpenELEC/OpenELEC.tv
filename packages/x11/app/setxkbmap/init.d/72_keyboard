@@ -18,31 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="boblightd"
-PKG_VERSION="465"
-PKG_REV="3"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://code.google.com/p/boblight"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="libusb"
-PKG_BUILD_DEPENDS="toolchain libusb"
-PKG_PRIORITY="optional"
-PKG_SECTION="service/multimedia"
-PKG_SHORTDESC="boblightd: an ambilight controller."
-PKG_LONGDESC="Boblight's main purpose is to create light effects from an external input, such as a video stream.\n\nSee this thread on the Openelec forums for howto and demonstration: http://bit.ly/oe-boblight"
+# setup keyboard layout
+#
+# runlevels: openelec
 
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.service"
+(
+  if [ -f /var/config/settings.conf ]; then
+    . /var/config/settings.conf
 
-PKG_AUTORECONF="yes"
+    progress "setup keyboard layout"
 
-if [ "$DISPLAYSERVER" = "xorg-server" ] ; then
-  PKG_DEPENDS="$PKG_DEPENDS libX11 libXext libXrender"
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libX11 libXext libXrender"
-fi
+    if [ -z $X11_KEYMAP ]; then
+      X11_KEYMAP="us"
+    fi
 
-if [ "$OPENGL_SUPPORT" = "yes" ] ; then
-  PKG_DEPENDS="$PKG_DEPENDS Mesa glu"
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS Mesa glu"
-fi
+    # waiting for Xorg to start
+      wait_for_xorg
+
+    # setup keymap
+      if [ -z $X11_KEYMAP2 ]; then
+        setxkbmap -display $DISPLAY $X11_KEYMAP;
+      else
+        setxkbmap -display $DISPLAY -layout "$X11_KEYMAP,$X11_KEYMAP2" -option "grp:alt_shift_toggle";
+      fi
+  fi
+)&
