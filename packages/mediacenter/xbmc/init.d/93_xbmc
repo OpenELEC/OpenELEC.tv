@@ -37,7 +37,7 @@ fi
   chmod +x /storage/.xbmc/addons/*/bin/* > /dev/null 2>&1
 
 # write Logs to storage if needed 
-  LOGFILE="$((test -d /storage/log) && echo '/var' || echo '/storage')/log/messages"
+  LOGFILE="/var/log/messages"
 
 # starting autostart script
   AUTOSTART="/storage/.config/autostart.sh"
