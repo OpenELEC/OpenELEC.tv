@@ -19,19 +19,23 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="vdr-addon"
-PKG_VERSION="4.0"
+PKG_NAME="noad"
+PKG_VERSION="0.8.5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
+PKG_SITE="http://noad.net23.net/"
+PKG_URL="http://noad.net23.net/noad-0.8.5.tar.bz2"
 PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain attr libcap vdr vdr-plugin-xvdr vdr-plugin-vnsiserver vdr-iptv vdr-wirbelscan vdr-wirbelscancontrol vdr-sc vdr-plugin-dvbapi vdr-plugin-streamdev vdr-live vdr-control vdr-epgsearch vdr-plugin-xmltv2vdr noad"
+PKG_BUILD_DEPENDS_TARGET="ffmpeg libmpeg2"
 PKG_PRIORITY="optional"
-PKG_SECTION="service.multimedia"
-PKG_SHORTDESC="vdr: A powerful DVB TV application"
-PKG_LONGDESC="This project describes how to build your own digital satellite receiver and video disk recorder. It is based mainly on the DVB-S digital satellite receiver card, which used to be available from Fujitsu Siemens and the driver software developed by the LinuxTV project."
-PKG_AUTORECONF="no"
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.service"
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="noad - no advertising"
+PKG_LONGDESC=""
+
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+makeinstall_target() {
+  : # installation not needed, done by create-addon script
+}
