@@ -36,15 +36,30 @@ fi
 # hack: make addon-bins executable
   chmod +x /storage/.xbmc/addons/*/bin/* > /dev/null 2>&1
 
-# starting autostart script (will be removed later again, dont use it!!!)
+# write Logs to storage if needed 
+  LOGFILE="/var/log/messages"
+
+# starting autostart script
   AUTOSTART="/storage/.config/autostart.sh"
   if [ -f $AUTOSTART ]; then
-    echo "!!! AUTOSTART script detected !!!" >> /var/log/messages
-    cat "$AUTOSTART" >> /var/log/messages
-    echo "!!! -End of autostart script- !!!" >> /var/log/messages
+    echo "!!! $(date "+%b %d %T"): AUTOSTART script detected !!!" >> $LOGFILE
+    cat "$AUTOSTART" >> $LOGFILE
+    echo "!!! -End of autostart script- !!!" >> $LOGFILE
 
     sh $AUTOSTART
   fi
+
+# call shutdown script if exists
+call_shutdown_script(){
+  SHUTDOWN="/storage/.config/shutdown.sh"
+  if [ -f $SHUTDOWN ]; then
+    echo "!!! $(date "+%b %d %T"): SHUTDOWN script detected !!!" >> $LOGFILE
+    cat "$SHUTDOWN" >> $LOGFILE
+    echo "!!! -End of shutdown script- !!!" >> $LOGFILE
+
+    sh $SHUTDOWN $1
+  fi
+}
 
 # starting autoupdate
   [ -f /usr/bin/autoupdate ] && /usr/bin/autoupdate &
@@ -84,6 +99,7 @@ fi
       0)
         if [ ! $(pidof console-kit-daemon) ]; then
           touch "$LOCKDIR/$LOCKFILE"
+          call_shutdown_script quit
           _safe_shutdown
           poweroff -f
         fi
@@ -91,6 +107,7 @@ fi
       64)
         if [ ! $(pidof console-kit-daemon) ]; then
           touch "$LOCKDIR/$LOCKFILE"
+          call_shutdown_script powerdown
           _safe_shutdown
           poweroff -f
         fi
@@ -98,6 +115,7 @@ fi
       66)
         if [ ! $(pidof console-kit-daemon) ]; then
           touch "$LOCKDIR/$LOCKFILE"
+          call_shutdown_script reboot
           _safe_shutdown
           reboot
         fi
