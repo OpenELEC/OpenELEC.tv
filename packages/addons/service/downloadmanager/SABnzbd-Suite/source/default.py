@@ -62,7 +62,10 @@ if sabNzbdLaunch:
     sabNzbdUser       = sabConfiguration['misc']['username']
     sabNzbdPass       = sabConfiguration['misc']['password']
     sabNzbdQueue      = 'http://' + sabNzbdAddress + '/api?mode=queue&output=xml&apikey=' + sabNzbdApiKey + '&ma_username=' + sabNzbdUser + '&ma_password=' + sabNzbdPass
-
+    sabNzbdHistory    = 'http://' + sabNzbdAddress + '/api?mode=history&output=xml&apikey=' + sabNzbdApiKey + '&ma_username=' + sabNzbdUser + '&ma_password=' + sabNzbdPass
+    sabNzbdQueueKeywords = ['<status>Downloading</status>', '<status>Fetching</status>']
+    sabNzbdHistoryKeywords = ['<status>Repairing</status>', '<status>Verifying</status>', '<status>Extracting</status>']
+    
     # start checking SABnzbd for activity and prevent sleeping if necessary
     socket.setdefaulttimeout(timeout)
     
@@ -90,13 +93,24 @@ while (not xbmc.abortRequested):
             req = urllib2.Request(sabNzbdQueue)
             try: handle = urllib2.urlopen(req)
             except IOError, e:
-                xbmc.log('SABnzbd-Suite: could not determine SABnzbds status', level=xbmc.LOGERROR)
+                xbmc.log('SABnzbd-Suite: could not determine SABnzbds queue status', level=xbmc.LOGERROR)
             else:
                 queue = handle.read()
                 handle.close()
-                sabIsActive = (queue.find('<status>Downloading</status>') >= 0)
+                if any(x in queue for x in sabNzbdQueueKeywords):
+                    sabIsActive = True
 
-            # reset idle timer when we're close to idle sleep/shutdown
+            req = urllib2.Request(sabNzbdHistory)
+            try: handle = urllib2.urlopen(req)
+            except IOError, e:
+                xbmc.log('SABnzbd-Suite: could not determine SABnzbds history status', level=xbmc.LOGERROR)
+            else:
+                history = handle.read()
+                handle.close()
+                if any(x in history for x in sabNzbdHistoryKeywords):
+                    sabIsActive = True
+
+            # reset idle timer if queue is downloading/reparing/verifying/extracting
             if sabIsActive:
                 xbmc.executebuiltin('InhibitIdleShutdown(true)')
             else:
