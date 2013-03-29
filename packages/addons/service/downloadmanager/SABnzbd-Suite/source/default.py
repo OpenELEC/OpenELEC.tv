@@ -128,7 +128,7 @@ while (not xbmc.abortRequested):
             open("/sys/class/rtc/rtc0/wakealarm", "w").write("0")
             open("/sys/class/rtc/rtc0/wakealarm", "w").write(str(secondsSinceEpoch))
 
-    time.sleep(0.250)
+    time.sleep(60)
 
 subprocess.Popen(__stop__, shell=True, close_fds=True)
 
