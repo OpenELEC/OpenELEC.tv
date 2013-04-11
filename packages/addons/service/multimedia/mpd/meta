@@ -19,11 +19,11 @@
 ################################################################################
 
 PKG_NAME="mpd"
-PKG_VERSION="0.17.3"
+PKG_VERSION="0.17.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://mpd.wikia.com/wiki/Music_Player_Daemon_Wiki"
+PKG_SITE="http://www.musicpd.org/"
 PKG_URL="http://downloads.sourceforge.net/musicpd/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS="libid3tag libmad glib alsa-lib libogg flac faad2 curl libid3tag ffmpeg"
 PKG_BUILD_DEPENDS="toolchain glib alsa-lib libmad libogg flac faad2 curl libid3tag ffmpeg"
