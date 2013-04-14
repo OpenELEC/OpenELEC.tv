@@ -1,0 +1,40 @@
+From 0187ab6184b36cc1f01424ef534648c198578dbe Mon Sep 17 00:00:00 2001
+From: Rainer Koenig <Rainer.Koenig@ts.fujitsu.com>
+Date: Thu, 04 Apr 2013 06:40:38 +0000
+Subject: ALSA: hda - Enabling Realtek ALC 671 codec
+
+commit 1d87caa69c04008e09f5ff47b5e6acb6116febc7 upstream.
+
+* Added the device ID to the modalias list and assinged ALC662 patches
+for it
+* Added 4 port support for the device ID 0671 in alc662_parse_auto_config
+
+Signed-off-by: Rainer Koenig <Rainer.Koenig@ts.fujitsu.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 47fb18d..ee975a2 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6720,7 +6720,8 @@ static int alc662_parse_auto_config(struct hda_codec *codec)
+ 	const hda_nid_t *ssids;
+ 
+ 	if (codec->vendor_id == 0x10ec0272 || codec->vendor_id == 0x10ec0663 ||
+-	    codec->vendor_id == 0x10ec0665 || codec->vendor_id == 0x10ec0670)
++	    codec->vendor_id == 0x10ec0665 || codec->vendor_id == 0x10ec0670 ||
++	    codec->vendor_id == 0x10ec0671)
+ 		ssids = alc663_ssids;
+ 	else
+ 		ssids = alc662_ssids;
+@@ -7173,6 +7174,7 @@ static const struct hda_codec_preset snd_hda_preset_realtek[] = {
+ 	{ .id = 0x10ec0665, .name = "ALC665", .patch = patch_alc662 },
+ 	{ .id = 0x10ec0668, .name = "ALC668", .patch = patch_alc662 },
+ 	{ .id = 0x10ec0670, .name = "ALC670", .patch = patch_alc662 },
++	{ .id = 0x10ec0671, .name = "ALC671", .patch = patch_alc662 },
+ 	{ .id = 0x10ec0680, .name = "ALC680", .patch = patch_alc680 },
+ 	{ .id = 0x10ec0880, .name = "ALC880", .patch = patch_alc880 },
+ 	{ .id = 0x10ec0882, .name = "ALC882", .patch = patch_alc882 },
+--
+cgit v0.9.1

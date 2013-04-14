@@ -1,0 +1,30 @@
+From 05c05ef21a1cf71d16189cd4d8060b47f504db2b Mon Sep 17 00:00:00 2001
+From: David Henningsson <david.henningsson@canonical.com>
+Date: Thu, 04 Apr 2013 09:47:13 +0000
+Subject: ALSA: hda - fix typo in proc output
+
+commit aeb3a97222832e5457c4b72d72235098ce4bfe8d upstream.
+
+Rename "Digitial In" to "Digital In". This function is only used for
+proc output, so should not cause any problems to change.
+
+Signed-off-by: David Henningsson <david.henningsson@canonical.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index e46b6a3..622f726 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -173,7 +173,7 @@ const char *snd_hda_get_jack_type(u32 cfg)
+ 		"Line Out", "Speaker", "HP Out", "CD",
+ 		"SPDIF Out", "Digital Out", "Modem Line", "Modem Hand",
+ 		"Line In", "Aux", "Mic", "Telephony",
+-		"SPDIF In", "Digitial In", "Reserved", "Other"
++		"SPDIF In", "Digital In", "Reserved", "Other"
+ 	};
+ 
+ 	return jack_types[(cfg & AC_DEFCFG_DEVICE)
+--
+cgit v0.9.1

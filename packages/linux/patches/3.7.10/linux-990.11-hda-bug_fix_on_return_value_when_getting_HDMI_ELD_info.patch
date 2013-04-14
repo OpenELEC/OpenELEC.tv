@@ -1,0 +1,33 @@
+From 083e2330c09b7a5f905020c10e9f52b5c1e17979 Mon Sep 17 00:00:00 2001
+From: Mengdong Lin <mengdong.lin@intel.com>
+Date: Thu, 28 Mar 2013 09:20:22 +0000
+Subject: ALSA: hda - bug fix on return value when getting HDMI ELD info
+
+commit 2ef5692efad330b67a234e2c49edad38538751e7 upstream.
+
+In function snd_hdmi_get_eld(), the variable 'ret' should be initialized to 0.
+Otherwise it will be returned uninitialized as non-zero after ELD info is got
+successfully. Thus hdmi_present_sense() will always assume ELD info is invalid
+by mistake, and /proc file system cannot show the proper ELD info.
+
+Signed-off-by: Mengdong Lin <mengdong.lin@intel.com>
+Acked-by: David Henningsson <david.henningsson@canonical.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+diff --git a/sound/pci/hda/hda_eld.c b/sound/pci/hda/hda_eld.c
+index 4c054f4..86f6468 100644
+--- a/sound/pci/hda/hda_eld.c
++++ b/sound/pci/hda/hda_eld.c
+@@ -322,7 +322,7 @@ int snd_hdmi_get_eld(struct hdmi_eld *eld,
+ 		     struct hda_codec *codec, hda_nid_t nid)
+ {
+ 	int i;
+-	int ret;
++	int ret = 0;
+ 	int size;
+ 	unsigned char *buf;
+ 
+--
+cgit v0.9.1
