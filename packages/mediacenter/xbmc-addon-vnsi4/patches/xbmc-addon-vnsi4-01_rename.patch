@@ -1,0 +1,349 @@
+diff --git a/addons/pvr.vdr.vnsi/Makefile.am b/addons/pvr.vdr.vnsi/Makefile.am
+index 66deae8..7964a37 100644
+--- a/addons/pvr.vdr.vnsi/Makefile.am
++++ b/addons/pvr.vdr.vnsi/Makefile.am
+@@ -5,7 +5,7 @@
+ # how to reach the author.
+ #
+ 
+-ADDONBINNAME    = XBMC_VDR_vnsi
++ADDONBINNAME    = XBMC_VDR_vnsi4
+ ADDONNAME       = pvr.vdr.vnsi
+ LIBNAME         = libvdrvnsi-addon
+ lib_LTLIBRARIES = libvdrvnsi-addon.la
+diff --git a/addons/pvr.vdr.vnsi/addon/addon.xml.in b/addons/pvr.vdr.vnsi/addon/addon.xml.in
+index 3710738..f5698a3 100644
+--- a/addons/pvr.vdr.vnsi/addon/addon.xml.in
++++ b/addons/pvr.vdr.vnsi/addon/addon.xml.in
+@@ -1,8 +1,8 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <addon
+-  id="pvr.vdr.vnsi"
++  id="pvr.vdr.vnsi4"
+   version="1.6.4"
+-  name="VDR VNSI Client"
++  name="VDR VNSI Client (version 4)"
+   provider-name="FernetMenta, Team XBMC">
+   <requires>
+     <c-pluff version="0.1"/>
+@@ -10,8 +10,8 @@
+   </requires>
+   <extension
+     point="xbmc.pvrclient"
+-    library_linux="XBMC_VDR_vnsi.pvr"
+-    library_osx="XBMC_VDR_vnsi.pvr"
++    library_linux="XBMC_VDR_vnsi4.pvr"
++    library_osx="XBMC_VDR_vnsi4.pvr"
+     library_wingl="XBMC_VDR_vnsi_WIN32.dll"
+     library_windx="XBMC_VDR_vnsi_WIN32.dll"
+     library_android="libXBMC_VDR_vnsi.so"/>
+diff --git a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.aeon.nox/1080i/Admin.xml b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.aeon.nox/1080i/Admin.xml
+index 74e3aa8..15d8146 100644
+--- a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.aeon.nox/1080i/Admin.xml
++++ b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.aeon.nox/1080i/Admin.xml
+@@ -58,11 +58,11 @@
+ 		</focusedlayout>
+ 		<content>
+          <item id="1">
+-		   <label>$ADDON[pvr.vdr.vnsi 30100]</label>
++		   <label>$ADDON[pvr.vdr.vnsi4 30100]</label>
+ 		   <onclick>SetProperty(menu,osd)</onclick>
+ 		 </item>
+ 		 <item id="2">
+-		   <label>$ADDON[pvr.vdr.vnsi 30101]</label>
++		   <label>$ADDON[pvr.vdr.vnsi4 30101]</label>
+ 		   <onclick>SetProperty(menu,setup)</onclick>
+ 		 </item>
+         </content>
+@@ -98,7 +98,7 @@
+             <texturefocus>views/tripanel/listselect_fo.png</texturefocus>
+             <colordiffuse>$VAR[FocusTextureColorVar]</colordiffuse>
+             <texturenofocus>-</texturenofocus>
+-            <label>$ADDON[pvr.vdr.vnsi 30103]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30103]</label>
+             <font>font16caps</font>
+             <textcolor>grey</textcolor>
+             <focusedcolor>white2</focusedcolor>
+@@ -112,7 +112,7 @@
+             <width>1380</width>
+             <height>30</height>
+             <font>font16caps</font>
+-            <label>$ADDON[pvr.vdr.vnsi 30103]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30103]</label>
+             <align>left</align>
+             <aligny>center</aligny>
+             <textcolor>white</textcolor>
+@@ -141,7 +141,7 @@
+             <textcolor>grey</textcolor>
+             <focusedcolor>white2</focusedcolor>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30104]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30104]</label>
+             <onleft>10</onleft>
+ 			<ondown>22</ondown>
+         </control>
+@@ -158,7 +158,7 @@
+             <textcolor>grey</textcolor>
+             <focusedcolor>white2</focusedcolor>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30105]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30105]</label>
+             <onleft>10</onleft>
+ 			<onup>21</onup>
+ 			<ondown>23</ondown>
+@@ -176,7 +176,7 @@
+             <textcolor>grey</textcolor>
+             <focusedcolor>white2</focusedcolor>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30106]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30106]</label>
+             <onleft>10</onleft>
+ 			<onup>22</onup>
+         </control>
+diff --git a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/Admin.xml b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/Admin.xml
+index 910de6d..45c52f2 100644
+--- a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/Admin.xml
++++ b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/Admin.xml
+@@ -118,11 +118,11 @@
+ 		</focusedlayout>
+ 		<content>
+          <item id="1">
+-		   <label>$ADDON[pvr.vdr.vnsi 30100]</label>
++		   <label>$ADDON[pvr.vdr.vnsi4 30100]</label>
+ 		   <onclick>SetProperty(menu,osd)</onclick>
+ 		 </item>
+ 		 <item id="2">
+-		   <label>$ADDON[pvr.vdr.vnsi 30101]</label>
++		   <label>$ADDON[pvr.vdr.vnsi4 30101]</label>
+ 		   <onclick>SetProperty(menu,setup)</onclick>
+ 		 </item>
+         </content>
+@@ -157,7 +157,7 @@
+             <height>30</height>
+             <texturefocus border="5">MenuItemFO.png</texturefocus>
+             <texturenofocus border="5">MenuItemNF.png</texturenofocus>
+-            <label>$ADDON[pvr.vdr.vnsi 30103]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30103]</label>
+             <font>font16caps</font>
+             <textcolor>white</textcolor>
+ 		    <onleft>10</onleft>
+@@ -170,7 +170,7 @@
+             <width>740</width>
+             <height>30</height>
+             <font>font16caps</font>
+-            <label>$ADDON[pvr.vdr.vnsi 30103]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30103]</label>
+             <align>left</align>
+             <aligny>center</aligny>
+             <textcolor>white</textcolor>
+@@ -198,7 +198,7 @@
+             <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+             <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30104]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30104]</label>
+             <onleft>10</onleft>
+ 			<ondown>22</ondown>
+         </control>
+@@ -214,7 +214,7 @@
+             <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+             <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30105]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30105]</label>
+             <onleft>10</onleft>
+ 			<onup>21</onup>
+ 			<ondown>23</ondown>
+@@ -231,7 +231,7 @@
+             <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+             <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+             <aligny>center</aligny>
+-            <label>$ADDON[pvr.vdr.vnsi 30106]</label>
++            <label>$ADDON[pvr.vdr.vnsi4 30106]</label>
+             <onleft>10</onleft>
+ 			<onup>22</onup>
+         </control>
+diff --git a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/ChannelScan.xml b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/ChannelScan.xml
+index e4f6338..8f3f59a 100644
+--- a/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/ChannelScan.xml
++++ b/addons/pvr.vdr.vnsi/addon/resources/skins/skin.confluence/720p/ChannelScan.xml
+@@ -54,7 +54,7 @@
+         <width>740</width>
+         <height>30</height>
+         <font>font16caps</font>
+-        <label>$ADDON[pvr.vdr.vnsi 30009]</label>
++        <label>$ADDON[pvr.vdr.vnsi4 30009]</label>
+         <align>left</align>
+         <aligny>center</aligny>
+         <textcolor>white</textcolor>
+@@ -67,7 +67,7 @@
+         <width>260</width>
+         <height>60</height>
+         <textoffsety>13</textoffsety>
+-        <label>$ADDON[pvr.vdr.vnsi 30010]</label>
++        <label>$ADDON[pvr.vdr.vnsi4 30010]</label>
+         <font>font13_title</font>
+         <align>right</align>
+         <aligny>center</aligny>
+@@ -85,7 +85,7 @@
+         <width>260</width>
+         <height>60</height>
+         <textoffsety>13</textoffsety>
+-        <label>$ADDON[pvr.vdr.vnsi 30024]</label>
++        <label>$ADDON[pvr.vdr.vnsi4 30024]</label>
+         <font>font13_title</font>
+         <align>right</align>
+         <aligny>center</aligny>
+@@ -111,7 +111,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30011]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30011]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>22</onup>
+@@ -128,7 +128,7 @@
+           <focusedcolor>white</focusedcolor>
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+-          <label>$ADDON[pvr.vdr.vnsi 30012]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30012]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>10</onup>
+@@ -146,7 +146,7 @@
+           <focusedcolor>white</focusedcolor>
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+-          <label>$ADDON[pvr.vdr.vnsi 30013]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30013]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>11</onup>
+@@ -165,7 +165,7 @@
+           <focusedcolor>white</focusedcolor>
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+-          <label>$ADDON[pvr.vdr.vnsi 30014]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30014]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>12</onup>
+@@ -185,7 +185,7 @@
+           <focusedcolor>white</focusedcolor>
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+-          <label>$ADDON[pvr.vdr.vnsi 30015]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30015]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>13</onup>
+@@ -206,7 +206,7 @@
+           <focusedcolor>white</focusedcolor>
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+-          <label>$ADDON[pvr.vdr.vnsi 30016]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30016]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>14</onup>
+@@ -229,7 +229,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30017]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30017]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>15</onup>
+@@ -253,7 +253,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30022]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30022]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>16</onup>
+@@ -278,7 +278,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30018]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30018]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>17</onup>
+@@ -304,7 +304,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30019]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30019]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>18</onup>
+@@ -331,7 +331,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30020]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30020]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>29</onup>
+@@ -359,7 +359,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30021]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30021]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>20</onup>
+@@ -388,7 +388,7 @@
+           <texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+           <texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+           <aligny>center</aligny>
+-          <label>$ADDON[pvr.vdr.vnsi 30023]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30023]</label>
+           <onright>5</onright>
+           <onleft>5</onleft>
+           <onup>21</onup>
+@@ -423,7 +423,7 @@
+           <width>250</width>
+           <height>30</height>
+           <font>font13</font>
+-          <label>$ADDON[pvr.vdr.vnsi 30026]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30026]</label>
+           <align>left</align>
+           <aligny>center</aligny>
+           <textcolor>grey</textcolor>
+@@ -449,7 +449,7 @@
+           <width>250</width>
+           <height>30</height>
+           <font>font13</font>
+-          <label>$ADDON[pvr.vdr.vnsi 30027]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30027]</label>
+           <align>left</align>
+           <aligny>center</aligny>
+           <textcolor>white</textcolor>
+@@ -475,7 +475,7 @@
+           <width>250</width>
+           <height>30</height>
+           <font>font13</font>
+-          <label>$ADDON[pvr.vdr.vnsi 30034]</label>
++          <label>$ADDON[pvr.vdr.vnsi4 30034]</label>
+           <align>left</align>
+           <aligny>center</aligny>
+           <textcolor>white</textcolor>
+@@ -724,7 +724,7 @@
+       <control type="label">
+         <include>WindowTitleCommons</include>
+         <posx>220</posx>
+-        <label>$ADDON[pvr.vdr.vnsi 30008]</label>
++        <label>$ADDON[pvr.vdr.vnsi4 30008]</label>
+       </control>
+     </control>
+     <include>WindowTitleHomeButton</include>
