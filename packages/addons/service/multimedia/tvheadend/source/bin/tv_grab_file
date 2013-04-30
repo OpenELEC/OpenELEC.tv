@@ -27,6 +27,7 @@ ADDON_SETTINGS="$ADDON_HOME/settings.xml"
 XMLTV_TYPE=`grep XMLTV_TYPE $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
 XMLTV_LOCATION_FILE=`grep XMLTV_LOCATION_FILE $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
 XMLTV_LOCATION_WEB=`grep XMLTV_LOCATION_WEB $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
+XMLTV_LOCATION_SCRIPT=`grep XMLTV_LOCATION_SCRIPT $ADDON_SETTINGS | awk '{print $3 }' | sed -e "s,value=,," -e "s,\",,g"`
 
 dflag=
 vflag=
@@ -37,10 +38,10 @@ if [[ $# -lt 1 ]]; then
     cat "$XMLTV_LOCATION_FILE"
     exit 0
   elif [ "$XMLTV_TYPE" = "SCRIPT" ]; then
-    if [ -x "$XMLTV_LOCATION_FILE" ] ; then
-      exec "$XMLTV_LOCATION_FILE"
+    if [ -x "$XMLTV_LOCATION_SCRIPT" ] ; then
+      exec "$XMLTV_LOCATION_SCRIPT"
     else
-      /bin/sh "$XMLTV_LOCATION_FILE"
+      /bin/sh "$XMLTV_LOCATION_SCRIPT"
       exit $?
     fi
   elif [ "$XMLTV_TYPE" = "WEB" ]; then
