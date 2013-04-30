@@ -36,6 +36,13 @@ if [[ $# -lt 1 ]]; then
   if [ "$XMLTV_TYPE" = "FILE" ]; then
     cat "$XMLTV_LOCATION_FILE"
     exit 0
+  elif [ "$XMLTV_TYPE" = "SCRIPT" ]; then
+    if [ -x "$XMLTV_LOCATION_FILE" ] ; then
+      exec "$XMLTV_LOCATION_FILE"
+    else
+      /bin/sh "$XMLTV_LOCATION_FILE"
+      exit $?
+    fi
   elif [ "$XMLTV_TYPE" = "WEB" ]; then
     wget -qO - "$XMLTV_LOCATION_WEB"
     exit 0
