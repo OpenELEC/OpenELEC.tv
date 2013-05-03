@@ -1,0 +1,115 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+# dont build parallel
+  MAKEFLAGS=-j1
+
+install_modules() {
+  TMPDIR=$ROOT/$INSTALL/lib/modules/$KVER/modules.tmp
+
+  make -C $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION} install DESTDIR=$TMPDIR >/dev/null
+  rm -f $TMPDIR/lib/modules/$KVER/* 2>/dev/null || true
+
+  mkdir -p $INSTALL/lib/modules/$KVER/updates
+  cp -a $TMPDIR/lib/modules/$KVER/* $INSTALL/lib/modules/$KVER/updates
+
+  mkdir -p $INSTALL/lib/firmware/
+  cp -a $TMPDIR/lib/firmware/* $INSTALL/lib/firmware/
+  cp $BUILD/${PKG_NAME}-${PKG_VERSION}/v4l/firmware/*.fw $INSTALL/lib/firmware/
+  [ -f $PKG_DIR/firmware/*.fw ] && cp $PKG_DIR/firmware/*.fw $INSTALL/lib/firmware/
+
+  rm -fr $TMPDIR
+
+  # run depmod
+  $TOOLCHAIN/bin/depmod -b $INSTALL $KVER > /dev/null
+}
+
+# modules installed under this name
+KNAME_NEW=$PKG_NAME
+# compare with
+KNAME_CMP=sys
+
+#------------------------------------------------------
+KVER=$(ls $BUILD/linux-*/modules/lib/modules)
+KDIR=$INSTALL/lib/modules/${KVER}
+KDIRSYS=$INSTALL/lib/modules/${KVER}-sys
+KDIR_NEW=$INSTALL/lib/modules/${KVER}-$KNAME_NEW
+KDIR_CMP=$INSTALL/lib/modules/${KVER}-$KNAME_CMP
+
+if [ ! -d $KDIRSYS ]; then
+  # sys folder doesn't exist
+  cp -aP $KDIR $KDIRSYS
+else
+  rm -fr $KDIR
+  cp -aP $KDIRSYS $KDIR
+fi
+
+# actual install
+install_modules
+
+find $KDIR/* -type f -name *.ko | while read f1; do
+  f2=$(echo "$f1" | sed "s|$KDIR/||")
+
+  if [ -f $KDIR/$f2 -a -f $KDIR_CMP/$f2 ]; then
+    md5_new=$(md5sum $KDIR/$f2 | cut -d ' ' -f1)
+    md5_cmp=$(md5sum $KDIR_CMP/$f2 | cut -d ' ' -f1)
+    if [ "$md5_new" = "$md5_cmp" ]; then
+      # use symbolic link from compared kernel
+      ln -f -s "/lib/modules/$KVER-$KNAME_CMP/$f2" "$KDIR/$f2"
+    fi
+  elif [ -f $KDIR/$f2 -a -L $KDIR_CMP/$f2 ]; then
+    # symbolic link for compare
+    KNAME_CMP_SAVE=$KNAME_CMP
+    TMP_PATH=$(readlink $KDIR_CMP/$f2)
+
+    KDIR_CMP=$(echo $TMP_PATH | sed "s|/$f2||")
+    KNAME_CMP=$(echo $KDIR_CMP | sed "s|/lib/modules/$KVER-||")
+    KDIR_CMP=${INSTALL}$KDIR_CMP
+
+    md5_new=$(md5sum $KDIR/$f2 | cut -d ' ' -f1)
+    md5_cmp=$(md5sum $KDIR_CMP/$f2 | cut -d ' ' -f1)
+    if [ "$md5_new" = "$md5_cmp" ]; then
+      # use symbolic link from compare kernel
+      ln -f -s "/lib/modules/$KVER-$KNAME_CMP/$f2" "$KDIR/$f2"
+    fi
+
+    KNAME_CMP=$KNAME_CMP_SAVE
+    KDIR_CMP=$INSTALL/lib/modules/${KVER}-$KNAME_CMP
+  fi
+done
+
+# rename to new folder
+rm -fr $KDIR_NEW
+mv $KDIR $KDIR_NEW
+
+# create symbolic link
+ln -s /var/run/modules/$KVER $KDIR
+
+#echo "/storage/.config/" >$INSTALL/lib/modules/drivers-extra.txt
+#ls -d $INSTALL/lib/modules/${KVER}-* | grep -v "\-sys$" | sed "s|$INSTALL/lib/modules/${KVER}-\(.*\)|  enable-drivers-\1.txt|g" >>$INSTALL/lib/modules/drivers-extra.txt
+(
+  cd $INSTALL/lib/modules
+  echo "/storage/.config/" >drivers-extra.txt
+  ls -d ${KVER}-* | grep -v "\-sys$" | sed "s|${KVER}-\(.*\)|  enable-drivers-\1.txt|g" >>drivers-extra.txt
+)

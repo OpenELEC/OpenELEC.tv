@@ -157,6 +157,10 @@
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
   ADDITIONAL_DRIVERS="RTL8192CU RTL8188EU vboxguest dvbhdhomerun"
 
+# extra drivers to install:
+# Space separated list is supported
+  EXTRA_DRIVERS="tbs media_build"
+
 # build with network support (yes / no)
   NETWORK="yes"
 

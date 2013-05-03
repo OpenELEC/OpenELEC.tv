@@ -165,6 +165,11 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     $STRIP --strip-debug $MOD
   done
 
+# build linux kernel drivers which interfere with each other
+  for p in $EXTRA_DRIVERS; do
+    $SCRIPTS/install $p
+  done
+
 # make target dir
   mkdir -p $TARGET_IMG
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
