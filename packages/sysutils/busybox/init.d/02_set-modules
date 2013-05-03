@@ -1,0 +1,49 @@
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+#
+# make symbolic link for kernel modules
+#
+# runlevels: openelec, installer, textmode
+
+  KVER=$(uname -r)
+  KNAME=sys
+
+  for kn in /lib/modules/$KVER-*; do
+    kn="${kn%%/}"           # strip last / if exist
+    KNAME=${kn##*/$KVER-}   # strip kernel version in front
+    CONFIG_FILE=/storage/.config/enable-drivers-${KNAME}.txt
+
+    if [ -f $CONFIG_FILE ]; then
+      # use first driver
+      break
+    else
+      KNAME=sys
+    fi
+  done
+
+  # check for symbolic link
+  if [ -h "/lib/modules/$KVER" ]; then
+    progress "enabling kernel drivers $KNAME..."
+    mkdir -p /var/run/modules/
+    ln -s /lib/modules/${KVER}-$KNAME /var/run/modules/$KVER
+  else
+    progress "only stock kernel drivers available..."
+  fi

@@ -1,0 +1,108 @@
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/meye.c s2-liplianin-v37/linux/drivers/media/video/meye.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/meye.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/meye.c	2013-02-03 13:07:39.000000000 +0100
+@@ -1647,7 +1647,7 @@
+ 
+ 	vma->vm_ops = &meye_vm_ops;
+ 	vma->vm_flags &= ~VM_IO;	/* not I/O memory */
+-	vma->vm_flags |= VM_RESERVED;	/* avoid to swap out this VMA */
++	vma->vm_flags |= (VM_DONTEXPAND | VM_DONTDUMP);	/* avoid to swap out this VMA */
+ 	vma->vm_private_data = (void *) (offset / gbufsize);
+ 	meye_vm_open(vma);
+ 
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/omap/omap_vout.c s2-liplianin-v37/linux/drivers/media/video/omap/omap_vout.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/omap/omap_vout.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/omap/omap_vout.c	2013-02-03 13:07:39.000000000 +0100
+@@ -910,7 +910,7 @@
+ 
+ 	q->bufs[i]->baddr = vma->vm_start;
+ 
+-	vma->vm_flags |= VM_RESERVED;
++	vma->vm_flags |= (VM_DONTEXPAND | VM_DONTDUMP);
+ 	vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+ 	vma->vm_ops = &omap_vout_vm_ops;
+ 	vma->vm_private_data = (void *) vout;
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/sn9c102/sn9c102_core.c s2-liplianin-v37/linux/drivers/media/video/sn9c102/sn9c102_core.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/sn9c102/sn9c102_core.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/sn9c102/sn9c102_core.c	2013-02-03 13:07:39.000000000 +0100
+@@ -2129,7 +2129,7 @@
+ 	}
+ 
+ 	vma->vm_flags |= VM_IO;
+-	vma->vm_flags |= VM_RESERVED;
++	vma->vm_flags |= (VM_DONTEXPAND | VM_DONTDUMP);
+ 
+ 	pos = cam->frame[i].bufmem;
+ 	while (size > 0) { /* size is page-aligned */
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/usbvision/usbvision-video.c s2-liplianin-v37/linux/drivers/media/video/usbvision/usbvision-video.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/usbvision/usbvision-video.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/usbvision/usbvision-video.c	2013-02-03 13:07:39.000000000 +0100
+@@ -1091,7 +1091,7 @@
+ 
+ 	/* VM_IO is eventually going to replace PageReserved altogether */
+ 	vma->vm_flags |= VM_IO;
+-	vma->vm_flags |= VM_RESERVED;	/* avoid to swap out this VMA */
++	vma->vm_flags |= (VM_DONTEXPAND | VM_DONTDUMP);	/* avoid to swap out this VMA */
+ 
+ 	pos = usbvision->frame[i].data;
+ 	while (size > 0) {
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/videobuf2-memops.c s2-liplianin-v37/linux/drivers/media/video/videobuf2-memops.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/videobuf2-memops.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/videobuf2-memops.c	2013-02-03 13:07:39.000000000 +0100
+@@ -162,7 +162,7 @@
+ 		return ret;
+ 	}
+ 
+-	vma->vm_flags		|= VM_DONTEXPAND | VM_RESERVED;
++	vma->vm_flags		|= VM_DONTEXPAND | (VM_DONTEXPAND | VM_DONTDUMP);
+ 	vma->vm_private_data	= priv;
+ 	vma->vm_ops		= vm_ops;
+ 
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/videobuf-dma-sg.c s2-liplianin-v37/linux/drivers/media/video/videobuf-dma-sg.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/videobuf-dma-sg.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/videobuf-dma-sg.c	2013-02-03 13:07:39.000000000 +0100
+@@ -582,7 +582,7 @@
+ 	map->count    = 1;
+ 	map->q        = q;
+ 	vma->vm_ops   = &videobuf_vm_ops;
+-	vma->vm_flags |= VM_DONTEXPAND | VM_RESERVED;
++	vma->vm_flags |= VM_DONTEXPAND | (VM_DONTEXPAND | VM_DONTDUMP);
+ 	vma->vm_flags &= ~VM_IO; /* using shared anonymous pages */
+ 	vma->vm_private_data = map;
+ 	dprintk(1, "mmap %p: q=%p %08lx-%08lx pgoff %08lx bufs %d-%d\n",
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/videobuf-vmalloc.c s2-liplianin-v37/linux/drivers/media/video/videobuf-vmalloc.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/videobuf-vmalloc.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/videobuf-vmalloc.c	2013-02-03 13:07:39.000000000 +0100
+@@ -270,7 +270,7 @@
+ 	}
+ 
+ 	vma->vm_ops          = &videobuf_vm_ops;
+-	vma->vm_flags       |= VM_DONTEXPAND | VM_RESERVED;
++	vma->vm_flags       |= VM_DONTEXPAND | (VM_DONTEXPAND | VM_DONTDUMP);
+ 	vma->vm_private_data = map;
+ 
+ 	dprintk(1, "mmap %p: q=%p %08lx-%08lx (%lx) pgoff %08lx buf %d\n",
+diff -uNr s2-liplianin-v37-orig/linux/drivers/media/video/vino.c s2-liplianin-v37/linux/drivers/media/video/vino.c
+--- s2-liplianin-v37-orig/linux/drivers/media/video/vino.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/media/video/vino.c	2013-02-03 13:07:39.000000000 +0100
+@@ -3950,7 +3950,7 @@
+ 
+ 	fb->map_count = 1;
+ 
+-	vma->vm_flags |= VM_DONTEXPAND | VM_RESERVED;
++	vma->vm_flags |= VM_DONTEXPAND | (VM_DONTEXPAND | VM_DONTDUMP);
+ 	vma->vm_flags &= ~VM_IO;
+ 	vma->vm_private_data = fb;
+ 	vma->vm_file = file;
+diff -uNr s2-liplianin-v37-orig/linux/drivers/staging/media/easycap/easycap_main.c s2-liplianin-v37/linux/drivers/staging/media/easycap/easycap_main.c
+--- s2-liplianin-v37-orig/linux/drivers/staging/media/easycap/easycap_main.c	2013-01-31 10:24:58.000000000 +0100
++++ s2-liplianin-v37/linux/drivers/staging/media/easycap/easycap_main.c	2013-02-03 13:07:39.000000000 +0100
+@@ -2453,7 +2453,7 @@
+ 	JOT(8, "\n");
+ 
+ 	pvma->vm_ops = &easycap_vm_ops;
+-	pvma->vm_flags |= VM_RESERVED;
++	pvma->vm_flags |= (VM_DONTEXPAND | VM_DONTDUMP);
+ 	if (file)
+ 		pvma->vm_private_data = file->private_data;
+ 	easycap_vma_open(pvma);
