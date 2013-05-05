@@ -144,8 +144,8 @@ if [ "$AIRPLAY_SUPPORT" = yes ]; then
 fi
 
 if [ "$AIRTUNES_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libshairport"
-  PKG_DEPENDS="$PKG_DEPENDS libshairport"
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libshairport libshairplay"
+  PKG_DEPENDS="$PKG_DEPENDS libshairport libshairplay"
 fi
 
 if [ "$NFS_SUPPORT" = yes ]; then
