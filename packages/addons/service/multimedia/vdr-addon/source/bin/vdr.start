@@ -38,19 +38,49 @@ if [ ! -f "$ADDON_SETTINGS" ]; then
   cp $ADDON_DIR/settings-default.xml $ADDON_SETTINGS
 fi
 
+ADDON_CACHE_DIR="$ADDON_HOME/cache"
+if [ ! -f "$ADDON_CACHE_DIR" ]; then
+  mkdir -p $ADDON_CACHE_DIR
+fi
+
 mkdir -p /var/config
 cat "$ADDON_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/vdr.conf.default
 cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/vdr.conf
+
+#handle epgsources
 mkdir -p /var/lib/epgsources
-cp $ADDON_DIR/config/epgsources/epgdata2xmltv/epgdata2xmltv.dist /var/lib/epgsources/epgdata2xmltv
+mkdir -p $ADDON_HOME/config/epgsources
+for source in `find $ADDON_DIR/config/epgsources -type f`; do
+  if [ ! -e $ADDON_HOME/config/epgsources/`basename $source` ] ; then
+    cp $source $ADDON_HOME/config/epgsources/
+  fi
+done
+for source in `find $ADDON_HOME/config/epgsources -type f`; do
+  cp $source /var/lib/epgsources
+done
 
 . /var/config/vdr.conf.default
 . /var/config/vdr.conf
 
-VDR_ARG="-g /tmp --no-kbd --log=3 --port=0"
+VDR_ARG="-g /tmp --no-kbd --log=3"
+SVDRP_PORT=0
+
+# epgsearch needs svdrp
+if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
+  SVDRP_PORT=6419
+fi
+VDR_ARG="$VDR_ARG --port=$SVDRP_PORT"
+
 VDR_ARG="$VDR_ARG --config=$ADDON_CONFIG_DIR"
+VDR_ARG="$VDR_ARG --resdir=$ADDON_DIR/res"
+VDR_ARG="$VDR_ARG --cachedir=$ADDON_CACHE_DIR"
 VDR_ARG="$VDR_ARG --lib=$ADDON_PLUGIN_DIR"
 VDR_ARG="$VDR_ARG --video=\"$VDR_VIDEO_DIR\""
+
+if [ "$ENABLE_DVB_PLUGIN" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P $DVB_PLUGIN"
+fi
+
 VDR_ARG="$VDR_ARG -P $PVR_PLUGIN"
 
 if [ "$ENABLE_SOFTCAM" == "true" ] ; then
@@ -83,10 +113,6 @@ fi
 if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P xmltv2vdr"
 fi
-# dynamite must be LAST loaded plugin
-if [ "$ENABLE_DYNAMITE" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P dynamite"
-fi
 
 (
   cd $ADDON_DIR/config
@@ -105,9 +131,11 @@ fi
   if [ -f "$ADDON_CONFIG_DIR/setup.conf" ]; then
     sed -i -e '/^$/d' $ADDON_CONFIG_DIR/setup.conf
     sed -i -e '/^epgsearch.SVDRPPort.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^OSDSkin.*$/d' $ADDON_CONFIG_DIR/setup.conf
   fi
   cat >>$ADDON_CONFIG_DIR/setup.conf << MYDATA
-epgsearch.SVDRPPort = 2004
+epgsearch.SVDRPPort = 6419
+OSDSkin = sttng
 MYDATA
 
 )

@@ -19,7 +19,10 @@
 ################################################################################
 
 PKG_NAME="xbmc-addon-xvdr"
-PKG_VERSION="34070b5"
+PKG_VERSION="frodo-acd4e14"
+if [ "$XBMC" = "master" ]; then
+  PKG_VERSION="871faab"
+fi
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

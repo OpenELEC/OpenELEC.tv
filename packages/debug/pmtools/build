@@ -23,8 +23,15 @@
 . config/options $1
 
 cd $PKG_BUILD
-make PREFIX=/usr \
-     CC="$TARGET_CC" \
-     AR="$TARGET_AR" \
+make CC="$TARGET_CC" \
      CFLAGS="$TARGET_CFLAGS -Wall -Wstrict-prototypes -Wdeclaration-after-statement -Os -s -D_LINUX -DDEFINE_ALTERNATE_TYPES -I../include" \
-     CPPFLAGS="$TARGET_CPPFLAGS" \
+     -C acpidump acpidump
+
+make CC="$TARGET_CC" \
+     CFLAGS="$TARGET_CFLAGS -Wall -Wstrict-prototypes -Wdeclaration-after-statement -Os -s -D_LINUX -DDEFINE_ALTERNATE_TYPES -I../include" \
+     -C acpixtract acpixtract
+
+make CC="$TARGET_CC" \
+     CFLAGS="$TARGET_CFLAGS -Wall -Wstrict-prototypes -Wdeclaration-after-statement -Os -s -D_LINUX -DDEFINE_ALTERNATE_TYPES -I../include" \
+     -C madt madt
+

@@ -160,7 +160,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU dvbhdhomerun"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8188EU dvbhdhomerun"
 
 # build with network support (yes / no)
   NETWORK="yes"
@@ -313,9 +313,6 @@
 
 # swapfile size if SWAP_SUPPORT=yes in kB (example: 262144 = 256MB )
   SWAPFILESIZE="262144"
-
-# build with automatic update support (yes / no)
-  UPDATE_SUPPORT="yes"
 
 # build with installer (yes / no)
   INSTALLER_SUPPORT="yes"
