@@ -1,0 +1,11 @@
+/dev/sda1                  /var/mnt/EFI        vfat      defaults,noauto      0 0
+/dev/sda2                  /var/mnt/Recovery   hfsplus   defaults,noauto      0 0
+/dev/sda3                  /flash              ext4      defaults,ro,noauto   0 0
+/dev/sda4                  /storage            ext4      defaults,noatime     1 1
+devpts                     /dev/pts            devpts    gid=5,mode=620       0 0
+tmpfs                      /dev/shm            tmpfs     defaults             0 0
+proc                       /proc               proc      defaults             0 0
+sysfs                      /sys                sysfs     defaults             0 0
+debugfs                    /sys/kernel/debug   debugfs   defaults             0 0
+tmpfs                      /var                tmpfs     defaults             0 0
+/storage/.cache/swapfile   swap                swap      defaults             0 0
