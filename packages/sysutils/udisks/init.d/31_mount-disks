@@ -27,20 +27,34 @@
   progress "automount internal disks"
 
   drive_dump () {
-    udisks --dump | tr -d ' ' | grep 'device-file:' | cut -d ':' -f2
+    udisks --dump | awk '/^  device-file:/ { print $2 }'
   }
 
   show_info () {
-    udisks --show-info $2 | grep "$1:" | tr -d ' ' | cut -d ":" -f2
+    udisks --show-info $2 | awk "/$1:/ { print \$2; nextfile }"
   }
 
-  for DEVICE in `drive_dump`; do
-    REMOVABLE="`show_info "removable" $DEVICE`"
-    MOUNTED="`show_info "is mounted" $DEVICE`"
-    USAGE="`show_info "usage" $DEVICE`"
+  for DEVICE in $(drive_dump); do
 
-    if [ "$REMOVABLE" = "0" -a "$MOUNTED" = "0" -a "$USAGE" = "filesystem" ]; then
-      udisks --mount "$DEVICE" >/dev/null
+    if [ "$(show_info 'usage' $DEVICE)" != "filesystem" ]; then
+      # Skip device if not a filesystem
+      continue
+    elif [ "$(show_info 'removable' $DEVICE)" == "1" ]; then
+      # Skip device if removable
+      continue
+    elif [ "$(show_info 'is mounted' $DEVICE)" == "1" ]; then
+      # Skip device if already mounted
+      continue
+    else
+      case "$(show_info 'label' $DEVICE)" in
+        # Skip devices with known filesystem labels
+        ("EFI"|"Recovery")
+          ;;
+        # Mount everything else
+        (*)
+          udisks --mount "$DEVICE" >/dev/null
+          ;;
+      esac
     fi
 
   done
