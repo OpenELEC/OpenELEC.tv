@@ -48,8 +48,8 @@ mkdir -p objdir-$1 && cd objdir-$1
              --disable-libmudflap \
              --disable-libssp \
              --disable-multilib \
-             --disable-gold \
-             --enable-ld \
+             --enable-gold \
+             --enable-ld=default \
              --enable-plugin \
              --enable-lto \
              --disable-libquadmath \
