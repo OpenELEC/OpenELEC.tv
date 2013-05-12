@@ -23,8 +23,9 @@
 [ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
 [ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
 
-# mount $BOOT_ROOT r/w
-  mount -o remount,rw $BOOT_ROOT
+# mount $BOOT_ROOT r/w if required
+  READ_ONLY=$(/bin/busybox grep " $BOOT_ROOT " /proc/mounts | /bin/busybox awk '$4~/(^|,)ro($|,)/')
+  [ -n "$READ_ONLY" ] && /bin/busybox mount -o remount,rw $BOOT_ROOT
 
 # update bootloader files
   cp $SYSTEM_ROOT/usr/share/bootloader/LICENCE* $BOOT_ROOT
@@ -45,10 +46,10 @@
     cat $SYSTEM_ROOT/usr/share/bootloader/config.txt \
         $BOOT_ROOT/config.txt.bk > $BOOT_ROOT/config.txt
   else
-    sed -e "s,# gpu_mem_256=128,gpu_mem_256=128,g" -i $BOOT_ROOT/config.txt
-    sed -e "s,# gpu_mem_512=128,gpu_mem_512=128,g" -i $BOOT_ROOT/config.txt
+    sed -e "s,# gpu_mem_256=128,gpu_mem_256=100,g" -i $BOOT_ROOT/config.txt
+    sed -e "s,# gpu_mem_512=128,gpu_mem_512=256,g" -i $BOOT_ROOT/config.txt
   fi
 
-# mount $BOOT_ROOT r/o
+# mount $BOOT_ROOT r/o if previously mounted r/w
   sync
-  mount -o remount,ro $BOOT_ROOT
+  [ -n "$READ_ONLY" ] && mount -o remount,ro $BOOT_ROOT
