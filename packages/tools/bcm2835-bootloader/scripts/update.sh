@@ -20,35 +20,36 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-[ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
-[ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
+  [ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
+  [ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
 
-# mount $BOOT_ROOT r/w
-  mount -o remount,rw $BOOT_ROOT
+# mount $BOOT_ROOT r/w if required
+  READ_ONLY=$(/bin/busybox grep " $BOOT_ROOT " /proc/mounts | /bin/busybox awk '$4~/(^|,)ro($|,)/')
+  [ -n "$READ_ONLY" ] && /bin/busybox mount -o remount,rw $BOOT_ROOT
 
 # update bootloader files
-  cp $SYSTEM_ROOT/usr/share/bootloader/LICENCE* $BOOT_ROOT
-  cp $SYSTEM_ROOT/usr/share/bootloader/bootcode.bin $BOOT_ROOT
-  cp $SYSTEM_ROOT/usr/share/bootloader/fixup.dat $BOOT_ROOT
-  cp $SYSTEM_ROOT/usr/share/bootloader/start.elf $BOOT_ROOT
+  /bin/busybox cp -p $SYSTEM_ROOT/usr/share/bootloader/LICENCE* $BOOT_ROOT
+  /bin/busybox cp -p $SYSTEM_ROOT/usr/share/bootloader/bootcode.bin $BOOT_ROOT
+  /bin/busybox cp -p $SYSTEM_ROOT/usr/share/bootloader/fixup.dat $BOOT_ROOT
+  /bin/busybox cp -p $SYSTEM_ROOT/usr/share/bootloader/start.elf $BOOT_ROOT
 
 # cleanup not more needed files
-  rm -rf $BOOT_ROOT/loader.bin
-  rm -rf $BOOT_ROOT/fixup_x.dat
-  rm -rf $BOOT_ROOT/start_x.elf
+  /bin/busybox rm -rf $BOOT_ROOT/loader.bin
+  /bin/busybox rm -rf $BOOT_ROOT/fixup_x.dat
+  /bin/busybox rm -rf $BOOT_ROOT/start_x.elf
 
 # some config.txt magic
   if [ ! -f $BOOT_ROOT/config.txt ]; then
-    cp $SYSTEM_ROOT/usr/share/bootloader/config.txt $BOOT_ROOT
-  elif [ -z "`grep "^[ ]*gpu_mem.*" $BOOT_ROOT/config.txt`" ]; then
-    mv $BOOT_ROOT/config.txt $BOOT_ROOT/config.txt.bk
-    cat $SYSTEM_ROOT/usr/share/bootloader/config.txt \
-        $BOOT_ROOT/config.txt.bk > $BOOT_ROOT/config.txt
+    /bin/busybox cp -p $SYSTEM_ROOT/usr/share/bootloader/config.txt $BOOT_ROOT
+  elif [ -z "$(/bin/busybox grep "^[ ]*gpu_mem.*" $BOOT_ROOT/config.txt)" ]; then
+    /bin/busybox mv $BOOT_ROOT/config.txt $BOOT_ROOT/config.txt.bk
+    /bin/busybox cat $SYSTEM_ROOT/usr/share/bootloader/config.txt \
+                     $BOOT_ROOT/config.txt.bk > $BOOT_ROOT/config.txt
   else
-    sed -e "s,# gpu_mem_256=128,gpu_mem_256=128,g" -i $BOOT_ROOT/config.txt
-    sed -e "s,# gpu_mem_512=128,gpu_mem_512=128,g" -i $BOOT_ROOT/config.txt
+    /bin/busybox sed -e "s,# gpu_mem_256=128,gpu_mem_256=128,g" -i $BOOT_ROOT/config.txt
+    /bin/busybox sed -e "s,# gpu_mem_512=128,gpu_mem_512=128,g" -i $BOOT_ROOT/config.txt
   fi
 
-# mount $BOOT_ROOT r/o
-  sync
-  mount -o remount,ro $BOOT_ROOT
+# mount $BOOT_ROOT r/o if previously mounted r/w
+  /bin/busybox sync
+  [ -n "$READ_ONLY" ] && /bin/busybox mount -o remount,ro $BOOT_ROOT
