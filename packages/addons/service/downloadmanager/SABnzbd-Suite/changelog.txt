@@ -1,3 +1,6 @@
+3.0.9 (in progress)
+- remove periodic wake option
+
 3.0.8
 - update to CouchPotatoServe-f1dde5c
 - update to Headphones-ebbe908

@@ -42,7 +42,6 @@ subprocess.Popen("chmod -R +x " + __cwd__ + "/bin/*" , shell=True, close_fds=Tru
 
 checkInterval  = 240
 timeout        = 20
-wake_times     = ['01:00','03:00','05:00','07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']
 idleTimer      = 0
 
 # Launch Suite
@@ -72,21 +71,14 @@ if sabNzbdLaunch:
 
     # perform some initial checks and log essential settings
     shouldKeepAwake = (__settings__.getSetting('SABNZBD_KEEP_AWAKE').lower() == 'true')
-    wakePeriodically = (__settings__.getSetting('SABNZBD_PERIODIC_WAKE').lower() == 'true')
-    wakeHourIdx = int(__settings__.getSetting('SABNZBD_WAKE_AT'))
     if shouldKeepAwake:
         xbmc.log('SABnzbd-Suite: will prevent idle sleep/shutdown while downloading')
-    if wakePeriodically:
-        xbmc.log('SABnzbd-Suite: will try to wake system daily at ' + wake_times[wakeHourIdx])
-
 
 while (not xbmc.abortRequested):
 
     if sabNzbdLaunch:
         # reread setting in case it has changed
         shouldKeepAwake = (__settings__.getSetting('SABNZBD_KEEP_AWAKE').lower() == 'true')
-        wakePeriodically = (__settings__.getSetting('SABNZBD_PERIODIC_WAKE').lower() == 'true')
-        wakeHourIdx = int(__settings__.getSetting('SABNZBD_WAKE_AT'))
 
         # check if SABnzbd is downloading
         if shouldKeepAwake:
@@ -120,18 +112,6 @@ while (not xbmc.abortRequested):
                     xbmc.executebuiltin('InhibitIdleShutdown(true)')
                 else:
                     xbmc.executebuiltin('InhibitIdleShutdown(false)')
-
-        # calculate and set the time to wake up at (if any)
-        if wakePeriodically:
-            wakeHour = wakeHourIdx * 2 + 1
-            timeOfDay = datetime.time(hour=wakeHour)
-            now = datetime.datetime.now()
-            wakeTime = now.combine(now.date(),timeOfDay)
-            if now.time() > timeOfDay:
-                wakeTime += datetime.timedelta(days=1)
-            secondsSinceEpoch = time.mktime(wakeTime.timetuple())
-            open("/sys/class/rtc/rtc0/wakealarm", "w").write("0")
-            open("/sys/class/rtc/rtc0/wakealarm", "w").write(str(secondsSinceEpoch))
 
     time.sleep(0.250)
 
