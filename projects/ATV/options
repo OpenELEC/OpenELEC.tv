@@ -86,7 +86,6 @@
   LTO_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader)
-#  BOOTLOADER="atv-bootloader" disabled for now
   BOOTLOADER="atv-bootloader"
 
 # Configuration for u-boot
@@ -94,6 +93,9 @@
 
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""
+
+# install Berryboot support tools
+  BERRYBOOT_TOOLS="no"
 
 # Kernel to use. values can be:
 # default:  default mainline kernel

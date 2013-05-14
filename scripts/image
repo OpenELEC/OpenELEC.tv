@@ -144,6 +144,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Update support
   [ "$UPDATE_SUPPORT" = "yes" ] && $SCRIPTS/install autoupdate
 
+# Berryboot support
+  [ "$BERRYBOOT_TOOLS" = "yes" ] && $SCRIPTS/install berryboot-tools
+
 # Installer support
   [ "$INSTALLER_SUPPORT" = "yes" ] && $SCRIPTS/install installer
 
