@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <string id="30000">MySql Server</string>
+  <string id="30001">Aktiviert</string>
+  <string id="30002">MySql Server starten</string>
+  <string id="30003">MySql Server beenden</string>
+</strings>

@@ -1,0 +1,49 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+. config/options $1
+
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin/bin
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin/share
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin/share/mysql
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin/init.d
+
+find $ROOT/$BUILD/mysql-*/sql/share -type d -exec cp -R \{\} $ADDON_BUILD/$PKG_ADDON_ID/bin/share/mysql \;
+
+cp $ROOT/$BUILD/mysql-*/sql/mysqld $ADDON_BUILD/$PKG_ADDON_ID/bin/bin
+cp $ROOT/$BUILD/mysql-*/extra/resolveip $ADDON_BUILD/$PKG_ADDON_ID/bin/bin/
+cp $ROOT/$BUILD/mysql-*/extra/my_print_defaults $ADDON_BUILD/$PKG_ADDON_ID/bin/bin/
+cp $ROOT/$BUILD/mysql-*/scripts/mysql_install_db $ADDON_BUILD/$PKG_ADDON_ID/bin/bin/
+
+cp $ROOT/$BUILD/mysql-*/client/mysql $ADDON_BUILD/$PKG_ADDON_ID/bin/
+cp $ROOT/$BUILD/mysql-*/client/mysqladmin $ADDON_BUILD/$PKG_ADDON_ID/bin/
+
+cp $ROOT/$BUILD/mysql-*/scripts/*.sql $ADDON_BUILD/$PKG_ADDON_ID/bin/share/
+
+
+sed 's/#ROOT_PASSWORD#/'$ROOT_PASSWORD'/g' $PKG_DIR/config/init.d/mysql>$ADDON_BUILD/$PKG_ADDON_ID/bin/init.d/mysql
+
+
+
+

@@ -56,7 +56,6 @@ ac_cv_sys_restartable_syscalls=yes \
             --with-readline \
             --without-libwrap \
             --without-pstack \
-            --without-server \
             --without-embedded-server \
             --without-libedit \
             --with-query-cache \

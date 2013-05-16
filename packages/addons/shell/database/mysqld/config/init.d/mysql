@@ -1,0 +1,85 @@
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+# start MySql Server
+
+(
+  
+  ADDON_ROOT=$(dirname $(dirname $(dirname $(realpath $0))))
+  ADDON_ID=$(basename $ADDON_ROOT)
+
+  ADDON_SYS_DIR=$(dirname $ADDON_ROOT)
+  ADDON_USR_DIR="$HOME/.xbmc/userdata/addon_data/$ADDON_ID"
+  ADDON_ENABLED=$(sed -n -e 's/.*MYSQLD_ENABLED.*value="\(.*\)".*/\1/p' $ADDON_USR_DIR/settings.xml 2>/dev/null)
+
+  if [ -f $ADDON_USR_DIR/startup ];then 
+    sed -i 's/\(.*MYSQLD_ENABLED.*value="\)\(.*\)\(".*\)/\1false\3/' $ADDON_USR_DIR/settings.xml 2>/dev/null
+    rm $ADDON_USR_DIR/startup
+    ADDON_ENABLED=false
+    logger "### ADDON ### $ADDON_ID ### last Addon start faild -> Addon diabled"
+  fi 
+
+  if [ "$ADDON_ENABLED" != "true" ];then
+    logger "### ADDON ### $ADDON_ID ### Addon is not enabled"
+    exit
+  fi
+
+  if [ -e /tmp/mysql.socket ];then
+    logger "### ADDON ### $ADDON_ID ### Addon is always running"
+    exit
+  fi 
+
+  touch $ADDON_USR_DIR/startup
+
+  MYSQL_USERNAME="root"
+  MYSQL_PASSWORD="#ROOT_PASSWORD#"
+  MYSQL_BASE_DIR="$ADDON_ROOT/bin"
+  MYSQL_DATA_DIR="$ADDON_USR_DIR/data"
+
+  chmod 777 $MYSQL_BASE_DIR/* >/dev/null 2>&1
+  chmod 777 $MYSQL_BASE_DIR/bin/* >/dev/null 2>&1
+
+  if [ ! -d $MYSQL_DATA_DIR ]; then
+
+    logger "### ADDON ### $ADDON_ID ### initialize MySql Server Database"
+
+    mkdir -p $MYSQL_DATA_DIR >/dev/null 2>&1
+
+    $MYSQL_BASE_DIR/bin/mysql_install_db --user=root --datadir=$MYSQL_DATA_DIR --basedir=$MYSQL_BASE_DIR >/dev/null 2>&1
+
+    ($MYSQL_BASE_DIR/bin/mysqld --user=root --datadir=$MYSQL_DATA_DIR --basedir=$MYSQL_BASE_DIR>/dev/null 2>&1)& 
+
+    usleep 100000
+
+    $MYSQL_BASE_DIR/mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USERNAME'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' WITH GRANT OPTION;" >/dev/null 2>&1
+    $MYSQL_BASE_DIR/mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USERNAME'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD' WITH GRANT OPTION;" >/dev/null 2>&1 
+
+    killall mysqld >/dev/null 2>&1
+  fi
+
+  logger "### ADDON ### $ADDON_ID ### start MySql Server Database Engine"
+
+  ($MYSQL_BASE_DIR/bin/mysqld --user=root --datadir=$MYSQL_DATA_DIR --basedir=$MYSQL_BASE_DIR >/dev/null 2>&1)&
+
+  usleep 100000
+
+  rm $ADDON_USR_DIR/startup >/dev/null 2>&1
+)&
+
