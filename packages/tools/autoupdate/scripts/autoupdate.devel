@@ -115,6 +115,10 @@ if [ ! -f /var/lock/update.lock ]; then
           mv $TMP_DIR/$NEW_IMAGE/target/KERNEL /storage/.update/KERNEL.tmp
           mv $TMP_DIR/$NEW_IMAGE/target/KERNEL.md5 /storage/.update/KERNEL.md5.tmp
         fi
+        if [ -f $TMP_DIR/$NEW_IMAGE/target/MACH_KERNEL -a -f $TMP_DIR/$NEW_IMAGE/target/MACH_KERNEL.md5 ]; then
+          mv $TMP_DIR/$NEW_IMAGE/target/MACH_KERNEL /storage/.update/MACH_KERNEL.tmp
+          mv $TMP_DIR/$NEW_IMAGE/target/MACH_KERNEL.md5 /storage/.update/MACH_KERNEL.md5.tmp
+        fi
         if [ -f $TMP_DIR/$NEW_IMAGE/target/SYSTEM -a -f $TMP_DIR/$NEW_IMAGE/target/SYSTEM.md5 ]; then
           mv $TMP_DIR/$NEW_IMAGE/target/SYSTEM /storage/.update/SYSTEM.tmp
           mv $TMP_DIR/$NEW_IMAGE/target/SYSTEM.md5 /storage/.update/SYSTEM.md5.tmp
@@ -124,6 +128,10 @@ if [ ! -f /var/lock/update.lock ]; then
       # move KERNEL and SYSTEM to the right place
         mv /storage/.update/KERNEL.tmp /storage/.update/KERNEL
         mv /storage/.update/KERNEL.md5.tmp /storage/.update/KERNEL.md5
+        if [ -f /storage/.update/MACH_KERNEL.tmp -a -f /storage/.update//MACH_KERNEL.md5.tmp ]; then
+          mv /storage/.update/MACH_KERNEL.tmp /storage/.update/MACH_KERNEL
+          mv /storage/.update/MACH_KERNEL.md5.tmp /storage/.update/MACH_KERNEL.md5
+        fi
         mv /storage/.update/SYSTEM.tmp /storage/.update/SYSTEM
         mv /storage/.update/SYSTEM.md5.tmp /storage/.update/SYSTEM.md5
         sync
