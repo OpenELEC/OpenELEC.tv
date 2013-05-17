@@ -44,8 +44,7 @@ mkdir -p m4 && do_autoreconf
             --enable-sandboxed \
             --with-gnu-ld \
             --without-x \
-            --with-driver=userspace \
-            --with-driver=xbox \
+            --with-driver=all \
             --with-syslog=LOG_DAEMON \
             --with-kerneldir=$(kernel_path) \
             $DEBUG_CONFIG
