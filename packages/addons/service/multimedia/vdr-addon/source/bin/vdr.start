@@ -111,7 +111,8 @@ if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P epgsearch"
 fi
 if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P xmltv2vdr"
+  [ ! -e /var/run/vdr ] && ln -s /dev/shm /var/run/vdr
+  VDR_ARG="$VDR_ARG -P 'xmltv2vdr --epgfile=$ADDON_CACHE_DIR/epg.db'"
 fi
 
 (
