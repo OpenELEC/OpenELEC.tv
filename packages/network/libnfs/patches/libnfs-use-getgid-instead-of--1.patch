@@ -1,0 +1,48 @@
+From 43e0e7a7e6cbec9ba55db89eac368d42e969ad55 Mon Sep 17 00:00:00 2001
+From: Ronnie Sahlberg <ronniesahlberg@gmail.com>
+Date: Sat, 25 May 2013 06:24:15 -0700
+Subject: [PATCH] On unix systems, when creating the default authentication
+ token use getgid() as the group instead of -1. Recent linux knfsd do not
+ allow grp==-1
+
+On windows there are no uid/gids in the traditional sense so there I still specify a default credential of uid==gid==-1 :
+	rpc->auth = authunix_create("LibNFS", 65535, 65535, 0, NULL);
+
+This is I think the sanest/safest thing to do since most servers will have
+special handing of -1 meaning 'nobody' or similar.
+This should work on many/most servers and give the user the minimum available
+access allowed for 'nobody'.
+
+I think on windows (or AROS for that matter) applications will probably have
+to invoke and set the credentials themself explicitely.
+Those apps probably, unfortunately, also need to have a configuration
+setting to select which uid/gid to use when talking to the server.
+(or they could hardcode it)
+
+rpc_set_auth(rpc, libnfs_authunix_create("hostname", uid, gid, 0, NULL))
+should do the trick if they call immediately after creating the rpc/nfs context.
+
+But dont set it to 0,0 root/root for uid/gid.
+First of all, most servers have root-squash so they will re-map this uid/gid
+to 'nobody' internally.
+But, if the user uses a server that does not do root-squash, then setting this to 0,0 would mean that your app now access the nfs share as root   which is probably not what you want.
+---
+ lib/libnfs-zdr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/libnfs-zdr.c b/lib/libnfs-zdr.c
+index 24bf6c2..29bb18d 100644
+--- a/lib/libnfs-zdr.c
++++ b/lib/libnfs-zdr.c
+@@ -504,7 +504,7 @@ struct AUTH *libnfs_authunix_create(char *host, uint32_t uid, uint32_t gid, uint
+ 
+ struct AUTH *libnfs_authunix_create_default(void)
+ {
+-	return libnfs_authunix_create("libnfs", getuid(), -1, 0, NULL);
++	return libnfs_authunix_create("libnfs", getuid(), getgid(), 0, NULL);
+ }
+ 
+ void libnfs_auth_destroy(struct AUTH *auth)
+-- 
+1.8.1.6
+
