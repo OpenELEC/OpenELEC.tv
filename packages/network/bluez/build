@@ -22,12 +22,6 @@
 
 . config/options
 
-if [ "$ALSA_SUPPORT" = "yes" ]; then
-  BLUEZ_ALSA="--enable-audio --enable-alsa"
-else
-  BLUEZ_ALSA="--disable-audio --disable-alsa"
-fi
-
 if [ "$DEBUG" = "yes" ]; then
   DEBUG_CONFIG="--enable-debug"
 else
@@ -62,7 +56,8 @@ cd $PKG_BUILD
             --enable-health \
             --disable-pnat \
             --disable-gstreamer \
-            $BLUEZ_ALSA \
+            --disable-audio \
+            --disable-alsa \
             --enable-usb \
             --enable-datafiles \
             --enable-pcmcia \
