@@ -48,8 +48,8 @@ cd $PKG_BUILD
             --localstatedir=/var \
             --disable-dependency-tracking \
             --disable-silent-rules \
-            --disable-shared \
-            --enable-static \
+            --enable-shared \
+            --disable-static \
             --enable-optimization \
             --enable-fortify \
             --disable-pie \
