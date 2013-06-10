@@ -23,11 +23,12 @@
 # runlevels: openelec, textmode
 
 (
-  # sleep 10 sec to be ensure network is started
-    usleep 10000000
-
+  wait_for_inet_addr
   progress "Starting Avahi Daemon"
 
     mkdir -p /var/run/avahi-daemon
-    avahi-daemon -D
+    while true; do
+      sleep 2
+      avahi-daemon
+    done
 )&
