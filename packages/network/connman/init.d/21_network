@@ -265,11 +265,12 @@ set_interface() {
   # starting Connection manager
   progress "starting Connection manager"
 
-  while true; do
-    set_basic
-    set_interface
-    set_hwclock
+  set_basic
+  set_interface
+  set_hwclock
 
+  while true; do
+    wait_for_dbus 
     if [ -f $HOME/.config/debug.connman ]; then
       /usr/sbin/connmand -nrd > /dev/null 2>&1
     else
