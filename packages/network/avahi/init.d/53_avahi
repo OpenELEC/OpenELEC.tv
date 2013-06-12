@@ -29,6 +29,6 @@
     mkdir -p /var/run/avahi-daemon
     while true; do
       sleep 2
-      avahi-daemon
+      avahi-daemon > /dev/null 2>&1
     done
 )&
