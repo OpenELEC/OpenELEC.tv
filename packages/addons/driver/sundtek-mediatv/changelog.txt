@@ -1,3 +1,5 @@
+3.0.7
+  improve suspend/resume
 3.0.6
   rebuild
 3.0.5
