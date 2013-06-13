@@ -31,7 +31,7 @@ fi
   if [ "$HDD_STANDBY" == "true" ] ; then
     progress "Setup HDD standby"
     [ -z "$HDD_STANDBY_TIME" ] && HDD_STANDBY_TIME=15
-    STANDBY_TIME=$[$HDD_STANDBY_TIME * 12]
+    STANDBY_TIME=$((HDD_STANDBY_TIME * 12))
     for disk in /dev/sd?; do
       hdparm -S $STANDBY_TIME $disk > /dev/null 2>&1
     done
