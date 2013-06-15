@@ -29,6 +29,7 @@ cd $PKG_BUILD
             --prefix=/usr/share/xbmc \
             --disable-static \
             --enable-addons-with-dependencies \
+	    --$( [[ $MYSQL_SUPPORT = yes ]] && echo enable || echo disable)-mysql \
             --enable-shared
 
 make
