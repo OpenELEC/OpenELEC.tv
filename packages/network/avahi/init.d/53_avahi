@@ -29,7 +29,7 @@
     mkdir -p /var/run/avahi-daemon
     while true; do
       wait_for_dbus
-      avahi-daemon > /dev/null 2>&1
+      avahi-daemon --syslog > /dev/null 2>&1
       sleep 500000
     done
 )&
