@@ -65,7 +65,7 @@ cd $PKG_BUILD
             --with-curl=$SYSROOT_PREFIX/usr \
             --with-pcre-regex \
             --without-sqlite \
-            --with-sqlite3=$SYSROOT_PREFIX/usr \
+            --without-sqlite3 \
             --enable-sqlite-utf8 \
             --disable-pdo \
             --without-pdo-sqlite \
