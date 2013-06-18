@@ -52,7 +52,7 @@ cd $PKG_BUILD
             --disable-ftp \
             --without-gettext \
             --without-gmp \
-            --disable-json \
+            --enable-json \
             --without-readline \
             --without-ncurses \
             --disable-pcntl \
