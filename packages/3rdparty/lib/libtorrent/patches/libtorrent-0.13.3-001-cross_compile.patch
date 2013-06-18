@@ -1,0 +1,31 @@
+--- ./scripts/common.m4.orig	2012-12-28 11:01:48.469301610 +0100
++++ ./scripts/common.m4	2012-12-28 11:02:02.221126574 +0100
+@@ -223,7 +223,7 @@
+ AC_DEFUN([TORRENT_CHECK_EXECINFO], [
+   AC_MSG_CHECKING(for execinfo.h)
+ 
+-  AC_RUN_IFELSE([AC_LANG_SOURCE([
++  AC_LINK_IFELSE([AC_LANG_SOURCE([
+       #include <execinfo.h>
+       int main() { backtrace((void**)0, 0); backtrace_symbols((char**)0, 0); return 0;}
+       ])],
+@@ -238,7 +238,7 @@
+ AC_DEFUN([TORRENT_CHECK_ALIGNED], [
+   AC_MSG_CHECKING(the byte alignment)
+ 
+-  AC_RUN_IFELSE([AC_LANG_SOURCE([
++  AC_LINK_IFELSE([AC_LANG_SOURCE([
+       #include <inttypes.h>
+       int main() {
+         char buf@<:@8@:>@ = { 0, 0, 0, 0, 1, 0, 0, 0 };
+--- ./scripts/checks.m4.orig      2012-12-28 11:39:38.865233920 +0100
++++ ./scripts/checks.m4   2012-12-28 11:40:14.404802773 +0100
+@@ -96,7 +96,7 @@
+ AC_DEFUN([TORRENT_CHECK_KQUEUE_SOCKET_ONLY], [
+   AC_MSG_CHECKING(whether kqueue supports pipes and ptys)
+ 
+-  AC_RUN_IFELSE([AC_LANG_SOURCE([
++  AC_LINK_IFELSE([AC_LANG_SOURCE([
+       #include <fcntl.h>
+       #include <stdlib.h>
+       #include <unistd.h>
