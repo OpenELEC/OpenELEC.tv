@@ -1,0 +1,19 @@
+<settings>
+    <setting id="RTORRENT_ENABLED" value="true" />
+    <setting id="RTORRENT_PORTS" value="6895-6895" />
+    <setting id="RTORRENT_UPNP" value="false" />
+    <setting id="RTORRENT_DOWN_RATE" value="1024" />
+    <setting id="RTORRENT_UP_RATE" value="100" />
+    <setting id="RTORRENT_UPDATE_ON_COMPLETE" value="false" />
+    <setting id="RTORRENT_ON_COMPLETE" value="Move" />
+    <setting id="RTORRENT_DL_DIR" value="/storage/downloads/" />
+    <setting id="RTORRENT_WATCH_DIR" value="/storage/downloads/torrents/" />
+    <setting id="RTORRENT_COMPLETE_DIR" value="/storage/" />
+    <setting id="RTORRENT_DIRS" value="videos,tvshows,music" />
+    <setting id="RUTORRENT_ENABLED" value="true" />
+    <setting id="RUTORRENT_PORT" value="8181" />
+    <setting id="RUTORRENT_AUTH" value="false" />
+    <setting id="RUTORRENT_USER" value="" />
+    <setting id="RUTORRENT_PASS" value="" />
+    <setting id="RUTORRENT_UPNP" value="false" />
+</settings>

@@ -1,0 +1,26 @@
+# config file for rtorrent.
+
+# Seting useful umask
+system.umask.set=0002
+
+# This will set rtorrent/scgi to listen on localhost, port 5000.
+scgi_port = localhost:5000
+
+#force UTF-8, as xmlrpc-c only transfers in UTF-8
+encoding_list = UTF-8
+
+# Save session data 
+schedule = session_save,60,120,session_save=
+
+# Stop and remove untied torrents
+schedule = untied_directory,5,10,remove_untied=
+
+# Close torrents when diskspace is low.
+schedule = low_diskspace,5,20,close_low_diskspace=500M
+
+# Encrypt all traffic.
+encryption = allow_incoming, try_outgoing, require, require_RC4, enable_retry
+
+# Dont check hashes
+check_hash = no
+

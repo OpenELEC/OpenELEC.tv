@@ -1,0 +1,42 @@
+3.1.8
+- Fixed php sqlite problem
+- added mkdir for series with sNNeNN in name
+- added remove lock file if rtorrent is dead
+3.0.7
+- added new patch from @sallyswiss: fixes for ipv4_filter now includes logging.
+- changed defaults of rTorrent and ruTorrent to enabled, easier to install and run.
+3.0.6
+- added patch from @sallyswiss: fixes ipv4_filter high memory usage.
+- ipv4_filter now supports lists in p2p format.
+- compile optimizations.
+3.0.5
+- upgraded to rtorrent to 0.9.3: fixed announcement interval issue and more
+- upgraded to rutorrent to 3.5: new features and fixes, release notes comming...
+- upgraded to xmlrpc-c to 1.16.44: fixed memory leaks and more
+- upgraded to libtorrent to 0.13.3: fixed announcement interval issue and more
+- upgraded to libsigc++ to 2.3.1: performace optimize and fixes
+- changed low_diskspace limit on RPi to 100MB and 500MB on others
+- dont try to sort downloads not in correct dirs
+- OpenELEC 3.0 support
+2.1.4
+- OpenELEC 2.0 support
+2.1.3
+- addon name changed form rtorrent to rTorrent, uninstall old addon is needed.
+- added rtorrent upnp support whit miniupnpc
+- added rutorrent web auth and upnp support
+- added config options to enable upnp for rtorrent and/or rutorrent
+- added rutorrent plugin ratio whit seedtime support
+- added rutorrent on complete actions support, you need to save data in correct dirs
+- added on complete script whit notify xbmc
+- added library auto update script, enable in config
+- added default download dir. whill be base download dir 
+- changed rutorrent rss updateInterval from 30m to 10m
+- fixed rutorrent settings not saved on updates/reinstalls, settings moved to addon home
+- fix addon updates try 1
+- fix rtorrent move on complete not working
+- cleanup of config screan
+- script fixes/cleanups
+2.1.2
+- added rutorrent-3.4 web gui
+2.1.1
+- initial version of rtorrent-0.9.2

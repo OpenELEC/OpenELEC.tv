@@ -1,0 +1,159 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+#
+# rtorrent.start by jenkins
+# This script is for start of the rtorrent service in OpenELEC
+# No other platform then openelec is supported.
+#
+
+. /etc/profile
+
+ADDON_DIR="$HOME/.xbmc/addons/service.downloadmanager.rTorrent"
+ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.downloadmanager.rTorrent"
+ADDON_SETTINGS="$ADDON_HOME/settings.xml"
+
+RTORRENT_RC="$ADDON_HOME/rtorrent.rc"
+RTORRENT_SESSION="$ADDON_HOME/session"
+RTORRENT_LOCKFILE="$RTORRENT_SESSION/rtorrent.lock"                                                                                    
+RTORRENT_DTACH_FILE="/tmp/rtorrent.dtach"
+RTORRENT_ARG="-n -o import=$RTORRENT_RC -s $RTORRENT_SESSION"
+
+RUTORRENT_CONF="$ADDON_DIR/rutorrent-httpd.conf"
+RUTORRENT_CONF_DIR="$ADDON_HOME/rutorrent"
+
+LOCKDIR="/var/lock/"
+LOCKFILE="rtorrent.disabled"
+LOG_FILE="$ADDON_HOME/service.log"
+
+[ -d $ADDON_HOME ] || mkdir -p $ADDON_HOME
+[ -d $RTORRENT_SESSION ] || mkdir -p $RTORRENT_SESSION
+[ -d $RUTORRENT_CONF_DIR ] || mkdir -p $RUTORRENT_CONF_DIR
+[ -d $RUTORRENT_CONF_DIR/torrents ] || mkdir -p $RUTORRENT_CONF_DIR/torrents
+[ -f $RUTORRENT_CONF_DIR/.htaccess ] || echo "deny from all" > $RUTORRENT_CONF_DIR/.htaccess
+[ -f $LOG_FILE ] || touch $LOG_FILE
+
+# Trying to fix addon updates
+if [ -f $ADDON_DIR/firstrun ];then
+	rm -f $ADDON_DIR/firstrun
+	[ -f "$RTORRENT_RC" ] && mv "$RTORRENT_RC" "$RTORRENT_RC.old"
+fi
+
+if [ ! -f "$ADDON_SETTINGS" ]; then
+  cp $ADDON_DIR/settings-default.xml $ADDON_SETTINGS
+fi
+
+if [ ! -f "$RTORRENT_RC" ]; then
+  cp $ADDON_DIR/rtorrent.default.rc $RTORRENT_RC
+fi
+
+[ -d /var/config ] || mkdir -p /var/config
+cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/rtorrent.conf
+
+. /var/config/rtorrent.conf
+
+# Please dont auto start on install
+if [ "$RTORRENT_ENABLED" == "false" ];then
+	exit 0
+fi
+
+RTORRENT_ARG="$RTORRENT_ARG -p $RTORRENT_PORTS -o download_rate=$RTORRENT_DOWN_RATE -o upload_rate=$RTORRENT_UP_RATE"
+
+# Check upnp support if upnp enabled.
+if [ "$RTORRENT_UPNP" == "true" -o "$RUTORRENT_UPNP" == "true" -a "$RUTORRENT_AUTH" == "true" ];then
+	LAN_IP=$(upnpc -s |grep "LAN ip" |awk -F: '{print $2}')
+	EXT_IP=$(upnpc -s |awk -F= '/ExternalIPAddress =/ {print $2}' |grep -Eo [0-9]+.[0-9]+.[0-9]+.[0-9]+.)
+	if [ -z $EXT_IP ];then
+		xbmc-send -a "Notification(rTorrent UPNP Failed,your router does not support UPNP port mapping or it is not enabled,20000)"
+		UPNP_OK="false"
+	else
+		UPNP_OK="true"
+	fi
+fi	
+
+if [ "$RTORRENT_UPNP" == "true" -a "$UPNP_OK" == "true" ];then
+	PORT=${RTORRENT_PORTS%-*}
+	PORT_END=${RTORRENT_PORTS#*-}
+	while [ $PORT -le $PORT_END ];do
+		$ADDON_DIR/bin/upnpc -a $LAN_IP $PORT $PORT TCP
+		let PORT=$PORT+1
+	done
+fi
+
+
+if [ "$RUTORRENT_ENABLED" == "true" ];then
+	.  $ADDON_DIR/bin/rutorrent.sh
+fi
+
+# Default download path = DL base dir
+RTORRENT_ARG="$RTORRENT_ARG -d $RTORRENT_DL_DIR"
+
+# Create and load watch dirs
+for dir in ${RTORRENT_DIRS//,/ } ;do
+	[ -d "$RTORRENT_DL_DIR/$dir" ] || mkdir -p "$RTORRENT_DL_DIR/$dir"
+	[ -d "$RTORRENT_WATCH_DIR/$dir" ] || mkdir -p "$RTORRENT_WATCH_DIR/$dir"
+	if [ ! "$RTORRENT_ON_COMPLETE" == "None" ];then
+		[ -d "$RTORRENT_COMPLETE_DIR/$dir" ] || mkdir -p "$RTORRENT_COMPLETE_DIR/$dir"
+	fi
+	RTORRENT_ARG="$RTORRENT_ARG -O schedule=watch_$dir,10,10,\"load_start=$RTORRENT_WATCH_DIR/$dir/*.torrent\,d.set_directory=$RTORRENT_DL_DIR/$dir\,d.set_custom1=$dir\""
+done
+
+if [ ! "$RTORRENT_ON_COMPLETE" == "None" ];then
+	RTORRENT_ARG="$RTORRENT_ARG -O system.method.set_key=event.download.finished,on_complete,\"execute=complete.sh,\$d.get_hash=,\$d.get_base_path=\""
+fi
+
+if [ "$RTORRENT_UPDATE_ON_COMPLETE" == "true" ];then
+	RTORRENT_ARG="$RTORRENT_ARG -O system.method.set_key=event.download.finished,update_on_complete,\"execute=xbmc-libup.sh\""
+fi
+
+if [ ! "$(pidof rtorrent)" ];then
+  [ -f "$LOCKDIR/$LOCKFILE" ] && rm -f "$LOCKDIR/$LOCKFILE"
+  while [ true ] ; do
+    # FIX: Broken addon uninstaller does not stop the addon
+    if [ ! -d "$ADDON_DIR/bin" ];then
+        killall rtorrent
+        if [ "$RUTORRENT_ENABLED" == "true" ];then
+           RUTORRENT_PID=$(ps |grep "http[d] -p $RUTORRENT_PORT"|awk '{print $1}')
+           kill $RUTORRENT_PID
+        fi
+        break
+    fi
+    if [ -f "$LOCKDIR/$LOCKFILE" ] ; then
+      break
+    fi 
+    
+    # Start
+    if [ ! "$(pidof rtorrent)" ];then
+        [ -f $RTORRENT_LOCKFILE ] && rm -f $RTORRENT_LOCKFILE
+        dtach -n $RTORRENT_DTACH_FILE rtorrent $RTORRENT_ARG &>$LOG_FILE
+    fi
+    if [ ! "$(ps |grep "http[d] -p $RUTORRENT_PORT")" ];then
+	if [ "$RUTORRENT_ENABLED" == "true" ];then
+		httpd -p $RUTORRENT_PORT -c $RUTORRENT_CONF >>$LOG_FILE
+		# Start plugins
+		$ADDON_DIR/bin/php $ADDON_DIR/rutorrent/php/initplugins.php >>$LOG_FILE
+	fi
+    fi
+    sleep 1 
+  done &
+fi
+
+# vim:ts=4:sw=4

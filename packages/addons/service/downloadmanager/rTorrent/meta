@@ -1,0 +1,38 @@
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#
+#  This Program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  This Program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
+#  http://www.gnu.org/copyleft/gpl.html
+################################################################################
+
+PKG_NAME="rTorrent"
+PKG_VERSION="3.1"
+PKG_REV="8"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://libtorrent.rakshasa.no"
+PKG_URL=""
+PKG_DEPENDS="openssl curl ncurses zlib libtorrent xmlrpc-c rutorrent dtach miniupnpc rtorrent php"
+PKG_BUILD_DEPENDS="toolchain openssl curl libtool pkg-config ncurses libtorrent zlib xmlrpc-c dtach rutorrent miniupnpc rtorrent php"
+PKG_PRIORITY="optional"
+PKG_SECTION="service/downloadmanager"
+PKG_SHORTDESC="rTorrent: This is the free BitTorrent client rtorrent packed for OpenELEC"
+PKG_LONGDESC="rTorrent BitTorrent client can handel multipel watch dirs and post actions. [CR][CR]After changing settings you need to disable and re-enable the addon. [CR][CR]Hove this addon is intended to work: [CR][CR]You add base dirs. [CR]torrents: /storage/downloads/torrents/ [CR]downloads: /storage/downloads [CR]comlete: /storege [CR][CR]then you add watch dirs separated by: ,[CR]videos,tvshows,music [CR][CR]Wath will happen then is: [CR][CR]Directorys while be created if they dont exist: [CR]/storage/downloads/torrents/videos [CR]/storage/downloads/videos [CR]/storege/videos [CR][CR]then rtorrent while start dtached. [CR][CR]Now if you add a torrent file to: /storage/downloads/torrents/videos it while be downloaded to /storage/downloads/videos [CR][CR]On completion it while be Linked or Moved to /storege/videos [CR][CR]The same for every watch dir added... [CR][CR]Nice ha..."
+
+PKG_IS_ADDON="yes"
+PKG_ADDON_TYPE="xbmc.service"
+
+PKG_AUTORECONF="no"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+	<!-- rTorrent -->
+	<string id="1000">rTorrent Service</string>
+	<string id="1001">rTorrent Service Settings</string>
+	<string id="1002">Enable Service:</string>
+	<string id="1003">Port Range:</string>
+	<string id="1004">Download Rate (kb/s):</string>
+	<string id="1005">Upload Rate (kb/s):</string>
+	<string id="1006">Enable UPNP port mapping:</string>
+	<string id="1007">Update XBMC library on complete:</string>
+		
+	<!-- rTorrent Watch Settings -->
+	<string id="2000">Watch Settings</string>
+	<string id="2010">When Download Completes</string>
+	<string id="2011">To Complete Directory:</string>
+	<string id="2020">rTorrent Base Directory Settings</string>
+	<string id="2021">Torrent  Base Directory:</string>
+	<string id="2022">Download Base Directory:</string>
+	<string id="2023">Complete Base Directory:</string>
+	<string id="2030">Directorys to Watch under Base Dirs (add as menny as you like)</string>
+	<string id="2031">Directorys:</string>
+	
+	<!-- ruTorrent -->
+	<string id="3000">ruTorrent Web</string>
+	<string id="3001">ruTorrent Web Settings</string>
+	<string id="3002">Enable ruTorrent Web:</string>
+	<string id="3003">ruTorrent Web Port:</string>
+	<string id="3004">ruTorrent Web Auth Settings:</string>
+	<string id="3005">Enable Web Auth:</string>
+	<string id="3006">Username:</string>
+	<string id="3007">Password:</string>
+	<string id="3008">Enable UPNP port mapping:</string>
+	
+</strings>

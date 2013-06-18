@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+
+   <!-- rTorrent -->
+    <category label="1000">
+		<setting label="1001" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RTORRENT_ENABLED" type="bool" label="1002" default="false"/>
+		<setting id="RTORRENT_PORTS" type="text" label="1003" enable="eq(-1,true)" default="6895-6895"/>
+		<setting id="RTORRENT_UPNP" type="bool" label="1006" enable="eq(-2,true)" default="false"/>
+		<setting id="RTORRENT_DOWN_RATE" type="text" label="1004" enable="eq(-3,true)" default="1024"/>
+		<setting id="RTORRENT_UP_RATE" type="text" label="1005" enable="eq(-4,true)" default="50"/>
+		<setting id="RTORRENT_UPDATE_ON_COMPLETE" type="bool" label="1007" enable="eq(-5,true)" default="false"/>
+    </category>
+    
+    <!-- rTorrent Watch Settings -->
+    <category label="2000">
+		<setting label="2010" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RTORRENT_ON_COMPLETE" type="labelenum" label="2011" values="None|Link|Move" sort="yes" default="Move"/>
+		<setting label="2020" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RTORRENT_WATCH_DIR" type="folder" label="2021" values="" default="/storage/downloads/torrents/"/>
+   		<setting id="RTORRENT_DL_DIR" type="folder" label="2022" values="" default="/storage/downloads/"/>
+		<setting id="RTORRENT_COMPLETE_DIR" type="folder" label="2023" values="" enable="!eq(-5,2)" default="/storage/"/>
+		<setting label="2030" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RTORRENT_DIRS" type="text" label="2031" default="videos,tvshows,music"/>
+    </category>
+    
+   <!-- ruTorrent -->
+    <category label="3000">
+		<setting label="3001" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RUTORRENT_ENABLED" type="bool" label="3002" default="false"/>
+		<setting id="RUTORRENT_PORT" type="text" label="3003" enable="eq(-1,true)" default="8181"/>
+		<setting label="3004" type="lsep"/>
+		<setting type="sep" />
+		<setting id="RUTORRENT_AUTH" type="bool" label="3005" default="false"/>
+		<setting id="RUTORRENT_USER" type="text" label="3006" enable="eq(-1,true)" default=""/>
+		<setting id="RUTORRENT_PASS" type="text" option="hidden" label="3007" enable="eq(-2,true)" default=""/>
+		<setting id="RUTORRENT_UPNP" type="bool" label="3008" enable="eq(-3,true)" default="false"/>
+    </category>
+    
+</settings>
