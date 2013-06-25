@@ -52,6 +52,9 @@ PKG_AUTORECONF="no"
   PKG_DEPENDS="$PKG_DEPENDS xbmc-pvr-addons"
   PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr"
 
+# vnsi4
+  PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-vnsi4"
+
 if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   # for libX11 support
   PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS libX11 libXext"

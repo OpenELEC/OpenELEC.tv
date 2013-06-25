@@ -50,6 +50,7 @@ mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-[0-9]*/.install/usr/lib/vdr/libvdr-dvbsddevice.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-plugin-xvdr-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-plugin-vnsiserver-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $BUILD/vdr-plugin-vnsiserver4-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-iptv-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-wirbelscan-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-wirbelscancontrol-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
@@ -74,6 +75,9 @@ mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/xvdr
 
 mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/vnsiserver
   cp -PR $BUILD/vdr-plugin-vnsiserver-*/vnsiserver/allowed_hosts.conf $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/vnsiserver
+
+mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/vnsiserver4
+  cp -PR $BUILD/vdr-plugin-vnsiserver4-*/vnsiserver/allowed_hosts.conf $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/vnsiserver4
 
 mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
   cp -P $BUILD/vdr-[0-9]*/vdr $ADDON_BUILD/$PKG_ADDON_ID/bin/vdr.bin
