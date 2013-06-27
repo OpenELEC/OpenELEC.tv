@@ -170,12 +170,10 @@ cd $PKG_BUILD/
             --enable-runtime-cpudetect \
             $FFMPEG_TABLES \
             --disable-memalign-hack \
-            --disable-encoders \
             --enable-encoder=ac3 \
             --enable-encoder=aac \
             --disable-decoder=mpeg_xvmc \
             --enable-hwaccels \
-            --disable-muxers \
             --enable-muxer=spdif \
             --enable-muxer=adts \
             --enable-demuxers \
@@ -195,7 +193,6 @@ cd $PKG_BUILD/
             --disable-libfaac \
             --disable-libfreetype \
             --disable-libgsm \
-            --disable-libmp3lame \
             --disable-libnut \
             --disable-libopenjpeg \
             --disable-librtmp \
@@ -206,7 +203,6 @@ cd $PKG_BUILD/
             --disable-libvo-amrwbenc \
             --enable-libvorbis --enable-muxer=ogg --enable-encoder=libvorbis \
             --disable-libvpx \
-            --disable-libx264 \
             --disable-libxavs \
             --disable-libxvid \
             --enable-zlib \

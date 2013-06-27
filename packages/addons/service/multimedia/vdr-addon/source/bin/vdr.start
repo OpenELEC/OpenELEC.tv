@@ -98,6 +98,8 @@ if [ "$ENABLE_IPTV" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P iptv"
 fi
 if [ "$ENABLE_STREAMDEV_SERVER" == "true" ] ; then
+  mkdir -p $ADDON_CONFIG_DIR/plugins/streamdev-server
+  ln -sf $ADDON_DIR/bin/externremux.sh $ADDON_CONFIG_DIR/plugins/streamdev-server/externremux.sh
   VDR_ARG="$VDR_ARG -P streamdev-server"
 fi
 if [ "$ENABLE_STREAMDEV_CLIENT" == "true" ] ; then
