@@ -1,6 +1,6 @@
-# https://devtalk.nvidia.com/default/topic/543728/linux/building-nvidia-driver-on-kernel-3-9-0/post/3814531/#3814531
+https://devtalk.nvidia.com/default/topic/543728/linux/building-nvidia-driver-on-kernel-3-9-0/post/3814531/#3814531
+http://pastie.org/7942599
 
-diff -ur -X - a/kernel/nv-i2c.c b/kernel/nv-i2c.c
 --- a/kernel/nv-i2c.c	2013-04-26 00:22:30.000000000 -0400
 +++ b/kernel/nv-i2c.c	2013-05-13 05:20:55.571981365 -0400
 @@ -311,8 +311,6 @@
@@ -31,7 +31,7 @@ diff -ur -X - a/kernel/nv-i2c.c b/kernel/nv-i2c.c
  }
  
  #else // (defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE))
-diff -ur -X - a/kernel/nv-procfs.c b/kernel/nv-procfs.c
+
 --- a/kernel/nv-procfs.c	2013-04-26 00:22:30.000000000 -0400
 +++ b/kernel/nv-procfs.c	2013-05-22 04:52:45.229495748 -0400
 @@ -60,60 +60,41 @@
@@ -163,7 +163,7 @@ diff -ur -X - a/kernel/nv-procfs.c b/kernel/nv-procfs.c
          }
      }
 @@ -180,12 +161,12 @@
-         type = "PCIe";
+         type = "PCI-E";
      else
          type = "PCI";
 -    len += sprintf(page+len, "Bus Type: \t %s\n", type);
