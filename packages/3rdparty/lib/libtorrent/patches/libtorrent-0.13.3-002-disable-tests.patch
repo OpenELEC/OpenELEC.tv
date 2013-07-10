@@ -1,0 +1,24 @@
+Description: Don't run the testsuite after building
+Author: Daniel Forsberg
+Last-Update: 2013-01-03
+
+--- ./Makefile.am.orig  2013-01-03 21:17:32.246116451 +0100
++++ ./Makefile.am       2013-01-03 21:18:01.045792247 +0100
+@@ -1,4 +1,4 @@
+-SUBDIRS = src test
++SUBDIRS = src
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libtorrent.pc
+--- ./Makefile.in.orig  2013-01-03 21:17:21.482237702 +0100
++++ ./Makefile.in       2013-01-03 21:18:15.897625177 +0100
+@@ -297,7 +297,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = src test
++SUBDIRS = src
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libtorrent.pc
+ EXTRA_DIST = \
+

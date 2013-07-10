@@ -1,0 +1,23 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -268,8 +268,7 @@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = \
+ 	doc \
+-	src \
+-	test
++	src
+ 
+ EXTRA_DIST = \
+ 	autogen.sh \
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,7 +1,6 @@
+ SUBDIRS = \
+ 	doc \
+-	src \
+-	test
++	src
+ 
+ EXTRA_DIST= \
+ 	autogen.sh \

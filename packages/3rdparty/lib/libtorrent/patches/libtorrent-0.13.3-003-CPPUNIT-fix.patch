@@ -1,0 +1,14 @@
+Description: Don't check for CPPUNIT
+Author: Daniel Forsberg
+Last-Update: 2013-01-03
+
+--- ./configure.ac.orig   2013-01-03 21:22:01.955092145 +0100
++++ ./configure.ac        2013-01-03 21:24:18.865566799 +0100
+@@ -19,7 +19,6 @@
+ 
+ AM_INIT_AUTOMAKE
+ AM_CONFIG_HEADER(config.h)
+-AM_PATH_CPPUNIT(1.9.6)
+ 
+ AC_PROG_CXX
+

@@ -1,0 +1,29 @@
+--- ./conf/config.php.orig	2012-12-28 12:23:07.632175085 +0100
++++ ./conf/config.php	2012-12-28 12:27:04.673647355 +0100
+@@ -19,13 +19,13 @@
+ 	$schedule_rand = 10;			// rand for schedulers start, +0..X seconds
+ 
+ 	$do_diagnostic = true;
+-	$log_file = '/tmp/errors.log';		// path to log file (comment or leave blank to disable logging)
++	$log_file = '/var/log/rutorrent.log';	// path to log file (comment or leave blank to disable logging)
+ 
+ 	$saveUploadedTorrents = true;		// Save uploaded torrents to profile/torrents directory or not
+-	$overwriteUploadedTorrents = false;     // Overwrite existing uploaded torrents in profile/torrents directory or make unique name
++	$overwriteUploadedTorrents = true;      // Overwrite existing uploaded torrents in profile/torrents directory or make unique name
+ 
+-	$topDirectory = '/';			// Upper available directory. Absolute path with trail slash.
+-	$forbidUserSettings = false;
++	$topDirectory = '/storage/';		// Upper available directory. Absolute path with trail slash.
++	$forbidUserSettings = true;
+ 
+ 	$scgi_port = 5000;
+ 	$scgi_host = "127.0.0.1";
+@@ -52,7 +52,7 @@
+ 		"localhost",
+ 	);
+ 
+-	$profilePath = '../share';		// Path to user profiles
++	$profilePath = '../../../../userdata/addon_data/service.downloadmanager.rTorrent/rutorrent'; 	// Path to user profiles
+ 	$profileMask = 0777;			// Mask for files and directory creation in user profiles.
+ 						// Both Webserver and rtorrent users must have read-write access to it.
+ 						// For example, if Webserver and rtorrent users are in the same group then the value may be 0770.
