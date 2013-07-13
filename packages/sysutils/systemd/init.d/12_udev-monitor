@@ -25,5 +25,5 @@
 
 (
   progress "monitoring udev events"
-  exec udevadm monitor -e > /dev/udev.log
+  exec udevadm monitor -e > /var/log/udev.log
 )&
