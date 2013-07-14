@@ -24,6 +24,5 @@
 
 (
   progress "starting ATVclient"
-  mkdir -p /storage/.cache
   exec atvclient -m > /dev/null 2>&1
 )&

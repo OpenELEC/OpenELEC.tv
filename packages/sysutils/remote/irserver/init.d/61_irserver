@@ -29,8 +29,6 @@ if [ "$REMOTE_BACKEND" = "irtrans" -o "$LCD_DRIVER" = "irtrans" ]; then
 
   progress "Starting IRtrans daemon"
 
-  mkdir -p /var/run/lirc
-
   [ "$DEBUG" = "yes" ] && \
     IRSERVER_ARG="$IRSERVER_ARG -loglevel 4" # set loglevel in debugmode
 

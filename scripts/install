@@ -30,6 +30,10 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+if [ -z "$INSTALL" ] ; then
+  echo "error: '\$INSTALL' not set! this script is not intended to be run manually"
+  exit 1
+fi
 mkdir -p $STAMPS_INSTALL/$1
 
 if [ -f $STAMP -a $PKG_DIR/install -nt $STAMP ]; then
@@ -51,6 +55,11 @@ fi
 if [ -d $PKG_DIR/profile.d ]; then
   mkdir -p $INSTALL/etc/profile.d
   cp $PKG_DIR/profile.d/*.conf $INSTALL/etc/profile.d/
+fi
+
+if [ -d $PKG_DIR/tmpfiles.d ]; then
+  mkdir -p $INSTALL/usr/lib/tmpfiles.d
+  cp $PKG_DIR/tmpfiles.d/*.conf $INSTALL/usr/lib/tmpfiles.d
 fi
 
 if [ -d $PKG_DIR/udev.d ]; then

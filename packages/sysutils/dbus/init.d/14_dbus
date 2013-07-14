@@ -25,9 +25,6 @@
 
 (
   progress "Starting D-BUS"
-
-  mkdir -p /var/lib/dbus /var/run/dbus
-    dbus-uuidgen --ensure
     while true; do
       dbus-daemon --system --nofork &>/dev/null
       rm /var/run/dbus/pid &>/dev/null

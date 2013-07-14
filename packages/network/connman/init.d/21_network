@@ -22,10 +22,6 @@
 #
 # runlevels: openelec, textmode
 
-mkdir -p $CONFIG_CACHE/connman
-mkdir -p /storage/.config/vpn-config
-mkdir -p /run/connman
-
 if [ -f $HOME/.config/debug.connman ]; then
   CONNMAN_DEBUG="-d"
 fi
