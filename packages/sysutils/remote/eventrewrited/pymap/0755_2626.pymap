@@ -1,0 +1,241 @@
+#
+# Configuration file for Jetway Remote Control
+#
+# Map a key (or key sequence, if using "wait") to an action.
+# Format: KEY_SEQUENCE = ACTIONS
+#
+# KEY_SEQUENCE is one or more space separated KEY_COMBINATIONs.
+# KEY_COMBINATIONs have the format KEY_NAME-down or KEY_NAME-up, and may
+# be prefixed with Ctrl-, Alt-, or Shift-. eg. KEY_1-down
+#
+# Actions are semicolon separated (simple python split). They may be
+# one of:
+#
+#  none - do nothing, ignore key sequence
+#  wait - wait for the next keystroke and join into a KEY_SEQUENCE
+#  clear - clear the list of previously "wait"'d key sequences.
+#  send KEY1 KEY2 - send key response sequence (see below)
+#  set VARNAME value - evaluate (value) and put the result in VARNAME
+#  if EXPR - if EXPR (python expression) is true, execute following statements
+#  else - toggle execution of following statements (best used with "if")
+#  exec STMT - execute a python statement
+#  call MODULE:FUNCTION:argument - import a python module and call the
+#                                  specified function with the arguments:
+#    function(list_of_keyevents, dictionary_of_variables, argument_string)
+#    The function should return a list of InputEvent's to send.
+
+# Power Button
+KEY_POWER-down = send KEY_POWER-down
+KEY_POWER-up = send KEY_POWER-up
+
+# Esc Button (TODO)
+KEY_ESC-down = send KEY_EXIT-down
+KEY_ESC-up = send KEY_EXIT-up
+
+# Close Button
+Alt-KEY_F4-down = send KEY_EXIT-down
+Alt-KEY_F4-up = none
+KEY_F4-up = send KEY_EXIT-up
+
+# Blue (DVD Menu)
+Ctrl-Shift-KEY_M-down = send KEY_DVD
+KEY_M-up = none
+
+# Yellow (Pictures)
+Ctrl-KEY_I-down = send KEY_CAMERA
+KEY_I-up = none
+
+# Green (Music)
+Ctrl-KEY_M-down = send KEY_AUDIO
+
+# Orange (Videos)
+Ctrl-KEY_E-down = send KEY_VIDEO
+KEY_E-up = none
+
+# Ok
+KEY_ENTER-down = send KEY_OK-down
+KEY_ENTER-up = send KEY_OK-up
+
+# For the arrow keys we need to send the key on
+# key-up so we can repeat
+
+# Left
+KEY_LEFT-down = wait
+KEY_LEFT-down KEY_LEFT-up = send KEY_LEFT; clear
+KEY_LEFT-up = send KEY_LEFT
+
+# Right
+KEY_RIGHT-down = wait
+KEY_RIGHT-down KEY_RIGHT-up = send KEY_RIGHT; clear
+KEY_RIGHT-up = send KEY_RIGHT
+
+# Up 
+KEY_UP-down = wait
+KEY_UP-down KEY_UP-up = send KEY_UP; clear
+KEY_UP-up = send KEY_UP
+
+# Down
+KEY_DOWN-down = wait
+KEY_DOWN-down KEY_DOWN-up = send KEY_DOWN; clear
+KEY_DOWN-up = send KEY_DOWN
+
+# Magnifier
+
+KEY_LEFTMETA-down = wait 
+KEY_LEFTMETA-down KEY_EQUAL-down = clear; set infodown time.time()
+
+KEY_EQUAL-up = none
+
+KEY_LEFTMETA-up = wait
+KEY_LEFTMETA-up KEY_EQUAL-up = clear; if (time.time()-infodown) > 0.3; send KEY_EPG; else; send KEY_INFO
+
+# Volume up
+KEY_VOLUMEUP-down = send KEY_VOLUMEUP-down
+KEY_VOLUMEUP-up = send KEY_VOLUMEUP-up
+
+# Volume down
+KEY_VOLUMEDOWN-down = send KEY_VOLUMEDOWN-down
+KEY_VOLUMEDOWN-up = send KEY_VOLUMEDOWN-up
+
+
+# Media Center
+Alt-KEY_LEFTMETA-down = wait
+Alt-KEY_LEFTMETA-down Alt-KEY_ENTER-down = send KEY_PROG1-down; clear
+
+Alt-KEY_ENTER-up = none
+
+KEY_LEFTMETA-up = wait
+KEY_LEFTMETA-up KEY_ENTER-up = send KEY_PROG1-up; clear
+ 
+# channel+
+KEY_PAGEUP-down = wait
+KEY_PAGEUP-down KEY_PAGEUP-up = send KEY_CHANNELUP; clear
+KEY_PAGEUP-up = send KEY_CHANNELUP
+
+# channel-
+KEY_PAGEDOWN-down = wait
+KEY_PAGEDOWN-down KEY_PAGEDOWN-up = send KEY_CHANNELDOWN; clear
+KEY_PAGEDOWN-up = send KEY_CHANNELDOWN
+
+# Rewind
+KEY_REWIND-down = send KEY_REWIND-down
+KEY_REWIND-up = send KEY_REWIND-up
+
+Ctrl-Shift-KEY_B-down = wait
+Ctrl-Shift-KEY_B-down KEY_B-up = none; clear
+
+Ctrl-KEY_LEFT-down = wait
+Ctrl-KEY_LEFT-down KEY_LEFT-up = none; clear
+
+Ctrl-Shift-KEY_LEFT-down = wait
+Ctrl-Shift-KEY_LEFT-down KEY_LEFT-up = none; clear
+
+# Play/Pause
+KEY_PLAYPAUSE-down = send KEY_PLAY-down
+KEY_PLAYPAUSE-up = send KEY_PLAY-up
+
+KEY_SPACE-down = wait
+KEY_SPACE-down KEY_SPACE-up = none; clear
+
+# Fast Forward
+KEY_FASTFORWARD-down = send KEY_FASTFORWARD-down
+KEY_FASTFORWARD-up = send KEY_FASTFORWARD-up
+
+Ctrl-Shift-KEY_F-down = wait
+Ctrl-Shift-KEY_F-down KEY_F-up = none; clear
+
+Ctrl-KEY_RIGHT-down = wait
+Ctrl-KEY_RIGHT-down KEY_RIGHT-up = none; clear
+
+Ctrl-Shift-KEY_RIGHT-down = wait
+Ctrl-Shift-KEY_RIGHT-down KEY_RIGHT-up = none; clear
+
+# Replay
+KEY_PREVIOUSSONG-down = send KEY_PREVIOUS-down
+KEY_PREVIOUSSONG-up = send KEY_PREVIOUS-up
+
+    # This is a hack because page down returns KEY_PAGE-down and KEY_PAGE-up
+Alt-KEY_LEFT-down = wait
+Alt-KEY_LEFT-down KEY_LEFT-up = wait 
+
+Alt-KEY_LEFT-down KEY_LEFT-up KEY_PAGEUP-down = wait
+Alt-KEY_LEFT-down KEY_LEFT-up KEY_PAGEUP-down KEY_PAGEUP-up = none; clear
+
+Ctrl-KEY_PAGEUP-down = wait
+Ctrl-KEY_PAGEUP-down KEY_PAGEUP-up = none; clear
+
+# Stop
+KEY_STOPCD-down = send KEY_STOP-down
+KEY_STOPCD-up = send KEY_STOP-up
+
+KEY_DOT-down = wait
+KEY_DOT-down KEY_DOT-up = none; clear
+
+Ctrl-KEY_U-down = wait
+Ctrl-KEY_U-down KEY_U-up = none; clear
+
+Alt-KEY_U-down = wait
+Alt-KEY_U-down KEY_U-up = none; clear
+
+# Skip
+KEY_NEXTSONG-down = send KEY_NEXT-down
+KEY_NEXTSONG-up = send KEY_NEXT-up
+    # This is also a hack
+Alt-KEY_DOWN-down = wait
+Alt-KEY_DOWN-down KEY_DOWN-up = wait
+
+Alt-KEY_DOWN-down KEY_DOWN-up KEY_PAGEDOWN-down = wait
+Alt-KEY_DOWN-down KEY_DOWN-up KEY_PAGEDOWN-down KEY_PAGEDOWN-up = none; clear
+
+Ctrl-KEY_PAGEDOWN-down = wait
+Ctrl-KEY_PAGEDOWN-down KEY_PAGEDOWN-up = none; clear
+
+# Back
+KEY_BACK-down = send KEY_EXIT-down
+KEY_BACK-up = send KEY_EXIT-up
+
+# Forward
+KEY_FORWARD-down = send KEY_OK-down
+KEY_FORWARD-up = send KEY_OK-up
+
+# WWW (Not mapped)
+KEY_HOMEPAGE-down = send KEY_HOMEPAGE-down
+KEY_HOMEPAGE-up = send KEY_HOMEPAGE-up
+
+# Full screen
+Alt-KEY_ENTER-down = wait
+Alt-KEY_ENTER-down KEY_ENTER-up = send KEY_ZOOM; clear
+
+Ctrl-KEY_ENTER-down = wait
+Ctrl-KEY_ENTER-down KEY_ENTER-up = none; clear
+
+# Delete
+KEY_DELETE-down = wait
+KEY_DELETE-down KEY_DELETE-up = send KEY_DELETE; clear
+KEY_DELETE-up = none
+
+# Desktop (No key assigned ?)
+
+KEY_LEFTMETA-down = wait 
+KEY_LEFTMETA-down KEY_D-down = clear 
+
+KEY_D-up = none
+
+KEY_LEFTMETA-up = wait
+KEY_LEFTMETA-up KEY_D-up = clear
+
+
+# Mic OSD
+Ctrl-Alt-Shift-KEY_BACKSLASH-down = send KEY_SUBTITLE-down
+KEY_BACKSLASH-up = send KEY_SUBTITLE-up
+
+Ctrl-Alt-Shift-KEY_BACKSLASH-up = none
+
+# Windows Toggle (No key)
+Alt-KEY_TAB-down = none
+Alt-KEY_TAB-up = none
+
+# Mute
+KEY_MUTE-down = send KEY_MUTE-down
+KEY_MUTE-up = send KEY_MUTE-up
+
