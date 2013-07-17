@@ -54,6 +54,10 @@ if  [ -f /etc/lsb-release ]; then
   DISTRO=$(grep DISTRIB_ID /etc/lsb-release | cut -d "=" -f 2)
 fi
 
+if [ "$DISTRO" = "Ubuntu" ]; then
+  deps="$deps autopoint xfonts-utils libxml-parser-perl"
+fi
+
 i=0
 while dep=`getarg $i $deps` && [ -n "$dep" ]; do
   [ -z "`which $dep 2>/dev/null`" ] && need="$need $dep" && need_pkg="$need_pkg `getarg $i $deps_pkg`"
