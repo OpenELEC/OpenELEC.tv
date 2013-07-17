@@ -56,6 +56,7 @@ fi
 
 if [ "$DISTRO" = "Ubuntu" ]; then
   deps="$deps autopoint xfonts-utils libxml-parser-perl"
+  deps_pkg="$deps_pkg autopoint xfonts-utils libxml-parser-perl"
 fi
 
 i=0
