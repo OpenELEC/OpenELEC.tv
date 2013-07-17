@@ -55,7 +55,7 @@ if  [ -f /etc/lsb-release ]; then
 fi
 
 if [ "$DISTRO" = "Ubuntu" ]; then
-  deps="$deps autopoint xfonts-utils libxml-parser-perl"
+  deps="$deps autopoint"
   deps_pkg="$deps_pkg autopoint xfonts-utils libxml-parser-perl"
 fi
 
