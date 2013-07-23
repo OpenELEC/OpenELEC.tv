@@ -22,10 +22,13 @@
 #
 # runlevels: openelec, textmode
 
-  if [ -f /etc/sshd.conf ]; then
-    . /etc/sshd.conf
-  elif [ -f /storage/.config/sshd.conf ]; then
-    . /storage/.config/sshd.conf
+  # can be called from openelec addon.
+  # ensure that environment is sane
+  . /etc/profile
+
+  SSHD_START=false
+  if [ -f $CONFIG_CACHE/service_ssh.conf ]; then
+    . $CONFIG_CACHE/service_ssh.conf
   fi
 
 # Check if password authentication is disabled
@@ -66,13 +69,8 @@
           chmod 600 $DSA2_KEY
       fi
 
-    # Check for predefined known hosts file
-      if [ -f /etc/ssh/known_hosts -a ! -f $HOME/.ssh/known_hosts ] ; then
-        progress "SSH: setup predefined known hosts"
-          cp /etc/ssh/known_hosts $HOME/.ssh
-      fi
-
       progress "Starting SSH Server"
+        rm /var/run/sshd.pid &>/dev/null
         eval $SSHD $OPTIONS
     fi
   )&

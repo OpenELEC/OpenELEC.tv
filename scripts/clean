@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
@@ -39,7 +39,7 @@ clean ()
   else
     rm -rf $PKG_BUILD
     rm -f $STAMPS/$1*/unpack
-    rm -f $STAMPS/$1*/build
+    rm -f $STAMPS/$1*/build_*
   fi
 }
 

@@ -30,8 +30,6 @@ $SCRIPTS/build squashfs
 $SCRIPTS/build fakeroot
 $SCRIPTS/build module-init-tools
 
-export INSTALL=$BUILD/image/system
-
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
 if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
@@ -102,6 +100,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   if [ -n "$GIT_HASH" ]; then
     echo "$DISTRONAME git: $GIT_HASH" >> $INSTALL/etc/issue
   fi
+
+  ln -sf /etc/issue $INSTALL/etc/motd
 
 # Basissystem...
   $SCRIPTS/install eglibc

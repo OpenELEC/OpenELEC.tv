@@ -25,7 +25,7 @@
 if [ -f $PROJECT_DIR/$PROJECT/busybox/$1.conf ]; then
   BUSYBOX_CFG_FILE=$PROJECT_DIR/$PROJECT/busybox/$1.conf
 else
-  BUSYBOX_CFG_FILE=$ROOT/$PKG_DIR/config/$1.conf
+  BUSYBOX_CFG_FILE=$PKG_DIR/config/$1.conf
 fi
 
 # optimize for size
@@ -44,6 +44,13 @@ cd $BUILD/busybox*
     sed -i -e "s|^CONFIG_FEATURE_CROND_D=.*$|# CONFIG_FEATURE_CROND_D is not set|" .config
     sed -i -e "s|^CONFIG_CRONTAB=.*$|# CONFIG_CRONTAB is not set|" .config
   fi
+  if [ ! "$NFS_SUPPORT" = yes ]; then
+    sed -i -e "s|^CONFIG_FEATURE_MOUNT_NFS=.*$|# CONFIG_FEATURE_MOUNT_NFS is not set|" .config
+  fi
+  if [ ! "$SAMBA_SUPPORT" = yes ]; then
+    sed -i -e "s|^CONFIG_FEATURE_MOUNT_CIFS=.*$|# CONFIG_FEATURE_MOUNT_CIFS is not set|" .config
+  fi
+
   make oldconfig
 
   make ARCH=$TARGET_ARCH \
