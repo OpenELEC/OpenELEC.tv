@@ -25,6 +25,4 @@
 DOSFSTOOLS_DIR="$BUILD/dosfstools-*"
 
 mkdir -p $INSTALL/sbin
-  cp $DOSFSTOOLS_DIR/dosfsck $INSTALL/sbin
-    ln -sf dosfsck $INSTALL/sbin/fsck.vfat
-    ln -sf dosfsck $INSTALL/sbin/fsck.msdos
+  cp -PR $DOSFSTOOLS_DIR/.install_pkg/usr/sbin/fsck.* $INSTALL/sbin

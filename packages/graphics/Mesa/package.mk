@@ -19,14 +19,14 @@
 ################################################################################
 
 PKG_NAME="Mesa"
-PKG_VERSION="9.1.5"
+PKG_VERSION="9.1.6"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_VERSION/MesaLib-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS="libXdamage libdrm expat libXext libXfixes libX11"
-PKG_BUILD_DEPENDS_TARGET="toolchain Python-host makedepend libxml2-host expat glproto dri2proto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11"
+PKG_BUILD_DEPENDS_TARGET="toolchain Python-host makedepend:host libxml2-host expat glproto dri2proto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="mesa: 3-D graphics library with OpenGL API"
@@ -34,6 +34,9 @@ PKG_LONGDESC="Mesa is a 3-D graphics library with an API which is very similar t
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+# configure GPU drivers and dependencies:
+  get_graphicdrivers
 
 if [ "$LLVM_SUPPORT" = "yes" ]; then
   PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET llvm"
@@ -56,8 +59,6 @@ if [ "$MESA_VAAPI_SUPPORT" = "yes" ]; then
   PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libva"
   PKG_DEPENDS="$PKG_DEPENDS libva"
 fi
-
-get_graphicdrivers
 
 XA_CONFIG="--disable-xa"
 for drv in $GRAPHIC_DRIVERS; do
