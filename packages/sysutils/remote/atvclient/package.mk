@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,14 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="atvclient"
+PKG_VERSION="0.1"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://github.com/Evinyatar/atvclient/wiki"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS="libusb-compat"
+PKG_BUILD_DEPENDS_TARGET="toolchain libusb-compat"
+PKG_PRIORITY="optional"
+PKG_SECTION="system/remote"
+PKG_SHORTDESC="atvclient: a background application for Linux that reads input from the AppleTV’s internal infra-red receiver"
+PKG_LONGDESC="atvclient is a background application for Linux that reads input from the AppleTV’s internal infra-red receiver and submits it to XBMC in a way very similar to how XBMCHelper does this under the native AppleTV OS. It implements most of the functionality the ATV OS HID driver supports, including pairing and control of the status LED."
 
-mkdir -p $INSTALL/usr/bin
-  cp $PKG_DIR/scripts/installer $INSTALL/usr/bin
-
-mkdir -p $INSTALL/etc
-  if [ -f $PROJECT_DIR/$PROJECT/installer/installer.conf ]; then
-    cp $PROJECT_DIR/$PROJECT/installer/installer.conf $INSTALL/etc
-  else
-    cp $PKG_DIR/config/installer.conf $INSTALL/etc
-  fi
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"

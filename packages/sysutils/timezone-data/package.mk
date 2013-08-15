@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -20,15 +18,39 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-. config/options $1
+PKG_NAME="timezone-data"
+PKG_VERSION="2011n"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="Public Domain"
+PKG_SITE="ftp://elsie.nci.nih.gov/pub/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="timezone-data"
+PKG_LONGDESC="timezone-data"
 
-cd $PKG_BUILD
-./configure --host=$TARGET_NAME \
-            --build=$HOST_NAME \
-            --prefix=/usr \
-            --sbindir=/usr/sbin \
-            --exec-prefix=/usr \
-            --localstatedir=/var \
-            --sysconfdir=/etc \
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-make
+make_target() {
+  setup_toolchain host
+  make CC="$HOST_CC" CFLAGS="$HOST_CFLAGS"
+}
+
+makeinstall_target() {
+  make TOPDIR="./.install_pkg" install
+}
+
+post_makeinstall_target() {
+  mkdir -p $INSTALL/usr/share/zoneinfo
+    mv $INSTALL/etc/zoneinfo/* $INSTALL/usr/share/zoneinfo
+
+  rm -rf $INSTALL/man
+  rm -rf $INSTALL/etc
+
+  mkdir -p $INSTALL/etc
+    ln -sf /var/run/localtime $INSTALL/etc/localtime
+}
