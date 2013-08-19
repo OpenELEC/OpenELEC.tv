@@ -1,0 +1,21 @@
+Changes required to apply backported patches.
+Simply moves flags off the Open call so they can be updated.
+
+---
+diff --git a/xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamFile.cpp b/xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamFile.cpp
+index 6662686..a3f0e32 100644
+--- a/xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamFile.cpp
++++ b/xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamFile.cpp
+@@ -51,7 +51,9 @@ bool CDVDInputStreamFile::Open(const char* strFile, const std::string& content)
+   if (!m_pFile)
+     return false;
+ 
++  unsigned int flags = READ_TRUNCATED | READ_BITRATE | READ_CHUNKED;
++
+   // open file in binary mode
+-  if (!m_pFile->Open(strFile, READ_TRUNCATED | READ_BITRATE | READ_CHUNKED))
++  if (!m_pFile->Open(strFile, flags))
+   {
+     delete m_pFile;
+     m_pFile = NULL;
+---
