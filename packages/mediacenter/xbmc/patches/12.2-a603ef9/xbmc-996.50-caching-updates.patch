@@ -1,0 +1,75 @@
+From c90da1375e57c7b1db0f39353830d08adc9dd6be Mon Sep 17 00:00:00 2001
+From: fritsch <peter.fruehberger@gmail.com>
+Date: Tue, 13 Aug 2013 16:39:58 +0200
+Subject: [PATCH] Use advancedsetting to speed up ReadRate in players
+
+---
+ xbmc/cores/dvdplayer/DVDPlayer.cpp | 2 +-
+ xbmc/cores/omxplayer/OMXPlayer.cpp | 2 +-
+ xbmc/settings/AdvancedSettings.cpp | 4 ++++
+ xbmc/settings/AdvancedSettings.h   | 1 +
+ 4 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+index 5375535..d12121f 100644
+--- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
++++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+@@ -687,7 +687,7 @@ bool CDVDPlayer::OpenDemuxStream()
+   int64_t len = m_pInputStream->GetLength();
+   int64_t tim = m_pDemuxer->GetStreamLength();
+   if(len > 0 && tim > 0)
+-    m_pInputStream->SetReadRate(len * 1000 / tim);
++    m_pInputStream->SetReadRate(g_advancedSettings.m_readBufferFactor * len * 1000 / tim);
+ 
+   return true;
+ }
+diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
+index b0ea05b..1bfbdaf 100644
+--- a/xbmc/cores/omxplayer/OMXPlayer.cpp
++++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
+@@ -735,7 +735,7 @@ bool COMXPlayer::OpenDemuxStream()
+   int64_t len = m_pInputStream->GetLength();
+   int64_t tim = m_pDemuxer->GetStreamLength();
+   if(len > 0 && tim > 0)
+-    m_pInputStream->SetReadRate(len * 1000 / tim);
++    m_pInputStream->SetReadRate(g_advancedSettings.m_readBufferFactor * len * 1000 / tim);
+ 
+   return true;
+ }
+diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
+index 053b5e7..5feaf8a 100644
+--- a/xbmc/settings/AdvancedSettings.cpp
++++ b/xbmc/settings/AdvancedSettings.cpp
+@@ -309,6 +309,9 @@ void CAdvancedSettings::Initialize()
+ 
+   m_cacheMemBufferSize = 1024 * 1024 * 20;
+   m_alwaysForceBuffer = false;
++  // the following setting determines the readRate of a player data
++  // as multiply of the default data read rate
++  m_readBufferFactor = 1.0f;
+   m_addonPackageFolderSize = 200;
+ 
+   m_jsonOutputCompact = true;
+@@ -709,6 +812,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
+     XMLUtils::GetBoolean(pElement,"disableipv6", m_curlDisableIPV6);
+     XMLUtils::GetUInt(pElement, "cachemembuffersize", m_cacheMemBufferSize);
+     XMLUtils::GetBoolean(pElement, "alwaysforcebuffer", m_alwaysForceBuffer);
++    XMLUtils::GetFloat(pElement, "readbufferfactor", m_readBufferFactor);
+   }
+ 
+   pElement = pRootElement->FirstChildElement("jsonrpc");
+diff --git a/xbmc/settings/AdvancedSettings.h b/xbmc/settings/AdvancedSettings.h
+index e7adbea..72716ee 100644
+--- a/xbmc/settings/AdvancedSettings.h
++++ b/xbmc/settings/AdvancedSettings.h
+@@ -360,6 +360,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
+ 
+     unsigned int m_cacheMemBufferSize;
+     bool m_alwaysForceBuffer;
++    float m_readBufferFactor;
+ 
+     bool m_jsonOutputCompact;
+     unsigned int m_jsonTcpPort;
+-- 
+1.8.1.6
+
