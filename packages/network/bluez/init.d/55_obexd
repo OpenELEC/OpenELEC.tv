@@ -34,14 +34,17 @@
 
   OBEXD_ENABLED=true
   OBEXD_ROOT=/storage/downloads
-  if [ -f $CONFIG_CACHE/service_bluez.conf ]; then
-    . $CONFIG_CACHE/service_bluez.conf
+  if [ -f $CONFIG_CACHE/services/bluez.conf ]; then
+    . $CONFIG_CACHE/services/bluez.conf
+  fi
+  if [ -f $CONFIG_CACHE/services/obexd.conf ]; then
+    . $CONFIG_CACHE/services/obexd.conf
   fi
 
   if [ "$BLUEZ_ENABLED" == "true" -a "$OBEXD_ENABLED" == "true" ]; then
     progress "Starting obexd"
     wait_for_dbus
-    mkdir -p "$OBEXD_ROOT"
+    mkdir -p "$OBEXD_ROOT" &>/dev/null
     /usr/lib/bluetooth/obexd $OBEXD_DEBUG -r "$OBEXD_ROOT" &>/dev/null
   fi
 )&
