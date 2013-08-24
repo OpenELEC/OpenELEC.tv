@@ -272,7 +272,7 @@
         MOUNT_TARGET="$1"
         # check filesystem
           if [ -x /sbin/fsck ]; then
-            /sbin/fsck -a $1 &>/dev/null
+            /sbin/fsck -a $1
           fi
         ;;
       CIFS=*|SMB=*)
