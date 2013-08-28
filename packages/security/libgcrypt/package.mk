@@ -17,12 +17,29 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# setup functions
-################################################################################
 
-  wait_for_dbus () {
-    while [ ! -e /var/run/dbus/system_bus_socket ]; do
-      usleep 1000000
-    done
-  }
+PKG_NAME="libgcrypt"
+PKG_VERSION="1.5.3"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.gnupg.org/"
+PKG_URL="ftp://ftp.gnupg.org/gcrypt/libgcrypt/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS="libgpg-error"
+PKG_BUILD_DEPENDS_TARGET="toolchain libgpg-error"
+PKG_PRIORITY="optional"
+PKG_SECTION="security"
+PKG_SHORTDESC="libgcrypt: General purpose cryptographic library"
+PKG_LONGDESC="Libgcrypt is a general purpose cryptographic library based on the code from GnuPG. It provides functions for all cryptographic building blocks: symmetric ciphers, hash algorithms, MACs, public key algorithms, large integer functions, random numbers and a lot of supporting functions."
 
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--disable-asm --with-gnu-ld"
+
+post_makeinstall_target() {
+  sed -e "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" -i src/libgcrypt-config
+  cp src/libgcrypt-config $ROOT/$TOOLCHAIN/bin
+
+  rm -rf $INSTALL/usr/bin
+}

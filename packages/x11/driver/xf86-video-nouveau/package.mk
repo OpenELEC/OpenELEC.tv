@@ -18,41 +18,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="gdb"
-PKG_VERSION="7.6"
+PKG_NAME="xf86-video-nouveau"
+PKG_VERSION="1.0.9"
 PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.gnu.org/software/gdb/"
-PKG_URL="http://ftp.gnu.org/gnu/gdb/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="zlib ncurses expat"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib ncurses expat"
+PKG_ARCH="i386 x86_64"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.x.org/"
+PKG_URL="http://cgit.freedesktop.org/nouveau/xf86-video-nouveau/snapshot/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS="libXrandr libXrender libdrm libXext libpciaccess systemd Mesa glu"
+PKG_BUILD_DEPENDS_TARGET="toolchain util-macros libXrandr libXrender libdrm libXext libpciaccess systemd Mesa glu xorg-server"
 PKG_PRIORITY="optional"
-PKG_SECTION="debug"
-PKG_SHORTDESC="gdb: The GNU Debugger"
-PKG_LONGDESC="The purpose of a debugger such as GDB is to allow you to see what is going on ``inside'' another program while it executes--or what another program was doing at the moment it crashed."
+PKG_SECTION="x11/driver"
+PKG_SHORTDESC="xf86-video-nouveau: Nouveau display driver (experimental)"
+PKG_LONGDESC="This driver for the X.Org X server (see xserver-xorg for a further description) provides support for NVIDIA Riva, TNT, GeForce, and Quadro cards. Although the nouveau project aims to provide full 3D support it is not yet complete, and these packages do not include any 3D support. Users requiring 3D support should use the non-free "nvidia" driver."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
-CC_FOR_BUILD="$HOST_CC"
-CFLAGS_FOR_BUILD="$HOST_CFLAGS"
-
-pre_configure_target() {
-    strip_gold
-    strip_lto
-}
-
-PKG_CONFIGURE_OPTS_TARGET="bash_cv_have_mbstate_t=set \
-                           --disable-shared \
-                           --enable-static \
-                           --disable-nls \
-                           --disable-sim \
-                           --without-x \
-                           --disable-tui \
-                           --disable-libada \
-                           --disable-werror"
+PKG_CONFIGURE_OPTS_TARGET="--with-xorg-module-dir=$XORG_PATH_MODULES"
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/share/gdb/python
+  mkdir -p $INSTALL/etc/X11
+    cp $PKG_DIR/config/*.conf $INSTALL/etc/X11
 }

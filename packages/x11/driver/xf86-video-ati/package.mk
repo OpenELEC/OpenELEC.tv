@@ -17,12 +17,25 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# setup functions
-################################################################################
 
-  wait_for_dbus () {
-    while [ ! -e /var/run/dbus/system_bus_socket ]; do
-      usleep 1000000
-    done
-  }
+PKG_NAME="xf86-video-ati"
+PKG_VERSION="7.2.0"
+PKG_REV="1"
+PKG_ARCH="i386 x86_64"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.x.org/"
+PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="x11/driver"
+PKG_SHORTDESC="xf86-video-ati: The Xorg driver for ATI video chips"
+PKG_LONGDESC="The ati driver supports various ATi, know AMD, video chips."
 
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--enable-dri \
+                           --enable-exa \
+                           --enable-kms \
+                           --with-xorg-module-dir=$XORG_PATH_MODULES"
