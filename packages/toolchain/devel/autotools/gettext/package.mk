@@ -17,12 +17,24 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# setup functions
-################################################################################
 
-  wait_for_dbus () {
-    while [ ! -e /var/run/dbus/system_bus_socket ]; do
-      usleep 1000000
-    done
-  }
+PKG_NAME="gettext"
+PKG_VERSION="0.18.3.1"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.gnu.org/s/gettext/"
+PKG_URL="http://ftp.gnu.org/pub/gnu/gettext/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_HOST="ccache"
+PKG_PRIORITY="optional"
+PKG_SECTION="toolchain/devel"
+PKG_SHORTDESC="gettext: A program internationalization library and tools"
+PKG_LONGDESC="This is the GNU gettext package. It is interesting for authors or maintainers of other packages or programs which they want to see internationalized. As one step the handling of messages in different languages should be implemented. For this task GNU gettext provides the needed tools and library functions."
 
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
+
+PKG_CONFIGURE_OPTS_HOST="--disable-rpath \
+                         --with-gnu-ld \
+                         --without-emacs"
