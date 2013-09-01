@@ -1,0 +1,115 @@
+diff -rupN xbmc-vbs/xbmc/guilib/GUIMessage.h xbmc-vbs-2/xbmc/guilib/GUIMessage.h
+--- xbmc-vbs/xbmc/guilib/GUIMessage.h	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/guilib/GUIMessage.h	2013-08-21 04:07:02.465612339 +0200
+@@ -133,6 +133,13 @@
+ 
+ #define GUI_MSG_WINDOW_LOAD 43
+ 
++/*!
++ \brief Signal a window that the system is going to suspend or has just woke up
++ */
++#define GUI_MSG_PREPARE_SLEEP 44
++
++#define GUI_MSG_WAKE          45
++
+ #define GUI_MSG_USER         1000
+ 
+ /*!
+diff -rupN xbmc-vbs/xbmc/guilib/GUIWindowManager.cpp xbmc-vbs-2/xbmc/guilib/GUIWindowManager.cpp
+--- xbmc-vbs/xbmc/guilib/GUIWindowManager.cpp	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/guilib/GUIWindowManager.cpp	2013-08-21 04:07:02.469612418 +0200
+@@ -1012,3 +1012,19 @@ void CGUIWindowManager::DumpTextureUse()
+   }
+ }
+ #endif
++
++void CGUIWindowManager::OnPrepareSleep()
++{
++    CLog::Log(LOGNOTICE, "%s: Waking up", __FUNCTION__);
++
++    CGUIMessage msg(GUI_MSG_PREPARE_SLEEP, 0, 0);
++    this->SendMessage(msg);
++}
++
++void CGUIWindowManager::OnWake()
++{
++    CLog::Log(LOGNOTICE, "%s: Preparing sleep", __FUNCTION__);
++
++    CGUIMessage msg(GUI_MSG_WAKE, 0, 0);
++    this->SendMessage(msg);
++}
+\ No newline at end of file
+diff -rupN xbmc-vbs/xbmc/guilib/GUIWindowManager.h xbmc-vbs-2/xbmc/guilib/GUIWindowManager.h
+--- xbmc-vbs/xbmc/guilib/GUIWindowManager.h	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/guilib/GUIWindowManager.h	2013-08-21 04:07:02.469612418 +0200
+@@ -138,6 +138,9 @@ public:
+ #ifdef _DEBUG
+   void DumpTextureUse();
+ #endif
++  void OnPrepareSleep();
++  void OnWake();
++
+ private:
+   void RenderPass();
+ 
+diff -rupN xbmc-vbs/xbmc/music/windows/GUIWindowMusicBase.cpp xbmc-vbs-2/xbmc/music/windows/GUIWindowMusicBase.cpp
+--- xbmc-vbs/xbmc/music/windows/GUIWindowMusicBase.cpp	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/music/windows/GUIWindowMusicBase.cpp	2013-08-21 04:07:02.497612963 +0200
+@@ -231,6 +231,12 @@ bool CGUIWindowMusicBase::OnMessage(CGUI
+         }
+       }
+     }
++  case GUI_MSG_PREPARE_SLEEP:
++    m_musicdatabase.Close();
++    break;
++  case GUI_MSG_WAKE:
++    m_musicdatabase.Open();
++    break;
+   }
+   return CGUIMediaWindow::OnMessage(message);
+ }
+diff -rupN xbmc-vbs/xbmc/powermanagement/PowerManager.cpp xbmc-vbs-2/xbmc/powermanagement/PowerManager.cpp
+--- xbmc-vbs/xbmc/powermanagement/PowerManager.cpp	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/powermanagement/PowerManager.cpp	2013-08-21 04:07:02.513613272 +0200
+@@ -34,6 +34,7 @@
+ #include "guilib/GraphicContext.h"
+ #include "dialogs/GUIDialogKaiToast.h"
+ #include "settings/AdvancedSettings.h"
++#include "guilib/GUIWindowManager.h"
+ 
+ #ifdef HAS_LCD
+ #include "utils/LCDFactory.h"
+@@ -208,6 +209,8 @@ void CPowerManager::OnPrepareSleep()
+   //we do this here instead in OnSleep cause according to DBUS specification we only have 1 second of time in OnSleep
+   //so shutdowns that may potentially take longer should be issued in here
+   g_application.StopAddonServices();
++
++  g_windowManager.OnPrepareSleep();
+ }
+ 
+ void CPowerManager::OnSleep()
+@@ -261,6 +264,8 @@ void CPowerManager::OnWake()
+ 
+   WaitForNet();
+ 
++  g_windowManager.OnWake();
++
+   //re-start addon services
+   g_application.StartAddonServices();
+ 
+diff -rupN xbmc-vbs/xbmc/video/windows/GUIWindowVideoBase.cpp xbmc-vbs-2/xbmc/video/windows/GUIWindowVideoBase.cpp
+--- xbmc-vbs/xbmc/video/windows/GUIWindowVideoBase.cpp	2013-08-21 04:06:06.624525600 +0200
++++ xbmc-vbs-2/xbmc/video/windows/GUIWindowVideoBase.cpp	2013-08-21 04:07:02.545613895 +0200
+@@ -241,6 +241,12 @@ bool CGUIWindowVideoBase::OnMessage(CGUI
+   case GUI_MSG_SEARCH:
+     OnSearch();
+     break;
++  case GUI_MSG_PREPARE_SLEEP:
++    m_database.Close();
++    break;
++  case GUI_MSG_WAKE:
++    m_database.Open();
++    break;
+   }
+   return CGUIMediaWindow::OnMessage(message);
+ }
