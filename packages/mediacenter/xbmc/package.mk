@@ -19,9 +19,9 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="12.2-18397e1"
+PKG_VERSION="12.2-71eb528"
 if [ "$XBMC" = "master" ]; then
-  PKG_VERSION="13.alpha-0efa87e"
+  PKG_VERSION="13.alpha-2435cf3"
 elif [ "$XBMC" = "xbmc-aml" ]; then
   PKG_VERSION="aml-frodo-d9119f2"
 fi
@@ -342,6 +342,12 @@ else
   XBMC_CRYSTALHD="--disable-crystalhd"
 fi
 
+export CXX_FOR_BUILD="$HOST_CXX"
+export CC_FOR_BUILD="$HOST_CC"
+export CXXFLAGS_FOR_BUILD="$HOST_CXXFLAGS"
+export CFLAGS_FOR_BUILD="$HOST_CFLAGS"
+export LDFLAGS_FOR_BUILD="$HOST_LDFLAGS"
+
 export PYTHON_VERSION="2.7"
 export PYTHON_CPPFLAGS="-I$SYSROOT_PREFIX/usr/include/python$PYTHON_VERSION"
 export PYTHON_LDFLAGS="-L$SYSROOT_PREFIX/usr/lib/python$PYTHON_VERSION -lpython$PYTHON_VERSION"
@@ -381,6 +387,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_NFS \
                            $XBMC_AFP \
                            $XBMC_VORBISENC \
+                           --disable-libcap \
                            --enable-ffmpeg-libvorbis \
                            $XBMC_LAMEENC \
                            $XBMC_DVDCSS \

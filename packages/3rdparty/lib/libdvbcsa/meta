@@ -18,20 +18,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="ppl"
-PKG_VERSION="1.1pre9"
+PKG_NAME="libdvbcsa"
+PKG_VERSION="1.1.0"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.cs.unipr.it/ppl"
-PKG_URL="http://bugseng.com/products/ppl/download/ftp/snapshots/$PKG_NAME-$PKG_VERSION.tar.xz"
-#PKG_URL="http://bugseng.com/products/ppl/download/ftp/releases/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_LICENSE="LGPL"
+PKG_SITE="http://www.videolan.org/developers/libdvbcsa.html"
+PKG_URL="http://download.videolan.org/pub/videolan/libdvbcsa/${PKG_VERSION}/libdvbcsa-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="ccache gmp-host"
+PKG_BUILD_DEPENDS="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="toolchain/math"
-PKG_SHORTDESC="ppl: Parma Polyhedra Library"
-PKG_LONGDESC="The Parma Polyhedra Library (PPL) provides numerical abstractions especially targeted at applications in the field of analysis and verification of complex systems."
+PKG_SECTION="lib"
+PKG_SHORTDESC="libdvbcsa is a free implementation of the DVB Common Scrambling Algorithm - DVB/CSA - with encryption and decryption capabilities"
+PKG_LONGDESC="libdvbcsa is a free implementation of the DVB Common Scrambling Algorithm - DVB/CSA - with encryption and decryption capabilities"
+
 PKG_IS_ADDON="no"
 
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
