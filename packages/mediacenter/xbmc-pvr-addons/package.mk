@@ -18,24 +18,31 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xbmc-theme-Confluence"
-PKG_VERSION="12.2-58a9d9e"
+PKG_NAME="xbmc-pvr-addons"
+PKG_VERSION="frodo-910d7e7"
 if [ "$XBMC" = "master" ]; then
-  PKG_VERSION="13.alpha-dcd897b"
-elif [ "$XBMC" = "xbmc-aml" ]; then
-  PKG_VERSION="aml-frodo-d9119f2"
+  PKG_VERSION="18597fd"
 fi
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.xbmc.org"
+PKG_SITE="https://github.com/opdenkamp/xbmc-pvr-addons"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
+PKG_DEPENDS="curl"
+PKG_BUILD_DEPENDS_TARGET="toolchain curl"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
-PKG_SHORTDESC="xbmc-theme-Confluence: XBMC Mediacenter default theme"
-PKG_LONGDESC="XBMC Media Center (which was formerly named Xbox Media Center) is a free and open source cross-platform media player and home entertainment system software with a 10-foot user interface designed for the living-room TV. Its graphical user interface allows the user to easily manage video, photos, podcasts, and music from a computer, optical disk, local network, and the internet using a remote control."
+PKG_SHORTDESC="Various PVR addons for XBMC" 
+PKG_LONGDESC="This addons allows XBMC PVR to connect to various TV/PVR backends and tuners."
 PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
 
-PKG_AUTORECONF="no"
+if [ "$MYSQL_SUPPORT" = yes ]; then
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS mysql"
+  PKG_DEPENDS="$PKG_DEPENDS mysql"
+  PVRADDONS_MYSQL="--enable-mysql"
+else
+  PVRADDONS_MYSQL="--disable-mysql"
+fi
+
+PKG_CONFIGURE_OPTS_TARGET="--enable-addons-with-dependencies $PVRADDONS_MYSQL"

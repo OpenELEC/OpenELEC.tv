@@ -18,24 +18,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xbmc-theme-Confluence"
-PKG_VERSION="12.2-58a9d9e"
-if [ "$XBMC" = "master" ]; then
-  PKG_VERSION="13.alpha-dcd897b"
-elif [ "$XBMC" = "xbmc-aml" ]; then
-  PKG_VERSION="aml-frodo-d9119f2"
-fi
+PKG_NAME="libSM"
+PKG_VERSION="1.2.2"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.xbmc.org"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.X.org"
+PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS="util-linux"
+PKG_BUILD_DEPENDS_TARGET="toolchain util-macros util-linux libICE"
 PKG_PRIORITY="optional"
-PKG_SECTION="mediacenter"
-PKG_SHORTDESC="xbmc-theme-Confluence: XBMC Mediacenter default theme"
-PKG_LONGDESC="XBMC Media Center (which was formerly named Xbox Media Center) is a free and open source cross-platform media player and home entertainment system software with a 10-foot user interface designed for the living-room TV. Its graphical user interface allows the user to easily manage video, photos, podcasts, and music from a computer, optical disk, local network, and the internet using a remote control."
-PKG_IS_ADDON="no"
+PKG_SECTION="x11/lib"
+PKG_SHORTDESC="libSM: X11 Inter-Client Exchange library"
+PKG_LONGDESC="This package provides the main interface to the X11 Session Management library, which allows for applications to both manage sessions, and make use of session managers to save and restore their state for later use."
 
-PKG_AUTORECONF="no"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--enable-static \
+                           --disable-shared \
+                           --with-libuuid \
+                           --without-xmlto \
+                           --without-fop"

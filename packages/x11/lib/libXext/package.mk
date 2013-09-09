@@ -18,24 +18,21 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xbmc-theme-Confluence"
-PKG_VERSION="12.2-58a9d9e"
-if [ "$XBMC" = "master" ]; then
-  PKG_VERSION="13.alpha-dcd897b"
-elif [ "$XBMC" = "xbmc-aml" ]; then
-  PKG_VERSION="aml-frodo-d9119f2"
-fi
+PKG_NAME="libXext"
+PKG_VERSION="1.3.2"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.xbmc.org"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.X.org"
+PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS="libX11"
+PKG_BUILD_DEPENDS_TARGET="toolchain util-macros xextproto libX11"
 PKG_PRIORITY="optional"
-PKG_SECTION="mediacenter"
-PKG_SHORTDESC="xbmc-theme-Confluence: XBMC Mediacenter default theme"
-PKG_LONGDESC="XBMC Media Center (which was formerly named Xbox Media Center) is a free and open source cross-platform media player and home entertainment system software with a 10-foot user interface designed for the living-room TV. Its graphical user interface allows the user to easily manage video, photos, podcasts, and music from a computer, optical disk, local network, and the internet using a remote control."
-PKG_IS_ADDON="no"
+PKG_SECTION="x11/lib"
+PKG_SHORTDESC="libxext: X11 miscellaneous extensions library"
+PKG_LONGDESC="LibXext provides an X Window System client interface to several extensions to the X protocol, iincluding DOUBLE-BUFFER (DBE), DPMS, Extended-Visual-Information (EVI), LBX, MIT-SHM, MIT-SUNDRY-NONSTANDARD, Multi-Buffering, SECURITY, SHAPE, SHAPE, SYNC, TOG-CUP, XC-APPGROUP, XC-MISC, XTEST and possibly others."
 
-PKG_AUTORECONF="no"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--enable-malloc0returnsnull --without-xmlto"

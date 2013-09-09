@@ -18,24 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="xbmc-theme-Confluence"
-PKG_VERSION="12.2-58a9d9e"
-if [ "$XBMC" = "master" ]; then
-  PKG_VERSION="13.alpha-dcd897b"
-elif [ "$XBMC" = "xbmc-aml" ]; then
-  PKG_VERSION="aml-frodo-d9119f2"
-fi
+PKG_NAME="libXdamage"
+PKG_VERSION="1.1.4"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.xbmc.org"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="toolchain"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.X.org"
+PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS="libX11 libXfixes"
+PKG_BUILD_DEPENDS_TARGET="toolchain util-macros damageproto fixesproto libX11 libXfixes"
 PKG_PRIORITY="optional"
-PKG_SECTION="mediacenter"
-PKG_SHORTDESC="xbmc-theme-Confluence: XBMC Mediacenter default theme"
-PKG_LONGDESC="XBMC Media Center (which was formerly named Xbox Media Center) is a free and open source cross-platform media player and home entertainment system software with a 10-foot user interface designed for the living-room TV. Its graphical user interface allows the user to easily manage video, photos, podcasts, and music from a computer, optical disk, local network, and the internet using a remote control."
-PKG_IS_ADDON="no"
+PKG_SECTION="x11/lib"
+PKG_SHORTDESC="libXdamage: X11 damaged region extension library"
+PKG_LONGDESC="LibXdamage provides an X Window System client interface to the DAMAGE extension to the X protocol. The Damage extension provides for notification of when on-screen regions have been 'damaged' (altered)."
 
-PKG_AUTORECONF="no"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
