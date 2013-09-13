@@ -52,8 +52,9 @@ ac_cv_func_malloc_0_nonnull=yes \
             --disable-tcpwrap \
             --disable-pam \
             --disable-acl \
-              --enable-xattr \
+            --disable-xattr \
             --without-python \
+            --disable-python-devel \
             --disable-gcrypt \
             --disable-audit \
             --disable-libcryptsetup \
@@ -65,6 +66,7 @@ ac_cv_func_malloc_0_nonnull=yes \
             --disable-quotacheck \
             --disable-randomseed \
             --disable-logind \
+            --disable-backlight \
             --disable-hostnamed \
             --disable-timedated \
             --disable-localed \
