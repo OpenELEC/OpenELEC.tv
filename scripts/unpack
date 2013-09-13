@@ -85,7 +85,7 @@ elif [ -d "$BUILD/${PKG_NAME}" ]; then
   PKG_BUILD="$BUILD/${PKG_NAME}"
 fi
 
-for i in $PKG_DIR/patches/$PKG_NAME-*.patch ; do
+for i in $PKG_DIR/patches/$PKG_NAME-*.patch* ; do
   if [ -f "$i" ]; then
     PATCH=`basename $i`
     PT=`echo $PATCH | sed 's/.*\.\(.*\)$/\1/'`
@@ -99,7 +99,7 @@ for i in $PKG_DIR/patches/$PKG_NAME-*.patch ; do
   fi
 done
 
-for i in $PKG_DIR/patches/$PKG_VERSION/*.patch ; do
+for i in $PKG_DIR/patches/$PKG_VERSION/*.patch* ; do
   if [ -f "$i" ]; then
     PATCH=`basename $i`
     PT=`echo $PATCH | sed 's/.*\.\(.*\)$/\1/'`
@@ -113,7 +113,7 @@ for i in $PKG_DIR/patches/$PKG_VERSION/*.patch ; do
   fi
 done
 
-for i in $PROJECT_DIR/$PROJECT/patches/$PKG_NAME/*.patch ; do
+for i in $PROJECT_DIR/$PROJECT/patches/$PKG_NAME/*.patch* ; do
   if [ -f "$i" ]; then
     PATCH=`basename $i`
     PT=`echo $PATCH | sed 's/.*\.\(.*\)$/\1/'`
