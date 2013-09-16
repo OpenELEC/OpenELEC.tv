@@ -13,6 +13,14 @@ diff --git a/xbmc/powermanagement/PowerManager.cpp b/xbmc/powermanagement/PowerM
 index a68910b..8e93492 100644
 --- a/xbmc/powermanagement/PowerManager.cpp
 +++ b/xbmc/powermanagement/PowerManager.cpp
+@@ -23,6 +23,7 @@
+ #include "Application.h"
+ #include "cores/AudioEngine/AEFactory.h"
+ #include "input/KeyboardStat.h"
++#include "network/Network.h"
+ #include "settings/GUISettings.h"
+ #include "windowing/WindowingFactory.h"
+ #include "utils/log.h"
 @@ -207,6 +207,8 @@ void CPowerManager::OnWake()
  {
    CLog::Log(LOGNOTICE, "%s: Running resume jobs", __FUNCTION__);
