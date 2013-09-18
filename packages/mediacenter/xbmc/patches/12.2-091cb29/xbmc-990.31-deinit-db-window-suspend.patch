@@ -83,7 +83,7 @@ diff -rupN xbmc12-vanilla/xbmc/powermanagement/PowerManager.cpp xbmc12/xbmc/powe
 @@ -246,7 +248,9 @@ void CPowerManager::OnWake()
    CLog::Log(LOGNOTICE, "%s: Running resume jobs", __FUNCTION__);
  
-   WaitForNet();
+   WaitForNic();
 -
 +  
 +  g_windowManager.OnWake();
