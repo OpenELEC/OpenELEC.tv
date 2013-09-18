@@ -1,0 +1,109 @@
+diff -rupN xbmc12-vanilla/xbmc/guilib/GUIMessage.h xbmc12/xbmc/guilib/GUIMessage.h
+--- xbmc12-vanilla/xbmc/guilib/GUIMessage.h	2013-09-12 19:41:14.000000000 +0200
++++ xbmc12/xbmc/guilib/GUIMessage.h	2013-09-16 21:17:22.398253100 +0200
+@@ -133,6 +133,8 @@
+ 
+ #define GUI_MSG_WINDOW_LOAD 43
+ 
++#define GUI_MSG_SLEEP 44
++#define GUI_MSG_WAKE          45
+ #define GUI_MSG_USER         1000
+ 
+ /*!
+diff -rupN xbmc12-vanilla/xbmc/guilib/GUIWindowManager.cpp xbmc12/xbmc/guilib/GUIWindowManager.cpp
+--- xbmc12-vanilla/xbmc/guilib/GUIWindowManager.cpp	2013-09-12 19:41:14.000000000 +0200
++++ xbmc12/xbmc/guilib/GUIWindowManager.cpp	2013-09-16 21:17:30.994744800 +0200
+@@ -1012,3 +1012,18 @@ void CGUIWindowManager::DumpTextureUse()
+   }
+ }
+ #endif
++void CGUIWindowManager::OnSleep()
++{
++    CLog::Log(LOGNOTICE, "%s: Going to sleep", __FUNCTION__);
++
++    CGUIMessage msg(GUI_MSG_SLEEP, 0, 0);
++    this->SendMessage(msg);
++}
++
++void CGUIWindowManager::OnWake()
++{
++    CLog::Log(LOGNOTICE, "%s: Waking up", __FUNCTION__);
++
++    CGUIMessage msg(GUI_MSG_WAKE, 0, 0);
++    this->SendMessage(msg);
++}
+\ No newline at end of file
+diff -rupN xbmc12-vanilla/xbmc/guilib/GUIWindowManager.h xbmc12/xbmc/guilib/GUIWindowManager.h
+--- xbmc12-vanilla/xbmc/guilib/GUIWindowManager.h	2013-09-12 19:41:14.000000000 +0200
++++ xbmc12/xbmc/guilib/GUIWindowManager.h	2013-09-16 21:17:37.194099300 +0200
+@@ -138,6 +138,8 @@ public:
+ #ifdef _DEBUG
+   void DumpTextureUse();
+ #endif
++  void OnSleep();
++  void OnWake();
+ private:
+   void RenderPass();
+ 
+diff -rupN xbmc12-vanilla/xbmc/music/windows/GUIWindowMusicBase.cpp xbmc12/xbmc/music/windows/GUIWindowMusicBase.cpp
+--- xbmc12-vanilla/xbmc/music/windows/GUIWindowMusicBase.cpp	2013-09-12 19:41:09.000000000 +0200
++++ xbmc12/xbmc/music/windows/GUIWindowMusicBase.cpp	2013-09-16 21:18:31.895228100 +0200
+@@ -231,6 +231,12 @@ bool CGUIWindowMusicBase::OnMessage(CGUI
+         }
+       }
+     }
++  case GUI_MSG_SLEEP:
++    m_musicdatabase.Close();
++    break;
++  case GUI_MSG_WAKE:
++    m_musicdatabase.Open();
++    break;
+   }
+   return CGUIMediaWindow::OnMessage(message);
+ }
+diff -rupN xbmc12-vanilla/xbmc/powermanagement/PowerManager.cpp xbmc12/xbmc/powermanagement/PowerManager.cpp
+--- xbmc12-vanilla/xbmc/powermanagement/PowerManager.cpp	2013-09-16 21:09:18.933945547 +0200
++++ xbmc12/xbmc/powermanagement/PowerManager.cpp	2013-09-16 21:17:52.222958900 +0200
+@@ -33,6 +33,7 @@
+ #include "guilib/LocalizeStrings.h"
+ #include "guilib/GraphicContext.h"
+ #include "dialogs/GUIDialogKaiToast.h"
++#include "guilib/GUIWindowManager.h"
+ 
+ #ifdef HAS_LCD
+ #include "utils/LCDFactory.h"
+@@ -216,6 +217,7 @@ void CPowerManager::OnSleep()
+   g_application.StopShutdownTimer();
+   g_application.StopScreenSaverTimer();
+   g_application.CloseNetworkShares();
++  g_windowManager.OnSleep();
+   CAEFactory::Suspend();
+ }
+ 
+@@ -246,7 +248,9 @@ void CPowerManager::OnWake()
+   CLog::Log(LOGNOTICE, "%s: Running resume jobs", __FUNCTION__);
+ 
+   WaitForNet();
+-
++  
++  g_windowManager.OnWake();
++  
+   // reset out timers
+   g_application.ResetShutdownTimers();
+ 
+diff -rupN xbmc12-vanilla/xbmc/video/windows/GUIWindowVideoBase.cpp xbmc12/xbmc/video/windows/GUIWindowVideoBase.cpp
+--- xbmc12-vanilla/xbmc/video/windows/GUIWindowVideoBase.cpp	2013-09-12 19:41:10.000000000 +0200
++++ xbmc12/xbmc/video/windows/GUIWindowVideoBase.cpp	2013-09-16 21:18:23.808765600 +0200
+@@ -240,6 +240,12 @@ bool CGUIWindowVideoBase::OnMessage(CGUI
+   case GUI_MSG_SEARCH:
+     OnSearch();
+     break;
++  case GUI_MSG_SLEEP:
++    m_database.Close();
++    break;
++  case GUI_MSG_WAKE:
++    m_database.Open();
++    break;
+   }
+   return CGUIMediaWindow::OnMessage(message);
+ }
