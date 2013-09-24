@@ -25,3 +25,4 @@
 
 progress "Setup some CDROM settings"
   sysctl -w dev.cdrom.lock=0 > /dev/null 2>&1 &
+  sysctl -w dev.cdrom.autoclose=0 > /dev/null 2>&1 &
