@@ -1,7 +1,7 @@
-From 297322435f97dd0cba80467999dc3620dafa5f82 Mon Sep 17 00:00:00 2001
+From 9b8c75f091c40ae6c41bf399f99b3dc02a9adb51 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 12 May 2013 12:24:19 +0100
-Subject: [PATCH 001/113] Main bcm2708 linux port
+Subject: [PATCH 001/124] Main bcm2708 linux port
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -6193,7 +6193,7 @@ index 0000000..799a0ac
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:bcm-mbox");
 diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index 2950082..bbccc7e 100644
+index 08c9fe9..4118436 100644
 --- a/arch/arm/mm/Kconfig
 +++ b/arch/arm/mm/Kconfig
 @@ -358,7 +358,7 @@ config CPU_PJ4B
@@ -8256,13 +8256,13 @@ index b838ffc..f3a39c1 100644
  	unsigned int data_early:1;	/* Data finished before cmd */
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From b71856a8387e23943d2e026883aedc0a3440faa2 Mon Sep 17 00:00:00 2001
+From ea00337aa55f2e6851370be5b7c9ced0b96f4d74 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:46:17 +0100
-Subject: [PATCH 002/113] Add dwc_otg driver
+Subject: [PATCH 002/124] Add dwc_otg driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -65338,13 +65338,13 @@ index 0000000..abcf284
 +test_main();
 +0;
 -- 
-1.8.1.6
+1.8.4
 
 
-From 09a0a27db122df4dc12d7cbccdc61d906f8449e6 Mon Sep 17 00:00:00 2001
+From fc4550f27dbc1cece45a94c17d04acb86b6c6970 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:54:32 +0100
-Subject: [PATCH 003/113] bcm2708 watchdog driver
+Subject: [PATCH 003/124] bcm2708 watchdog driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -65775,13 +65775,13 @@ index 0000000..dd33c35
 +MODULE_LICENSE("GPL");
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From 6cc7fb2c843076ba2fbe948d04c4b825c3224ef2 Mon Sep 17 00:00:00 2001
+From 520fc1c445ad64f7b138b36785dc8d3fe6083274 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:55:09 +0100
-Subject: [PATCH 004/113] bcm2708 framebuffer driver
+Subject: [PATCH 004/124] bcm2708 framebuffer driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -68813,13 +68813,13 @@ index 3c14e43..7626beb 100644
 +0 0 0  0 0 0  0 0 0  0 0 0  0 0 0  0 0 0
 +0 0 0  0 0 0  0 0 0
 -- 
-1.8.1.6
+1.8.4
 
 
-From 402ef0a356fc771bbb29bcfa785429083df25549 Mon Sep 17 00:00:00 2001
+From 0c7080ddef03325b12f4d57904903d0dde0637e5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 2 Jul 2013 23:42:01 +0100
-Subject: [PATCH 005/113] bcm2708 vchiq driver
+Subject: [PATCH 005/124] bcm2708 vchiq driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -81277,25 +81277,25 @@ index 0000000..b6bfa21
 +   return vchiq_build_time;
 +}
 -- 
-1.8.1.6
+1.8.4
 
 
-From e1c40de1fd73e3cb5da83b1cd1009346d105c92e Mon Sep 17 00:00:00 2001
+From 368e85b674d7bdb2b3d90530c5f282a3d58a56d9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:31:47 +0100
-Subject: [PATCH 006/113] cma: Add vc_cma driver to enable use of CMA
+Subject: [PATCH 006/124] cma: Add vc_cma driver to enable use of CMA
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
  drivers/char/Kconfig                  |    2 +
  drivers/char/Makefile                 |    3 +
- drivers/char/broadcom/Kconfig         |   17 +
+ drivers/char/broadcom/Kconfig         |   16 +
  drivers/char/broadcom/Makefile        |    2 +
  drivers/char/broadcom/vc_cma/Makefile |   15 +
  drivers/char/broadcom/vc_cma/vc_cma.c | 1145 +++++++++++++++++++++++++++++++++
  drivers/misc/Makefile                 |    2 +-
  include/linux/broadcom/vc_cma.h       |   30 +
- 8 files changed, 1215 insertions(+), 1 deletion(-)
+ 8 files changed, 1214 insertions(+), 1 deletion(-)
  create mode 100644 drivers/char/broadcom/Kconfig
  create mode 100644 drivers/char/broadcom/Makefile
  create mode 100644 drivers/char/broadcom/vc_cma/Makefile
@@ -81328,23 +81328,22 @@ index 7ff1d0d..c594502 100644
 +
 diff --git a/drivers/char/broadcom/Kconfig b/drivers/char/broadcom/Kconfig
 new file mode 100644
-index 0000000..6ec2528
+index 0000000..e23b440
 --- /dev/null
 +++ b/drivers/char/broadcom/Kconfig
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,16 @@
 +#
 +# Broadcom char driver config
 +#
 +
 +menuconfig BRCM_CHAR_DRIVERS
-+	tristate "Broadcom Char Drivers"
-+	depends on PROC_FS
++	bool "Broadcom Char Drivers"
 +	help
 +	  Broadcom's char drivers
 +
 +config BCM_VC_CMA
 +	bool "Videocore CMA"
-+	depends on CMA
++	depends on CMA && BRCM_CHAR_DRIVERS
 +	default n
 +        help
 +          Helper for videocore CMA access.
@@ -82576,13 +82575,13 @@ index 0000000..bdc9d79
 +#endif /* VC_CMA_H */
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From 9b742527ac0ebaa3b643857b47d043ae79dc8475 Mon Sep 17 00:00:00 2001
+From 52a10be38f6f53a362c983813f2ad855b36dd9b5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 26 Mar 2012 22:15:50 +0100
-Subject: [PATCH 007/113] bcm2708: alsa sound driver
+Subject: [PATCH 007/124] bcm2708: alsa sound driver
 
     Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -84902,13 +84901,13 @@ index 0000000..af3e6eb
 +
 +#endif // _VC_AUDIO_DEFS_H_
 -- 
-1.8.1.6
+1.8.4
 
 
-From 4b2f619cd70236bf8ce6f5018e6e1cea509f0a19 Mon Sep 17 00:00:00 2001
+From 9c08dcbd00bec82b1d15ca33b57ad82ebe0e5f75 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 17:26:38 +0000
-Subject: [PATCH 008/113] Allow mac address to be set in smsc95xx
+Subject: [PATCH 008/124] Allow mac address to be set in smsc95xx
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -84999,13 +84998,13 @@ index 3f38ba8..60076fe 100644
  	if (smsc95xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
  			dev->net->dev_addr) == 0) {
 -- 
-1.8.1.6
+1.8.4
 
 
-From a39e53dad7af023d5be0b7ecfa3fcef09e8245bc Mon Sep 17 00:00:00 2001
+From 6d17161b92e6d627294ff4a45af928ccb0a58e98 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 8 May 2012 23:12:13 +0100
-Subject: [PATCH 009/113] possible fix for sdcard missing status. Thank naren
+Subject: [PATCH 009/124] possible fix for sdcard missing status. Thank naren
 
 ---
  drivers/mmc/host/sdhci-bcm2708.c | 9 +++++++++
@@ -85039,13 +85038,13 @@ index e79723d..a405114 100644
  
  /*****************************************************************************\
 -- 
-1.8.1.6
+1.8.4
 
 
-From 41e5012bbd0ff332c303adffb25fe0aaa61b821e Mon Sep 17 00:00:00 2001
+From 5b8fb5231dd2c5edbddd93cf52dcb1f00c59d4c2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 May 2012 14:44:19 +0100
-Subject: [PATCH 010/113] sdcard patch improvements from naren
+Subject: [PATCH 010/124] sdcard patch improvements from naren
 
 ---
  drivers/mmc/host/sdhci-bcm2708.c | 23 +++++++----------------
@@ -85101,13 +85100,13 @@ index a405114..ae8edf7 100644
  
  /***************************************************************************** \
 -- 
-1.8.1.6
+1.8.4
 
 
-From 0a471a2ef5220d0d59aae591ca9b4c4672caa87d Mon Sep 17 00:00:00 2001
+From f2ef12b61ebe7e43d3c7e3b624825fc29698c3c2 Mon Sep 17 00:00:00 2001
 From: Grigori Goronzy <greg@blackbox>
 Date: Mon, 4 Jun 2012 04:27:48 +0200
-Subject: [PATCH 011/113] sdhci-bcm2708: speed up DMA sync
+Subject: [PATCH 011/124] sdhci-bcm2708: speed up DMA sync
 
 Experiments show that it doesn't really take that long to sync, so we
 can reduce the poll interval slightly. Might improve performance a bit.
@@ -85129,13 +85128,13 @@ index ae8edf7..a6bdc25 100644
  		}
  		if (timeout <= 0)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 90d3261b231978a660446ea386f0d93a1cdf9997 Mon Sep 17 00:00:00 2001
+From 53c69556509df8d8808479bb1174a41dc8fadfa5 Mon Sep 17 00:00:00 2001
 From: Grigori Goronzy <greg@blackbox>
 Date: Mon, 11 Jun 2012 18:52:04 +0200
-Subject: [PATCH 012/113] sdhci-bcm2708: remove custom clock handling
+Subject: [PATCH 012/124] sdhci-bcm2708: remove custom clock handling
 
 The custom clock handling code is redundant and buggy. The MMC/SDHCI
 subsystem does a better job than it, so remove it for good.
@@ -85230,13 +85229,13 @@ index a6bdc25..0ed4d85 100644
  #ifdef CONFIG_MMC_SDHCI_BCM2708_DMA
  	// Platform DMA operations
 -- 
-1.8.1.6
+1.8.4
 
 
-From 0ec9efa9013b6dcaae65e51bb09820ecba1eda0a Mon Sep 17 00:00:00 2001
+From 70e6b72a601fb93e02050c497b3a32ef6b3be0db Mon Sep 17 00:00:00 2001
 From: Grigori Goronzy <greg@blackbox>
 Date: Mon, 11 Jun 2012 18:53:59 +0200
-Subject: [PATCH 013/113] sdhci-bcm2708: add additional quirks
+Subject: [PATCH 013/124] sdhci-bcm2708: add additional quirks
 
 Some additional quirks are needed for correct operation.
 There's no SDHCI capabilities register documented, and it always reads
@@ -85263,13 +85262,13 @@ index 0ed4d85..3001836 100644
  	host->flags = SDHCI_USE_PLATDMA;
  #endif
 -- 
-1.8.1.6
+1.8.4
 
 
-From cbcc5023b35ee7c09a2489900b8adc8ebcc1eee3 Mon Sep 17 00:00:00 2001
+From 46b9ab4446b805a8c4f6f2efbef817eb9fa4e1f5 Mon Sep 17 00:00:00 2001
 From: Grigori Goronzy <greg@blackbox>
 Date: Mon, 11 Jun 2012 18:57:13 +0200
-Subject: [PATCH 014/113] sdhci-bcm2708: add allow_highspeed parameter
+Subject: [PATCH 014/124] sdhci-bcm2708: add allow_highspeed parameter
 
 Add a parameter to disable high-speed mode for the few cards that
 still might have problems. High-speed mode is enabled by default.
@@ -85314,13 +85313,13 @@ index 3001836..c64de21 100644
 +MODULE_PARM_DESC(allow_highspeed, "Allow high speed transfers modes");
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From eecd610cbe2b2890024251a69b107485f730eb54 Mon Sep 17 00:00:00 2001
+From cfab67e0c7c65b84c73fcdaae93e555ef54bedbe Mon Sep 17 00:00:00 2001
 From: Grigori Goronzy <greg@blackbox>
 Date: Mon, 11 Jun 2012 18:58:40 +0200
-Subject: [PATCH 015/113] sdhci-bcm2708: assume 50 MHz eMMC clock
+Subject: [PATCH 015/124] sdhci-bcm2708: assume 50 MHz eMMC clock
 
 80 MHz clock isnt't suited well to be dividable to get SD clocks of 25
 MHz (default mode) or 50 MHz (high speed mode). 50 MHz are perfect to
@@ -85343,13 +85342,13 @@ index c64de21..d174938 100644
  /*****************************************************************************\
   *									     *
 -- 
-1.8.1.6
+1.8.4
 
 
-From 9608f28466b8ba9128ee024e3588834b166372cb Mon Sep 17 00:00:00 2001
+From 7747f80c83a3bd507bf1cdea1e8fa287b5fbdb6e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 16 Jun 2012 22:31:55 +0100
-Subject: [PATCH 016/113] Allow emmc clock to be specified as command line
+Subject: [PATCH 016/124] Allow emmc clock to be specified as command line
  parameter
 
 ---
@@ -85393,13 +85392,13 @@ index d174938..0ee983c 100644
 +
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From f574ed854666c747e1ae126caf1f13825b18a1cb Mon Sep 17 00:00:00 2001
+From 5c7e7e4a3fef75d30c2ecb94fbbc16fa16847694 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 16 Jun 2012 22:35:38 +0100
-Subject: [PATCH 017/113] sdhci-bcm2708: raise DMA sync timeout
+Subject: [PATCH 017/124] sdhci-bcm2708: raise DMA sync timeout
 
 Commit d64b84c by accident reduced the maximum overall DMA sync
 timeout. The maximum overall timeout was reduced from 100ms to 30ms,
@@ -85426,13 +85425,13 @@ index 0ee983c..b0cdd7d 100644
  		DBG("PDMA over - sync card\n");
  		if (data->flags & MMC_DATA_READ)
 -- 
-1.8.1.6
+1.8.4
 
 
-From a2349148e2f010d576248817eb5c94597c9494ae Mon Sep 17 00:00:00 2001
+From bb3e4329dacfa2145cefac964c6d10572fef87b2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 22 Jun 2012 12:57:42 +0100
-Subject: [PATCH 018/113] Use ndelay rather than udelay. Thanks lb
+Subject: [PATCH 018/124] Use ndelay rather than udelay. Thanks lb
 
 ---
  drivers/mmc/host/sdhci-bcm2708.c | 8 ++++----
@@ -85476,13 +85475,13 @@ index b0cdd7d..7bba950 100644
  #endif
  	writel(val, host->ioaddr + reg);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 6413462d71e8ad0cad8d3938dcfd3c7e9f8fa3b4 Mon Sep 17 00:00:00 2001
+From 75bb6d34cf3eace6ed2aa9c37ec5806ed8c1e762 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:41:10 +0100
-Subject: [PATCH 019/113] Backport of Chris Boot's i2c and spi drivers.
+Subject: [PATCH 019/124] Backport of Chris Boot's i2c and spi drivers.
 
 ---
  arch/arm/configs/bcmrpi_cutdown_defconfig     |  10 +
@@ -86768,13 +86767,13 @@ index 0000000..9f1580e
 +MODULE_LICENSE("GPL v2");
 +MODULE_ALIAS("platform:" DRV_NAME);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 201b733f848e43718c63a2fb19d2f1759edb4bf9 Mon Sep 17 00:00:00 2001
+From 2233f22cb5dc1513e2d1d6315835f1be7823cc7f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 19 Jul 2012 16:00:28 +0100
-Subject: [PATCH 020/113] Add SPI_SPI_DEV module
+Subject: [PATCH 020/124] Add SPI_SPI_DEV module
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 1 +
@@ -86793,13 +86792,13 @@ index 6219df3..31f5afaa 100644
  # CONFIG_HWMON is not set
  CONFIG_WATCHDOG=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From 569030543f5165fba8ef04ca35a2aa8909a762e2 Mon Sep 17 00:00:00 2001
+From 7baabc1022257cd2adf4f6f29b84042ba3224948 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 13 Jul 2012 18:34:18 +0100
-Subject: [PATCH 021/113] Fix for quitting X hang. Interrupted mailbox reads
+Subject: [PATCH 021/124] Fix for quitting X hang. Interrupted mailbox reads
  are not something we can reliably recover from, so down_interruptable is not
  a safe call.
 
@@ -86831,13 +86830,13 @@ index 799a0ac..3874051 100644
  	return rc;
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From 294ada2e4a6c36aa47273848ec78f9fced4a5aa5 Mon Sep 17 00:00:00 2001
+From 090dba6134b5cd9de60debb40baf81a8634d367f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 17 Jul 2012 00:48:27 +0100
-Subject: [PATCH 022/113] Add sync_after_dma module parameter
+Subject: [PATCH 022/124] Add sync_after_dma module parameter
 
 ---
  drivers/mmc/host/sdhci-bcm2708.c | 60 +++++++++++++++++++++-------------------
@@ -86951,13 +86950,13 @@ index 7bba950..3792b9f 100644
  
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From b3c7a66df274aa410ac682d1016a7ac31112f113 Mon Sep 17 00:00:00 2001
+From 836fbe1d30f19bbf3f59139ac88a9480809a3ca7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 12 May 2013 12:25:52 +0100
-Subject: [PATCH 023/113] sdhci-bcm2708: use extension FIFO to buffer DMA
+Subject: [PATCH 023/124] sdhci-bcm2708: use extension FIFO to buffer DMA
  transfers
 
 The additional FIFO might speed up transfers in some cases.
@@ -87006,13 +87005,13 @@ index 3792b9f..326b962 100644
  	       mmc_hostname(host->mmc), (unsigned long long)iomem->start,
  	       host_priv->dma_chan, host_priv->dma_irq);
 -- 
-1.8.1.6
+1.8.4
 
 
-From e2b73225a65b99319f65336b7fb86888e11008f7 Mon Sep 17 00:00:00 2001
+From a16396e6d3f2302b56850af3387faca53e48542a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:42:49 +0100
-Subject: [PATCH 024/113] sdhci-bcm2708: use multiblock-type transfers for
+Subject: [PATCH 024/124] sdhci-bcm2708: use multiblock-type transfers for
  single blocks
 
 There are issues with both single block reads (missed completion)
@@ -87065,13 +87064,13 @@ index e326ae2..70020e3 100644
  	mmc_pm_flag_t		pm_caps;	/* supported pm features */
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From b18581317d232b74b1d334bcd632fe2d2d979347 Mon Sep 17 00:00:00 2001
+From 7484e2c77cbd2947b7fe6d061d122f8b732ecb75 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 Aug 2012 19:02:14 +0100
-Subject: [PATCH 025/113] Add module parameter for missing_status quirk.
+Subject: [PATCH 025/124] Add module parameter for missing_status quirk.
  sdhci-bcm2708.missing_status=0 may improve interrupt latency
 
 ---
@@ -87124,13 +87123,13 @@ index c6d6bb0..8243593 100644
  
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 291cf0d67088f942514a25a3b64d1efddfce29ba Mon Sep 17 00:00:00 2001
+From 695b4327195166ee2af2eeccf88f8eb77fc76537 Mon Sep 17 00:00:00 2001
 From: ddv2005 <ddv@abinet.com>
 Date: Sun, 5 Aug 2012 10:42:12 -0400
-Subject: [PATCH 026/113] Fix spinlock recursion in sdhci-bcm2708.c
+Subject: [PATCH 026/124] Fix spinlock recursion in sdhci-bcm2708.c
 
 ---
  drivers/mmc/host/sdhci-bcm2708.c | 14 +++++++-------
@@ -87196,13 +87195,13 @@ index 8243593..7a703c2 100644
  
  static irqreturn_t sdhci_bcm2708_dma_irq(int irq, void *dev_id)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 8c8505670a0fadd8a8247e4b1da9cfd85416007e Mon Sep 17 00:00:00 2001
+From 6eccb6583225be5691bc35f0ad1e36f616a8300c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 21 Aug 2012 18:49:44 +0100
-Subject: [PATCH 027/113] Read memory size for vc_mem through mailbox property
+Subject: [PATCH 027/124] Read memory size for vc_mem through mailbox property
  channel
 
 ---
@@ -87370,13 +87369,13 @@ index fd9d4be..7a7748e 100644
  
  /****************************************************************************
 -- 
-1.8.1.6
+1.8.4
 
 
-From 9beca9e15a1698575ae20d3992e6a47ba6da79f8 Mon Sep 17 00:00:00 2001
+From 2250daa44a167d04ac9341a0c8ef30420259b9db Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 8 May 2013 11:46:50 +0100
-Subject: [PATCH 028/113] enabling the realtime clock 1-wire chip DS1307 and
+Subject: [PATCH 028/124] enabling the realtime clock 1-wire chip DS1307 and
  1-wire on GPIO4 (as a module)
 
 ---
@@ -87436,13 +87435,13 @@ index 510be0b..d61e747 100644
  	bcm_register_device(&bcm2708_fb_device);
  	bcm_register_device(&bcm2708_usb_device);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 1a338526b40364fde7b6f2c31e1ee3ae73617763 Mon Sep 17 00:00:00 2001
+From f116a2fce49f1eba3ac51bec1ac7d04002be0192 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 12 May 2013 12:27:48 +0100
-Subject: [PATCH 029/113] Add low-latency mode to sdcard driver. Disable with
+Subject: [PATCH 029/124] Add low-latency mode to sdcard driver. Disable with
  sdhci-bcm2708.enable_llm=0. Thanks ddv2005.
 
 ---
@@ -87962,13 +87961,13 @@ index f3a39c1..58bfab0 100644
  
  	const struct sdhci_ops *ops;	/* Low level hw interface */
 -- 
-1.8.1.6
+1.8.4
 
 
-From 2a920ba6ca829de9fbce51aa0c2bd30ab47fa8aa Mon Sep 17 00:00:00 2001
+From 5d5aac9bab161217624021a99dfc63237510580e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:46:42 +0100
-Subject: [PATCH 030/113] Add FIQ patch to dwc_otg driver. Enable with
+Subject: [PATCH 030/124] Add FIQ patch to dwc_otg driver. Enable with
  dwc_otg.fiq_fix_enable=1. Should give about 10% more ARM performance. Thanks
  to Gordon and Costas
 
@@ -89125,13 +89124,13 @@ index a7e9076..bb1c42d 100644
  	struct lm_device *lmdev;
  #elif  defined(PCI_INTERFACE)
 -- 
-1.8.1.6
+1.8.4
 
 
-From fff65bacabdf6369f43978e2d7e6018d8b5f2201 Mon Sep 17 00:00:00 2001
+From c76438af5b5107ce6e1ecedf5b3fe63e6e3820c0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 12 Apr 2013 23:58:47 +0100
-Subject: [PATCH 033/113] Add verious user config requests.
+Subject: [PATCH 033/124] Add verious user config requests.
  CONFIG_DEVTMPFS_MOUNT, CONFIG_NFS_V4_1=y CONFIG_NFSD_V3_ACL=y
  CONFIG_NFSD_V4=y, drbd and IPSEC modules
 
@@ -89538,13 +89537,13 @@ index 31f5afaa..ef43466 100644
  # CONFIG_CRYPTO_HW is not set
  CONFIG_CRC_ITU_T=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From 259c141897753d6306363a377f742afe714c63cc Mon Sep 17 00:00:00 2001
+From a159f8253a7dda3524423c801f2b68ddbb54d4a8 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 8 Sep 2012 15:17:53 +0100
-Subject: [PATCH 034/113] Avoid dynamic memory allocation for channel lock in
+Subject: [PATCH 034/124] Avoid dynamic memory allocation for channel lock in
  USB driver. Thanks ddv2005.
 
 ---
@@ -89648,13 +89647,13 @@ index f1658fa..21e8f09 100644
  
  /**
 -- 
-1.8.1.6
+1.8.4
 
 
-From 9e7f197820b6389054c2bb8e49b393308291a1ce Mon Sep 17 00:00:00 2001
+From 95772de6fe6c9e365ee9636bcf1a919bd03a7a79 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:49:20 +0100
-Subject: [PATCH 035/113] Add cpufreq driver
+Subject: [PATCH 035/124] Add cpufreq driver
 
 ---
  arch/arm/Kconfig                          |   1 +
@@ -90178,13 +90177,13 @@ index 0000000..aa6fc66
 +module_exit(bcm2835_cpufreq_module_exit);
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From 000312ec04a3a48ba8f615a17356321bcb908ae5 Mon Sep 17 00:00:00 2001
+From 35b5b3a221cd9013d3a29144aa929ca85b73f368 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 8 Apr 2013 21:12:48 +0100
-Subject: [PATCH 036/113] Add NAK holdoff scheme. Enabled by default, disable
+Subject: [PATCH 036/124] Add NAK holdoff scheme. Enabled by default, disable
  with dwc_otg.nak_holdoff_enable=0. Thanks gsh
 
 ---
@@ -90391,13 +90390,13 @@ index ac10323..e6b2a7b 100644
  		if (!DWC_CIRCLEQ_EMPTY(&qh->qtd_list)) {
  			/* Add back to inactive non-periodic schedule. */
 -- 
-1.8.1.6
+1.8.4
 
 
-From f1c804c6c5fc251e6e8f5f9a652687fb6530c5da Mon Sep 17 00:00:00 2001
+From 284c8eadb90ca81dc2457761be38f3223d56220a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 19:24:24 +0000
-Subject: [PATCH 037/113] Added hwmon/thermal driver for reporting core
+Subject: [PATCH 037/124] Added hwmon/thermal driver for reporting core
  temperature. Thanks Dorian
 
 ---
@@ -90442,7 +90441,7 @@ index f5f262c..2875cd2 100644
  	{
  		extern void vc_mem_connected_init(void);
 diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 0428e8a..dd3a6e0 100644
+index df064e8..b1f1265 100644
 --- a/drivers/hwmon/Kconfig
 +++ b/drivers/hwmon/Kconfig
 @@ -1528,6 +1528,15 @@ config SENSORS_MC13783_ADC
@@ -90918,13 +90917,13 @@ index 0000000..f1ecdb2
 +
 +module_platform_driver(bcm2835_thermal_driver);
 -- 
-1.8.1.6
+1.8.4
 
 
-From cfdeee5942afe981f36878896b4ab5abe013efb7 Mon Sep 17 00:00:00 2001
+From 3d3ffc2b26655fd84a3eb6ad15c3e7b0ab5e33a4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 12 Apr 2013 23:59:27 +0100
-Subject: [PATCH 038/113] Add config options for thermal sensor, L2TP,
+Subject: [PATCH 038/124] Add config options for thermal sensor, L2TP,
  RT2800USB_UNKNOWN, and various I2C and SPI RTCs. Tidy of thermal driver.
 
 ---
@@ -91000,7 +90999,7 @@ index 5b0a171..d11f688 100644
  CONFIG_UIO_PDRV=m
  CONFIG_UIO_PDRV_GENIRQ=m
 diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index dd3a6e0..760940b 100644
+index b1f1265..170bfef 100644
 --- a/drivers/hwmon/Kconfig
 +++ b/drivers/hwmon/Kconfig
 @@ -1529,6 +1529,7 @@ config SENSORS_MC13783_ADC
@@ -91089,13 +91088,13 @@ index f1ecdb2..3f9a733 100644
  #include <linux/module.h>
  #include <linux/init.h>
 -- 
-1.8.1.6
+1.8.4
 
 
-From 0cafd4ffcb046d31c19c97b091f69e1e5f674d5b Mon Sep 17 00:00:00 2001
+From d3ada75513d513f299b031f86486898fe1eccb5b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 28 Mar 2013 01:19:54 +0000
-Subject: [PATCH 039/113] 2708fb: Remove some unnecessary dmesg output.
+Subject: [PATCH 039/124] 2708fb: Remove some unnecessary dmesg output.
 
 ---
  drivers/video/bcm2708_fb.c | 34 +++++++++++++++++++---------------
@@ -91219,13 +91218,13 @@ index c82dd90..08d9238 100644
  	return ret;
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From 3c11cdf591a62c3eac631870aaa77d6a80372b5e Mon Sep 17 00:00:00 2001
+From 68d239c846ae392bd2bc0fa38eb178d14dbf81af Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 28 Mar 2013 01:20:34 +0000
-Subject: [PATCH 040/113] cpufreq: Remove some unnecessary dmesg output.
+Subject: [PATCH 040/124] cpufreq: Remove some unnecessary dmesg output.
 
 ---
  drivers/cpufreq/bcm2835-cpufreq.c | 2 +-
@@ -91245,13 +91244,13 @@ index aa6fc66..6ff1edb 100755
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 4c074cf000920de7743875ba0c2494f414f3e008 Mon Sep 17 00:00:00 2001
+From 1eb3d94a62288c66bcfd039c365e553357dcb73f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 17 Sep 2012 22:57:29 +0100
-Subject: [PATCH 041/113] Switch to powersave governor. We'll enable ondemand
+Subject: [PATCH 041/124] Switch to powersave governor. We'll enable ondemand
  in the distribution
 
 ---
@@ -91276,13 +91275,13 @@ index d11f688..c1afa47 100644
  CONFIG_CPU_IDLE=y
  CONFIG_VFP=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From 5f50086a7239b91561881bd295571887e94fe274 Mon Sep 17 00:00:00 2001
+From 46d16b7b0fe7f9003fcc3b68774193a296a5018d Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 17 Apr 2013 12:16:36 +0100
-Subject: [PATCH 042/113] Enable multiple ALSA channels
+Subject: [PATCH 042/124] Enable multiple ALSA channels
 
 ---
  arch/arm/mach-bcm2708/bcm2708.c | 54 ++++++++++++++++++++++++++++++++++++-----
@@ -91354,13 +91353,13 @@ index 2875cd2..27e9553 100644
  
  static struct resource bcm2708_spi_resources[] = {
 -- 
-1.8.1.6
+1.8.4
 
 
-From 52a6863fd533ffa018168ccbccb6f26684607cb1 Mon Sep 17 00:00:00 2001
+From 3061aee071a580c554fb1e86b5edd084bced284f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Oct 2012 20:08:19 +0100
-Subject: [PATCH 043/113] set i2c speed via module-parameter or menuconfig.
+Subject: [PATCH 043/124] set i2c speed via module-parameter or menuconfig.
  Thanks FrankBoesing
 
 ---
@@ -91432,13 +91431,13 @@ index 7cae615..3391889 100644
  	return 0;
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From cd88777d0adfc6630157543118aba6bfa494c286 Mon Sep 17 00:00:00 2001
+From e2b57f10c08797f25e12dce9ec9b0885ac5b67c2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Oct 2012 21:31:48 +0100
-Subject: [PATCH 044/113] Allow the number of cycles delay between sdcard
+Subject: [PATCH 044/124] Allow the number of cycles delay between sdcard
  peripheral writes to be specified on command line with
  sdhci-bcm2708.cycle_delay
 
@@ -91477,13 +91476,13 @@ index 7ce2829..ffd7310 100644
  MODULE_DESCRIPTION("Secure Digital Host Controller Interface platform driver");
  MODULE_AUTHOR("Broadcom <info@broadcom.com>");
 -- 
-1.8.1.6
+1.8.4
 
 
-From 0dc9549e5aa15fe2bd68e1c71e478d83e9bce346 Mon Sep 17 00:00:00 2001
+From 3bffe9a536a8d02cae084833142eb15c453cd7d0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 17 Apr 2013 14:37:25 +0100
-Subject: [PATCH 045/113] Fix vc-mem by using module parameters
+Subject: [PATCH 045/124] Fix vc-mem by using module parameters
 
 ---
  arch/arm/mach-bcm2708/bcm2708.c | 12 ++---
@@ -91715,13 +91714,13 @@ index 5ef68b3..057f74f 100644
 +module_param(mem_base, uint, 0644);
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From f0cea32b4797cb78f383c99a185e6c0073de9fc6 Mon Sep 17 00:00:00 2001
+From 7fb571ca5ba2aaa6cd61686b788bfb0a2ce6a130 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 5 Oct 2012 22:44:47 +0100
-Subject: [PATCH 046/113] Support dummy vc-mem ioctl used by vcdbg
+Subject: [PATCH 046/124] Support dummy vc-mem ioctl used by vcdbg
 
 ---
  arch/arm/mach-bcm2708/include/mach/vc_mem.h |  1 +
@@ -91766,13 +91765,13 @@ index 057f74f..aeae4d5 100644
  		{
  			return -ENOTTY;
 -- 
-1.8.1.6
+1.8.4
 
 
-From 7d46f7dab9f58dc747e852b664a2cbcdaf62a4f3 Mon Sep 17 00:00:00 2001
+From f75d7bafd4c3cdcbe5ce6f2a113b418b23c11d25 Mon Sep 17 00:00:00 2001
 From: dero <de@ro>
 Date: Mon, 19 Nov 2012 12:46:06 +0100
-Subject: [PATCH 047/113] Lazy CRC quirk: Implemented retrying mechanisms for
+Subject: [PATCH 047/124] Lazy CRC quirk: Implemented retrying mechanisms for
  SD SSR and SCR, disabled missing_status and spurious CRC ACMD51 quirks by
  default (should be fixed by the retrying-mechanishm)
 
@@ -92001,13 +92000,13 @@ index ffd7310..3556ed3 100644
  
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 214f5b84197d030bb6be4214b750a3f070bacd91 Mon Sep 17 00:00:00 2001
+From 7468790654c50378726e524f8bd66fc9936e764e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 28 Mar 2013 00:10:32 +0000
-Subject: [PATCH 048/113] bcm2708: Add vc_cma driver to enable use of CMA
+Subject: [PATCH 048/124] bcm2708: Add vc_cma driver to enable use of CMA
 
 ---
  arch/arm/mach-bcm2708/bcm2708.c | 18 ++++++++++++++++++
@@ -92065,13 +92064,13 @@ index e010515..9d38d40 100644
  
  module_param(boardrev, uint, 0644);
 -- 
-1.8.1.6
+1.8.4
 
 
-From b052cfe5c038d97f45f8d620e0182c66135aebef Mon Sep 17 00:00:00 2001
+From 3b4e28e2a351f05495e9e5acea16221c92993397 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 24 Oct 2012 22:00:43 +0100
-Subject: [PATCH 049/113] Fix reboot with new restart method of machine driver
+Subject: [PATCH 049/124] Fix reboot with new restart method of machine driver
 
 ---
  arch/arm/mach-bcm2708/bcm2708.c             | 18 +++++++++++++++++-
@@ -92146,13 +92145,13 @@ index bc9d458..2d0b821 100644
 -
  #endif
 -- 
-1.8.1.6
+1.8.4
 
 
-From 41f569ca2bd0437b34a670fb44cdfb49b6ac68a3 Mon Sep 17 00:00:00 2001
+From ea7d7d31149b8216580ffa96a75fff29a0f38bba Mon Sep 17 00:00:00 2001
 From: Gordon Hollingworth <gordon@holliweb.co.uk>
 Date: Sun, 4 Nov 2012 15:55:01 +0000
-Subject: [PATCH 050/113] Make sure we wait for the reset to finish
+Subject: [PATCH 050/124] Make sure we wait for the reset to finish
 
 ---
  drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c | 2 ++
@@ -92172,13 +92171,13 @@ index 3e762e2..e8c91e7 100644
  			mphi_int_count = 0;
  		}
 -- 
-1.8.1.6
+1.8.4
 
 
-From 933d56caab97524b18e22c9b27e6c10688fabc3e Mon Sep 17 00:00:00 2001
+From bd3003672dd26fde1aa686ed5bf6bca2ca6ef60e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 19 Nov 2012 18:27:05 +0000
-Subject: [PATCH 051/113] Add Simon Hall's dma helper module, useful in future
+Subject: [PATCH 051/124] Add Simon Hall's dma helper module, useful in future
  for X acceleration
 
 ---
@@ -93513,13 +93512,13 @@ index 0000000..5cb1335
 +}
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From cbb8914064ed2273517a66fe6d479e9dcb7fa5f6 Mon Sep 17 00:00:00 2001
+From c51b955f2ac5256e0f93dc460f73b2bee38c5f32 Mon Sep 17 00:00:00 2001
 From: Aron Szabo <aron@aron.ws>
 Date: Sat, 16 Jun 2012 12:15:55 +0200
-Subject: [PATCH 052/113] lirc: added support for RaspberryPi GPIO
+Subject: [PATCH 052/124] lirc: added support for RaspberryPi GPIO
 
 ---
  drivers/staging/media/lirc/Kconfig    |   6 +
@@ -94251,13 +94250,13 @@ index 0000000..96acab0
 +module_param(debug, bool, S_IRUGO | S_IWUSR);
 +MODULE_PARM_DESC(debug, "Enable debugging messages");
 -- 
-1.8.1.6
+1.8.4
 
 
-From d83a0f6019a8b6d047f6bb9e856c7181172a99c7 Mon Sep 17 00:00:00 2001
+From 8c0ed8815cc5986978b84106304fdfc6b323495f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 25 Nov 2012 18:28:09 +0000
-Subject: [PATCH 053/113] Allow mailbox driver to be called from user code
+Subject: [PATCH 053/124] Allow mailbox driver to be called from user code
  though ioctl
 
 ---
@@ -94491,13 +94490,13 @@ index 468fdef..09b78b5 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From b37195943149a1addd276900703eab170ce33055 Mon Sep 17 00:00:00 2001
+From 82c42a3533088843cc4d10493927eef35ed90f38 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 11 Dec 2012 18:23:03 +0000
-Subject: [PATCH 054/113] Default to dwc_otp.lpm_enable=0
+Subject: [PATCH 054/124] Default to dwc_otp.lpm_enable=0
 
 ---
  drivers/usb/host/dwc_otg/dwc_otg_driver.c | 2 +-
@@ -94517,13 +94516,13 @@ index d353a9a..cea8fcb 100644
  	.ahb_thr_ratio = -1,
  	.power_down = -1,
 -- 
-1.8.1.6
+1.8.4
 
 
-From 4cc2022aca695d77259b686c9f75705e3f7263f0 Mon Sep 17 00:00:00 2001
+From ef39099ce76b07b2714c5f3da4078290bf8bca7b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 11 Dec 2012 19:04:27 +0000
-Subject: [PATCH 055/113] Increase default coherent pool so vchiq starts up
+Subject: [PATCH 055/124] Increase default coherent pool so vchiq starts up
 
 ---
  arch/arm/mach-bcm2708/bcm2708.c | 4 +---
@@ -94545,13 +94544,13 @@ index 9f456e9..87fd348 100644
  
  static void __init board_reserve(void)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 8db963b8d5be89e46676139848d4538ed552ed0b Mon Sep 17 00:00:00 2001
+From 2fd5c6c17b06281e68fc76d8d13824336ca91f08 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 7 Jan 2013 21:34:59 +0000
-Subject: [PATCH 056/113] Add mutex around bcm_mailbox_property function
+Subject: [PATCH 056/124] Add mutex around bcm_mailbox_property function
 
 ---
  arch/arm/mach-bcm2708/vcio.c | 5 ++++-
@@ -94588,13 +94587,13 @@ index 09b78b5..599eb63 100644
  }
  EXPORT_SYMBOL_GPL(bcm_mailbox_property);
 -- 
-1.8.1.6
+1.8.4
 
 
-From a2b04bdc07d4187f69a8987bec7747598cca6786 Mon Sep 17 00:00:00 2001
+From 54c1e86dae49c0b202a6cfcceae7ec2f72217aeb Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Wed, 9 Jan 2013 16:12:04 +0000
-Subject: [PATCH 057/113] dwc_otg: fix bug in dwc_otg_hcd.c resulting in silent
+Subject: [PATCH 057/124] dwc_otg: fix bug in dwc_otg_hcd.c resulting in silent
  kernel 	 memory corruption, escalating to OOPS under high USB load.
 
 ---
@@ -94628,13 +94627,13 @@ index e6b2a7b..b337e1b 100644
  	DWC_SPINUNLOCK_IRQRESTORE(hcd->lock, flags);
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From a7247aee8bfa56a3c5bab4e13f832c4faf4c7ebd Mon Sep 17 00:00:00 2001
+From 96758ce79d41f650ec044b0b9f5e5af8ba70aa05 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 21 Jan 2013 23:03:53 +0000
-Subject: [PATCH 058/113] Return error value from bcm2708_setup_state. Thanks
+Subject: [PATCH 058/124] Return error value from bcm2708_setup_state. Thanks
  notro
 
 ---
@@ -94654,13 +94653,13 @@ index 9f1580e..8513704 100644
  
  	dev_dbg(&spi->dev,
 -- 
-1.8.1.6
+1.8.4
 
 
-From dce892d144e982b53af979489e0034ba677e8334 Mon Sep 17 00:00:00 2001
+From 1faa4714439594a2120365492d0f512d2de9cf73 Mon Sep 17 00:00:00 2001
 From: Kamal Mostafa <kamal@whence.com>
 Date: Mon, 22 Oct 2012 15:52:44 -0700
-Subject: [PATCH 059/113] spi/spi-bcm2708: respect per-transfer SPI clock
+Subject: [PATCH 059/124] spi/spi-bcm2708: respect per-transfer SPI clock
  speed_hz value
 
 The bcm2708 SPI driver's bcm2708_process_transfer() was ignoring the
@@ -94702,13 +94701,13 @@ index 8513704..b74aa32 100644
  		if (ret)
  			return ret;
 -- 
-1.8.1.6
+1.8.4
 
 
-From f9f3d616a9189f682c4e5b7d08db4952e64e5bf7 Mon Sep 17 00:00:00 2001
+From 0f0bdd3932175d2b732e5787ba596cfb03c02063 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:51:55 +0100
-Subject: [PATCH 060/113] Add hwrng (hardware random number generator) driver
+Subject: [PATCH 060/124] Add hwrng (hardware random number generator) driver
 
 ---
  arch/arm/mach-bcm2708/include/mach/platform.h |   1 +
@@ -94883,13 +94882,13 @@ index 0000000..1ffa7d7
 +MODULE_DESCRIPTION("BCM2708 H/W Random Number Generator (RNG) driver");
 +MODULE_LICENSE("GPL and additional rights");
 -- 
-1.8.1.6
+1.8.4
 
 
-From bcacc6fdab7df493ac55f76e801672f62bb6f767 Mon Sep 17 00:00:00 2001
+From e83282bcb067a6534bffc635ba906ba95f67ec84 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 7 Feb 2013 17:04:13 +0000
-Subject: [PATCH 061/113] Add missing newlines to log messages
+Subject: [PATCH 061/124] Add missing newlines to log messages
 
 ---
  drivers/cpufreq/bcm2835-cpufreq.c | 20 ++++++++++----------
@@ -94985,13 +94984,13 @@ index 6ff1edb..5a19212 100755
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 7ad225340ad6ff96af2fdb53fead00b88b5b542a Mon Sep 17 00:00:00 2001
+From 24b4364bc58e6c9ebef97f02ae66bf802f885a2e Mon Sep 17 00:00:00 2001
 From: Technion <Technion>
 Date: Mon, 11 Feb 2013 22:08:53 +1100
-Subject: [PATCH 062/113] Changed wording on logging. Previously, we received
+Subject: [PATCH 062/124] Changed wording on logging. Previously, we received
  errors like this: mmc0: could read SD Status register (SSR) at the 3th
  attempt A more sensible response is now returned. A typo also fixed in
  comments.
@@ -95023,13 +95022,13 @@ index 1ee6cf3..90228f9 100644
  
  	for (i = 0; i < 16; i++)
 -- 
-1.8.1.6
+1.8.4
 
 
-From c512532d50bfb31f942c20aa57c51d2486ee770e Mon Sep 17 00:00:00 2001
+From e25d289abb48f4f09a117f6fc3aefd8bca2ac387 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 15 Feb 2013 22:36:47 +0000
-Subject: [PATCH 063/113] dwc_otg: Fix unsafe access of QTD during URB enqueue
+Subject: [PATCH 063/124] dwc_otg: Fix unsafe access of QTD during URB enqueue
 
 In dwc_otg_hcd_urb_enqueue during qtd creation, it was possible that the
 transaction could complete almost immediately after the qtd was assigned
@@ -95113,13 +95112,13 @@ index b337e1b..b3e6e52 100644
  		}
  	}
 -- 
-1.8.1.6
+1.8.4
 
 
-From b0e6cda506f41eb9d9bcd4e5dc638549ac82869a Mon Sep 17 00:00:00 2001
+From 7f4ed34cddd72679bbb3b2105c2273ba9546e5cc Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 15 Feb 2013 22:38:40 +0000
-Subject: [PATCH 064/113] dwc_otg: Fix incorrect URB allocation error handling
+Subject: [PATCH 064/124] dwc_otg: Fix incorrect URB allocation error handling
 
 If the memory allocation for a dwc_otg_urb failed, the kernel would OOPS
 because for some reason a member of the *unallocated* struct was set to
@@ -95157,13 +95156,13 @@ index e653d84..fcec97f 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From d692b0b337cc5e093c29a3268a3c53366e4106ac Mon Sep 17 00:00:00 2001
+From 68075071e6a06072930a42263728ba2c1b892c91 Mon Sep 17 00:00:00 2001
 From: pjennings <pjennings-git@pjennings.net>
 Date: Wed, 20 Feb 2013 17:51:43 -0600
-Subject: [PATCH 065/113] Added inverted transmitter support
+Subject: [PATCH 065/124] Added inverted transmitter support
 
 ---
  drivers/staging/media/lirc/lirc_rpi.c | 17 +++++++++++------
@@ -95241,13 +95240,13 @@ index 96acab0..5bb0dfe 100644
  module_param(debug, bool, S_IRUGO | S_IWUSR);
  MODULE_PARM_DESC(debug, "Enable debugging messages");
 -- 
-1.8.1.6
+1.8.4
 
 
-From 33d55fa26325a0165f4b2fbfc795896fde043982 Mon Sep 17 00:00:00 2001
+From 07ba42537b64c0095cfa7af9e7a27b97851720e5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 24 Feb 2013 16:30:57 +0000
-Subject: [PATCH 066/113] Add retry on error and tidy of temperature driver
+Subject: [PATCH 066/124] Add retry on error and tidy of temperature driver
 
 ---
  drivers/thermal/bcm2835-thermal.c | 78 ++++++++++++++-------------------------
@@ -95371,13 +95370,13 @@ index 3f9a733..85fceb5 100644
  static int bcm2835_get_trip_type(struct thermal_zone_device * thermal_dev, int trip_num, enum thermal_trip_type *trip_type)
  {
 -- 
-1.8.1.6
+1.8.4
 
 
-From 0b6fc3c07e41feb561e19075fa1f4dd263d66104 Mon Sep 17 00:00:00 2001
+From c3b1f9d0867d654d4752974942b9acbfc114c7c2 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Thu, 28 Feb 2013 16:52:51 +0000
-Subject: [PATCH 067/113] dwc_otg: fix potential use-after-free case in
+Subject: [PATCH 067/124] dwc_otg: fix potential use-after-free case in
  interrupt handler
 
 If a transaction had previously aborted, certain interrupts are
@@ -95406,13 +95405,13 @@ index e8c91e7..0c81a64 100644
  	if (hcint.b.nyet) {
  		retval |= handle_hc_nyet_intr(dwc_otg_hcd, hc, hc_regs, qtd);
 -- 
-1.8.1.6
+1.8.4
 
 
-From e68c54361fc71f822d24336ad2affe6a4a6e6cb6 Mon Sep 17 00:00:00 2001
+From f9e6412224d8eef43853da7ef3c4fba55ec3670b Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Sun, 3 Mar 2013 14:45:53 +0000
-Subject: [PATCH 068/113] dwc_otg: add handling of SPLIT transaction data
+Subject: [PATCH 068/124] dwc_otg: add handling of SPLIT transaction data
  toggle errors
 
 Previously a data toggle error on packets from a USB1.1 device behind
@@ -95464,13 +95463,13 @@ index 0c81a64..16e8c6c 100644
  		if (hcint.b.nyet) {
  			/*
 -- 
-1.8.1.6
+1.8.4
 
 
-From ece0467d1974612055aeb8f779eb8a23b89ad9bc Mon Sep 17 00:00:00 2001
+From c41463acf6f284aeac498ed93fae6236312e0dfc Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 21:14:28 +0100
-Subject: [PATCH 069/113] Add bitbanging pullups, use them for w1-gpio
+Subject: [PATCH 069/124] Add bitbanging pullups, use them for w1-gpio
 
 Allows parasite power to work, uses module option pullup=1
 ---
@@ -95606,13 +95605,13 @@ index e10acc2..667fdd5 100644
  	}
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From d760ca2b00179795065bf4632550b299a50ecb11 Mon Sep 17 00:00:00 2001
+From 2be8b04cc8bcd4c0ece185179a704d3102c18bed Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sat, 26 Jan 2013 20:38:03 +0100
-Subject: [PATCH 070/113] spi-bcm2708: add 9-bit support using LoSSI mode
+Subject: [PATCH 070/124] spi-bcm2708: add 9-bit support using LoSSI mode
 
 ---
  drivers/spi/spi-bcm2708.c | 30 ++++++++++++++++++++++++++++--
@@ -95679,13 +95678,13 @@ index b74aa32..abaa5a6 100644
  			return ret;
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 9179356d935522018b105ba6a08771ee6bb48c9b Mon Sep 17 00:00:00 2001
+From f6c2eeadd8bff25855c6bf26abccf5de44abb3c0 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Thu, 21 Mar 2013 19:36:17 +0000
-Subject: [PATCH 071/113] dwc_otg: implement tasklet for returning URBs to
+Subject: [PATCH 071/124] dwc_otg: implement tasklet for returning URBs to
  usbcore hcd layer
 
 The dwc_otg driver interrupt handler for transfer completion will spend
@@ -95924,13 +95923,13 @@ index 9702f81..7bb133a 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 7315208ea871604a45fc6bf677c75938baa49262 Mon Sep 17 00:00:00 2001
+From ec6e60be0db2f4738ea4429d0586a0a107bb399c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 16 Apr 2013 15:36:01 +0100
-Subject: [PATCH 073/113] Add v6wbi_flush_kern_tlb_range to allow zsmalloc to
+Subject: [PATCH 073/124] Add v6wbi_flush_kern_tlb_range to allow zsmalloc to
  be built as a module
 
 ---
@@ -95950,13 +95949,13 @@ index 60d3b73..cba4d28 100644
 +EXPORT_SYMBOL(v6wbi_flush_kern_tlb_range);
 +
 -- 
-1.8.1.6
+1.8.4
 
 
-From 7456280527cb3c4686be43c0e18821869a5bf572 Mon Sep 17 00:00:00 2001
+From 30e2d21f515461a128522d606d90efc7d4f6cbc5 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Mon, 22 Apr 2013 00:08:36 +0100
-Subject: [PATCH 074/113] dwc_otg: fix NAK holdoff and allow on split
+Subject: [PATCH 074/124] dwc_otg: fix NAK holdoff and allow on split
  transactions only
 
 This corrects a bug where if a single active non-periodic endpoint
@@ -96023,13 +96022,13 @@ index 91eefecd..eaa8f38 100644
  				DWC_SPINLOCK_IRQSAVE(channel_lock, &flags);
  				if (hcd->available_host_channels < 1) {
 -- 
-1.8.1.6
+1.8.4
 
 
-From 63e843506d0027823f926dd003f0ef541db13cf4 Mon Sep 17 00:00:00 2001
+From 70298b554f8879c878becf08f6559937313ebd26 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 26 Apr 2013 10:08:31 -0700
-Subject: [PATCH 075/113] Merge pull request #286 from
+Subject: [PATCH 075/124] Merge pull request #286 from
  martinezjavier/rpi-3.6.y-dev
 
 add mmap support and some cleanups to bcm2835 ALSA driver
@@ -96507,13 +96506,13 @@ index b966e28..08c763d 100755
  	struct semaphore buffers_update_sem;
  	struct semaphore control_sem;
 -- 
-1.8.1.6
+1.8.4
 
 
-From 3201bce360adb5c8345ad98a1b082e6f594175e0 Mon Sep 17 00:00:00 2001
+From 76e0e227b31eafaa904783373e7a3f13ae3f186e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 7 May 2013 22:20:24 +0100
-Subject: [PATCH 076/113] Add quick config.
+Subject: [PATCH 076/124] Add quick config.
 
 This is designed for quick compiling when developing.
 No modules are needed and it includes all Pi specific drivers
@@ -96726,13 +96725,13 @@ index 0000000..e5efe75
 +CONFIG_CRC_ITU_T=y
 +CONFIG_LIBCRC32C=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From 558c1be0b32edbe4aa7b172a5ce3ede01b832e60 Mon Sep 17 00:00:00 2001
+From 0e29270180fde3c19a56aa8e52aa067a792c16c2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 10 May 2013 19:42:38 +0100
-Subject: [PATCH 077/113] mmc: suppress sdcard warnings we are happy about by
+Subject: [PATCH 077/124] mmc: suppress sdcard warnings we are happy about by
  default
 
 ---
@@ -96795,13 +96794,13 @@ index 3556ed3..c2409b9 100644
  
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 52e57a2f21ebcff9bde56e4dbaee44e6fcf0c280 Mon Sep 17 00:00:00 2001
+From aaa2f79e26eb82d5b79ed8847ed2a2609c966bb2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 14 May 2013 11:42:25 +0100
-Subject: [PATCH 078/113] Allow reboot=q on command line to set a flag that
+Subject: [PATCH 078/124] Allow reboot=q on command line to set a flag that
  bootcode.bin can use to boot from alternate partition
 
 ---
@@ -96829,13 +96828,13 @@ index 87fd348..1ed4d73 100644
  	pm_rstc = readl(__io_address(PM_RSTC));
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 1d5db5511083852610efbf193776a7d4279bcaa6 Mon Sep 17 00:00:00 2001
+From b4e82aa202af154683bdd03b783c4e7044a1fd59 Mon Sep 17 00:00:00 2001
 From: hutorny <eugene@hutorny.in.ua>
 Date: Mon, 13 May 2013 10:26:14 +0300
-Subject: [PATCH 080/113] Update bcm2708.c to use CONFIG_BCM2708_SPIDEV rather
+Subject: [PATCH 080/124] Update bcm2708.c to use CONFIG_BCM2708_SPIDEV rather
  than CONFIG_SPI
 
 ---
@@ -96882,13 +96881,13 @@ index 1ed4d73..68c577a 100644
  			ARRAY_SIZE(bcm2708_spi_devices));
  #endif
 -- 
-1.8.1.6
+1.8.4
 
 
-From 21859458a2ad78b303036841508cf285abcae6a5 Mon Sep 17 00:00:00 2001
+From ae40bf037c62f5717a78db216a24d9f3126569e1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 8 Jun 2013 22:14:13 +0100
-Subject: [PATCH 082/113] Only init gpio pins of selected i2c bus
+Subject: [PATCH 082/124] Only init gpio pins of selected i2c bus
 
 ---
  drivers/i2c/busses/i2c-bcm2708.c | 8 +++++---
@@ -96929,13 +96928,13 @@ index 3391889..edc90c0 100644
  	bi = kzalloc(sizeof(*bi), GFP_KERNEL);
  	if (!bi)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 777e8971980a501b06f2a1eced61b0f0ae1b1b86 Mon Sep 17 00:00:00 2001
+From df0f4ca7d1a873e5db706ae1795ad1f0d5834cf5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 13 Jun 2013 16:46:54 +0100
-Subject: [PATCH 083/113] Avoid responding to unexpected I2C interrupts
+Subject: [PATCH 083/124] Avoid responding to unexpected I2C interrupts
 
 ---
  drivers/i2c/busses/i2c-bcm2708.c | 6 ++++++
@@ -96966,13 +96965,13 @@ index edc90c0..33f4e7d 100644
  
  	return handled ? IRQ_HANDLED : IRQ_NONE;
 -- 
-1.8.1.6
+1.8.4
 
 
-From 54093a51d14812febe1ae4b955a506503e364c7f Mon Sep 17 00:00:00 2001
+From 9b77850af3b180a8f10ae799ccc461a413459f76 Mon Sep 17 00:00:00 2001
 From: Harm Hanemaaijer <fgenfb@yahoo.com>
 Date: Thu, 20 Jun 2013 20:21:39 +0200
-Subject: [PATCH 084/113] Speed up console framebuffer imageblit function
+Subject: [PATCH 084/124] Speed up console framebuffer imageblit function
 
 Especially on platforms with a slower CPU but a relatively high
 framebuffer fill bandwidth, like current ARM devices, the existing
@@ -97181,13 +97180,13 @@ index baed57d..ce91bf2 100644
  					start_index, pitch_index);
  	} else
 -- 
-1.8.1.6
+1.8.4
 
 
-From 3673a5a0f802d1c47d51bd105eb31f67d8c1f028 Mon Sep 17 00:00:00 2001
+From cfc20ce8b49f5032b63c337f9b6b522e536bff9c Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 13:32:11 +0300
-Subject: [PATCH 085/113] fbdev: add FBIOCOPYAREA ioctl
+Subject: [PATCH 085/124] fbdev: add FBIOCOPYAREA ioctl
 
 Based on the patch authored by Ali Gholami Rudi at
     https://lkml.org/lkml/2009/7/13/153
@@ -97280,13 +97279,13 @@ index fb795c3..fa72af0 100644
  #define FB_TYPE_PACKED_PIXELS		0	/* Packed Pixels	*/
  #define FB_TYPE_PLANES			1	/* Non interleaved planes */
 -- 
-1.8.1.6
+1.8.4
 
 
-From f34c976767863abb6963a10a1d94aa5417900387 Mon Sep 17 00:00:00 2001
+From ef9b1412cf5a340d66cd81602f2c4b52ab4f27ab Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 16:00:25 +0300
-Subject: [PATCH 086/113] bcm2708_fb: DMA acceleration for fb_copyarea
+Subject: [PATCH 086/124] bcm2708_fb: DMA acceleration for fb_copyarea
 
 Based on http://www.raspberrypi.org/phpBB3/viewtopic.php?p=62425#p62425
 Also used Simon's dmaer_master module as a reference for tweaking DMA
@@ -97527,13 +97526,13 @@ index 08d9238..c10c5ee 100644
  			  fb->dma);
  	kfree(fb);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 959ec6a678a85afa12a0a12928d10f3f6faafec3 Mon Sep 17 00:00:00 2001
+From 69f07961134a9b355ad2ea0f1d06242330cc7ad9 Mon Sep 17 00:00:00 2001
 From: Mike Bradley <mike.bradley@incanetworks.com>
 Date: Mon, 17 Jun 2013 11:31:42 -0700
-Subject: [PATCH 087/113] dwc_otg: Call usb_hcd_unlink_urb_from_ep with lock
+Subject: [PATCH 087/124] dwc_otg: Call usb_hcd_unlink_urb_from_ep with lock
  held in completion handler
 
 usb_hcd_unlink_urb_from_ep must be called with the HCD lock held.  Calling it
@@ -97617,13 +97616,13 @@ index 7bb133a..fef557d 100644
  	return 0;
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From c86f2ba722813909e73bed14f1151edcce7732f3 Mon Sep 17 00:00:00 2001
+From abda5ea036e2afc96a964855e29d27a3f59d8345 Mon Sep 17 00:00:00 2001
 From: Gordon Hollingworth <gordon@holliweb.co.uk>
 Date: Thu, 4 Apr 2013 11:05:21 +0100
-Subject: [PATCH 088/113] USB fix using a FIQ to implement split transactions
+Subject: [PATCH 088/124] USB fix using a FIQ to implement split transactions
 
 This commit adds a FIQ implementaion that schedules
 the split transactions using a FIQ so we don't get
@@ -99039,13 +99038,13 @@ index 27061d3..9720937 100644
  
  								if (status.b.sr) {
 -- 
-1.8.1.6
+1.8.4
 
 
-From eb48f7faf9e10f6eca20a043d2d65146ebcd7683 Mon Sep 17 00:00:00 2001
+From c6edbd06da4592972a926fdd8bf5c11ca064fa59 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 11:39:46 +0100
-Subject: [PATCH 089/113] dwc_otg: fix device attributes and avoid kernel
+Subject: [PATCH 089/124] dwc_otg: fix device attributes and avoid kernel
  warnings on boot
 
 ---
@@ -99111,13 +99110,13 @@ index 95eb7f8..9602fda 100644
  #ifdef CONFIG_USB_DWC_OTG_LPM
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 8bb9a012ed98c50b9c827e515efa3ca71b94d51f Mon Sep 17 00:00:00 2001
+From 60173e5e332f177dfa18db23913f7dc510e8c7f7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 13:55:00 +0100
-Subject: [PATCH 090/113] hack: fix for incorrect uart fifo size detection
+Subject: [PATCH 090/124] hack: fix for incorrect uart fifo size detection
 
 ---
  drivers/tty/serial/amba-pl011.c | 2 +-
@@ -99137,13 +99136,13 @@ index e2774f9..5254f10 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 58879fbbd67263ca40d585272ed93b3c90619b8a Mon Sep 17 00:00:00 2001
+From 53d21cbc7d93fe07c15df31d29641b2cbb6c70e4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 6 Jul 2013 15:25:50 +0100
-Subject: [PATCH 091/113] Re-enable RTL8192CU driver
+Subject: [PATCH 091/124] Re-enable RTL8192CU driver
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 230 +++++++-------------------------------
@@ -99536,13 +99535,13 @@ index c1afa47..f488d9e 100644
  CONFIG_CRYPTO_TGR192=m
  CONFIG_CRYPTO_WP512=m
 -- 
-1.8.1.6
+1.8.4
 
 
-From dd7311fd0207b7e45124ea274f358279c5aeadf6 Mon Sep 17 00:00:00 2001
+From 41398a52a0f70d2ccb2610340eb93f40a848c1b1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 10 Jul 2013 23:53:31 +0100
-Subject: [PATCH 093/113] sdhci-bcm2807: Increase sync_after_dma timeout
+Subject: [PATCH 093/124] sdhci-bcm2807: Increase sync_after_dma timeout
 
 The current timeout is being hit with some cards that complete successfully with a longer timeout.
 The timeout is not handled well, and is believed to be a code path that causes corruption.
@@ -99565,13 +99564,13 @@ index c2409b9..4770680 100644
  			DBG("PDMA over - sync card\n");
  			if (data->flags & MMC_DATA_READ)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 11a2600b6e675fa01834e93863603ed699f943c5 Mon Sep 17 00:00:00 2001
+From 2ed2516da223ddff44ad940a3fb294665cbdf35c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 15 Jul 2013 23:55:52 +0100
-Subject: [PATCH 094/113] dcw_otg: avoid logging function that can cause panics
+Subject: [PATCH 094/124] dcw_otg: avoid logging function that can cause panics
 
 See: https://github.com/raspberrypi/firmware/issues/21
 Thanks to cleverca22 for fix
@@ -99593,13 +99592,13 @@ index 9602fda..c6966af 100644
  	return sprintf(buf, "SPRAM Dump\n");
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From 443c09c58738c3187a0f378ae3d071f969017f0b Mon Sep 17 00:00:00 2001
+From 7c3ce135124e690ede627868e9ba5b7f81152e41 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Sat, 13 Jul 2013 20:41:26 +0100
-Subject: [PATCH 095/113] dwc_otg: mask correct interrupts after transaction
+Subject: [PATCH 095/124] dwc_otg: mask correct interrupts after transaction
  error recovery
 
 The dwc_otg driver will unmask certain interrupts on a transaction
@@ -99663,13 +99662,13 @@ index e8b4d35..27b673f 100644
  	}
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From a1a1f1c9b76f15428952abb98814e57ba4116ca9 Mon Sep 17 00:00:00 2001
+From 60e632dd90de3b08d5c7cc4ec91df3fccb79e33e Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Sat, 13 Jul 2013 21:48:41 +0100
-Subject: [PATCH 096/113] dwc_otg: fiq: prevent FIQ thrash and incorrect state
+Subject: [PATCH 096/124] dwc_otg: fiq: prevent FIQ thrash and incorrect state
  passing to IRQ
 
 In the case of a transaction to a device that had previously aborted
@@ -99723,13 +99722,13 @@ index 27b673f..d655363 100644
  	// Clear the interrupt, this will also clear the HAINT bit
  	FIQ_WRITE((dwc_regs_base + 0x500 + (channel * 0x20) + 0x8), hcint.d32);
 -- 
-1.8.1.6
+1.8.4
 
 
-From e7944421831da467a3f51a098e6cc0f6ebb4114a Mon Sep 17 00:00:00 2001
+From c4a9e394c046b03cf34c0d5e60cab97429cf619f Mon Sep 17 00:00:00 2001
 From: Gordon Hollingworth <gordon@holliweb.co.uk>
 Date: Mon, 8 Jul 2013 04:12:19 +0100
-Subject: [PATCH 097/113] Fix function tracing
+Subject: [PATCH 097/124] Fix function tracing
 
 ---
  drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c | 12 ++++++------
@@ -99791,13 +99790,13 @@ index d655363..765451b 100644
  
  	/* entry takes care to store registers we will be treading on here */
 -- 
-1.8.1.6
+1.8.4
 
 
-From bb0c18e85d74ab863a4d1fe91df06bda88b5d0d7 Mon Sep 17 00:00:00 2001
+From 09faf3862d27ffeb3c04eea7f17e21ca3bf74168 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Thu, 18 Jul 2013 16:32:41 +0100
-Subject: [PATCH 098/113] dwc_otg: whitespace cleanup in dwc_otg_urb_enqueue
+Subject: [PATCH 098/124] dwc_otg: whitespace cleanup in dwc_otg_urb_enqueue
 
 ---
  drivers/usb/host/dwc_otg/dwc_otg_hcd_linux.c | 59 ++++++++++++++--------------
@@ -99885,13 +99884,13 @@ index 0d6f5f4..0f72bd5 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From 5c7bbdc95f5ec139f242623b27d5407dc33561f8 Mon Sep 17 00:00:00 2001
+From 085cf82b9a9b9c30461b4fb7d88eb29f853c125d Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Thu, 18 Jul 2013 17:07:26 +0100
-Subject: [PATCH 099/113] dwc_otg: prevent OOPSes during device disconnects
+Subject: [PATCH 099/124] dwc_otg: prevent OOPSes during device disconnects
 
 The dwc_otg_urb_enqueue function is thread-unsafe. In particular the
 access of urb->hcpriv, usb_hcd_link_urb_to_ep, dwc_otg_urb->qtd and
@@ -100029,13 +100028,13 @@ index 8125307..5aed416 100644
  
  	return retval;
 -- 
-1.8.1.6
+1.8.4
 
 
-From 77978b94828ec1ba2f264bec64681a0470bb323e Mon Sep 17 00:00:00 2001
+From 583de2c3b9028d27a8bb319aeb098d9f291c837a Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Mon, 22 Jul 2013 14:08:26 +0100
-Subject: [PATCH 100/113] dwc_otg: prevent BUG() in TT allocation if hub
+Subject: [PATCH 100/124] dwc_otg: prevent BUG() in TT allocation if hub
  address is > 16
 
 A fixed-size array is used to track TT allocation. This was
@@ -100122,13 +100121,13 @@ index 765451b..dbff763 100644
  	}
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From f2d66d64db0b312bfb9ae91d82ea1cfc1f3edf3b Mon Sep 17 00:00:00 2001
+From dd458df1e6fc1b30330fb4667eecdc2ca51c8619 Mon Sep 17 00:00:00 2001
 From: Alexander Kolesen <akolesen@iron.io>
 Date: Mon, 22 Jul 2013 15:23:32 +0300
-Subject: [PATCH 101/113] bcm_vc_cma: create_proc_entry replaced by proc_create
+Subject: [PATCH 101/124] bcm_vc_cma: create_proc_entry replaced by proc_create
 
 Commit 80e928f7 kills create_proc_entry, so need to get rid if it and replace by proc_create
 
@@ -100182,13 +100181,13 @@ index 6d8b4df..fe80887 100644
  		class_destroy(vc_cma_class);
  		cdev_del(&vc_cma_cdev);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 091b8bb04d9581126f3d04eb7796e5ab48daff26 Mon Sep 17 00:00:00 2001
+From b591c46d1826c07f328944eab6bd1034f848bdc9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 23 Jul 2013 12:29:27 +0100
-Subject: [PATCH 102/113] config: Add back in CONFIG_TASKSTATS
+Subject: [PATCH 102/124] config: Add back in CONFIG_TASKSTATS
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 4 ++++
@@ -100210,13 +100209,13 @@ index f488d9e..194c0d6 100644
  CONFIG_IKCONFIG_PROC=y
  CONFIG_CGROUP_FREEZER=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From fb7d7d539d327f77c8ba789e68b9e6e512151e07 Mon Sep 17 00:00:00 2001
+From 1412a04fbe041c208b6a399817f1c99766808bf0 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Tue, 23 Jul 2013 14:15:32 +0100
-Subject: [PATCH 103/113] dwc_otg: make channel halts with unknown state less
+Subject: [PATCH 103/124] dwc_otg: make channel halts with unknown state less
  damaging
 
 If the IRQ received a channel halt interrupt through the FIQ
@@ -100258,13 +100257,13 @@ index dbff763..488defb 100644
  }
  
 -- 
-1.8.1.6
+1.8.4
 
 
-From c20d78831a20a6c56d7a49b15ce826951aa9d4a9 Mon Sep 17 00:00:00 2001
+From f6a47a402655f593881d7fa184f385de3e7448dd Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Tue, 30 Jul 2013 09:58:48 +0100
-Subject: [PATCH 104/113] dwc_otg: fiq_split: use TTs with more granularity
+Subject: [PATCH 104/124] dwc_otg: fiq_split: use TTs with more granularity
 
 This fixes certain issues with split transaction scheduling.
 
@@ -100381,13 +100380,13 @@ index 488defb..7d521d9 100644
  
  	/* Try to queue more transfers now that there's a free channel. */
 -- 
-1.8.1.6
+1.8.4
 
 
-From fbf9d1e976d66a8c78a378c81dfba9151c8ded51 Mon Sep 17 00:00:00 2001
+From d7dc65fe35c065af719387ff16b32bd4ed447445 Mon Sep 17 00:00:00 2001
 From: Matthew Hails <mhails@broadcom.com>
 Date: Mon, 13 May 2013 14:22:48 +0100
-Subject: [PATCH 105/113] VCHIQ: Fix mem leak of USER_SERVICE_T objects.
+Subject: [PATCH 105/124] VCHIQ: Fix mem leak of USER_SERVICE_T objects.
 
 The userdata for VCHIQ services created through the ioctl API is
 a kmalloced structure. These objects were getting leaked, most
@@ -100559,13 +100558,13 @@ index 62965c6..be9735f 100644
  	if (service) {
  		status = vchiq_open_service_internal(service, current->pid);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 52777010e9f8db211007f48ef03a2d4bd5af5977 Mon Sep 17 00:00:00 2001
+From cce144045ceb38eb2b4ea7564ff1056170d5d6f8 Mon Sep 17 00:00:00 2001
 From: Philip Taylor <ptaylor@broadcom.com>
 Date: Tue, 28 May 2013 17:20:49 +0100
-Subject: [PATCH 106/113] vchiq_util: Fix race condition in push/pop
+Subject: [PATCH 106/124] vchiq_util: Fix race condition in push/pop
 
 The lack of memory barriers could (very rarely) result in
 vchiu_queue_pop reading the next value before it had been written
@@ -100635,13 +100634,13 @@ index 03cece571b..c2eefef 100644
  
  	up(&queue->pop);
 -- 
-1.8.1.6
+1.8.4
 
 
-From 6d41e9434fda6ce8b3cc965d03e5ad8c440f0b40 Mon Sep 17 00:00:00 2001
+From cdcca8ef2a280e87b616049cdcc5f2e72dc71bf2 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 2 Aug 2013 10:04:18 +0100
-Subject: [PATCH 107/113] dwc_otg: fix potential sleep while atomic during urb
+Subject: [PATCH 107/124] dwc_otg: fix potential sleep while atomic during urb
  enqueue
 
 Fixes a regression introduced with eb1b482a. Kmalloc called from
@@ -100667,13 +100666,13 @@ index ad03ff1..80690f9 100644
  			if (alloc_bandwidth) {
  				allocate_bus_bandwidth(hcd,
 -- 
-1.8.1.6
+1.8.4
 
 
-From 05eea29e29f313323299bf5a23e7fa18bb5b57cf Mon Sep 17 00:00:00 2001
+From 758bd972371a90818a3a000a7a0851918b9ea5d5 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Mon, 5 Aug 2013 11:42:12 +0100
-Subject: [PATCH 108/113] dwc_otg: make fiq_split_enable imply fiq_fix_enable
+Subject: [PATCH 108/124] dwc_otg: make fiq_split_enable imply fiq_fix_enable
 
 Failing to set up the FIQ correctly would result in
 "IRQ 32: nobody cared" errors in dmesg.
@@ -100699,13 +100698,13 @@ index 6c89a69..4735f51 100644
  	       DWC_DRIVER_VERSION,
  #ifdef LM_INTERFACE
 -- 
-1.8.1.6
+1.8.4
 
 
-From 2a097e935336c7db990f856599864533d6d5fbb7 Mon Sep 17 00:00:00 2001
+From 65ded66c430adcd36ccde98ca7d5e4f4be182c8c Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Mon, 5 Aug 2013 11:47:12 +0100
-Subject: [PATCH 109/113] dwc_otg: prevent crashes on host port disconnects
+Subject: [PATCH 109/124] dwc_otg: prevent crashes on host port disconnects
 
 Fix several issues resulting in crashes or inconsistent state
 if a Model A root port was disconnected.
@@ -100860,13 +100859,13 @@ index 80690f9..0d49b50 100644
  		if (status) {
  			DWC_PRINTF("Uknown urb status %d\n", status);
 -- 
-1.8.1.6
+1.8.4
 
 
-From c10aa3b9d00e8c63a8c2166ec9a4fd34a1101544 Mon Sep 17 00:00:00 2001
+From 58b141840f1088b1b92f370303f07e78944a7fae Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Mon, 5 Aug 2013 13:17:58 +0100
-Subject: [PATCH 110/113] dwc_otg: prevent leaking URBs during enqueue
+Subject: [PATCH 110/124] dwc_otg: prevent leaking URBs during enqueue
 
 A dwc_otg_urb would get leaked if the HCD enqueue function
 failed for any reason. Free the URB at the appropriate points.
@@ -100899,13 +100898,13 @@ index 0d49b50..d3949da 100644
  	return retval;
  }
 -- 
-1.8.1.6
+1.8.4
 
 
-From 2baec0f9a0dbfd601908318a523383004bea123c Mon Sep 17 00:00:00 2001
+From 7360df327ee9efa387820c4331f9f4d21ab2bbd7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 15 Aug 2013 15:24:40 +0100
-Subject: [PATCH 111/113] Increase to CONFIG_MMC_BLOCK_MINORS=32 and enable
+Subject: [PATCH 111/124] Increase to CONFIG_MMC_BLOCK_MINORS=32 and enable
  CONFIG_JUMP_LABEL See: https://github.com/raspberrypi/linux/pull/348
 
 ---
@@ -100933,13 +100932,13 @@ index 194c0d6..1a97514 100644
  CONFIG_MMC_SDHCI_PLTFM=y
  CONFIG_MMC_SDHCI_BCM2708=y
 -- 
-1.8.1.6
+1.8.4
 
 
-From b9af5161cac76a91b14dba869a1ed5f8169aa226 Mon Sep 17 00:00:00 2001
+From 261209f2c343e632ca19d1f3259bd50bc295bad9 Mon Sep 17 00:00:00 2001
 From: Russell King <rmk+kernel@arm.linux.org.uk>
 Date: Thu, 8 Aug 2013 11:51:21 +0100
-Subject: [PATCH 112/113] ARM: Fix FIQ code on VIVT CPUs
+Subject: [PATCH 112/124] ARM: Fix FIQ code on VIVT CPUs
 
 Aaro Koskinen reports the following oops:
 Installing fiq handler from c001b110, length 0x164
@@ -100990,13 +100989,13 @@ index 74ff4ba..9ac7935 100644
  
  int claim_fiq(struct fiq_handler *f)
 -- 
-1.8.1.6
+1.8.4
 
 
-From 2ed7ca02343ab6d10262f99fcf2b4e189d1aabed Mon Sep 17 00:00:00 2001
+From b1d2b488e549f1ac996d5c03d70a700a4e7b771f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 19 Aug 2013 15:21:22 +0100
-Subject: [PATCH 113/113] Changes for new NOOBS multi partition booting from
+Subject: [PATCH 113/124] Changes for new NOOBS multi partition booting from
  gsh
 
 ---
@@ -101109,5 +101108,790 @@ index 68c577a..5662c1a 100644
  module_param(uart_clock, uint, 0644);
 +module_param(reboot_part, uint, 0644);
 -- 
-1.8.1.6
+1.8.4
+
+
+From 353b3e536614cf5804f75bf415de87673c04fc36 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Fri, 30 Aug 2013 19:06:56 +0100
+Subject: [PATCH 114/124] Move to SLUB memory allocator. See:
+ https://github.com/raspberrypi/linux/pull/349
+
+---
+ arch/arm/configs/bcmrpi_defconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 1a97514..fdda50b 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -23,7 +23,6 @@ CONFIG_NAMESPACES=y
+ CONFIG_SCHED_AUTOGROUP=y
+ CONFIG_EMBEDDED=y
+ # CONFIG_COMPAT_BRK is not set
+-CONFIG_SLAB=y
+ CONFIG_PROFILING=y
+ CONFIG_OPROFILE=m
+ CONFIG_KPROBES=y
+-- 
+1.8.4
+
+
+From 19505fd247730aed22b3acce6667128255cd98ec Mon Sep 17 00:00:00 2001
+From: Phil Elwell <pelwell@broadcom.com>
+Date: Wed, 20 Mar 2013 09:58:21 +0000
+Subject: [PATCH 115/124] SW-11786: Fix USE_AFTER_FREE defect (61220)
+
+In the error paths of parse_open, only unlock the service if it is not
+NULL. In the fail path, NULL the service after it is unlocked to
+prevent a double unlock.
+---
+ drivers/misc/vc04_services/interface/vchiq_arm/vchiq_core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/misc/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/misc/vc04_services/interface/vchiq_arm/vchiq_core.c
+index 9f66704..f35ed4f 100644
+--- a/drivers/misc/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/misc/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -1492,6 +1492,7 @@ static const char *msg_type_str(unsigned int msg_type)
+ 					version, version_min);
+ 				vchiq_loud_error_footer();
+ 				unlock_service(service);
++				service = NULL;
+ 				goto fail_open;
+ 			}
+ 			service->peer_version = version;
+@@ -1557,7 +1558,8 @@ static const char *msg_type_str(unsigned int msg_type)
+ 	return 1;
+ 
+ bail_not_ready:
+-	unlock_service(service);
++	if (service)
++		unlock_service(service);
+ 
+ 	return 0;
+ }
+-- 
+1.8.4
+
+
+From 6c7716e65956dc083a581349705f2e97fbec83ec Mon Sep 17 00:00:00 2001
+From: Fabio Estevam <festevam@gmail.com>
+Date: Fri, 16 Aug 2013 12:55:56 +0100
+Subject: [PATCH 116/124] ARM: 7819/1: fiq: Cast the first argument of
+ flush_icache_range()
+
+Commit 2ba85e7af4 (ARM: Fix FIQ code on VIVT CPUs) causes the following build warning:
+
+arch/arm/kernel/fiq.c:92:3: warning: passing argument 1 of 'cpu_cache.coherent_kern_range' makes integer from pointer without a cast [enabled by default]
+
+Cast it as '(unsigned long)base' to avoid the warning.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
+---
+ arch/arm/kernel/fiq.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/kernel/fiq.c b/arch/arm/kernel/fiq.c
+index 9ac7935..aac11f8 100644
+--- a/arch/arm/kernel/fiq.c
++++ b/arch/arm/kernel/fiq.c
+@@ -89,7 +89,8 @@ void set_fiq_handler(void *start, unsigned int length)
+ 
+ 	memcpy(base + offset, start, length);
+ 	if (!cache_is_vipt_nonaliasing())
+-		flush_icache_range(base + offset, offset + length);
++		flush_icache_range((unsigned long)base + offset, offset +
++				   length);
+ 	flush_icache_range(0xffff0000 + offset, 0xffff0000 + offset + length);
+ }
+ 
+-- 
+1.8.4
+
+
+From 3338c9d0411f9232dadc1164a2f2248eae21d721 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sun, 15 Sep 2013 13:48:43 +0100
+Subject: [PATCH 117/124] config: add missing options from 3.6.y kernel
+
+---
+ arch/arm/configs/bcmrpi_defconfig | 228 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 225 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index fdda50b..b41feb2 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -46,6 +46,7 @@ CONFIG_CMDLINE="dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,11520
+ CONFIG_KEXEC=y
+ CONFIG_CPU_FREQ=y
+ CONFIG_CPU_FREQ_STAT=m
++CONFIG_CPU_FREQ_STAT_DETAILS=y
+ CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE=y
+ CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+ CONFIG_CPU_FREQ_GOV_USERSPACE=y
+@@ -84,7 +85,6 @@ CONFIG_NF_CONNTRACK_ZONES=y
+ CONFIG_NF_CONNTRACK_EVENTS=y
+ CONFIG_NF_CONNTRACK_TIMESTAMP=y
+ CONFIG_NF_CT_PROTO_DCCP=m
+-CONFIG_NF_CT_PROTO_SCTP=m
+ CONFIG_NF_CT_PROTO_UDPLITE=m
+ CONFIG_NF_CONNTRACK_AMANDA=m
+ CONFIG_NF_CONNTRACK_FTP=m
+@@ -104,7 +104,10 @@ CONFIG_NETFILTER_XT_TARGET_CHECKSUM=m
+ CONFIG_NETFILTER_XT_TARGET_CLASSIFY=m
+ CONFIG_NETFILTER_XT_TARGET_CONNMARK=m
+ CONFIG_NETFILTER_XT_TARGET_DSCP=m
++CONFIG_NETFILTER_XT_TARGET_HMARK=m
+ CONFIG_NETFILTER_XT_TARGET_IDLETIMER=m
++CONFIG_NETFILTER_XT_TARGET_LED=m
++CONFIG_NETFILTER_XT_TARGET_LOG=m
+ CONFIG_NETFILTER_XT_TARGET_MARK=m
+ CONFIG_NETFILTER_XT_TARGET_NFLOG=m
+ CONFIG_NETFILTER_XT_TARGET_NFQUEUE=m
+@@ -115,9 +118,11 @@ CONFIG_NETFILTER_XT_TARGET_TRACE=m
+ CONFIG_NETFILTER_XT_TARGET_TCPMSS=m
+ CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP=m
+ CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=m
++CONFIG_NETFILTER_XT_MATCH_BPF=m
+ CONFIG_NETFILTER_XT_MATCH_CLUSTER=m
+ CONFIG_NETFILTER_XT_MATCH_COMMENT=m
+ CONFIG_NETFILTER_XT_MATCH_CONNBYTES=m
++CONFIG_NETFILTER_XT_MATCH_CONNLABEL=m
+ CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
+ CONFIG_NETFILTER_XT_MATCH_CONNMARK=m
+ CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
+@@ -134,6 +139,7 @@ CONFIG_NETFILTER_XT_MATCH_LIMIT=m
+ CONFIG_NETFILTER_XT_MATCH_MAC=m
+ CONFIG_NETFILTER_XT_MATCH_MARK=m
+ CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
++CONFIG_NETFILTER_XT_MATCH_NFACCT=m
+ CONFIG_NETFILTER_XT_MATCH_OSF=m
+ CONFIG_NETFILTER_XT_MATCH_OWNER=m
+ CONFIG_NETFILTER_XT_MATCH_POLICY=m
+@@ -143,7 +149,6 @@ CONFIG_NETFILTER_XT_MATCH_QUOTA=m
+ CONFIG_NETFILTER_XT_MATCH_RATEEST=m
+ CONFIG_NETFILTER_XT_MATCH_REALM=m
+ CONFIG_NETFILTER_XT_MATCH_RECENT=m
+-CONFIG_NETFILTER_XT_MATCH_SCTP=m
+ CONFIG_NETFILTER_XT_MATCH_SOCKET=m
+ CONFIG_NETFILTER_XT_MATCH_STATE=m
+ CONFIG_NETFILTER_XT_MATCH_STATISTIC=m
+@@ -163,6 +168,24 @@ CONFIG_IP_SET_HASH_NET=m
+ CONFIG_IP_SET_HASH_NETPORT=m
+ CONFIG_IP_SET_HASH_NETIFACE=m
+ CONFIG_IP_SET_LIST_SET=m
++CONFIG_IP_VS=m
++CONFIG_IP_VS_PROTO_TCP=y
++CONFIG_IP_VS_PROTO_UDP=y
++CONFIG_IP_VS_PROTO_ESP=y
++CONFIG_IP_VS_PROTO_AH=y
++CONFIG_IP_VS_PROTO_SCTP=y
++CONFIG_IP_VS_RR=m
++CONFIG_IP_VS_WRR=m
++CONFIG_IP_VS_LC=m
++CONFIG_IP_VS_WLC=m
++CONFIG_IP_VS_LBLC=m
++CONFIG_IP_VS_LBLCR=m
++CONFIG_IP_VS_DH=m
++CONFIG_IP_VS_SH=m
++CONFIG_IP_VS_SED=m
++CONFIG_IP_VS_NQ=m
++CONFIG_IP_VS_NFCT=y
++CONFIG_IP_VS_PE_SIP=m
+ CONFIG_NF_CONNTRACK_IPV4=m
+ CONFIG_IP_NF_IPTABLES=m
+ CONFIG_IP_NF_MATCH_AH=m
+@@ -215,6 +238,8 @@ CONFIG_BRIDGE_EBT_SNAT=m
+ CONFIG_BRIDGE_EBT_LOG=m
+ CONFIG_BRIDGE_EBT_ULOG=m
+ CONFIG_BRIDGE_EBT_NFLOG=m
++CONFIG_IP_SCTP=m
++CONFIG_SCTP_COOKIE_HMAC_SHA1=y
+ CONFIG_L2TP=m
+ CONFIG_BRIDGE=m
+ CONFIG_VLAN_8021Q=m
+@@ -237,6 +262,10 @@ CONFIG_NET_SCH_DRR=m
+ CONFIG_NET_SCH_MQPRIO=m
+ CONFIG_NET_SCH_CHOKE=m
+ CONFIG_NET_SCH_QFQ=m
++CONFIG_NET_SCH_CODEL=m
++CONFIG_NET_SCH_FQ_CODEL=m
++CONFIG_NET_SCH_INGRESS=m
++CONFIG_NET_SCH_PLUG=m
+ CONFIG_NET_CLS_BASIC=m
+ CONFIG_NET_CLS_TCINDEX=m
+ CONFIG_NET_CLS_ROUTE4=m
+@@ -253,6 +282,7 @@ CONFIG_NET_EMATCH_NBYTE=m
+ CONFIG_NET_EMATCH_U32=m
+ CONFIG_NET_EMATCH_META=m
+ CONFIG_NET_EMATCH_TEXT=m
++CONFIG_NET_EMATCH_IPSET=m
+ CONFIG_NET_CLS_ACT=y
+ CONFIG_NET_ACT_POLICE=m
+ CONFIG_NET_ACT_GACT=m
+@@ -265,8 +295,19 @@ CONFIG_NET_ACT_SIMP=m
+ CONFIG_NET_ACT_SKBEDIT=m
+ CONFIG_NET_ACT_CSUM=m
+ CONFIG_NET_PKTGEN=m
++CONFIG_HAMRADIO=y
++CONFIG_AX25=m
++CONFIG_NETROM=m
++CONFIG_ROSE=m
++CONFIG_MKISS=m
++CONFIG_6PACK=m
++CONFIG_BPQETHER=m
++CONFIG_BAYCOM_SER_FDX=m
++CONFIG_BAYCOM_SER_HDX=m
++CONFIG_YAM=m
+ CONFIG_IRDA=m
+ CONFIG_IRLAN=m
++CONFIG_IRNET=m
+ CONFIG_IRCOMM=m
+ CONFIG_IRDA_ULTRA=y
+ CONFIG_IRDA_CACHE_LAST_LSAP=y
+@@ -293,17 +334,22 @@ CONFIG_BT_HCIVHCI=m
+ CONFIG_BT_MRVL=m
+ CONFIG_BT_MRVL_SDIO=m
+ CONFIG_BT_ATH3K=m
++CONFIG_BT_WILINK=m
+ CONFIG_CFG80211=m
++CONFIG_CFG80211_WEXT=y
+ CONFIG_MAC80211=m
+ CONFIG_MAC80211_RC_PID=y
+ CONFIG_MAC80211_MESH=y
+ CONFIG_WIMAX=m
++CONFIG_RFKILL=m
++CONFIG_RFKILL_INPUT=y
+ CONFIG_NET_9P=m
+ CONFIG_NFC=m
+ CONFIG_NFC_PN533=m
+ CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
++CONFIG_CMA=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_CRYPTOLOOP=m
+ CONFIG_BLK_DEV_DRBD=m
+@@ -332,10 +378,12 @@ CONFIG_USB_CATC=m
+ CONFIG_USB_KAWETH=m
+ CONFIG_USB_PEGASUS=m
+ CONFIG_USB_RTL8150=m
++CONFIG_USB_RTL8152=m
+ CONFIG_USB_USBNET=y
+ CONFIG_USB_NET_AX8817X=m
+ CONFIG_USB_NET_CDCETHER=m
+ CONFIG_USB_NET_CDC_EEM=m
++CONFIG_USB_NET_CDC_MBIM=m
+ CONFIG_USB_NET_DM9601=m
+ CONFIG_USB_NET_SMSC75XX=m
+ CONFIG_USB_NET_SMSC95XX=y
+@@ -346,10 +394,12 @@ CONFIG_USB_NET_MCS7830=m
+ CONFIG_USB_NET_CDC_SUBSET=m
+ CONFIG_USB_ALI_M5632=y
+ CONFIG_USB_AN2720=y
++CONFIG_USB_EPSON2888=y
+ CONFIG_USB_KC2190=y
+-# CONFIG_USB_NET_ZAURUS is not set
++CONFIG_USB_NET_ZAURUS=m
+ CONFIG_USB_NET_CX82310_ETH=m
+ CONFIG_USB_NET_KALMIA=m
++CONFIG_USB_NET_QMI_WWAN=m
+ CONFIG_USB_NET_INT51X1=m
+ CONFIG_USB_IPHETH=m
+ CONFIG_USB_SIERRA_NET=m
+@@ -361,6 +411,13 @@ CONFIG_USB_ZD1201=m
+ CONFIG_USB_NET_RNDIS_WLAN=m
+ CONFIG_RTL8187=m
+ CONFIG_MAC80211_HWSIM=m
++CONFIG_ATH_CARDS=m
++CONFIG_ATH9K=m
++CONFIG_ATH9K_HTC=m
++CONFIG_CARL9170=m
++CONFIG_ATH6KL=m
++CONFIG_ATH6KL_USB=m
++CONFIG_AR5523=m
+ CONFIG_B43=m
+ CONFIG_B43LEGACY=m
+ CONFIG_HOSTAP=m
+@@ -409,6 +466,8 @@ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_RAW_DRIVER=y
++CONFIG_BRCM_CHAR_DRIVERS=y
++CONFIG_BCM_VC_CMA=y
+ CONFIG_I2C=y
+ CONFIG_I2C_CHARDEV=m
+ CONFIG_I2C_BCM2708=m
+@@ -422,6 +481,146 @@ CONFIG_THERMAL_BCM2835=y
+ CONFIG_WATCHDOG=y
+ CONFIG_BCM2708_WDT=m
+ CONFIG_MEDIA_SUPPORT=m
++CONFIG_MEDIA_CAMERA_SUPPORT=y
++CONFIG_MEDIA_ANALOG_TV_SUPPORT=y
++CONFIG_MEDIA_DIGITAL_TV_SUPPORT=y
++CONFIG_MEDIA_RADIO_SUPPORT=y
++CONFIG_MEDIA_RC_SUPPORT=y
++CONFIG_MEDIA_CONTROLLER=y
++CONFIG_LIRC=m
++CONFIG_RC_DEVICES=y
++CONFIG_RC_ATI_REMOTE=m
++CONFIG_IR_IMON=m
++CONFIG_IR_MCEUSB=m
++CONFIG_IR_REDRAT3=m
++CONFIG_IR_STREAMZAP=m
++CONFIG_IR_IGUANA=m
++CONFIG_IR_TTUSBIR=m
++CONFIG_RC_LOOPBACK=m
++CONFIG_IR_GPIO_CIR=m
++CONFIG_MEDIA_USB_SUPPORT=y
++CONFIG_USB_VIDEO_CLASS=m
++CONFIG_USB_M5602=m
++CONFIG_USB_STV06XX=m
++CONFIG_USB_GL860=m
++CONFIG_USB_GSPCA_BENQ=m
++CONFIG_USB_GSPCA_CONEX=m
++CONFIG_USB_GSPCA_CPIA1=m
++CONFIG_USB_GSPCA_ETOMS=m
++CONFIG_USB_GSPCA_FINEPIX=m
++CONFIG_USB_GSPCA_JEILINJ=m
++CONFIG_USB_GSPCA_JL2005BCD=m
++CONFIG_USB_GSPCA_KINECT=m
++CONFIG_USB_GSPCA_KONICA=m
++CONFIG_USB_GSPCA_MARS=m
++CONFIG_USB_GSPCA_MR97310A=m
++CONFIG_USB_GSPCA_NW80X=m
++CONFIG_USB_GSPCA_OV519=m
++CONFIG_USB_GSPCA_OV534=m
++CONFIG_USB_GSPCA_OV534_9=m
++CONFIG_USB_GSPCA_PAC207=m
++CONFIG_USB_GSPCA_PAC7302=m
++CONFIG_USB_GSPCA_PAC7311=m
++CONFIG_USB_GSPCA_SE401=m
++CONFIG_USB_GSPCA_SN9C2028=m
++CONFIG_USB_GSPCA_SN9C20X=m
++CONFIG_USB_GSPCA_SONIXB=m
++CONFIG_USB_GSPCA_SONIXJ=m
++CONFIG_USB_GSPCA_SPCA500=m
++CONFIG_USB_GSPCA_SPCA501=m
++CONFIG_USB_GSPCA_SPCA505=m
++CONFIG_USB_GSPCA_SPCA506=m
++CONFIG_USB_GSPCA_SPCA508=m
++CONFIG_USB_GSPCA_SPCA561=m
++CONFIG_USB_GSPCA_SPCA1528=m
++CONFIG_USB_GSPCA_SQ905=m
++CONFIG_USB_GSPCA_SQ905C=m
++CONFIG_USB_GSPCA_SQ930X=m
++CONFIG_USB_GSPCA_STK014=m
++CONFIG_USB_GSPCA_STV0680=m
++CONFIG_USB_GSPCA_SUNPLUS=m
++CONFIG_USB_GSPCA_T613=m
++CONFIG_USB_GSPCA_TOPRO=m
++CONFIG_USB_GSPCA_TV8532=m
++CONFIG_USB_GSPCA_VC032X=m
++CONFIG_USB_GSPCA_VICAM=m
++CONFIG_USB_GSPCA_XIRLINK_CIT=m
++CONFIG_USB_GSPCA_ZC3XX=m
++CONFIG_USB_PWC=m
++CONFIG_VIDEO_CPIA2=m
++CONFIG_USB_ZR364XX=m
++CONFIG_USB_STKWEBCAM=m
++CONFIG_USB_S2255=m
++CONFIG_USB_SN9C102=m
++CONFIG_VIDEO_PVRUSB2=m
++CONFIG_VIDEO_HDPVR=m
++CONFIG_VIDEO_TLG2300=m
++CONFIG_VIDEO_USBVISION=m
++CONFIG_VIDEO_STK1160=m
++CONFIG_VIDEO_STK1160_AC97=y
++CONFIG_VIDEO_AU0828=m
++CONFIG_VIDEO_CX231XX=m
++CONFIG_VIDEO_CX231XX_ALSA=m
++CONFIG_VIDEO_CX231XX_DVB=m
++CONFIG_VIDEO_TM6000=m
++CONFIG_VIDEO_TM6000_ALSA=m
++CONFIG_VIDEO_TM6000_DVB=m
++CONFIG_DVB_USB=m
++CONFIG_DVB_USB_A800=m
++CONFIG_DVB_USB_DIBUSB_MB=m
++CONFIG_DVB_USB_DIBUSB_MB_FAULTY=y
++CONFIG_DVB_USB_DIBUSB_MC=m
++CONFIG_DVB_USB_DIB0700=m
++CONFIG_DVB_USB_UMT_010=m
++CONFIG_DVB_USB_CXUSB=m
++CONFIG_DVB_USB_M920X=m
++CONFIG_DVB_USB_DIGITV=m
++CONFIG_DVB_USB_VP7045=m
++CONFIG_DVB_USB_VP702X=m
++CONFIG_DVB_USB_GP8PSK=m
++CONFIG_DVB_USB_NOVA_T_USB2=m
++CONFIG_DVB_USB_TTUSB2=m
++CONFIG_DVB_USB_DTT200U=m
++CONFIG_DVB_USB_OPERA1=m
++CONFIG_DVB_USB_AF9005=m
++CONFIG_DVB_USB_AF9005_REMOTE=m
++CONFIG_DVB_USB_PCTV452E=m
++CONFIG_DVB_USB_DW2102=m
++CONFIG_DVB_USB_CINERGY_T2=m
++CONFIG_DVB_USB_DTV5100=m
++CONFIG_DVB_USB_FRIIO=m
++CONFIG_DVB_USB_AZ6027=m
++CONFIG_DVB_USB_TECHNISAT_USB2=m
++CONFIG_DVB_USB_V2=m
++CONFIG_DVB_USB_AF9015=m
++CONFIG_DVB_USB_AF9035=m
++CONFIG_DVB_USB_ANYSEE=m
++CONFIG_DVB_USB_AU6610=m
++CONFIG_DVB_USB_AZ6007=m
++CONFIG_DVB_USB_CE6230=m
++CONFIG_DVB_USB_EC168=m
++CONFIG_DVB_USB_GL861=m
++CONFIG_DVB_USB_IT913X=m
++CONFIG_DVB_USB_LME2510=m
++CONFIG_DVB_USB_MXL111SF=m
++CONFIG_DVB_USB_RTL28XXU=m
++CONFIG_SMS_USB_DRV=m
++CONFIG_DVB_B2C2_FLEXCOP_USB=m
++CONFIG_VIDEO_EM28XX=m
++CONFIG_VIDEO_EM28XX_ALSA=m
++CONFIG_VIDEO_EM28XX_DVB=m
++CONFIG_RADIO_SI470X=y
++CONFIG_USB_SI470X=m
++CONFIG_USB_MR800=m
++CONFIG_USB_DSBR=m
++CONFIG_RADIO_SHARK=m
++CONFIG_RADIO_SHARK2=m
++CONFIG_RADIO_SI4713=m
++CONFIG_USB_KEENE=m
++CONFIG_USB_MA901=m
++CONFIG_RADIO_SAA7706H=m
++CONFIG_RADIO_TEF6862=m
++CONFIG_RADIO_WL128X=m
+ CONFIG_FB=y
+ CONFIG_FB_BCM2708=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+@@ -448,6 +647,7 @@ CONFIG_SND_USB_UA101=m
+ CONFIG_SND_USB_CAIAQ=m
+ CONFIG_SND_USB_6FIRE=m
+ CONFIG_SOUND_PRIME=m
++CONFIG_HIDRAW=y
+ CONFIG_HID_A4TECH=m
+ CONFIG_HID_ACRUX=m
+ CONFIG_HID_APPLE=m
+@@ -486,7 +686,10 @@ CONFIG_HID_SUNPLUS=m
+ CONFIG_HID_GREENASIA=m
+ CONFIG_HID_SMARTJOYPLUS=m
+ CONFIG_HID_TOPSEED=m
++CONFIG_HID_THINGM=m
+ CONFIG_HID_THRUSTMASTER=m
++CONFIG_HID_WACOM=m
++CONFIG_HID_WIIMOTE=m
+ CONFIG_HID_ZEROPLUS=m
+ CONFIG_HID_ZYDACRON=m
+ CONFIG_HID_PID=y
+@@ -495,6 +698,7 @@ CONFIG_USB=y
+ CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
+ CONFIG_USB_MON=m
+ CONFIG_USB_DWCOTG=y
++CONFIG_USB_PRINTER=m
+ CONFIG_USB_STORAGE=y
+ CONFIG_USB_STORAGE_REALTEK=m
+ CONFIG_USB_STORAGE_DATAFAB=m
+@@ -529,6 +733,7 @@ CONFIG_USB_SERIAL_IPAQ=m
+ CONFIG_USB_SERIAL_IR=m
+ CONFIG_USB_SERIAL_EDGEPORT=m
+ CONFIG_USB_SERIAL_EDGEPORT_TI=m
++CONFIG_USB_SERIAL_F81232=m
+ CONFIG_USB_SERIAL_GARMIN=m
+ CONFIG_USB_SERIAL_IPW=m
+ CONFIG_USB_SERIAL_IUU=m
+@@ -537,6 +742,7 @@ CONFIG_USB_SERIAL_KEYSPAN=m
+ CONFIG_USB_SERIAL_KLSI=m
+ CONFIG_USB_SERIAL_KOBIL_SCT=m
+ CONFIG_USB_SERIAL_MCT_U232=m
++CONFIG_USB_SERIAL_METRO=m
+ CONFIG_USB_SERIAL_MOS7720=m
+ CONFIG_USB_SERIAL_MOS7840=m
+ CONFIG_USB_SERIAL_MOTOROLA=m
+@@ -558,8 +764,12 @@ CONFIG_USB_SERIAL_OPTION=m
+ CONFIG_USB_SERIAL_OMNINET=m
+ CONFIG_USB_SERIAL_OPTICON=m
+ CONFIG_USB_SERIAL_VIVOPAY_SERIAL=m
++CONFIG_USB_SERIAL_XSENS_MT=m
+ CONFIG_USB_SERIAL_ZIO=m
++CONFIG_USB_SERIAL_WISHBONE=m
++CONFIG_USB_SERIAL_ZTE=m
+ CONFIG_USB_SERIAL_SSU100=m
++CONFIG_USB_SERIAL_QT2=m
+ CONFIG_USB_SERIAL_DEBUG=m
+ CONFIG_USB_EMI62=m
+ CONFIG_USB_EMI26=m
+@@ -586,6 +796,16 @@ CONFIG_MMC_SDHCI=y
+ CONFIG_MMC_SDHCI_PLTFM=y
+ CONFIG_MMC_SDHCI_BCM2708=y
+ CONFIG_MMC_SDHCI_BCM2708_DMA=y
++CONFIG_LEDS_GPIO=m
++CONFIG_LEDS_TRIGGER_TIMER=y
++CONFIG_LEDS_TRIGGER_ONESHOT=y
++CONFIG_LEDS_TRIGGER_HEARTBEAT=y
++CONFIG_LEDS_TRIGGER_BACKLIGHT=y
++CONFIG_LEDS_TRIGGER_CPU=y
++CONFIG_LEDS_TRIGGER_GPIO=y
++CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
++CONFIG_LEDS_TRIGGER_TRANSIENT=m
++CONFIG_LEDS_TRIGGER_CAMERA=m
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_DS1307=m
+ CONFIG_RTC_DRV_DS1374=m
+@@ -596,6 +816,7 @@ CONFIG_RTC_DRV_RS5C372=m
+ CONFIG_RTC_DRV_ISL1208=m
+ CONFIG_RTC_DRV_ISL12022=m
+ CONFIG_RTC_DRV_X1205=m
++CONFIG_RTC_DRV_PCF8523=m
+ CONFIG_RTC_DRV_PCF8563=m
+ CONFIG_RTC_DRV_PCF8583=m
+ CONFIG_RTC_DRV_M41T80=m
+@@ -615,6 +836,7 @@ CONFIG_RTC_DRV_R9701=m
+ CONFIG_RTC_DRV_RS5C348=m
+ CONFIG_RTC_DRV_DS3234=m
+ CONFIG_RTC_DRV_PCF2123=m
++CONFIG_RTC_DRV_RX4581=m
+ CONFIG_UIO=m
+ CONFIG_UIO_PDRV=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+-- 
+1.8.4
+
+
+From 21c8250a3b7be3b9d44a7c3565acc2d53cd929f3 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 23 Sep 2013 17:14:19 +0100
+Subject: [PATCH 118/124] config: Add missing F2FS, BATMAN_ADV, OPENVSWITCH,
+ NF_NAT options
+
+---
+ arch/arm/configs/bcmrpi_defconfig | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index b41feb2..3294a27 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -184,7 +184,7 @@ CONFIG_IP_VS_DH=m
+ CONFIG_IP_VS_SH=m
+ CONFIG_IP_VS_SED=m
+ CONFIG_IP_VS_NQ=m
+-CONFIG_IP_VS_NFCT=y
++CONFIG_IP_VS_FTP=m
+ CONFIG_IP_VS_PE_SIP=m
+ CONFIG_NF_CONNTRACK_IPV4=m
+ CONFIG_IP_NF_IPTABLES=m
+@@ -194,6 +194,10 @@ CONFIG_IP_NF_MATCH_TTL=m
+ CONFIG_IP_NF_FILTER=m
+ CONFIG_IP_NF_TARGET_REJECT=m
+ CONFIG_IP_NF_TARGET_ULOG=m
++CONFIG_NF_NAT_IPV4=m
++CONFIG_IP_NF_TARGET_MASQUERADE=m
++CONFIG_IP_NF_TARGET_NETMAP=m
++CONFIG_IP_NF_TARGET_REDIRECT=m
+ CONFIG_IP_NF_MANGLE=m
+ CONFIG_IP_NF_TARGET_ECN=m
+ CONFIG_IP_NF_TARGET_TTL=m
+@@ -216,6 +220,9 @@ CONFIG_IP6_NF_FILTER=m
+ CONFIG_IP6_NF_TARGET_REJECT=m
+ CONFIG_IP6_NF_MANGLE=m
+ CONFIG_IP6_NF_RAW=m
++CONFIG_NF_NAT_IPV6=m
++CONFIG_IP6_NF_TARGET_MASQUERADE=m
++CONFIG_IP6_NF_TARGET_NPT=m
+ CONFIG_BRIDGE_NF_EBTABLES=m
+ CONFIG_BRIDGE_EBT_BROUTE=m
+ CONFIG_BRIDGE_EBT_T_FILTER=m
+@@ -294,6 +301,8 @@ CONFIG_NET_ACT_PEDIT=m
+ CONFIG_NET_ACT_SIMP=m
+ CONFIG_NET_ACT_SKBEDIT=m
+ CONFIG_NET_ACT_CSUM=m
++CONFIG_BATMAN_ADV=m
++CONFIG_OPENVSWITCH=m
+ CONFIG_NET_PKTGEN=m
+ CONFIG_HAMRADIO=y
+ CONFIG_AX25=m
+@@ -884,6 +893,7 @@ CONFIG_SQUASHFS=m
+ CONFIG_SQUASHFS_XATTR=y
+ CONFIG_SQUASHFS_LZO=y
+ CONFIG_SQUASHFS_XZ=y
++CONFIG_F2FS_FS=y
+ CONFIG_NFS_FS=y
+ CONFIG_NFS_V3_ACL=y
+ CONFIG_NFS_V4=y
+-- 
+1.8.4
+
+
+From da9cdff5afc89b8e55b410a217f9c09900c1bd31 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 23 Sep 2013 19:38:00 +0100
+Subject: [PATCH 119/124] config: Add some joystick support
+
+---
+ arch/arm/configs/bcmrpi_defconfig | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 3294a27..91c0dfa 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -452,6 +452,11 @@ CONFIG_INPUT_JOYDEV=m
+ CONFIG_INPUT_EVDEV=m
+ # CONFIG_INPUT_KEYBOARD is not set
+ # CONFIG_INPUT_MOUSE is not set
++CONFIG_INPUT_JOYSTICK=y
++CONFIG_JOYSTICK_IFORCE=m
++CONFIG_JOYSTICK_IFORCE_USB=y
++CONFIG_JOYSTICK_XPAD=y
++CONFIG_JOYSTICK_XPAD_FF=y
+ CONFIG_INPUT_MISC=y
+ CONFIG_INPUT_AD714X=m
+ CONFIG_INPUT_ATI_REMOTE2=m
+@@ -463,11 +468,7 @@ CONFIG_INPUT_UINPUT=m
+ CONFIG_INPUT_GPIO_ROTARY_ENCODER=m
+ CONFIG_INPUT_ADXL34X=m
+ CONFIG_INPUT_CMA3000=m
+-CONFIG_SERIO=m
+-CONFIG_SERIO_RAW=m
+-CONFIG_GAMEPORT=m
+-CONFIG_GAMEPORT_NS558=m
+-CONFIG_GAMEPORT_L4=m
++# CONFIG_SERIO is not set
+ CONFIG_VT_HW_CONSOLE_BINDING=y
+ # CONFIG_LEGACY_PTYS is not set
+ # CONFIG_DEVKMEM is not set
+@@ -703,7 +704,6 @@ CONFIG_HID_ZEROPLUS=m
+ CONFIG_HID_ZYDACRON=m
+ CONFIG_HID_PID=y
+ CONFIG_USB_HIDDEV=y
+-CONFIG_USB=y
+ CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
+ CONFIG_USB_MON=m
+ CONFIG_USB_DWCOTG=y
+-- 
+1.8.4
+
+
+From e34cb1c5ad1ede3f42c18b8b850dcf686b2737a4 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 23 Sep 2013 23:56:15 +0100
+Subject: [PATCH 120/124] config: Add new config options: DUMMY, QFMT_V1,
+ QFMT_V2, DLM
+
+---
+ arch/arm/configs/bcmrpi_defconfig | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 91c0dfa..5621ab1 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -245,7 +245,6 @@ CONFIG_BRIDGE_EBT_SNAT=m
+ CONFIG_BRIDGE_EBT_LOG=m
+ CONFIG_BRIDGE_EBT_ULOG=m
+ CONFIG_BRIDGE_EBT_NFLOG=m
+-CONFIG_IP_SCTP=m
+ CONFIG_SCTP_COOKIE_HMAC_SHA1=y
+ CONFIG_L2TP=m
+ CONFIG_BRIDGE=m
+@@ -373,6 +372,7 @@ CONFIG_SCSI_MULTI_LUN=y
+ # CONFIG_SCSI_LOWLEVEL is not set
+ CONFIG_MD=y
+ CONFIG_NETDEVICES=y
++CONFIG_DUMMY=m
+ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+ CONFIG_MDIO_BITBANG=m
+@@ -871,6 +871,8 @@ CONFIG_BTRFS_FS=m
+ CONFIG_BTRFS_FS_POSIX_ACL=y
+ CONFIG_NILFS2_FS=m
+ CONFIG_FANOTIFY=y
++CONFIG_QFMT_V1=m
++CONFIG_QFMT_V2=m
+ CONFIG_AUTOFS4_FS=y
+ CONFIG_FUSE_FS=m
+ CONFIG_CUSE=m
+@@ -947,6 +949,7 @@ CONFIG_NLS_ISO8859_15=m
+ CONFIG_NLS_KOI8_R=m
+ CONFIG_NLS_KOI8_U=m
+ CONFIG_NLS_UTF8=m
++CONFIG_DLM=m
+ CONFIG_PRINTK_TIME=y
+ CONFIG_DETECT_HUNG_TASK=y
+ CONFIG_TIMER_STATS=y
+-- 
+1.8.4
+
+
+From 243461570d712b475d937a2ef38c0f5a24a92924 Mon Sep 17 00:00:00 2001
+From: P33M <P33M@github.com>
+Date: Fri, 20 Sep 2013 16:08:27 +0100
+Subject: [PATCH 123/124] dwc_otg: Enable NAK holdoff for control split
+ transactions
+
+Certain low-speed devices take a very long time to complete a
+data or status stage of a control transaction, producing NAK
+responses until they complete internal processing - the USB2.0
+spec limit is up to 500mS. This causes the same type of interrupt
+storm as seen with USB-serial dongles prior to c8edb238.
+
+In certain circumstances, usually while booting, this interrupt
+storm could cause SD card timeouts.
+---
+ drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+index 19abea0..509b629 100644
+--- a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
++++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+@@ -1857,8 +1857,7 @@ static int32_t handle_hc_nak_intr(dwc_otg_hcd_t * hcd,
+ 	 */
+ 	switch(dwc_otg_hcd_get_pipe_type(&qtd->urb->pipe_info)) {
+ 		case UE_BULK:
+-		//case UE_INTERRUPT:
+-		//case UE_CONTROL:
++		case UE_CONTROL:
+ 		if (nak_holdoff_enable)
+ 			hc->qh->nak_frame = dwc_otg_hcd_get_frame_number(hcd);
+ 	}
+-- 
+1.8.4
+
+
+From 6570114a1a4de777e02c55c02c721db363f656c1 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Fri, 20 Sep 2013 19:07:56 +0100
+Subject: [PATCH 124/124] dwc_otg: Fix for occasional lockup on boot when doing
+ a USB reset
+
+---
+ drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+index 509b629..57092d2 100644
+--- a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
++++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+@@ -742,8 +742,8 @@ int32_t dwc_otg_hcd_handle_sof_intr(dwc_otg_hcd_t * hcd)
+ 	}
+ 
+ 	/* Clear interrupt */
+-	//gintsts.b.sofintr = 1;
+-	//DWC_WRITE_REG32(&hcd->core_if->core_global_regs->gintsts, gintsts.d32);
++	gintsts.b.sofintr = 1;
++	DWC_WRITE_REG32(&hcd->core_if->core_global_regs->gintsts, gintsts.d32);
+ 
+ 	return 1;
+ }
+-- 
+1.8.4
 
