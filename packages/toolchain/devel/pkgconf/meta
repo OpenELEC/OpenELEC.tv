@@ -18,19 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="pkg-config"
-PKG_VERSION="0.28"
+PKG_NAME="pkgconf"
+PKG_VERSION="0.9.3"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.freedesktop.org/software/pkgconfig/"
-PKG_URL="http://pkgconfig.freedesktop.org/releases/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE=""
+PKG_SITE="https://github.com/pkgconf/pkgconf"
+PKG_URL="http://rabbit.dereferenced.org/~nenolod/distfiles/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="ccache gettext:host"
+PKG_BUILD_DEPENDS="ccache"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="pkg-config: A library configuration management system"
-PKG_LONGDESC="pkg-config is a system for managing library compile/link flags that works with automake and autoconf. It replaces the ubiquitous *-config scripts you may have seen with a single tool."
+PKG_SHORTDESC="pkgconf provides compiler and linker configuration for development frameworks"
+PKG_LONGDESC="pkgconf is a program which helps to configure compiler and linker flags for development frameworks. It is similar to pkg-config, but was written from scratch in the summer of 2011 to replace pkg-config"
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"

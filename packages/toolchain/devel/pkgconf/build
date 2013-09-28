@@ -3,6 +3,7 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2013 Johan Bergström (bugs@bergstroem.nu)
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,17 +27,13 @@ setup_toolchain host
 
 cd $PKG_BUILD
 ./configure --host=$HOST_NAME \
-            --build=$HOST_NAME \
-            --enable-shared \
-            --disable-static \
-            --disable-silent-rules \
-            --with-internal-glib --disable-dtrace \
-            --with-gnu-ld
+            --build=$HOST_NAME
 
 make
 
 mkdir -p $ROOT/$TOOLCHAIN/bin
-  cp pkg-config $ROOT/$TOOLCHAIN/bin
+  cp pkgconf $ROOT/$TOOLCHAIN/bin
+  ln -sf pkgconf $ROOT/$TOOLCHAIN/bin/pkg-config
 
 mkdir -p $SYSROOT_PREFIX/usr/share/aclocal
   cp pkg.m4 $SYSROOT_PREFIX/usr/share/aclocal
