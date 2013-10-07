@@ -63,6 +63,7 @@ mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-control-*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-epgsearch*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $BUILD/vdr-plugin-xmltv2vdr*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $BUILD/vdr-femon*/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
 
 #  ENABLED_PLUGINS="cardclient constcw sc-conax sc-cryptoworks sc-irdeto sc-nagra sc-seca sc-viaccess sc-videoguard2"
 #  for plugin in $ENABLED_PLUGINS; do
