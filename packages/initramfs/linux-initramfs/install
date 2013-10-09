@@ -39,8 +39,3 @@ if [ -n "$INITRAMFS_MODULES" ]; then
   done
 fi
 
-if [ "$UVESAFB_SUPPORT" = yes ]; then
-  mkdir -p $INSTALL/lib/modules
-    uvesafb=`find $LINUX_MODULES_DIR -name uvesafb.ko`
-    cp $uvesafb $INSTALL/lib/modules/`basename $uvesafb`
-fi
