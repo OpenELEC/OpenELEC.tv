@@ -1,6 +1,7 @@
 [Unit]
 Description=Show Bootsplash
 DefaultDependencies=false
+Before=basic.target
 
 ConditionKernelCommandLine=!nosplash
 
@@ -11,6 +12,3 @@ ExecStart=/bin/sh -c '[ -f /flash/oemsplash.png ] && /bin/ply-image /flash/oemsp
 ExecStartPost=/usr/bin/lsb_release
 RemainAfterExit=yes
 StandardOutput=tty
-
-[Install]
-WantedBy=basic.target
