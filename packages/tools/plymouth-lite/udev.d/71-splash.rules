@@ -13,28 +13,14 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
+#  along with OpenELEC; see the file COPYING.  If not, write to
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="initramfs"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="eglibc-initramfs busybox-initramfs linux-initramfs diskdev_cmds-initramfs"
-PKG_BUILD_DEPENDS="toolchain eglibc-initramfs busybox-initramfs"
-PKG_PRIORITY="optional"
-PKG_SECTION="initramfs"
-PKG_SHORTDESC="initramfs: Metapackage for installing initramfs"
-PKG_LONGDESC="debug is a Metapackage for installing initramfs"
-PKG_IS_ADDON="no"
+ACTION!="add|change", SUBSYSTEM!="graphics", GOTO="end_splash"
 
-PKG_AUTORECONF="no"
+# check for drivers dont use the pci substem
+KERNEL=="fb0", TAG+="systemd", ENV{SYSTEMD_WANTS}+="splash.service"
 
-if [ "$ISCSI_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS open-iscsi"
-fi
+LABEL="end_splash"
