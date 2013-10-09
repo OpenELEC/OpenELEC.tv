@@ -44,3 +44,9 @@ PKG_AUTORECONF="no"
 if [ "$NFS_SUPPORT" = yes ]; then
   PKG_DEPENDS="$PKG_DEPENDS rpcbind"
 fi
+
+# uvesafb support
+if [ UVESAFB_SUPPORT = "yes" ]; then
+  PKG_DEPENDS="$PKG_DEPENDS v86d"
+fi
+
