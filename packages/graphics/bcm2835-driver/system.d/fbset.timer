@@ -1,0 +1,8 @@
+[Unit]
+Description=Framebuffer setup
+
+[Timer]
+OnBootSec=20sec
+
+[Install]
+WantedBy=graphical.target
