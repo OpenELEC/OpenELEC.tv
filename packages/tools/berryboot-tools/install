@@ -22,18 +22,5 @@
 
 . config/options $1
 
-PLYMOUTH_DIR="$BUILD/plymouth-lite-*"
-PLYMOUTH_PKG_DIR=`find $PACKAGES -type d -name plymouth-lite 2>/dev/null`
-
 mkdir -p $INSTALL
   cp $PKG_DIR/scripts/berryboot-init $INSTALL
-
-mkdir -p $INSTALL/bin
-  cp $PLYMOUTH_DIR/ply-image $INSTALL/bin
-
-mkdir -p $INSTALL/splash
-  if [ -f $PROJECT_DIR/$PROJECT/splash/splash-full.png ]; then
-    cp $PROJECT_DIR/$PROJECT/splash/splash-full.png $INSTALL/splash
-  else
-    cp $PLYMOUTH_PKG_DIR/splash/splash-full.png $INSTALL/splash
-  fi

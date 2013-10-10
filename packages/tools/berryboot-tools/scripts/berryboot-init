@@ -22,18 +22,6 @@
 
 UPDATEDIR=${DATADIR}/storage/.update
 UPDATEFILE=${UPDATEDIR}/SYSTEM
-SPLASHIMAGE="/squashfs/splash/splash-full.png"
-
-#
-# load splash
-# berryboot is based on uClibc, so run ply-image via ld.so directly
-#
-
-if [ -e /dev/fb0 -a -f "${SPLASHIMAGE}" ]; then
-# load splash
-  LD_LIBRARY_PATH=/squashfs/lib /squashfs/lib/ld.so \
-    /squashfs/bin/ply-image ${SPLASHIMAGE} > /dev/null 2>&1
-fi
 
 #
 # Check if OpenELEC downloaded an update
