@@ -552,6 +552,11 @@
     [ -f "/sysroot/lib/systemd/systemd" ] || error "final_check" "Could not find system."
   }
 
+  show_version() {
+    clear
+    cat /sysroot/etc/openelec-release 2&>/dev/null
+  }
+
   if [ "${boot%%=*}" = "FILE" ]; then
     error "check arguments" "boot argument can't be FILE type..."
   fi
@@ -563,7 +568,8 @@
       mount_flash \
       mount_storage \
       check_update \
-      prepare_sysroot; do
+      prepare_sysroot \
+      show_version ; do
     $BOOT_STEP
     [ -n "$DEBUG" ] && break_after $BOOT_STEP
   done
