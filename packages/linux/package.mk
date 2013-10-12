@@ -69,11 +69,6 @@ post_unpack() {
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
   sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
 
-  # disable PPP support if not enabled
-  if [ ! "$PPTP_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_PPP=.*$|# CONFIG_PPP is not set|" $PKG_BUILD/.config
-  fi
-
   # disable swap support if not enabled
   if [ ! "$SWAP_SUPPORT" = yes ]; then
     sed -i -e "s|^CONFIG_SWAP=.*$|# CONFIG_SWAP is not set|" $PKG_BUILD/.config
