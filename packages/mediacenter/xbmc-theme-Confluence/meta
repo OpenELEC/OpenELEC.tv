@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="xbmc-theme-Confluence"
-PKG_VERSION="12.2-9714e7e"
+PKG_VERSION="12.2-d80d273"
 if [ "$XBMC" = "master" ]; then
   PKG_VERSION="13.alpha-2ef8929"
 elif [ "$XBMC" = "xbmc-aml" ]; then
