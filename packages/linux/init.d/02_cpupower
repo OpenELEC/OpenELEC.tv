@@ -23,22 +23,7 @@
 #
 # runlevels: openelec, textmode
 
-progress "set cpu's to full power"
-  for i in /sys/devices/system/cpu/*/cpufreq/scaling_governor; do
-    printf "performance" > $i
-  done 2>/dev/null
-
-(
-  usleep 40000000
-  progress "set cpu's to 'ondemand'"
-  for i in /sys/devices/system/cpu/*/cpufreq/scaling_governor; do
-    printf "ondemand" > $i
-  done 2>/dev/null
-
-  progress "set onedemand threshold"
+progress "set onedemand threshold"
   if [ -f /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ]; then
     echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
   fi
-
-)&
-
