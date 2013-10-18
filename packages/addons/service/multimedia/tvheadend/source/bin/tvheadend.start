@@ -115,7 +115,6 @@ cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/co
 . /var/config/tvheadend.conf
 
 rm -rf "$LOCKDIR/$LOCKFILE_SLEEP" &>/dev/null
-tvheadend.stop
 rm -rf "$LOCKDIR/$LOCKFILE" &>/dev/null
 if [ ! "$(pidof $ADDON_BIN)" ]; then
    while [ true ] ; do
