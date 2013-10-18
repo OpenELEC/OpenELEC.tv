@@ -104,21 +104,20 @@ else
 fi
 
 mkdir -p /var/config
-  if [ -f $ADDON_DIR/settings-default.xml ]; then
-    cat "$ADDON_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf.default
-  elif [ -f $ADDON_SYS_DIR/settings-default.xml ]; then
-    cat "$ADDON_SYS_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf.default
-  fi
-  cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf
+if [ -f $ADDON_DIR/settings-default.xml ]; then
+  cat "$ADDON_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf.default
+elif [ -f $ADDON_SYS_DIR/settings-default.xml ]; then
+  cat "$ADDON_SYS_DIR/settings-default.xml" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf.default
+fi
+cat "$ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/tvheadend.conf
 
 . /var/config/tvheadend.conf.default
 . /var/config/tvheadend.conf
 
-  rm -rf "$LOCKDIR/$LOCKFILE_SLEEP" &>/dev/null
-  tvheadend.stop
-  rm -rf "$LOCKDIR/$LOCKFILE" &>/dev/null
-  if [ ! "$(pidof $ADDON_BIN)" ]; then
-    while [ true ] ; do
+rm -rf "$LOCKDIR/$LOCKFILE_SLEEP" &>/dev/null
+rm -rf "$LOCKDIR/$LOCKFILE" &>/dev/null
+if [ ! "$(pidof $ADDON_BIN)" ]; then
+   while [ true ] ; do
       while [ -f "$LOCKDIR/$LOCKFILE_SLEEP" ] ; do
         usleep 100000
       done
@@ -144,5 +143,5 @@ mkdir -p /var/config
       else
         $ADDON_BIN $TVHEADEND_ARG &>$LOG_FILE
       fi
-    done &
-  fi
+   done &
+fi
