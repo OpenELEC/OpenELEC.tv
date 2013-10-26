@@ -1,0 +1,10 @@
+--- a/main.cpp_orig	2013-03-20 20:26:19.000000000 +0100
++++ b/main.cpp	2013-03-20 20:30:29.000000000 +0100
+@@ -25,6 +25,7 @@
+ #include <sys/wait.h>
+ #include <signal.h>
+ #include <execinfo.h>
++#include <sys/resource.h>
+ #include "noad.h"
+ #include "svdrpc.h"
+ #include "tnoad.h"

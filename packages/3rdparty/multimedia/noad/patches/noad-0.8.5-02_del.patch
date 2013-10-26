@@ -1,0 +1,12 @@
+--- noad-0.8.5/main.cpp	2012-10-23 18:59:31.000000000 +0200
++++ noad-0.8.5-patched/main.cpp	2013-04-19 23:36:02.037083150 +0200
+@@ -423,7 +423,8 @@
+       }
+       else
+       {
+-        if( strstr(argv[optind],".rec") != NULL )
++        if (( bDeleted && strstr(argv[optind],".del") != NULL ) ||
++            (!bDeleted && strstr(argv[optind],".rec") != NULL ))
+           recDir = argv[optind];
+       }
+       optind++;
