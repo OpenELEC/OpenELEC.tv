@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="12.2-97a9f05"
+PKG_VERSION="12.2-ef79847"
 if [ "$XBMC" = "master" ]; then
   PKG_VERSION="13.alpha-2ef8929"
 elif [ "$XBMC" = "xbmc-aml" ]; then
@@ -217,13 +217,13 @@ else
 fi
 
 if [ "$AIRTUNES_SUPPORT" = yes ]; then
-  if [ "$XBMC" = master ]; then
+#  if [ "$XBMC" = master ]; then
     PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libshairplay"
     PKG_DEPENDS="$PKG_DEPENDS libshairplay"
-  else
-    PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libshairport"
-    PKG_DEPENDS="$PKG_DEPENDS libshairport"
-  fi
+#  else
+#    PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libshairport"
+#    PKG_DEPENDS="$PKG_DEPENDS libshairport"
+#  fi
   XBMC_AIRTUNES="--enable-airtunes"
 else
   XBMC_AIRTUNES="--disable-airtunes"
