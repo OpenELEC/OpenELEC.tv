@@ -51,5 +51,11 @@ pre_configure_target() {
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin
+  rm -rf $INSTALL/usr/bin/fc-cat
+  rm -rf $INSTALL/usr/bin/fc-list
+  rm -rf $INSTALL/usr/bin/fc-match
+  rm -rf $INSTALL/usr/bin/fc-pattern
+  rm -rf $INSTALL/usr/bin/fc-query
+  rm -rf $INSTALL/usr/bin/fc-scan
+  rm -rf $INSTALL/usr/bin/fc-validate
 }
