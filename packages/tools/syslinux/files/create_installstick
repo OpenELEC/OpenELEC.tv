@@ -161,10 +161,9 @@ echo "#########################################################"
   echo "please wait..."
   sleep 10
 
-# quick and dirty: assume no more than 10 partitions. should be enough
-  for i in `seq 1 10` ; do
-    umount "${DISK}$i" 2>/dev/null
-    umount "${DISK}p$i" 2>/dev/null
+  for part in $( grep -oE `basename ${DISK}`[1-9]+ /proc/partitions ); do
+    echo "unmounting partition /dev/${part}..."
+    umount "/dev/${part}" 2>/dev/null
   done
 
 # create a temp dir
