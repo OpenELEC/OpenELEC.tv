@@ -161,6 +161,17 @@ echo "#########################################################"
     exit 1
   fi
 
+  maybe_list_devices()
+  {
+    LSBLK=$(lsblk 2>/dev/null) && echo list of block devices: && echo "$LSBLK"
+  }
+
+  if [ ! -b "$DISK" ]; then
+    echo "SD device $DISK does not exist"
+    maybe_list_devices
+    exit 1
+  fi
+
 # check MD5 sums
   echo "checking MD5 sum..."
 
