@@ -199,8 +199,16 @@ echo "#########################################################"
     md5sumFailed
   fi
 
-# (TODO) umount everything (if more than one partition)
-  umount ${DISK}*
+  umount_all()
+  {  
+    for part in $( grep -oE `basename $1`[1-9]+ /proc/partitions ); do
+      echo "unmounting partition /dev/${part}..."
+      umount "/dev/${part}" 2>/dev/null
+    done
+  }
+
+# umount everything (if more than one partition)
+  umount_all ${DISK}
 
 # remove all partitions from the drive
   echo "writing new disklabel on $DISK (removing all partitions)..."
