@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="12.2-d1002b4"
+PKG_VERSION="12.2-e2bbb6d"
 if [ "$XBMC" = "master" ]; then
   PKG_VERSION="13.alpha-2ef8929"
 elif [ "$XBMC" = "xbmc-aml" ]; then
