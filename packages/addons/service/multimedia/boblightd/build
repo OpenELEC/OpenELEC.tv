@@ -28,10 +28,6 @@ if [ ! "$OPENGL" = "Mesa" ]; then
   EXTRAOPTS="--without-opengl"
 fi
 
-if [ ! "$DISPLAYSERVER" = "xorg-server" ] ; then
-  EXTRAOPTS="$EXTRAOPTS --without-x11"
-fi
-
 cd $PKG_BUILD
 ./configure --host=$TARGET_NAME \
             --build=$HOST_NAME \
@@ -39,6 +35,7 @@ cd $PKG_BUILD
             --enable-shared \
             --disable-static \
             $EXTRAOPTS \
+            --without-x11 \
             --without-portaudio \
 
 make
