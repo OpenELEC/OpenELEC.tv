@@ -27,3 +27,5 @@ mkdir -p $INSTALL/usr/bin
 mkdir -p $INSTALL/etc
   cp $PKG_BUILD/retroarch $INSTALL/usr/bin
   cp $PKG_BUILD/retroarch.cfg $INSTALL/etc
+
+sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
