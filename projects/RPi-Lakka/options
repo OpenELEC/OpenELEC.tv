@@ -8,9 +8,9 @@
   DESCRIPTION="Lakka is a fast and userfriendly Retroarch distribution."
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
-  GREETING0="#############"
-  GREETING1="#   Lakka   #"
-  GREETING2="#############"
+  GREETING0="#########"
+  GREETING1="# Lakka #"
+  GREETING2="#########"
   GREETING3=""
 
 # Hostname for target system (openelec)
