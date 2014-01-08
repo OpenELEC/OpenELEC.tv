@@ -2,22 +2,20 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . config/options $1
@@ -26,16 +24,17 @@ show_config
 
 $SCRIPTS/checkdeps build
 $SCRIPTS/build toolchain
-$SCRIPTS/build squashfs
-$SCRIPTS/build fakeroot
-$SCRIPTS/build module-init-tools
+$SCRIPTS/build squashfs:host
+$SCRIPTS/build fakeroot:host
+$SCRIPTS/build kmod:host
 
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
 if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
   GIT_BUILD=$(git rev-list --count HEAD)
   GIT_HASH=$(git rev-parse HEAD)
-  OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD
+  GIT_ABBREV=$(git log -1 --pretty=format:%h)
+  OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
 fi
 
 TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
@@ -104,7 +103,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # Basissystem...
   $SCRIPTS/install eglibc
-  $SCRIPTS/install gcc-final
+  $SCRIPTS/install gcc
   $SCRIPTS/install linux system
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
@@ -137,9 +136,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # Sensors support
   [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
 
-# Berryboot support
-  [ "$BERRYBOOT_TOOLS" = "yes" ] && $SCRIPTS/install berryboot-tools
-
 # Installer support
   [ "$INSTALLER_SUPPORT" = "yes" ] && $SCRIPTS/install installer
 
@@ -156,8 +152,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   fi
 
 # run depmod
-  KVER=`ls $BUILD/linux-*/modules/lib/modules`
-  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $KVER > /dev/null
+  find $INSTALL/lib/modules/`kernel_version`/ -name *.ko | \
+    sed -e "s,$INSTALL/lib/modules/`kernel_version`/,," > $INSTALL/lib/modules/`kernel_version`/modules.order
+  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL `kernel_version` > /dev/null
 
 # strip kernel modules
   for MOD in `find $INSTALL/lib/modules/ -name *.ko`; do
@@ -184,11 +181,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     KERNEL_ARCH="arm"
   fi
 
-  cp -PR $BUILD/linux-*/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
-
   if [ "$BOOTLOADER" = "atv-bootloader" ]; then
     cp -PR $BUILD/atv-bootloader-*/mach_kernel $TARGET_IMG/$IMAGE_NAME.mach_kernel
     chmod 0644 $TARGET_IMG/$IMAGE_NAME.mach_kernel
+  else
+    cp -PR $BUILD/linux-*/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
+    chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
   fi
 
 # create squashfs file
@@ -205,9 +203,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # set permissions
   chmod 0644 $TARGET_IMG/$IMAGE_NAME.system
-  chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
 
-  if [ "$1" = "release" ]; then
+  if [ "$1" = "release" -o "$1" = "mkimage" ]; then
 
     RELEASE_DIR="target/$IMAGE_NAME"
 
@@ -245,18 +242,20 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
       mkdir -p $RELEASE_DIR/target
         cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/target/SYSTEM
-        cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
 
         if [ -f $TARGET_IMG/$IMAGE_NAME.mach_kernel ]; then
           cp $TARGET_IMG/$IMAGE_NAME.mach_kernel $RELEASE_DIR/target/MACH_KERNEL
+        else
+          cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
         fi
 
     # create md5sum's
       ( cd $RELEASE_DIR;
         md5sum -t target/SYSTEM > target/SYSTEM.md5;
-        md5sum -t target/KERNEL > target/KERNEL.md5;
         if [ -f target/MACH_KERNEL ]; then
           md5sum -t target/MACH_KERNEL > target/MACH_KERNEL.md5;
+        else
+          md5sum -t target/KERNEL > target/KERNEL.md5;
         fi
       )
 
@@ -268,6 +267,22 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
     # create release tarball
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
+
+    # create image files if requested
+      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+        # variables used in image script must be passed
+        sudo env \
+          PATH="$PATH" \
+          ROOT="$ROOT" \
+          TOOLCHAIN="$TOOLCHAIN" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          BOOTLOADER="$BOOTLOADER" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          UUID_SYSTEM="$(uuidgen)" \
+          UUID_STORAGE="$(uuidgen)" \
+          $SCRIPTS/mkimage
+      fi
 
     # cleanup release dir
       rm -rf $RELEASE_DIR
@@ -291,7 +306,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       sed -e "s%@DISTRONAME@%$DISTRONAME%g" \
           -e "s%@OPENELEC_VERSION@%$OPENELEC_VERSION%g" \
           -e "s%@RELEASE_DATE@%$(date +%F)%g" \
-          -e "s%@KERNEL_VERSION@%$(echo $(basename $BUILD/linux-*) | awk -F - '{print $2}')%g" \
+          -e "s%@KERNEL_VERSION@%$(kernel_version)%g" \
           -e "s%@DESCRIPTION@%$DESCRIPTION%g" \
           -i $RELEASE_DIR/os.json
 

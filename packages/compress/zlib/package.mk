@@ -1,21 +1,19 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 PKG_NAME="zlib"
@@ -28,6 +26,7 @@ PKG_URL="http://www.zlib.net/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_BUILD_DEPENDS_HOST=""
+PKG_BUILD_DEPENDS_INIT=""
 PKG_PRIORITY="optional"
 PKG_SECTION="compress"
 PKG_SHORTDESC="zlib: A general purpose (ZIP) data compression library"
@@ -38,6 +37,7 @@ PKG_AUTORECONF="no"
 
 TARGET_CONFIGURE_OPTS="--prefix=/usr"
 HOST_CONFIGURE_OPTS="--prefix=$ROOT/$TOOLCHAIN"
+INIT_CONFIGURE_OPTS="--prefix=/"
 
 pre_build_target() {
   mkdir -p $PKG_BUILD/.$TARGET_NAME
@@ -47,4 +47,9 @@ pre_build_target() {
 pre_build_host() {
   mkdir -p $PKG_BUILD/.$HOST_NAME
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$HOST_NAME
+}
+
+pre_build_init() {
+  mkdir -p $PKG_BUILD/.$TARGET_NAME-init
+  cp -RP $PKG_BUILD/* $PKG_BUILD/.$TARGET_NAME-init
 }

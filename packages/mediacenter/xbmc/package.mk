@@ -1,32 +1,30 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="13.alpha-0d22ffb"
+PKG_VERSION="13.alpha-024ef6b"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="Python zlib bzip2 systemd ffmpeg libass curl rtmpdump fontconfig freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib service.openelec.settings"
-PKG_BUILD_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd lzo pcre swig ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib yajl sqlite"
+PKG_DEPENDS="Python zlib bzip2 systemd ffmpeg libass curl rtmpdump fontconfig freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib libxml2 service.openelec.settings"
+PKG_BUILD_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd lzo pcre swig ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="xbmc: XBMC Mediacenter"
@@ -97,6 +95,15 @@ if [ "$ALSA_SUPPORT" = yes ]; then
   XBMC_ALSA="--enable-alsa"
 else
   XBMC_ALSA="--disable-alsa"
+fi
+
+if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
+# for PulseAudio support
+  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET pulseaudio"
+  PKG_DEPENDS="$PKG_DEPENDS pulseaudio"
+  XBMC_PULSEAUDIO="--enable-pulse"
+else
+  XBMC_PULSEAUDIO="--disable-pulse"
 fi
 
 if [ "$CEC_SUPPORT" = yes ]; then
@@ -366,7 +373,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_XORG \
                            --disable-ccache \
                            $XBMC_ALSA \
-                           --disable-pulse \
+                           $XBMC_PULSEAUDIO \
                            --enable-rtmp \
                            $XBMC_SAMBA \
                            $XBMC_NFS \
@@ -420,6 +427,7 @@ pre_configure_target() {
 
   export CFLAGS="$CFLAGS $XBMC_CFLAGS"
   export CXXFLAGS="$CXXFLAGS $XBMC_CXXFLAGS"
+  export LIBS="$LIBS -lz"
 }
 
 make_target() {
@@ -443,15 +451,19 @@ make_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/xbmc
   rm -rf $INSTALL/usr/bin/xbmc-standalone
+  rm -rf $INSTALL/usr/lib/xbmc/*.cmake
 
   mkdir -p $INSTALL/usr/lib/xbmc
     cp $PKG_DIR/scripts/xbmc-config $INSTALL/usr/lib/xbmc
     cp $PKG_DIR/scripts/xbmc-hacks $INSTALL/usr/lib/xbmc
     cp $PKG_DIR/scripts/xbmc-sources $INSTALL/usr/lib/xbmc
 
+  mkdir -p $INSTALL/usr/lib/openelec
+    cp $PKG_DIR/scripts/systemd-addon-wrapper $INSTALL/usr/lib/openelec
+
   mkdir -p $INSTALL/usr/bin
     cp $PKG_DIR/scripts/cputemp $INSTALL/usr/bin
-    cp $PKG_DIR/scripts/gputemp $INSTALL/usr/bin
+      ln -sf cputemp $INSTALL/usr/bin/gputemp
     cp $PKG_DIR/scripts/setwakeup.sh $INSTALL/usr/bin
     cp tools/EventClients/Clients/XBMC\ Send/xbmc-send.py $INSTALL/usr/bin/xbmc-send
 

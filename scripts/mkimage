@@ -1,0 +1,219 @@
+#!/bin/bash
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+################################################################################
+# variables such as $ROOT $PATH etc... that are required for this
+# script to work must be passed via env ... in scripts/image
+################################################################################
+
+# set variables
+  OE_TMP=$(mktemp -d)
+  LOOP=$(losetup -f)
+
+  if [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    SYSTEM_SIZE=128
+  else
+    SYSTEM_SIZE=256
+  fi
+  STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
+
+  DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE ))
+  DISK="$TARGET_IMG/$IMAGE_NAME.img"
+
+# functions
+  cleanup() {
+    echo "image: cleanup..."
+    umount "$OE_TMP" &>/dev/null || :
+    losetup -d "$LOOP"
+    [ -f "$OE_TMP/ldlinux.sys" ] && chattr -i "$OE_TMP/ldlinux.sys" || :
+    rm -rf "$OE_TMP"
+    exit
+  }
+
+trap cleanup SIGINT
+
+# ensure loopX not in use
+  umount "$OE_TMP" &>/dev/null || :
+  umount "$LOOP" &>/dev/null >/dev/null || :
+  losetup -d "$LOOP" &>/dev/null >/dev/null || :
+
+# create an image
+  echo "image: creating image: $DISK..."
+  dd if=/dev/zero of="$DISK" bs=1M count="$DISK_SIZE"
+  sync
+
+# write a disklabel
+  echo "image: creating partition table on $DISK..."
+  losetup "$LOOP" "$DISK"
+  parted -s "$LOOP" mklabel msdos
+  sync
+
+# create part1
+  echo "image: creating part1 on $DISK..."
+  SYSTEM_PART_END=$(( $SYSTEM_SIZE * 1024 * 1024 / 512 + 64 ))
+  if [ "$BOOTLOADER" = "syslinux" ]; then
+    parted -s "$LOOP" -a min unit s mkpart primary ext4 64 $SYSTEM_PART_END
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    parted -s "$LOOP" -a min unit s mkpart primary fat32 64 $SYSTEM_PART_END
+  fi
+  parted -s "$LOOP" set 1 boot on
+
+# create part2
+  echo "image: creating part2 on $DISK..."
+  STORAGE_PART_START=$(( $SYSTEM_PART_END + 1 ))
+  parted -s "$LOOP" -a min unit s mkpart primary ext4 $STORAGE_PART_START 100%
+  sync
+
+if [ "$BOOTLOADER" = "syslinux" ]; then
+  # write mbr
+    echo "image: writing mbr..."
+    MBR="$ROOT/$TOOLCHAIN/share/syslinux/mbr.bin"
+    if [ -n "$MBR" ]; then
+      dd bs=440 count=1 conv=notrunc if="$MBR" of="$LOOP"
+    fi
+    sync
+fi
+
+# create filesystem on part1
+  losetup -d "$LOOP"
+  echo "image: creating filesystem on part1..."
+  OFFSET=$(( 64 * 512 ))
+  SIZELIMIT=$(( $SYSTEM_SIZE * 1024 * 1024 ))
+  losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
+  if [ "$BOOTLOADER" = "syslinux" ]; then
+    mke2fs -q -t ext4 -m 0 "$LOOP"
+    tune2fs -U $UUID_SYSTEM "$LOOP"
+    e2fsck -n "$LOOP"
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    mkfs.vfat "$LOOP"
+  fi
+  sync
+
+# mount partition
+  echo "image: mounting part1 on $OE_TMP..."
+  mount "$LOOP" "$OE_TMP"
+
+if [ "$BOOTLOADER" = "syslinux" ]; then
+  # create bootloader configuration
+    echo "image: creating bootloader configuration..."
+    cat << EOF > "$OE_TMP"/syslinux.cfg
+UI vesamenu.c32
+PROMPT 0
+MENU TITLE Boot Menu
+MENU BACKGROUND splash.png
+TIMEOUT 50
+DEFAULT live
+
+MENU WIDTH 70
+MENU MARGIN 15
+MENU ROWS 2
+MENU HSHIFT 4
+MENU VSHIFT 13
+MENU TIMEOUTROW 10
+MENU TABMSGROW 8
+MENU CMDLINEROW 8
+MENU HELPMSGROW 13
+MENU HELPMSGENDROW 26
+MENU CLEAR
+
+MENU COLOR border       30;44   #40ffffff #00000000 std
+MENU COLOR title        1;36;44 #ff8bbfe3 #00000000 std
+MENU COLOR sel          7;37;40 #80f0f0f0 #ff606060 all
+MENU COLOR unsel        37;44   #50ffffff #00000000 std
+MENU COLOR help         37;40   #c0ffffff #a0000000 std
+MENU COLOR timeout_msg  37;40   #80ffffff #00000000 std
+MENU COLOR timeout      1;37;40 #c0ffffff #00000000 std
+MENU COLOR msg07        37;40   #90ffffff #a0000000 std
+MENU COLOR tabmsg       31;40   #ff868787 #00000000 std
+
+LABEL installer
+  MENU LABEL Run $DISTRONAME Installer
+  KERNEL /KERNEL
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
+
+LABEL live
+  MENU LABEL Run $DISTRONAME Live
+  KERNEL /KERNEL
+  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet vga=current
+EOF
+
+  # install extlinux
+    echo "image: installing extlinux to part1..."
+    extlinux --heads=4 --sector=32 -i "$OE_TMP"
+
+  # copy files
+    echo "image: copying files to part1..."
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/KERNEL"
+    cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
+    cp $RELEASE_DIR/splash.png "$OE_TMP"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/vesamenu.c32 "$OE_TMP"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/libcom32.c32 "$OE_TMP"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/libutil.c32 "$OE_TMP"
+
+elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+  # create bootloader configuration
+    echo "image: creating bootloader configuration..."
+    cat << EOF > "$OE_TMP"/cmdline.txt
+boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 quiet
+EOF
+
+  # copy files
+    echo "image: copying files to part1..."
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/kernel.img"
+    cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
+    cp $RELEASE_DIR/3rdparty/bootloader/bootcode.bin "$OE_TMP"
+    cp $RELEASE_DIR/3rdparty/bootloader/fixup.dat "$OE_TMP"
+    cp $RELEASE_DIR/3rdparty/bootloader/start.elf "$OE_TMP"
+fi # bootloader
+
+# unmount part1
+  echo "image: unmounting part1..."
+  sync
+  umount "$LOOP"
+
+# create filesystem on part2
+  losetup -d "$LOOP"
+  echo "image: creating filesystem on part2..."
+  OFFSET=$(( $STORAGE_PART_START * 512 ))
+  losetup -o $OFFSET "$LOOP" "$DISK"
+  mke2fs -q -t ext4 -m 0 "$LOOP"
+  tune2fs -U $UUID_STORAGE "$LOOP"
+  e2fsck -n "$LOOP"
+  sync
+
+# mount part2
+  echo "image: mounting part2 on $OE_TMP..."
+  mount "$LOOP" "$OE_TMP"
+
+# add resize mark
+  touch "$OE_TMP/.please_resize_me"
+  sync
+
+# unmount part2
+  echo "image: unmounting part2..."
+  umount "$LOOP"
+  sync
+
+# gzip
+  echo "image: compressing..."
+  gzip $DISK
+
+# cleanup
+  cleanup

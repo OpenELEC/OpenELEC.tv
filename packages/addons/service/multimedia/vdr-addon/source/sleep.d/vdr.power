@@ -2,56 +2,44 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . /etc/profile
 
-ADDON_HOME="$HOME/.xbmc/userdata/addon_data/service.multimedia.vdr-addon"
-ADDON_CONFIG_DIR="$ADDON_HOME/config"
-ADDON_SETTINGS="$ADDON_HOME/settings.xml"
-REMOVE_MODULES=`grep REMOVE_MODULES $ADDON_SETTINGS | sed 's|.*value="\([^"]*\)".*|\1|g'`
+oe_setup_addon service.multimedia.vdr-addon
 
-LOCKFILE_SLEEP="/var/lock/vdr.sleep"
-
-ADDON_DIR="$HOME/.xbmc/addons/service.multimedia.vdr-addon"
+SERVICE="service.multimedia.vdr-addon.service"
 
 case "$1" in
-  hibernate|suspend|pre)
-    if [ "$(pidof vdr.bin)" ];then
-      progress "Shutting down vdr for suspending..."
-      touch $LOCKFILE_SLEEP
-      vdr.stop
+  pre)
+    if systemctl is-active "$SERVICE" &>/dev/null ; then
+      systemctl stop "$SERVICE"
       for module in $REMOVE_MODULES ; do
-        rmmod -w $module
+        rmmod $module
       done
     fi
     ;;
-  thaw|resume|post)
-    if [ -f "$LOCKFILE_SLEEP" ] ; then
-      progress "Restarting vdr for wakeup..."
+  post)
+    if systemctl is-enabled "$SERVICE" &>/dev/null ; then
       for module in $REMOVE_MODULES ; do
         modprobe $module
       done
-      rm -rf "$LOCKFILE_SLEEP"
+      systemctl start "$SERVICE"
     fi
-    ;;
-  *) exit $NA
     ;;
 esac
 

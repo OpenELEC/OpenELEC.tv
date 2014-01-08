@@ -2,22 +2,20 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . config/options $1
@@ -27,6 +25,8 @@ $SCRIPTS/unpack libpng
 LIBPNG_DIR=`ls -d $BUILD/libpng-[0-9]*`
 
 setup_toolchain host
+
+export CPPFLAGS="$CPPFLAGS -I$ROOT/$TOOLCHAIN/include"
 
 cd $LIBPNG_DIR
 
@@ -39,19 +39,4 @@ mkdir -p .build-host && cd .build-host
              --enable-shared \
 
 make
-
-mkdir -p $ROOT/$TOOLCHAIN/lib
-  cp -PR .libs/*.so* $ROOT/$TOOLCHAIN/lib
-  ln -sf libpng15.so $ROOT/$TOOLCHAIN/lib/libpng.so
-
-mkdir -p $ROOT/$TOOLCHAIN/lib/pkgconfig
-  cp -PR libpng.pc $ROOT/$TOOLCHAIN/lib/pkgconfig/libpng15.pc
-  ln -sf libpng15.pc $ROOT/$TOOLCHAIN/lib/pkgconfig/libpng.pc
-
-mkdir -p $ROOT/$TOOLCHAIN/include/libpng15
-  cp -PR ../png.h $ROOT/$TOOLCHAIN/include/libpng15
-  cp -PR ../pngconf.h $ROOT/$TOOLCHAIN/include/libpng15
-  cp -PR pnglibconf.h $ROOT/$TOOLCHAIN/include/libpng15
-  ln -sf libpng15/png.h $ROOT/$TOOLCHAIN/include/png.h
-  ln -sf libpng15/pngconf.h $ROOT/$TOOLCHAIN/include/pngconf.h
-  ln -sf libpng15/pnglibconf.h $ROOT/$TOOLCHAIN/include/pnglibconf.h
+make install

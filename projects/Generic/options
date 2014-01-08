@@ -20,15 +20,6 @@
 # Root password to integrate in the target system
   ROOT_PASSWORD="openelec"
 
-# User to integrate in the target system
-  USER_NAME="openelec"
-
-# User group to integrate in the target system
-  USER_GROUP="openelec"
-
-# User password to integrate in the target system
-  USER_PASSWORD="openelec"
-
 # The TARGET_CPU variable controls which processor should be targeted for
 # generated code.
   case $TARGET_ARCH in
@@ -106,8 +97,9 @@
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""
 
-# install Berryboot support tools
-  BERRYBOOT_TOOLS="no"
+# GCC to use. values can be:
+# default:  default mainline gcc
+  GCC_VERSION="default"
 
 # Kernel to use. values can be:
 # default:  default mainline kernel
@@ -153,6 +145,9 @@
 
 # build and install ALSA Audio support (yes / no)
   ALSA_SUPPORT="yes"
+
+# build and install PulseAudio support (yes / no)
+  PULSEAUDIO_SUPPORT="no"
 
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
@@ -319,6 +314,9 @@
 
 # build with swap support (yes / no)
   SWAP_SUPPORT="no"
+
+# swap support enabled per default (yes / no)
+  SWAP_ENABLED_DEFAULT="no"
 
 # swapfile size if SWAP_SUPPORT=yes in MB
   SWAPFILESIZE="256"

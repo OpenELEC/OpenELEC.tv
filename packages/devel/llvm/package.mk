@@ -1,30 +1,28 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 PKG_NAME="llvm"
-PKG_VERSION="3.3.src"
+PKG_VERSION="3.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://llvm.org/"
-PKG_URL="http://llvm.org/releases/3.3/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="http://llvm.org/releases/3.4/${PKG_NAME}-${PKG_VERSION}.src.tar.gz"
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain llvm:host"
 PKG_BUILD_DEPENDS_HOST="toolchain"
@@ -38,17 +36,33 @@ PKG_AUTORECONF="no"
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_HOST="--disable-polly \
+                         --disable-libcpp \
+                         --disable-cxx11 \
+                         --disable-split-dwarf \
+                         --disable-clang-arcmt \
+                         --disable-clang-static-analyzer \
+                         --disable-clang-rewriter \
                          --disable-zlib \
                          --disable-assertions \
+                         --disable-werror \
+                         --disable-terminfo \
                          --enable-optimized \
                          --disable-debug-runtime \
                          --disable-debug-symbols \
-                         --enable-experimental-targets=R600"
+                         --enable-targets=r600"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-polly \
+                           --disable-libcpp \
+                           --disable-cxx11 \
+                           --disable-split-dwarf \
+                           --disable-clang-arcmt \
+                           --disable-clang-static-analyzer \
+                           --disable-clang-rewriter \
                            --enable-optimized \
                            --disable-profiling \
                            --disable-assertions \
+                           --disable-werror \
+                           --disable-terminfo \
                            --disable-expensive-checks \
                            --disable-debug-runtime \
                            --disable-debug-symbols \
@@ -57,17 +71,19 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-polly \
                            --disable-doxygen \
                            --enable-threads \
                            --enable-pthreads \
+                           --enable-zlib \
                            --enable-pic \
                            --enable-shared \
                            --enable-embed-stdcxx \
                            --enable-timestamps \
+                           --disable-backtraces \
                            --disable-libffi \
                            --disable-ltdl-install"
 
 if [ "$TARGET_ARCH" = i386 ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=x86 --enable-experimental-targets=R600"
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=x86,r600"
 elif [ "$TARGET_ARCH" = x86_64 ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=x86_64 --enable-experimental-targets=R600"
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=x86_64,r600"
 elif [ "$TARGET_ARCH" = arm ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=arm"
 fi
