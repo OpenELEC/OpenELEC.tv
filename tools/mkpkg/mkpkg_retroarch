@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="retroarch"
-PKG_VERSION="0.9.9.7"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/libretro/RetroArch"
-PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="bcm2835-driver alsa-lib"
-PKG_BUILD_DEPENDS="toolchain bcm2835-driver alsa-lib"
-PKG_PRIORITY="optional"
-PKG_SECTION="retroarch"
-PKG_SHORTDESC="Reference frontend for the libretro API."
-PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular examples of implementations for this API includes videogame system emulators and game engines, but also more generalized 3D programs. These programs are instantiated as dynamic libraries. We refer to these as libretro cores."
+echo "getting sources..."
+  if [ ! -d RetroArch.git ]; then
+    git clone https://github.com/libretro/RetroArch.git -b master RetroArch.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd RetroArch.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
+
+echo "copying sources..."
+  rm -rf RetroArch-$GIT_REV
+  cp -R RetroArch.git RetroArch-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf RetroArch-$GIT_REV/.git
+  rm RetroArch-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf RetroArch-$GIT_REV.tar.xz RetroArch-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf RetroArch-$GIT_REV

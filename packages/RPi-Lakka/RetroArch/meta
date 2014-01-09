@@ -18,28 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="pocketsnes-libretro"
-PKG_VERSION="95b2465"
+PKG_NAME="RetroArch"
+PKG_VERSION="f374827"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/ToadKing/pocketsnes-libretro"
+PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS="bcm2835-driver alsa-lib"
+PKG_BUILD_DEPENDS="toolchain bcm2835-driver alsa-lib"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
-PKG_SHORTDESC="An ARM-based SNES emulator for libretro"
-PKG_LONGDESC="An ARM-based SNES emulator for libretro"
+PKG_SHORTDESC="Reference frontend for the libretro API."
+PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular examples of implementations for this API includes videogame system emulators and game engines, but also more generalized 3D programs. These programs are instantiated as dynamic libraries. We refer to these as libretro cores."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-pre_configure_target() {
-  sed -i -e "s/CC         = gcc//" Makefile
-}
-
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/pocketsnes-libretro.so
-}
