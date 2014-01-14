@@ -24,6 +24,8 @@
 
 
 mkdir -p $INSTALL/usr/bin
+#mkdir -p $INSTALL/usr/share/retroarch
+#  cp $PKG_BUILD/media/lakka/* $INSTALL/usr/share/retroarch
 mkdir -p $INSTALL/etc
   cp $PKG_BUILD/retroarch $INSTALL/usr/bin
   cp $PKG_BUILD/retroarch.cfg $INSTALL/etc
@@ -33,6 +35,8 @@ sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/u
 sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\"\/storage\/roms\"/" $INSTALL/etc/retroarch.cfg
 sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
 sed -i -e "s/# video_smooth = true/video_smooth = false/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# video_force_aspect = true/video_force_aspect = true/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# video_aspect_ratio =/video_aspect_ratio = 1.7777777/" $INSTALL/etc/retroarch.cfg
 
 # link default.target to retroarch.target
 ln -sf retroarch.target $INSTALL/lib/systemd/system/default.target

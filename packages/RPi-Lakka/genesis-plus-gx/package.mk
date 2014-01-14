@@ -18,19 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RetroArch"
-PKG_VERSION="2445225"
+PKG_NAME="genesis-plus-gx"
+PKG_VERSION="a369579"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/libretro/RetroArch"
+PKG_SITE="https://github.com/libretro/Genesis-Plus-GX"
 PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="bcm2835-driver alsa-lib"
-PKG_BUILD_DEPENDS="toolchain bcm2835-driver alsa-lib"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
-PKG_SHORTDESC="Reference frontend for the libretro API."
-PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular examples of implementations for this API includes videogame system emulators and game engines, but also more generalized 3D programs. These programs are instantiated as dynamic libraries. We refer to these as libretro cores."
+PKG_SHORTDESC="An enhanced port of Genesis Plus for Gamecube/Wii"
+PKG_LONGDESC="Genesis Plus GX is an open-source & portable Sega Mega Drive / Genesis emulator, now also emulating SG-1000, Master System, Game Gear and Sega/Mega CD hardware."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make -f Makefile.libretro
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp genesis_plus_gx_libretro.so $INSTALL/usr/lib/libretro/genesis-plus-gx-libretro.so
+}

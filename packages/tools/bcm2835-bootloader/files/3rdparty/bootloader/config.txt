@@ -71,7 +71,7 @@
 # Make display smaller to stop text spilling off the screen
 # see also http://www.raspberrypi.org/phpBB3/viewtopic.php?f=67&t=15700
 # overscan_scale=1
-# disable_overscan=1
+disable_overscan=1
 
 # Adapt overscan values to your needs
 # overscan_left=57
@@ -101,3 +101,4 @@
 # all values below this line were inserted from config.txt.bk (your old config)
 # and can be merged with the above values
 ################################################################################
+disable_splash=1
