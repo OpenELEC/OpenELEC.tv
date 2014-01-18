@@ -18,19 +18,32 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="gambatte"
+PKG_VERSION="6882ef2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/gambatte-libretro"
+PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RPi-Lakka"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of libgambatte"
+PKG_LONGDESC="Gambatte is an open-source Game Boy Color emulator written for fun and made available in the hope that it will be useful."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+#pre_configure_target() {
+#  sed -i -e "s/CC         = gcc//" Makefile
+#}
+
+make_target() {
+  make -C libgambatte -f Makefile.libretro
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp libgambatte/gambatte_libretro.so $INSTALL/usr/lib/libretro/gambatte-libretro.so
+}
