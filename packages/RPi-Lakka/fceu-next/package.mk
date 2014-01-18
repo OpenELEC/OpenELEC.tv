@@ -18,19 +18,32 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="fceu-next"
+PKG_VERSION="b242269"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch pocketsnes-libretro genesis-plus-gx nxengine fceu-next retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/fceu-next"
+PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RPi-Lakka"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Port of FCEUmm / FCEUX to Libretro."
+PKG_LONGDESC="FCEUX is a Nintendo Entertainment System (NES), Famicom, and Famicom Disk System (FDS) emulator."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+#pre_configure_target() {
+#  sed -i -e "s/CC         = gcc//" Makefile
+#}
+
+make_target() {
+  make -f Makefile.libretro-fceux
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp libretro.so $INSTALL/usr/lib/libretro/fceu-next-libretro.so
+}
