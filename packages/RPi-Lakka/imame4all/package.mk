@@ -18,19 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="imame4all"
+PKG_VERSION="474ff5d"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/imame4all-libretro.git"
+PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RPi-Lakka"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="A port of iMAME4all to libretro"
+PKG_LONGDESC="A port of iMAME4all to libretro"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make -f makefile.libretro ARM=1
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp libretro.so $INSTALL/usr/lib/libretro/imame4all-libretro.so
+}
