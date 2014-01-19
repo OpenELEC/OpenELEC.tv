@@ -33,7 +33,12 @@ mkdir -p $INSTALL/etc
 
 # General configuration
 sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
-sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\"\/storage\/roms\"/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# savefile_directory =/savefile_directory =\/storage\/savefiles/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# savestate_directory =/savestate_directory =\/storage\/savestates/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# system_directory =/system_directory =\/storage\/system/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# screenshot_directory =/screenshot_directory =\/storage\/screenshots/" $INSTALL/etc/retroarch.cfg
+sed -i -e "s/# video_shader_dir =/video_shader_dir =\/storage\/shaders/" $INSTALL/etc/retroarch.cfg
 sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
 sed -i -e "s/# config_save_on_exit = false/config_save_on_exit = false/" $INSTALL/etc/retroarch.cfg
 
