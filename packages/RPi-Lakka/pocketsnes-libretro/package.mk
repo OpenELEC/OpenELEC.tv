@@ -41,5 +41,5 @@ pre_configure_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/pocketsnes-libretro.so
+  cp libretro.so $INSTALL/usr/lib/libretro/libretro-pocketsnes.so
 }

@@ -41,5 +41,5 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp stella_libretro.so $INSTALL/usr/lib/libretro/stella-libretro.so
+  cp stella_libretro.so $INSTALL/usr/lib/libretro/libretro-stella.so
 }

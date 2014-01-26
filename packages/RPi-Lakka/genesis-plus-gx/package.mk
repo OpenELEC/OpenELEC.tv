@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp genesis_plus_gx_libretro.so $INSTALL/usr/lib/libretro/genesis-plus-gx-libretro.so
+  cp genesis_plus_gx_libretro.so $INSTALL/usr/lib/libretro/libretro-genesis-plus-gx.so
 }

@@ -45,5 +45,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libgambatte/gambatte_libretro.so $INSTALL/usr/lib/libretro/gambatte-libretro.so
+  cp libgambatte/gambatte_libretro.so $INSTALL/usr/lib/libretro/libretro-gambatte.so
 }

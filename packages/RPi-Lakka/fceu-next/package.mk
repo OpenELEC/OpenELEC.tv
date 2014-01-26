@@ -45,5 +45,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/fceu-next-libretro.so
+  cp libretro.so $INSTALL/usr/lib/libretro/libretro-fceu-next.so
 }
