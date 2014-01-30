@@ -18,19 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="vbam-libretro"
+PKG_VERSION="122ea09"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="http://vba-m.com/"
+PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RPi-Lakka"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="VBA-M is a [Super] Game Boy [Color / Advance] emulator for Windows, Linux & Mac."
+PKG_LONGDESC="VBA-M is a [Super] Game Boy [Color / Advance] emulator for Windows, Linux & Mac."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make -C ../src/libretro -f Makefile
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp ../src/libretro/vbam_libretro.so $INSTALL/usr/lib/libretro/libretro-vbam.so
+}
