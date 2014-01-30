@@ -1,0 +1,12 @@
+diff -Naur pocketsnes-libretro/src/ppu.cpp pocketsnes-libretro.patch/src/ppu.cpp
+--- pocketsnes-libretro/src/ppu.cpp	2014-01-31 00:16:52.139008689 +0100
++++ pocketsnes-libretro.patch/src/ppu.cpp	2014-01-31 00:19:07.582033526 +0100
+@@ -714,7 +714,7 @@
+ 						}
+ 					}
+ 					return (
+-						(IPPU.Joypads[0]
++						(IPPU.Joypads[1]
+ 							>> (PPU.Joypad2ButtonReadPos++ ^ 15))
+ 							& 1);
+ 				}
