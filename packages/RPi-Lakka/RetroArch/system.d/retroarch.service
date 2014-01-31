@@ -1,9 +1,9 @@
 [Unit]
 Description=Retroarch
-#After=graphical.target
-#Requires=graphical.target
-After=basic.target
-Requires=basic.target
+After=graphical.target
+Requires=graphical.target
+#After=basic.target
+#Requires=basic.target
 
 
 [Service]
