@@ -32,12 +32,17 @@ PKG_LONGDESC="Fluxbox is a windowmanager for X that was based on the Blackbox 0.
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-toolbar \
+PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_realloc_0_nonnull=yes \
+                           ac_cv_func_malloc_0_nonnull=yes
+                           --disable-toolbar \
                            --disable-slit \
                            --disable-systray \
-                           --disable-ewmh \
-                           ac_cv_func_realloc_0_nonnull=yes \
-                           ac_cv_func_malloc_0_nonnull=yes"
+                           --disable-ewmh
+                           --disable-remember \
+                           --disable-regexp \
+                           --disable-debug \
+                           --disable-test \
+                           --disable-nls"
                            
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/fbrun
