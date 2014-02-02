@@ -34,3 +34,15 @@ PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+configure_target() {
+  :
+}
+
+make_target() {
+  :
+}
+
+makeinstall_target() {
+  :
+}
