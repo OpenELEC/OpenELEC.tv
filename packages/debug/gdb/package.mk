@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/software/gdb/"
 PKG_URL="http://ftp.gnu.org/gnu/gdb/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="zlib ncurses expat"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib ncurses expat"
+PKG_DEPENDS_TARGET="toolchain zlib ncurses expat"
 PKG_PRIORITY="optional"
 PKG_SECTION="debug"
 PKG_SHORTDESC="gdb: The GNU Debugger"
@@ -49,6 +48,7 @@ PKG_CONFIGURE_OPTS_TARGET="bash_cv_have_mbstate_t=set \
                            --without-x \
                            --disable-tui \
                            --disable-libada \
+                           --without-lzma \
                            --disable-werror"
 
 post_makeinstall_target() {

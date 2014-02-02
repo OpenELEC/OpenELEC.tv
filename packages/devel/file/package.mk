@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="file"
-PKG_VERSION="5.14"
+PKG_VERSION="5.16"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.darwinsys.com/file/"
 PKG_URL="ftp://ftp.astron.com/pub/file/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="zlib"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib file:host"
+PKG_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_TARGET="toolchain zlib file:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
 PKG_SHORTDESC="file: File type identification utility"
@@ -33,5 +33,5 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_HOST="--enable-fsect-man5"
-PKG_CONFIGURE_OPTS_TARGET="--enable-fsect-man5"
+PKG_CONFIGURE_OPTS_HOST="--enable-fsect-man5 --enable-static --disable-shared"
+PKG_CONFIGURE_OPTS_TARGET="--enable-fsect-man5 --enable-static --disable-shared"

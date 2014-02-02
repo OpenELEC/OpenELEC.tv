@@ -23,10 +23,9 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://dbus.freedesktop.org"
 PKG_URL="http://dbus.freedesktop.org/releases/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="expat"
-PKG_BUILD_DEPENDS_TARGET="toolchain expat systemd"
-PKG_BUILD_DEPENDS_HOST="toolchain expat:host"
-PKG_BUILD_DEPENDS_BOOTSTRAP="toolchain expat"
+PKG_DEPENDS_HOST="expat:host"
+PKG_DEPENDS_TARGET="toolchain expat systemd"
+PKG_DEPENDS_BOOTSTRAP="toolchain expat"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="dbus: simple interprocess messaging system"
@@ -36,6 +35,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="export ac_cv_have_abstract_sockets=yes \
+                           --with-sysroot=$SYSROOT_PREFIX \
                            --libexecdir=/usr/lib/dbus \
                            --disable-verbose-mode \
                            --disable-asserts \

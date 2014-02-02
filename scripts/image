@@ -31,7 +31,10 @@ $SCRIPTS/build kmod:host
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
 if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
-  GIT_BUILD=$(git rev-list --count HEAD)
+  if ! GIT_BUILD=$(git rev-list --count HEAD 2>/dev/null)
+  then
+    GIT_BUILD=$(git rev-list HEAD | wc -l)
+  fi
   GIT_HASH=$(git rev-parse HEAD)
   GIT_ABBREV=$(git log -1 --pretty=format:%h)
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
@@ -102,9 +105,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   ln -sf /etc/issue $INSTALL/etc/motd
 
 # Basissystem...
-  $SCRIPTS/install eglibc
+  $SCRIPTS/install libc
   $SCRIPTS/install gcc
-  $SCRIPTS/install linux system
+  $SCRIPTS/install linux
+  $SCRIPTS/install linux-drivers
+  $SCRIPTS/install linux-firmware
+  $SCRIPTS/install $BOOTLOADER
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
@@ -117,6 +123,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
+
+# Sound support
+  [ "$ALSA_SUPPORT" = "yes" ] && $SCRIPTS/install alsa
 
 # Automounter support
   [ "$UDEVIL" = "yes" ] && $SCRIPTS/install udevil
@@ -152,9 +161,10 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   fi
 
 # run depmod
-  find $INSTALL/lib/modules/`kernel_version`/ -name *.ko | \
-    sed -e "s,$INSTALL/lib/modules/`kernel_version`/,," > $INSTALL/lib/modules/`kernel_version`/modules.order
-  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL `kernel_version` > /dev/null
+  MODVER=$(basename $(ls -d $INSTALL/lib/modules/*))
+  find $INSTALL/lib/modules/$MODVER/ -name *.ko | \
+    sed -e "s,$INSTALL/lib/modules/$MODVER/,," > $INSTALL/lib/modules/$MODVER/modules.order
+  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER > /dev/null
 
 # strip kernel modules
   for MOD in `find $INSTALL/lib/modules/ -name *.ko`; do

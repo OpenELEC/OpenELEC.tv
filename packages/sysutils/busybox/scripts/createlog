@@ -27,13 +27,15 @@ RELEASE="`cat /etc/release`"
 GIT="`cat /etc/issue |grep git`"
 
 getlog_cmd() {
-  echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "# ... output of $@" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "# OpenELEC release: $RELEASE" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "# $GIT" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
-  $@ >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "" >> $BASEDIR/$LOGDIR/$LOGFILE
+  if which $1 >/dev/null; then
+    echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# ... output of $@" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# OpenELEC release: $RELEASE" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# $GIT" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
+    $@ >> $BASEDIR/$LOGDIR/$LOGFILE 2>/dev/null
+    echo "" >> $BASEDIR/$LOGDIR/$LOGFILE
+  fi
 }
 
 rm -rf $BASEDIR/$LOGDIR
@@ -81,7 +83,10 @@ mkdir -p $BASEDIR/$LOGDIR
 # Input.log
   LOGFILE="07_input.log"
   getlog_cmd cat /proc/bus/input/devices
-  getlog_cmd cat /proc/acpi/wakeup
+  # make RPi users happy
+  if [ -e /proc/acpi/wakeup ] ; then
+    getlog_cmd cat /proc/acpi/wakeup
+  fi
 
 # Filesystem.log
   LOGFILE="08_Filesystem.log"

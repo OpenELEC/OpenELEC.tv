@@ -65,15 +65,17 @@ kernel_version() {
   echo ${PKG_VERSION}
 }
 
+# get kernel module dir
+get_module_dir() {
+  basename $(ls -d $(get_build_dir linux)/.install_pkg/lib/modules/*)
+}
+
 # get package's build dir
 get_build_dir() {
   if [ ! -z $1 ] ; then
     local _PKG_DIR=$(find $ROOT/packages -name $1)
     if [ -d $_PKG_DIR -a -f $_PKG_DIR/package.mk ] ; then
       . $_PKG_DIR/package.mk
-    # TODO: remove
-    elif [ -d $_PKG_DIR -a -f $_PKG_DIR/meta ] ; then
-      . $_PKG_DIR/meta
     fi
     echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
   fi

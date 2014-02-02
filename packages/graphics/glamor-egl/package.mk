@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="glamor-egl"
-PKG_VERSION="0.5.1"
+PKG_VERSION="0.6.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://cgit.freedesktop.org/xorg/driver/glamor/"
 PKG_URL="http://cgit.freedesktop.org/xorg/driver/glamor/snapshot/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="Mesa libdrm"
-PKG_BUILD_DEPENDS_TARGET="toolchain Mesa xorg-server libdrm"
+PKG_DEPENDS_TARGET="toolchain Mesa xorg-server libdrm"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="glamor-egl: OpenGL based 2D rendering acceleration library"
@@ -33,10 +32,9 @@ PKG_LONGDESC="glamor-egl is a OpenGL based 2D rendering acceleration library"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-glx-tls"
+PKG_CONFIGURE_OPTS_TARGET="--disable-glamor-gles2 --enable-xv --disable-glamor-dri3 --enable-glx-tls"
 
 pre_configure_target() {
   # glamor-egl fails to build with GOLD if we build with --enable-glx-tls
   strip_gold
 }
-

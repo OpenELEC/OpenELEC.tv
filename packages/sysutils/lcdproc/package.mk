@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://lcdproc.org/"
 PKG_URL="$SOURCEFORGE_SRC/lcdproc/lcdproc/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="libusb"
-PKG_BUILD_DEPENDS_TARGET="toolchain libusb libhid libftdi"
+PKG_DEPENDS_TARGET="toolchain libusb libhid libftdi"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="lcdproc: Software to display system information from your Linux/*BSD box on a LCD"
@@ -37,7 +36,7 @@ if [ "$IRSERVER_SUPPORT" = yes ]; then
   PKG_DEPENDS="$PKG_DEPENDS irserver"
 fi
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga"
+PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars"
 
 post_makeinstall_target() {
   rm -rf $INSTALL/etc/lcd*.conf
@@ -60,4 +59,6 @@ post_makeinstall_target() {
 post_install() {
   add_user nobody x 999 999 "Nobody" "/" "/bin/sh"
   add_group nobody 999
+
+  enable_service lcdd.service
 }

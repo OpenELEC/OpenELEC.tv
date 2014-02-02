@@ -17,15 +17,14 @@
 ################################################################################
 
 PKG_NAME="dbus-glib"
-PKG_VERSION="0.100"
+PKG_VERSION="0.100.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://freedesktop.org/wiki/Software/dbus"
 PKG_URL="http://dbus.freedesktop.org/releases/dbus-glib/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="dbus glib expat"
-PKG_BUILD_DEPENDS_HOST="toolchain glib:host dbus:host"
-PKG_BUILD_DEPENDS_TARGET="toolchain dbus glib expat dbus-glib:host"
+PKG_DEPENDS_HOST="glib:host dbus:host"
+PKG_DEPENDS_TARGET="toolchain dbus glib expat dbus-glib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
 PKG_SHORTDESC="dbus-glib: A message bus system"

@@ -24,8 +24,7 @@ PKG_LICENSE="nonfree"
 PKG_SITE="http://www.nvidia.com/"
 [ "$TARGET_ARCH" = "i386" ] && PKG_URL="http://us.download.nvidia.com/XFree86/Linux-x86/$PKG_VERSION/NVIDIA-Linux-x86-$PKG_VERSION.run"
 [ "$TARGET_ARCH" = "x86_64" ] && PKG_URL="http://us.download.nvidia.com/XFree86/Linux-x86_64/$PKG_VERSION/NVIDIA-Linux-x86_64-$PKG_VERSION-no-compat32.run"
-PKG_DEPENDS_TARGET="linux libXinerama"
-PKG_BUILD_DEPENDS_TARGET="toolchain util-macros linux xorg-server"
+PKG_DEPENDS_TARGET="toolchain util-macros linux xorg-server"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/driver"
@@ -69,8 +68,8 @@ makeinstall_target() {
   # rename to not conflicting with Mesa libGL.so
     cp -P libGL.so* $INSTALL/usr/lib/libGL_nvidia.so.1
 
-  mkdir -p $INSTALL/lib/modules/`kernel_version`/nvidia
-    cp kernel/nvidia.ko $INSTALL/lib/modules/`kernel_version`/nvidia
+  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/nvidia
+    cp kernel/nvidia.ko $INSTALL/lib/modules/$(get_module_dir)/nvidia
 
   mkdir -p $INSTALL/usr/bin
     cp nvidia-smi $INSTALL/usr/bin

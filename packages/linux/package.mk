@@ -18,13 +18,12 @@
 
 PKG_NAME="linux"
 case "$LINUX" in
-  3.13)
-    PKG_VERSION="3.13.0-rc7"
-    PKG_SOURCE_DIR="$PKG_NAME-3.13-rc7"
-    PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/testing/$PKG_SOURCE_DIR.tar.xz"
+  imx6)
+    PKG_VERSION="imx_3.0.35_4.1.0-5c73417"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.12.6"
+    PKG_VERSION="3.13.1"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -32,10 +31,9 @@ PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
-PKG_DEPENDS_TARGET="busybox linux-drivers linux-firmware pciutils $BOOTLOADER"
-PKG_BUILD_DEPENDS_HOST="ccache:host"
-PKG_BUILD_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz wireless-regdb"
-PKG_BUILD_DEPENDS_INIT="toolchain"
+PKG_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz wireless-regdb"
+PKG_DEPENDS_INIT="toolchain"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="linux"
@@ -46,8 +44,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Python"
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET elfutils Python"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
 fi
 
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
@@ -120,7 +117,9 @@ pre_make_target() {
   cp $(get_build_dir wireless-regdb)/db.txt $ROOT/$PKG_BUILD/net/wireless/db.txt
 
   if [ "$BOOTLOADER" = "u-boot" ]; then
-    $SCRIPTS/build u-boot
+    ( cd $ROOT
+      $SCRIPTS/build u-boot
+    )
   fi
 }
 
@@ -140,6 +139,7 @@ make_target() {
     ( cd tools/perf
 
       # dont use some optimizations because of build problems
+        strip_lto
         LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 
       export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
@@ -158,6 +158,7 @@ make_target() {
            PYTHON=$SYSROOT_PREFIX/usr/bin/python \
            WERROR=0 \
            NO_SLANG=1 \
+           EXTRA_CFLAGS="$CFLAGS"
     )
   fi
 }
@@ -183,7 +184,7 @@ makeinstall_init() {
     mkdir -p $INSTALL/lib/modules
 
     for i in $INITRAMFS_MODULES; do
-      module=`find .install_pkg/lib/modules/$PKG_VERSION/kernel -name $i.ko`
+      module=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name $i.ko`
       if [ -n "$module" ]; then
         echo $i >> $INSTALL/etc/modules
         cp $module $INSTALL/lib/modules/`basename $module`
@@ -193,7 +194,7 @@ makeinstall_init() {
 
   if [ "$UVESAFB_SUPPORT" = yes ]; then
     mkdir -p $INSTALL/lib/modules
-      uvesafb=`find .install_pkg/lib/modules/$PKG_VERSION/kernel -name uvesafb.ko`
+      uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
       cp $uvesafb $INSTALL/lib/modules/`basename $uvesafb`
   fi
 }

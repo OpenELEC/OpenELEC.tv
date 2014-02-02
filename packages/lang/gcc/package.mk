@@ -17,17 +17,15 @@
 ################################################################################
 
 PKG_NAME="gcc"
-PKG_VERSION="4.7.3"
+PKG_VERSION="4.8.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://gcc.gnu.org/"
 PKG_URL="ftp://ftp.gnu.org/gnu/gcc/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS="ccache:host autoconf-2.64 binutils:host gmp:host mpfr mpc cloog ppl:host"
-PKG_BUILD_DEPENDS_BOOTSTRAP="ccache:host autoconf-2.64 binutils:host gmp:host mpfr mpc cloog ppl:host"
-PKG_BUILD_DEPENDS_TARGET="gcc:host"
-PKG_BUILD_DEPENDS_HOST="ccache:host autoconf-2.64 binutils:host gmp:host mpfr mpc cloog ppl:host eglibc"
+PKG_DEPENDS_BOOTSTRAP="ccache:host autoconf-2.64:host binutils:host gmp:host mpfr:host mpc:host cloog:host ppl:host"
+PKG_DEPENDS_TARGET="gcc:host"
+PKG_DEPENDS_HOST="ccache:host autoconf-2.64:host binutils:host gmp:host mpfr:host mpc:host cloog:host ppl:host eglibc"
 PKG_PRIORITY="optional"
 PKG_SECTION="lang"
 PKG_SHORTDESC="gcc: The GNU Compiler Collection Version 4 (aka GNU C Compiler)"
@@ -69,7 +67,8 @@ BOOTSTRAP_CONFIGURE_OPTS="--host=$HOST_NAME \
                           --with-newlib \
                           --disable-decimal-float \
                           $GCC_OPTS \
-                          --disable-nls"
+                          --disable-nls \
+                          --disable-cloog-version-check"
 
 PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --with-sysroot=$SYSROOT_PREFIX \
@@ -103,7 +102,8 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --disable-libstdcxx-pch \
                          --enable-clocale=gnu \
                          $GCC_OPTS \
-                         --disable-nls"
+                         --disable-nls \
+                         --disable-cloog-version-check"
 
 pre_configure_bootstrap() {
   setup_toolchain host

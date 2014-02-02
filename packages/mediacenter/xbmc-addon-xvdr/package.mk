@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="xbmc-addon-xvdr"
-PKG_VERSION="f267086"
+PKG_VERSION="df75826"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/pipelka/xbmc-addon-xvdr"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="zlib"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib"
+PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="XVDR addon for XBMC"
@@ -36,3 +35,8 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--prefix=/usr/share/xbmc"
 
 export CXXFLAGS="$CXXFLAGS -DZLIB_INTERNAL=1"
+
+pre_make_target() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}

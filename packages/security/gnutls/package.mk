@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://www.gnutls.org/"
 PKG_URL="ftp://ftp.gnutls.org/gcrypt/gnutls/v3.2/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="zlib nettle"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib nettle"
+PKG_DEPENDS_TARGET="toolchain zlib nettle"
 PKG_PRIORITY="optional"
 PKG_SECTION="security"
 PKG_SHORTDESC="gnutls: Development Library for TLS applications"
@@ -35,15 +34,22 @@ PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-hardware-acceleration \
                            --disable-openssl-compatibility \
+                           --disable-cxx \
                            --without-p11-kit \
+                           --enable-local-libopts \
                            --with-included-libtasn1 \
+                           --with-sysroot=$SYSROOT_PREFIX/usr \
                            --with-libz-prefix=$SYSROOT_PREFIX/usr \
-                           --disable-gtk-doc \
-                           --disable-gtk-doc-html \
-                           --disable-gtk-doc-pdf \
+                           --with-librt-prefix=$SYSROOT_PREFIX/usr \
+                           --with-libpthread-prefix=$SYSROOT_PREFIX/usr \
+                           --without-libiconv-prefix \
+                           --without-libintl-prefix \
+                           --disable-libdane \
+                           --disable-doc \
                            --disable-nls \
                            --disable-guile \
                            --disable-valgrind-tests \
+                           --without-lzo \
                            --with-gnu-ld"
 
 post_makeinstall_target() {

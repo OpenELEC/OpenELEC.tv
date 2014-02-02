@@ -26,8 +26,7 @@ PKG_ARCH="i386 x86_64"
 PKG_LICENSE="nonfree"
 PKG_SITE="http://www.broadcom.com/"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET=""
-PKG_BUILD_DEPENDS_TARGET="toolchain linux"
+PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
@@ -49,6 +48,6 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/`kernel_version`/bcm_sta
-    cp *.ko $INSTALL/lib/modules/`kernel_version`/$PKG_NAME
+  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/bcm_sta
+    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
 }
