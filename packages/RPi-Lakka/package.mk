@@ -28,21 +28,9 @@ PKG_URL=""
 PKG_DEPENDS="RetroArch pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig"
 PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
-PKG_SECTION="RPi-Lakka"
+PKG_SECTION="virtual"
 PKG_SHORTDESC="RPi-Lakka metapackage"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-configure_target() {
-  :
-}
-
-make_target() {
-  :
-}
-
-makeinstall_target() {
-  :
-}
