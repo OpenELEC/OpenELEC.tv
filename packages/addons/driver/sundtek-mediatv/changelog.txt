@@ -1,6 +1,7 @@
 3.1.4
   no analog tv anymore.
   include driver bin/libs
+  enable hw pid filter by default
 3.1.3
   rebuild
 3.1.2
