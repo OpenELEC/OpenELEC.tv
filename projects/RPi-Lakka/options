@@ -357,3 +357,6 @@
 # set the addon dirs
   ADDON_PATH="$ADDON_VERSION/$PROJECT/$TARGET_ARCH"
   ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
+
+# choose a package mirror
+  LAKKA_MIRROR="62.210.201.191"
