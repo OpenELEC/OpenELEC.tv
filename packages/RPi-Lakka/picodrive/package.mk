@@ -25,8 +25,8 @@ PKG_ARCH="any"
 PKG_LICENSE="MAME"
 PKG_SITE="https://github.com/libretro/picodrive"
 PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="$PKG_NAME:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
 PKG_SHORTDESC="Libretro implementation of PicoDrive. (Sega Megadrive/Genesis/Sega Master System/Sega GameGear/Sega CD/32X)"
@@ -35,12 +35,24 @@ PKG_LONGDESC="This is yet another Megadrive / Genesis / Sega CD / Mega CD / 32X 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+configure_host() {
+  :
+}
+
+make_host() {
+  make -C ../cpu/cyclone CONFIG_FILE=../cyclone_config.h
+}
+
+makeinstall_host() {
+  :
+}
+
 configure_target() {
   :
 }
 
 make_target() {
-  make -j 1 -C .. -f Makefile.libretro platform=armv6
+  make -C .. -f Makefile.libretro platform=armv6
 }
 
 makeinstall_target() {
