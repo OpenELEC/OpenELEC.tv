@@ -1,8 +1,5 @@
 # Name of the Distro to build (full name, without special charcters)
   DISTRONAME="OpenELEC"
-  if [ "$XBMC" = "master" ]; then
-    DISTRONAME="${DISTRONAME}_Gotham"
-  fi
 
 # short project description
   DESCRIPTION="Lakka is a fast and userfriendly Retroarch distribution."
@@ -154,6 +151,9 @@
 # build and install ALSA Audio support (yes / no)
   ALSA_SUPPORT="no"
 
+# build and install PulseAudio support (yes / no)
+  PULSEAUDIO_SUPPORT="no"
+
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
   NONFREE_SUPPORT="yes"
@@ -254,7 +254,7 @@
 # include uvesafb support (yes / no)
   UVESAFB_SUPPORT="no"
 
-# Displayserver to use (xorg-server / no)
+# Displayserver to use (x11 / no)
   DISPLAYSERVER="no"
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
