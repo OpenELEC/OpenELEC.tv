@@ -18,19 +18,34 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="scummvm"
+PKG_VERSION="c464a1a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch scummvm handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/scummvm"
+PKG_URL="http://$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="ScummVM with libretro backend."
+PKG_LONGDESC="ScummVM is a program which allows you to run certain classic graphical point-and-click adventure games, provided you already have their data files."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+export CXXFLAGS="$CXXFLAGS -DHAVE_POSIX_MEMALIGN=1"
+
+configure_target() {
+  :
+}
+
+make_target() {
+  make -C ../backends/platform/libretro/build/
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp ../backends/platform/libretro/build/scummvm_libretro.so $INSTALL/usr/lib/libretro/libretro-scummvm.so
+}
