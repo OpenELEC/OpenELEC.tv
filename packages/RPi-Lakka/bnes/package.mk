@@ -37,5 +37,5 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/libretro-bnes.so
+  cp libretro.so $INSTALL/usr/lib/libretro/bnes_libretro.so
 }

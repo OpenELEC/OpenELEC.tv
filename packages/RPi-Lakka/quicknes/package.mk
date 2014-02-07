@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro/quicknes_libretro.so $INSTALL/usr/lib/libretro/libretro-quicknes.so
+  cp libretro/quicknes_libretro.so $INSTALL/usr/lib/libretro/
 }

@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp vba_next_libretro.so $INSTALL/usr/lib/libretro/libretro-vba-next.so
+  cp vba_next_libretro.so $INSTALL/usr/lib/libretro/
 }

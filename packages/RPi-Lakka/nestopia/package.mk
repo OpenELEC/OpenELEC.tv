@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro/nestopia_libretro.so $INSTALL/usr/lib/libretro/libretro-nestopia.so
+  cp libretro/nestopia_libretro.so $INSTALL/usr/lib/libretro/
 }

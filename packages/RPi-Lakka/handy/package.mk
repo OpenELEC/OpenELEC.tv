@@ -37,5 +37,5 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp handy_libretro.so $INSTALL/usr/lib/libretro/libretro-handy.so
+  cp handy_libretro.so $INSTALL/usr/lib/libretro/
 }

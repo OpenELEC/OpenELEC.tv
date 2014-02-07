@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../libretro/meteor_libretro.so $INSTALL/usr/lib/libretro/libretro-meteor.so
+  cp ../libretro/meteor_libretro.so $INSTALL/usr/lib/libretro/
 }

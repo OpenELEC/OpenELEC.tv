@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/libretro-imame4all.so
+  cp libretro.so $INSTALL/usr/lib/libretro/imame4all_libretro.so
 }

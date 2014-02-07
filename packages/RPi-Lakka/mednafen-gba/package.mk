@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp mednafen_gba_libretro.so $INSTALL/usr/lib/libretro/libretro-mednafen-gba.so
+  cp mednafen_gba_libretro.so $INSTALL/usr/lib/libretro/
 }

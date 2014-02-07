@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../src/libretro/vbam_libretro.so $INSTALL/usr/lib/libretro/libretro-vbam.so
+  cp ../src/libretro/vbam_libretro.so $INSTALL/usr/lib/libretro/
 }

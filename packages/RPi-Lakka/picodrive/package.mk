@@ -57,5 +57,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../picodrive_libretro.so $INSTALL/usr/lib/libretro/libretro-picodrive.so
+  cp ../picodrive_libretro.so $INSTALL/usr/lib/libretro/
 }
