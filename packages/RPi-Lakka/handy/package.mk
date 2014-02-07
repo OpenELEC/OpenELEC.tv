@@ -18,19 +18,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="handy"
+PKG_VERSION="d7344bb"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="Zlib"
+PKG_SITE="https://github.com/libretro/libretro-handy"
+PKG_URL="http://$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="K. Wilkins' Atari Lynx emulator Handy for libretro"
+PKG_LONGDESC="Handy is an Atari Lynx Emulator for Windows 95/98/NT/2000. Handy was the original name of the Lynx project that was started at Epyx and then finished by Atari."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp handy_libretro.so $INSTALL/usr/lib/libretro/libretro-handy.so
+}
