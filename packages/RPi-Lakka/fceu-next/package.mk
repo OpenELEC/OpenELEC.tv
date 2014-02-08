@@ -35,15 +35,11 @@ PKG_LONGDESC="FCEUX is a Nintendo Entertainment System (NES), Famicom, and Famic
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-#pre_configure_target() {
-#  sed -i -e "s/CC         = gcc//" Makefile
-#}
-
 make_target() {
-  make -f Makefile.libretro-fceux
+  make -C fceumm-code -f Makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/fceu_next_libretro.so
+  cp fceumm-code/fceumm_libretro.so $INSTALL/usr/lib/libretro/
 }
