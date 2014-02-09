@@ -18,19 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="fba"
+PKG_VERSION="158022f"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch fba pcsx_rearmed scummvm handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="Non-commercial"
+PKG_SITE="https://github.com/libretro/fba-libretro"
+PKG_URL="http://$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Port of Final Burn Alpha to Libretro."
+PKG_LONGDESC="Currently, FB Alpha supports games on Capcom CPS-1 and CPS-2 hardware, SNK Neo-Geo hardware, Toaplan hardware, Cave hardware, and various games on miscellaneous hardware. "
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make -C svn-current/trunk/ -f makefile.libretro
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp svn-current/trunk/fb_alpha_libretro.so $INSTALL/usr/lib/libretro/
+}
