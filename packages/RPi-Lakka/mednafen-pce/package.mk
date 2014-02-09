@@ -18,19 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="mednafen-pce"
+PKG_VERSION="8496dd3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/mednafen-libretro"
+PKG_URL="http://$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Mednafen PCE. (PC Engine)"
+PKG_LONGDESC="libretro implementation of Mednafen PCE. (PC Engine)"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make core=pce-fast
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mednafen_pce_fast_libretro.so $INSTALL/usr/lib/libretro/
+}

@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d mednafen-pce.git ]; then
+    git clone https://github.com/libretro/mednafen-libretro.git -b master mednafen-pce.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd mednafen-pce.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
+
+echo "copying sources..."
+  rm -rf mednafen-pce-$GIT_REV
+  cp -R mednafen-pce.git mednafen-pce-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf mednafen-pce-$GIT_REV/.git
+  rm mednafen-pce-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf mednafen-pce-$GIT_REV.tar.xz mednafen-pce-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf mednafen-pce-$GIT_REV
