@@ -276,9 +276,15 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     # create release tarball
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
-    # create image files if requested
-      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
-        # variables used in image script must be passed
+    # create image files if requested - variables used in image script must be passed
+      if [ "$1" = "mkimage" -a "$BOOTLOADER" = "atv-bootloader" ]; then
+        sudo env \
+          ROOT="$ROOT" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          TARGET="$TARGET_IMG" \
+          IMGNAME="$IMAGE_NAME" \
+          $SCRIPTS/mkimage-atv
+      elif [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
         sudo env \
           PATH="$PATH" \
           ROOT="$ROOT" \
