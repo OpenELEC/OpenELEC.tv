@@ -1,0 +1,10 @@
+--- origin/Makefile	2014-02-10 23:00:38.044337587 +0100
++++ patch/Makefile	2014-02-10 23:00:56.084337729 +0100
+@@ -13,7 +13,6 @@
+ endif
+ endif
+ 
+-CC         = gcc
+ DOOMSRC    = src
+ PORTSRCDIR = src
+ LMADSRCDIR = libmad

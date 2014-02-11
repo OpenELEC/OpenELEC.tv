@@ -18,19 +18,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="prboom"
+PKG_VERSION="4b0db5e"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes-libretro genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam-libretro mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="GPLv3"
+PKG_SITE="https://github.com/libretro/libretro-prboom"
+PKG_URL="http://$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Doom"
+PKG_LONGDESC="libretro implementation of Doom"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp prboom_libretro.so $INSTALL/usr/lib/libretro/prboom_libretro.so
+}
