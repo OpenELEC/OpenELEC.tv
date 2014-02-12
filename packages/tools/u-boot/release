@@ -20,9 +20,14 @@
 
 . config/options $1
 
+mkdir -p $RELEASE_DIR/3rdparty/bootloader
+
+if [ "$UBOOT_VERSION" = "sunxi" ]; then
+  cp -PR $BUILD/u-boot-*/u-boot-sunxi-with-spl.bin $RELEASE_DIR/3rdparty/bootloader
+  $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/board.fex $RELEASE_DIR/3rdparty/bootloader/script.bin
+fi
 if [ -z "$UBOOT_CONFIGFILE" ]; then
   UBOOT_CONFIGFILE="boot.scr"
 fi
 
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader
+cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader

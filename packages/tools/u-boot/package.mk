@@ -21,6 +21,10 @@ if [ "$UBOOT_VERSION" = "default" ]; then
   PKG_VERSION="2011.03-rc1"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+elif [ "$UBOOT_VERSION" = "sunxi" ]; then
+  PKG_VERSION="af9f405"
+  PKG_SITE="https://github.com/linux-sunxi/u-boot-sunxi"
+  PKG_URL="http://localhost/u-boot-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_VERSION="imx6-cuboxi-efc4835"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
@@ -30,6 +34,9 @@ PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="GPL"
 PKG_DEPENDS_TARGET="toolchain"
+if [ "$UBOOT_VERSION" = "sunxi" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host"
+fi
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
 PKG_SHORTDESC="u-boot: Universal Bootloader project"
