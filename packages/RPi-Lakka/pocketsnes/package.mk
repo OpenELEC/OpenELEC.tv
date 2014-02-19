@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d pocketsnes-libretro.git ]; then
-    git clone https://github.com/ToadKing/pocketsnes-libretro.git -b master pocketsnes-libretro.git
-  fi
+PKG_NAME="pocketsnes"
+PKG_VERSION="fccecaa"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/ToadKing/pocketsnes-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="An ARM-based SNES emulator for libretro"
+PKG_LONGDESC="An ARM-based SNES emulator for libretro"
 
-  cd pocketsnes-libretro.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf pocketsnes-libretro-$GIT_REV
-  cp -R pocketsnes-libretro.git pocketsnes-libretro-$GIT_REV
+pre_configure_target() {
+  sed -i -e "s/CC         = gcc//" Makefile
+}
 
-echo "cleaning sources..."
-  rm -rf pocketsnes-libretro-$GIT_REV/.git
-  rm pocketsnes-libretro-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf pocketsnes-libretro-$GIT_REV.tar.xz pocketsnes-libretro-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf pocketsnes-libretro-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp libretro.so $INSTALL/usr/lib/libretro/pocketsnes_libretro.so
+}
