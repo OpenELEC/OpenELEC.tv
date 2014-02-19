@@ -18,23 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="dinothawr"
+PKG_VERSION="5a1e31c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/Dinothawr"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Dinothawr is a block pushing puzzle game on slippery surfaces"
+PKG_LONGDESC="Dinothawr is a block pushing puzzle game on slippery surfaces. Our hero is a dinosaur whose friends are trapped in ice. Through puzzles it is your task to free the dinos from their ice prison."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS samba"
-fi
+pre_configure_target() {
+  strip_gold
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp dinothawr_libretro.so $INSTALL/usr/lib/libretro/
+}
