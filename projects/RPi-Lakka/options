@@ -1,17 +1,15 @@
 # Name of the Distro to build (full name, without special charcters)
-  DISTRONAME="OpenELEC"
+  DISTRONAME="Lakka"
 
 # short project description
-  DESCRIPTION="Lakka is a fast and userfriendly Retroarch distribution."
+  DESCRIPTION="Lakka is a lightweight Linux distribution that transforms a credit card sized computer into a full blown emulation console."
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
-  GREETING0="#########"
-  GREETING1="# Lakka #"
-  GREETING2="#########"
-  GREETING3=""
-
-# Hostname for target system (openelec)
-  HOSTNAME="lakka"
+  GREETING0="##############################################"
+  GREETING1="# Lakka - The DIY retro emulation console    #"
+  GREETING2="# ....... visit http://www.lakka.tv ........ #"
+  GREETING3="##############################################"
+  GREETING4=""
 
 # Root password to integrate in the target system
   ROOT_PASSWORD="root"
@@ -214,10 +212,10 @@
   AFP_SUPPORT="no"
 
 # build and install Samba Client support (yes / no)
-  SAMBA_SUPPORT="no"
+  SAMBA_SUPPORT="yes"
 
 # build and install Samba Server (yes / no)
-  SAMBA_SERVER="no"
+  SAMBA_SERVER="yes"
 
 # build and install SFTP Server (yes / no)
   SFTP_SERVER="no"
@@ -359,4 +357,4 @@
   ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
 
 # choose a package mirror
-  LAKKA_MIRROR="62.210.201.191"
+  LAKKA_MIRROR="http://sources.lakka.tv"

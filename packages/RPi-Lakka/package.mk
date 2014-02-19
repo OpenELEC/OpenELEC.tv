@@ -34,3 +34,7 @@ PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+if [ "$SAMBA_SUPPORT" = yes ]; then
+  PKG_DEPENDS="$PKG_DEPENDS samba"
+fi
