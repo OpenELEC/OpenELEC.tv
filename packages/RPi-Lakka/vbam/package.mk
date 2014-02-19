@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d vbam-libretro.git ]; then
-    git clone https://github.com/libretro/vbam-libretro.git -b master vbam-libretro.git
-  fi
+PKG_NAME="vbam"
+PKG_VERSION="122ea09"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/libretro/vbam-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="A fork of VBA-M with libretro integration"
+PKG_LONGDESC="VBA-M is a [Super] Game Boy [Color / Advance] emulator for Windows, Linux & Mac."
 
-  cd vbam-libretro.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf vbam-libretro-$GIT_REV
-  cp -R vbam-libretro.git vbam-libretro-$GIT_REV
+make_target() {
+  make -C ../src/libretro -f Makefile
+}
 
-echo "cleaning sources..."
-  rm -rf vbam-libretro-$GIT_REV/.git
-  rm vbam-libretro-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf vbam-libretro-$GIT_REV.tar.xz vbam-libretro-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf vbam-libretro-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp ../src/libretro/vbam_libretro.so $INSTALL/usr/lib/libretro/
+}
