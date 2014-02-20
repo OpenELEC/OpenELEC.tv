@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="core-info"
-PKG_VERSION="7a201cd"
+PKG_VERSION="9bad5b5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -29,7 +29,7 @@ PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
-PKG_SHORTDESC="Super repo for other libretro projects. Fetches, builds and installs."
+PKG_SHORTDESC="Info files for libretro cores"
 PKG_LONGDESC="Super repo for other libretro projects. Fetches, builds and installs."
 
 PKG_IS_ADDON="no"
@@ -42,7 +42,6 @@ make_target() {
 configure-target() {
   :
 }
-
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
