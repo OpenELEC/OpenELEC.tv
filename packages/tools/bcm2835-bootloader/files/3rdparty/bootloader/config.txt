@@ -102,3 +102,4 @@ disable_overscan=1
 # and can be merged with the above values
 ################################################################################
 disable_splash=1
+hdmi_drive=2
