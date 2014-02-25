@@ -7,10 +7,10 @@
         <key>Boot Fail Logo</key>
         <string></string>
         <key>Boot Logo</key>
-        <string>BootLogo.png</string>
+        <string>BootLogoSwiss.png</string>
         <key>Kernel</key>
         <string>mach_kernel</string>
         <key>Kernel Flags</key>
-        <string>atv-boot=none video=vesafb</string>
+        <string>atv-boot=patchstick logo.nologo quiet video=vesafb</string>
 </dict>
 </plist>
