@@ -73,6 +73,8 @@ makeinstall_target() {
   #sed -i -e "s/# video_force_aspect = true/video_force_aspect = true/" $INSTALL/etc/retroarch.cfg
   #sed -i -e "s/# video_aspect_ratio =/video_aspect_ratio = 1.7777777/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_aspect_ratio_auto = false/video_aspect_ratio_auto = true/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_vsync = true/video_vsync = false/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
   
   # Input
   sed -i -e "s/# input_driver = sdl/input_driver = sdl/" $INSTALL/etc/retroarch.cfg
