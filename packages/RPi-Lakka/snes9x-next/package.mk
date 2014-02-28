@@ -18,23 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="snes9x-next"
+PKG_VERSION="615b8a1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="Non-commercial"
+PKG_SITE="https://github.com/libretro/snes9x-next"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Optimized port/rewrite of SNES9x 1.52+ to Libretro."
+PKG_LONGDESC="Optimized port/rewrite of SNES9x 1.52+ to Libretro."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS samba"
-fi
+make_target() {
+  make -f Makefile.libretro
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp snes9x_next_libretro.so $INSTALL/usr/lib/libretro/
+}

@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,23 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d snes9x-next.git ]; then
+    git clone https://github.com/libretro/snes9x-next.git -b master snes9x-next.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd snes9x-next.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS samba"
-fi
+echo "copying sources..."
+  rm -rf snes9x-next-$GIT_REV
+  cp -R snes9x-next.git snes9x-next-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf snes9x-next-$GIT_REV/.git
+  rm snes9x-next-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf snes9x-next-$GIT_REV.tar.xz snes9x-next-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf snes9x-next-$GIT_REV
