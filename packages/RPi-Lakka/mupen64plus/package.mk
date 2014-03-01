@@ -18,23 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
-PKG_VERSION=""
+PKG_NAME="mupen64plus"
+PKG_VERSION="b28bb4e"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="GPLv3"
+PKG_SITE="https://github.com/libretro/mupen64plus-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Doom"
+PKG_LONGDESC="libretro implementation of Doom"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS samba"
-fi
+make_target() {
+  make platform=rpi
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mupen64plus_libretro.so $INSTALL/usr/lib/libretro/mupen64plus_libretro.so
+}
