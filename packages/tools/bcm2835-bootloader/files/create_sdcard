@@ -18,7 +18,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# usage:   sudo ./create_sdcard <drive>
+# usage:   sudo ./create_sdcard [options] <drive>
 # example: sudo ./create_sdcard /dev/sdb
 # loop example: sudo ./create_sdcard /dev/loop0 ~/vSD.img
 
@@ -34,6 +34,16 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
+USB=
+while [ $# -gt 0 ]
+do
+    case "$1" in
+	-u) USB="$2"; shift;;
+	 *) break;;
+    esac
+    shift
+done
+
 if [ -z "$1" ]; then
   clear
   echo "#########################################################"
@@ -41,6 +51,7 @@ if [ -z "$1" ]; then
   echo "# example: sudo ./create_sdcard /dev/sdb                #"
   echo "# or:      sudo ./create_sdcard /dev/mmcblk0            #"
   echo "# or:      sudo ./create_sdcard /dev/loop0 ~/vSD.img    #"
+  echo "# or:      sudo ./create_sdcard -u /dev/sdc /dev/sdb    #"
   echo "# to create an image file for /dev/loop0 option:        #"
   echo "#   sudo dd if=/dev/zero of=~/vSD.img bs=1M count=910   #"
   echo "#########################################################"
@@ -159,6 +170,28 @@ echo "#########################################################"
     exit 1
   fi
 
+  if [ "$USB" = "$DISK" ]; then
+    echo "USB device must not be the same as SD card device"
+    exit 1
+  fi
+
+  maybe_list_devices()
+  {
+    LSBLK=$(lsblk 2>/dev/null) && echo list of block devices: && echo "$LSBLK"
+  }
+
+  if [ ! -b "$DISK" ]; then
+    echo "SD device $DISK does not exist"
+    maybe_list_devices
+    exit 1
+  fi
+
+  if [ -n "$USB" ] && [ ! -b "$USB" ]; then
+    echo "USB device $USB does not exist"
+    maybe_list_devices
+    exit 1
+  fi
+
 # check MD5 sums
   echo "checking MD5 sum..."
 
@@ -186,8 +219,16 @@ echo "#########################################################"
     md5sumFailed
   fi
 
-# (TODO) umount everything (if more than one partition)
-  umount ${DISK}*
+  umount_all()
+  {  
+    for part in $( grep -oE `basename $1`[1-9]+ /proc/partitions ); do
+      echo "unmounting partition /dev/${part}..."
+      umount "/dev/${part}" 2>/dev/null
+    done
+  }
+
+# umount everything (if more than one partition)
+  umount_all ${DISK}
 
 # remove all partitions from the drive
   echo "writing new disklabel on $DISK (removing all partitions)..."
@@ -211,7 +252,11 @@ echo "#########################################################"
   mkfs.vfat "$PART1" -I -n System
 
   echo "creating filesystem on $PART2..."
-  mkfs.ext4 "$PART2" -L Storage
+  LABEL=Storage
+  if [ -n "$USB" ]; then
+    LABEL=SD
+  fi
+  mkfs.ext4 "$PART2" -L $LABEL
 
 # remount loopback device
   if [ "$DISK" = "/dev/loop0" ]; then
@@ -219,6 +264,47 @@ echo "#########################################################"
     losetup -d $DISK
     losetup $DISK $IMGFILE -o 1048576 --sizelimit 131071488
     PART1=$DISK
+  fi
+
+  STORAGE="/dev/mmcblk0p1"
+
+  if [ -n "$USB" ]; then
+
+    echo "#########################################################"
+    echo
+    echo "creating USB storage..."
+
+    umount_all ${USB}
+
+    echo "writing new disklabel on $USB (removing all partitions)..."
+    parted -s "$USB" mklabel msdos
+
+    echo "creating partition on $USB..."
+    parted -s -a none "$USB" mkpart primary ext2 0 100%
+
+    partprobe "$USB"
+
+    echo "creating filesystem on ${USB}1..."
+    mkfs.ext4 "${USB}1" -L Storage
+
+    mkdir -p /tmp/openelec_usb
+    mount "${USB}1" /tmp/openelec_usb
+
+    UUID=$(udevadm info -n ${USB}1 -q property 2> /dev/null | grep ID_FS_UUID= | cut -d= -f2)
+
+    if [ -z UUID ]; then
+      echo "unable to determine USB UUID, using LABEL=Storage instead"
+      STORAGE="LABEL=Storage"
+    else
+      echo "USB UUID is $UUID"
+      STORAGE="UUID=$UUID"
+    fi
+
+    umount /tmp/openelec_usb
+    rmdir /tmp/openelec_usb
+
+    echo "#########################################################"
+    echo
   fi
 
 # mount partition
@@ -231,7 +317,7 @@ echo "#########################################################"
 # create bootloader configuration
   echo "creating bootloader configuration..."
 
-  echo "boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 quiet" > $MOUNTPOINT/cmdline.txt
+  echo "boot=/dev/mmcblk0p1 disk=$STORAGE quiet" > $MOUNTPOINT/cmdline.txt
 
 # copy files
   echo "copying files to $MOUNTPOINT..."
