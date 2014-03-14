@@ -2,7 +2,7 @@
   DISTRONAME="Lakka"
 
 # short project description
-  DESCRIPTION="Lakka is a lightweight Linux distribution that transforms a credit card sized computer into a full blown emulation console."
+  DESCRIPTION="The DIY retro emulation console"
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
   GREETING0="##############################################"
