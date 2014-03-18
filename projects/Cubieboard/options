@@ -89,7 +89,7 @@
   UBOOT_VERSION="sunxi"
 
 # Configuration for u-boot
-  UBOOT_CONFIG="cubietruck_config"
+  UBOOT_CONFIG="cubieboard2_config"
 
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""
