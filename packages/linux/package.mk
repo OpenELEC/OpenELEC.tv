@@ -19,7 +19,7 @@
 PKG_NAME="linux"
 case "$LINUX" in
   linux-sun7i)
-    PKG_VERSION="0c92978"
+    PKG_VERSION="a6a667f"
     PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
