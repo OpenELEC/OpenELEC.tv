@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
 PKG_URL=""
-PKG_DEPENDS="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
+PKG_DEPENDS_TARGET="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
 PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
@@ -36,5 +36,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS samba"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
 fi

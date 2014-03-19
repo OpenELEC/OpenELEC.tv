@@ -22,7 +22,7 @@ if [ "$UBOOT_VERSION" = "default" ]; then
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
 elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
-  PKG_VERSION="imx6-cuboxi-920ea0f"
+  PKG_VERSION="imx6-cuboxi-efc4835"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 fi
@@ -83,8 +83,16 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/share/u-boot
     cp ./u-boot.bin $INSTALL/usr/share/u-boot
 
+  if [ -f "./u-boot.img" ]; then
+    cp ./u-boot.img $INSTALL/usr/share/u-boot
+  fi
+
   if [ -f "./MLO" ]; then
     cp ./MLO $INSTALL/usr/share/u-boot
+  fi
+
+  if [ -f "./SPL" ]; then
+    cp ./SPL $INSTALL/usr/share/u-boot
   fi
 
   if [ -f "./boot.cfg" ]; then

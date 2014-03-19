@@ -5,10 +5,10 @@
   DESCRIPTION="The DIY retro emulation console"
 
 # Welcome Message for e.g. SSH Server (up to 5 Lines)
-  GREETING0="##############################################"
-  GREETING1="# Lakka - The DIY retro emulation console    #"
-  GREETING2="# ....... visit http://www.lakka.tv ........ #"
-  GREETING3="##############################################"
+  GREETING0="###########################################"
+  GREETING1="# Lakka - The DIY retro emulation console #"
+  GREETING2="# ...... visit http://www.lakka.tv ...... #"
+  GREETING3="###########################################"
   GREETING4=""
 
 # Root password to integrate in the target system
@@ -76,8 +76,8 @@
       ;;
   esac
 
-# Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="speed"
+# Build optimizations (size/normal)
+  OPTIMIZATIONS="size"
 
 # Project CFLAGS
   PROJECT_CFLAGS=""
@@ -99,6 +99,15 @@
 
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""
+
+# Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
+  KERNEL_UBOOT_TARGET=""
+
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET=""
+
+# Additional kernel make parameters (for example to specify the u-boot loadaddress)
+  KERNEL_MAKE_EXTRACMD=""
 
 # install Berryboot support tools
   BERRYBOOT_TOOLS="no"
@@ -152,6 +161,9 @@
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
 
+# build and install espeak support (yes / no)
+  ESPEAK_SUPPORT="yes"
+
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
   NONFREE_SUPPORT="yes"
@@ -163,9 +175,6 @@
 # build and install with LAME cdrip encoder support
   ENCODER_LAME="no"
 
-# build and install with VORBIS cdrip encoder support
-  ENCODER_VORBIS="yes"
-
 # build and install with BluRay support (yes / no)
   BLURAY_SUPPORT="no"
 
@@ -174,9 +183,6 @@
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
   ADDITIONAL_DRIVERS="RTL8192CU RTL8188EU dvbhdhomerun"
-
-# build with network support (yes / no)
-  NETWORK="yes"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"
@@ -246,7 +252,7 @@
 # OpenGL-ES implementation to use (no / bcm2835-driver)
   OPENGLES="bcm2835-driver"
 
-# Windowmanager to use (ratpoison / none)
+# Windowmanager to use (ratpoison / fluxbox / dwm / none)
   WINDOWMANAGER="none"
 
 # include uvesafb support (yes / no)
@@ -257,7 +263,7 @@
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
 # Space separated list is supported,
-# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon nvidia nouveau"
+# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
   GRAPHIC_DRIVERS=""
 
 # XBMC Player implementation to use (default / bcm2835-driver)

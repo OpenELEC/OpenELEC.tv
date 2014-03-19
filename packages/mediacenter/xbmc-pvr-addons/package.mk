@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xbmc-pvr-addons"
-PKG_VERSION="af29425"
+PKG_VERSION="71e5b8c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,7 +32,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 if [ "$MYSQL_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS mysql"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mysql"
   PVRADDONS_MYSQL="--enable-mysql"
 else
   PVRADDONS_MYSQL="--disable-mysql"

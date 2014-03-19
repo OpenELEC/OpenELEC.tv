@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="iptables"
-PKG_VERSION="1.4.20"
+PKG_VERSION="1.4.21"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,5 +32,4 @@ PKG_LONGDESC="Iptables is used to set up, maintain, and inspect the tables of IP
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--with-kernel=$SYSROOT_PREFIX/usr"
-
+PKG_CONFIGURE_OPTS_TARGET="--with-kernel=$(kernel_path)"

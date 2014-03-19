@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="openssh"
-PKG_VERSION="6.5p1"
+PKG_VERSION="6.6p1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -68,6 +68,10 @@ post_makeinstall_target() {
   if [ ! $SFTP_SERVER = "yes" ]; then
     rm -rf $INSTALL/usr/lib/openssh/sftp-server
   fi
+  # k0p
+  rm -rf $INSTALL/usr/bin/ssh-add
+  rm -rf $INSTALL/usr/bin/ssh-agent
+  rm -rf $INSTALL/usr/bin/ssh-keyscan
 }
 
 post_install() {

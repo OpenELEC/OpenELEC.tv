@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://www.connman.net"
 PKG_URL="http://www.kernel.org/pub/linux/network/connman/$PKG_NAME-$PKG_VERSION.tar.xz"
 # PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain glib readline dbus iptables wpa_supplicant ntp Python pygobject dbus-python"
+PKG_DEPENDS_TARGET="toolchain glib readline dbus iptables wpa_supplicant ntp"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="connman: Network manager daemon"
@@ -83,7 +83,7 @@ PKG_MAKE_OPTS_TARGET="storagedir=/storage/.cache/connman \
                       statedir=/run/connman"
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/lib/systemd
+  rm -rf $INSTALL/usr/lib/systemd
 
   mkdir -p $INSTALL/usr/bin
     cp -P client/connmanctl $INSTALL/usr/bin
@@ -115,9 +115,7 @@ post_makeinstall_target() {
 post_install() {
   add_user system x 430 430 "service" "/var/run/connman" "/bin/sh"
   add_group system 430
-}
 
-post_install() {
   enable_service hostname.service
   enable_service loopback.service
   enable_service connman.service

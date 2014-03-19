@@ -73,111 +73,7 @@ mkdir -p /var/config
 cat "$SUNDTEK_ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/sundtek-addon.conf
 . /var/config/sundtek-addon.conf
 
-if [ "$AUTO_UPDATE" = "true" -a -f $SUNDTEK_ADDON_DIR/bin/mediasrv ]; then
-  logger -t Sundtek "### Checking for new Sundtek binary installer ###"
-  touch $SUNDTEK_ADDON_HOME/driver-version.txt
-  wget -O /tmp/sundtek-driver-version.txt http://sundtek.de/media/latest.phtml
-  md5_1=$(md5sum -b /tmp/sundtek-driver-version.txt | awk '{print $1}')
-  md5_2=$(md5sum -b $SUNDTEK_ADDON_HOME/driver-version.txt | awk '{print $1}')
-  if [ "$md5_1" != "$md5_2" ]; then
-    logger -t Sundtek "### Updating Sundtek binary installer ###"
-    rm -f $SUNDTEK_ADDON_DIR/bin/mediasrv
-  fi
-
-  rm -f /tmp/sundtek-driver-version.txt
-fi
-
-if [ ! -f $SUNDTEK_ADDON_DIR/bin/mediasrv ]; then
-  # remove renamed addon if exist
-  rm -fr "$HOME/.xbmc/addons/driver.dvb.sundtek"
-  rm -fr "$HOME/userdata/addon_data/driver.dvb.sundtek"
-
-  logger -t Sundtek "### Downloading installer ###"
-  cd $SUNDTEK_ADDON_DIR
-  mkdir -p bin lib tmp
-  cd tmp/
-
-  ARCH=$(sed -n 's|.*\.\([^-]*\)-.*|\1|p' /etc/release | tr -d '\n')
-  if [ "$ARCH" = "x86_64" ]; then
-    INSTALLER_URL="http://sundtek.de/media/netinst/64bit/installer.tar.gz"
-  elif [ "$ARCH" = "i386" ]; then
-    INSTALLER_URL="http://sundtek.de/media/netinst/32bit/installer.tar.gz"
-  elif [ "$ARCH" = "arm" ]; then
-    INSTALLER_URL="http://sundtek.de/media/netinst/armsysvhf/installer.tar.gz"
-
-    # enable HW PID filter on RPi by default
-    sed -i 's|^use_hwpidfilter=.*|use_hwpidfilter=on|g' $SUNDTEK_ADDON_DIR/config/sundtek.conf
-    sed -i 's|^use_hwpidfilter=.*|use_hwpidfilter=on|g' $SUNDTEK_ADDON_HOME/sundtek.conf
-    sed -i 's|.*id="ENABLE_HW_PID_FILTER".*|<setting id="ENABLE_HW_PID_FILTER" value="true" />|' $SUNDTEK_ADDON_DIR/settings-default.xml
-    sed -i 's|.*id="ENABLE_HW_PID_FILTER".*|<setting id="ENABLE_HW_PID_FILTER" value="true" />|' $SUNDTEK_ADDON_SETTINGS
-  else
-    logger -t Sundtek "### Unsupported architecture ###"
-    cd ..
-    rm -fr tmp/
-    exit 1
-  fi
-
-  wget -O installer.tar.gz $INSTALLER_URL
-  wget -O ../driver-version.txt http://sundtek.de/media/latest.phtml
-  logger -t Sundtek "### Extracting installer ###"
-  tar -xzf installer.tar.gz
-  if [ $? -ne 0 ]; then
-    logger -t Sundtek "### Installer damaged ###"
-    cd ..
-    rm -fr tmp/
-    exit 2
-  fi
-
-  cp -Pa opt/bin/* ../bin/
-  cp -Pa opt/lib/* ../lib/
-  cp ../driver-version.txt $SUNDTEK_ADDON_HOME/
-  cd ..
-  rm -fr tmp/
-  logger -t Sundtek "### Installer finished ###"
-
-  cat "$SUNDTEK_ADDON_SETTINGS" | awk -F\" '{print $2"=\""$4"\""}' | sed '/^=/d' > /var/config/sundtek-addon.conf
-  . /var/config/sundtek-addon.conf
-fi
-
-if [ ! -f $SUNDTEK_ADDON_HOME/driver-version.txt ]; then
-  cp $SUNDTEK_ADDON_DIR/driver-version.txt $SUNDTEK_ADDON_HOME/
-fi
-
-# enable to install same addon package version again
-#rm -f /storage/.xbmc/addons/packages/driver.dvb.sundtek*
-
-# add alias for /opt/bin/mediaclient
-alias_set="$(grep libmediaclient.so /storage/.profile 2>/dev/null)"
-if [ -z "$alias_set" ]; then
-  echo "" >>/storage/.profile
-  echo "[ -f /storage/.xbmc/addons/driver.dvb.sundtek-mediatv/lib/libmediaclient.so ] && export LD_PRELOAD=/storage/.xbmc/addons/driver.dvb.sundtek-mediatv/lib/libmediaclient.so" >>/storage/.profile
-  echo "" >>/storage/.profile
-else
-  # fix name
-  sed -i 's|/driver.dvb.sundtek/|/driver.dvb.sundtek-mediatv/|g' /storage/.profile
-fi
-
 export LD_PRELOAD=$SUNDTEK_ADDON_DIR/lib/libmediaclient.so
-
-if [ "$ANALOG_TV" = "true" -a ! -f "$SUNDTEK_ADDON_DIR/bin/plugins/lib/libavcodec.so.54.12.100" ]; then
-  logger -t Sundtek "### Downloading missing ffmpeg libraries ###"
-  cd $SUNDTEK_ADDON_DIR/bin
-  mkdir -p plugins/
-  cd plugins/
-
-  ARCH=$(sed -n 's|.*\.\([^-]*\)-.*|\1|p' /etc/release | tr -d '\n')
-  wget -O sundtek-ffmpeg-analog_tv-lib.tgz http://dl.dropbox.com/u/8224157/public/sundtek/sundtek-ffmpeg-analog_tv-lib-$ARCH.tgz
-
-  logger -t Sundtek "### Extracting ffmpeg libraries ###"
-  tar -xzf sundtek-ffmpeg-analog_tv-lib.tgz
-  if [ $? -ne 0 ]; then
-    logger -t Sundtek "### Ffmpeg library archive damaged ###"
-    rm -f sundtek-ffmpeg-analog_tv-lib.tgz
-    exit 2
-  fi
-
-  rm -f sundtek-ffmpeg-analog_tv-lib.tgz
-fi
 
 if [ -z "$(pidof mediasrv)" ]; then
   rm -f /var/log/mediasrv.log
@@ -324,12 +220,6 @@ if [ -z "$(pidof mediasrv)" ]; then
     sleep $SETTLE_TIME
   fi
 
-  if [ "$ANALOG_TV" = "true" ]; then
-    logger -t Sundtek "### Switching to analog TV mode ###"
-    #rm -fr /dev/dvb/
-    mediaclient --disable-dvb=/dev/dvb/adapter0
-  fi
-
   if [ "$RUN_USER_SCRIPT" = "true" -a -f "$SUNDTEK_ADDON_HOME/userscript.sh" ]; then
     logger -t Sundtek "### Running user script $SUNDTEK_ADDON_HOME/userscript.sh ###"
     cat $SUNDTEK_ADDON_HOME/userscript.sh | dos2unix >/var/run/sundtek-userscript.sh
@@ -339,7 +229,7 @@ if [ -z "$(pidof mediasrv)" ]; then
   # save adapter serial number in background
   sleep 5
   serial_number_old=$(cat $SUNDTEK_ADDON_HOME/adapters.txt 2>/dev/null)
-  serial_number_new=$(mediaclient -e | awk '/device / {print $0} /ID:/ {print $2}')
+  serial_number_new=$(mediaclient.bin -e | awk '/device / {print $0} /ID:/ {print $2}')
   if [ "$serial_number_old" != "$serial_number_new" ]; then
     echo "$serial_number_new" >$SUNDTEK_ADDON_HOME/adapters.txt
   fi
