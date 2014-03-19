@@ -27,7 +27,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.13.2"
+    PKG_VERSION="3.13.6"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -54,7 +54,7 @@ fi
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
 if [ "$BOOTLOADER" = "u-boot" ]; then
-  KERNEL_IMAGE="uImage"
+  KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
 else
   KERNEL_IMAGE="bzImage"
 fi
@@ -137,7 +137,13 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  LDFLAGS="" make $KERNEL_IMAGE
+  LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
+
+  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
+    for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
+      LDFLAGS="" make $extra_target
+    done
+  fi
 
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
     ( cd tools/perf
@@ -168,6 +174,13 @@ make_target() {
 }
 
 makeinstall_target() {
+  if [ "$BOOTLOADER" = "u-boot" ]; then
+    mkdir -p $INSTALL/usr/share/u-boot
+    for dtb in arch/arm/boot/dts/*.dtb; do
+      cp $dtb $INSTALL/usr/share/u-boot
+    done
+  fi
+
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
     mkdir -p $INSTALL/usr/bin
       cp -P tools/perf/perf $INSTALL/usr/bin/

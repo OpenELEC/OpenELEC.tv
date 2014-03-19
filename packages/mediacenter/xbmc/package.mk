@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="13.alpha-73371a9"
+PKG_VERSION="13-a1cab7a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis"
+PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi gnutls tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="xbmc: XBMC Mediacenter"
@@ -86,6 +86,11 @@ if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
   XBMC_PULSEAUDIO="--enable-pulse"
 else
   XBMC_PULSEAUDIO="--disable-pulse"
+fi
+
+if [ "$ESPEAK_SUPPORT" = yes ]; then
+# for espeak support
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET espeak"
 fi
 
 if [ "$CEC_SUPPORT" = yes ]; then
@@ -248,6 +253,7 @@ else
 fi
 
 if [ "$SSHLIB_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libssh"
   XBMC_SSH="--enable-ssh"
 else
   XBMC_SSH="--disable-ssh"
@@ -308,6 +314,7 @@ export PYTHON_SITE_PKG="$SYSROOT_PREFIX/usr/lib/python$PYTHON_VERSION/site-packa
 export ac_python_version="$PYTHON_VERSION"
 
 PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
+                           ac_cv_lib_bluetooth_hci_devid=no \
                            --with-arch=$TARGET_ARCH \
                            --with-cpu=$TARGET_CPU \
                            --disable-debug \
@@ -384,9 +391,6 @@ pre_configure_target() {
 
 # Todo: XBMC segfaults on exit when building with LTO support
   strip_lto
-
-# xbmc fails to build with more then 4 cores
-  MAKEFLAGS=-j4
 
   export CFLAGS="$CFLAGS $XBMC_CFLAGS"
   export CXXFLAGS="$CXXFLAGS $XBMC_CXXFLAGS"
@@ -494,7 +498,7 @@ post_makeinstall_target() {
 
 post_install() {
 # link default.target to xbmc.target
-  ln -sf xbmc.target $INSTALL/lib/systemd/system/default.target
+  ln -sf xbmc.target $INSTALL/usr/lib/systemd/system/default.target
 
   enable_service xbmc-autostart.service
   enable_service xbmc-cleanlogs.service
@@ -506,6 +510,5 @@ post_install() {
   enable_service xbmc-reboot.service
   enable_service xbmc-waitonnetwork.service
   enable_service xbmc.service
-  enable_service xbmc-lcd-suspend.service
   enable_service xbmc-lirc-suspend.service
 }

@@ -176,7 +176,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # copy kernel to target dir
   if [ "$BOOTLOADER" = "u-boot" ]; then
-    KERNEL_IMAGE="uImage"
+    KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     KERNEL_IMAGE="zImage"
   else
@@ -277,7 +277,19 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
     # create image files if requested
-      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+      if [ "$1" = "mkimage" -a "$BOOTLOADER" = "atv-bootloader" ]; then
+        # variables used in image script must be passed
+        sudo env \
+          ROOT="$ROOT" \
+          BUILD="$BUILD" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          $SCRIPTS/mkimage-atv
+      elif [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+        if [ "$2" == "efi" ] ; then
+          UEFI=yes
+        fi
         # variables used in image script must be passed
         sudo env \
           PATH="$PATH" \
@@ -289,6 +301,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           RELEASE_DIR="$RELEASE_DIR" \
           UUID_SYSTEM="$(uuidgen)" \
           UUID_STORAGE="$(uuidgen)" \
+          UEFI="$UEFI" \
           $SCRIPTS/mkimage
       fi
 

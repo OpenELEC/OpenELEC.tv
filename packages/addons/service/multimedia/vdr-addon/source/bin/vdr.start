@@ -22,14 +22,6 @@
 
 oe_setup_addon service.multimedia.vdr-addon
 
-check_tmpfs_mount() {
-  grep " /var/run/vdr " /proc/mounts >/dev/null
-  if [ $? -ne 0 ] ; then
-    mkdir -p /var/run/vdr
-    mount -t tmpfs -o size=10% tmpfs /var/run/vdr
-  fi
-}
-
 fix_config() {
   if [ -f "$ADDON_CONFIG_DIR/setup.conf" ]; then
     sed -i -e '/^$/d' $ADDON_CONFIG_DIR/setup.conf
@@ -56,18 +48,6 @@ ADDON_CACHE_DIR="$ADDON_HOME/cache"
 if [ ! -f "$ADDON_CACHE_DIR" ]; then
   mkdir -p $ADDON_CACHE_DIR
 fi
-
-#handle epgsources
-mkdir -p /var/lib/epgsources
-mkdir -p $ADDON_HOME/config/epgsources
-for source in `find $ADDON_DIR/config/epgsources -type f`; do
-  if [ ! -e $ADDON_HOME/config/epgsources/`basename $source` ] ; then
-    cp $source $ADDON_HOME/config/epgsources/
-  fi
-done
-for source in `find $ADDON_HOME/config/epgsources -type f`; do
-  cp $source /var/lib/epgsources
-done
 
 VDR_ARG="-g /tmp --no-kbd"
 if [ "$DEBUG" = "yes" ]; then
@@ -96,12 +76,11 @@ if [ "$ENABLE_EXTERNAL_RECCMD" == "true" ] ; then
   fi
 fi
 
-VDR_ARG="$VDR_ARG -P $PVR_PLUGIN"
-VDR_ARG="$VDR_ARG -P wirbelscan -P wirbelscancontrol"
-
+# keep softcam first
 if [ "$ENABLE_SOFTCAM" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P $SOFTCAM_PLUGIN"
 fi
+VDR_ARG="$VDR_ARG -P wirbelscan -P wirbelscancontrol"
 if [ "$ENABLE_IPTV" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P iptv"
 fi
@@ -117,12 +96,33 @@ fi
 if [ "$ENABLE_CONTROL" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P 'control -p $CONTROL_PORT'"
 fi
+if [ "$ENABLE_EEPG" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P eepg"
+fi
 if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P epgsearch"
 fi
+if [ "$ENABLE_DUMMYDEVICE" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P dummydevice"
+fi
 if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P 'xmltv2vdr --epgfile=$ADDON_CACHE_DIR/epg.db'"
+  # xmltv2vdr needs /var/run/vdr
+  grep -q " /var/run/vdr " /proc/mounts || ( mkdir -p /var/run/vdr && mount -t tmpfs -o size=10% tmpfs /var/run/vdr )
+  #handle epgsources
+  mkdir -p /var/lib/epgsources
+  mkdir -p $ADDON_HOME/config/epgsources
+  for source in `find $ADDON_DIR/config/epgsources -type f`; do
+    if [ ! -e $ADDON_HOME/config/epgsources/`basename $source` ] ; then
+      cp $source $ADDON_HOME/config/epgsources/
+    fi
+  done
+  for source in `find $ADDON_HOME/config/epgsources -type f`; do
+    cp $source /var/lib/epgsources
+  done
 fi
+# vnsi/xvdr last
+VDR_ARG="$VDR_ARG -P $PVR_PLUGIN"
 
 cd $ADDON_DIR/config
 mkdir -p $ADDON_CONFIG_DIR
@@ -146,16 +146,18 @@ for driver_dvb in $(find /storage/.xbmc/addons/driver.dvb.*/bin/userspace-driver
 done
 
 # (wait for) at least 1 adapter (xbmc allows to set 0)
+# xbmc allows "numeric" type field to be empty. lets handle thaat
+[ "$NUM_ADAPTERS" = "" ] && NUM_ADAPTERS=1
+# 0 does not make sense. should be 1 or more
 [ $NUM_ADAPTERS -lt 1 ] && NUM_ADAPTERS=1
 if [ "$WAIT_FOR_FEINIT" == "true" ] ; then
   while [ true ] ; do
-    if [ -e /dev/dvb/adapter$((NUM_ADAPTERS-1))/frontend* ] ; then
+    if [ -e /dev/dvb/adapter$((NUM_ADAPTERS-1))/frontend0 ] ; then
       break
     fi
     sleep 1
   done
 fi
 
-check_tmpfs_mount
 fix_config
 eval LANG=en_US.UTF-8 exec vdr.bin $VDR_ARG

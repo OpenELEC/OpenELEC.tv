@@ -11,9 +11,6 @@
   GREETING3="##############################################"
   GREETING4=""
 
-# Hostname for target system (openelec)
-  HOSTNAME="openelec"
-
 # Root password to integrate in the target system
   ROOT_PASSWORD="openelec"
 
@@ -70,7 +67,7 @@
       ;;
   esac
 
-# Build optimizations (size/speed)
+# Build optimizations (size/normal)
   OPTIMIZATIONS="size"
 
 # Project CFLAGS
@@ -93,6 +90,15 @@
 
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""
+
+# Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
+  KERNEL_UBOOT_TARGET=""
+
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET=""
+
+# Additional kernel make parameters (for example to specify the u-boot loadaddress)
+  KERNEL_MAKE_EXTRACMD=""
 
 # GCC to use. values can be:
 # default:  default mainline gcc
@@ -145,6 +151,9 @@
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
+
+# build and install espeak support (yes / no)
+  ESPEAK_SUPPORT="yes"
 
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
@@ -234,8 +243,8 @@
 # OpenGL-ES implementation to use (no)
   OPENGLES="no"
 
-# Windowmanager to use (ratpoison / none)
-  WINDOWMANAGER="ratpoison"
+# Windowmanager to use (ratpoison / fluxbox / dwm / none)
+  WINDOWMANAGER="fluxbox"
 
 # include uvesafb support (yes / no)
   UVESAFB_SUPPORT="no"
@@ -245,7 +254,7 @@
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
 # Space separated list is supported,
-# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon nvidia nouveau"
+# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
   GRAPHIC_DRIVERS="nvidia-legacy"
 
 # XBMC Player implementation to use (default / bcm2835-driver)

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="samba"
-PKG_VERSION="3.6.22"
+PKG_VERSION="3.6.23"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -169,8 +169,8 @@ makeinstall_target() {
       cp ../codepages/upcase.dat $INSTALL/etc/samba
       cp ../codepages/valid.dat $INSTALL/etc/samba
 
-    mkdir -p $INSTALL/lib/systemd/system
-      cp $PKG_DIR/system.d.opt/* $INSTALL/lib/systemd/system
+    mkdir -p $INSTALL/usr/lib/systemd/system
+      cp $PKG_DIR/system.d.opt/* $INSTALL/usr/lib/systemd/system
 
     mkdir -p $INSTALL/usr/share/services
       cp -P $PKG_DIR/default.d/*.conf $INSTALL/usr/share/services
@@ -193,7 +193,9 @@ makeinstall_target() {
 }
 
 post_install() {
-      enable_service samba-defaults.service
-      enable_service nmbd.service
-      enable_service smbd.service
+  if [ "$SAMBA_SERVER" = "yes" ]; then
+    enable_service samba-defaults.service
+    enable_service nmbd.service
+    enable_service smbd.service
+  fi
 }
