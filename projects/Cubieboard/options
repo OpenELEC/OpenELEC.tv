@@ -11,9 +11,6 @@
   GREETING3="##############################################"
   GREETING4=""
 
-# Hostname for target system (openelec)
-  HOSTNAME="openelec"
-
 # Root password to integrate in the target system
   ROOT_PASSWORD="openelec"
 
@@ -70,7 +67,7 @@
       ;;
   esac
 
-# Build optimizations (size/normal/speed)
+# Build optimizations (size/normal)
   OPTIMIZATIONS="size"
 
 # Project CFLAGS
@@ -155,6 +152,9 @@
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
+
+# build and install espeak support (yes / no)
+  ESPEAK_SUPPORT="yes"
 
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
@@ -244,7 +244,7 @@
 # OpenGL-ES implementation to use (no / bcm2835-driver)
   OPENGLES="no"
 
-# Windowmanager to use (ratpoison / none)
+# Windowmanager to use (ratpoison / fluxbox / dwm / none)
   WINDOWMANAGER="none"
 
 # include uvesafb support (yes / no)
@@ -255,7 +255,7 @@
 
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
 # Space separated list is supported,
-# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeon nvidia nouveau"
+# e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
   GRAPHIC_DRIVERS=""
 
 # XBMC Player implementation to use (default / bcm2835-driver)
