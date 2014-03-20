@@ -18,6 +18,10 @@
 
 PKG_NAME="linux"
 case "$LINUX" in
+  linux-sun7i)
+    PKG_VERSION="a6a667f"
+    PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   imx6)
     PKG_VERSION="imx_3.0.35_4.1.0-5c73417"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -172,9 +176,11 @@ make_target() {
 makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" ]; then
     mkdir -p $INSTALL/usr/share/u-boot
-    for dtb in arch/arm/boot/dts/*.dtb; do
-      cp $dtb $INSTALL/usr/share/u-boot
-    done
+    if [ "$LINUX" != "linux-sun7i" ]; then
+      for dtb in arch/arm/boot/dts/*.dtb; do
+        cp $dtb $INSTALL/usr/share/u-boot
+      done
+    fi
   fi
 
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
