@@ -36,7 +36,11 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make platform=rpi
+  if [ "$PROJECT" == "RPi" ]; then
+    make platform=rpi
+  else
+    make
+  fi
 }
 
 makeinstall_target() {

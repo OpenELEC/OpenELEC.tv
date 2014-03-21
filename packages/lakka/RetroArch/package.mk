@@ -37,11 +37,10 @@ PKG_AUTORECONF="no"
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg"
 
 if [ "$PROJECT" == "RPi" ]; then
-  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGETPKG_DEPENDS_TARGET bcm2835-driver"
+  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
   export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
+  export LDFLAGS="$LDFLAGS -lGLESv2"
 fi
-
-export LDFLAGS="$LDFLAGS -lGLESv2"
 
 pre_configure_target() {
   cd $ROOT/$PKG_BUILD
@@ -73,6 +72,7 @@ makeinstall_target() {
   sed -i -e "s/# config_save_on_exit = false/config_save_on_exit = false/" $INSTALL/etc/retroarch.cfg
   
   # Video
+  sed -i -e "s/# video_fullscreen = false/video_fullscreen = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_smooth = true/video_smooth = false/" $INSTALL/etc/retroarch.cfg
   #sed -i -e "s/# video_force_aspect = true/video_force_aspect = true/" $INSTALL/etc/retroarch.cfg
   #sed -i -e "s/# video_aspect_ratio =/video_aspect_ratio = 1.7777777/" $INSTALL/etc/retroarch.cfg

@@ -187,7 +187,7 @@ echo "#########################################################"
 
 # create filesystem
   echo "creating filesystem on $PART..."
-  mkfs.vfat "$PART" -n OpenELEC
+  mkfs.vfat "$PART" -n Lakka
 
 # install syslinux
   echo "installing syslinux to $PART..."

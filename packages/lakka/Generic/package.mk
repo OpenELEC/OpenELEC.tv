@@ -18,48 +18,23 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="picodrive"
-PKG_VERSION="fd90b67"
+PKG_NAME="Generic"
+PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="MAME"
-PKG_SITE="https://github.com/libretro/picodrive"
-PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_BUILD_DEPENDS_TARGET="toolchain"
-PKG_DEPENDS_TARGET="$PKG_NAME:host"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
+PKG_URL=""
+PKG_DEPENDS_TARGET="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive genesis-plus-gx nxengine fceu-next gambatte stella vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
+PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
-PKG_SECTION="RetroArch"
-PKG_SHORTDESC="Libretro implementation of PicoDrive. (Sega Megadrive/Genesis/Sega Master System/Sega GameGear/Sega CD/32X)"
-PKG_LONGDESC="This is yet another Megadrive / Genesis / Sega CD / Mega CD / 32X / SMS emulator, which was written having ARM-based handheld devices in mind (such as smartphones and handheld consoles like GP2X and Pandora), but also runs on non-ARM little-endian hardware too."
+PKG_SECTION="virtual"
+PKG_SHORTDESC="Lakka metapackage for Generic"
+PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-configure_host() {
-  :
-}
-
-make_host() {
-  make -C ../cpu/cyclone CONFIG_FILE=../cyclone_config.h
-}
-
-makeinstall_host() {
-  :
-}
-
-configure_target() {
-  :
-}
-
-make_target() {
-  if [ "$ARCH" == "arm" ]; then
-    make -C .. -f Makefile.libretro platform=armv6
-  else
-    make -C .. -f Makefile.libretro
-  fi
-}
-
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp ../picodrive_libretro.so $INSTALL/usr/lib/libretro/
-}
+if [ "$SAMBA_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
+fi
