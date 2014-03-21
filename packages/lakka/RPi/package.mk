@@ -17,14 +17,24 @@
 #  the Free Software Foundation, 51 Franklin Street, Suite 500, Boston, MA 02110, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
-# Core (OpenSSL) environment variable.
-#
-# This file contains non-OpenELEC evironment variables as well as OpenELEC
-# evironment variables that are not user defined.
-#
-# set OpenSSL for armv6, see also:
-# http://archlinuxarm.org/forum/viewtopic.php?f=15&t=1694&start=20#p20813
-# https://github.com/archlinuxarm/PKGBUILDs/issues/242#issuecomment-8426407
-################################################################################
 
-export OPENSSL_armcap=6
+PKG_NAME="RPi"
+PKG_VERSION=""
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
+PKG_URL=""
+PKG_DEPENDS_TARGET="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prboom mednafen-pce fba pcsx_rearmed scummvm handy picodrive pocketsnes genesis-plus-gx nxengine fceu-next gambatte stella imame4all vbam mednafen-gba vba-next meteor nestopia quicknes libretro-ffmpeg retroarch-joypad-autoconfig core-info"
+PKG_BUILD_DEPENDS=""
+PKG_PRIORITY="optional"
+PKG_SECTION="virtual"
+PKG_SHORTDESC="Lakka metapackage for RPi"
+PKG_LONGDESC=""
+
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
+
+if [ "$SAMBA_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
+fi

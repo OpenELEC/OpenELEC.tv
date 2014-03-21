@@ -18,7 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi-Lakka"
+PKG_NAME="Cubieboard2"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
@@ -29,7 +29,7 @@ PKG_DEPENDS_TARGET="RetroArch mupen64plus vecx snes9x-next dosbox dinothawr prbo
 PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="RPi-Lakka metapackage"
+PKG_SHORTDESC="Lakka metapackage for Cubieboard2"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
