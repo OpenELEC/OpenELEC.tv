@@ -15,5 +15,5 @@ Please refer to our website (http://www.lakka.tv/getlakka?step=1) on how to setu
 
 ## Support
 
-* #lakka on irc.freenode.org
+* #lakkatv on irc.freenode.org
 * contact@lakka.tv
