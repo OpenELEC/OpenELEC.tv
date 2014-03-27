@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="RetroArch"
-PKG_VERSION="52c3207"
+PKG_VERSION="a3f6904"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -34,8 +34,6 @@ PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-vg"
-
 if [ "$PROJECT" == "RPi" ]; then
   export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
   export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
@@ -48,7 +46,7 @@ pre_configure_target() {
 }
 
 configure_target() {
-  ./configure --disable-vg
+  ./configure --disable-vg --disable-ffmpeg
 }
 
 makeinstall_target() {
