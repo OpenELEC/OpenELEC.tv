@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib SDL"
+PKG_DEPENDS_TARGET="toolchain alsa-lib"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -81,7 +81,7 @@ makeinstall_target() {
   sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
   
   # Input
-  sed -i -e "s/# input_driver = sdl/input_driver = sdl/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
   #sed -i -e "s/# input_joypad_driver =/input_joypad_driver = udev/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# input_autodetect_enable = true/input_autodetect_enable = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# joypad_autoconfig_dir =/joypad_autoconfig_dir = \/etc\/retroarch-joypad-autoconfig/" $INSTALL/etc/retroarch.cfg
