@@ -11,7 +11,7 @@ Lakka is a lightweight Linux distribution that transforms a credit card sized co
 
 ## Installation instructions
 
-Please refer to our website (http://www.lakka.tv/getlakka?step=1) on how to setup Lakka.
+Please refer to our website http://www.lakka.tv/getlakka on how to setup Lakka.
 
 ## Support
 
