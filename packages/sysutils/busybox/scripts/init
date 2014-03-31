@@ -569,6 +569,14 @@
     [ -f "/sysroot/usr/lib/systemd/systemd" ] || error "final_check" "Could not find system."
   }
 
+  bigfatwarning() {
+    echo ""
+    echo "BIG FAT WARNING"
+    echo ""
+    echo "$1"
+    echo ""
+  }
+
   if [ "${boot%%=*}" = "FILE" ]; then
     error "check arguments" "boot argument can't be FILE type..."
   fi
@@ -615,6 +623,7 @@
   # tell OE settings addon to disable updates
   if [ "$UPDATE_DISABLED" = "yes" ] ; then
     echo "" > /sysroot/dev/.update_disabled
+    bigfatwarning "You are booting from network. automatic updates will not work"
   fi
   # swap can not be used over nfs.(see scripts/mount-swap)
   if [ "$STORAGE_NETBOOT" = "yes" ] ; then
@@ -623,6 +632,7 @@
   # no suspend when booted from nonpersistent storage
   if [ "$SUSPEND_DISABLED" = "yes" ] ; then
     echo "" > /sysroot/dev/.suspend_disabled
+    bigfatwarning "You are booting from removable drive. suspend will not work"
   fi
   # switch to new sysroot and start real init
   exec /bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS
