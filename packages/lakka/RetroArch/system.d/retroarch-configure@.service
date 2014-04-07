@@ -1,0 +1,9 @@
+[Unit]
+Description=configure Retroarch for %I
+
+ConditionKernelCommandLine=!installer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/libretro/retroarch-configure %I
+RemainAfterExit=yes
