@@ -15,6 +15,6 @@ Please refer to our website http://www.lakka.tv/getlakka on how to setup Lakka.
 
 ## Support
 
-* [FAQ](wiki/FAQ)
+* [FAQ](https://github.com/lakkatv/Lakka/wiki/FAQ)
 * #lakkatv on irc.freenode.org
 * contact@lakka.tv
