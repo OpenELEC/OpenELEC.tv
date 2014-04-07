@@ -1,0 +1,90 @@
+KEY_0            = KEY_NUMERIC_0      # 0
+KEY_1            = KEY_NUMERIC_1      # 1
+KEY_2            = KEY_NUMERIC_2      # 2
+KEY_3            = KEY_NUMERIC_3      # 3
+KEY_4            = KEY_NUMERIC_4      # 4
+KEY_5            = KEY_NUMERIC_5      # 5
+KEY_6            = KEY_NUMERIC_6      # 6
+KEY_7            = KEY_NUMERIC_7      # 7
+KEY_8            = KEY_NUMERIC_8      # 8
+KEY_9            = KEY_NUMERIC_9      # 9
+KEY_MUTE         = KEY_MUTE           # Mute
+KEY_PAUSE        = KEY_PAUSE          # Pause
+KEY_INFO         = KEY_INFO           # Info
+KEY_VOLDOWN      = KEY_VOLUMEDOWN     # Volume Down
+KEY_VOLUP        = KEY_VOLUMEUP       # Volume Up
+KEY_CHDOWN       = KEY_CHANNELDOWN    # Channel Down
+KEY_CHUP         = KEY_CHANNELUP      # Channel Up
+KEY_FORWARD      = KEY_FORWARD        # Forward
+KEY_PLAY         = KEY_PLAY
+KEY_CLEAR        = KEY_CLEAR          # Clear
+KEY_BACK         = KEY_BACK           # BACK/Clear
+KEY_UP           = KEY_UP             # Up
+KEY_DOWN         = KEY_DOWN           # Direction Down
+KEY_MENU         = KEY_MENU           # Menu
+KEY_EXIT         = KEY_EXIT           # Back/Exit
+KEY_LEFT         = KEY_LEFT           # Direction Left
+KEY_RIGHT        = KEY_RIGHT          # Right Arrow
+KEY_OK           = KEY_OK             # Direction OK (also used for Enter)
+KEY_ENTER        = KEY_ENTER          # Enter (also used for Direction OK)
+KEY_STOP         = KEY_STOP           # Stop
+KEY_FFORWARD     = KEY_FASTFORWARD    # Forward
+KEY_REWIND       = KEY_REWIND         # Rewind
+KEY_RED          = KEY_RED            # Red
+KEY_GREEN        = KEY_GREEN          # Green
+KEY_YELLOW       = KEY_YELLOW         # Yellow
+KEY_BLUE         = KEY_BLUE           # Blue
+KEY_GUIDE        = KEY_EPG            # EPG
+KEY_RECORD       = KEY_RECORD         # Record
+
+## KEY_PREV         = KEY_PREVIOUS       # Prev TODO : recheck with rewind
+## BTN_LEFT           # Mouse Left
+## KEY_ANGLE          # Angle
+## KEY_AUDIO          # Audio / Music
+## KEY_CAMERA         # Pictures
+## KEY_CLOSE          # Close
+## KEY_CONTEXT_MENU   # DVD/Menu
+## KEY_DELETE         # Delete/Clear
+## KEY_DVD            # DVD Menu
+## KEY_EJECT          # Eject
+## KEY_ESC	           # Escape
+## KEY_F1
+## KEY_F2
+## KEY_F3
+## KEY_F4
+## KEY_F5
+## KEY_F6
+## KEY_FRAMEBACK      # Step back
+## KEY_FRAMEFORWARD   # Step forward
+## KEY_HOME           # Home
+## KEY_LANGUAGE       # Language
+## KEY_LAST           # Last CH
+## KEY_MEDIA          # Pictures
+## KEY_MEDIA_REPEAT   # Repeat
+## KEY_MODE           # Radio # Remap because we need the zoom key
+## KEY_MP3            # Music
+## KEY_NEXT           # Next
+## KEY_NUMERIC_POUND  # Hash (#)
+## KEY_NUMERIC_STAR   # Star (*)
+## KEY_OPTION         # Options
+## KEY_PAGEDOWN       # Ch-
+## KEY_PAGEUP         # Ch+
+## KEY_PLAYPAUSE      # Play/Pause
+## KEY_POWER          # Power
+## KEY_PRINT          # Print
+## KEY_PROG1          # Home
+## KEY_PROGRAM
+## KEY_PVR            # TV/DVR
+## KEY_RADIO          # Radio
+## KEY_SCREEN         # View
+## KEY_SHUFFLE        # Shuffle
+## KEY_SUBTITLE       # Subtitle
+## KEY_TAB            # Tab
+## KEY_TEXT           # Text
+## KEY_TIME           # Time
+## KEY_TUNER          # Tuner
+## KEY_TV             # PVR
+## KEY_VCR            # My TV
+## KEY_VIDEO          # Videos
+## KEY_WWW            # WWW
+## KEY_ZOOM           # Zoom
