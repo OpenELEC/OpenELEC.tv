@@ -88,6 +88,12 @@ makeinstall_target() {
   sed -i -e "s/# video_gpu_screenshot = true/video_gpu_screenshot = false/" $INSTALL/etc/retroarch.cfg
 }
 
+post_makeinstall_target() {
+  # Adding auto-configuration 
+  mkdir -p $INSTALL/usr/lib/libretro
+    cp -v $PKG_DIR/scripts/retroarch-configure $INSTALL/usr/lib/libretro
+}
+
 post_install() {  
   # link default.target to retroarch.target
   ln -sf retroarch.target $INSTALL/usr/lib/systemd/system/default.target

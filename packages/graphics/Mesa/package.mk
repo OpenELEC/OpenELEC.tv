@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="ftp://freedesktop.org/pub/mesa/10.1/MesaLib-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain Python:host makedepend:host libxml2:host expat glproto presentproto dri2proto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence"
+PKG_DEPENDS_TARGET="toolchain Python:host makedepend:host libxml2:host expat glproto dri2proto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence presentproto"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="mesa: 3-D graphics library with OpenGL API"
@@ -111,9 +111,7 @@ post_makeinstall_target() {
   # rename and relink for cooperate with nvidia drivers
     rm -rf $INSTALL/usr/lib/libGL.so
     rm -rf $INSTALL/usr/lib/libGL.so.1
-  # ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
-  # ln -sf $INSTALL/var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
+    ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
+    ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
     mv $INSTALL/usr/lib/libGL.so.1.2.0 $INSTALL/usr/lib/libGL_mesa.so.1
-    ln -sf /usr/lib/libGL_mesa.so.1 $INSTALL/usr/lib/libGL.so.1
-    ln -sf /usr/lib/libGL.so.1 $INSTALL/usr/lib/libGL.so
 }
