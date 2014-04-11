@@ -238,7 +238,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
         cp $ROOT/README* $RELEASE_DIR
         cp $ROOT/CHANGELOG* $RELEASE_DIR
-        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR
+        cp -R $CONFIG/release/lakka.ico $RELEASE_DIR
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
 
         if [ -n "$MEDIACENTER" ] ; then
@@ -356,7 +356,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         )
 
       # copy additional files
-        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR/System
+        cp -R $CONFIG/release/lakka.ico $RELEASE_DIR/System
         mkdir -p $RELEASE_DIR/System/licenses
           cp $ROOT/licenses/* $RELEASE_DIR/System/licenses
 

@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE OpenELEC LIVE USB Installer
+TITLE Lakka LIVE USB Installer
 mode con:cols=67 lines=17
 COLOR 17
 SET DRIVE=
@@ -14,7 +14,7 @@ rmdir "%windir%\OEAdminCheck" & goto gotPrivileges
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
@@ -48,7 +48,7 @@ IF ERRORLEVEL 1 GOTO BadMD5
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
@@ -73,12 +73,12 @@ if %DRIVE%==C: goto InvalidDrive
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
 ECHO.
-ECHO                     Installing OpenELEC to %DRIVE%
+ECHO                      Installing Lakka to %DRIVE%
 ECHO              Please wait approximately 20 seconds...
 ECHO.
 ECHO  *****************************************************************
@@ -88,7 +88,7 @@ ECHO.
 ECHO.
 ECHO.
 
-ECHO. | >NUL format %DRIVE% /V:OPENELEC /Q /FS:FAT32 /X
+ECHO. | >NUL format %DRIVE% /V:LAKKA /Q /FS:FAT32 /X
 IF ERRORLEVEL 1 goto InvalidDrive
 >NUL 3rdparty\syslinux\win32\syslinux.exe -f -m -a %DRIVE%
 >NUL copy target\* %DRIVE%
@@ -96,7 +96,7 @@ IF ERRORLEVEL 1 goto InvalidDrive
 >NUL copy INSTALL %DRIVE%
 >NUL copy README.md %DRIVE%
 >NUL copy RELEASE %DRIVE%
->NUL copy openelec.ico %DRIVE%
+>NUL copy lakka.ico %DRIVE%
 
 FOR /F "tokens=5" %%G IN ('vol %DRIVE% ^|find "-"') DO SET DRIVEUUID=%%G
 ECHO PROMPT 0 >> %DRIVE%\syslinux.cfg
@@ -104,7 +104,7 @@ ECHO DEFAULT installer >> %DRIVE%\syslinux.cfg
 ECHO. >> %DRIVE%\syslinux.cfg
 ECHO LABEL installer >> %DRIVE%\syslinux.cfg
 ECHO   KERNEL /KERNEL >> %DRIVE%\syslinux.cfg
-ECHO   APPEND boot=LABEL=OPENELEC installer quiet tty >> %DRIVE%\syslinux.cfg
+ECHO   APPEND boot=LABEL=LAKKA installer quiet tty >> %DRIVE%\syslinux.cfg
 ECHO. >> %DRIVE%\syslinux.cfg
 GOTO END
 
@@ -112,7 +112,7 @@ GOTO END
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
@@ -129,15 +129,15 @@ GOTO SelectDrive
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
 ECHO.
-ECHO       OpenELEC failed md5 check - Installation will now quit
+ECHO         Lakka failed md5 check - Installation will now quit
 ECHO.
 ECHO             Your original download is probably corrupt
-ECHO       Please visit www.openelec.tv and download another copy
+ECHO         Please visit www.lakka.tv and download another copy
 ECHO.
 ECHO  *****************************************************************
 ECHO.
@@ -150,12 +150,12 @@ EXIT
 CLS
 ECHO.
 ECHO.
-ECHO                     OpenELEC LIVE USB Installer
+ECHO                       Lakka LIVE USB Installer
 ECHO.
 ECHO.
 ECHO  *****************************************************************
 ECHO.
-ECHO  The OpenELEC LIVE USB Installer has been successfully copied to %DRIVE%
+ECHO  The Lakka LIVE USB Installer has been successfully copied to %DRIVE%
 ECHO             Please boot your HTPC off this USB stick
 ECHO.
 ECHO  *****************************************************************

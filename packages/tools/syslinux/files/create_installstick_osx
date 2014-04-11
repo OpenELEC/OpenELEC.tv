@@ -25,7 +25,7 @@ banner(){
   echo ""
   echo "********************************************************************************"
   echo "*                                                                              *"
-  echo "*              Welcome to the OpenELEC Mac OS X Livestick Creator!             *"
+  echo "*                Welcome to the Lakka Mac OS X Livestick Creator!              *"
   echo "*                                                                              *"
   echo "********************************************************************************"
 }
@@ -47,7 +47,7 @@ check_localtargetfolder(){
   if [ ! -f target/SYSTEM -a ! -f target/KERNEL ]; then
     echo ""
     echo "FAIL: Could not detect SYSTEM and KERNEL files. This script *must* be run from"
-    echo "      the root folder of the OpenELEC image you downloaded!" 
+    echo "      the root folder of the Lakka image you downloaded!" 
     echo ""
     exit 1
   fi
@@ -73,7 +73,7 @@ read_input(){
 
 check_target(){
   echo ""
-  echo "INFO: The following drives are available to create the OpenELEC USB on:"
+  echo "INFO: The following drives are available to create the Lakka USB on:"
   echo ""
   diskutil list | grep 0: | grep -v disk0 | awk '{print "/dev/"$5 " "$3 $4}'
   echo ""
@@ -146,8 +146,8 @@ prepare_target(){
   echo "INFO: Erasing existing partition schemes on ${TARGET}"
   dd if=/dev/zero of=${TARGET} bs=512 count=100 1>&3 2>&4
   gpt destroy ${TARGET} 1>&3 2>&4
-  echo "INFO: Creating MBR 'OPENELEC' disk on ${TARGET}"
-  diskutil eraseDisk MS-DOS OPENELEC MBR ${TARGET} 1>&3 2>&4
+  echo "INFO: Creating MBR 'LAKKA' disk on ${TARGET}"
+  diskutil eraseDisk MS-DOS LAKKA MBR ${TARGET} 1>&3 2>&4
   unmount_target
   chmod 755 3rdparty/macfiles/*
   cat 3rdparty/macfiles/mbr.bin > ${TARGET}
@@ -176,18 +176,18 @@ check_checksums(){
 
 copy_files(){
   mount_target
-  echo "INFO: Copying SYSTEM and KERNEL files to 'OPENELEC'"
-  cp -a target/KERNEL /Volumes/OPENELEC/
-  cp -a target/SYSTEM /Volumes/OPENELEC/
-  echo "INFO: Creating syslinux.cfg on 'OPENELEC'"
-  cat >/Volumes/OPENELEC/syslinux.cfg << EOF
+  echo "INFO: Copying SYSTEM and KERNEL files to 'LAKKA'"
+  cp -a target/KERNEL /Volumes/LAKKA/
+  cp -a target/SYSTEM /Volumes/LAKKA/
+  echo "INFO: Creating syslinux.cfg on 'LAKKA'"
+  cat >/Volumes/LAKKA/syslinux.cfg << EOF
 PROMPT 0
 DEFAULT installer
 
 LABEL installer
-  MENU LABEL Run OpenELEC Installer
+  MENU LABEL Run Lakka Installer
   KERNEL /KERNEL
-  APPEND boot=LABEL=OPENELEC installer quiet vga=current
+  APPEND boot=LABEL=LAKKA installer quiet vga=current
 
 EOF
 }

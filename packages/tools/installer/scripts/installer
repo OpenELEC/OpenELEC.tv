@@ -600,7 +600,7 @@ menu_main() {
   MSG_MENU="\n\ZbQuick Install:\Zn do a default installation on a specific device \
             \Z1\Zb(this will delete ALL data on this device!)\Zn \
             \n\ZbCustom Install:\Zn do a custom installation \
-            \n\ZbSetup:\Zn change some settings to run OpenELEC \
+            \n\ZbSetup:\Zn change some settings to run Lakka \
             \n\ZbBIOS Update:\Zn backup and update your BIOS (only for OEMs) \
             \n\ZbShow logfile:\Zn show and save the logfile \
             \n \
@@ -609,9 +609,9 @@ menu_main() {
 
   dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
     --title "$MSG_TITLE" --menu "$MSG_MENU" 20 70 5 \
-      1 "Quick Install of OpenELEC" \
-      2 "Custom Install of OpenELEC" \
-      3 "Setup OpenELEC" \
+      1 "Quick Install of Lakka" \
+      2 "Custom Install of Lakka" \
+      3 "Setup Lakka" \
       4 "BIOS update (only for OEM's)" \
       5 "Show logfile" 2> $TMPDIR/mainmenu
 
@@ -752,7 +752,7 @@ do_poweroff() {
 BETA="yes"
 INSTALLER_VERSION="0.2.6"
 OS_VERSION=$(lsb_release)
-BACKTITLE="OpenELEC Installer $INSTALLER_VERSION - $OS_VERSION"
+BACKTITLE="Lakka Installer $INSTALLER_VERSION - $OS_VERSION"
 
 TMPDIR="/tmp/installer"
 LOGFILE="$TMPDIR/install.log"

@@ -234,7 +234,7 @@ echo "#########################################################"
   cp 3rdparty/bootloader/boot.scr $MOUNTPOINT
   cp target/KERNEL $MOUNTPOINT/uImage
   cp target/SYSTEM $MOUNTPOINT
-  cp openelec.ico $MOUNTPOINT
+  cp lakka.ico $MOUNTPOINT
   cp README.md $MOUNTPOINT
 
 # sync disk
