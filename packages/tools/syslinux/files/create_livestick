@@ -50,7 +50,7 @@ esac
 clear
 echo "#########################################################"
 echo "#                                                       #"
-echo "#              OpenELEC LIVE Installer                  #"
+echo "#                Lakka LIVE Installer                   #"
 echo "#                                                       #"
 echo "#########################################################"
 echo "#                                                       #"
@@ -67,7 +67,7 @@ echo "#########################################################"
     clear
     echo "#########################################################"
     echo "#                                                       #"
-    echo "# OpenELEC missing tool - Installation will quit        #"
+    echo "# Lakka missing tool - Installation will quit           #"
     echo "#                                                       #"
     echo "#      We can't find the required tool \"syslinux\"     #"
     echo "#      on your system.                                  #"
@@ -83,7 +83,7 @@ echo "#########################################################"
     clear
     echo "#########################################################"
     echo "#                                                       #"
-    echo "# OpenELEC missing tool - Installation will quit        #"
+    echo "# Lakka missing tool - Installation will quit           #"
     echo "#                                                       #"
     echo "#      We can't find the required tool \"mcopy\"        #"
     echo "#      on your system.                                  #"
@@ -101,7 +101,7 @@ echo "#########################################################"
     clear
     echo "#########################################################"
     echo "#                                                       #"
-    echo "# OpenELEC missing tool - Installation will quit        #"
+    echo "# Lakka missing tool - Installation will quit           #"
     echo "#                                                       #"
     echo "#      We can't find the required tool \"parted\"       #"
     echo "#      on your system.                                  #"
@@ -117,7 +117,7 @@ echo "#########################################################"
     clear
     echo "#########################################################"
     echo "#                                                       #"
-    echo "# OpenELEC.tv missing tool - Installation will quit     #"
+    echo "# Lakka missing tool - Installation will quit           #"
     echo "#                                                       #"
     echo "#      We can't find the required tool \"mkfs.vfat\"    #"
     echo "#      on your system.                                  #"
@@ -135,10 +135,10 @@ echo "#########################################################"
     clear
     echo "#########################################################"
     echo "#                                                       #"
-    echo "# OpenELEC failed md5 check - Installation will quit    #"
+    echo "# Lakka failed md5 check - Installation will quit       #"
     echo "#                                                       #"
     echo "#      Your original download was probably corrupt.     #"
-    echo "#   Please visit www.openelec.tv and get another copy   #"
+    echo "#     Please visit www.lakka.tv and get another copy    #"
     echo "#                                                       #"
     echo "#########################################################"
     exit 1
@@ -224,7 +224,7 @@ EOF
   cp target/SYSTEM $OE_TMP
   cp target/SYSTEM.md5 $OE_TMP
 #  cp Autorun.inf $OE_TMP
-  cp openelec.ico $OE_TMP
+  cp lakka.ico $OE_TMP
   cp CHANGELOG $OE_TMP
   cp INSTALL $OE_TMP
   cp README.md $OE_TMP
