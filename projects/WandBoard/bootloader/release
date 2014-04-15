@@ -1,0 +1,13 @@
+#!/bin/sh
+mkdir -p "$RELEASE_DIR"/3rdparty/bootloader/
+cp "$PROJECT_DIR/$PROJECT"/bootloader/files/create_sdcard "$RELEASE_DIR"
+cp "$BUILD"/image/system/usr/share/u-boot/u-boot.imx "$RELEASE_DIR"/3rdparty/bootloader/ #$INSTALL?
+cp "$BUILD"/image/system/usr/share/u-boot/boot.scr "$RELEASE_DIR"/3rdparty/bootloader/ #$INSTALL?
+case "$SUBPROJ" in
+  "quad")
+    cp "$BUILD"/image/system/usr/share/u-boot/imx6q-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/dtb #$INSTALL?
+    ;;
+  *)
+    cp "$BUILD"/image/system/usr/share/u-boot/imx6dl-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/dtb #$INSTALL?
+    ;;
+esac
