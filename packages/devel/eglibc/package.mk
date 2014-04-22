@@ -17,16 +17,14 @@
 ################################################################################
 
 PKG_NAME="eglibc"
-PKG_VERSION="2.18-23911"
+PKG_VERSION="2.19-25249"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.eglibc.org/"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="timezone-data"
-PKG_DEPENDS_INIT=""
-PKG_BUILD_DEPENDS_TARGET="ccache:host autotools:host autoconf-2.68:host linux:host gcc:bootstrap"
-PKG_BUILD_DEPENDS_INIT="eglibc"
+PKG_DEPENDS_TARGET="ccache:host autotools:host autoconf-2.68:host linux:host gcc:bootstrap"
+PKG_DEPENDS_INIT="eglibc"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="eglibc: The Embedded GNU C library"
@@ -35,12 +33,7 @@ PKG_LONGDESC="The Embedded GLIBC (EGLIBC) is a variant of the GNU C Library (GLI
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$XBMCPLAYER_DRIVER" = "bcm2835-driver" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET arm-mem"
-  PKG_DEPENDS_INIT="$PKG_DEPENDS_INIT arm-mem:init"
-fi
-
-PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh
+PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
                            --libexecdir=/usr/lib/eglibc \
                            --cache-file=config.cache \
                            --disable-profile \

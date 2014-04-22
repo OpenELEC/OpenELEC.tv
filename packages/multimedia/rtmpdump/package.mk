@@ -24,8 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://rtmpdump.mplayerhq.hu/"
 #PKG_URL="http://rtmpdump.mplayerhq.hu/download/$PKG_NAME-$PKG_VERSION.tgz"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="zlib openssl"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib openssl"
+PKG_DEPENDS_TARGET="toolchain zlib openssl"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="rtmpdump: a toolkit for RTMP streams."
@@ -33,6 +32,8 @@ PKG_LONGDESC="rtmpdump is a toolkit for RTMP streams. All forms of RTMP are supp
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+MAKEFLAGS="-j1"
 
 make_target() {
   make prefix=/usr \

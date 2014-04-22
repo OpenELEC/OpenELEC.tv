@@ -17,15 +17,14 @@
 ################################################################################
 
 PKG_NAME="mysql"
-PKG_VERSION="5.1.70"
+PKG_VERSION="5.1.73"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://www.mysql.com"
 PKG_URL="http://ftp.gwdg.de/pub/misc/$PKG_NAME/Downloads/MySQL-5.1/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="zlib ncurses"
-PKG_BUILD_DEPENDS_HOST="toolchain zlib:host"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib ncurses mysql:host"
+PKG_DEPENDS_HOST="zlib:host"
+PKG_DEPENDS_TARGET="toolchain zlib ncurses mysql:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="database"
 PKG_SHORTDESC="mysql: A database server"

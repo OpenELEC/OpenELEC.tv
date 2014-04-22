@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://avahi.org/"
 PKG_URL="http://www.avahi.org/download/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="expat dbus connman"
-PKG_BUILD_DEPENDS_TARGET="toolchain expat libdaemon dbus"
+PKG_DEPENDS_TARGET="toolchain expat libdaemon dbus connman"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="avahi: A Zeroconf mDNS/DNS-SD responder"
@@ -93,7 +92,7 @@ post_makeinstall_target() {
   if [ ! $SFTP_SERVER = "yes" ]; then
     rm -rf $INSTALL/etc/avahi/services/sftp-ssh.service
   fi
-  rm -rf $INSTALL/lib/systemd
+  rm -rf $INSTALL/usr/lib/systemd
   rm -f $INSTALL/usr/share/dbus-1/system-services/org.freedesktop.Avahi.service
   rm -f $INSTALL/usr/sbin/avahi-dnsconfd
   rm -f $INSTALL/usr/bin/avahi-bookmarks

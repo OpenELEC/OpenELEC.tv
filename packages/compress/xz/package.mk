@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://tukaani.org/xz/"
 PKG_URL="http://tukaani.org/xz/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_HOST=""
-PKG_BUILD_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/archivers"
 PKG_SHORTDESC="xz: a free general-purpose data compression software with high compression ratio."
@@ -33,6 +32,8 @@ PKG_LONGDESC="XZ Utils is free general-purpose data compression software with hi
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+# never build shared or k0p happens when building
+# on fedora due to host selinux/liblzma
 PKG_CONFIGURE_OPTS_HOST="--disable-shared --enable-static \
                          --disable-lzmadec \
                          --disable-lzmainfo \
@@ -40,4 +41,3 @@ PKG_CONFIGURE_OPTS_HOST="--disable-shared --enable-static \
                          --disable-scripts \
                          --disable-nls"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static"

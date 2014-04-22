@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/s/gettext/"
 PKG_URL="http://ftp.gnu.org/pub/gnu/gettext/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="gettext: A program internationalization library and tools"
@@ -33,7 +32,8 @@ PKG_LONGDESC="This is the GNU gettext package. It is interesting for authors or 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_HOST="--disable-rpath \
+PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared \
+                         --disable-rpath \
                          --with-gnu-ld \
                          --disable-java \
                          --disable-native-java \

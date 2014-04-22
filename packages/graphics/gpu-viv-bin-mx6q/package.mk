@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="gpu-viv-bin-mx6q"
-PKG_VERSION="3.5.7-1.0.0"
+PKG_VERSION="3.10.17-1.0.0"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="nonfree"
 PKG_SITE="http://www.freescale.com"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="gpu-viv-bin-mx6q: OpenGL-ES and VIVANTE driver for imx6q"
@@ -54,6 +53,7 @@ makeinstall_target() {
             $FLOAT/usr/lib/libGLES_CM.so \
             $FLOAT/usr/lib/libGLESv1_CL.so* \
             $FLOAT/usr/lib/libGLESv1_CM.so* \
+            $FLOAT/usr/lib/libGLESv2-fb.so \
             $FLOAT/usr/lib/libGLESv2.so* \
             $FLOAT/usr/lib/libGAL-fb.so \
             $FLOAT/usr/lib/libGAL.so* \
@@ -69,6 +69,7 @@ makeinstall_target() {
             $FLOAT/usr/lib/libGLES_CM.so \
             $FLOAT/usr/lib/libGLESv1_CL.so* \
             $FLOAT/usr/lib/libGLESv1_CM.so* \
+            $FLOAT/usr/lib/libGLESv2-fb.so \
             $FLOAT/usr/lib/libGLESv2.so* \
             $FLOAT/usr/lib/libGLSLC.so* \
             $FLOAT/usr/lib/libGAL-fb.so \

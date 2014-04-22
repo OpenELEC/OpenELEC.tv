@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="xf86-video-ati"
-PKG_VERSION="7.2.0"
+PKG_VERSION="7.3.0"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.x.org/"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="glamor-egl"
-PKG_BUILD_DEPENDS_TARGET="toolchain glamor-egl"
+PKG_DEPENDS_TARGET="toolchain libXcomposite glamor-egl"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/driver"
 PKG_SHORTDESC="xf86-video-ati: The Xorg driver for ATI video chips"

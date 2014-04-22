@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="elfutils"
-PKG_VERSION="0.155"
+PKG_VERSION="0.158"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://fedorahosted.org/elfutils/"
 PKG_URL="https://fedorahosted.org/releases/e/l/elfutils/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="zlib"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib"
+PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
 PKG_SHORTDESC="elfutils: collection of utilities to handle ELF objects"
@@ -33,7 +32,8 @@ PKG_LONGDESC="Elfutils is a collection of utilities, including eu-ld (a linker),
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-werror \
+PKG_CONFIGURE_OPTS_TARGET="utrace_cv_cc_biarch=false \
+                           --disable-werror \
                            --disable-progs \
                            --with-zlib \
                            --without-bzlib \

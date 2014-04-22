@@ -17,15 +17,14 @@
 ################################################################################
 
 PKG_NAME="xf86-video-nvidia-legacy"
-PKG_VERSION="304.117"
+PKG_VERSION="304.121"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="nonfree"
 PKG_SITE="http://www.nvidia.com/"
 [ "$TARGET_ARCH" = "i386" ] && PKG_URL="http://us.download.nvidia.com/XFree86/Linux-x86/$PKG_VERSION/NVIDIA-Linux-x86-$PKG_VERSION.run"
 [ "$TARGET_ARCH" = "x86_64" ] && PKG_URL="http://us.download.nvidia.com/XFree86/Linux-x86_64/$PKG_VERSION/NVIDIA-Linux-x86_64-$PKG_VERSION-no-compat32.run"
-PKG_DEPENDS_TARGET="linux libXinerama"
-PKG_BUILD_DEPENDS_TARGET="toolchain util-macros linux xorg-server"
+PKG_DEPENDS_TARGET="toolchain util-macros linux xorg-server"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/driver"
@@ -74,4 +73,10 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/usr/bin
     cp nvidia-smi $INSTALL/usr/bin
+
+  if [ "$VDPAU" = yes ]; then
+    mkdir -p $INSTALL/usr/lib/vdpau
+      cp libvdpau_nvidia.so* $INSTALL/usr/lib/vdpau/libvdpau_nvidia.so.1
+      ln -sf libvdpau_nvidia.so.1 $INSTALL/usr/lib/vdpau/libvdpau_nvidia.so
+  fi
 }

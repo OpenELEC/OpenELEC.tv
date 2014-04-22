@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="nasm"
-PKG_VERSION="2.10.07"
+PKG_VERSION="2.11.02"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://nasm.sourceforge.net/"
 PKG_URL="http://www.nasm.us/pub/nasm/releasebuilds/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_HOST=""
-PKG_BUILD_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="lang"
 PKG_SHORTDESC="nasm: A 80x86 assembler which can create a wide rande of object formats"

@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="util-linux"
-PKG_VERSION="2.24"
+PKG_VERSION="2.24.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_URL="http://www.kernel.org/pub/linux/utils/util-linux/v2.24/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="util-linux: Miscellaneous system utilities for Linux"

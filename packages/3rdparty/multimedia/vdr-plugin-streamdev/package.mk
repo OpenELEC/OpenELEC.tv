@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="vdr-plugin-streamdev"
-PKG_VERSION="a9c2adb"
+PKG_VERSION="40704cd"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://projects.vdr-developer.org/projects/show/plg-streamdev"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain vdr openssl"
+PKG_DEPENDS_TARGET="toolchain vdr openssl"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="TV"

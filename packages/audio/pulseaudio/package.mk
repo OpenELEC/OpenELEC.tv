@@ -19,14 +19,13 @@
 ################################################################################
 
 PKG_NAME="pulseaudio"
-PKG_VERSION="4.0"
+PKG_VERSION="5.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://pulseaudio.org/"
-PKG_URL="http://freedesktop.org/software/pulseaudio/releases/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="libtool alsa-lib libsamplerate dbus speex systemd openssl"
-PKG_BUILD_DEPENDS_TARGET="toolchain libtool json-c alsa-lib libsndfile libsamplerate speex dbus systemd openssl libcap"
+PKG_URL="http://www.freedesktop.org/software/pulseaudio/releases/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain libtool json-c alsa-lib libsndfile libsamplerate speex dbus systemd openssl libcap"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
 PKG_SHORTDESC="pulseaudio: Yet another sound server for Unix"
@@ -34,6 +33,13 @@ PKG_LONGDESC="PulseAudio is a sound server for Linux and other Unix-like operati
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+if [ "$BLUETOOTH_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sbc"
+  PULSEAUDIO_BLUETOOTH="--enable-bluez5"
+else
+  PULSEAUDIO_BLUETOOTH="--disable-bluez5"
+fi
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
@@ -59,7 +65,8 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
                            --disable-tcpwrap \
                            --disable-lirc \
                            --enable-dbus \
-                           --disable-bluez \
+                           --disable-bluez4 \
+                           $PULSEAUDIO_BLUETOOTH \
                            --enable-udev \
                            --disable-hal-compat \
                            --enable-ipv6 \
@@ -77,6 +84,13 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
                            --without-fftw \
                            --with-speex \
                            --with-module-dir=/usr/lib/pulse"
+
+pre_build_target() {
+# broken autoreconf
+  ( cd $PKG_BUILD
+    intltoolize --force
+  )
+}
 
 pre_configure_target() {
   # pulseaudio fails to build with LTO support

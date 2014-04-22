@@ -17,18 +17,15 @@
 ################################################################################
 
 PKG_NAME="busybox"
-PKG_VERSION="1.22.0"
+PKG_VERSION="1.22.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.busybox.net"
 PKG_URL="http://busybox.net/downloads/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_HOST=""
-PKG_DEPENDS_TARGET="hdparm dosfstools e2fsprogs speedcontrol zip unzip pciutils usbutils parted"
-PKG_DEPENDS_INIT=""
-PKG_BUILD_DEPENDS_HOST="toolchain"
-PKG_BUILD_DEPENDS_TARGET="toolchain busybox:host"
-PKG_BUILD_DEPENDS_INIT="toolchain"
+PKG_DEPENDS_TARGET="toolchain busybox:host hdparm dosfstools e2fsprogs speedcontrol zip unzip pciutils usbutils parted pciutils"
+PKG_DEPENDS_INIT="toolchain"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="BusyBox: The Swiss Army Knife of Embedded Linux"
@@ -153,6 +150,7 @@ makeinstall_target() {
     cp $PKG_DIR/scripts/lsb_release $INSTALL/usr/bin/
     cp $PKG_DIR/scripts/apt-get $INSTALL/usr/bin/
     cp $PKG_DIR/scripts/passwd $INSTALL/usr/bin/
+    cp $PKG_DIR/scripts/sudo $INSTALL/usr/bin/
     ln -sf /bin/busybox $INSTALL/usr/bin/env          #/usr/bin/env is needed for most python scripts
     cp $PKG_DIR/scripts/pastebinit $INSTALL/usr/bin/
     ln -sf pastebinit $INSTALL/usr/bin/paste
@@ -215,12 +213,12 @@ post_install() {
 
   # cron support
   if [ "$CRON_SUPPORT" = "yes" ] ; then
-    mkdir -p $INSTALL/lib/systemd/system
-      cp $PKG_DIR/system.d.opt/cron.service $INSTALL/lib/systemd/system
+    mkdir -p $INSTALL/usr/lib/systemd/system
+      cp $PKG_DIR/system.d.opt/cron.service $INSTALL/usr/lib/systemd/system
       enable_service cron.service
     mkdir -p $INSTALL/usr/share/services
       cp -P $PKG_DIR/default.d/*.conf $INSTALL/usr/share/services
-      cp $PKG_DIR/system.d.opt/cron-defaults.service $INSTALL/lib/systemd/system
+      cp $PKG_DIR/system.d.opt/cron-defaults.service $INSTALL/usr/lib/systemd/system
       enable_service cron-defaults.service
   fi
 }

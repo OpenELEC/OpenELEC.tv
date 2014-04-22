@@ -17,15 +17,14 @@
 ################################################################################
 
 PKG_NAME="xproto"
-PKG_VERSION="7.0.25"
+PKG_VERSION="7.0.26"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.x.org/"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/proto/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain util-macros"
-PKG_BUILD_DEPENDS_HOST="toolchain util-macros"
+PKG_DEPENDS_HOST="util-macros"
+PKG_DEPENDS_TARGET="toolchain util-macros"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/proto"
 PKG_SHORTDESC="xproto: KB extension headers"

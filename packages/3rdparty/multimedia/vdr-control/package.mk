@@ -24,8 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://ricomp.de/vdr/"
 PKG_URL="http://ricomp.de/vdr/${PKG_NAME}-${PKG_VERSION}.tgz"
 PKG_SOURCE_DIR="control-${PKG_VERSION}"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain vdr"
+PKG_DEPENDS_TARGET="toolchain vdr"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="vdr control plugin"
@@ -45,6 +44,10 @@ make_target() {
   make VDRDIR=$VDR_DIR \
     LIBDIR="." \
     LOCALEDIR="./locale"
+}
+
+post_make_target() {
+  $STRIP libvdr-*.so*
 }
 
 makeinstall_target() {

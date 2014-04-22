@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="RTL8192CU"
-PKG_VERSION="v3.4.4_4749.20121105"
+PKG_VERSION="v4.0.2_9000.20130911"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.realtek.com.tw/downloads/downloadsView.aspx?Langid=1&PFid=48&Level=5&Conn=4&ProdID=274&DownTypeID=3&GetDown=false&Downloads=true"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET=""
-PKG_BUILD_DEPENDS_TARGET="toolchain linux"
+PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"

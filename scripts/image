@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
@@ -31,7 +31,10 @@ $SCRIPTS/build kmod:host
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
 if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
-  GIT_BUILD=$(git rev-list --count HEAD)
+  if ! GIT_BUILD=$(git rev-list --count HEAD 2>/dev/null)
+  then
+    GIT_BUILD=$(git rev-list HEAD | wc -l)
+  fi
   GIT_HASH=$(git rev-parse HEAD)
   GIT_ABBREV=$(git log -1 --pretty=format:%h)
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
@@ -102,21 +105,25 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   ln -sf /etc/issue $INSTALL/etc/motd
 
 # Basissystem...
-  $SCRIPTS/install eglibc
+  $SCRIPTS/install libc
   $SCRIPTS/install gcc
-  $SCRIPTS/install linux system
+  $SCRIPTS/install linux
+  $SCRIPTS/install linux-drivers
+  $SCRIPTS/install linux-firmware
+  $SCRIPTS/install $BOOTLOADER
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
-
-# Network support
-  [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
+  $SCRIPTS/install network
 
 # Graphic support
   [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
+
+# Sound support
+  [ "$ALSA_SUPPORT" = "yes" ] && $SCRIPTS/install alsa
 
 # Automounter support
   [ "$UDEVIL" = "yes" ] && $SCRIPTS/install udevil
@@ -169,7 +176,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # copy kernel to target dir
   if [ "$BOOTLOADER" = "u-boot" ]; then
-    KERNEL_IMAGE="uImage"
+    KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     KERNEL_IMAGE="zImage"
   else
@@ -270,7 +277,19 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
     # create image files if requested
-      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+      if [ "$1" = "mkimage" -a "$BOOTLOADER" = "atv-bootloader" ]; then
+        # variables used in image script must be passed
+        sudo env \
+          ROOT="$ROOT" \
+          BUILD="$BUILD" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          $SCRIPTS/mkimage-atv
+      elif [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+        if [ "$2" == "efi" ] ; then
+          UEFI=yes
+        fi
         # variables used in image script must be passed
         sudo env \
           PATH="$PATH" \
@@ -282,6 +301,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           RELEASE_DIR="$RELEASE_DIR" \
           UUID_SYSTEM="$(uuidgen)" \
           UUID_STORAGE="$(uuidgen)" \
+          UEFI="$UEFI" \
           $SCRIPTS/mkimage
       fi
 

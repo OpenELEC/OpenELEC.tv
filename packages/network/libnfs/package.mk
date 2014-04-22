@@ -16,6 +16,8 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+# TODO: libnfs-1.9.3 fails at runtime (xbmc)
+
 PKG_NAME="libnfs"
 PKG_VERSION="1.8.0"
 PKG_REV="1"
@@ -23,8 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/sahlberg/libnfs"
 PKG_URL="https://sites.google.com/site/libnfstarballs/li/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="libnfs: a client library for accessing NFS shares over a network."

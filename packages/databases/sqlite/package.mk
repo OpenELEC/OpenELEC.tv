@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="sqlite"
-PKG_VERSION="autoconf-3080002"
+PKG_VERSION="autoconf-3080403"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="PublicDomain"
 PKG_SITE="http://www.sqlite.org/"
-PKG_URL="http://sqlite.org/2013/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_URL="http://sqlite.org/2014/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="database"
 PKG_SHORTDESC="sqlite: An Embeddable SQL Database Engine"
@@ -62,7 +61,7 @@ PKG_AUTORECONF="yes"
 # SQLITE_MAX_MMAP_SIZE can be modified at start-time using the
 # sqlite3_config(SQLITE_CONFIG_MMAP_SIZE) call, or at run-time using the
 # mmap_size pragma.
-  CFLAGS="$CFLAGS -DSQLITE_DEFAULT_MMAP_SIZE=268435456"
+  CFLAGS="$CFLAGS -DSQLITE_TEMP_STORE=3 -DSQLITE_DEFAULT_MMAP_SIZE=268435456"
 
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \

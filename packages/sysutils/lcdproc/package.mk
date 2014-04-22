@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="lcdproc"
-PKG_VERSION="0.5.6"
+PKG_VERSION="0.5.7-cvs20140217"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://lcdproc.org/"
-PKG_URL="$SOURCEFORGE_SRC/lcdproc/lcdproc/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="libusb"
-PKG_BUILD_DEPENDS_TARGET="toolchain libusb libhid libftdi"
+# PKG_URL="$SOURCEFORGE_SRC/lcdproc/lcdproc/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain libusb libhid libftdi"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="lcdproc: Software to display system information from your Linux/*BSD box on a LCD"
@@ -34,10 +34,10 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 if [ "$IRSERVER_SUPPORT" = yes ]; then
-  PKG_DEPENDS="$PKG_DEPENDS irserver"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET irserver"
 fi
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga"
+PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars"
 
 post_makeinstall_target() {
   rm -rf $INSTALL/etc/lcd*.conf
@@ -55,9 +55,15 @@ post_makeinstall_target() {
       -e "s|^#GoodBye=\"Thanks for using\"|GoodBye=\"Thanks for using\"|" \
       -e "s|^#GoodBye=\"   LCDproc!\"|GoodBye=\"$DISTRONAME\"|" \
       -i $INSTALL/etc/LCDd.conf
+
+    mkdir -p $INSTALL/usr/lib/openelec
+      cp $PKG_DIR/scripts/lcd-wrapper $INSTALL/usr/lib/openelec
+
 }
 
 post_install() {
   add_user nobody x 999 999 "Nobody" "/" "/bin/sh"
   add_group nobody 999
+
+  enable_service lcdd.service
 }

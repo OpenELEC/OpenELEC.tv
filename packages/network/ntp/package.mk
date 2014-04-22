@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.ntp.org/"
 PKG_URL="http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="ntp: Network Time Protocol utilities"
@@ -39,6 +38,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-all-clocks \
                            --with-gnu-ld \
                            --disable-linuxcaps \
                            --without-ntpsnmpd \
+                           --enable-local-libopts \
                            --without-crypto"
 
 makeinstall_target() {

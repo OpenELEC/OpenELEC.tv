@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.lirc.org"
 PKG_URL="$SOURCEFORGE_SRC/lirc/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libusb-compat"
-PKG_BUILD_DEPENDS_TARGET="toolchain libftdi libusb-compat"
+PKG_DEPENDS_TARGET="toolchain libftdi libusb-compat"
 PKG_PRIORITY="optional"
 PKG_SECTION="sysutils/remote"
 PKG_SHORTDESC="lirc: Linux Infrared Remote Control"
@@ -58,4 +57,10 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/etc/lirc
     cp $PKG_DIR/config/lircd.conf.xbox $INSTALL/etc/lirc
     cp $PKG_DIR/config/lircd.conf.rpi $INSTALL/etc/lirc
+
+  mkdir -p $INSTALL/usr/lib/openelec
+    cp $PKG_DIR/scripts/lircd_helper $INSTALL/usr/lib/openelec
+
+  mkdir -p $INSTALL/usr/lib/udev
+    cp $PKG_DIR/scripts/lircd_wakeup_enable $INSTALL/usr/lib/udev
 }

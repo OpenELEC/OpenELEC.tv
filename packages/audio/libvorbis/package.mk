@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="libvorbis"
-PKG_VERSION="1.3.3"
+PKG_VERSION="1.3.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.vorbis.com/"
 PKG_URL="http://downloads.xiph.org/releases/vorbis/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="libogg"
-PKG_BUILD_DEPENDS_TARGET="toolchain libogg"
+PKG_DEPENDS_TARGET="toolchain libogg"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
 PKG_SHORTDESC="libvorbis: Lossless audio compression tools using the ogg-vorbis algorithms"
@@ -34,4 +33,4 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 # package specific configure options
-PKG_CONFIGURE_OPTS_TARGET="--with-ogg=$SYSROOT_PREFIX/usr"
+PKG_CONFIGURE_OPTS_TARGET="--with-ogg=$SYSROOT_PREFIX/usr --disable-oggtest --disable-docs --disable-examples"

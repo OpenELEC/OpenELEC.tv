@@ -17,15 +17,14 @@
 ################################################################################
 
 PKG_NAME="pcre"
-PKG_VERSION="8.33"
+PKG_VERSION="8.35"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.pcre.org/"
 PKG_URL="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_HOST="toolchain"
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_HOST=""
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
 PKG_SHORTDESC="pcre: Perl Compatible Regulat Expressions"

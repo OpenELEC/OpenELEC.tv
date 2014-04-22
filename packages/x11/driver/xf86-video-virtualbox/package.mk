@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="xf86-video-virtualbox"
-PKG_VERSION="4.3.4"
+PKG_VERSION="4.3.8"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.virtualbox.org"
 PKG_URL="${DISTRO_SRC}/${PKG_NAME}-${PKG_VERSION}-${TARGET_ARCH}.tar.bz2"
-PKG_DEPENDS_TARGET="libXcomposite libXdamage libXfixes libXext libX11"
-PKG_BUILD_DEPENDS_TARGET="toolchain libXcomposite libXdamage libXfixes libXext libX11 libxcb libXau"
+PKG_DEPENDS_TARGET="toolchain libXcomposite libXdamage libXfixes libXext libX11 libxcb libXau"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/driver"
 PKG_SHORTDESC="xf86-video-virtualbox: The Xorg driver for virtualbox video"
@@ -44,7 +43,7 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/$XORG_PATH_MODULES/drivers
-    cp -P lib/VBoxGuestAdditions/vboxvideo_drv_114.so $INSTALL/$XORG_PATH_MODULES/drivers/vboxvideo_drv.so
+    cp -P lib/VBoxGuestAdditions/vboxvideo_drv_115.so $INSTALL/$XORG_PATH_MODULES/drivers/vboxvideo_drv.so
 
   mkdir -p $INSTALL/usr/lib/dri
     cp -P lib/VBoxOGL.so $INSTALL/usr/lib/dri/vboxvideo_dri.so

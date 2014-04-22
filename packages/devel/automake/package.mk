@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://sources.redhat.com/automake/"
 PKG_URL="http://ftp.gnu.org/gnu/automake/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_HOST=""
-PKG_BUILD_DEPENDS_HOST="ccache:host autoconf:host"
+PKG_DEPENDS_HOST="ccache:host autoconf:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="automake: A GNU tool for automatically creating Makefiles"
@@ -37,5 +36,4 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME --disable-silent-rules"
 
 post_makeinstall_host() {
   make prefix=$SYSROOT_PREFIX/usr install
-  cp -P $PKG_DIR/files/*.m4 $SYSROOT_PREFIX/usr/share/aclocal
 }

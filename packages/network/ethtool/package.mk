@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="ethtool"
-PKG_VERSION="3.12.1"
+PKG_VERSION="3.13"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org/pub/software/network/ethtool/"
 PKG_URL="http://www.kernel.org/pub/software/network/ethtool/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="ethtool: Display or change ethernet card settings"

@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="udevil"
-PKG_VERSION="77e0ba0"
+PKG_VERSION="0.4.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/IgnorantGuru/udevil"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="systemd glib"
-PKG_BUILD_DEPENDS_TARGET="toolchain systemd glib"
+PKG_URL="https://github.com/IgnorantGuru/udevil/raw/pkg/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain systemd glib"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="udevil: Mounts and unmounts removable devices and networks without a password."

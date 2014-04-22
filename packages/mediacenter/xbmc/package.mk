@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="13.alpha-63e652f"
+PKG_VERSION="13-482ccd3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="Python zlib bzip2 systemd ffmpeg libass curl rtmpdump fontconfig freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib libxml2 service.openelec.settings"
-PKG_BUILD_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd lzo pcre swig:host ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite"
+PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi gnutls tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="xbmc: XBMC Mediacenter"
@@ -34,28 +33,16 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # for dbus support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET dbus"
-  PKG_DEPENDS="$PKG_DEPENDS dbus"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET dbus"
 
 # needed for hosttools (Texturepacker)
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET lzo:host SDL-host SDL_image-host"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lzo:host SDL:host SDL_image:host"
 
-# some python stuff needed for various addons
-  PKG_DEPENDS="$PKG_DEPENDS Imaging"
-  PKG_DEPENDS="$PKG_DEPENDS simplejson"
-  PKG_DEPENDS="$PKG_DEPENDS pycrypto"
-
-# various PVR clients
-  PKG_DEPENDS="$PKG_DEPENDS xbmc-pvr-addons"
-  PKG_DEPENDS="$PKG_DEPENDS xbmc-addon-xvdr"
-
-if [ "$DISPLAYSERVER" = "xorg-server" ]; then
+if [ "$DISPLAYSERVER" = "x11" ]; then
 # for libX11 support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libX11 libXext"
-  PKG_DEPENDS="$PKG_DEPENDS libX11 libXext"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext"
 # for libXrandr support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libXrandr"
-  PKG_DEPENDS="$PKG_DEPENDS libXrandr"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libXrandr"
   XBMC_XORG="--enable-x11 --enable-xrandr"
 else
   XBMC_XORG="--disable-x11 --disable-xrandr"
@@ -63,8 +50,7 @@ fi
 
 if [ "$OPENGL" = "Mesa" ]; then
 # for OpenGL (GLX) support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET Mesa glu glew"
-  PKG_DEPENDS="$PKG_DEPENDS Mesa glu"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Mesa glu glew"
   XBMC_OPENGL="--enable-gl"
 else
   XBMC_OPENGL="--disable-gl"
@@ -72,8 +58,7 @@ fi
 
 if [ "$OPENGLES_SUPPORT" = yes ]; then
 # for OpenGL-ES support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET $OPENGLES"
-  PKG_DEPENDS="$PKG_DEPENDS $OPENGLES"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
   XBMC_OPENGLES="--enable-gles"
 else
   XBMC_OPENGLES="--disable-gles"
@@ -81,8 +66,7 @@ fi
 
 if [ "$SDL_SUPPORT" = yes ]; then
 # for SDL support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET SDL SDL_image"
-  PKG_DEPENDS="$PKG_DEPENDS SDL SDL_image"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL SDL_image"
   XBMC_SDL="--enable-sdl"
 else
   XBMC_SDL="--disable-sdl"
@@ -90,8 +74,7 @@ fi
 
 if [ "$ALSA_SUPPORT" = yes ]; then
 # for ALSA support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET alsa-lib"
-  PKG_DEPENDS="$PKG_DEPENDS alsa-lib"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET alsa-lib"
   XBMC_ALSA="--enable-alsa"
 else
   XBMC_ALSA="--disable-alsa"
@@ -99,17 +82,20 @@ fi
 
 if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
 # for PulseAudio support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET pulseaudio"
-  PKG_DEPENDS="$PKG_DEPENDS pulseaudio"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
   XBMC_PULSEAUDIO="--enable-pulse"
 else
   XBMC_PULSEAUDIO="--disable-pulse"
 fi
 
+if [ "$ESPEAK_SUPPORT" = yes ]; then
+# for espeak support
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET espeak"
+fi
+
 if [ "$CEC_SUPPORT" = yes ]; then
 # for CEC support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libcec"
-  PKG_DEPENDS="$PKG_DEPENDS libcec"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libcec"
   XBMC_CEC="--enable-libcec"
 else
   XBMC_CEC="--disable-libcec"
@@ -117,7 +103,7 @@ fi
 
 if [ "$XBMC_SCR_RSXS" = yes ]; then
 # for RSXS Screensaver support
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libXt libXmu"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libXt libXmu"
   XBMC_RSXS="--enable-rsxs"
 # fix build of RSXS Screensaver support if not using libiconv
   export jm_cv_func_gettimeofday_clobber=no
@@ -187,92 +173,74 @@ else
 fi
 
 if [ "$FAAC_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET faac"
-  PKG_DEPENDS="$PKG_DEPENDS faac"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET faac"
 fi
 
 if [ "$ENCODER_LAME" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET lame"
-  PKG_DEPENDS="$PKG_DEPENDS lame"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lame"
   XBMC_LAMEENC="--enable-libmp3lame"
 else
   XBMC_LAMEENC="--disable-libmp3lame"
 fi
 
-if [ "$ENCODER_VORBIS" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libvorbis"
-  PKG_DEPENDS="$PKG_DEPENDS libvorbis"
-  XBMC_VORBISENC="--enable-libvorbisenc"
-else
-  XBMC_VORBISENC="--disable-libvorbisenc"
-fi
-
 if [ "$BLURAY_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libbluray"
-  PKG_DEPENDS="$PKG_DEPENDS libbluray"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libbluray"
   XBMC_BLURAY="--enable-libbluray"
 else
   XBMC_BLURAY="--disable-libbluray"
 fi
 
 if [ "$AVAHI_DAEMON" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET avahi"
-  PKG_DEPENDS="$PKG_DEPENDS avahi"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET avahi"
   XBMC_AVAHI="--enable-avahi"
 else
   XBMC_AVAHI="--disable-avahi"
 fi
 
 if [ "$MYSQL_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET mysql"
-  PKG_DEPENDS="$PKG_DEPENDS mysql"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mysql"
   XBMC_MYSQL="--enable-mysql"
 else
   XBMC_MYSQL="--disable-mysql"
 fi
 
 if [ "$AIRPLAY_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libplist"
-  PKG_DEPENDS="$PKG_DEPENDS libplist"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libplist"
   XBMC_AIRPLAY="--enable-airplay"
 else
   XBMC_AIRPLAY="--disable-airplay"
 fi
 
 if [ "$AIRTUNES_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libshairplay"
-  PKG_DEPENDS="$PKG_DEPENDS libshairplay"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libshairplay"
   XBMC_AIRTUNES="--enable-airtunes"
 else
   XBMC_AIRTUNES="--disable-airtunes"
 fi
 
 if [ "$NFS_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libnfs"
-  PKG_DEPENDS="$PKG_DEPENDS libnfs"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libnfs"
   XBMC_NFS="--enable-nfs"
 else
   XBMC_NFS="--disable-nfs"
 fi
 
 if [ "$AFP_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET afpfs-ng"
-  PKG_DEPENDS="$PKG_DEPENDS afpfs-ng"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET afpfs-ng"
   XBMC_AFP="--enable-afpclient"
 else
   XBMC_AFP="--disable-afpclient"
 fi
 
 if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET samba"
-  PKG_DEPENDS="$PKG_DEPENDS samba"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
   XBMC_SAMBA="--enable-samba"
 else
   XBMC_SAMBA="--disable-samba"
 fi
 
 if [ "$WEBSERVER" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libmicrohttpd"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libmicrohttpd"
   XBMC_WEBSERVER="--enable-webserver"
 else
   XBMC_WEBSERVER="--disable-webserver"
@@ -285,14 +253,14 @@ else
 fi
 
 if [ "$SSHLIB_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libssh"
   XBMC_SSH="--enable-ssh"
 else
   XBMC_SSH="--disable-ssh"
 fi
 
 if [ ! "$XBMCPLAYER_DRIVER" = default ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET $XBMCPLAYER_DRIVER"
-  PKG_DEPENDS="$PKG_DEPENDS $XBMCPLAYER_DRIVER"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $XBMCPLAYER_DRIVER"
 
   if [ "$XBMCPLAYER_DRIVER" = bcm2835-driver ]; then
     XBMC_OPENMAX="--enable-openmax"
@@ -310,24 +278,24 @@ if [ ! "$XBMCPLAYER_DRIVER" = default ]; then
 fi
 
 if [ "$VDPAU" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libvdpau"
-  PKG_DEPENDS="$PKG_DEPENDS libvdpau"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   XBMC_VDPAU="--enable-vdpau"
 else
   XBMC_VDPAU="--disable-vdpau"
 fi
 
 if [ "$VAAPI" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET libva"
-  PKG_DEPENDS="$PKG_DEPENDS libva"
+# configure GPU drivers and dependencies:
+  get_graphicdrivers
+
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $LIBVA"
   XBMC_VAAPI="--enable-vaapi"
 else
   XBMC_VAAPI="--disable-vaapi"
 fi
 
 if [ "$CRYSTALHD" = yes ]; then
-  PKG_BUILD_DEPENDS_TARGET="$PKG_BUILD_DEPENDS_TARGET crystalhd"
-  PKG_DEPENDS="$PKG_DEPENDS crystalhd"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET crystalhd"
   XBMC_CRYSTALHD="--enable-crystalhd"
 else
   XBMC_CRYSTALHD="--disable-crystalhd"
@@ -346,6 +314,7 @@ export PYTHON_SITE_PKG="$SYSROOT_PREFIX/usr/lib/python$PYTHON_VERSION/site-packa
 export ac_python_version="$PYTHON_VERSION"
 
 PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
+                           ac_cv_lib_bluetooth_hci_devid=no \
                            --with-arch=$TARGET_ARCH \
                            --with-cpu=$TARGET_CPU \
                            --disable-debug \
@@ -380,7 +349,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_SAMBA \
                            $XBMC_NFS \
                            $XBMC_AFP \
-                           $XBMC_VORBISENC \
+                           --enable-libvorbisenc \
                            --disable-libcap \
                            --enable-ffmpeg-libvorbis \
                            $XBMC_LAMEENC \
@@ -400,7 +369,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_BLURAY \
                            --enable-texturepacker --with-texturepacker-root="$ROOT/$TOOLCHAIN" \
                            --disable-external-libraries \
-                           --enable-external-ffmpeg \
                            $XBMC_CODEC \
                            $XBMC_PLAYER"
 
@@ -424,9 +392,6 @@ pre_configure_target() {
 # Todo: XBMC segfaults on exit when building with LTO support
   strip_lto
 
-# xbmc fails to build with more then 4 cores
-  MAKEFLAGS=-j4
-
   export CFLAGS="$CFLAGS $XBMC_CFLAGS"
   export CXXFLAGS="$CXXFLAGS $XBMC_CXXFLAGS"
   export LIBS="$LIBS -lz"
@@ -442,7 +407,7 @@ make_target() {
   make externals
   make xbmc.bin
 
-  if [ "$DISPLAYSERVER" = "xorg-server" ]; then
+  if [ "$DISPLAYSERVER" = "x11" ]; then
     make xbmc-xrandr
   fi
 
@@ -469,7 +434,7 @@ post_makeinstall_target() {
     cp $PKG_DIR/scripts/setwakeup.sh $INSTALL/usr/bin
     cp tools/EventClients/Clients/XBMC\ Send/xbmc-send.py $INSTALL/usr/bin/xbmc-send
 
-  if [ ! "$DISPLAYSERVER" = "xorg-server" ]; then
+  if [ ! "$DISPLAYSERVER" = "x11" ]; then
     rm -rf $INSTALL/usr/lib/xbmc/xbmc-xrandr
   fi
 
@@ -533,7 +498,7 @@ post_makeinstall_target() {
 
 post_install() {
 # link default.target to xbmc.target
-  ln -sf xbmc.target $INSTALL/lib/systemd/system/default.target
+  ln -sf xbmc.target $INSTALL/usr/lib/systemd/system/default.target
 
   enable_service xbmc-autostart.service
   enable_service xbmc-cleanlogs.service
@@ -545,6 +510,5 @@ post_install() {
   enable_service xbmc-reboot.service
   enable_service xbmc-waitonnetwork.service
   enable_service xbmc.service
-  enable_service xbmc-lcd-suspend.service
   enable_service xbmc-lirc-suspend.service
 }

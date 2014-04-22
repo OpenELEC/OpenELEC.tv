@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="freetype"
-PKG_VERSION="2.5.2"
+PKG_VERSION="2.5.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freetype.org"
 PKG_URL="http://download.savannah.gnu.org/releases/freetype/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="zlib"
-PKG_BUILD_DEPENDS_TARGET="toolchain zlib libpng"
+PKG_DEPENDS_TARGET="toolchain zlib libpng"
 PKG_PRIORITY="optional"
 PKG_SECTION="print"
 PKG_SHORTDESC="freetype: TrueType font rendering library"
@@ -47,8 +46,8 @@ pre_configure_target() {
 }
 
 post_makeinstall_target() {
-  $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/freetype-config
-  mv $SYSROOT_PREFIX/usr/bin/freetype-config $ROOT/$TOOLCHAIN/bin
+  $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/freetype-config
+  cp $SYSROOT_PREFIX/usr/bin/freetype-config $ROOT/$TOOLCHAIN/bin
   ln -v -sf $SYSROOT_PREFIX/usr/include/freetype2 $SYSROOT_PREFIX/usr/include/freetype
 
   rm -rf $INSTALL/usr/bin

@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="vdr-plugin-xvdr"
-PKG_VERSION="6249892"
+PKG_VERSION="7f49bfa"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/pipelka/vdr-plugin-xvdr"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain vdr"
+PKG_DEPENDS_TARGET="toolchain vdr"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="TV"
@@ -33,6 +32,12 @@ PKG_LONGDESC="TV"
 PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
+
+pre_configure_target() {
+  export CFLAGS="$CFLAGS -fPIC"
+  export CXXFLAGS="$CXXFLAGS -fPIC"
+  export LDFLAGS="$LDFLAGS -fPIC"
+}
 
 make_target() {
   VDR_DIR=$(get_build_dir vdr)

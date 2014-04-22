@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="bluez"
-PKG_VERSION="5.12"
+PKG_VERSION="5.17"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.bluez.org/"
 PKG_URL="http://www.kernel.org/pub/linux/bluetooth/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS="libusb-compat dbus glib systemd"
-PKG_BUILD_DEPENDS_TARGET="toolchain libusb-compat dbus glib readline systemd"
+PKG_DEPENDS_TARGET="toolchain dbus glib readline systemd"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="bluez: Bluetooth Tools and System Daemons for Linux."
@@ -68,11 +67,14 @@ pre_configure_target() {
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/lib/systemd
+  rm -rf $INSTALL/usr/lib/systemd
+  rm -rf $INSTALL/usr/bin/bccmd
+  rm -rf $INSTALL/usr/bin/bluemoon
+  rm -rf $INSTALL/usr/bin/ciptool
+  rm -rf $INSTALL/usr/share/dbus-1
 }
 
 post_install() {
   enable_service bluetooth.service
   enable_service obex.service
 }
-

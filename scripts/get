@@ -25,18 +25,10 @@ if [ -z "$1" ]; then
     GET_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
     $SCRIPTS/get $GET_PKG
   done
-  for i in `find packages/ -type f -name meta`; do
-    GET_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
-    $SCRIPTS/get $GET_PKG
-  done
 fi
 
-[ -z "$PKG_URL" ] && exit 0
-
 if [ -n "$PKG_URL" ]; then
-  URLS="$URLS `echo $PKG_URL | sed s%GEEXBOX_SRCS%$GEEXBOX_SRCS%`"
-
-  for i in $URLS; do
+  for i in $PKG_URL; do
     SOURCE_NAME="`basename $i`"
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
     PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
@@ -77,4 +69,6 @@ if [ -n "$PKG_URL" ]; then
     rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/build
 
   done
+else
+  exit 0
 fi

@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.alsa-project.org/"
 PKG_URL="ftp://ftp.alsa-project.org/pub/utils/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain alsa-lib"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
 PKG_SHORTDESC="alsa-utils: Advanced Linux Sound Architecture utilities"
@@ -47,11 +46,12 @@ post_makeinstall_target() {
   rm -rf $INSTALL/lib $INSTALL/var
   rm -rf $INSTALL/usr/share/alsa/speaker-test
   rm -rf $INSTALL/usr/share/sounds
+  rm -rf $INSTALL/usr/lib/systemd/system
 
   for i in aconnect alsaucm amidi aplaymidi arecord arecordmidi aseqdump aseqnet iecset; do
     rm -rf $INSTALL/usr/bin/$i
   done
 
-  mkdir -p $INSTALL/lib/udev
-    cp $PKG_DIR/scripts/soundconfig $INSTALL/lib/udev
+  mkdir -p $INSTALL/usr/lib/udev
+    cp $PKG_DIR/scripts/soundconfig $INSTALL/usr/lib/udev
 }

@@ -17,16 +17,14 @@
 ################################################################################
 
 PKG_NAME="dbus"
-PKG_VERSION="1.6.18"
+PKG_VERSION="1.8.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://dbus.freedesktop.org"
 PKG_URL="http://dbus.freedesktop.org/releases/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="expat"
-PKG_BUILD_DEPENDS_TARGET="toolchain expat systemd"
-PKG_BUILD_DEPENDS_HOST="toolchain expat:host"
-PKG_BUILD_DEPENDS_BOOTSTRAP="toolchain expat"
+PKG_DEPENDS_HOST="expat:host"
+PKG_DEPENDS_TARGET="toolchain expat systemd"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="dbus: simple interprocess messaging system"
@@ -36,6 +34,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="export ac_cv_have_abstract_sockets=yes \
+                           --with-sysroot=$SYSROOT_PREFIX \
                            --libexecdir=/usr/lib/dbus \
                            --disable-verbose-mode \
                            --disable-asserts \
@@ -61,26 +60,6 @@ PKG_CONFIGURE_OPTS_HOST="--disable-verbose-mode \
                          --disable-tests \
                          --disable-xml-docs \
                          --disable-doxygen-docs"
-
-PKG_CONFIGURE_OPTS_BOOTSTRAP="export ac_cv_have_abstract_sockets=yes \
-                             --libexecdir=/usr/lib/dbus \
-                             --disable-verbose-mode \
-                             --disable-asserts \
-                             --disable-checks \
-                             --disable-tests \
-                             --disable-ansi \
-                             --disable-xml-docs \
-                             --disable-doxygen-docs \
-                             --enable-abstract-sockets \
-                             --disable-x11-autolaunch \
-                             --disable-selinux \
-                             --disable-libaudit \
-                             --disable-systemd \
-                             --enable-dnotify \
-                             --enable-inotify \
-                             --with-xml=expat \
-                             --without-x \
-                             --with-dbus-user=dbus"
 
 post_makeinstall_host() {
   $ROOT/$TOOLCHAIN/bin/dbus-daemon --introspect > introspect.xml

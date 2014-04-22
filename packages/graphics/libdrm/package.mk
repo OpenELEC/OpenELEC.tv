@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="libdrm"
-PKG_VERSION="2.4.51"
+PKG_VERSION="2.4.53"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://dri.freedesktop.org"
 PKG_URL="http://dri.freedesktop.org/libdrm/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libpciaccess"
-PKG_BUILD_DEPENDS_TARGET="toolchain libpthread-stubs libpciaccess"
+PKG_DEPENDS_TARGET="toolchain libpthread-stubs libpciaccess"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="libdrm: Userspace interface to kernel DRM services"
@@ -49,7 +48,7 @@ configure_target() {
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-libkms/enable-libkms/'` && \
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-intel/enable-intel/'`
 
-    [ "$drv" = "r200" -o "$drv" = "r300" -o "$drv" = "r600" -o "$drv" = "radeon" ] && \
+    [ "$drv" = "r200" -o "$drv" = "r300" -o "$drv" = "r600" -o "$drv" = "radeonsi" ] && \
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-libkms/enable-libkms/'` && \
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-radeon/enable-radeon/'`
 

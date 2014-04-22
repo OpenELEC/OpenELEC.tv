@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.cmake.org/"
 PKG_URL="http://www.cmake.org/files/v2.8/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST=""
-PKG_BUILD_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="cmake: A cross-platform, open-source make system"
@@ -34,7 +33,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 configure_host() {
-  ../configure --no-qt-gui
+  ../configure --no-qt-gui -- -DBUILD_CursesDialog=0
 }
 
 makeinstall_host() {

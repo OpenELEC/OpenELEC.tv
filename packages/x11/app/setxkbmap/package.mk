@@ -23,8 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/app/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS="libX11"
-PKG_BUILD_DEPENDS_TARGET="toolchain libX11"
+PKG_DEPENDS_TARGET="toolchain libX11"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/app"
 PKG_SHORTDESC="setxkbmap: Sets the keyboard using the X Keyboard Extension"
@@ -32,8 +31,3 @@ PKG_LONGDESC="Setxkbmap sets the keyboard using the X Keyboard Extension."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
-
-post_makeinstall_target() {
-  mkdir -p $INSTALL/lib/udev
-    cp $PKG_DIR/scripts/xkb-setup $INSTALL/lib/udev
-}

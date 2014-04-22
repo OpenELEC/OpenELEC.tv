@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="make"
-PKG_VERSION="3.82"
+PKG_VERSION="4.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/software/make/"
 PKG_URL="http://ftp.gnu.org/gnu/make/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_HOST=""
+PKG_DEPENDS_HOST=""
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="make: GNU make utility to maintain groups of programs"
@@ -34,3 +33,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 export CC=$LOCAL_CC
+
+post_makeinstall_host() {
+  ln -sf make $ROOT/$TOOLCHAIN/bin/gmake
+}

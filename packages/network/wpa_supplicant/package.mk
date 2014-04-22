@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="wpa_supplicant"
-PKG_VERSION="2.0"
+PKG_VERSION="2.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://hostap.epitest.fi/wpa_supplicant/"
 PKG_URL="http://hostap.epitest.fi/releases/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS="dbus libnl openssl"
-PKG_BUILD_DEPENDS_TARGET="toolchain dbus libnl openssl"
+PKG_DEPENDS_TARGET="toolchain dbus libnl openssl"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="wpa_supplicant: An IEEE 802.11i supplicant implementation"
@@ -54,8 +53,8 @@ post_makeinstall_target() {
 mkdir -p $INSTALL/etc/dbus-1/system.d
   cp wpa_supplicant/dbus/dbus-wpa_supplicant.conf $INSTALL/etc/dbus-1/system.d
 
-mkdir -p $INSTALL/lib/systemd/system
-  cp wpa_supplicant/systemd/wpa_supplicant.service $INSTALL/lib/systemd/system
+mkdir -p $INSTALL/usr/lib/systemd/system
+  cp wpa_supplicant/systemd/wpa_supplicant.service $INSTALL/usr/lib/systemd/system
 
 mkdir -p $INSTALL/usr/share/dbus-1/system-services
   cp wpa_supplicant/dbus/fi.w1.wpa_supplicant1.service $INSTALL/usr/share/dbus-1/system-services

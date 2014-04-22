@@ -50,7 +50,6 @@
 
   NBD_DEVS="0"
   FLASH_FREE_MIN="5"
-  LIVE_FLASH_FREE_MIN="50"
 
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
   SYSTEM_TORAM_LIMIT=1024000
@@ -100,9 +99,6 @@
         ;;
       debugging)
         DEBUG=yes
-        ;;
-      bootchart)
-        BOOTCHART=yes
         ;;
       ssh)
         SSH=yes
@@ -280,7 +276,7 @@
 
     [ "$NFS_OPTIONS" = "$1" ] && NFS_OPTIONS=
 
-    mount_common "$NFS_EXPORT" "$2" "$3,nolock,soft,timeo=3,retrans=2,$NFS_OPTIONS" "nfs"
+    mount_common "$NFS_EXPORT" "$2" "$3,nolock,soft,timeo=3,retrans=2,rsize=32768,wsize=32768,$NFS_OPTIONS" "nfs"
   }
 
   mount_part() {
@@ -342,7 +338,7 @@
   }
 
   hfsdiskprep() {
-    for DEVICE in /dev/sd*; do
+    for DEVICE in $(/bin/busybox blkid /dev/sd* | sed -e "s,\",,g"| grep $boot); do
       for device in $(/bin/busybox blkid $DEVICE); do
         case $device in
           TYPE=*)
@@ -370,9 +366,9 @@
   }
 
   load_splash() {
-    progress "Loading bootsplash"
-
     if [ ! "$SPLASH" = "no" ]; then
+      progress "Loading bootsplash"
+
       SPLASHIMAGE="/splash/splash-full.png"
 
       # load uvesafb module if needed
@@ -570,7 +566,7 @@
       mount --move /storage /sysroot/storage
     fi
 
-    [ -f "/sysroot/lib/systemd/systemd" ] || error "final_check" "Could not find system."
+    [ -f "/sysroot/usr/lib/systemd/systemd" ] || error "final_check" "Could not find system."
   }
 
   if [ "${boot%%=*}" = "FILE" ]; then
@@ -592,6 +588,25 @@
 
   BOOT_STEP=final
 
+  # no suspend when booted from nonpersistent storage
+  STORAGE=$(cat /proc/mounts | grep " /sysroot/storage " | awk '{print $1}' | awk -F '/' '{print $3}')
+  if [ -n "$STORAGE" ] ; then
+    removable="/sys/class/block/*/$STORAGE/../removable"
+    if [ -e $removable ] ; then
+      if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
+        SUSPEND_DISABLED=yes
+      fi
+    fi
+  fi
+  FLASH=$(cat /proc/mounts | grep " /sysroot/flash " | awk '{print $1}' | awk -F '/' '{print $3}')
+  if [ -n "$FLASH" ] ; then
+    removable="/sys/class/block/*/$FLASH/../removable"
+    if [ -e $removable ] ; then
+      if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
+        SUSPEND_DISABLED=yes
+      fi
+    fi
+  fi
   # move some special filesystems
   /bin/busybox mount --move /dev /sysroot/dev
   /bin/busybox mount --move /proc /sysroot/proc
@@ -605,7 +620,11 @@
   if [ "$STORAGE_NETBOOT" = "yes" ] ; then
     echo "" > /sysroot/dev/.storage_netboot
   fi
+  # no suspend when booted from nonpersistent storage
+  if [ "$SUSPEND_DISABLED" = "yes" ] ; then
+    echo "" > /sysroot/dev/.suspend_disabled
+  fi
   # switch to new sysroot and start real init
-  exec /bin/busybox switch_root /sysroot /lib/systemd/systemd $INIT_ARGS
+  exec /bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS
 
   error "switch_root" "Error in initramfs. Could not switch to new root"
