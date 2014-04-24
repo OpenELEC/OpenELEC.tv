@@ -3566,3 +3566,560 @@ diff -Naur xbmc-13b4/xbmc/windowing/egl/Makefile.in xbmc-imx6-13b4/xbmc/windowin
  LIB = windowing_egl.a
  
  include ../../../Makefile.include
+ .../Engines/ActiveAE/ActiveAEResample.cpp          |   10 +-
+ .../AudioEngine/Engines/ActiveAE/ActiveAESink.cpp  |   55 ++++++++--
+ .../AudioEngine/Engines/ActiveAE/ActiveAESink.h    |    2 +
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp        |    4 +-
+ xbmc/cores/AudioEngine/Sinks/AESinkPULSE.cpp       |   12 +--
+ xbmc/cores/AudioEngine/Sinks/AESinkWASAPI.cpp      |    6 +-
+ xbmc/cores/AudioEngine/Utils/AEAudioFormat.h       |   13 ++-
+ xbmc/cores/AudioEngine/Utils/AEConvert.cpp         |  111 +++++++++++++++++---
+ xbmc/cores/AudioEngine/Utils/AEConvert.h           |    9 +-
+ xbmc/cores/AudioEngine/Utils/AEUtil.cpp            |   31 ++++--
+ 10 files changed, 200 insertions(+), 53 deletions(-)
+
+diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEResample.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEResample.cpp
+index ca19263..5abc6fb 100644
+--- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEResample.cpp
++++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEResample.cpp
+@@ -277,14 +277,16 @@ AVSampleFormat CActiveAEResample::GetAVSampleFormat(AEDataFormat format)
+   if      (format == AE_FMT_U8)     return AV_SAMPLE_FMT_U8;
+   else if (format == AE_FMT_S16NE)  return AV_SAMPLE_FMT_S16;
+   else if (format == AE_FMT_S32NE)  return AV_SAMPLE_FMT_S32;
+-  else if (format == AE_FMT_S24NE4) return AV_SAMPLE_FMT_S32;
++  else if (format == AE_FMT_S24NE4H) return AV_SAMPLE_FMT_S32;
++  else if (format == AE_FMT_S24NE4L) return AV_SAMPLE_FMT_S32;
+   else if (format == AE_FMT_FLOAT)  return AV_SAMPLE_FMT_FLT;
+   else if (format == AE_FMT_DOUBLE) return AV_SAMPLE_FMT_DBL;
+ 
+   else if (format == AE_FMT_U8P)     return AV_SAMPLE_FMT_U8P;
+   else if (format == AE_FMT_S16NEP)  return AV_SAMPLE_FMT_S16P;
+   else if (format == AE_FMT_S32NEP)  return AV_SAMPLE_FMT_S32P;
+-  else if (format == AE_FMT_S24NE4P) return AV_SAMPLE_FMT_S32P;
++  else if (format == AE_FMT_S24NE4HP) return AV_SAMPLE_FMT_S32P;
++  else if (format == AE_FMT_S24NE4LP) return AV_SAMPLE_FMT_S32P;
+   else if (format == AE_FMT_FLOATP)  return AV_SAMPLE_FMT_FLTP;
+   else if (format == AE_FMT_DOUBLEP) return AV_SAMPLE_FMT_DBLP;
+ 
+@@ -296,14 +298,14 @@ AEDataFormat CActiveAEResample::GetAESampleFormat(AVSampleFormat format, int bit
+   if      (format == AV_SAMPLE_FMT_U8)   return AE_FMT_U8;
+   else if (format == AV_SAMPLE_FMT_S16)  return AE_FMT_S16NE;
+   else if (format == AV_SAMPLE_FMT_S32 && bits == 32)  return AE_FMT_S32NE;
+-  else if (format == AV_SAMPLE_FMT_S32 && bits == 24)  return AE_FMT_S24NE4;
++  else if (format == AV_SAMPLE_FMT_S32 && bits == 24)  return AE_FMT_S24NE4H;
+   else if (format == AV_SAMPLE_FMT_FLT)  return AE_FMT_FLOAT;
+   else if (format == AV_SAMPLE_FMT_DBL)  return AE_FMT_DOUBLE;
+ 
+   else if (format == AV_SAMPLE_FMT_U8P)   return AE_FMT_U8P;
+   else if (format == AV_SAMPLE_FMT_S16P)  return AE_FMT_S16NEP;
+   else if (format == AV_SAMPLE_FMT_S32P && bits == 32)  return AE_FMT_S32NEP;
+-  else if (format == AV_SAMPLE_FMT_S32P && bits == 24)  return AE_FMT_S24NE4P;
++  else if (format == AV_SAMPLE_FMT_S32P && bits == 24)  return AE_FMT_S24NE4HP;
+   else if (format == AV_SAMPLE_FMT_FLTP)  return AE_FMT_FLOATP;
+   else if (format == AV_SAMPLE_FMT_DBLP)  return AE_FMT_DOUBLEP;
+ 
+diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+index 56b72d3..ca31516 100644
+--- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
++++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+@@ -796,6 +796,12 @@ void CActiveAESink::ReturnBuffers()
+   }
+ }
+ 
++static inline void RShift8_32_buf(uint32_t *src, uint32_t *dst, uint32_t count)
++{
++  while (count--)
++    *dst++ = *src++ >> 8;
++}
++
+ unsigned int CActiveAESink::OutputSamples(CSampleBuffer* samples)
+ {
+   uint8_t *buffer = samples->pkt->data[0];
+@@ -816,14 +822,22 @@ unsigned int CActiveAESink::OutputSamples(CSampleBuffer* samples)
+   case NEED_BYTESWAP:
+     Endian_Swap16_buf((uint16_t *)buffer, (uint16_t *)buffer, frames * samples->pkt->config.channels);
+     break;
++  case NEED_RSHIFT8:
++    RShift8_32_buf((uint32_t *)buffer, (uint32_t *)buffer, frames * samples->pkt->config.channels);
++    break;
+   case CHECK_CONVERT:
+     ConvertInit(samples);
+     if (m_convertState == NEED_CONVERT)
+       buffer = Convert(samples);
+     else if (m_convertState == NEED_BYTESWAP)
+       Endian_Swap16_buf((uint16_t *)buffer, (uint16_t *)buffer, frames * samples->pkt->config.channels);
++    else if (m_convertState == NEED_RSHIFT8)
++      RShift8_32_buf((uint32_t *)buffer, (uint32_t *)buffer, frames * samples->pkt->config.channels);
++    else if (m_convertState == SKIP_OUTPUT)
++      frames = 0;
+     break;
+-  default:
++  case SKIP_OUTPUT:
++    frames = 0;
+     break;
+   }
+ 
+@@ -862,15 +876,38 @@ unsigned int CActiveAESink::OutputSamples(CSampleBuffer* samples)
+ 
+ void CActiveAESink::ConvertInit(CSampleBuffer* samples)
+ {
+-  if (CActiveAEResample::GetAESampleFormat(samples->pkt->config.fmt, samples->pkt->config.bits_per_sample) != m_sinkFormat.m_dataFormat)
++  AEDataFormat srcFmt = CActiveAEResample::GetAESampleFormat(samples->pkt->config.fmt, samples->pkt->config.bits_per_sample);
++  
++  if (srcFmt != m_sinkFormat.m_dataFormat)
+   {
+-    m_convertFn = CAEConvert::FrFloat(m_sinkFormat.m_dataFormat);
+-    if (m_convertBuffer)
+-      _aligned_free(m_convertBuffer);
+-    m_convertBufferSampleSize = samples->pkt->max_nb_samples;
+-    m_convertBuffer = (uint8_t*)_aligned_malloc(samples->pkt->max_nb_samples * m_sinkFormat.m_channelLayout.Count() * m_sinkFormat.m_frameSize, 16);
+-    memset(m_convertBuffer, 0, samples->pkt->max_nb_samples * m_sinkFormat.m_channelLayout.Count() * m_sinkFormat.m_frameSize);
+-    m_convertState = NEED_CONVERT;
++    switch (srcFmt)
++    {
++    case AE_FMT_FLOAT:
++    case AE_FMT_FLOATP:
++      m_convertFn = CAEConvert::FrFloat(m_sinkFormat.m_dataFormat);
++      if (m_convertBuffer)
++        _aligned_free(m_convertBuffer);
++      m_convertBufferSampleSize = samples->pkt->max_nb_samples;
++      m_convertBuffer = (uint8_t*)_aligned_malloc(samples->pkt->max_nb_samples * m_sinkFormat.m_channelLayout.Count() * m_sinkFormat.m_frameSize, 16);
++      memset(m_convertBuffer, 0, samples->pkt->max_nb_samples * m_sinkFormat.m_channelLayout.Count() * m_sinkFormat.m_frameSize);
++      m_convertState = NEED_CONVERT;
++      break;
++    case AE_FMT_S24NE4H:
++      m_convertState = (m_sinkFormat.m_dataFormat == AE_FMT_S24NE4L) ? NEED_RSHIFT8 : SKIP_OUTPUT;
++      break;
++    case AE_FMT_S24NE4HP:
++      m_convertState = (m_sinkFormat.m_dataFormat == AE_FMT_S24NE4LP) ? NEED_RSHIFT8 : SKIP_OUTPUT;
++      break;
++    default:
++      m_convertState = SKIP_OUTPUT;
++      break;
++    }
++
++    if (m_convertState == SKIP_OUTPUT)
++    {
++      CLog::Log(LOGERROR, "CActiveAESink::ConvertInit - cannot convert from %s to %s",
++                CAEUtil::DataFormatToStr(srcFmt), CAEUtil::DataFormatToStr(m_sinkFormat.m_dataFormat));
++    }
+   }
+   else if (AE_IS_RAW(m_requestedFormat.m_dataFormat) && CAEUtil::S16NeedsByteSwap(AE_FMT_S16NE, m_sinkFormat.m_dataFormat))
+   {
+diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.h b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.h
+index 81b1117..68d7454 100644
+--- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.h
++++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.h
+@@ -139,6 +139,8 @@ protected:
+     NEED_CONVERT,
+     NEED_BYTESWAP,
+     SKIP_CONVERT,
++    NEED_RSHIFT8,
++    SKIP_OUTPUT
+   } m_convertState;
+ 
+   std::string m_deviceFriendlyName;
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+index 8c0bad6..3270bc9 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+@@ -268,7 +268,7 @@ snd_pcm_format_t CAESinkALSA::AEFormatToALSAFormat(const enum AEDataFormat forma
+     case AE_FMT_S16NE : return SND_PCM_FORMAT_S16;
+     case AE_FMT_S16LE : return SND_PCM_FORMAT_S16_LE;
+     case AE_FMT_S16BE : return SND_PCM_FORMAT_S16_BE;
+-    case AE_FMT_S24NE4: return SND_PCM_FORMAT_S24;
++    case AE_FMT_S24NE4L: return SND_PCM_FORMAT_S24;
+ #ifdef __BIG_ENDIAN__
+     case AE_FMT_S24NE3: return SND_PCM_FORMAT_S24_3BE;
+ #else
+@@ -343,7 +343,7 @@ bool CAESinkALSA::InitializeHW(const ALSAConfig &inconfig, ALSAConfig &outconfig
+       {
+         /* if we opened in 32bit and only have 24bits, pack into 24 */
+         if (fmtBits == 32 && bits == 24)
+-          i = AE_FMT_S24NE4;
++          i = AE_FMT_S24NE4L;
+         else
+           continue;
+       }
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkPULSE.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkPULSE.cpp
+index 457f452..a232683 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkPULSE.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkPULSE.cpp
+@@ -80,9 +80,9 @@ static pa_sample_format AEFormatToPulseFormat(AEDataFormat format)
+     case AE_FMT_S24LE3: return PA_SAMPLE_S24LE;
+     case AE_FMT_S24BE3: return PA_SAMPLE_S24BE;
+     case AE_FMT_S24NE3: return PA_SAMPLE_S24NE;
+-    case AE_FMT_S24LE4: return PA_SAMPLE_S24_32LE;
+-    case AE_FMT_S24BE4: return PA_SAMPLE_S24_32BE;
+-    case AE_FMT_S24NE4: return PA_SAMPLE_S24_32NE;
++    case AE_FMT_S24LE4L: return PA_SAMPLE_S24_32LE;
++    case AE_FMT_S24BE4L: return PA_SAMPLE_S24_32BE;
++    case AE_FMT_S24NE4L: return PA_SAMPLE_S24_32NE;
+     case AE_FMT_S32BE : return PA_SAMPLE_S32BE;
+     case AE_FMT_S32LE : return PA_SAMPLE_S32LE;
+     case AE_FMT_S32NE : return PA_SAMPLE_S32NE;
+@@ -119,9 +119,9 @@ static AEDataFormat defaultDataFormats[] = {
+   AE_FMT_S24LE3,
+   AE_FMT_S24BE3,
+   AE_FMT_S24NE3,
+-  AE_FMT_S24LE4,
+-  AE_FMT_S24BE4,
+-  AE_FMT_S24NE4,
++  AE_FMT_S24LE4L,
++  AE_FMT_S24BE4L,
++  AE_FMT_S24NE4L,
+   AE_FMT_S32BE,
+   AE_FMT_S32LE,
+   AE_FMT_S32NE,
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkWASAPI.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkWASAPI.cpp
+index ccec98d..3ec2049 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkWASAPI.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkWASAPI.cpp
+@@ -111,7 +111,7 @@ struct sampleFormat
+ /* Sample formats go from float -> 32 bit int -> 24 bit int (packed in 32) -> -> 24 bit int -> 16 bit int */
+ static const sampleFormat testFormats[] = { {KSDATAFORMAT_SUBTYPE_IEEE_FLOAT, 32, 32, AE_FMT_FLOAT},
+                                             {KSDATAFORMAT_SUBTYPE_PCM, 32, 32, AE_FMT_S32NE},
+-                                            {KSDATAFORMAT_SUBTYPE_PCM, 32, 24, AE_FMT_S24NE4},
++                                            {KSDATAFORMAT_SUBTYPE_PCM, 32, 24, AE_FMT_S24NE4H},
+                                             {KSDATAFORMAT_SUBTYPE_PCM, 24, 24, AE_FMT_S24NE3},
+                                             {KSDATAFORMAT_SUBTYPE_PCM, 16, 16, AE_FMT_S16NE} };
+ 
+@@ -754,7 +754,7 @@ void CAESinkWASAPI::EnumerateDevicesEx(AEDeviceInfoList &deviceInfoList, bool fo
+         wfxex.Format.wBitsPerSample     = CAEUtil::DataFormatToBits((AEDataFormat) p);
+         wfxex.Format.nBlockAlign        = wfxex.Format.nChannels * (wfxex.Format.wBitsPerSample >> 3);
+         wfxex.Format.nAvgBytesPerSec    = wfxex.Format.nSamplesPerSec * wfxex.Format.nBlockAlign;
+-        if (p <= AE_FMT_S24NE4 && p >= AE_FMT_S24BE4)
++        if (p <= AE_FMT_S24NE4H && p >= AE_FMT_S24BE4H)
+         {
+           wfxex.Samples.wValidBitsPerSample = 24;
+         }
+@@ -1140,7 +1140,7 @@ initialize:
+       else if (wfxex.Samples.wValidBitsPerSample == 32)
+         format.m_dataFormat = AE_FMT_S32NE;
+       else
+-        format.m_dataFormat = AE_FMT_S24NE4;
++        format.m_dataFormat = AE_FMT_S24NE4H;
+     }
+     else if (wfxex.Format.wBitsPerSample == 24)
+       format.m_dataFormat = AE_FMT_S24NE3;
+diff --git a/xbmc/cores/AudioEngine/Utils/AEAudioFormat.h b/xbmc/cores/AudioEngine/Utils/AEAudioFormat.h
+index 9ac5c79..0916abb 100644
+--- a/xbmc/cores/AudioEngine/Utils/AEAudioFormat.h
++++ b/xbmc/cores/AudioEngine/Utils/AEAudioFormat.h
+@@ -41,9 +41,13 @@ enum AEDataFormat
+   AE_FMT_S32LE,
+   AE_FMT_S32NE,
+   
+-  AE_FMT_S24BE4,
+-  AE_FMT_S24LE4,
+-  AE_FMT_S24NE4, /* S24 in 4 bytes */
++  AE_FMT_S24BE4H,
++  AE_FMT_S24LE4H,
++  AE_FMT_S24NE4H, /* S24 in upper 4 bytes */
++
++  AE_FMT_S24BE4L,
++  AE_FMT_S24LE4L,
++  AE_FMT_S24NE4L, /* S24 in lower 4 bytes */
+ 
+   AE_FMT_S24BE3,
+   AE_FMT_S24LE3,
+@@ -65,7 +69,8 @@ enum AEDataFormat
+   AE_FMT_U8P,
+   AE_FMT_S16NEP,
+   AE_FMT_S32NEP,
+-  AE_FMT_S24NE4P,
++  AE_FMT_S24NE4HP,
++  AE_FMT_S24NE4LP,
+   AE_FMT_S24NE3P,
+   AE_FMT_DOUBLEP,
+   AE_FMT_FLOATP,
+diff --git a/xbmc/cores/AudioEngine/Utils/AEConvert.cpp b/xbmc/cores/AudioEngine/Utils/AEConvert.cpp
+index d113f09..c2bafb8 100644
+--- a/xbmc/cores/AudioEngine/Utils/AEConvert.cpp
++++ b/xbmc/cores/AudioEngine/Utils/AEConvert.cpp
+@@ -69,18 +69,22 @@ CAEConvert::AEConvertToFn CAEConvert::ToFloat(enum AEDataFormat dataFormat)
+ #ifdef __BIG_ENDIAN__
+     case AE_FMT_S16NE : return &S16BE_Float;
+     case AE_FMT_S32NE : return &S32BE_Float;
+-    case AE_FMT_S24NE4: return &S24BE4_Float;
++    case AE_FMT_S24NE4H: return &S24BE4H_Float;
++    case AE_FMT_S24NE4L: return &S24BE4L_Float;
+     case AE_FMT_S24NE3: return &S24BE3_Float;
+ #else
+     case AE_FMT_S16NE : return &S16LE_Float;
+     case AE_FMT_S32NE : return &S32LE_Float;
+-    case AE_FMT_S24NE4: return &S24LE4_Float;
++    case AE_FMT_S24NE4H: return &S24LE4H_Float;
++    case AE_FMT_S24NE4L: return &S24LE4L_Float;
+     case AE_FMT_S24NE3: return &S24LE3_Float;
+ #endif
+     case AE_FMT_S16LE : return &S16LE_Float;
+     case AE_FMT_S16BE : return &S16BE_Float;
+-    case AE_FMT_S24LE4: return &S24LE4_Float;
+-    case AE_FMT_S24BE4: return &S24BE4_Float;
++    case AE_FMT_S24LE4H: return &S24LE4H_Float;
++    case AE_FMT_S24LE4L: return &S24LE4L_Float;
++    case AE_FMT_S24BE4H: return &S24BE4H_Float;
++    case AE_FMT_S24BE4L: return &S24BE4L_Float;
+     case AE_FMT_S24LE3: return &S24LE3_Float;
+     case AE_FMT_S24BE3: return &S24BE3_Float;
+ #if defined(__ARM_NEON__)
+@@ -112,7 +116,8 @@ CAEConvert::AEConvertFrFn CAEConvert::FrFloat(enum AEDataFormat dataFormat)
+ #endif
+     case AE_FMT_S16LE : return &Float_S16LE;
+     case AE_FMT_S16BE : return &Float_S16BE;
+-    case AE_FMT_S24NE4: return &Float_S24NE4;
++    case AE_FMT_S24NE4H: return &Float_S24NE4H;
++    case AE_FMT_S24NE4L: return &Float_S24NE4L;
+     case AE_FMT_S24NE3: return &Float_S24NE3;
+ #if defined(__ARM_NEON__)
+     case AE_FMT_S32LE : return &Float_S32LE_Neon;
+@@ -210,7 +215,17 @@ unsigned int CAEConvert::S16BE_Float(uint8_t* data, const unsigned int samples,
+   return samples;
+ }
+ 
+-unsigned int CAEConvert::S24LE4_Float(uint8_t *data, const unsigned int samples, float *dest)
++unsigned int CAEConvert::S24LE4H_Float(uint8_t *data, const unsigned int samples, float *dest)
++{
++  for (unsigned int i = 0; i < samples; ++i, data += 4)
++  {
++    int s = (data[3] << 24) | (data[2] << 16) | (data[1] << 8);
++    *dest++ = (float)s * INT32_SCALE;
++  }
++  return samples;
++}
++
++unsigned int CAEConvert::S24LE4L_Float(uint8_t *data, const unsigned int samples, float *dest)
+ {
+   for (unsigned int i = 0; i < samples; ++i, data += 4)
+   {
+@@ -220,7 +235,7 @@ unsigned int CAEConvert::S24LE4_Float(uint8_t *data, const unsigned int samples,
+   return samples;
+ }
+ 
+-unsigned int CAEConvert::S24BE4_Float(uint8_t *data, const unsigned int samples, float *dest)
++unsigned int CAEConvert::S24BE4H_Float(uint8_t *data, const unsigned int samples, float *dest)
+ {
+   for (unsigned int i = 0; i < samples; ++i, data += 4)
+   {
+@@ -230,6 +245,16 @@ unsigned int CAEConvert::S24BE4_Float(uint8_t *data, const unsigned int samples,
+   return samples;
+ }
+ 
++unsigned int CAEConvert::S24BE4L_Float(uint8_t *data, const unsigned int samples, float *dest)
++{
++  for (unsigned int i = 0; i < samples; ++i, data += 4)
++  {
++    int s = (data[1] << 24) | (data[2] << 16) | (data[3] << 8);
++    *dest++ = (float)s * INT32_SCALE;
++  }
++  return samples;
++}
++
+ unsigned int CAEConvert::S24LE3_Float(uint8_t *data, const unsigned int samples, float *dest)
+ {
+   for (unsigned int i = 0; i < samples; ++i, data += 3)
+@@ -244,7 +269,7 @@ unsigned int CAEConvert::S24BE3_Float(uint8_t *data, const unsigned int samples,
+ {
+   for (unsigned int i = 0; i < samples; ++i, data += 3)
+   {
+-    int s = (data[1] << 24) | (data[2] << 16) | (data[3] << 8);
++    int s = (data[0] << 24) | (data[1] << 16) | (data[2] << 8);
+     *dest++ = (float)s * INT32_SCALE;
+   }
+   return samples;
+@@ -786,7 +811,7 @@ unsigned int CAEConvert::Float_S16BE(float *data, const unsigned int samples, ui
+   return samples << 1;
+ }
+ 
+-unsigned int CAEConvert::Float_S24NE4(float *data, const unsigned int samples, uint8_t *dest)
++unsigned int CAEConvert::Float_S24NE4H(float *data, const unsigned int samples, uint8_t *dest)
+ {
+   int32_t *dst = (int32_t*)dest;
+   #ifdef __SSE2__
+@@ -797,7 +822,7 @@ unsigned int CAEConvert::Float_S24NE4(float *data, const unsigned int samples, u
+   /* work around invalid alignment */
+   while ((((uintptr_t)data & 0xF) || ((uintptr_t)dest & 0xF)) && count > 0)
+   {
+-    dst[0] = (safeRound(data[0] * ((float)INT24_MAX+.5f)) & 0xFFFFFF) << 8;
++    dst[0] = safeRound(data[0] * ((float)INT24_MAX+.5f)) << 8;
+     ++data;
+     ++dst;
+     --count;
+@@ -816,7 +841,7 @@ unsigned int CAEConvert::Float_S24NE4(float *data, const unsigned int samples, u
+   {
+     const uint32_t odd = count - even;
+     if (odd == 1)
+-      dst[0] = (safeRound(data[0] * ((float)INT24_MAX+.5f)) & 0xFFFFFF) << 8;
++      dst[0] = safeRound(data[0] * ((float)INT24_MAX+.5f)) << 8;
+     else
+     {
+       __m128 in;
+@@ -841,7 +866,69 @@ unsigned int CAEConvert::Float_S24NE4(float *data, const unsigned int samples, u
+   _mm_empty();
+   #else /* no SSE2 */
+   for (uint32_t i = 0; i < samples; ++i)
+-    *dst++ = safeRound(*data++ * ((float)INT24_MAX+.5f)) & 0x00FFFFFF;
++    *dst++ = safeRound(*data++ * ((float)INT24_MAX+.5f)) << 8;
++  #endif
++
++  return samples << 2;
++}
++
++unsigned int CAEConvert::Float_S24NE4L(float *data, const unsigned int samples, uint8_t *dest)
++{
++  int32_t *dst = (int32_t*)dest;
++  #ifdef __SSE2__
++
++  const __m128i msk = _mm_set1_epi32(0xFFFFFF);
++  const __m128 mul = _mm_set_ps1((float)INT24_MAX+.5f);
++  unsigned int count = samples;
++
++  /* work around invalid alignment */
++  while ((((uintptr_t)data & 0xF) || ((uintptr_t)dest & 0xF)) && count > 0)
++  {
++    dst[0] = safeRound(data[0] * ((float)INT24_MAX+.5f)) & 0xFFFFFF;
++    ++data;
++    ++dst;
++    --count;
++  }
++
++  const uint32_t even = count & ~0x3;
++  for (uint32_t i = 0; i < even; i += 4, data += 4, dst += 4)
++  {
++    __m128  in  = _mm_mul_ps(_mm_load_ps(data), mul);
++    __m128i con = _mm_cvtps_epi32(in);
++    con         = _mm_and_si128(con, msk);
++    memcpy(dst, &con, sizeof(int32_t) * 4);
++  }
++
++  if (count != even)
++  {
++    const uint32_t odd = count - even;
++    if (odd == 1)
++      dst[0] = safeRound(data[0] * ((float)INT24_MAX+.5f)) & 0xFFFFFF;
++    else
++    {
++      __m128 in;
++      if (odd == 2)
++      {
++        in = _mm_setr_ps(data[0], data[1], 0, 0);
++        in = _mm_mul_ps(in, mul);
++        __m128i con = _mm_cvtps_epi32(in);
++        con         = _mm_and_si128(con, msk);
++        memcpy(dst, &con, sizeof(int32_t) * 2);
++      }
++      else
++      {
++        in = _mm_setr_ps(data[0], data[1], data[2], 0);
++        in = _mm_mul_ps(in, mul);
++        __m128i con = _mm_cvtps_epi32(in);
++        con         = _mm_and_si128(con, msk);
++        memcpy(dst, &con, sizeof(int32_t) * 3);
++      }
++    }
++  }
++  _mm_empty();
++  #else /* no SSE2 */
++  for (uint32_t i = 0; i < samples; ++i)
++    *dst++ = safeRound(*data++ * ((float)INT24_MAX+.5f)) & 0xFFFFFF;
+   #endif
+ 
+   return samples << 2;
+diff --git a/xbmc/cores/AudioEngine/Utils/AEConvert.h b/xbmc/cores/AudioEngine/Utils/AEConvert.h
+index 7ded823..82afd4b 100644
+--- a/xbmc/cores/AudioEngine/Utils/AEConvert.h
++++ b/xbmc/cores/AudioEngine/Utils/AEConvert.h
+@@ -28,8 +28,10 @@ private:
+   static unsigned int S8_Float    (uint8_t *data, const unsigned int samples, float   *dest);
+   static unsigned int S16LE_Float (uint8_t *data, const unsigned int samples, float   *dest);
+   static unsigned int S16BE_Float (uint8_t *data, const unsigned int samples, float   *dest);
+-  static unsigned int S24LE4_Float(uint8_t *data, const unsigned int samples, float   *dest);
+-  static unsigned int S24BE4_Float(uint8_t *data, const unsigned int samples, float   *dest);
++  static unsigned int S24LE4H_Float(uint8_t *data, const unsigned int samples, float   *dest);
++  static unsigned int S24LE4L_Float(uint8_t *data, const unsigned int samples, float   *dest);
++  static unsigned int S24BE4H_Float(uint8_t *data, const unsigned int samples, float   *dest);
++  static unsigned int S24BE4L_Float(uint8_t *data, const unsigned int samples, float   *dest);
+   static unsigned int S24LE3_Float(uint8_t *data, const unsigned int samples, float   *dest);
+   static unsigned int S24BE3_Float(uint8_t *data, const unsigned int samples, float   *dest);
+   static unsigned int S32LE_Float (uint8_t *data, const unsigned int samples, float   *dest);
+@@ -41,7 +43,8 @@ private:
+   static unsigned int Float_S8    (float   *data, const unsigned int samples, uint8_t *dest);
+   static unsigned int Float_S16LE (float   *data, const unsigned int samples, uint8_t *dest);
+   static unsigned int Float_S16BE (float   *data, const unsigned int samples, uint8_t *dest);
+-  static unsigned int Float_S24NE4(float   *data, const unsigned int samples, uint8_t *dest);
++  static unsigned int Float_S24NE4H(float   *data, const unsigned int samples, uint8_t *dest);
++  static unsigned int Float_S24NE4L(float   *data, const unsigned int samples, uint8_t *dest);
+   static unsigned int Float_S24NE3(float   *data, const unsigned int samples, uint8_t *dest);
+   static unsigned int Float_S32LE (float   *data, const unsigned int samples, uint8_t *dest);
+   static unsigned int Float_S32BE (float   *data, const unsigned int samples, uint8_t *dest);
+diff --git a/xbmc/cores/AudioEngine/Utils/AEUtil.cpp b/xbmc/cores/AudioEngine/Utils/AEUtil.cpp
+index feaa621..095fc8f 100644
+--- a/xbmc/cores/AudioEngine/Utils/AEUtil.cpp
++++ b/xbmc/cores/AudioEngine/Utils/AEUtil.cpp
+@@ -92,9 +92,13 @@ const unsigned int CAEUtil::DataFormatToBits(const enum AEDataFormat dataFormat)
+     32,                  /* S32LE  */
+     32,                  /* S32NE  */
+     
+-    32,                  /* S24BE  */
+-    32,                  /* S24LE  */
+-    32,                  /* S24NE  */
++    32,                  /* S24BE4H */
++    32,                  /* S24LE4H */
++    32,                  /* S24NE4H */
++    
++    32,                  /* S24BE4L */
++    32,                  /* S24LE4L */
++    32,                  /* S24NE4L */
+     
+     24,                  /* S24BE3 */
+     24,                  /* S24LE3 */
+@@ -114,8 +118,9 @@ const unsigned int CAEUtil::DataFormatToBits(const enum AEDataFormat dataFormat)
+      8,                  /* U8P    */
+     16,                  /* S16NEP */
+     32,                  /* S32NEP */
+-    32,                  /* S24NEP */
+-    24,                  /* S24NE3P*/
++    32,                  /* S24NE4HP */
++    32,                  /* S24NE4LP */
++    24,                  /* S24NE3P */
+     sizeof(double) << 3, /* DOUBLEP */
+     sizeof(float ) << 3  /* FLOATP  */
+  };
+@@ -125,7 +130,8 @@ const unsigned int CAEUtil::DataFormatToBits(const enum AEDataFormat dataFormat)
+ 
+ const unsigned int CAEUtil::DataFormatToUsedBits(const enum AEDataFormat dataFormat)
+ {
+-  if (dataFormat == AE_FMT_S24BE4 || dataFormat == AE_FMT_S24LE4 || dataFormat == AE_FMT_S24NE4)
++  if (dataFormat == AE_FMT_S24BE4H || dataFormat == AE_FMT_S24LE4H || dataFormat == AE_FMT_S24NE4H ||
++      dataFormat == AE_FMT_S24BE4L || dataFormat == AE_FMT_S24LE4L || dataFormat == AE_FMT_S24NE4L)
+     return 24;
+   else
+     return DataFormatToBits(dataFormat);
+@@ -149,9 +155,13 @@ const char* CAEUtil::DataFormatToStr(const enum AEDataFormat dataFormat)
+     "AE_FMT_S32LE",
+     "AE_FMT_S32NE",
+     
+-    "AE_FMT_S24BE4",
+-    "AE_FMT_S24LE4",
+-    "AE_FMT_S24NE4",  /* S24 in 4 bytes */
++    "AE_FMT_S24BE4H",
++    "AE_FMT_S24LE4H",
++    "AE_FMT_S24NE4H",  /* S24 in upper 4 bytes */
++    
++    "AE_FMT_S24BE4L",
++    "AE_FMT_S24LE4L",
++    "AE_FMT_S24NE4L",  /* S24 in lower 4 bytes */
+     
+     "AE_FMT_S24BE3",
+     "AE_FMT_S24LE3",
+@@ -173,7 +183,8 @@ const char* CAEUtil::DataFormatToStr(const enum AEDataFormat dataFormat)
+     "AE_FMT_U8P",
+     "AE_FMT_S16NEP",
+     "AE_FMT_S32NEP",
+-    "AE_FMT_S24NE4P",
++    "AE_FMT_S24NE4HP",
++    "AE_FMT_S24NE4LP",
+     "AE_FMT_S24NE3P",
+     "AE_FMT_DOUBLEP",
+     "AE_FMT_FLOATP"
