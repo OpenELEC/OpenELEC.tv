@@ -86,7 +86,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   fi
   
 # create /etc/os-release
-  echo -e "NAME=$DISTRONAME \n" > $INSTALL/etc/os-release
+  echo -e "ID=openelec\n" > $INSTALL/etc/os-release
+  echo -e "NAME=$DISTRONAME\n" >> $INSTALL/etc/os-release
   echo -e "VERSION=$OPENELEC_VERSION\n" >> $INSTALL/etc/os-release
   echo -e "PRETTY_NAME=$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION\n" >> $INSTALL/etc/os-release
   echo -e "HOME_URL=http://www.openelec.tv\n" >> $INSTALL/etc/os-release
