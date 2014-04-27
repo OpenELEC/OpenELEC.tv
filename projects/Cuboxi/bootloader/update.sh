@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
@@ -16,30 +18,24 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libxcb"
-PKG_VERSION="1.10"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="OSS"
-PKG_SITE="http://xcb.freedesktop.org"
-PKG_URL="http://xcb.freedesktop.org/dist/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros Python:host xcb-proto libpthread-stubs libXau"
-PKG_PRIORITY="optional"
-PKG_SECTION="x11/lib"
-PKG_SHORTDESC="libxcb: X C-language Bindings library"
-PKG_LONGDESC="X C-language Bindings library."
+[ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
+[ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+# mount $BOOT_ROOT r/w
+  mount -o remount,rw $BOOT_ROOT
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
+# update Device Tree Blobs
+  for all_dtb in /flash/*.dtb; do
+    dtb=$(basename $all_dtb)
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/$dtb ]; then
+      echo "*** updating Device Tree Blob: $dtb ..."
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT
+    fi
+  done
 
-pre_configure_target() {
-  PYTHON_LIBDIR="`ls -d $SYSROOT_PREFIX/usr/lib/python*`"
-  PYTHON_TOOLCHAIN_PATH=`ls -d $PYTHON_LIBDIR/site-packages`
+# update bootloader files
+  # todo
 
-  PKG_CONFIG="$PKG_CONFIG --define-variable=pythondir=$PYTHON_TOOLCHAIN_PATH"
-  PKG_CONFIG="$PKG_CONFIG --define-variable=xcbincludedir=$SYSROOT_PREFIX/usr/share/xcb"
-
-  CFLAGS="$CFLAGS -fPIC -DPIC"
-}
+# mount $BOOT_ROOT r/o
+  sync
+  mount -o remount,ro $BOOT_ROOT

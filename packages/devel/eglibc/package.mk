@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.eglibc.org/"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="ccache:host autotools:host autoconf-2.68:host linux:host gcc:bootstrap"
+PKG_DEPENDS_TARGET="ccache:host autotools:host autoconf:host linux:host gcc:bootstrap"
 PKG_DEPENDS_INIT="eglibc"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
@@ -70,7 +70,7 @@ EGLIBC_EXCLUDE_BIN="$EGLIBC_EXCLUDE_BIN xtrace zdump zic"
 pre_build_target() {
   cd $PKG_BUILD
     aclocal --force --verbose
-    autoconf-2.68 --force --verbose
+    autoconf --force --verbose
   cd -
 }
 
@@ -200,7 +200,6 @@ makeinstall_init() {
   mkdir -p $INSTALL/lib
     cp -PR $ROOT/$PKG_BUILD/.$TARGET_NAME/elf/ld*.so* $INSTALL/lib
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/libc.so.6 $INSTALL/lib
-    cp $ROOT/$PKG_BUILD/.$TARGET_NAME/math/libm.so.6 $INSTALL/lib
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/nptl/libpthread.so.0 $INSTALL/lib
 
     if [ "$TARGET_ARCH" = "arm" -a "$TARGET_FLOAT" = "hard" ]; then
