@@ -1,23 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . config/options $1
@@ -33,10 +31,14 @@ case $1 in
     deps_pkg="wget"
     ;;
   build)
-    deps="gcc g++ sed patch touch nasm tar bzip2 gzip lzma perl flex bison cp gawk makeinfo gettext autopoint gperf autoconf automake m4 cvs zip unzip mkfontscale libtool diff byacc xsltproc msgfmt"
-    deps_pkg="gcc g++ sed patch fileutils nasm tar bzip2 gzip lzma perl flex bison coreutils gawk texinfo gettext gettext-devel gperf autoconf automake m4 cvs zip unzip xutils libtool diff byacc xsltproc gettext"
-    files="/usr/lib/libc.a /usr/include/stdio.h /usr/include/zlib.h /usr/include/ncurses.h /usr/lib/perl5/XML/Parser.pm"
-    files_pkg="glibc-static libc6-dev zlib1g-dev libncurses5-dev perl-XML-Parser"
+    deps="bash bc gcc g++ sed patch touch tar bzip2 gzip perl cp gawk makeinfo gperf cvs zip unzip mkfontscale mkfontdir bdftopcf diff xsltproc java"
+    deps_pkg="bash bc gcc g++ sed patch fileutils tar bzip2 gzip perl coreutils gawk texinfo gperf cvs zip unzip xutils xfonts-utils diff xsltproc default-jre"
+    files="/usr/include/stdio.h /usr/include/ncurses.h"
+    files_pkg="libc6-dev libncurses5-dev"
+    if [ -f /etc/redhat-release ]; then
+      deps_pkg="bash bc gcc gcc-c++ sed patch fileutils tar bzip2 gzip perl coreutils gawk texinfo gperf cvs zip unzip xorg-x11-font-utils xorg-x11-font-utils diffutils libxslt java-1.7.0-openjdk"
+      files_pkg="glibc-headers ncurses-devel"
+    fi
     ;;
   qemu)
     if [ ! `which qemu` ]; then
@@ -66,14 +68,43 @@ if [ -n "$need" ]; then
   echo "**** Your system lacks the following tools needed to $1 $DISTRONAME ****"
   echo $need
 
-  [ -f /etc/lsb-release ] && . /etc/lsb-release
+  if  [ -f /etc/lsb-release ]; then
+    DISTRO=$(grep DISTRIB_ID /etc/lsb-release | cut -d "=" -f 2)
+  fi
 
-  if [ -n "`which aptitude 2>/dev/null`" ]; then
-    DISTRO="a Debian" 
-    [ "$DISTRIB_ID" = "Ubuntu" ] && DISTRO="an Ubuntu"
-    echo "**** You seem to use $DISTRO system ****"
+  if [ "$DISTRO" = "Ubuntu" ]; then
+    echo "**** You seem to use a $DISTRO system ****"
     read -p "would you like to install the needed tools ? (y/n) " ans
-    [ "$ans" = "y" ] && sudo aptitude install $need_pkg
+    if ( ! [ -z "`which aptitude 2>/dev/null`" ] && [ "$ans" = "y" ]); then
+      sudo aptitude install $need_pkg
+    elif [ "$ans" = "y" ]; then
+      echo "**** The recommended Package-Manager Aptitude is not installed"
+      read -p "(y) install Aptitude :: (n) use APT " ans
+      if [ "$ans" = "y" ]; then
+        sudo apt-get -y install aptitude
+        sudo aptitude install $need_pkg
+      elif [ "$ans" = "n" ]; then
+        sudo apt-get install $need_pkg
+      else
+        echo "********"
+        exit 1
+      fi
+    else
+      echo "********"
+      exit 1
+    fi
+  elif ( ! [ -z "`which aptitude 2>/dev/null`" ]); then
+   DISTRO="a Debian" 
+   echo "**** You seem to use $DISTRO system ****"
+    read -p "would you like to install the needed tools ? (y/n) " ans
+    if ([ "$ans" = "y" ] && ! [ $(sudo -n uptime 2>&1|grep "load"|wc -l) ]); then
+      sudo aptitude install $need_pkg
+    elif [ "$ans" = "y" ]; then
+      su -c "aptitude install $need_pkg"
+    else
+      echo "********"
+      exit 1
+    fi
   elif [ -f /etc/mandrake-release -a -n "`which urpmi 2>/dev/null`" ]; then
     echo "**** You seem to use a mandrake system ****"
     read -p "would you like to install the needed tools ? (y/n) " ans
@@ -84,6 +115,10 @@ if [ -n "$need" ]; then
     [ "$ans" = "y" ] && sudo emerge -D $need_pkg
   elif [ -f /etc/fedora-release -a -n "`which yum 2>/dev/null`" ]; then
     echo "**** You seem to use a fedora system ****"
+    read -p "would you like to install the needed tools ? (y/n) " ans
+    [ "$ans" = "y" ] && sudo yum install $need_pkg
+  elif [ -f /etc/redhat-release -a "`which yum 2>/dev/null`" ]; then
+    echo "**** You seem to use a RedHat or clone (CentOS) system ****"
     read -p "would you like to install the needed tools ? (y/n) " ans
     [ "$ans" = "y" ] && sudo yum install $need_pkg
   else

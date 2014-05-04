@@ -1,3 +1,6 @@
+# set default language for buildsystem
+  export LC_ALL=C
+
 # determines PROJECT, if not forced by user
 # default is Generic
 if [ -z "$PROJECT" ]; then
@@ -16,16 +19,10 @@ fi
 
 ROOT=`pwd`
 PROJECT_DIR="$ROOT/projects"
+LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/packages/linux/package.mk"
 
-OPENELEC_VERSION=`cat VERSION`
-
-if [ "$OPENELEC_VERSION" = "devel" ]; then
-  OS_VERSION="0.90"
-else
-  OS_MAJOR_VERSION=`echo "$OPENELEC_VERSION" | cut -f1 -d "."`
-  OS_MINOR_VERSION=`echo "$OPENELEC_VERSION" | cut -f2 -d "."`
-  OS_VERSION="$OS_MAJOR_VERSION.$OS_MINOR_VERSION"
-fi
+# include versioning
+  . config/version
 
 # read project options if available
  if [ -f "$PROJECT_DIR/$PROJECT/options" ]; then
@@ -57,14 +54,19 @@ fi
 #  multi-processor computer (like hyperthreading SMP CPU)
   CONCURRENCY_MAKE_LEVEL=`cat /proc/cpuinfo | grep -c '^processor[[:cntrl:]]*:'`
 
+# cache size for ccache
+# Set the maximum size of the files stored in the cache. You can specify a
+# value in gigabytes, megabytes or kilobytes by appending a G, M or K to the
+# value. The default is gigabytes. The actual value stored is rounded down to
+# the nearest multiple of 16 kilobytes.
+  CCACHE_CACHE_SIZE="30G"
+
 # forcing install of all packages (yes/no)
   FORCE_INSTALL="no"
 
-# set jpeg library depending on ARCH
-  if [ "$TARGET_ARCH" = "i386" -o "$TARGET_ARCH" = "x86_64" ]; then
-    LIBJPEG="libjpeg-turbo"
-  else
-    LIBJPEG="jpeg"
+# install devtools on development builds
+  if [ "$OPENELEC_VERSION" = "devel" ]; then
+    DEVTOOLS=yes
   fi
 
 # read options from $HOME if available
@@ -75,41 +77,5 @@ fi
     . $HOME/.openelec/$PROJECT/options
   fi
 
-get_graphicdrivers() {
-  if [ "$GRAPHIC_DRIVERS" = "all" ]; then
-    GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 radeon nvidia vmware"
-  fi
-
-  for drv in $GRAPHIC_DRIVERS; do
-    [ "$drv" = "i915" ] && MESA_DRIVERS="$MESA_DRIVERS,i915"
-    [ "$drv" = "i965" ] && MESA_DRIVERS="$MESA_DRIVERS,i965"
-    [ "$drv" = "r200" ] && MESA_DRIVERS="$MESA_DRIVERS,r200"
-    [ "$drv" = "r300" ] && MESA_DRIVERS="$MESA_DRIVERS,r300"
-    [ "$drv" = "r600" ] && MESA_DRIVERS="$MESA_DRIVERS,r600"
-    [ "$drv" = "radeon" ] && MESA_DRIVERS="$MESA_DRIVERS,radeon"
-    [ "$drv" = "nouveau" ] && MESA_DRIVERS="$MESA_DRIVERS,nouveau"
-
-    if [ "$drv" = "i915" -o "$drv" = "i965" ]; then
-      XORG_DRIVERS="$XORG_DRIVERS intel"
-    fi
-
-    if [ "$drv" = "r200" -o "$drv" = "r300" -o "$drv" = "r600" -o "$drv" = "radeon" ]; then
-      XORG_DRIVERS="$XORG_DRIVERS ati"
-    fi
-
-    if [ "$drv" = "nouveau" ]; then
-      XORG_DRIVERS="$XORG_DRIVERS nouveau"
-    fi
-
-    if [ "$drv" = "nvidia" ]; then
-      XORG_DRIVERS="$XORG_DRIVERS nvidia"
-      XINERAMA_SUPPORT="yes"
-    fi
-
-    if [ "$drv" = "vmware" ]; then
-      XINERAMA_SUPPORT="yes"
-    fi
-  done
-}
-
+. config/graphic
 . config/path $1

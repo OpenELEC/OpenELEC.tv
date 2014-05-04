@@ -1,0 +1,51 @@
+diff -Naur Python-2.7.2/Makefile.pre.in Python-2.7.2.patch/Makefile.pre.in
+--- Python-2.7.2/Makefile.pre.in	2011-10-25 16:20:40.178698198 +0200
++++ Python-2.7.2.patch/Makefile.pre.in	2011-10-25 16:22:33.429160448 +0200
+@@ -398,7 +398,7 @@
+ 
+ 
+ # Build the interpreter
+-$(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
++$(BUILDPYTHON):	Modules/python.o $(LDLIBRARY)
+ 		$(LINKCC) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
+ 			Modules/python.o \
+ 			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
+@@ -414,18 +414,6 @@
+ 	*) $(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' PYTHONXCPREFIX='$(DESTDIR)$(prefix)' $(HOSTPYTHON) -E $(srcdir)/setup.py build;; \
+ 	esac
+ 
+-# Build static library
+-# avoid long command lines, same as LIBRARY_OBJS
+-$(LIBRARY): $(LIBRARY_OBJS)
+-	-rm -f $@
+-	$(AR) $(ARFLAGS) $@ Modules/getbuildinfo.o
+-	$(AR) $(ARFLAGS) $@ $(PARSER_OBJS)
+-	$(AR) $(ARFLAGS) $@ $(OBJECT_OBJS)
+-	$(AR) $(ARFLAGS) $@ $(PYTHON_OBJS)
+-	$(AR) $(ARFLAGS) $@ $(MODULE_OBJS) $(SIGNAL_OBJS)
+-	$(AR) $(ARFLAGS) $@ $(MODOBJS)
+-	$(RANLIB) $@
+-
+ libpython$(VERSION).so: $(LIBRARY_OBJS)
+ 	if test $(INSTSONAME) != $(LDLIBRARY); then \
+ 		$(BLDSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
+@@ -997,18 +985,6 @@
+ 		else	true; \
+ 		fi; \
+ 	done
+-	@if test -d $(LIBRARY); then :; else \
+-		if test "$(PYTHONFRAMEWORKDIR)" = no-framework; then \
+-			if test "$(SO)" = .dll; then \
+-				$(INSTALL_DATA) $(LDLIBRARY) $(DESTDIR)$(LIBPL) ; \
+-			else \
+-				$(INSTALL_DATA) $(LIBRARY) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
+-				$(RANLIB) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
+-			fi; \
+-		else \
+-			echo Skip install of $(LIBRARY) - use make frameworkinstall; \
+-		fi; \
+-	fi
+ 	$(INSTALL_DATA) Modules/config.c $(DESTDIR)$(LIBPL)/config.c
+ 	$(INSTALL_DATA) Modules/python.o $(DESTDIR)$(LIBPL)/python.o
+ 	$(INSTALL_DATA) $(srcdir)/Modules/config.c.in $(DESTDIR)$(LIBPL)/config.c.in
+diff -Naur Python-2.7.2/Makefile.pre.in.orig Python-2.7.2.patch/Makefile.pre.in.orig

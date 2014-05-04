@@ -1,0 +1,112 @@
+if [ "$DISPLAYSERVER" = "x11" ]; then
+  SDL_SUPPORT="yes"
+else
+  SDL_SUPPORT="no"
+fi
+
+if [ "$OPENGL" = no ]; then
+  OPENGL_SUPPORT="no"
+else
+  OPENGL_SUPPORT="yes"
+fi
+
+if [ "$OPENGLES" = no ]; then
+  OPENGLES_SUPPORT="no"
+else
+  OPENGLES_SUPPORT="yes"
+fi
+
+if [ "$SDL_SUPPORT" = no ]; then
+  JOYSTICK_SUPPORT="no"
+fi
+
+if [ "$OPENGL_SUPPORT" = no ]; then
+  XBMC_SCR_RSXS="no"
+  XBMC_VIS_PROJECTM="no"
+  XBMC_VIS_GOOM="no"
+fi
+
+get_graphicdrivers() {
+  if [ "$GRAPHIC_DRIVERS" = "all" ]; then
+    GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nvidia vmware virtualbox"
+  fi
+
+  for drv in $GRAPHIC_DRIVERS; do
+    if [ "$drv" = "dove" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS dove"
+    fi
+
+    if [ "$drv" = "i915" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,i915"
+      XORG_DRIVERS="$XORG_DRIVERS intel"
+      COMPOSITE_SUPPORT="yes"
+      LIBVA="$LIBVA libva-driver-intel"
+    fi
+
+    if [ "$drv" = "i965" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,i965"
+      XORG_DRIVERS="$XORG_DRIVERS intel"
+      COMPOSITE_SUPPORT="yes"
+      LIBVA="$LIBVA libva-driver-intel"
+    fi
+
+    if [ "$drv" = "nouveau" ]; then
+      # DRI_DRIVERS are only used for NV04 - NV20 (which we dont want to support anymore)
+      DRI_DRIVERS="$DRI_DRIVERS"
+      # GALLIUM_DRIVERS are used for all cards from NV30 to nvc0
+      # see also http://nouveau.freedesktop.org/wiki/MesaDrivers/
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,nouveau"
+      XORG_DRIVERS="$XORG_DRIVERS nouveau"
+      COMPOSITE_SUPPORT="yes"
+#      LLVM_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "nvidia" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS nvidia"
+    fi
+
+    if [ "$drv" = "nvidia-legacy" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS nvidia-legacy"
+    fi
+
+    if [ "$drv" = "virtualbox" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,swrast"
+      XORG_DRIVERS="$XORG_DRIVERS virtualbox"
+    fi
+
+    if [ "$drv" = "r200" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,r200"
+      XORG_DRIVERS="$XORG_DRIVERS ati"
+      COMPOSITE_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "r300" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300"
+      XORG_DRIVERS="$XORG_DRIVERS ati"
+      LLVM_SUPPORT="yes"
+      COMPOSITE_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "r600" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600"
+      XORG_DRIVERS="$XORG_DRIVERS ati"
+      LLVM_SUPPORT="yes"
+      COMPOSITE_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "radeonsi" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,radeonsi"
+      XORG_DRIVERS="$XORG_DRIVERS ati"
+      LLVM_SUPPORT="yes"
+      COMPOSITE_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "vmware" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,swrast"
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
+      XORG_DRIVERS="$XORG_DRIVERS vmware"
+#      LLVM_SUPPORT="yes"
+    fi
+
+  done
+}

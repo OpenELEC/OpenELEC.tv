@@ -1,0 +1,13 @@
+[Unit]
+Description=Setup User config dir
+DefaultDependencies=no
+Before=local-fs.target shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/openelec/openelec-userconfig
+RemainAfterExit=yes
+
+[Install]
+WantedBy=local-fs.target

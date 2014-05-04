@@ -1,27 +1,24 @@
-BUILD_DIRS="build.*"
+BUILD_DIRS=build.*
 
-all: squashfs
+all: release
 
 system:
 	./scripts/image
 
 release:
-	./scripts/image_release
+	./scripts/image release
 
-squashfs:
-	./scripts/image_squashfs
+image:
+	./scripts/image mkimage
 
-qemu:
-	./scripts/image_qemu
+image-efi:
+	./scripts/image mkimage efi
 
-vmware:
-	./scripts/image_vmware
-
-addons:
-	./scripts/image_addons
+noobs:
+	./scripts/image noobs
 
 clean:
-	rm -rf $(BUILD_DIRS)
+	rm -rf $(BUILD_DIRS)/* $(BUILD_DIRS)/.stamps
 
 src-pkg:
 	tar cvjf sources.tar.bz2 sources .stamps

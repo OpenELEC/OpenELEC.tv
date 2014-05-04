@@ -1,0 +1,17 @@
+[Unit]
+Description=Bluetooth service
+Requires=bluetooth.target
+
+ConditionPathExists=/storage/.cache/services/bluez.conf
+
+[Service]
+NotifyAccess=main
+EnvironmentFile=/storage/.cache/services/bluez.conf
+EnvironmentFile=-/run/openelec/debug/bluez.conf
+ExecStart=/usr/lib/bluetooth/bluetoothd $BLUEZ_ARGS $BLUEZ_DEBUG
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+LimitNPROC=1
+TimeoutStopSec=1s
+
+[Install]
+WantedBy=bluetooth.target

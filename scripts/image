@@ -1,41 +1,58 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . config/options $1
 
+show_config
+
 $SCRIPTS/checkdeps build
 $SCRIPTS/build toolchain
+$SCRIPTS/build squashfs:host
+$SCRIPTS/build fakeroot:host
+$SCRIPTS/build kmod:host
 
-export INSTALL=$BUILD/image/system
+BUILD_DATE=`date +%Y%m%d%H%M%S`
 
-get_version
+if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
+  if ! GIT_BUILD=$(git rev-list --count HEAD 2>/dev/null)
+  then
+    GIT_BUILD=$(git rev-list HEAD | wc -l)
+  fi
+  GIT_HASH=$(git rev-parse HEAD)
+  GIT_ABBREV=$(git log -1 --pretty=format:%h)
+  OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
+fi
 
-rm -rf $INSTALL
-rm -rf $STAMPS_INSTALL
-
-mkdir -p $INSTALL
+TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # setup fakeroot
+  rm -rf $FAKEROOT_SCRIPT   # remove $FAKEROOT_SCRIPT if it exist
+  touch $FAKEROOT_SCRIPT    # create an empty $FAKEROOT_SCRIPT
+  chmod +x $FAKEROOT_SCRIPT # make $FAKEROOT_SCRIPT executable
   echo "chown -R 0:0 $INSTALL" >> $FAKEROOT_SCRIPT
+
+# clean old install dirs
+  rm -rf $INSTALL
+  rm -rf $STAMPS_INSTALL
+  mkdir -p $INSTALL
 
 # create baselayout
   mkdir -p $INSTALL/bin
@@ -44,14 +61,14 @@ mkdir -p $INSTALL
   mkdir -p $INSTALL/sbin
   mkdir -p $INSTALL/dev
   mkdir -p $INSTALL/proc
+  mkdir -p $INSTALL/run
   mkdir -p $INSTALL/sys
+  mkdir -p $INSTALL/tmp
   mkdir -p $INSTALL/usr
   mkdir -p $INSTALL/var
   mkdir -p $INSTALL/flash
   mkdir -p $INSTALL/storage
-
   ln -sf /var $INSTALL/usr/var
-  ln -sf /var/tmp $INSTALL/tmp
   ln -sf /var/media $INSTALL/media
 
   if [ "$TARGET_ARCH" = "x86_64" -o "$TARGET_ARCH" = "powerpc64" ]; then
@@ -63,62 +80,72 @@ mkdir -p $INSTALL
   echo "$PROJECT.$TARGET_ARCH" > $INSTALL/etc/arch
   echo "$OPENELEC_VERSION" > $INSTALL/etc/version
   echo "$TARGET_VERSION" > $INSTALL/etc/release
-  echo "$DISTRONAME - Version: $OPENELEC_VERSION" > $INSTALL/etc/openelec-release
+  echo "$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION" > $INSTALL/etc/openelec-release
   if [ -n "$GIT_HASH" ]; then
     echo "$GIT_HASH" >> $INSTALL/etc/gitrev
   fi
+  
+# create /etc/os-release
+  echo -e "NAME=$DISTRONAME" > $INSTALL/etc/os-release
+  echo -e "VERSION=$OPENELEC_VERSION" >> $INSTALL/etc/os-release
+  echo -e "ID=openelec" >> $INSTALL/etc/os-release
+  echo -e "VERSION_ID=$OS_VERSION" >> $INSTALL/etc/os-release
+  echo -e "PRETTY_NAME=$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION" >> $INSTALL/etc/os-release
+  echo -e "HOME_URL=http://www.openelec.tv" >> $INSTALL/etc/os-release
+  echo -e "BUG_REPORT_URL=https://github.com/OpenELEC/OpenELEC.tv" >> $INSTALL/etc/os-release
+  if [ -n "$GIT_HASH" ]; then
+	echo -e "BUILD_ID=$GIT_HASH" >> $INSTALL/etc/os-release
+  fi
+  
+
+  if [ "$OFFICIAL" = "yes" ]; then
+    echo "official" > $INSTALL/etc/build
+  else
+    echo "unofficial" > $INSTALL/etc/build
+  fi
 
 # create /etc/issue
-  echo $GREATING0 >  $INSTALL/etc/issue
-  echo $GREATING1 >> $INSTALL/etc/issue
-  echo $GREATING2 >> $INSTALL/etc/issue
-  echo $GREATING3 >> $INSTALL/etc/issue
-  echo $GREATING4 >> $INSTALL/etc/issue
-  echo "$DISTRONAME Version: $OPENELEC_VERSION" >> $INSTALL/etc/issue
+  echo $GREETING0 >  $INSTALL/etc/issue
+  echo $GREETING1 >> $INSTALL/etc/issue
+  echo $GREETING2 >> $INSTALL/etc/issue
+  echo $GREETING3 >> $INSTALL/etc/issue
+  echo $GREETING4 >> $INSTALL/etc/issue
+  echo "$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) Version: $OPENELEC_VERSION" >> $INSTALL/etc/issue
   if [ -n "$GIT_HASH" ]; then
     echo "$DISTRONAME git: $GIT_HASH" >> $INSTALL/etc/issue
   fi
 
-# copy project related files to filesystem
-  if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
-    cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
-  fi
+  ln -sf /etc/issue $INSTALL/etc/motd
 
 # Basissystem...
-  $SCRIPTS/install eglibc
-  $SCRIPTS/install gcc-final
-  $SCRIPTS/install linux system
+  $SCRIPTS/install libc
+  $SCRIPTS/install gcc
+  $SCRIPTS/install linux
+  $SCRIPTS/install linux-drivers
+  $SCRIPTS/install linux-firmware
+  $SCRIPTS/install $BOOTLOADER
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
-
-# Network support
-  [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
-
-# Transmission BitTorrent support
-  [ "$TRANSMISSION" = "yes" ] && $SCRIPTS/install transmission
-
-# SABnzbd support
-  [ "$SABNZBD" = "yes" ] && $SCRIPTS/install SABnzbd
+  $SCRIPTS/install corefonts
+  $SCRIPTS/install network
 
 # Graphic support
   [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
-  [ "$TVHEADEND" = "yes" ] && $SCRIPTS/install hts-tvheadend
+
+# Sound support
+  [ "$ALSA_SUPPORT" = "yes" ] && $SCRIPTS/install alsa
 
 # Automounter support
-  [ "$UDISKS" = "yes" ] && $SCRIPTS/install udisks
-
-# Powermanagement support
-  [ "$UPOWER" = "yes" ] && $SCRIPTS/install upower
-  [ "$UPOWER" = "yes" ] && $SCRIPTS/install ConsoleKit
+  [ "$UDEVIL" = "yes" ] && $SCRIPTS/install udevil
 
 # NTFS 3G support
-  [ "$NTFS3G" = "yes" ] && $SCRIPTS/install ntfs-3g
+  [ "$EXFAT" = "yes" ] && $SCRIPTS/install fuse-exfat
 
-# Apple mount (ifuse) support
-  [ "$APPLEMOUNT" = "yes" ] && $SCRIPTS/install ifuse
+# NTFS 3G support
+  [ "$NTFS3G" = "yes" ] && $SCRIPTS/install ntfs-3g_ntfsprogs
 
 # Remote support
   [ "$REMOTE_SUPPORT" = "yes" ] && $SCRIPTS/install remote
@@ -129,18 +156,8 @@ mkdir -p $INSTALL
 # Sensors support
   [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
 
-# Update support
-  [ "$UPDATE_SUPPORT" = "yes" ] && $SCRIPTS/install autoupdate
-
-# Update support
+# Installer support
   [ "$INSTALLER_SUPPORT" = "yes" ] && $SCRIPTS/install installer
-
-# Games and Emulators support (SDK's)
-  [ "$GAMES" = "yes" ] && $SCRIPTS/install games-sdk
-  [ "$EMULATORS" = "yes" ] && $SCRIPTS/install emulators-sdk
-
-# some system tools
-  [ "$TOOLS" = "yes" ] && $SCRIPTS/install tools
 
 # Devtools... (not for Release)
   [ "$TESTING" = "yes" ] && $SCRIPTS/install testing
@@ -149,7 +166,234 @@ mkdir -p $INSTALL
 # OEM packages
   [ "$OEM_SUPPORT" = "yes" ] && $SCRIPTS/install oem
 
+# copy project related files to filesystem
+  if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
+  fi
+
+# run depmod
+  MODVER=$(basename $(ls -d $INSTALL/lib/modules/*))
+  find $INSTALL/lib/modules/$MODVER/ -name *.ko | \
+    sed -e "s,$INSTALL/lib/modules/$MODVER/,," > $INSTALL/lib/modules/$MODVER/modules.order
+  $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER > /dev/null
+
 # strip kernel modules
   for MOD in `find $INSTALL/lib/modules/ -name *.ko`; do
     $STRIP --strip-debug $MOD
   done
+
+# make target dir
+  mkdir -p $TARGET_IMG
+    rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
+    rm -rf $TARGET_IMG/$IMAGE_NAME.mach_kernel
+
+# copy kernel to target dir
+  if [ "$BOOTLOADER" = "u-boot" ]; then
+    KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    KERNEL_IMAGE="zImage"
+  else
+    KERNEL_IMAGE="bzImage"
+  fi
+
+  if [ "$TARGET_ARCH" = i386 -o "$TARGET_ARCH" = x86_64 ]; then
+    KERNEL_ARCH="x86"
+  elif [ "$TARGET_ARCH" = arm ]; then
+    KERNEL_ARCH="arm"
+  fi
+
+  if [ "$BOOTLOADER" = "atv-bootloader" ]; then
+    cp -PR $BUILD/atv-bootloader-*/mach_kernel $TARGET_IMG/$IMAGE_NAME.mach_kernel
+    chmod 0644 $TARGET_IMG/$IMAGE_NAME.mach_kernel
+  else
+    cp -PR $BUILD/linux-*/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
+    chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
+  fi
+
+# create squashfs file
+  if [ -z "$SQUASHFS_COMPRESSION" ]; then
+    SQUASHFS_COMPRESSION="gzip"
+  fi
+
+  echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT
+  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT
+
+# run fakeroot
+  $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT
+  rm -rf $FAKEROOT_SCRIPT
+
+# set permissions
+  chmod 0644 $TARGET_IMG/$IMAGE_NAME.system
+
+  if [ "$1" = "release" -o "$1" = "mkimage" ]; then
+
+    RELEASE_DIR="target/$IMAGE_NAME"
+
+    # cleanup
+      rm -rf $RELEASE_DIR
+
+    # create release dir
+      mkdir -p $RELEASE_DIR
+      # remove n previous created release image
+        rm -rf $TARGET_IMG/$IMAGE_NAME.img.gz
+        if [ -n "$BOOTLOADER" ]; then
+          BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+          if [ -d "$BOOTLOADER_DIR"/files ]; then
+            cp -R $BOOTLOADER_DIR/files/* $RELEASE_DIR
+          fi
+
+          if [ -f $PROJECT_DIR/$PROJECT/bootloader/release ]; then
+            . $PROJECT_DIR/$PROJECT/bootloader/release
+          elif [ -f "$BOOTLOADER_DIR"/release ]; then
+            . $BOOTLOADER_DIR/release
+          fi
+        fi
+
+        cp $ROOT/README* $RELEASE_DIR
+        cp $ROOT/CHANGELOG* $RELEASE_DIR
+        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR
+        echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
+
+        if [ -n "$MEDIACENTER" ] ; then
+          echo "XBMC commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
+        fi
+
+      mkdir -p $RELEASE_DIR/licenses
+        cp $ROOT/licenses/* $RELEASE_DIR/licenses
+
+      mkdir -p $RELEASE_DIR/target
+        cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/target/SYSTEM
+
+        if [ -f $TARGET_IMG/$IMAGE_NAME.mach_kernel ]; then
+          cp $TARGET_IMG/$IMAGE_NAME.mach_kernel $RELEASE_DIR/target/MACH_KERNEL
+        else
+          cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
+        fi
+
+    # create md5sum's
+      ( cd $RELEASE_DIR;
+        md5sum -t target/SYSTEM > target/SYSTEM.md5;
+        if [ -f target/MACH_KERNEL ]; then
+          md5sum -t target/MACH_KERNEL > target/MACH_KERNEL.md5;
+        else
+          md5sum -t target/KERNEL > target/KERNEL.md5;
+        fi
+      )
+
+    # create target directory
+      mkdir -p $TARGET_IMG
+
+    # remove an previous created release tarball
+      rm -rf $TARGET_IMG/$IMAGE_NAME.tar
+
+    # create release tarball
+      tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
+
+    # create image files if requested
+      if [ "$1" = "mkimage" -a "$BOOTLOADER" = "atv-bootloader" ]; then
+        # variables used in image script must be passed
+        sudo env \
+          ROOT="$ROOT" \
+          BUILD="$BUILD" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          $SCRIPTS/mkimage-atv
+      elif [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+        if [ "$2" == "efi" ] ; then
+          UEFI=yes
+        fi
+        # variables used in image script must be passed
+        sudo env \
+          PATH="$PATH" \
+          ROOT="$ROOT" \
+          TOOLCHAIN="$TOOLCHAIN" \
+          TARGET_IMG="$TARGET_IMG" \
+          IMAGE_NAME="$IMAGE_NAME" \
+          BOOTLOADER="$BOOTLOADER" \
+          RELEASE_DIR="$RELEASE_DIR" \
+          UUID_SYSTEM="$(uuidgen)" \
+          UUID_STORAGE="$(uuidgen)" \
+          UEFI="$UEFI" \
+          $SCRIPTS/mkimage
+      fi
+
+    # cleanup release dir
+      rm -rf $RELEASE_DIR
+
+  elif [ "$1" = "noobs" ]; then
+
+    RELEASE_DIR="$TARGET_IMG/${IMAGE_NAME}-$1"
+
+    # cleanup
+      rm -rf $RELEASE_DIR
+
+    # create release dir
+      mkdir -p $RELEASE_DIR
+
+      cp -PR $ROOT/config/$1/* $RELEASE_DIR
+
+      cp $ROOT/README* $RELEASE_DIR
+      cp $ROOT/CHANGELOG $RELEASE_DIR/release_notes.txt
+
+
+      sed -e "s%@DISTRONAME@%$DISTRONAME%g" \
+          -e "s%@OPENELEC_VERSION@%$OPENELEC_VERSION%g" \
+          -e "s%@RELEASE_DATE@%$(date +%F)%g" \
+          -e "s%@KERNEL_VERSION@%$(kernel_version)%g" \
+          -e "s%@DESCRIPTION@%$DESCRIPTION%g" \
+          -i $RELEASE_DIR/os.json
+
+    # create System dir
+      mkdir -p $RELEASE_DIR/System
+
+        BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+        if [ -d "$BOOTLOADER_DIR"/files/3rdparty/bootloader/ ]; then
+          cp -PR $BOOTLOADER_DIR/files/3rdparty/bootloader/* $RELEASE_DIR/System
+        fi
+
+      # copy Bootloader
+        cp -PR $BUILD/bcm2835-bootloader-*/LICENCE* $RELEASE_DIR/System/
+        cp -PR $BUILD/bcm2835-bootloader-*/bootcode.bin $RELEASE_DIR/System/
+        cp -PR $BUILD/bcm2835-bootloader-*/fixup_x.dat $RELEASE_DIR/System/fixup.dat
+        cp -PR $BUILD/bcm2835-bootloader-*/start_x.elf $RELEASE_DIR/System/start.elf
+
+      # copy system files
+        cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/System/SYSTEM
+        cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/System/kernel.img
+
+      # create md5sum's
+        ( cd $RELEASE_DIR/System;
+          md5sum -t SYSTEM > SYSTEM.md5;
+          md5sum -t kernel.img > kernel.img.md5;
+        )
+
+      # copy additional files
+        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR/System
+        mkdir -p $RELEASE_DIR/System/licenses
+          cp $ROOT/licenses/* $RELEASE_DIR/System/licenses
+
+    # create Storage dir
+      mkdir -p $RELEASE_DIR/Storage
+
+    # remove an previous created release tarball
+      rm -rf $RELEASE_DIR/System.tar.xz
+      rm -rf $RELEASE_DIR/Storage.tar.xz
+
+    # create filesystem tarballs
+      tar cJf $RELEASE_DIR/System.tar.xz -C $RELEASE_DIR/System/ .
+      tar cJf $RELEASE_DIR/Storage.tar.xz -C $RELEASE_DIR/Storage/ .
+
+    # remove an filesystem dirs
+      rm -rf $RELEASE_DIR/System
+      rm -rf $RELEASE_DIR/Storage
+
+    # remove an previous created release tarball
+      rm -rf $TARGET_IMG/${IMAGE_NAME}-$1.tar
+
+    # create release tarball
+      tar cf $TARGET_IMG/${IMAGE_NAME}-$1.tar -C $TARGET ${IMAGE_NAME}-$1
+
+    # cleanup release dir
+      rm -rf $RELEASE_DIR
+  fi

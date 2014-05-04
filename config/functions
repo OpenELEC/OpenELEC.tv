@@ -15,6 +15,7 @@ setup_toolchain() {
     export NM=$TARGET_NM
     export RANLIB=$TARGET_RANLIB
     export OBJCOPY=$TARGET_OBJCOPY
+    export OBJDUMP=$TARGET_OBJDUMP
     export STRIP=$TARGET_STRIP
     export CPPFLAGS="$TARGET_CPPFLAGS"
     export CFLAGS="$TARGET_CFLAGS"
@@ -55,7 +56,29 @@ setup_toolchain() {
 }
 
 kernel_path() {
-  ls -d $ROOT/$BUILD/linux-[0-9]*
+  . $ROOT/packages/linux/package.mk
+  echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
+}
+
+kernel_version() {
+  . $ROOT/packages/linux/package.mk
+  echo ${PKG_VERSION}
+}
+
+# get kernel module dir
+get_module_dir() {
+  basename $(ls -d $(get_build_dir linux)/.install_pkg/lib/modules/*)
+}
+
+# get package's build dir
+get_build_dir() {
+  if [ ! -z $1 ] ; then
+    local _PKG_DIR=$(find $ROOT/packages -name $1)
+    if [ -d $_PKG_DIR -a -f $_PKG_DIR/package.mk ] ; then
+      . $_PKG_DIR/package.mk
+    fi
+    echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
+  fi
 }
 
 tolower(){
@@ -76,23 +99,21 @@ require_cxx() {
   fi
 }
 
-xorg_drv_configure_prepend() {
-  incdir=${SYSROOT_PREFIX}/usr/include/xorg
-  for f in dri.h sarea.h dristruct.h exa.h damage.h xf86Module.h; do
-    incfile="$incdir/$f"
-    if [ -f "$incfile" ]; then
-      p=`echo "$incfile" | sed 'y%*+%pp%;s%[^_[:alnum:]]%_%g'`
-      eval "export ac_cv_file_$p=yes"
-    fi
-  done
-}
-
 add_user() {
   # Usage: add_user "username" "password" "userid" "groupid" "description" "home" "shell"
   mkdir -p ${INSTALL}/etc
   touch ${INSTALL}/etc/passwd
   if [ -z "`grep "$1:" ${INSTALL}/etc/passwd`" ]; then
-    echo "$1:$2:$3:$4:$5:$6:$7" >> ${INSTALL}/etc/passwd
+    echo "$1:x:$3:$4:$5:$6:$7" >> ${INSTALL}/etc/passwd
+  fi
+
+  touch ${INSTALL}/etc/shadow
+  PASSWORD="$2"
+  if [ "$PASSWORD" = "x" ]; then
+    PASSWORD="*"
+  fi
+  if [ -z "`grep "$1:" ${INSTALL}/etc/shadow`" ]; then
+    echo "$1:$PASSWORD:::::::" >> ${INSTALL}/etc/shadow
   fi
 }
 
@@ -105,57 +126,289 @@ add_group() {
   fi
 }
 
-get_version() {
+do_autoreconf() {
+  export ACLOCAL_DIR=$SYSROOT_PREFIX/usr/share/aclocal
 
-  BUILD_DATE=`date +%Y%m%d`
-
-  if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
-    GIT_BUILD=`git log --pretty=format:'' | wc -l`
-    GIT_HASH=`git log -n1 --format=%H`
-    OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD
+  if [ -e "$ROOT/$TOOLCHAIN/bin/autoconf" ]; then
+    export AUTOCONF=$ROOT/$TOOLCHAIN/bin/autoconf
   fi
 
-  TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
-}
+  if [ -e "$ROOT/$TOOLCHAIN/bin/automake" ]; then
+    export AUTOMAKE=$ROOT/$TOOLCHAIN/bin/automake
+  fi
 
-do_autoreconf() {
-  if [ -e $ROOT/$TOOLCHAIN/bin/autoreconf ] &&
-     [ -e $ROOT/$TOOLCHAIN/bin/autoconf ] &&
-     [ -e $ROOT/$TOOLCHAIN/bin/automake ] &&
-     [ -e $ROOT/$TOOLCHAIN/bin/libtoolize ] &&
-     [ -e $ROOT/$TOOLCHAIN/bin/intltoolize ]; then
-       export LIBTOOL=$ROOT/$TOOLCHAIN/bin/libtool
-       export LIBTOOLIZE=$ROOT/$TOOLCHAIN/bin/libtoolize
-       export AUTOMAKE=$ROOT/$TOOLCHAIN/bin/automake
-       export ACLOCAL_DIR=$SYSROOT_PREFIX/usr/share/aclocal
-       export ACLOCAL="$ROOT/$TOOLCHAIN/bin/aclocal -I $ACLOCAL_DIR"
-       export AUTOCONF=$ROOT/$TOOLCHAIN/bin/autoconf
-       export AUTOHEADER=$ROOT/$TOOLCHAIN/bin/autoheader
-       export AUTORECONF="$ROOT/$TOOLCHAIN/bin/autoreconf -v -f -i -I $ACLOCAL_DIR"
+  if [ -e "$ROOT/$TOOLCHAIN/bin/autopoint" ]; then
+    export AUTOPOINT=$ROOT/$TOOLCHAIN/bin/autopoint
+  fi
 
-       mkdir -p $ACLOCAL_DIR
-       autoreconf --force --install -I $ACLOCAL_DIR $@
+  if [ -e "$ROOT/$TOOLCHAIN/bin/libtoolize" ]; then
+    export LIBTOOLIZE=$ROOT/$TOOLCHAIN/bin/libtoolize
+  fi
+
+  if [ -e "$ROOT/$TOOLCHAIN/bin/intltoolize" ]; then
+    export INTLTOOLIZE=$ROOT/$TOOLCHAIN/bin/intltoolize
+  fi
+
+  if [ -e "$ROOT/$TOOLCHAIN/bin/aclocal" ]; then
+    export ACLOCAL="$ROOT/$TOOLCHAIN/bin/aclocal -I $ACLOCAL_DIR"
+  fi
+
+  if [ -e "$ROOT/$TOOLCHAIN/bin/autoheader" ]; then
+    export AUTOHEADER=$ROOT/$TOOLCHAIN/bin/autoheader
+  fi
+
+  if [ -e "$ROOT/$TOOLCHAIN/bin/libtool" ]; then
+    export LIBTOOL=$ROOT/$TOOLCHAIN/bin/libtool
+  fi
+
+  if [ -e "$ROOT/$TOOLCHAIN/bin/autoreconf" -a -e "$INTLTOOLIZE" ]; then
+    mkdir -p $ACLOCAL_DIR
+    export AUTORECONF="$ROOT/$TOOLCHAIN/bin/autoreconf --verbose --force --install -I $ACLOCAL_DIR"
+    $AUTORECONF $@
   fi
 }
 
 strip_lto() {
   # strip out LTO optimization from *FLAGS
-  CFLAGS=`echo $CFLAGS | sed -e "s|-flto||"`
-  CXXFLAGS=`echo $CXXFLAGS | sed -e "s|-flto||"`
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-flto||"`
-}
-
-strip_gold() {
-  # strip out usage from GOLD linker
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-ld=gold||" -e "s|-fuse-linker-plugin||"`
+  CFLAGS=`echo $CFLAGS | sed -e "s|-flto||g"`
+  CXXFLAGS=`echo $CXXFLAGS | sed -e "s|-flto||g"`
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-flto||g"`
 }
 
 strip_linker_plugin() {
   # strip out usage from linker plugin
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-linker-plugin||"`
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-linker-plugin||g"`
 }
 
-strip_kmod() {
-  [ -z $1 ] && echo "usage strip_kmod <dir>" && exit 1
-  find $1 -type f -name '*.ko' | xargs -r $STRIP --strip-debug
+strip_gold() {
+  # strip out usage from GOLD linker
+  LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-ld=gold||g"`
+}
+
+fix_module_depends() {
+  # modify .modinfo section in kernel module to depends on other required modules
+  local MODULE="$1"
+  local DEPENDS="$2"
+  local OLD_DEPENDS=""
+  cp ${MODULE} ${MODULE}_orig
+  $OBJDUMP -s -j .modinfo ${MODULE}_orig | awk 'BEGIN{v=0;} /Contents/ {v=1; next;} {if (v==1) print $0;}' >new.modinfo1
+  cat new.modinfo1 | cut -c7-41 | awk '{printf($0);}' | sed 's/ //g;s/../\\\x&/g;' >new.modinfo2
+  /bin/echo -ne `cat new.modinfo2` | tr '\000' '\n' >new.modinfo3
+  cat new.modinfo3 | awk '/^depends=/ {next;} {print $0;}' | tr '\n' '\000' >new.modinfo
+  OLD_DEPENDS=$(awk '{FS="="} /depends=/ {print $2}' new.modinfo3)
+  [ -n "$OLD_DEPENDS" ] && DEPENDS="$OLD_DEPENDS,$DEPENDS"
+  /bin/echo -ne "depends=$DEPENDS\0" >>new.modinfo
+  $OBJCOPY --remove-section=.modinfo --add-section=.modinfo=new.modinfo --set-section-flags .modinfo=contents,alloc,load,readonly,data ${MODULE}_orig ${MODULE}
+  rm new.modinfo*
+}
+
+# Usage: enable_service <unit> [target]
+enable_service () {
+  local unit="$1"
+  local unit_dir="/usr/lib/systemd/system"
+  local target="$2"
+  local target_dir=$INSTALL
+
+  [ -f "$target_dir/$unit_dir/$unit" ] || exit 1
+  [ -z "$target" ] && target=`grep '^WantedBy' $target_dir/$unit_dir/$unit | cut -f2 -d=`
+
+  if [ -n "$target" ]; then
+    mkdir -p ${target_dir}/$unit_dir/${target}.wants
+    ln -sf ../${unit} ${target_dir}/$unit_dir/${target}.wants/
+  fi
+}
+
+check_path() {
+dashes="==========================="
+  if [ "${PWD##/usr}" != "${PWD}" ]; then
+    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
+    check_pathmessage="$check_pathmessage\n ERROR: You try to build inside /usr"
+    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
+    check_pathmessage="$check_pathmessage\n This is not supported with our buildsystem."
+    check_pathmessage="$check_pathmessage\n Please use another dir (for example your \$HOME) to build $DISTRONAME"
+
+    echo -e $check_pathmessage
+    exit 1
+  fi
+}
+
+check_config() {
+dashes="==========================="
+  if [ ! -d $PROJECT_DIR/$PROJECT ]; then
+    check_project="$check_project\n $dashes$dashes$dashes"
+    check_project="$check_project\n ERROR: Project not found, use a valid project or create a new config"
+    check_project="$check_project\n $dashes$dashes$dashes"
+    check_project="$check_project\n\n Valid projects:"
+
+    for projects in $PROJECT_DIR/*; do
+      check_project="$check_project\n - $(basename $projects)"
+    done
+    echo -e $check_project
+    exit 1
+  fi
+
+  if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf ]; then
+    check_arch="$check_arch\n $dashes$dashes$dashes"
+    check_arch="$check_arch\n ERROR: Architecture not found, use a valid Architecture"
+    check_arch="$check_arch\n for your project or create a new config"
+    check_arch="$check_arch\n $dashes$dashes$dashes"
+    check_arch="$check_arch\n\n Valid Architectures for your project: $PROJECT"
+
+    for arch in $PROJECT_DIR/$PROJECT/linux/*.conf; do
+      check_arch="$check_arch\n - $(basename $arch | cut -f2 -d".")"
+    done
+    echo -e $check_arch
+    exit 1
+  fi
+}
+
+show_config() {
+  dashes="==========================="
+  config_message="$config_message\n $dashes$dashes$dashes"
+  config_message="$config_message\n Configuration for $DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" || echo "unofficial"))"
+  config_message="$config_message\n $dashes$dashes$dashes"
+
+  # Build options
+
+  config_message="$config_message\n\n Buildoptions:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - CPU (ARCH):\t\t\t\t $TARGET_CPU ($TARGET_ARCH)"
+  config_message="$config_message\n - FLOAT:\t\t\t\t $TARGET_FLOAT"
+  config_message="$config_message\n - FPU:\t\t\t\t\t $TARGET_FPU"
+  config_message="$config_message\n - SIMD support:\t\t\t $SIMD_SUPPORT"
+  config_message="$config_message\n - Optimizations:\t\t\t $OPTIMIZATIONS"
+  config_message="$config_message\n - LTO (Link Time Optimization) support: $LTO_SUPPORT"
+  config_message="$config_message\n - GOLD (Google Linker) Support:\t $GOLD_SUPPORT"
+  config_message="$config_message\n - LLVM support:\t\t\t $LLVM_SUPPORT"
+
+  # config_message="$config_message\n - CFLAGS:\t $TARGET_CFLAGS"
+  # config_message="$config_message\n - LDFLAGS:\t $TARGET_LDFLAGS"
+
+  # Graphic configuration
+
+  config_message="$config_message\n\n Graphic configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - XORG support:\t\t\t $XORG_SUPPORT"
+  config_message="$config_message\n - XORG Composite support:\t\t $COMPOSITE_SUPPORT"
+  config_message="$config_message\n - XORG Xinerama support:\t\t $XINERAMA_SUPPORT"
+  config_message="$config_message\n - SDL support:\t\t\t\t $SDL_SUPPORT"
+  config_message="$config_message\n - OpenGL (GLX) support (provider):\t $OPENGL_SUPPORT ($OPENGL)"
+  config_message="$config_message\n - OpenGLES support (provider):\t\t $OPENGLES_SUPPORT ($OPENGLES)"
+  config_message="$config_message\n - WindowManager:\t\t\t $WINDOWMANAGER"
+  config_message="$config_message\n - Xorg Graphic Drivers:\t\t $GRAPHIC_DRIVERS"
+
+  # Hardware decoder support
+
+  config_message="$config_message\n\n Hardware decoder configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - Broadcom CrystalHD Decoder:\t\t $CRYSTALHD"
+  config_message="$config_message\n - XBMC Player driver:\t\t\t $XBMCPLAYER_DRIVER"
+  config_message="$config_message\n - VAAPI Support:\t\t\t $VAAPI"
+  config_message="$config_message\n - VDPAU Support:\t\t\t $VDPAU"
+
+  # Input device configuration
+
+  config_message="$config_message\n\n Input device configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - Remote support:\t\t\t $REMOTE_SUPPORT"
+  config_message="$config_message\n - ATV Remote support:\t\t\t $ATVCLIENT_SUPPORT"
+  config_message="$config_message\n - CEC Adapter support:\t\t\t $CEC_SUPPORT"
+  config_message="$config_message\n - IRTrans support:\t\t\t $IRSERVER_SUPPORT"
+  config_message="$config_message\n - XBMC Joystick support:\t\t $JOYSTICK_SUPPORT"
+
+  # Misc. hardware configuration
+
+  config_message="$config_message\n\n Misc. hardware configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - ALSA support:\t\t\t $ALSA_SUPPORT"
+  config_message="$config_message\n - Pulseaudio support:\t\t\t $PULSEAUDIO_SUPPORT"
+  config_message="$config_message\n - Blu-Ray support:\t\t\t $BLURAY_SUPPORT"
+  config_message="$config_message\n - Bluetooth support:\t\t\t $BLUETOOTH_SUPPORT"
+  config_message="$config_message\n - Hardware Sensors support:\t\t $SENSOR_SUPPORT"
+  config_message="$config_message\n - LCD drivers:\t\t\t\t $LCD_DRIVER"
+
+  for config_driver in $ADDITIONAL_DRIVERS; do
+    config_message="$config_message\n - Include driver:\t\t\t $config_driver"
+  done
+
+  for config_firmware in $FIRMWARE; do
+    config_message="$config_message\n - Include firmware:\t\t\t $config_firmware"
+  done
+
+  # Network service configuration
+
+  config_message="$config_message\n\n Network service configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - Avahi (Zeroconf) support:\t\t $AVAHI_DAEMON"
+  config_message="$config_message\n - SAMBA server support:\t\t $SAMBA_SERVER"
+  config_message="$config_message\n - SFTP server support:\t\t\t $SFTP_SERVER"
+  config_message="$config_message\n - PPTP support:\t\t\t $PPTP_SUPPORT"
+  config_message="$config_message\n - OpenVPN support:\t\t\t $OPENVPN_SUPPORT"
+  config_message="$config_message\n - XBMC Airplay support:\t\t $AIRPLAY_SUPPORT"
+  config_message="$config_message\n - XBMC Airtunes support:\t\t $AIRTUNES_SUPPORT"
+  config_message="$config_message\n - XBMC AFP support:\t\t\t $AFP_SUPPORT"
+  config_message="$config_message\n - XBMC NFS support:\t\t\t $NFS_SUPPORT"
+  config_message="$config_message\n - XBMC SAMBA client support:\t\t $SAMBA_SUPPORT"
+  config_message="$config_message\n - XBMC Webserver support:\t\t $WEBSERVER"
+
+  # OS configuration
+
+  config_message="$config_message\n\n OS configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - OEM Support:\t\t\t\t $OEM_SUPPORT"
+  config_message="$config_message\n - Default ROOT Password:\t\t $ROOT_PASSWORD"
+  config_message="$config_message\n - Bootloader:\t\t\t\t $BOOTLOADER"
+if [ "$BOOTLOADER" = "u-boot" ]; then
+  config_message="$config_message\n - U-Boot configuration:\t\t $UBOOT_CONFIG"
+  config_message="$config_message\n - U-Boot config file:\t\t\t $UBOOT_CONFIGFILE"
+fi
+  config_message="$config_message\n - UDevil support:\t\t\t $UDEVIL"
+  config_message="$config_message\n - Installer support:\t\t\t $INSTALLER_SUPPORT"
+
+  # Misc. Filesystems
+
+  config_message="$config_message\n\n Misc. Filesystems:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - Swap Support:\t\t\t $SWAP_SUPPORT"
+if [ "$SWAP_SUPPORT" = "yes" ]; then
+  config_message="$config_message\n - Swapfile default size:\t\t $SWAPFILESIZE"
+fi
+  config_message="$config_message\n - exFAT Support (via Fuse):\t\t $EXFAT"
+  config_message="$config_message\n - NTFS Support (via Fuse):\t\t $NTFS3G"
+  config_message="$config_message\n - Install HFS Tools:\t\t\t $HFSTOOLS"
+
+  # XBMC configuration
+
+  config_message="$config_message\n\n XBMC configuration:"
+  config_message="$config_message\n $dashes$dashes"
+
+  config_message="$config_message\n - XBMC version:\t\t\t $MEDIACENTER"
+  config_message="$config_message\n - XBMC nonfree support:\t\t $NONFREE_SUPPORT"
+  config_message="$config_message\n - XBMC DVDCSS support:\t\t\t $DVDCSS_SUPPORT"
+
+  for config_skin in $SKINS; do
+    config_message="$config_message\n - Include Skin:\t\t\t $config_skin"
+  done
+
+  config_message="$config_message\n - Default Skin:\t\t\t $SKIN_DEFAULT"
+  config_message="$config_message\n - Include extra fonts:\t\t\t $XBMC_EXTRA_FONTS"
+  config_message="$config_message\n - Include RSXS Screensaver:\t\t $XBMC_SCR_RSXS"
+  config_message="$config_message\n - Include ProjectM Visualization:\t $XBMC_VIS_PROJECTM"
+  config_message="$config_message\n - Include Goom Visualization:\t\t $XBMC_VIS_GOOM"
+
+  config_message="$config_message\n"
+  config_message="$config_message\n $dashes$dashes$dashes"
+  config_message="$config_message\n End Configuration for $DISTRONAME"
+  config_message="$config_message\n $dashes$dashes$dashes"
+  config_message="$config_message\n\n\n"
+
+  echo -e $config_message
 }

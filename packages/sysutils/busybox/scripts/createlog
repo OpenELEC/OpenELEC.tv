@@ -2,22 +2,20 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 # create logfile
@@ -25,21 +23,23 @@
 DATE=`date -u +%Y-%m-%d-%H.%M.%S`
 BASEDIR="/tmp"
 LOGDIR="log-$DATE"
+RELEASE="`cat /etc/release`"
+GIT="`cat /etc/issue |grep git`"
 
 getlog_cmd() {
-  echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "# ... output of $@" >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
-  $@ >> $BASEDIR/$LOGDIR/$LOGFILE
-  echo "" >> $BASEDIR/$LOGDIR/$LOGFILE
+  if which $1 >/dev/null; then
+    echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# ... output of $@" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# OpenELEC release: $RELEASE" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "# $GIT" >> $BASEDIR/$LOGDIR/$LOGFILE
+    echo "################################################################################" >> $BASEDIR/$LOGDIR/$LOGFILE
+    $@ >> $BASEDIR/$LOGDIR/$LOGFILE 2>/dev/null
+    echo "" >> $BASEDIR/$LOGDIR/$LOGFILE
+  fi
 }
 
 rm -rf $BASEDIR/$LOGDIR
 mkdir -p $BASEDIR/$LOGDIR
-
-# OS Info
-  LOGFILE="00_OS.log"
-  getlog_cmd cat /etc/issue
 
 # XBMC.log
   LOGFILE="01_XBMC.log"
@@ -47,15 +47,17 @@ mkdir -p $BASEDIR/$LOGDIR
     getlog_cmd cat $i
   done
 
-# Kernel.log
-  LOGFILE="02_Kernel.log"
-  getlog_cmd lsmod
+# System.log
+  LOGFILE="02_System.log"
   getlog_cmd dmesg
+  getlog_cmd lsmod
+  getlog_cmd ps xa
 
 # Hardware.log
   LOGFILE="03_Hardware.log"
-  getlog_cmd lspci -vvv
+  getlog_cmd lspci -vvvvnn
   getlog_cmd lsusb -vvv
+  getlog_cmd lsusb -t
   getlog_cmd cat /proc/cpuinfo
 
 # Audio.log
@@ -66,7 +68,11 @@ mkdir -p $BASEDIR/$LOGDIR
 
 # Network.log
   LOGFILE="05_Network.log"
-  getlog_cmd ifconfig
+  getlog_cmd ifconfig -a
+  getlog_cmd netstat -rn
+  getlog_cmd netstat -nalp
+  getlog_cmd connmanctl services
+  getlog_cmd cat /etc/resolv.conf
 
 # varlog.log
   LOGFILE="06_varlog.log"
@@ -77,15 +83,27 @@ mkdir -p $BASEDIR/$LOGDIR
 # Input.log
   LOGFILE="07_input.log"
   getlog_cmd cat /proc/bus/input/devices
-  getlog_cmd cat /proc/acpi/wakeup
+  # make RPi users happy
+  if [ -e /proc/acpi/wakeup ] ; then
+    getlog_cmd cat /proc/acpi/wakeup
+  fi
 
-# DMI.log
-#  LOGFILE="08_dmi.log"
-#  getlog_cmd dmidecode
+# Filesystem.log
+  LOGFILE="08_Filesystem.log"
+  getlog_cmd cat /proc/mounts
+  getlog_cmd df -h
+
+# Journal (current)
+  LOGFILE="09_Journal-cur.log"
+  getlog_cmd journalctl --no-pager -b -0
+
+# Journal (prev)
+  LOGFILE="10_Journal-prev.log"
+  getlog_cmd journalctl --no-pager -b -1
 
 # pack logfiles
   mkdir -p /storage/logfiles
-  tar cvjf /storage/logfiles/log-$DATE.tar.bz2 $LOGDIR -C $BASEDIR
+  zip -jq /storage/logfiles/log-$DATE.zip $BASEDIR/$LOGDIR/*
 
 # remove logdir
   rm -rf $BASEDIR/$LOGDIR

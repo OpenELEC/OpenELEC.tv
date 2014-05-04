@@ -1,0 +1,23 @@
+<settings>
+    <setting id="WAIT_FOR_FEINIT" value="false" />
+    <setting id="NUM_ADAPTERS" value="1" />
+    <setting id="REMOVE_MODULES" value="" />
+    <setting id="VDR_VIDEO_DIR" value="/storage/videos" />
+    <setting id="PVR_PLUGIN" value="vnsiserver" />
+    <setting id="ENABLE_IPTV" value="false" />
+    <setting id="ENABLE_SOFTCAM" value="true" />
+    <setting id="ENABLE_STREAMDEV_CLIENT" value="false" />
+    <setting id="ENABLE_STREAMDEV_SERVER" value="false" />
+    <setting id="ENABLE_LIVE" value="false" />
+    <setting id="LIVE_IP" value="0.0.0.0" />
+    <setting id="LIVE_PORT" value="8008" />
+    <setting id="ENABLE_CONTROL" value="false" />
+    <setting id="CONTROL_PORT" value="2002" />
+    <setting id="ENABLE_EEPG" value="false" />
+    <setting id="ENABLE_EPGSEARCH" value="false" />
+    <setting id="ENABLE_XMLTV2VDR" value="false" />
+    <setting id="ENABLE_DUMMYDEVICE" value="false" />
+    <setting id="ENABLE_SATIP" value="false" />
+    <setting id="ENABLE_EXTERNAL_RECCMD" value="false" />
+    <setting id="EXTERNAL_RECCMD_PATH" value="" />
+</settings>

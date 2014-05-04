@@ -1,0 +1,9 @@
+[Unit]
+Description=configure Xorg Server for %I
+
+ConditionKernelCommandLine=!installer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/xorg/xorg-configure %I
+RemainAfterExit=yes

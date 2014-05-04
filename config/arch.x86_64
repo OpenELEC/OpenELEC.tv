@@ -1,0 +1,14 @@
+# determines TARGET_CPU, if not forced by user
+  if [ -z "$TARGET_CPU" ]; then
+    TARGET_CPU=core2
+  fi
+
+# determine architecture's family
+  TARGET_SUBARCH=x86_64
+
+# setup ARCH specific *FLAGS
+  TARGET_CFLAGS="-march=$TARGET_CPU -m64"
+  TARGET_LDFLAGS="-march=$TARGET_CPU -m64"
+
+# build with SIMD support ( yes / no )
+  SIMD_SUPPORT="yes"

@@ -73,7 +73,7 @@ SUBSYSTEMS=="usb", GOTO="begin-usb"
 GOTO="end-usb"
 LABEL="begin-usb"
 
-ENV{ID_USB_INTERFACES}=="", IMPORT{program}="usb_id --export %p"
+ENV{ID_USB_INTERFACES}=="", IMPORT{builtin}="usb_id"
 
 ENV{ID_VENDOR_ID}=="0bc7", ENV{ID_MODEL_ID}=="0006", \
   ENV{eventlircd_enable}="true", \
@@ -83,7 +83,39 @@ ENV{ID_VENDOR_ID}=="0419", ENV{ID_MODEL_ID}=="0001", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
 
+ENV{ID_VENDOR_ID}=="046d", ENV{ID_MODEL_ID}=="c101", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
+
 ENV{ID_VENDOR_ID}=="046e", ENV{ID_MODEL_ID}=="5577", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="topseed.evmap"
+
+ENV{ID_VENDOR_ID}=="046e", ENV{ID_MODEL_ID}=="5578", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="topseed.evmap"
+
+ENV{ID_VENDOR_ID}=="04b4", ENV{ID_MODEL_ID}=="0100", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="cypress.evmap"
+
+ENV{ID_VENDOR_ID}=="04b4", ENV{ID_MODEL_ID}=="0101", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="cypress.evmap"
+
+ENV{ID_VENDOR_ID}=="04f2", ENV{ID_MODEL_ID}=="0618", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="topseed.evmap"
+
+ENV{ID_VENDOR_ID}=="0766", ENV{ID_MODEL_ID}=="0204", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="topseed.evmap"
+
+ENV{ID_VENDOR_ID}=="1784", ENV{ID_MODEL_ID}=="0004", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="topseed.evmap"
+
+ENV{ID_VENDOR_ID}=="03eb", ENV{ID_MODEL_ID}=="0002", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
 
@@ -103,7 +135,11 @@ ENV{ID_VENDOR_ID}=="0755", ENV{ID_MODEL_ID}=="2626", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
 
-ENV{ID_VENDOR_ID}=="0766", ENV{ID_MODEL_ID}=="0204", \
+ENV{ID_VENDOR_ID}=="1241", ENV{ID_MODEL_ID}=="e000", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
+
+ENV{ID_VENDOR_ID}=="13ec", ENV{ID_MODEL_ID}=="0006", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
 
@@ -111,6 +147,67 @@ ENV{ID_VENDOR_ID}=="147a", ENV{ID_MODEL_ID}=="e02d", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
 
+ENV{ID_VENDOR_ID}=="18b1", ENV{ID_MODEL_ID}=="0037", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
+
+ENV{ID_VENDOR_ID}=="1d57", ENV{ID_MODEL_ID}=="ac01", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="03_$env{ID_VENDOR_ID}_$env{ID_MODEL_ID}.evmap"
+
+#ENV{ID_VENDOR_ID}=="9022", ENV{ID_MODEL_ID}=="d660", \
+ATTRS{idVendor}=="9022", ATTRS{idProduct}=="d660", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="tevii_s660.evmap"
+
+ENV{ID_VENDOR_ID}=="0471", ENV{ID_MODEL_ID}=="0613", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="spinelplus.evmap"
+
+ENV{ID_VENDOR_ID}=="0471", ENV{ID_MODEL_ID}=="206c", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="spinelplus.evmap"
+
+ENV{ID_VENDOR_ID}=="0471", ENV{ID_MODEL_ID}=="20cc", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="spinelplus.evmap"
+
+# Enable wake-on-usb for the USB remotes.
+  RUN+="wakeup_enable"
+
 LABEL="end-usb"
+
+# Automatically set Delayrate to 200ms to avoid double keypresses with
+# gpio-rc-recv
+  DRIVERS=="gpio-rc-recv", \
+    RUN+="/usr/bin/ir-keytable --delay=200 --device=$devnode", \
+    GOTO="end-keytable"
+
+# Set default delays (1000ms for first repeat, to avoid multiple keypresses).
+  RUN+="/usr/bin/ir-keytable --delay=1000 --device=$devnode"
+
+LABEL="end-keytable"
+#-------------------------------------------------------------------------------
+# Ask eventlircd to handle Bluetooth HID devices that show up as event devices
+# and are known to be remote controls. For simplicity, the event map file names
+# have the format <BUSTYPE>_<VENDOR>_<PRODUCT>.evmap.
+#-------------------------------------------------------------------------------
+SUBSYSTEMS=="bluetooth", GOTO="begin-bluetooth"
+GOTO="end-bluetooth"
+LABEL="begin-bluetooth"
+
+ATTRS{name}=="Nintendo Wii Remote", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="wiimote.evmap"
+
+ATTRS{name}=="BD Remote Control", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="ps3remote.evmap"
+
+ATTRS{name}=="OUYA Game Controller", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="ouya.evmap"
+
+LABEL="end-bluetooth"
 
 LABEL="end"

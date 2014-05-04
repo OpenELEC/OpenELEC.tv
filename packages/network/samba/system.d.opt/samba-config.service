@@ -1,0 +1,11 @@
+[Unit]
+Description=Samba configfile writer
+After=local-fs.target samba-defaults.service
+Requires=samba-defaults.service
+
+ConditionPathExists=/storage/.cache/services/samba.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/samba/samba-config
+StartLimitInterval=0

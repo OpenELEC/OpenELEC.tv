@@ -1,63 +1,48 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2011 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
-#  This Program is free software; you can redistribute it and/or modify
+#  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
 #
-#  This Program is distributed in the hope that it will be useful,
+#  OpenELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.tv; see the file COPYING.  If not, write to
-#  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-#  http://www.gnu.org/copyleft/gpl.html
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 . config/options $1
 
-clean ()
-{
-  echo " CLEAN    $1" >&$SILENT_OUT
+if [ ! -z "$1" ]; then
+  printf "%${BUILD_INDENT}c ${boldred}CLEAN${endcolor}    $1\n" ' '>&$SILENT_OUT
+  export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
   if [ "$CLEAN_SOURCES" = true ]; then
     rm -rf $SOURCES/$1
     return
   fi
 
-  if [ "$FULL" = true ]; then
-    rm -rf $BUILD_BASE*/$STAMPS_NOARCH/$1*
-    rm -rf $BUILD_BASE*/$1*
-    rm -rf $STAMPS_NOARCH/$1
-    rm -rf $SOURCES/$1
-  else
-    rm -rf $PKG_BUILD
-    rm -f $STAMPS/$1*/unpack
-    rm -f $STAMPS/$1*/build
-  fi
-}
-
-if [ "$1" = "--full" ]; then
-  FULL=true
-  shift
-elif [ "$1" = "--sources" ]; then
-  CLEAN_SOURCES=true
-  shift
-fi
-
-if [ -z "$1" ]; then
-  for i in $PACKAGES/*; do clean ${i#$PACKAGES/}; done
-  rm -rf $BUILD/iso
-  rm -rf $BUILD/ziso
-  [ "$FULL" = true ] && rm -rf $CCACHE_DIR
-else
-  clean $1
+  for i in $BUILD/$1-*; do
+    if [ -d $i -a -f "$i/.openelec-unpack" ] ; then
+      . "$i/.openelec-unpack"
+      if [ "$STAMP_PKG_NAME" = "$1" ]; then
+        printf "%${BUILD_INDENT}c ${boldred}*${endcolor} ${red}Removing $i ...${endcolor}\n" ' '>&$SILENT_OUT
+        rm -rf $i
+      fi
+    else
+      # force clean if no stamp found (previous unpack failed)
+      printf "%${BUILD_INDENT}c * Removing $i ...\n" ' '>&$SILENT_OUT
+      rm -rf $i
+    fi
+  done
+  rm -f $STAMPS/$1*/build_*
 fi
 
 exit 0

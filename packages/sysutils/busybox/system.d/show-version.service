@@ -1,0 +1,12 @@
+[Unit]
+Description=Show Version
+DefaultDependencies=false
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/lsb_release
+RemainAfterExit=yes
+StandardOutput=tty
+
+[Install]
+WantedBy=basic.target

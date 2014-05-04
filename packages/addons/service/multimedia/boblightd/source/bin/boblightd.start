@@ -1,0 +1,38 @@
+#!/bin/bash
+
+################################################################################
+#      Copyright (C) 2009-2010 OpenELEC.tv
+#      http://www.openelec.tv
+#
+#  Boblightd addon maintained by Adam Boeglin: adamrb@gmail.com
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+. /etc/profile
+
+oe_setup_addon service.multimedia.boblightd
+
+chmod a+x $ADDON_DIR/bin/*
+
+cp $ADDON_DIR/config/*.sample $ADDON_HOME
+if [ ! -f $ADDON_HOME/boblight.conf ] ; then
+  cp $ADDON_DIR/config/boblight.conf $ADDON_HOME/boblight.conf
+fi
+
+if [ -x $ADDON_DIR/bin/boblight-X11 -a -e $ADDON_HOME/boblight.X11 ] ; then
+  boblight-X11 -f >/dev/null 2>&1
+fi
+
+exec boblightd -c $ADDON_HOME/boblight.conf > $ADDON_LOG_FILE 2>&1
