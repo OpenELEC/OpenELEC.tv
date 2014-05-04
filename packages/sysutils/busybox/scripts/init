@@ -80,7 +80,6 @@
         case $boot in
           CIFS=*|SMB=*|ISCSI=*|NBD=*|NFS=*)
             UPDATE_DISABLED=yes
-            FLASH_NETBOOT=yes
             ;;
         esac
         ;;
@@ -414,22 +413,40 @@
   }
 
   wakeonlan() {
-    if [ "$STORAGE_NETBOOT" = "yes" ]; then
-      wol_ip=${disk%:*}
-      wol_ip=${wol_ip#*=}
-    elif [ "$FLASH_NETBOOT" = "yes" ]; then
-      wol_ip=${boot%:*}
-      wol_ip=${wol_ip#*=}
-    else
-      return 0
-    fi
-      
+    case $1 in
+      LABEL=*|UUID=*|/*)
+        return 0
+        ;;
+      CIFS=*|SMB=*)
+        port="445"
+        ;;
+      ISCSI=*)
+        port="3260"
+        ;;
+      NBD=*)
+        port="${1#*:}"
+        ;;
+      NFS=*)
+        port="2049"
+        ;;
+      *)
+        return 0
+        ;;
+    esac
+
+    wol_ip="${1%:*}"
+    wol_ip="${wol_ip#*=}"
+
     if [ -n "$wol_ip" -a -n "$wol_mac" -a -n "$wol_wait" ]; then
       progress "Sending Magic Packet (WOL) if needed"
 
-      if ! ping -q -c 2 "$wol_ip" &>/dev/null; then
+      if ! ping -q -W 1 -c 2 "$wol_ip" &>/dev/null; then
         ether-wake "$wol_mac"
-        sleep "$wol_wait"
+        i="$((wol_wait/2))"
+        while ! echo -n | nc "$wol_ip" "$port" &>/dev/null && [ $i -gt "0" ]; do
+          sleep 2
+          i="$((i-1))"
+        done
       fi
     fi
   }
@@ -437,7 +454,7 @@
   mount_flash() {
     progress "Mounting flash"
 
-    wakeonlan
+    wakeonlan "$boot"
 
     mount_part "$boot" "/flash" "ro,noatime"
   }
@@ -445,7 +462,7 @@
   mount_storage() {    
     progress "Mounting storage"
 
-    wakeonlan
+    wakeonlan "$disk"
 
     if [ -n "$disk" ]; then
       if [ -n "$OVERLAY" ]; then
