@@ -144,10 +144,10 @@
   XBMC_VIS_GOOM="no"
 
 # build and install 'Waveform' Visualization (yes / no)
-  XBMC_VIS_WAVEFORM="yes"
+  XBMC_VIS_WAVEFORM="no"
 
 # build and install 'Spectrum' Visualization (yes / no)
-  XBMC_VIS_SPECTRUM="yes"
+  XBMC_VIS_SPECTRUM="no"
 
 # build and install 'FishBMC' Visualization (yes / no)
   # does not work on RPi
@@ -160,21 +160,21 @@
   PULSEAUDIO_SUPPORT="no"
 
 # build and install espeak support (yes / no)
-  ESPEAK_SUPPORT="yes"
+  ESPEAK_SUPPORT="no"
 
 # build and install with non-free support
 # (RAR compression support in XBMC) (yes / no)
-  NONFREE_SUPPORT="yes"
+  NONFREE_SUPPORT="no"
 
 # build and install with DVDCSS support
 # (DVD decryption support in XBMC) (yes / no)
-  DVDCSS_SUPPORT="yes"
+  DVDCSS_SUPPORT="no"
 
 # build and install with LAME cdrip encoder support
-  ENCODER_LAME="yes"
+  ENCODER_LAME="no"
 
 # build and install with BluRay support (yes / no)
-  BLURAY_SUPPORT="yes"
+  BLURAY_SUPPORT="no"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
@@ -201,19 +201,19 @@
   SSHLIB_SUPPORT="yes"
 
 # build xbmc with optical drive support (yes / no)
-  OPTICAL_DRIVE_SUPPORT="yes"
+  OPTICAL_DRIVE_SUPPORT="no"
 
 # build with AirPlay support (stream videos from iDevices to XBMC) (yes / no)
-  AIRPLAY_SUPPORT="yes"
+  AIRPLAY_SUPPORT="no"
 
 # build with AirTunes support (stream music from iDevices to XBMC) (yes / no)
-  AIRTUNES_SUPPORT="yes"
+  AIRTUNES_SUPPORT="no"
 
 # build with libnfs support (mounting nfs shares with XBMC) (yes / no)
-  NFS_SUPPORT="yes"
+  NFS_SUPPORT="no"
 
 # build with afpfs-ng support (mounting AFP shares with XBMC) (yes / no)
-  AFP_SUPPORT="yes"
+  AFP_SUPPORT="no"
 
 # build and install Samba Client support (yes / no)
   SAMBA_SUPPORT="yes"
@@ -222,13 +222,13 @@
   SAMBA_SERVER="yes"
 
 # build and install SFTP Server (yes / no)
-  SFTP_SERVER="yes"
+  SFTP_SERVER="no"
 
 # build and install PPP support (yes / no)
   PPTP_SUPPORT="yes"
 
 # build and install OpenVPN support (yes / no)
-  OPENVPN_SUPPORT="yes"
+  OPENVPN_SUPPORT="no"
 
 # build and install diskmounter support (udevil)
 # this service provide auto mounting support for external drives in the
@@ -236,13 +236,13 @@
   UDEVIL="yes"
 
 # build and install exFAT fuse support (yes / no)
-  EXFAT="yes"
+  EXFAT="no"
 
 # build and install NTFS-3G fuse support (yes / no)
   NTFS3G="yes"
 
 # build and install hfs filesystem utilities (yes / no)
-  HFSTOOLS="yes"
+  HFSTOOLS="no"
 
 # OpenGL(X) implementation to use (no / Mesa)
   OPENGL="no"
@@ -287,7 +287,7 @@
   IRSERVER_SUPPORT="no"
 
 # build and install Joystick support (yes / no)
-  JOYSTICK_SUPPORT="yes"
+  JOYSTICK_SUPPORT="no"
 
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
@@ -314,7 +314,7 @@
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
 # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-  FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
+  FIRMWARE="misc-firmware wlan-firmware"
 
 # build with lm_sensors hardware monitoring support (yes / no)
   SENSOR_SUPPORT="yes"
