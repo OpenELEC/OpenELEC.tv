@@ -1,9 +1,0 @@
-#!/bin/sh
-
-logger -t Retroarch "### creating needed directories and symlinks ###"
-
-if [ "$1" = "nvidia" ]; then
-  ln -sf /usr/lib/libGL_nvidia.so.1 /var/lib/libGL.so
-else
-  ln -sf /usr/lib/libGL_mesa.so.1 /var/lib/libGL.so
-fi
