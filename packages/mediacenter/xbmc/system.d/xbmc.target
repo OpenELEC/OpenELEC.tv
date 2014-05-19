@@ -1,7 +1,7 @@
 [Unit]
 Description=XBMC Mediacenter Interface
 Requires=multi-user.target graphical.target
-After=graphical.target
+After=systemd-udev-trigger.service graphical.target
 Conflicts=rescue.target
 AllowIsolate=yes
 
