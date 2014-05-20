@@ -26,7 +26,7 @@ elif [ "$UBOOT_VERSION" = "sunxi" ]; then
   PKG_SITE="https://github.com/linux-sunxi/u-boot-sunxi"
   PKG_URL="http://localhost/u-boot-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
-  PKG_VERSION="imx6-cuboxi-efc4835"
+  PKG_VERSION="imx6-ed888a1"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 fi
@@ -87,26 +87,27 @@ makeinstall_target() {
             $UBOOT_CONFIGFILE
   fi
 
-  mkdir -p $INSTALL/usr/share/u-boot
-    cp ./u-boot.bin $INSTALL/usr/share/u-boot
+  mkdir -p $INSTALL/usr/share/bootloader
 
-  if [ -f "./u-boot.img" ]; then
-    cp ./u-boot.img $INSTALL/usr/share/u-boot
+  if [ -f "./u-boot.imx" ]; then
+    cp ./u-boot.imx $INSTALL/usr/share/bootloader
   fi
 
-  if [ -f "./MLO" ]; then
-    cp ./MLO $INSTALL/usr/share/u-boot
+  if [ -f "./u-boot.img" ]; then
+    cp ./u-boot.img $INSTALL/usr/share/bootloader
   fi
 
   if [ -f "./SPL" ]; then
-    cp ./SPL $INSTALL/usr/share/u-boot
-  fi
-
-  if [ -f "./boot.cfg" ]; then
-    cp ./boot.cfg $INSTALL/usr/share/u-boot
+    cp ./SPL $INSTALL/usr/share/bootloader
   fi
 
   if [ -f "./$UBOOT_CONFIGFILE" ]; then
-    cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/u-boot
+    cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/bootloader
   fi
+
+  cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
+
+  if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
+    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $INSTALL/usr/share/bootloader
+  fi 
 }

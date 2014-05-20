@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="flac"
-PKG_VERSION="1.2.1"
+PKG_VERSION="1.3.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://flac.sourceforge.net/"
-PKG_URL="http://downloads.xiph.org/releases/flac/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="http://downloads.xiph.org/releases/flac/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain libogg"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
@@ -43,10 +43,11 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-rpath \
                            --with-ogg=$SYSROOT_PREFIX/usr \
                            --with-gnu-ld"
 
-pre_make_target() {
-  # hack
-  cp -R ../doc/* ./doc
-}
+if [ $TARGET_ARCH = "i386" -o $TARGET_ARCH = "x86_64" ]; then
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-sse"
+else
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-sse"
+fi
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin

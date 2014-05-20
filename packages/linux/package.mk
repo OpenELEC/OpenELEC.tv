@@ -23,12 +23,16 @@ case "$LINUX" in
     PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
-    PKG_VERSION="imx_3.0.35_4.1.0-5c73417"
+    PKG_VERSION="cuboxi-592b2d9"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
-  *)
-    PKG_VERSION="3.13.6"
+  3.14)
+    PKG_VERSION="3.14.4"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
+  *)
+    PKG_VERSION="3.15-rc5"
+    PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/testing/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
 PKG_REV="1"
@@ -175,12 +179,10 @@ make_target() {
 
 makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" ]; then
-    mkdir -p $INSTALL/usr/share/u-boot
-    if [ "$LINUX" != "linux-sun7i" ]; then
-      for dtb in arch/arm/boot/dts/*.dtb; do
-        cp $dtb $INSTALL/usr/share/u-boot
-      done
-    fi
+    mkdir -p $INSTALL/usr/share/bootloader
+    for dtb in arch/arm/boot/dts/*.dtb; do
+      cp $dtb $INSTALL/usr/share/bootloader
+    done
   fi
 
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.99.910"
+PKG_VERSION="2.99.911"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="OSS"
@@ -48,4 +48,8 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-udev \
 pre_configure_target() {
 # TODO: xf86-video-intel-2.21.5 dont link with LTO enabled
   strip_lto
+}
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr/share/polkit-1
 }

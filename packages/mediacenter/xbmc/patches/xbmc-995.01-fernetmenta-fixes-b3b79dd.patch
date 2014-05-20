@@ -1,7 +1,7 @@
-From 320046ba60eca428368d9fe229670a61ea31ff80 Mon Sep 17 00:00:00 2001
+From cd390c16efd020e7b02296bcdac9d700ce088e5c Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:34:39 +0200
-Subject: [PATCH 01/93] videoplayer: adapt lateness detection and dropping to
+Subject: [PATCH 01/96] videoplayer: adapt lateness detection and dropping to
  buffering
 
 ---
@@ -581,13 +581,13 @@ index f8ad541..186e271 100644
  };
  
 -- 
-1.9.0
+1.9.1
 
 
-From cbecaef2fb4c319c179c2283e82cead122f3bab5 Mon Sep 17 00:00:00 2001
+From 3b8554f9ad09aaed840ae6e00f5073c6e0015721 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 2 Sep 2012 16:05:21 +0200
-Subject: [PATCH 02/93] video player: present correct pts to user for a/v sync
+Subject: [PATCH 02/96] video player: present correct pts to user for a/v sync
  (after buffering in renderer)
 
 ---
@@ -652,13 +652,13 @@ index 186e271..59c7f09 100644
  
    double GetOutputDelay(); /* returns the expected delay, from that a packet is put in queue */
 -- 
-1.9.0
+1.9.1
 
 
-From 893b7955a20aeaf74b06b7de1c28e08ef05625dd Mon Sep 17 00:00:00 2001
+From 1b02662cd1ad58a5421f4dccb61cef38fea3de4e Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sat, 16 Feb 2013 18:25:53 +0100
-Subject: [PATCH 03/93] videoplayer: some rework and documentation
+Subject: [PATCH 03/96] videoplayer: some rework and documentation
 
 ---
  .../dvdplayer/DVDCodecs/Video/DVDVideoCodec.h      | 28 ++++++++++++++++++++--
@@ -765,13 +765,13 @@ index 1d29b6f..ee07f30 100644
    if (iDecoderPts == DVD_NOPTS_VALUE)
      iDecoderPts = pts;
 -- 
-1.9.0
+1.9.1
 
 
-From af8d9a25047777c7dd11797b07168a7e7f6fe1ce Mon Sep 17 00:00:00 2001
+From 79a3a5317beae2966b118a77a25b60b8b3a88c22 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 1 Jun 2013 11:21:19 +0200
-Subject: [PATCH 04/93] renderer: bump buffers to 5
+Subject: [PATCH 04/96] renderer: bump buffers to 5
 
 ---
  xbmc/cores/VideoRenderers/BaseRenderer.h | 2 +-
@@ -791,13 +791,13 @@ index dc2712a..9edfbd4 100644
  class CSetting;
  
 -- 
-1.9.0
+1.9.1
 
 
-From 2c520fc1ace027ecbecd06eb60aebe607e04c538 Mon Sep 17 00:00:00 2001
+From 307a65669e2b2936d77ec1f06cb60ff45fa5ffa9 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:41:31 +0200
-Subject: [PATCH 05/93] videoplayer: update frametime, it might change due to
+Subject: [PATCH 05/96] videoplayer: update frametime, it might change due to
  fps detection
 
 ---
@@ -818,13 +818,13 @@ index ee07f30..b3175cd 100644
              {
                m_codecname = m_pVideoCodec->GetName();
 -- 
-1.9.0
+1.9.1
 
 
-From e4e8f007146ed6d84a10f56a8ec1c8f70643b050 Mon Sep 17 00:00:00 2001
+From 0c8b92541bac2a40e3cad9f7da8fd6ce028a27ae Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:43:06 +0200
-Subject: [PATCH 06/93] videoplayer: give streams with invalid fps a chance for
+Subject: [PATCH 06/96] videoplayer: give streams with invalid fps a chance for
  fps detection
 
 ---
@@ -845,13 +845,13 @@ index b3175cd..9c36bdb 100644
      //reset the stored framerates if no good framerate was detected
      m_fStableFrameRate = 0.0;
 -- 
-1.9.0
+1.9.1
 
 
-From f565af531ea544c02207993205a2c1f79e003a77 Mon Sep 17 00:00:00 2001
+From 08385386346bd04b66867a679271e8e6ad99ff6c Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:49:05 +0200
-Subject: [PATCH 07/93] dvdplayer: allow rewinding at end of stream, do a seek
+Subject: [PATCH 07/96] dvdplayer: allow rewinding at end of stream, do a seek
  after rewind
 
 ---
@@ -859,7 +859,7 @@ Subject: [PATCH 07/93] dvdplayer: allow rewinding at end of stream, do a seek
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index b056c8b..0d2b4ae 100644
+index 3a37dee..15e490c 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
 @@ -1633,7 +1633,7 @@ void CDVDPlayer::HandlePlaySpeed()
@@ -885,13 +885,13 @@ index b056c8b..0d2b4ae 100644
          // audioplayer, stops outputing audio to audiorendere, but still tries to
          // sleep an correct amount for each packet
 -- 
-1.9.0
+1.9.1
 
 
-From c686480a53d7cdcf63a3000bf408ef4153e359a1 Mon Sep 17 00:00:00 2001
+From 79e223a725462b9e0ce94c5d9f820a92e782a197 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 15:22:05 +0200
-Subject: [PATCH 08/93] X11: ditch SDL for video and window events
+Subject: [PATCH 08/96] X11: ditch SDL for video and window events
 
 ---
  xbmc/Application.cpp                |   2 +-
@@ -907,10 +907,10 @@ Subject: [PATCH 08/93] X11: ditch SDL for video and window events
  create mode 100644 xbmc/windowing/WinEventsX11.h
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 265881f..43c4517 100644
+index 5e31453..5a24ffb 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -907,7 +907,7 @@ bool CApplication::CreateGUI()
+@@ -917,7 +917,7 @@ bool CApplication::CreateGUI()
  
    uint32_t sdlFlags = 0;
  
@@ -1920,7 +1920,7 @@ index 083d1e9..40b8403 100644
    if(!SetFullScreen(fullScreen, res, false))
      return false;
  
--  CBaseTexture* iconTexture = CTexture::LoadFromFile("special://xbmc/media/icon.png");
+-  CBaseTexture* iconTexture = CTexture::LoadFromFile("special://xbmc/media/icon256x256.png");
 -
 -  if (iconTexture)
 -    SDL_WM_SetIcon(SDL_CreateRGBSurfaceFrom(iconTexture->GetPixels(), iconTexture->GetWidth(), iconTexture->GetHeight(), 32, iconTexture->GetPitch(), 0xff0000, 0x00ff00, 0x0000ff, 0xff000000L), NULL);
@@ -2425,13 +2425,13 @@ index b1464d0..34b912f 100644
    CCriticalSection             m_resourceSection;
    std::vector<IDispResource*>  m_resources;
 -- 
-1.9.0
+1.9.1
 
 
-From 78d8cdb9dd83a7dfdbe77fa1bb137944200bed06 Mon Sep 17 00:00:00 2001
+From df8808f316b757da4e760ee8669326901191a6e5 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 15:24:22 +0200
-Subject: [PATCH 09/93] X11: Add xbmc icon
+Subject: [PATCH 09/96] X11: Add xbmc icon
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 126 +++++++++++++++++++++++++++++++++++-
@@ -2520,7 +2520,7 @@ index 40b8403..858ea5e 100644
 +  bRatio = vis->blue_mask / 255.0;
 +
 +  CTexture iconTexture;
-+  iconTexture.LoadFromFile("special://xbmc/media/icon.png");
++  iconTexture.LoadFromFile("special://xbmc/media/icon256x256.png");
 +  buf = iconTexture.GetPixels();
 +
 +  numBufBytes = iconTexture.GetWidth() * iconTexture.GetHeight() * 4;
@@ -2618,13 +2618,13 @@ index 34b912f..352e90e 100644
    CStopWatch m_screensaverReset;
  };
 -- 
-1.9.0
+1.9.1
 
 
-From a5da9aa02e7fa7ee91d0c98ef20c57b3737670e0 Mon Sep 17 00:00:00 2001
+From 66e95a677c6705dcbf031610fa2f3dbf5d15efbe Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 20 May 2012 14:11:26 +0200
-Subject: [PATCH 10/93] X11: add SDL joystick until we have a better solution
+Subject: [PATCH 10/96] X11: add SDL joystick until we have a better solution
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 26 ++++++++++++++++++++++++++
@@ -2675,13 +2675,13 @@ index ad58aad..6f57a87 100644
  }
  
 -- 
-1.9.0
+1.9.1
 
 
-From 97fa84c30a5c726690f886ac596bfd80870d8d77 Mon Sep 17 00:00:00 2001
+From 3f976cfab6a42dd7232464c7a366f4e6fa43b19f Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@xbmc.org>
 Date: Thu, 5 Jul 2012 12:35:55 +0200
-Subject: [PATCH 11/93] X11: factor out code handling device reset notification
+Subject: [PATCH 11/96] X11: factor out code handling device reset notification
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 22 ++++++++++++++--------
@@ -2741,13 +2741,13 @@ index 352e90e..3f91b9b 100644
  protected:
    bool RefreshGlxContext();
 -- 
-1.9.0
+1.9.1
 
 
-From 1d0601d1ec7d1ffcd14fd233d4f4769e862680bc Mon Sep 17 00:00:00 2001
+From ff1ddbc3986fb6e541d9850c4e51321fed42dab8 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 15:02:00 +0200
-Subject: [PATCH 12/93] X11: move xrandr events to WinEventsX11
+Subject: [PATCH 12/96] X11: move xrandr events to WinEventsX11
 
 ---
  xbmc/windowing/WinEventsX11.cpp     | 42 +++++++++++++++++++++++++++++++++++++
@@ -2888,13 +2888,13 @@ index 304dac8..16b13aa 100644
  
  void CWinSystemX11::Register(IDispResource *resource)
 -- 
-1.9.0
+1.9.1
 
 
-From 3181b919ca96f6837dde69a178ebb43112dff734 Mon Sep 17 00:00:00 2001
+From 3a1d2d126d78b438efa6da902b41fb4f65866dd0 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 12 Apr 2012 15:43:56 +0200
-Subject: [PATCH 13/93] xrandr: remove method RestoreState
+Subject: [PATCH 13/96] xrandr: remove method RestoreState
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 13 +++++++++++--
@@ -2970,13 +2970,13 @@ index 0aec487..00b49dc 100644
    //bool Has1080p();
    //bool Has720p();
 -- 
-1.9.0
+1.9.1
 
 
-From 65e877e82067a917e683c5930b2dc3840693f3ea Mon Sep 17 00:00:00 2001
+From 17b89c5e0ee97f7a162ba8c0f46c6efeb11fdd24 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 20 May 2012 13:17:10 +0200
-Subject: [PATCH 14/93] xrandr: observe orientation
+Subject: [PATCH 14/96] xrandr: observe orientation
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 89 ++++++++++++++++++++++++++++++-------
@@ -3188,13 +3188,13 @@ index 00b49dc..508604d 100644
  
  class CXRandR
 -- 
-1.9.0
+1.9.1
 
 
-From 6c652b01707baa034c3dacd7e2a6c1a38385f514 Mon Sep 17 00:00:00 2001
+From 50b8649389095c3b80ed2d698630eaf95fc9218e Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 11:54:15 +0200
-Subject: [PATCH 15/93] xrandr: allow getting info for multiple screen's
+Subject: [PATCH 15/96] xrandr: allow getting info for multiple screen's
 
 Refactored by: Joakim Plate <elupus@xbmc.org>
 ---
@@ -3366,13 +3366,13 @@ index 508604d..d37838a 100644
  
  extern CXRandR g_xrandr;
 -- 
-1.9.0
+1.9.1
 
 
-From fec4134865c2071f80276d020f900307f45d8057 Mon Sep 17 00:00:00 2001
+From 1c4250942d2478de4241bfd7f54b627faf476824 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 11:44:00 +0200
-Subject: [PATCH 16/93] X11: fix multi-head setups
+Subject: [PATCH 16/96] X11: fix multi-head setups
 
 ---
  language/English/strings.po         |   4 +-
@@ -3387,7 +3387,7 @@ Subject: [PATCH 16/93] X11: fix multi-head setups
  9 files changed, 227 insertions(+), 113 deletions(-)
 
 diff --git a/language/English/strings.po b/language/English/strings.po
-index 6b1070d..d9b34e1 100755
+index 616a321..685847c 100755
 --- a/language/English/strings.po
 +++ b/language/English/strings.po
 @@ -1021,7 +1021,9 @@ msgctxt "#245"
@@ -3402,10 +3402,10 @@ index 6b1070d..d9b34e1 100755
  msgctxt "#247"
  msgid "Scripts"
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index c6b03b9..4882978 100644
+index f92bd59..fba4561 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
-@@ -2250,6 +2250,15 @@
+@@ -2251,6 +2251,15 @@
    <section id="system" label="13000" help="36349">
      <category id="videoscreen" label="21373" help="36603">
        <group id="1">
@@ -3421,7 +3421,7 @@ index c6b03b9..4882978 100644
          <setting id="videoscreen.screen" type="integer" label="240" help="36351">
            <level>0</level>
            <default>0</default>
-@@ -2271,6 +2280,7 @@
+@@ -2272,6 +2281,7 @@
              <dependency type="enable" setting="videoscreen.screen" operator="!is">-1</dependency> <!-- DM_WINDOWED -->
              <dependency type="update" setting="videoscreen.screen" />
              <dependency type="update" setting="videoscreen.screenmode" />
@@ -3429,7 +3429,7 @@ index c6b03b9..4882978 100644
            </dependencies>
            <control type="list" format="string" />
          </setting>
-@@ -2288,6 +2298,7 @@
+@@ -2289,6 +2299,7 @@
              <dependency type="enable" setting="videoscreen.screen" operator="!is">-1</dependency> <!-- DM_WINDOWED -->
              <dependency type="update" setting="videoscreen.screen" />
              <dependency type="update" setting="videoscreen.resolution" />
@@ -3450,10 +3450,10 @@ index 4bd540b..f1e2c50 100644
    virtual void SetViewPort(CRect& viewPort);
    virtual void GetViewPort(CRect& viewPort);
 diff --git a/xbmc/settings/DisplaySettings.cpp b/xbmc/settings/DisplaySettings.cpp
-index c8c2bbd..966d08f 100644
+index daa1b18..db2f667 100644
 --- a/xbmc/settings/DisplaySettings.cpp
 +++ b/xbmc/settings/DisplaySettings.cpp
-@@ -219,13 +219,19 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -219,7 +219,8 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
  
    const std::string &settingId = setting->GetId();
    if (settingId == "videoscreen.resolution" ||
@@ -3463,9 +3463,10 @@ index c8c2bbd..966d08f 100644
    {
      RESOLUTION newRes = RES_DESKTOP;
      if (settingId == "videoscreen.resolution")
-       newRes = (RESOLUTION)((CSettingInt*)setting)->GetValue();
-     else if (settingId == "videoscreen.screen")
+@@ -235,6 +236,11 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+       // get desktop resolution for screen
        newRes = GetResolutionForScreen();
+     }
 +    else if (settingId == "videoscreen.monitor")
 +    {
 +      g_Windowing.UpdateResolutions();
@@ -3474,7 +3475,7 @@ index c8c2bbd..966d08f 100644
  
      string screenmode = GetStringFromResolution(newRes);
      CSettings::Get().SetString("videoscreen.screenmode", screenmode);
-@@ -236,7 +242,11 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -245,7 +251,11 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
      RESOLUTION newRes = GetResolutionFromString(((CSettingString*)setting)->GetValue());
  
      SetCurrentResolution(newRes, false);
@@ -3487,7 +3488,7 @@ index c8c2bbd..966d08f 100644
  
      // check if the old or the new resolution was/is windowed
      // in which case we don't show any prompt to the user
-@@ -622,6 +632,10 @@ void CDisplaySettings::SettingOptionsScreensFiller(const CSetting *setting, std:
+@@ -641,6 +651,10 @@ void CDisplaySettings::SettingOptionsScreensFiller(const CSetting *setting, std:
    if (g_advancedSettings.m_canWindowed)
      list.push_back(make_pair(g_localizeStrings.Get(242), DM_WINDOWED));
  
@@ -3498,7 +3499,7 @@ index c8c2bbd..966d08f 100644
    for (int idx = 0; idx < g_Windowing.GetNumScreens(); idx++)
    {
      int screen = CDisplaySettings::Get().GetResolutionInfo(RES_DESKTOP + idx).iScreen;
-@@ -636,6 +650,7 @@ void CDisplaySettings::SettingOptionsScreensFiller(const CSetting *setting, std:
+@@ -655,6 +669,7 @@ void CDisplaySettings::SettingOptionsScreensFiller(const CSetting *setting, std:
      RESOLUTION_INFO resInfo = CDisplaySettings::Get().GetResolutionInfo(res);
      current = resInfo.iScreen;
    }
@@ -3506,7 +3507,7 @@ index c8c2bbd..966d08f 100644
  }
  
  void CDisplaySettings::SettingOptionsVerticalSyncsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
-@@ -663,3 +678,28 @@ void CDisplaySettings::SettingOptionsPreferredStereoscopicViewModesFiller(const
+@@ -683,3 +698,28 @@ void CDisplaySettings::SettingOptionsPreferredStereoscopicViewModesFiller(const
    SettingOptionsStereoscopicModesFiller(setting, list, current);
    list.push_back(make_pair(g_localizeStrings.Get(36525), RENDER_STEREO_MODE_AUTO)); // option for autodetect
  }
@@ -3556,7 +3557,7 @@ index 8ee1be2..bead24b 100644
  protected:
    CDisplaySettings();
 diff --git a/xbmc/settings/Settings.cpp b/xbmc/settings/Settings.cpp
-index 892a139..1037ddb 100644
+index d8d50ea..013adf9 100644
 --- a/xbmc/settings/Settings.cpp
 +++ b/xbmc/settings/Settings.cpp
 @@ -406,6 +406,7 @@ void CSettings::Uninitialize()
@@ -3575,7 +3576,7 @@ index 892a139..1037ddb 100644
    m_settingsManager->RegisterSettingOptionsFiller("shutdownstates", CPowerManager::SettingOptionsShutdownStatesFiller);
    m_settingsManager->RegisterSettingOptionsFiller("startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
    m_settingsManager->RegisterSettingOptionsFiller("streamlanguages", CLangInfo::SettingOptionsStreamLanguagesFiller);
-@@ -865,6 +867,9 @@ void CSettings::InitializeConditions()
+@@ -868,6 +870,9 @@ void CSettings::InitializeConditions()
  #ifdef HAS_GL
    m_settingsManager->AddCondition("has_gl");
  #endif
@@ -3585,10 +3586,10 @@ index 892a139..1037ddb 100644
  #ifdef HAS_GLES
    m_settingsManager->AddCondition("has_gles");
  #endif
-@@ -1017,6 +1022,7 @@ void CSettings::InitializeISettingCallbacks()
-   settingSet.insert("videoscreen.screen");
+@@ -1021,6 +1026,7 @@ void CSettings::InitializeISettingCallbacks()
    settingSet.insert("videoscreen.resolution");
    settingSet.insert("videoscreen.screenmode");
+   settingSet.insert("videoscreen.vsync");
 +  settingSet.insert("videoscreen.monitor");
    m_settingsManager->RegisterCallback(&CDisplaySettings::Get(), settingSet);
  
@@ -4128,13 +4129,13 @@ index 4175aab..94584ab 100644
  private:
    bool IsSuitableVisual(XVisualInfo *vInfo);
 -- 
-1.9.0
+1.9.1
 
 
-From bf5648cf0df4279b2135f65d39542258de32a307 Mon Sep 17 00:00:00 2001
+From 42b6e1775d61778a57119471091900998ddf6d37 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 11:36:32 +0200
-Subject: [PATCH 17/93] X11: remove all DefaultScreen and RootWindow macros
+Subject: [PATCH 17/96] X11: remove all DefaultScreen and RootWindow macros
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp   | 6 +++---
@@ -4199,13 +4200,13 @@ index 6383754..21e7dc5 100644
  
    CLog::Log(LOGDEBUG, "GLX_EXTENSIONS:%s", m_glxext.c_str());
 -- 
-1.9.0
+1.9.1
 
 
-From 140a3ba6605aaba862ee004e78ff96aa84e0b8d9 Mon Sep 17 00:00:00 2001
+From 227a92bca30d905570f4827cef6102b0ba5f1022 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 11:45:22 +0200
-Subject: [PATCH 18/93] X11: remove all DefaultScreen and RootWindow macros
+Subject: [PATCH 18/96] X11: remove all DefaultScreen and RootWindow macros
  (VideoRefClock)
 
 Note this is on a separate display connection.
@@ -4274,13 +4275,13 @@ index 0b3950a..ca43b5a 100644
    XRRFreeScreenConfigInfo(CurrInfo);
  
 -- 
-1.9.0
+1.9.1
 
 
-From bccf49bf686d33cf16db5f99e013a71e2c3a2373 Mon Sep 17 00:00:00 2001
+From 9244c0ac286705cc5e8577138b219a25db3bdda3 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Wed, 20 Jun 2012 17:37:11 +0200
-Subject: [PATCH 19/93] X11: recreate gl context after output has changed
+Subject: [PATCH 19/96] X11: recreate gl context after output has changed
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp   | 24 ++++++++++++++----------
@@ -4428,13 +4429,13 @@ index 21e7dc5..8e68d5d 100644
  }
  
 -- 
-1.9.0
+1.9.1
 
 
-From 639f0284a947daac02be7bf2e727226f3f2c1526 Mon Sep 17 00:00:00 2001
+From b3587cc41599e6bd73bd54a58f59118d1edfced4 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 12:06:25 +0200
-Subject: [PATCH 20/93] X11: hook video reference clock in windowing
+Subject: [PATCH 20/96] X11: hook video reference clock in windowing
 
 ---
  xbmc/video/VideoReferenceClock.cpp | 71 +++++++++++++++++++++++++++-----------
@@ -4636,13 +4637,13 @@ index dd65a1b..afd71fc 100644
      bool         m_UseNvSettings;
      bool         m_bIsATI;
 -- 
-1.9.0
+1.9.1
 
 
-From f6ca378b58cabe46334742050fe263a98ac64f94 Mon Sep 17 00:00:00 2001
+From e9fe9c2f0dae615075a9173e5c4a0c6ef6700097 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 21 Jun 2012 17:26:51 +0200
-Subject: [PATCH 21/93] X11: fix video calibrations
+Subject: [PATCH 21/96] X11: fix video calibrations
 
 ---
  xbmc/windowing/WinSystem.h          |  1 +
@@ -4731,13 +4732,13 @@ index 9666cc3..5b52d6c 100644
    // Local to WinSystemX11 only
    Display*  GetDisplay() { return m_dpy; }
 -- 
-1.9.0
+1.9.1
 
 
-From c329e543adfd4989b6e53f936200f552ab90a369 Mon Sep 17 00:00:00 2001
+From 1d80e75563853da38393b91d38c1c3b449db0bd9 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 12:00:26 +0200
-Subject: [PATCH 22/93] X11: deactivate screen saver on startup
+Subject: [PATCH 22/96] X11: deactivate screen saver on startup
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 29 +++++++++++++++++++++++++++++
@@ -4804,13 +4805,13 @@ index 5b52d6c..b2bd5a0 100644
    virtual void NotifyAppActiveChange(bool bActivated);
    virtual void NotifyAppFocusChange(bool bGaining);
 -- 
-1.9.0
+1.9.1
 
 
-From d157d02acb752b074e9691f5b75bd55363dc5528 Mon Sep 17 00:00:00 2001
+From 2cd34f3f2ac582f71a042902d777b890234c7f93 Mon Sep 17 00:00:00 2001
 From: FernetMenta <fernetmenta@online.de>
 Date: Thu, 5 Jul 2012 12:10:09 +0200
-Subject: [PATCH 23/93] X11: change method of going full-screen
+Subject: [PATCH 23/96] X11: change method of going full-screen
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 9 ++++++++-
@@ -4851,13 +4852,13 @@ index b76b229..869baa8 100644
      Pixmap bitmapNoData;
      XColor black;
 -- 
-1.9.0
+1.9.1
 
 
-From 237a8d20a027e2fd3dfeb145aca32bff0525903a Mon Sep 17 00:00:00 2001
+From 7ea6a5a0a6040f2277a510fc8752d7ca134e1f07 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 28 Jun 2012 19:12:39 +0200
-Subject: [PATCH 24/93] X11: reset key repeat and key modifier on focus lost
+Subject: [PATCH 24/96] X11: reset key repeat and key modifier on focus lost
  and gain
 
 ---
@@ -4886,13 +4887,13 @@ index d98f12f..743aca9 100644
          serial = xevent.xfocus.serial;
          break;
 -- 
-1.9.0
+1.9.1
 
 
-From d86f85ddac13b7d104add8cac02c362f7a4fab28 Mon Sep 17 00:00:00 2001
+From d3c56229317ecf38e4b3957f82669281a722482f Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@xbmc.org>
 Date: Thu, 5 Jul 2012 14:18:46 +0200
-Subject: [PATCH 25/93] X11: replace custom utf8 to unicode with charset
+Subject: [PATCH 25/96] X11: replace custom utf8 to unicode with charset
  convertor (squash to x11 events)
 
 ---
@@ -5106,13 +5107,13 @@ index a412f32..9a8a912 100644
    XIC m_xic;
    XBMC_Event m_lastKey;
 -- 
-1.9.0
+1.9.1
 
 
-From 196db63b99d44b058a6b1fdd80798afbaab4435f Mon Sep 17 00:00:00 2001
+From 17f4e2e5c33d0574e944cba76a561e618051551a Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@xbmc.org>
 Date: Thu, 5 Jul 2012 14:23:54 +0200
-Subject: [PATCH 26/93] X11: fixed invalid usage of sizeof() (squash into x11
+Subject: [PATCH 26/96] X11: fixed invalid usage of sizeof() (squash into x11
  changes)
 
 ---
@@ -5173,13 +5174,13 @@ index 9a8a912..c69169c 100644
    XIC m_xic;
    XBMC_Event m_lastKey;
 -- 
-1.9.0
+1.9.1
 
 
-From 3ccc149a56b520df7a8933b889273296ba875090 Mon Sep 17 00:00:00 2001
+From 90af49c63d9469c783629881e1846979594a8ff2 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sat, 9 Jun 2012 18:23:53 +0200
-Subject: [PATCH 27/93] add missing keys to xbmc keytable
+Subject: [PATCH 27/96] add missing keys to xbmc keytable
 
 ---
  xbmc/input/XBMC_keytable.cpp | 2 ++
@@ -5199,13 +5200,13 @@ index d57f4d3..b807897 100644
  // Function keys
  , { XBMCK_F1,                     0,    0, XBMCVK_F1,            "f1"}
 -- 
-1.9.0
+1.9.1
 
 
-From 2b820efe0e7850414b31495b9569e6dac6e90a28 Mon Sep 17 00:00:00 2001
+From 049f7e527bf12b7322c7343f01e6f08a2415fe8e Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Fri, 16 Mar 2012 15:57:51 +0100
-Subject: [PATCH 28/93] videorefclock: temp deactivate of nv settings
+Subject: [PATCH 28/96] videorefclock: temp deactivate of nv settings
 
 ---
  xbmc/video/VideoReferenceClock.cpp | 2 +-
@@ -5225,13 +5226,13 @@ index 0ddf102..3ae7107 100644
  #endif
  }
 -- 
-1.9.0
+1.9.1
 
 
-From cd2f165acc58eaa519b48cdb53a6b5a4a8120be0 Mon Sep 17 00:00:00 2001
+From 23b43d522cb691b21ef572f3ee003b152fea4b3a Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 20 Aug 2012 09:09:09 +0200
-Subject: [PATCH 29/93] videorefclock: ask graphics context for refresh rate
+Subject: [PATCH 29/96] videorefclock: ask graphics context for refresh rate
 
 ---
  xbmc/video/VideoReferenceClock.cpp | 3 ++-
@@ -5259,13 +5260,13 @@ index 3ae7107..27bebde 100644
    CLog::Log(LOGDEBUG, "CVideoReferenceClock: Detected refreshrate: %i hertz", (int)m_RefreshRate);
  
 -- 
-1.9.0
+1.9.1
 
 
-From 603317efd971a1f90d15ebb5c8bc381912b710e2 Mon Sep 17 00:00:00 2001
+From 263d964167a2eaf52713f513ef8cc4c912241e3b Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 9 Jul 2012 14:00:18 +0200
-Subject: [PATCH 30/93] X11: fix icon texture after
+Subject: [PATCH 30/96] X11: fix icon texture after
  cc5ed3c2474084ebc0373a3046410e6f766e03f4
 
 ---
@@ -5313,9 +5314,9 @@ index 869baa8..bfe3797 100644
    bRatio = vis->blue_mask / 255.0;
  
 -  CTexture iconTexture;
--  iconTexture.LoadFromFile("special://xbmc/media/icon.png");
+-  iconTexture.LoadFromFile("special://xbmc/media/icon256x256.png");
 -  buf = iconTexture.GetPixels();
-+  CBaseTexture *iconTexture = CBaseTexture::LoadFromFile("special://xbmc/media/icon.png");
++  CBaseTexture *iconTexture = CBaseTexture::LoadFromFile("special://xbmc/media/icon256x256.png");
 +
 +  if (!iconTexture)
 +    return false;
@@ -5370,13 +5371,13 @@ index 869baa8..bfe3797 100644
  }
  
 -- 
-1.9.0
+1.9.1
 
 
-From 14680a3fd13af0a41b43899fdf3a2da65abad5f4 Mon Sep 17 00:00:00 2001
+From 648af86aa01874210d8ea6732cf7cef4f8e466e0 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Tue, 10 Jul 2012 11:14:12 +0200
-Subject: [PATCH 31/93] X11: check for window manager
+Subject: [PATCH 31/96] X11: check for window manager
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 74 ++++++++++++++++++++++++++++++++++++-
@@ -5494,13 +5495,13 @@ index b2bd5a0..3e62cd8 100644
    CStopWatch m_screensaverReset;
  };
 -- 
-1.9.0
+1.9.1
 
 
-From 0665385b9d92a49c75403273444d898589ec4185 Mon Sep 17 00:00:00 2001
+From f4ed19185a171a1967c30999e119abd661654102 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 12 Jul 2012 11:11:47 +0200
-Subject: [PATCH 32/93] X11: dont set window on xrandr if no mode available
+Subject: [PATCH 32/96] X11: dont set window on xrandr if no mode available
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 11 ++++++-----
@@ -5534,13 +5535,13 @@ index af82061..4f33c68 100644
  
    CStdString currentOutput = CSettings::Get().GetString("videoscreen.monitor");
 -- 
-1.9.0
+1.9.1
 
 
-From 2d78ed515c437b4dd082d585f2d06778bcb5cb03 Mon Sep 17 00:00:00 2001
+From d174bc51e0e31ec6666bdc0479a4c948efc5bd63 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 26 Jul 2012 09:34:28 +0200
-Subject: [PATCH 33/93] X11: fix crash after a resolution change on startup
+Subject: [PATCH 33/96] X11: fix crash after a resolution change on startup
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 3 ++-
@@ -5561,13 +5562,13 @@ index 4f33c68..bc4e963 100644
  #endif
  
 -- 
-1.9.0
+1.9.1
 
 
-From 8e45aca353568d3b1119aaae29d63ce10f76ca70 Mon Sep 17 00:00:00 2001
+From b685749adb461364ad288593d1e62e4927c439c8 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sat, 15 Sep 2012 18:27:29 +0200
-Subject: [PATCH 34/93] X11: lock graphics context in NotifyXRREvent
+Subject: [PATCH 34/96] X11: lock graphics context in NotifyXRREvent
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 2 ++
@@ -5587,13 +5588,13 @@ index bc4e963..57a8d20 100644
    {
      CLog::Log(LOGERROR, "WinSystemX11::RefreshWindow - failed to query xrandr");
 -- 
-1.9.0
+1.9.1
 
 
-From 7cecb116072ee9dd7893f3eef06a11c2c4811294 Mon Sep 17 00:00:00 2001
+From 9ac337cb7338a191037bb3e05599ce1f9de3419b Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 20 Aug 2012 16:06:39 +0200
-Subject: [PATCH 35/93] dvdplayer: observe pts counter overflow
+Subject: [PATCH 35/96] dvdplayer: observe pts counter overflow
 
 ---
  .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 197 ++++++++++++++++++++-
@@ -5601,7 +5602,7 @@ Subject: [PATCH 35/93] dvdplayer: observe pts counter overflow
  2 files changed, 200 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index 1146c6f..16efae0 100644
+index 4ce1b87..afa3024 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 @@ -18,7 +18,6 @@
@@ -5668,7 +5669,7 @@ index 1146c6f..16efae0 100644
          // copy contents into our own packet
          pPacket->iSize = m_pkt.pkt.size;
  
-@@ -905,7 +932,16 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
+@@ -906,7 +933,16 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
      ret = m_dllAvFormat.av_seek_frame(m_pFormatContext, -1, seek_pts, backwords ? AVSEEK_FLAG_BACKWARD : 0);
  
      if(ret >= 0)
@@ -5685,7 +5686,7 @@ index 1146c6f..16efae0 100644
    }
  
    if(m_iCurrentPts == DVD_NOPTS_VALUE)
-@@ -924,6 +960,165 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
+@@ -925,6 +961,165 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
    return (ret >= 0);
  }
  
@@ -5873,13 +5874,13 @@ index aef5ab1..35abbdf 100644
  };
  
 -- 
-1.9.0
+1.9.1
 
 
-From a2b098917cab5f9db00c69177792c373547f2bb8 Mon Sep 17 00:00:00 2001
+From edec7054fd66168c26cb16d624139a85d0feeb82 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Tue, 2 Oct 2012 13:02:10 +0200
-Subject: [PATCH 36/93] dvdplayer: avoid short screen flicker caused by
+Subject: [PATCH 36/96] dvdplayer: avoid short screen flicker caused by
  unnecessary reconfigure of renderer
 
 ---
@@ -5909,13 +5910,13 @@ index 9c36bdb..322a581 100644
     || ( m_output.extended_format != pPicture->extended_format )
     || ( m_output.color_matrix    != pPicture->color_matrix    && pPicture->color_matrix    != 0 ) // don't reconfigure on unspecified
 -- 
-1.9.0
+1.9.1
 
 
-From a67d385916ef70447e5167ca352f9f53de7e2778 Mon Sep 17 00:00:00 2001
+From aea69ca48e5ae5888feec63cd9ce8f16c971f5cf Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 11 Oct 2012 12:05:50 +0200
-Subject: [PATCH 37/93] vdpau: advanced settings for auto deinterlacing
+Subject: [PATCH 37/96] vdpau: advanced settings for auto deinterlacing
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/VDPAU.cpp | 8 ++++----
@@ -5978,13 +5979,13 @@ index 3995f35..c43351d 100644
      bool m_videoVDPAUdeintSkipChromaHD;
      bool m_musicUseTimeSeeking;
 -- 
-1.9.0
+1.9.1
 
 
-From 56a0e9d6cb08dcecbfdea964b99996c59ebd0c91 Mon Sep 17 00:00:00 2001
+From 075908a1dae8d28b939fe754686105b2106a97d1 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Fri, 2 Nov 2012 13:20:03 +0100
-Subject: [PATCH 38/93] player: fix rewind
+Subject: [PATCH 38/96] player: fix rewind
 
 ---
  xbmc/cores/dvdplayer/DVDMessage.h       |  5 ++++-
@@ -6032,7 +6033,7 @@ index 2ea8b8f..e8274f9 100644
  
  class CDVDMsgPlayerSeekChapter : public CDVDMsg
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 0d2b4ae..a4c0422 100644
+index 15e490c..2474b39 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
 @@ -1634,11 +1634,13 @@ void CDVDPlayer::HandlePlaySpeed()
@@ -6090,7 +6091,7 @@ index 0d2b4ae..a4c0422 100644
          }
  
          // if playspeed is different then DVD_PLAYSPEED_NORMAL or DVD_PLAYSPEED_PAUSE
-@@ -3293,7 +3297,7 @@ bool CDVDPlayer::CloseTeletextStream(bool bWaitForBuffers)
+@@ -3294,7 +3298,7 @@ bool CDVDPlayer::CloseTeletextStream(bool bWaitForBuffers)
    return true;
  }
  
@@ -6099,7 +6100,7 @@ index 0d2b4ae..a4c0422 100644
  {
    double startpts;
    if(accurate)
-@@ -3305,19 +3309,23 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
+@@ -3306,19 +3310,23 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
    if(startpts != DVD_NOPTS_VALUE)
      startpts -= m_offset_pts;
  
@@ -6127,7 +6128,7 @@ index 0d2b4ae..a4c0422 100644
    m_CurrentTeletext.dts      = DVD_NOPTS_VALUE;
    m_CurrentTeletext.startpts = startpts;
  
-@@ -3361,7 +3369,7 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
+@@ -3362,7 +3370,7 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
        m_CurrentTeletext.started = false;
      }
  
@@ -6196,13 +6197,13 @@ index 59c7f09..65dea76 100644
    unsigned int m_dropRequests;
  };
 -- 
-1.9.0
+1.9.1
 
 
-From b209430c56ad955fb164c88cf4696a5ab1f162db Mon Sep 17 00:00:00 2001
+From 7070e0502de0d996e39c2a379dea650f773e220e Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Fri, 23 Nov 2012 17:41:12 +0100
-Subject: [PATCH 39/93] xrandr: fix query for multiple screens
+Subject: [PATCH 39/96] xrandr: fix query for multiple screens
 
 ---
  xbmc/windowing/X11/XRandR.cpp | 10 ++++++----
@@ -6240,13 +6241,13 @@ index 4685413..e610150 100644
    FILE* file = popen(cmd.c_str(),"r");
    if (!file)
 -- 
-1.9.0
+1.9.1
 
 
-From 8d42739f0833403d688d7da9676d098ad3be45c6 Mon Sep 17 00:00:00 2001
+From 9495daa338e146f7efc13308d280ad9ebdf3f861 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 2 Dec 2012 15:46:55 +0100
-Subject: [PATCH 40/93] X11: add debug log to print out refresh after xrr event
+Subject: [PATCH 40/96] X11: add debug log to print out refresh after xrr event
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 6 ++++++
@@ -6270,13 +6271,13 @@ index 57a8d20..a237dc0 100644
    unsigned int i;
    bool found(false);
 -- 
-1.9.0
+1.9.1
 
 
-From ef3118362dcf019e927700e59f0cc4e7a0d506b1 Mon Sep 17 00:00:00 2001
+From 0b610b8e1040605b28907f72866a2be58b963a13 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Tue, 11 Dec 2012 11:08:13 +0100
-Subject: [PATCH 41/93] X11: dont call XCloseDisplay on shutdown, it crashes
+Subject: [PATCH 41/96] X11: dont call XCloseDisplay on shutdown, it crashes
  when powered doen by cec on ATI
 
 ---
@@ -6298,13 +6299,13 @@ index a237dc0..ab660b1 100644
  
    // m_SDLSurface is free()'d by SDL_Quit().
 -- 
-1.9.0
+1.9.1
 
 
-From da4c24ede3be3b5c074c44123e83e9059c25688d Mon Sep 17 00:00:00 2001
+From 1501643dfcda4e8e1c46feade3370964f8f344b9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Gr=C3=A9gory=20Coutant?= <gregory.coutant@gmail.com>
 Date: Wed, 12 Dec 2012 19:49:47 +0100
-Subject: [PATCH 42/93] x11: support for multiple x screens
+Subject: [PATCH 42/96] x11: support for multiple x screens
 
 ---
  xbmc/windowing/X11/XRandR.cpp | 2 +-
@@ -6324,13 +6325,13 @@ index e610150..5c53574 100644
      // TODO ERROR
      return false;
 -- 
-1.9.0
+1.9.1
 
 
-From c7215a8c352ad44a928a9d18f89ebf52c8dcf9fc Mon Sep 17 00:00:00 2001
+From 00c856df34e3941787d98d871b9b6d8905717d76 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 24 Dec 2012 16:02:42 +0100
-Subject: [PATCH 43/93] pvr: increase changes counter of stream on stream
+Subject: [PATCH 43/96] pvr: increase changes counter of stream on stream
  change, cosmetics after dd307930d39d92f145a01a16600cd00e01ec39be
 
 ---
@@ -6338,7 +6339,7 @@ Subject: [PATCH 43/93] pvr: increase changes counter of stream on stream
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxPVRClient.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxPVRClient.cpp
-index e5f8234..96c9e89 100644
+index 7d0a732..d066610 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxPVRClient.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxPVRClient.cpp
 @@ -339,9 +339,7 @@ void CDVDDemuxPVRClient::RequestStreams()
@@ -6361,13 +6362,13 @@ index e5f8234..96c9e89 100644
      else if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_VIDEO)
      {
 -- 
-1.9.0
+1.9.1
 
 
-From 26da0298234aeea96c4df4d3317589abb822cf1b Mon Sep 17 00:00:00 2001
+From 3021decc0764c58d5aa8e1d668106527f076343e Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 17 Jan 2013 16:03:22 +0100
-Subject: [PATCH 44/93] X11: add keymapping for XF86XK_Sleep
+Subject: [PATCH 44/96] X11: add keymapping for XF86XK_Sleep
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 1 +
@@ -6386,13 +6387,13 @@ index a62521f..263cb5a 100644
  , {XK_Undo, XBMCK_UNDO}
    /* Media keys */
 -- 
-1.9.0
+1.9.1
 
 
-From b0d730552ceac8e144436e96e9a88fe28e565ef6 Mon Sep 17 00:00:00 2001
+From 3064c39cb89bc411e235fd4fdc0d82f795c894f7 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 21 Jan 2013 09:00:19 +0100
-Subject: [PATCH 45/93] X11: remove toggle full screen after resume
+Subject: [PATCH 45/96] X11: remove toggle full screen after resume
 
 ---
  xbmc/powermanagement/PowerManager.cpp | 5 -----
@@ -6415,13 +6416,13 @@ index 590a887..35b5a21 100644
    }
    g_application.ResetScreenSaver();
 -- 
-1.9.0
+1.9.1
 
 
-From 876139f6eb64b5e72689d5fe6a9bf65f60070b2e Mon Sep 17 00:00:00 2001
+From ad652ac8add735a9796acf9545eceba8c1e4d2fe Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Wed, 23 Jan 2013 17:03:02 +0100
-Subject: [PATCH 46/93] xrandr: set screen on mode change command
+Subject: [PATCH 46/96] xrandr: set screen on mode change command
 
 ---
  xbmc/windowing/X11/XRandR.cpp | 2 +-
@@ -6441,13 +6442,13 @@ index 5c53574..4355ef7 100644
      return false;
    CLog::Log(LOGINFO, "XRANDR: %s", cmd);
 -- 
-1.9.0
+1.9.1
 
 
-From 4262d964615f251d99d6d773d5fa9a96f5230053 Mon Sep 17 00:00:00 2001
+From 10b7c59751e8b809a2fdf5e0c0edd01a2acbc5f7 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Wed, 23 Jan 2013 17:03:39 +0100
-Subject: [PATCH 47/93] X11: recreate glx context when output changes
+Subject: [PATCH 47/96] X11: recreate glx context when output changes
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 6 +++---
@@ -6495,13 +6496,13 @@ index 3e62cd8..2a1fb41 100644
    void OnLostDevice();
    bool SetWindow(int width, int height, bool fullscreen, const CStdString &output);
 -- 
-1.9.0
+1.9.1
 
 
-From 76bab5ec893f9534f50f38474b22a56300307631 Mon Sep 17 00:00:00 2001
+From 353c653d504a568b28cf3e90380c8aeff0629c75 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Fri, 14 Dec 2012 14:19:15 +0100
-Subject: [PATCH 48/93] pvr: do not show selection dialog for a single menu
+Subject: [PATCH 48/96] pvr: do not show selection dialog for a single menu
  hook
 
 ---
@@ -6536,13 +6537,13 @@ index 14c9cde..57b18a5 100644
        client->CallMenuHook(hooks->at(hookIDs.at(selection)), item);
    }
 -- 
-1.9.0
+1.9.1
 
 
-From 2069a5213f76e57a558189b52f098af75d9c21cf Mon Sep 17 00:00:00 2001
+From 3f1eb64980be5bf9c5676c93e3a99bf107824c25 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 3 Feb 2013 08:17:16 +0100
-Subject: [PATCH 49/93] X11: use default screen parameters if no output
+Subject: [PATCH 49/96] X11: use default screen parameters if no output
  connected
 
 ---
@@ -6643,13 +6644,13 @@ index 4329a22..2adf8a0 100644
                      mask, &swa);
  
 -- 
-1.9.0
+1.9.1
 
 
-From aebb14e8a7d079871c69f31df00a0b894e9d5ef9 Mon Sep 17 00:00:00 2001
+From aaeedaed5098ef4771c643a8d61b5d641e20c8ae Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sat, 23 Mar 2013 15:13:32 +0100
-Subject: [PATCH 50/93] X11: create parent window
+Subject: [PATCH 50/96] X11: create parent window
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 69 +++++++++++++++++++++++--------------
@@ -6912,13 +6913,13 @@ index 2a1fb41..e8993f1 100644
    Display*     m_dpy;
    Cursor       m_invisibleCursor;
 -- 
-1.9.0
+1.9.1
 
 
-From ecc4546cbeef4193a0cf2bcad35357f3fcf6fcc8 Mon Sep 17 00:00:00 2001
+From 085ec3cdb8b45b3885a7fc0cec7355ca211c055f Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 24 Mar 2013 12:30:12 +0100
-Subject: [PATCH 51/93] X11: use system key repeat rate instead of hardcoded
+Subject: [PATCH 51/96] X11: use system key repeat rate instead of hardcoded
  one, taken from 58fd64b194e38b73b5f3132744bab35e994e7441
 
 ---
@@ -7117,13 +7118,13 @@ index c69169c..6429291 100644
    int m_keymodState;
    bool m_structureChanged;
 -- 
-1.9.0
+1.9.1
 
 
-From 4e3bbd52ba8c190b152d0ef21a8da4d3d512f056 Mon Sep 17 00:00:00 2001
+From dcb0640d4f41cc444f6b212799505d1d122170a7 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 24 Mar 2013 16:04:48 +0100
-Subject: [PATCH 52/93] linux: use CLOCK_MONOTONIC_RAW as this is not subject
+Subject: [PATCH 52/96] linux: use CLOCK_MONOTONIC_RAW as this is not subject
  to NTP
 
 ---
@@ -7158,23 +7159,23 @@ index c06b8c5..4390d2e 100644
  #endif
  }
 -- 
-1.9.0
+1.9.1
 
 
-From 6f70066f6cc093386d9cc087c3d089012b810f05 Mon Sep 17 00:00:00 2001
+From feb8150d84f4b83dbba365cad5eafa8831914654 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 28 Mar 2013 15:18:53 +0100
-Subject: [PATCH 53/93] OMXPlayer: some caching fixes for pvr
+Subject: [PATCH 53/96] OMXPlayer: some caching fixes for pvr
 
 ---
  xbmc/cores/omxplayer/OMXPlayer.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index a3d3928..7b81178 100644
+index 0b80be5..8eab2fd 100644
 --- a/xbmc/cores/omxplayer/OMXPlayer.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
-@@ -2556,7 +2556,8 @@ void COMXPlayer::HandleMessages()
+@@ -2548,7 +2548,8 @@ void COMXPlayer::HandleMessages()
            m_messenger.Put(new CDVDMsgPlayerSeek(GetTime(), (speed < 0), true, false, false, true));
  
          m_playSpeed = speed;
@@ -7185,23 +7186,23 @@ index a3d3928..7b81178 100644
          m_av_clock.OMXSetSpeed(speed);
          m_av_clock.OMXPause();
 -- 
-1.9.0
+1.9.1
 
 
-From 73977466eae71113f367f88b3a6a39e2d2077089 Mon Sep 17 00:00:00 2001
+From c66609611e7e6da48d14069e0a047bca7ea1b694 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 28 Mar 2013 20:50:59 +0100
-Subject: [PATCH 54/93] fix incorrect display of fps when dr kicks in
+Subject: [PATCH 54/96] fix incorrect display of fps when dr kicks in
 
 ---
  xbmc/Application.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 43c4517..4131707 100644
+index 5a24ffb..a0ca53a 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -2307,10 +2307,11 @@ void CApplication::Render()
+@@ -2320,10 +2320,11 @@ void CApplication::Render()
      if (frameTime < singleFrameTime)
        Sleep(singleFrameTime - frameTime);
    }
@@ -7215,13 +7216,13 @@ index 43c4517..4131707 100644
  
    g_renderManager.UpdateResolution();
 -- 
-1.9.0
+1.9.1
 
 
-From c0b389a1a384684536183067a0b514bbc9c24477 Mon Sep 17 00:00:00 2001
+From 33ee35d980ddf952da1d577903154e19f8bad525 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sat, 13 Apr 2013 08:32:06 +0200
-Subject: [PATCH 55/93] X11: fix mouse coverage
+Subject: [PATCH 55/96] X11: fix mouse coverage
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 11 ++++++++---
@@ -7284,13 +7285,13 @@ index e8993f1..5cccfb7 100644
    CCriticalSection             m_resourceSection;
    std::vector<IDispResource*>  m_resources;
 -- 
-1.9.0
+1.9.1
 
 
-From 884c573f53a288c206bd13348ce3e60dae0cb564 Mon Sep 17 00:00:00 2001
+From 6b23cb08d6e6b72909750bd69630be1a4b381895 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Wed, 8 May 2013 13:14:58 +0200
-Subject: [PATCH 56/93] X11: fix incorrectly used screen num in desktop
+Subject: [PATCH 56/96] X11: fix incorrectly used screen num in desktop
  resolution
 
 ---
@@ -7322,13 +7323,13 @@ index 2acb36d..101ba98 100644
        res.iHeight = mode.h;
        res.iScreenWidth  = mode.w;
 -- 
-1.9.0
+1.9.1
 
 
-From 836500221bf270ed628d35468a28873c96d41764 Mon Sep 17 00:00:00 2001
+From 30326f85a2b363432abe0979d09f5eadd8520db1 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 9 May 2013 12:07:09 +0200
-Subject: [PATCH 57/93] X11: do not overwrite user selected monitor with
+Subject: [PATCH 57/96] X11: do not overwrite user selected monitor with
  fallback
 
 ---
@@ -7450,13 +7451,13 @@ index 5cccfb7..1b658e2 100644
    bool                         m_bIsInternalXrr;
    bool                         m_newGlContext;
 -- 
-1.9.0
+1.9.1
 
 
-From 01061c02fe55c312e6e7e4b56f9cc29760ce547d Mon Sep 17 00:00:00 2001
+From 640834140bad33d23f0d0228ac4a6f022405f276 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sun, 12 May 2013 10:50:30 +0200
-Subject: [PATCH 58/93] xrandr: add turn on/off to wrapper
+Subject: [PATCH 58/96] xrandr: add turn on/off to wrapper
 
 ---
  xbmc/windowing/X11/XRandR.cpp | 78 +++++++++++++++++++++++++++++++++++++++----
@@ -7619,13 +7620,13 @@ index d37838a..059062f 100644
    //bool Has1080p();
    //bool Has720p();
 -- 
-1.9.0
+1.9.1
 
 
-From fa66d3ddccf1c807feea602bd334b9adbc12ffe8 Mon Sep 17 00:00:00 2001
+From eb767b125450fc14c15cfe05dec4b696e1439bbe Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sun, 19 May 2013 12:55:35 +0200
-Subject: [PATCH 59/93] xrandr: add GetPreferredMode to wrapper
+Subject: [PATCH 59/96] xrandr: add GetPreferredMode to wrapper
 
 ---
  xbmc/windowing/X11/XRandR.cpp | 23 +++++++++++++++++++++++
@@ -7679,13 +7680,13 @@ index 059062f..ab7cc63 100644
    bool SetMode(XOutput output, XMode mode);
    void LoadCustomModeLinesToAllOutputs(void);
 -- 
-1.9.0
+1.9.1
 
 
-From 7c1b95f1c1354fbc2a32224592ba778b91b538d4 Mon Sep 17 00:00:00 2001
+From 24471c2dd68d3bf52d1a5204d73fb48ac6b4d189 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 11 May 2013 17:12:12 +0200
-Subject: [PATCH 60/93] X11: multi-head improvement - poll for desired output
+Subject: [PATCH 60/96] X11: multi-head improvement - poll for desired output
  if we do not get an xrr event
 
 ---
@@ -7700,7 +7701,7 @@ Subject: [PATCH 60/93] X11: multi-head improvement - poll for desired output
  8 files changed, 106 insertions(+), 13 deletions(-)
 
 diff --git a/language/English/strings.po b/language/English/strings.po
-index d9b34e1..516c5c1 100755
+index 685847c..9cc2090 100755
 --- a/language/English/strings.po
 +++ b/language/English/strings.po
 @@ -6558,7 +6558,7 @@ msgctxt "#14071"
@@ -7727,10 +7728,10 @@ index d9b34e1..516c5c1 100755
  #: xbmc/video/VideoDatabase.cpp
  msgctxt "#15012"
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index 4882978..fafabf4 100644
+index fba4561..798be52 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
-@@ -2251,7 +2251,7 @@
+@@ -2252,7 +2252,7 @@
      <category id="videoscreen" label="21373" help="36603">
        <group id="1">
          <setting id="videoscreen.monitor" type="string" label="246" help="">
@@ -7739,7 +7740,7 @@ index 4882978..fafabf4 100644
            <level>0</level>
            <default>Default</default>
            <constraints>
-@@ -2259,6 +2259,11 @@
+@@ -2260,6 +2260,11 @@
            </constraints>
            <control type="spinner" format="string" delayed="true" />
          </setting>
@@ -7751,7 +7752,7 @@ index 4882978..fafabf4 100644
          <setting id="videoscreen.screen" type="integer" label="240" help="36351">
            <level>0</level>
            <default>0</default>
-@@ -2311,6 +2316,7 @@
+@@ -2312,6 +2317,7 @@
            <control type="toggle" />
          </setting>
          <setting id="videoscreen.blankdisplays" type="boolean" parent="videoscreen.screen" label="13130" help="36355">
@@ -7760,10 +7761,10 @@ index 4882978..fafabf4 100644
            <default>false</default>
            <dependencies>
 diff --git a/xbmc/settings/DisplaySettings.cpp b/xbmc/settings/DisplaySettings.cpp
-index 966d08f..40bc3b3 100644
+index db2f667..efb6cb1 100644
 --- a/xbmc/settings/DisplaySettings.cpp
 +++ b/xbmc/settings/DisplaySettings.cpp
-@@ -265,6 +265,10 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -274,6 +274,10 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
          m_resolutionChangeAborted = false;
      }
    }
@@ -7972,13 +7973,13 @@ index 62003f5..8525ede 100644
    int status = system(cmd.c_str());
    if (status == -1)
 -- 
-1.9.0
+1.9.1
 
 
-From 08ec19f07d729af80bc81487a445ffd6794d82ed Mon Sep 17 00:00:00 2001
+From ca045d99ebbe5f35ea3d39a8f2356f53533a7269 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Wed, 15 May 2013 09:14:34 +0200
-Subject: [PATCH 61/93] X11: ignore mouse move event form other windows
+Subject: [PATCH 61/96] X11: ignore mouse move event form other windows
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 4 +++-
@@ -8007,13 +8008,13 @@ index 908c8b6..938ad26 100644
          memset(&newEvent, 0, sizeof(newEvent));
          newEvent.type = XBMC_MOUSEMOTION;
 -- 
-1.9.0
+1.9.1
 
 
-From 1f153f70a4adc06e1b23c09bfee4daa6f59ff1db Mon Sep 17 00:00:00 2001
+From 13b504eb4cb6bd21a6c1a3b658a9ddc05a18e252 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 11 Jun 2013 16:20:29 +0200
-Subject: [PATCH 62/93] renderer: allow some lateness within vblank interval
+Subject: [PATCH 62/96] renderer: allow some lateness within vblank interval
 
 ---
  xbmc/cores/VideoRenderers/RenderManager.cpp | 12 ++++++++++--
@@ -8070,13 +8071,13 @@ index 949c652..d84ff6c 100644
  
    OVERLAY::CRenderer m_overlays;
 -- 
-1.9.0
+1.9.1
 
 
-From 0505eab3a4d5a351fb5700e919e190674472675d Mon Sep 17 00:00:00 2001
+From e7fb60e0d020111598f477e775c5c2aaac7f7aa5 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 16 Jun 2013 13:22:58 +0200
-Subject: [PATCH 63/93] X11: another fix for mouse coverage
+Subject: [PATCH 63/96] X11: another fix for mouse coverage
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 6 ++++--
@@ -8106,13 +8107,13 @@ index 938ad26..e4ca56d 100644
          break;
        }
 -- 
-1.9.0
+1.9.1
 
 
-From 3479849f9941a74852f8057de0352f52775168fc Mon Sep 17 00:00:00 2001
+From 96d631b30b33312b8041ece09a5660740e9bade3 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 5 Jul 2013 12:14:00 +0200
-Subject: [PATCH 64/93] X11: set windows class name
+Subject: [PATCH 64/96] X11: set windows class name
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 9 ++++++++-
@@ -8151,20 +8152,20 @@ index b3fe510..df5fe9b 100644
  
        // register interest in the delete window message
 -- 
-1.9.0
+1.9.1
 
 
-From 25a211eaa8d5125fc99353198b2a2caff23bf13c Mon Sep 17 00:00:00 2001
+From 2594e2e409853924926bc3330d3bee0280c2c298 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 25 Jul 2013 17:18:13 +0200
-Subject: [PATCH 65/93] ActiveAE: slightly reduce buffer size
+Subject: [PATCH 65/96] ActiveAE: slightly reduce buffer size
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-index 6709993..6ca2cf4 100644
+index 3b7dbe1..6c5acfb 100644
 --- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
 +++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
 @@ -30,8 +30,8 @@ using namespace ActiveAE;
@@ -8179,13 +8180,13 @@ index 6709993..6ca2cf4 100644
  
  void CEngineStats::Reset(unsigned int sampleRate)
 -- 
-1.9.0
+1.9.1
 
 
-From 0153f224e0288a2fd3d2ea6066b53fa142435580 Mon Sep 17 00:00:00 2001
+From fd891b820c51301bda8391b1b599d4b10a44648f Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sun, 4 Aug 2013 10:11:16 +0200
-Subject: [PATCH 66/93] Revert "vdpau: comment some features that will be added
+Subject: [PATCH 66/96] Revert "vdpau: comment some features that will be added
  later"
 
 This reverts commit e00b4f65864d623ab4d2e9e5c06db138e661f1cf.
@@ -8238,13 +8239,13 @@ index cd72cc6..351586a 100644
          m_mixersteps = 1;
        }
 -- 
-1.9.0
+1.9.1
 
 
-From 59ce2ef98300a41255d4d860c62d3dde6f9b3272 Mon Sep 17 00:00:00 2001
+From 86b169528568416e4fe5a1dc718021d06ff78d26 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 9 Aug 2013 18:01:40 +0200
-Subject: [PATCH 67/93] X11: fix keysyms
+Subject: [PATCH 67/96] X11: fix keysyms
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 2 +-
@@ -8264,13 +8265,13 @@ index e4ca56d..b20130c 100644
                newEvent.key.keysym.unicode = keys[keys.length() - 1];
                newEvent.key.state = xevent.xkey.state;
 -- 
-1.9.0
+1.9.1
 
 
-From 9cec1f9aa579e00c1e22d67ff0fbb7a9466035b2 Mon Sep 17 00:00:00 2001
+From c7461145c0659e131b23fcc129739a1b06da1495 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 9 Aug 2013 18:42:36 +0200
-Subject: [PATCH 68/93] X11: fix keysym for non-IM
+Subject: [PATCH 68/96] X11: fix keysym for non-IM
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 2 +-
@@ -8290,19 +8291,19 @@ index b20130c..a38890c 100644
            newEvent.key.keysym.scancode = xevent.xkey.keycode;
            newEvent.key.state = xevent.xkey.state;
 -- 
-1.9.0
+1.9.1
 
 
-From 7c9b3dd5116848f8b4140450cc7e635870c91c35 Mon Sep 17 00:00:00 2001
+From ea94f4df86043896ad7ae622411aba08bfb1b80d Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 10 Aug 2013 11:18:16 +0200
-Subject: [PATCH 69/93] add some missing multi media keys
+Subject: [PATCH] add some missing multi media keys
 
 ---
  system/keymaps/keyboard.xml  | 3 +++
  xbmc/input/XBMC_keytable.cpp | 4 ++++
- xbmc/input/XBMC_vkeys.h      | 3 +++
- 3 files changed, 10 insertions(+)
+ xbmc/input/XBMC_vkeys.h      | 1 +
+ 3 files changed, 8 insertions(+)
 
 diff --git a/system/keymaps/keyboard.xml b/system/keymaps/keyboard.xml
 index 45682a2..01f7904 100644
@@ -8319,10 +8320,10 @@ index 45682a2..01f7904 100644
        <launch_media_select>XBMC.ActivateWindow(MyMusic)</launch_media_select>
        <launch_app1_pc_icon>ActivateWindow(MyPrograms)</launch_app1_pc_icon>
 diff --git a/xbmc/input/XBMC_keytable.cpp b/xbmc/input/XBMC_keytable.cpp
-index b807897..30bad46 100644
+index 53b9dce..834cccb 100644
 --- a/xbmc/input/XBMC_keytable.cpp
 +++ b/xbmc/input/XBMC_keytable.cpp
-@@ -182,6 +182,10 @@ static const XBMCKEYTABLE XBMCKeyTable[] =
+@@ -184,6 +184,10 @@ static const XBMCKEYTABLE XBMCKeyTable[] =
  , { XBMCK_LAUNCH_MEDIA_CENTER,    0,    0, XBMCVK_LAUNCH_MEDIA_CENTER, "launch_media_center" }
  , { XBMCK_PLAY,                   0,    0, XBMCVK_MEDIA_PLAY_PAUSE,    "play_pause" }
  , { XBMCK_STOP,                   0,    0, XBMCVK_MEDIA_STOP,          "stop" }
@@ -8334,27 +8335,25 @@ index b807897..30bad46 100644
  // Function keys
  , { XBMCK_F1,                     0,    0, XBMCVK_F1,            "f1"}
 diff --git a/xbmc/input/XBMC_vkeys.h b/xbmc/input/XBMC_vkeys.h
-index ee6bb69..364b45a 100644
+index 00437db..981c62a 100644
 --- a/xbmc/input/XBMC_vkeys.h
 +++ b/xbmc/input/XBMC_vkeys.h
-@@ -188,6 +188,9 @@ typedef enum {
-   XBMCVK_LAUNCH_APP2         = 0xC1,
-   XBMCVK_LAUNCH_FILE_BROWSER = 0xC2,
+@@ -190,6 +190,7 @@ typedef enum {
    XBMCVK_LAUNCH_MEDIA_CENTER = 0xC3,
-+  XBMCVK_MEDIA_RECORD        = 0xC4,
-+  XBMCVK_MEDIA_REWIND        = 0xC5,
-+  XBMCVK_MEDIA_FASTFORWARD   = 0xC6,
+   XBMCVK_MEDIA_REWIND        = 0xC4,
+   XBMCVK_MEDIA_FASTFORWARD   = 0xC5,
++  XBMCVK_MEDIA_RECORD        = 0xC6,
  
    XBMCVK_LCONTROL       = 0xD0,
    XBMCVK_RCONTROL       = 0xD1,
 -- 
-1.9.0
+1.9.1
 
 
-From de2b2ba8265aba77dee620d279a61da8d3b87a61 Mon Sep 17 00:00:00 2001
+From 0112e8256276aa87c5587cd53914eb3b84b3e53a Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 10 Aug 2013 15:53:45 +0200
-Subject: [PATCH 70/93] X11: squash multi
+Subject: [PATCH 70/96] X11: squash multi
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 2 +-
@@ -8374,13 +8373,13 @@ index df5fe9b..d8e04d6 100644
  
  bool CWinSystemX11::IsSuitableVisual(XVisualInfo *vInfo)
 -- 
-1.9.0
+1.9.1
 
 
-From cf58d7d9830ee42813d1f7e7103fed4106d34d74 Mon Sep 17 00:00:00 2001
+From 60af8bad18fc0b752ff179039d0410401fdbcad2 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 3 Sep 2013 20:46:17 +0200
-Subject: [PATCH 71/93] X11: do not poll default monitor
+Subject: [PATCH 71/96] X11: do not poll default monitor
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 2 +-
@@ -8400,13 +8399,13 @@ index d8e04d6..01f5272 100644
  
      int numScreens = XScreenCount(m_dpy);
 -- 
-1.9.0
+1.9.1
 
 
-From 21110ddf412223af1991542b1c5573da683f99a7 Mon Sep 17 00:00:00 2001
+From 0a2561c6afe499cea97e6f806db3a0be47eba77e Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 29 Oct 2013 20:57:28 +0100
-Subject: [PATCH 72/93] X11: fix broken monitor switching
+Subject: [PATCH 72/96] X11: fix broken monitor switching
 
 ---
  system/settings/settings.xml      |  1 -
@@ -8414,10 +8413,10 @@ Subject: [PATCH 72/93] X11: fix broken monitor switching
  2 files changed, 27 insertions(+), 14 deletions(-)
 
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index fafabf4..b13829b 100644
+index 798be52..890bb10 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
-@@ -2303,7 +2303,6 @@
+@@ -2304,7 +2304,6 @@
              <dependency type="enable" setting="videoscreen.screen" operator="!is">-1</dependency> <!-- DM_WINDOWED -->
              <dependency type="update" setting="videoscreen.screen" />
              <dependency type="update" setting="videoscreen.resolution" />
@@ -8426,10 +8425,10 @@ index fafabf4..b13829b 100644
            <control type="spinner" format="string" delayed="true" />
          </setting>
 diff --git a/xbmc/settings/DisplaySettings.cpp b/xbmc/settings/DisplaySettings.cpp
-index 40bc3b3..1663836 100644
+index efb6cb1..da5873f 100644
 --- a/xbmc/settings/DisplaySettings.cpp
 +++ b/xbmc/settings/DisplaySettings.cpp
-@@ -219,19 +219,13 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -219,8 +219,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
  
    const std::string &settingId = setting->GetId();
    if (settingId == "videoscreen.resolution" ||
@@ -8439,9 +8438,10 @@ index 40bc3b3..1663836 100644
    {
      RESOLUTION newRes = RES_DESKTOP;
      if (settingId == "videoscreen.resolution")
-       newRes = (RESOLUTION)((CSettingInt*)setting)->GetValue();
-     else if (settingId == "videoscreen.screen")
+@@ -236,11 +235,6 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+       // get desktop resolution for screen
        newRes = GetResolutionForScreen();
+     }
 -    else if (settingId == "videoscreen.monitor")
 -    {
 -      g_Windowing.UpdateResolutions();
@@ -8450,7 +8450,7 @@ index 40bc3b3..1663836 100644
  
      string screenmode = GetStringFromResolution(newRes);
      CSettings::Get().SetString("videoscreen.screenmode", screenmode);
-@@ -242,11 +236,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -251,11 +245,7 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
      RESOLUTION newRes = GetResolutionFromString(((CSettingString*)setting)->GetValue());
  
      SetCurrentResolution(newRes, false);
@@ -8463,7 +8463,7 @@ index 40bc3b3..1663836 100644
  
      // check if the old or the new resolution was/is windowed
      // in which case we don't show any prompt to the user
-@@ -265,6 +255,28 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+@@ -274,6 +264,28 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
          m_resolutionChangeAborted = false;
      }
    }
@@ -8492,7 +8492,7 @@ index 40bc3b3..1663836 100644
    else if (settingId == "videoscreen.monitorsingle")
    {
      g_Windowing.UpdateResolutions();
-@@ -688,9 +700,11 @@ void CDisplaySettings::SettingOptionsMonitorsFiller(const CSetting *setting, std
+@@ -708,9 +720,11 @@ void CDisplaySettings::SettingOptionsMonitorsFiller(const CSetting *setting, std
  #if defined(HAS_GLX)
    std::vector<CStdString> monitors;
    g_Windowing.GetConnectedOutputs(&monitors);
@@ -8506,13 +8506,13 @@ index 40bc3b3..1663836 100644
        current = monitors[i];
      }
 -- 
-1.9.0
+1.9.1
 
 
-From e95d85f22fecbc71b04569a4ceafe4971a0e5ba0 Mon Sep 17 00:00:00 2001
+From 24589dce42bebc68ae203a6c1e87b06f0e402302 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 29 Oct 2013 20:57:59 +0100
-Subject: [PATCH 73/93] X11: remove polling for connected outputs, use xrr
+Subject: [PATCH 73/96] X11: remove polling for connected outputs, use xrr
  events
 
 ---
@@ -8810,13 +8810,13 @@ index 7ec5be4..14622cb 100644
    bool                         m_bIsInternalXrr;
    bool                         m_newGlContext;
 -- 
-1.9.0
+1.9.1
 
 
-From 953a0ecd6ee55b1ef2842bb92d35e4e874f6b859 Mon Sep 17 00:00:00 2001
+From e84bb7507d0ed31b25ab3a2124b57b44e768e3d3 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 31 Oct 2013 09:37:13 +0100
-Subject: [PATCH 74/93] X11: remove grabbing of keyboard and mouse
+Subject: [PATCH 74/96] X11: remove grabbing of keyboard and mouse
 
 ---
  xbmc/windowing/WinEventsX11.cpp     |  4 ----
@@ -8931,13 +8931,13 @@ index 14622cb..d1c8729 100644
    CCriticalSection             m_resourceSection;
    std::vector<IDispResource*>  m_resources;
 -- 
-1.9.0
+1.9.1
 
 
-From 039e80014380b831d46199301999e27b1d40df96 Mon Sep 17 00:00:00 2001
+From 3ead8999a2b3509f552b4a0f6be22df4f7b3954f Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 31 Oct 2013 10:46:40 +0100
-Subject: [PATCH 75/93] X11: set ExposureMask on gl window, fixes not updated
+Subject: [PATCH 75/96] X11: set ExposureMask on gl window, fixes not updated
  areas
 
 ---
@@ -8960,13 +8960,13 @@ index 695b352..e55583c 100644
      m_glWindow = XCreateWindow(m_dpy, m_mainWindow,
                      0, 0, width, height, 0, vi->depth,
 -- 
-1.9.0
+1.9.1
 
 
-From 4469a824b82534d92692717e6f510a84c816eb46 Mon Sep 17 00:00:00 2001
+From 56dcd536fd8135ec06ef4cf317db86858ead89c8 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 31 Oct 2013 11:25:19 +0100
-Subject: [PATCH 76/93] X11: drop shortcuts, have WM do this
+Subject: [PATCH 76/96] X11: drop shortcuts, have WM do this
 
 ---
  xbmc/windowing/WinEventsX11.cpp | 21 ---------------------
@@ -9025,23 +9025,23 @@ index 6429291..4334d21 100644
    Display *m_display;
    Window m_window;
 -- 
-1.9.0
+1.9.1
 
 
-From 386745d4d1e4ea4b5bde6cfad26b719e45168beb Mon Sep 17 00:00:00 2001
+From 7c7bd83bede5ceaaca6e153486bef8d66662c4c5 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 7 Nov 2013 15:02:00 +0100
-Subject: [PATCH 77/93] X11: adapt to new settings
+Subject: [PATCH 77/96] X11: adapt to new settings
 
 ---
  system/settings/settings.xml | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index b13829b..b756fca 100644
+index 890bb10..124a14d 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
-@@ -2263,6 +2263,7 @@
+@@ -2264,6 +2264,7 @@
            <requirement>HAS_GLX</requirement>
            <level>0</level>
            <default>false</default>
@@ -9050,13 +9050,13 @@ index b13829b..b756fca 100644
          <setting id="videoscreen.screen" type="integer" label="240" help="36351">
            <level>0</level>
 -- 
-1.9.0
+1.9.1
 
 
-From c4292a4b8577828802204b56c4fc448dd9bd76f5 Mon Sep 17 00:00:00 2001
+From 97bc3eb5a047e69019c70221d35e478c4b66a363 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 14 Nov 2013 09:28:24 +0100
-Subject: [PATCH 78/93] X11: adapt to changes in cstdstring
+Subject: [PATCH 78/96] X11: adapt to changes in cstdstring
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 4 ++--
@@ -9101,53 +9101,13 @@ index 8525ede..c94f2e3 100644
    int status = system(cmd.c_str());
    if (status == -1)
 -- 
-1.9.0
+1.9.1
 
 
-From 029c809c1c28b7163ab02406668f176f49282626 Mon Sep 17 00:00:00 2001
-From: Rainer Hochecker <fernetmenta@online.de>
-Date: Mon, 18 Nov 2013 17:44:31 +0100
-Subject: [PATCH 79/93] ActiveAE: correct time of buffered samples by resample
- ratio
-
----
- xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp       | 2 +-
- xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-index 6ca2cf4..e2a4b6f 100644
---- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-+++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-@@ -102,7 +102,7 @@ float CEngineStats::GetDelay(CActiveAEStream *stream)
-   if (delay < 0)
-     delay = 0.0;
- 
--  delay += stream->m_bufferedTime;
-+  delay += stream->m_bufferedTime / stream->m_streamResampleRatio;
-   return delay;
- }
- 
-diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
-index 99989b3..0287e73 100644
---- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
-+++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
-@@ -58,6 +58,7 @@ CActiveAEStream::CActiveAEStream(AEAudioFormat *format)
-   m_forceResampler = false;
-   m_remapper = NULL;
-   m_remapBuffer = NULL;
-+  m_streamResampleRatio = 1.0;
- }
- 
- CActiveAEStream::~CActiveAEStream()
--- 
-1.9.0
-
-
-From f599ea4e785a09cae43ac3e80f9cb5eb576b9eff Mon Sep 17 00:00:00 2001
+From 2ec9169c90eb33866d139a09b38ff04018cae905 Mon Sep 17 00:00:00 2001
 From: Marcel Groothuis <margro.xbmc@gmail.com>
 Date: Thu, 5 Dec 2013 22:02:50 +0100
-Subject: [PATCH 80/93] ffmpeg demuxer: faster channel change for PVR addons
+Subject: [PATCH 80/96] ffmpeg demuxer: faster channel change for PVR addons
  without internal demuxing (such as MediaPortal, ArgusTV, MythTV, NextPVR)
  Credits: FernetMenta, Davilla, Popcornmix, Whaupt
 
@@ -9158,7 +9118,7 @@ Subject: [PATCH 80/93] ffmpeg demuxer: faster channel change for PVR addons
  3 files changed, 139 insertions(+), 22 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index 16efae0..6ebbb6e 100644
+index afa3024..3409b67 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 @@ -51,6 +51,8 @@
@@ -9278,7 +9238,7 @@ index 16efae0..6ebbb6e 100644
  
        if (pPacket)
        {
-@@ -1683,3 +1694,101 @@ bool CDVDDemuxFFmpeg::IsProgramChange()
+@@ -1684,3 +1695,101 @@ bool CDVDDemuxFFmpeg::IsProgramChange()
    }
    return false;
  }
@@ -9458,13 +9418,13 @@ index ca689d0..f383563 100644
    else
      return NULL;
 -- 
-1.9.0
+1.9.1
 
 
-From 51bc8b6305c3774d0967737d87abd35e6a4634a9 Mon Sep 17 00:00:00 2001
+From 1c6901d50fc7b5d499e423fd2d5721da1913c203 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 14 Nov 2013 20:35:04 +0100
-Subject: [PATCH 81/93] ffmpeg demuxer: make sure we start mpegts video with an
+Subject: [PATCH 81/96] ffmpeg demuxer: make sure we start mpegts video with an
  i-frame
 
 ---
@@ -9473,7 +9433,7 @@ Subject: [PATCH 81/93] ffmpeg demuxer: make sure we start mpegts video with an
  2 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index 6ebbb6e..782fb3d 100644
+index 3409b67..d5da14b 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 @@ -448,6 +448,13 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput, bool streaminfo)
@@ -9503,7 +9463,7 @@ index 6ebbb6e..782fb3d 100644
    }
    else
      m_program = 0;
-@@ -1730,7 +1743,7 @@ void CDVDDemuxFFmpeg::ParsePacket(AVPacket *pkt)
+@@ -1731,7 +1744,7 @@ void CDVDDemuxFFmpeg::ParsePacket(AVPacket *pkt)
    }
  
    // for video we need a decoder to get desired information into codec context
@@ -9512,7 +9472,7 @@ index 6ebbb6e..782fb3d 100644
        (!st->codec->width || st->codec->pix_fmt == PIX_FMT_NONE))
    {
      // open a decoder, it will be cleared down by ffmpeg on closing the stream
-@@ -1792,3 +1805,19 @@ bool CDVDDemuxFFmpeg::IsVideoReady()
+@@ -1793,3 +1806,19 @@ bool CDVDDemuxFFmpeg::IsVideoReady()
    }
    return true;
  }
@@ -9545,13 +9505,13 @@ index acde9a8..9ec0877 100644
    AVDictionary *GetFFMpegOptionsFromURL(const CURL &url);
    double ConvertTimestamp(int64_t pts, int den, int num);
 -- 
-1.9.0
+1.9.1
 
 
-From 24a3fa6f5b58a3c2c9bf4b53a778ca503143c6c6 Mon Sep 17 00:00:00 2001
+From 75043ecb88a683165524d49f5cdd6809af3443fd Mon Sep 17 00:00:00 2001
 From: Wolfgang Haupt <w.haupt@at-visions.com>
 Date: Thu, 5 Dec 2013 22:11:57 +0100
-Subject: [PATCH 82/93] DVDFactoryDemuxer: skip streaminfo for udp tcp and
+Subject: [PATCH 82/96] DVDFactoryDemuxer: skip streaminfo for udp tcp and
  pvr-channels
 
 ---
@@ -9600,7 +9560,7 @@ index f383563..d6580fd 100644
    if(demuxer->Open(pInputStream, streaminfo))
      return demuxer.release();
 diff --git a/xbmc/utils/URIUtils.cpp b/xbmc/utils/URIUtils.cpp
-index 12dadba..bca61a1 100644
+index fd2eb5a..22932b7 100644
 --- a/xbmc/utils/URIUtils.cpp
 +++ b/xbmc/utils/URIUtils.cpp
 @@ -788,6 +788,36 @@ bool URIUtils::IsFTP(const CStdString& strFile)
@@ -9640,7 +9600,7 @@ index 12dadba..bca61a1 100644
  bool URIUtils::IsDAV(const CStdString& strFile)
  {
    CStdString strFile2(strFile);
-@@ -1285,3 +1315,8 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
+@@ -1284,3 +1314,8 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
    strFilename = newFilename;
    return true;
  }
@@ -9672,23 +9632,66 @@ index b94e94c..b45630f 100644
    static void AddSlashAtEnd(std::string& strFolder);
    static bool HasSlashAtEnd(const std::string& strFile, bool checkURL = false);
 -- 
-1.9.0
+1.9.1
 
 
-From 93d15cd098d70bdc0629d6e550f27877ab0dd63e Mon Sep 17 00:00:00 2001
+From 3041272619e91e0b028462b53c59bd0cf620e1f9 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 28 Jan 2014 08:43:29 +0100
-Subject: [PATCH 83/93] squash fast switch
+Subject: [PATCH 83/96] squash fast switch
 
 ---
- xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 23 ++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index 782fb3d..b57b391 100644
+index d5da14b..f4ba29c 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-@@ -1815,7 +1815,7 @@ void CDVDDemuxFFmpeg::ResetVideoStreams()
+@@ -1783,15 +1783,19 @@ void CDVDDemuxFFmpeg::ParsePacket(AVPacket *pkt)
+ bool CDVDDemuxFFmpeg::IsVideoReady()
+ {
+   AVStream *st;
++  bool hasVideo = false;
+   if(m_program != UINT_MAX)
+   {
+     for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
+     {
+       int idx = m_pFormatContext->programs[m_program]->stream_index[i];
+       st = m_pFormatContext->streams[idx];
+-      if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
+-          (!st->codec->width || st->codec->pix_fmt == PIX_FMT_NONE))
+-        return false;
++      if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
++      {
++        if (st->codec->width && st->codec->pix_fmt != PIX_FMT_NONE)
++          return true;
++        hasVideo = true;
++      }
+     }
+   }
+   else
+@@ -1799,12 +1803,15 @@ bool CDVDDemuxFFmpeg::IsVideoReady()
+     for (unsigned int i = 0; i < m_pFormatContext->nb_streams; i++)
+     {
+       st = m_pFormatContext->streams[i];
+-      if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
+-          (!st->codec->width || st->codec->pix_fmt == PIX_FMT_NONE))
+-        return false;
++      if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
++      {
++        if (st->codec->width && st->codec->pix_fmt != PIX_FMT_NONE)
++          return true;
++        hasVideo = true;
++      }
+     }
+   }
+-  return true;
++  return !hasVideo;
+ }
+ 
+ void CDVDDemuxFFmpeg::ResetVideoStreams()
+@@ -1816,7 +1823,7 @@ void CDVDDemuxFFmpeg::ResetVideoStreams()
      if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
      {
        if (st->codec->extradata)
@@ -9698,16 +9701,14 @@ index 782fb3d..b57b391 100644
        st->codec->width = 0;
      }
 -- 
-1.9.0
+1.9.1
 
 
-From 1228259650fdf7fd118787abf1f6c934c46097d6 Mon Sep 17 00:00:00 2001
+From c70b0943cb55465cde76dde9a2dbcf4db1ced09b Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
-Date: Sun, 9 Mar 2014 00:15:35 +0200
-Subject: [PATCH 84/93] linux: add shared lib for sse4 operations
+Date: Sun, 22 Dec 2013 14:52:29 +0100
+Subject: [PATCH 84/96] linux: add shared lib for sse4 operations
 
-Conflicts:
-	configure.in
 ---
  Makefile.in                   |   8 ++-
  configure.in                  |  18 +++++++
@@ -9721,10 +9722,10 @@ Conflicts:
  create mode 100644 xbmc/linux/sse4/Makefile.in
 
 diff --git a/Makefile.in b/Makefile.in
-index 8eda3c4..b0b5c24 100644
+index 6f689cf..a79adc7 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -317,6 +317,12 @@ CHECK_LIBADD=@WAYLAND_TEST_LIBS@
+@@ -316,6 +316,12 @@ CHECK_LIBADD=@WAYLAND_TEST_LIBS@
  endif
  endif
  
@@ -9737,7 +9738,7 @@ index 8eda3c4..b0b5c24 100644
  CHECK_PROGRAMS = xbmc-test
  
  CLEAN_FILES += $(CHECK_PROGRAMS) $(CHECK_EXTENSIONS)
-@@ -446,7 +452,7 @@ endif
+@@ -444,7 +450,7 @@ endif
  
  codecs: papcodecs dvdpcodecs dvdpextcodecs
  
@@ -9747,7 +9748,7 @@ index 8eda3c4..b0b5c24 100644
  externals: codecs libs visualizations screensavers libaddon pvraddons
  
 diff --git a/configure.in b/configure.in
-index 1cd6b2e..8756b20 100644
+index d0775a9..6cf2a44 100644
 --- a/configure.in
 +++ b/configure.in
 @@ -883,6 +883,19 @@ if test "$use_static_ffmpeg" = "yes"; then
@@ -9770,7 +9771,7 @@ index 1cd6b2e..8756b20 100644
  # Checks for library functions.
  AC_FUNC_ALLOCA
  AC_FUNC_CHOWN
-@@ -2591,6 +2604,10 @@ if test "$use_codec_libstagefright" = "yes"; then
+@@ -2590,6 +2603,10 @@ if test "$use_codec_libstagefright" = "yes"; then
  OUTPUT_FILES="$OUTPUT_FILES xbmc/cores/dvdplayer/DVDCodecs/Video/libstagefrightICS/Makefile"
  fi
  
@@ -9781,7 +9782,7 @@ index 1cd6b2e..8756b20 100644
  OUTPUT_FILES="$OUTPUT_FILES \
    xbmc/interfaces/python/Makefile \
    xbmc/interfaces/python/test/Makefile"
-@@ -2669,6 +2686,7 @@ AC_SUBST(USE_DOXYGEN)
+@@ -2668,6 +2685,7 @@ AC_SUBST(USE_DOXYGEN)
  AC_SUBST(USE_PVR_ADDONS)
  AC_SUBST(GNUTLS_ALL_LIBS)
  AC_SUBST(VORBISENC_ALL_LIBS)
@@ -9790,10 +9791,10 @@ index 1cd6b2e..8756b20 100644
  # pushd and popd are not available in other shells besides bash, so implement
  # our own pushd/popd functions
 diff --git a/xbmc/DllPaths_generated.h.in b/xbmc/DllPaths_generated.h.in
-index d35ea97..3bf8f96 100644
+index 4953236..e42344c 100644
 --- a/xbmc/DllPaths_generated.h.in
 +++ b/xbmc/DllPaths_generated.h.in
-@@ -104,4 +104,7 @@
+@@ -103,4 +103,7 @@
  /* xkbcommon */
  #define DLL_PATH_XKBCOMMON "@XKBCOMMON_LIBRARY_SONAME@"
  
@@ -9998,17 +9999,14 @@ index 0000000..45aa826
 +
 +include ../../../Makefile.include
 -- 
-1.9.0
+1.9.1
 
 
-From 05f30fe9aa91c0b69d0e71490d73bdc34e0bf0af Mon Sep 17 00:00:00 2001
+From d8669de8aeb2268b9ae0b91602215b4890366f15 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
-Date: Sun, 9 Mar 2014 00:16:57 +0200
-Subject: [PATCH 85/93] vaapi: option to enable sw filters
+Date: Thu, 19 Dec 2013 15:36:11 +0100
+Subject: [PATCH 85/96] vaapi: option to enable sw filters
 
-Conflicts:
-	xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-	xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
 ---
  language/English/strings.po                        |  17 ++-
  system/settings/settings.xml                       |  15 ++
@@ -10017,12 +10015,12 @@ Conflicts:
  .../DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp        |  76 ++++++++--
  .../DVDCodecs/Video/DVDVideoCodecFFmpeg.h          |   3 +
  xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp     | 154 +++++++++++++++++++++
- xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h       |  36 ++++-
+ xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h       |  34 +++++
  xbmc/cores/dvdplayer/DVDPlayerVideo.cpp            |  32 ++---
- 9 files changed, 296 insertions(+), 42 deletions(-)
+ 9 files changed, 295 insertions(+), 41 deletions(-)
 
 diff --git a/language/English/strings.po b/language/English/strings.po
-index 516c5c1..47ac883 100755
+index 9cc2090..88b945e 100755
 --- a/language/English/strings.po
 +++ b/language/English/strings.po
 @@ -6092,7 +6092,13 @@ msgctxt "#13456"
@@ -10057,7 +10055,7 @@ index 516c5c1..47ac883 100755
  
  #: system/settings/settings.xml
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index b756fca..3a9325e 100644
+index 124a14d..fdf5f41 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -715,6 +715,21 @@
@@ -10512,18 +10510,10 @@ index bfefc9d..51f9bed 100644
 +
  #endif
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-index a520e42..3541c9c 100644
+index a520e42..755c192 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-@@ -22,14 +22,19 @@
- #include "system_gl.h"
- 
- #include "DllAvCodec.h"
-+
- #include "DVDVideoCodecFFmpeg.h"
--#include <libavcodec/vaapi.h>
- #include <va/va.h>
- #include <va/va_x11.h>
+@@ -29,7 +29,12 @@
  #include <va/va_glx.h>
  #include <list>
  #include <boost/shared_ptr.hpp>
@@ -10661,13 +10651,13 @@ index 9c5469b..b30e450 100644
              int iResult = OutputPicture(&picture, pts);
  
 -- 
-1.9.0
+1.9.1
 
 
-From eb235f0541bef993a9db30642ed451b723b7953e Mon Sep 17 00:00:00 2001
+From a866228fc54a4e95423387a83c8de012e247efc3 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 3 Jan 2014 20:50:46 +0100
-Subject: [PATCH 86/93] X11: check for user output on resize window
+Subject: [PATCH 86/96] X11: check for user output on resize window
 
 ---
  xbmc/windowing/X11/WinSystemX11.cpp | 17 ++++++++++++++---
@@ -10709,13 +10699,13 @@ index 9962f08..c95f4ec 100644
    && m_nHeight == newHeight
    && m_userOutput.compare(m_currentOutput) == 0)
 -- 
-1.9.0
+1.9.1
 
 
-From cf354441917e2066e406fad51200f20d762f09d2 Mon Sep 17 00:00:00 2001
+From a153c72c0b53c9cbad7fc545abb7730e8eecaf19 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 24 Jan 2014 18:29:33 +0100
-Subject: [PATCH 87/93] dvdplayer: flush ffmpeg after hw decoder returned an
+Subject: [PATCH 87/96] dvdplayer: flush ffmpeg after hw decoder returned an
  error
 
 ---
@@ -10752,13 +10742,13 @@ index 2df9de9..f4c9929 100644
      result = FilterProcess(m_pFrame);
    else
 -- 
-1.9.0
+1.9.1
 
 
-From 8184d80ea878672e0ad27ef24bc0daab05bf6397 Mon Sep 17 00:00:00 2001
+From d4e3e0920e61b7115b1053010fc7a00e1631e04a Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 28 Jan 2014 10:05:26 +0100
-Subject: [PATCH 88/93] xbmc pr 3080
+Subject: [PATCH 88/96] xbmc pr 3080
 
 ---
  .../dvdplayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp      | 14 ++++++++++++--
@@ -10797,13 +10787,13 @@ index f4c9929..283af9e 100644
      pDvdVideoPicture->pts = DVD_NOPTS_VALUE;
  
 -- 
-1.9.0
+1.9.1
 
 
-From dbfcb8af2d7aa02dd5de3227e226493e80e7be4d Mon Sep 17 00:00:00 2001
+From 23e4b30e3463b01d5f9acf1287767ca96c88fdb0 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 28 Jan 2014 17:24:58 +0100
-Subject: [PATCH 89/93] set preatpicture if pts is equal to last frame
+Subject: [PATCH 89/96] set preatpicture if pts is equal to last frame
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp | 8 ++++++++
@@ -10830,13 +10820,13 @@ index 283af9e..ff18b73 100644
      pDvdVideoPicture->pts = DVD_NOPTS_VALUE;
  
 -- 
-1.9.0
+1.9.1
 
 
-From 4ae7d07c09a3d2e3fe0dc7042f37a11c89622357 Mon Sep 17 00:00:00 2001
+From 3732925c369d10341ed813ea6c0775ea5ecc1cb5 Mon Sep 17 00:00:00 2001
 From: fritsch <Peter.Fruehberger@gmail.com>
 Date: Mon, 27 Jan 2014 19:49:03 +0100
-Subject: [PATCH 90/93] Introduce SWCodec - these are codecs that don't have
+Subject: [PATCH 90/96] Introduce SWCodec - these are codecs that don't have
  any GPU acceleration (yet) - add HVEC
 
 ---
@@ -10948,13 +10938,13 @@ index c43351d..7075f05 100644
  
      CStdString m_videoDefaultPlayer;
 -- 
-1.9.0
+1.9.1
 
 
-From 0f809b66ecb03c219083ea821f4dbba543e818f5 Mon Sep 17 00:00:00 2001
+From 552f5cec0cd0a753fcd920a1d5d7b3eb6d37e696 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 11 Feb 2014 18:15:06 +0100
-Subject: [PATCH 91/93] ActiveAE: add some debug logging
+Subject: [PATCH 91/96] ActiveAE: add some debug logging
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp | 6 ++++++
@@ -10979,18 +10969,165 @@ index 0287e73..6904cb9 100644
    return copied;
  }
 -- 
-1.9.0
+1.9.1
 
 
-From 513134b092630d3d59ee738a2761b93c08e3312f Mon Sep 17 00:00:00 2001
+From b10b79798aa7827134f34e5ad436e491a402cf77 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Tue, 1 Apr 2014 15:45:16 +0200
+Subject: [PATCH 92/96] X11: remove obsolete sdl include
+
+---
+ xbmc/windowing/X11/WinSystemX11.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/xbmc/windowing/X11/WinSystemX11.h b/xbmc/windowing/X11/WinSystemX11.h
+index d1c8729..5489543 100644
+--- a/xbmc/windowing/X11/WinSystemX11.h
++++ b/xbmc/windowing/X11/WinSystemX11.h
+@@ -25,7 +25,6 @@
+ 
+ #include "system_gl.h"
+ #include <GL/glx.h>
+-#include <SDL/SDL.h>
+ 
+ #include "windowing/WinSystem.h"
+ #include "utils/Stopwatch.h"
+-- 
+1.9.1
+
+
+From da2f57d73f6df8892b759b465ee47d9401b390f9 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sun, 13 Apr 2014 10:52:26 +0200
+Subject: [PATCH 93/96] squash fast channel
+
+---
+ xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 13 ++++++++++---
+ xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h   |  1 +
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index f4ba29c..ca545c0 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -220,6 +220,7 @@ CDVDDemuxFFmpeg::CDVDDemuxFFmpeg() : CDVDDemux()
+   m_pkt.result = -1;
+   memset(&m_pkt.pkt, 0, sizeof(AVPacket));
+   m_streaminfo = true; /* set to true if we want to look for streams before playback */
++  m_checkvideo = false;
+ }
+ 
+ CDVDDemuxFFmpeg::~CDVDDemuxFFmpeg()
+@@ -448,11 +449,10 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput, bool streaminfo)
+   if (iformat && (strcmp(iformat->name, "mjpeg") == 0) && m_ioContext->seekable == 0)
+     m_pFormatContext->max_analyze_duration = 500000;
+ 
+-  bool short_analyze = false;
+   if (iformat && (strcmp(iformat->name, "mpegts") == 0))
+   {
+     m_pFormatContext->max_analyze_duration = 500000;
+-    short_analyze = true;
++    m_checkvideo = true;
+   }
+ 
+   // we need to know if this is matroska or avi later
+@@ -484,14 +484,17 @@ bool CDVDDemuxFFmpeg::Open(CDVDInputStream* pInput, bool streaminfo)
+     }
+     CLog::Log(LOGDEBUG, "%s - av_find_stream_info finished", __FUNCTION__);
+ 
+-    if (short_analyze)
++    if (m_checkvideo)
+     {
+       // make sure we start video with an i-frame
+       ResetVideoStreams();
+     }
+   }
+   else
++  {
+     m_program = 0;
++    m_checkvideo = true;
++  }
+ 
+   // reset any timeout
+   m_timeout.SetInfinite();
+@@ -1784,6 +1787,10 @@ bool CDVDDemuxFFmpeg::IsVideoReady()
+ {
+   AVStream *st;
+   bool hasVideo = false;
++
++  if(!m_checkvideo)
++    return true;
++
+   if(m_program != UINT_MAX)
+   {
+     for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+index 9ec0877..c8d706b 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+@@ -166,5 +166,6 @@ protected:
+   bool m_bPtsWrap, m_bPtsWrapChecked;
+   int64_t m_iStartTime, m_iMaxTime, m_iEndTime;
+   bool m_streaminfo;
++  bool m_checkvideo;
+ };
+ 
+-- 
+1.9.1
+
+
+From 303fbf8b6724f2a01cb0ed213922dc8a6bd57b01 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sun, 13 Apr 2014 15:34:26 +0200
+Subject: [PATCH 94/96] X11: do not call xrandr until we have a window
+
+---
+ xbmc/windowing/X11/WinSystemX11.cpp | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/xbmc/windowing/X11/WinSystemX11.cpp b/xbmc/windowing/X11/WinSystemX11.cpp
+index c95f4ec..d1e6c1f 100644
+--- a/xbmc/windowing/X11/WinSystemX11.cpp
++++ b/xbmc/windowing/X11/WinSystemX11.cpp
+@@ -243,15 +243,17 @@ bool CWinSystemX11::SetFullScreen(bool fullScreen, RESOLUTION_INFO& res, bool bl
+     }
+ 
+     // only call xrandr if mode changes
+-    if (currmode.w != mode.w || currmode.h != mode.h ||
+-        currmode.hz != mode.hz || currmode.id != mode.id)
++    if (m_mainWindow)
+     {
+-      CLog::Log(LOGNOTICE, "CWinSystemX11::SetFullScreen - calling xrandr");
+-      OnLostDevice();
+-      m_bIsInternalXrr = true;
+-      g_xrandr.SetMode(out, mode);
+-      if (m_mainWindow)
++      if (currmode.w != mode.w || currmode.h != mode.h ||
++          currmode.hz != mode.hz || currmode.id != mode.id)
++      {
++        CLog::Log(LOGNOTICE, "CWinSystemX11::SetFullScreen - calling xrandr");
++        OnLostDevice();
++        m_bIsInternalXrr = true;
++        g_xrandr.SetMode(out, mode);
+         return true;
++      }
+     }
+   }
+ #endif
+-- 
+1.9.1
+
+
+From 836de0e5d789ea37b526d5869477f356c5cebfd1 Mon Sep 17 00:00:00 2001
 From: Stefan Saraev <stefan@saraev.ca>
-Date: Mon, 24 Feb 2014 20:49:47 +0200
-Subject: [PATCH 92/93] vaapi: fix build
+Date: Wed, 16 Apr 2014 12:40:42 +0300
+Subject: [PATCH 95/96] vaapi: fix build
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp | 13 ++-----------
- xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h   |  6 +-----
- 2 files changed, 3 insertions(+), 16 deletions(-)
+ xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h   |  5 -----
+ 2 files changed, 2 insertions(+), 16 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
 index 51f9bed..f957393 100644
@@ -11035,20 +11172,10 @@ index 51f9bed..f957393 100644
      frame->data[0] = m_frame_buffer + image.offsets[0];
      frame->linesize[0] = image.pitches[0];
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-index 3541c9c..49d3117 100644
+index 755c192..b6fb320 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-@@ -22,8 +22,8 @@
- #include "system_gl.h"
- 
- #include "DllAvCodec.h"
--
- #include "DVDVideoCodecFFmpeg.h"
-+#include <libavcodec/vaapi.h>
- #include <va/va.h>
- #include <va/va_x11.h>
- #include <va/va_glx.h>
-@@ -31,10 +31,6 @@
+@@ -31,11 +31,6 @@
  #include <boost/shared_ptr.hpp>
  #include "linux/sse4/DllLibSSE4.h"
  
@@ -11056,17 +11183,18 @@ index 3541c9c..49d3117 100644
 -#include "libavcodec/vaapi.h"
 -#include "libavcodec/avcodec.h"
 -}
- 
+-
  namespace VAAPI {
  
+ typedef boost::shared_ptr<VASurfaceID const> VASurfacePtr;
 -- 
-1.9.0
+1.9.1
 
 
-From f0b8551028faafa5bb3c5880263759a6239e836a Mon Sep 17 00:00:00 2001
+From d54319d818ed995076e5e4470673891788d0ef8e Mon Sep 17 00:00:00 2001
 From: Stefan Saraev <stefan@saraev.ca>
 Date: Mon, 24 Feb 2014 20:58:52 +0200
-Subject: [PATCH 93/93] no hevc in ffmpeg 1.2
+Subject: [PATCH 96/96] no hevc in ffmpeg 1.2
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp | 6 ++++--
@@ -11099,50 +11227,5 @@ index 354e206..6bc35b1 100644
  
    if (m_dllAvCodec.avcodec_open2(m_pCodecContext, pCodec, NULL) < 0)
 -- 
-1.9.0
-
-From a9d8d8a426cd16a72c078c0b6f151f974e65c4ef Mon Sep 17 00:00:00 2001
-From: Rainer Hochecker <fernetmenta@online.de>
-Date: Mon, 17 Mar 2014 12:06:37 +0100
-Subject: [PATCH] X11: fix detect of window manager
-
----
- xbmc/windowing/X11/WinSystemX11.cpp | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/xbmc/windowing/X11/WinSystemX11.cpp b/xbmc/windowing/X11/WinSystemX11.cpp
-index c95f4ec..1208246 100644
---- a/xbmc/windowing/X11/WinSystemX11.cpp
-+++ b/xbmc/windowing/X11/WinSystemX11.cpp
-@@ -905,8 +905,8 @@ bool CWinSystemX11::SetWindow(int width, int height, bool fullscreen, const std:
- 
-     if (fullscreen && hasWM)
-     {
--      Atom fs = XInternAtom(m_dpy, "_NET_WM_STATE_FULLSCREEN", True);
--      XChangeProperty(m_dpy, m_mainWindow, XInternAtom(m_dpy, "_NET_WM_STATE", True), XA_ATOM, 32, PropModeReplace, (unsigned char *) &fs, 1);
-+      Atom fs = XInternAtom(m_dpy, "_NET_WM_STATE_FULLSCREEN", False);
-+      XChangeProperty(m_dpy, m_mainWindow, XInternAtom(m_dpy, "_NET_WM_STATE", False), XA_ATOM, 32, PropModeReplace, (unsigned char *) &fs, 1);
-     }
- 
-     // define invisible cursor
-@@ -1139,7 +1139,7 @@ bool CWinSystemX11::HasWindowManager()
-   unsigned long items_read, items_left, i;
-   char req = 0;
- 
--  prop = XInternAtom(m_dpy, "_NET_SUPPORTING_WM_CHECK", True);
-+  prop = XInternAtom(m_dpy, "_NET_SUPPORTING_WM_CHECK", False);
-   if (prop == None)
-     return false;
-   status = XGetWindowProperty(m_dpy, DefaultRootWindow(m_dpy), prop,
-@@ -1174,7 +1174,7 @@ bool CWinSystemX11::HasWindowManager()
- 
-   XFree(data);
- 
--  prop = XInternAtom(m_dpy, "_NET_WM_NAME", True);
-+  prop = XInternAtom(m_dpy, "_NET_WM_NAME", False);
-   if (prop == None)
-   {
-     CLog::Log(LOGDEBUG,"Window Manager Name: ");
--- 
-1.8.5.5
+1.9.1
 

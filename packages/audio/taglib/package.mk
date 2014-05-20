@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="taglib"
-PKG_VERSION="1.8"
+PKG_VERSION="1.9.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://taglib.github.com/"
-PKG_URL="https://github.com/downloads/taglib/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="https://github.com/taglib/taglib/releases/download/v$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain cmake:host zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
@@ -39,4 +39,5 @@ configure_target() {
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
+  $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/taglib-config
 }

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xbmc-pvr-addons"
-PKG_VERSION="71e5b8c"
+PKG_VERSION="91cc731"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -39,3 +39,9 @@ else
 fi
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-addons-with-dependencies $PVRADDONS_MYSQL"
+
+post_makeinstall_target() {
+  if [ "$DEBUG" != yes ]; then
+    $STRIP $INSTALL/usr/lib/xbmc/addons/pvr.*/*.pvr
+  fi
+}

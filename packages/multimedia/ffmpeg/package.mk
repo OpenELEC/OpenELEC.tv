@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="1.2.5"
+PKG_VERSION="xbmc-c7a04ca"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://ffmpeg.org"
-PKG_URL="http://ffmpeg.org/releases/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis gnutls"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
@@ -120,6 +120,7 @@ configure_target() {
               --sysroot=$SYSROOT_PREFIX \
               --sysinclude="$SYSROOT_PREFIX/usr/include" \
               --target-os="linux" \
+              --extra-version="$PKG_VERSION" \
               --nm="$NM" \
               --ar="$AR" \
               --as="$CC" \
@@ -144,6 +145,7 @@ configure_target() {
               $FFMPEG_DEBUG \
               $FFMPEG_PIC \
               --enable-optimizations \
+              --disable-armv5te --disable-armv6t2 \
               --disable-extra-warnings \
               --disable-ffprobe \
               --disable-ffplay \
@@ -178,11 +180,14 @@ configure_target() {
               --disable-encoders \
               --enable-encoder=ac3 \
               --enable-encoder=aac \
+              --enable-encoder=wmav2 \
               --disable-decoder=mpeg_xvmc \
               --enable-hwaccels \
               --disable-muxers \
               --enable-muxer=spdif \
               --enable-muxer=adts \
+              --enable-muxer=asf \
+              --enable-muxer=ipod \
               --enable-demuxers \
               --enable-parsers \
               --enable-bsfs \
@@ -226,5 +231,6 @@ configure_target() {
 }
 
 post_makeinstall_target() {
+  rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share/ffmpeg/examples
 }

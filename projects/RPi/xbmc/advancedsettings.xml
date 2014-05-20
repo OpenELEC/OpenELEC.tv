@@ -2,11 +2,8 @@
 <advancedsettings>
   <showexitbutton>false</showexitbutton>
 
-  <destroywindowcontrols>false</destroywindowcontrols>
   <fanartres>720</fanartres>
   <imageres>540</imageres>
-  <bginfoloadermaxthreads>2</bginfoloadermaxthreads>
-  <useddsfanart>false</useddsfanart>
 
   <video>
     <defaultplayer>omxplayer</defaultplayer>

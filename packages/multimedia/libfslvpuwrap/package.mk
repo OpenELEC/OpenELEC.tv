@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="libfslvpuwrap"
-PKG_VERSION="3.5.7-1.0.0"
+PKG_VERSION="3.10.9-1.0.0"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="other"
 PKG_SITE="http://www.freescale.com"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain imx-lib libfslparser libfslcodec"
+PKG_DEPENDS_TARGET="toolchain imx-vpu"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="libfslvpuwrap: Freescale Multimedia VPU wrapper"
@@ -31,3 +31,7 @@ PKG_LONGDESC="libfslvpuwrap: Freescale Multimedia VPU wrapper"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr/share
+}

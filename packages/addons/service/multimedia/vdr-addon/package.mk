@@ -19,12 +19,12 @@
 
 PKG_NAME="vdr-addon"
 PKG_VERSION="4.1"
-PKG_REV="5"
+PKG_REV="6"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.openelec.tv"
 PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain attr libcap vdr vdr-plugin-xvdr vdr-plugin-vnsiserver vdr-iptv vdr-wirbelscan vdr-wirbelscancontrol vdr-sc vdr-plugin-dvbapi vdr-plugin-streamdev vdr-live vdr-control vdr-epgsearch vdr-plugin-xmltv2vdr vdr-plugin-eepg"
+PKG_DEPENDS_TARGET="toolchain attr libcap vdr vdr-plugin-xvdr vdr-plugin-vnsiserver vdr-iptv vdr-wirbelscan vdr-wirbelscancontrol vdr-plugin-dvbapi vdr-plugin-streamdev vdr-live vdr-control vdr-epgsearch vdr-plugin-xmltv2vdr vdr-plugin-eepg vdr-dummydevice vdr-satip"
 PKG_PRIORITY="optional"
 PKG_SECTION="service.multimedia"
 PKG_SHORTDESC="vdr: A powerful DVB TV application"
@@ -46,7 +46,6 @@ addon() {
   VDR_LIVE_DIR="$(get_build_dir vdr-live)"
   VDR_PLUGIN_XVDR_DIR="$(get_build_dir vdr-plugin-xvdr)"
   VDR_PLUGIN_VNSISERVER_DIR="$(get_build_dir vdr-plugin-vnsiserver)"
-  VDR_SC_DIR="$(get_build_dir vdr-sc)"
   VDR_PLUGIN_STREAMVEV_DIR="$(get_build_dir vdr-plugin-streamdev)"
   VDR_PLUGIN_XMLTV2VDR="$(get_build_dir vdr-plugin-xmltv2vdr)"
 
@@ -77,8 +76,6 @@ addon() {
   cp -PR $(get_build_dir vdr-wirbelscancontrol)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $(get_build_dir vdr-plugin-dvbapi)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $(get_build_dir vdr-plugin-eepg)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $VDR_SC_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $VDR_SC_DIR/systems/*/libsc*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/server/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/client/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_LIVE_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
@@ -86,6 +83,7 @@ addon() {
   cp -PR $(get_build_dir vdr-epgsearch)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_XMLTV2VDR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $(get_build_dir vdr-dummydevice)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_build_dir vdr-satip)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/eepg
 
@@ -101,7 +99,7 @@ addon() {
   cp -P $VDR_PLUGIN_XMLTV2VDR/dist/epgdata2xmltv/epgdata2xmltv $ADDON_BUILD/$PKG_ADDON_ID/bin
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/lib
-  cp -P $(get_build_dir tntnet)/.install_pkg/usr/lib/libtntnet.so* $ADDON_BUILD/$PKG_ADDON_ID/lib
+  cp -PL $(get_build_dir tntnet)/.install_pkg/usr/lib/libtntnet.so.11 $ADDON_BUILD/$PKG_ADDON_ID/lib
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/streamdev-server
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/streamdev-server/streamdevhosts.conf $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/streamdev-server

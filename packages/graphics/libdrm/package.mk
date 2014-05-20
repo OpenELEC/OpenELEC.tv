@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libdrm"
-PKG_VERSION="2.4.52"
+PKG_VERSION="2.4.54"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -55,10 +55,6 @@ configure_target() {
     [ "$drv" = "nouveau" ] && \
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-libkms/enable-libkms/'` && \
       DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-nouveau/enable-nouveau/'`
-
-    [ "$drv" = "vmware" ] && \
-      DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-libkms/enable-libkms/'` && \
-      DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-vmwgfx/enable-vmwgfx/'`
   done
 
   ../configure --host=$TARGET_NAME \

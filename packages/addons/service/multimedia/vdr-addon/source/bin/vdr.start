@@ -78,7 +78,7 @@ fi
 
 # keep softcam first
 if [ "$ENABLE_SOFTCAM" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P $SOFTCAM_PLUGIN"
+  VDR_ARG="$VDR_ARG -P dvbapi"
 fi
 VDR_ARG="$VDR_ARG -P wirbelscan -P wirbelscancontrol"
 if [ "$ENABLE_IPTV" == "true" ] ; then
@@ -104,6 +104,9 @@ if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
 fi
 if [ "$ENABLE_DUMMYDEVICE" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P dummydevice"
+fi
+if [ "$ENABLE_SATIP" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P satip"
 fi
 if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
   VDR_ARG="$VDR_ARG -P 'xmltv2vdr --epgfile=$ADDON_CACHE_DIR/epg.db'"
