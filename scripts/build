@@ -350,10 +350,14 @@ if [ ! -f $STAMP ]; then
     fi  # ! "$PKG_SECTION" = "virtual"
 
     # TODO: slow...
-    for i in `find $SYSROOT_PREFIX/usr/lib/ -name "*.la" 2>/dev/null`; do \
-      $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $i; \
-    done
-
+    # time: real 0m3.647s
+    #for i in `find $SYSROOT_PREFIX/usr/lib/ -name "*.la" 2>/dev/null`; do \
+    # $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $i; \
+    #done
+    #
+    # time: real 0m0.728s
+    find $SYSROOT_PREFIX/usr/lib/ -type f -name "*.la" -exec $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" {} \;
+    
     for i in `sed -n "s/^\([^#].*\)=\".*$/\1/p" $PROJECT_DIR/$PROJECT/options | grep -v "#"`; do
       eval val=\$$i
       echo "STAMP_$i=\"$val\"" >> $STAMP
