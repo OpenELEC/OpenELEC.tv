@@ -46,7 +46,7 @@ pre_configure_target() {
 }
 
 configure_target() {
-  ./configure --disable-vg --disable-ffmpeg --disable-sdl
+  ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo
 }
 
 makeinstall_target() {
