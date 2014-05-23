@@ -18,24 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
+PKG_NAME="mednafen-pcfx"
+PKG_VERSION="437489e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/Niouby/OpenELEC.tv"
-PKG_URL=""
-PKG_DEPENDS_TARGET="Mesa RetroArch mednafen-pcfx mame mednafen-psx mupen64plus vecx snes9x-next dinothawr prboom mednafen-pce fba handy genesis-plus-gx nxengine fceu-next gambatte stella vbam libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/mednafen-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Mednafen PC-FX."
+PKG_LONGDESC="libretro implementation of Mednafen PC-FX."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
+make_target() {
+  make core=pcfx
+}
 
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mednafen_pcfx_libretro.so $INSTALL/usr/lib/libretro/
+}
