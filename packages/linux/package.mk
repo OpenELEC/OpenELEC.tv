@@ -18,6 +18,10 @@
 
 PKG_NAME="linux"
 case "$LINUX" in
+  amlogic)
+    PKG_VERSION="amlogic-3.0.101"
+    PKG_URL="https://dl.dropboxusercontent.com/u/18902170/linux-amlogic-3.0.101.tar.xz"
+    ;;
   imx6)
     PKG_VERSION="cuboxi-592b2d9"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -170,7 +174,7 @@ make_target() {
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a -f "arch/arm/boot/dts/*.dtb" ]; then
     mkdir -p $INSTALL/usr/share/u-boot
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/u-boot

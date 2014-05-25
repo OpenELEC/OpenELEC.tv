@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
@@ -18,23 +16,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
+PKG_NAME="opengl-amlogic"
+PKG_VERSION="apiv17"
+PKG_REV="1"
+PKG_ARCH="arm"
+PKG_LICENSE="nonfree"
+PKG_SITE="http://www.arm.com/products/multimedia/mali-graphics-hardware/mali-400-mp.php"
+PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="graphics"
+PKG_SHORTDESC="opengl-mali: OpenGL-ES and Mali driver for Mali 400 GPUs"
+PKG_LONGDESC="opengl-mali: OpenGL-ES and Mali driver for Mali 400 GPUs"
 
-if [ -z "$UBOOT_CONFIGFILE" ]; then
-  UBOOT_CONFIGFILE="boot.scr"
-fi
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader
-  cp -PR $BUILD/u-boot-*/SPL $RELEASE_DIR/3rdparty/bootloader
-  cp -PR $BUILD/u-boot-*/u-boot.img $RELEASE_DIR/3rdparty/bootloader
+make_target() {
+ : # nothing todo
+}
 
-  if [ -f "$BUILD/linux-*/arch/arm/boot/dts/*.dtb" ]; then
-    for dtb in $BUILD/linux-*/arch/arm/boot/dts/*.dtb; do
-      cp -PR $dtb $RELEASE_DIR/3rdparty/bootloader
-    done
-  fi
+makeinstall_target() {
+  mkdir -p $SYSROOT_PREFIX/usr/include
+    cp -PR usr/include/* $SYSROOT_PREFIX/usr/include
 
-  for config in $PROJECT_DIR/$PROJECT/bootloader/*; do
-    cp -PR $config $RELEASE_DIR/3rdparty/bootloader
-  done
+  mkdir -p $SYSROOT_PREFIX/usr/lib
+    cp -PR usr/lib/*.so* $SYSROOT_PREFIX/usr/lib
+
+  mkdir -p $INSTALL/usr/lib
+    cp -PR usr/lib/*.so* $INSTALL/usr/lib
+}

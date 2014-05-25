@@ -1,0 +1,41 @@
+diff --git a/src/shared/missing.h b/src/shared/missing.h
+index bc0fcd5..67ae221 100644
+--- a/src/shared/missing.h
++++ b/src/shared/missing.h
+@@ -378,3 +378,36 @@ static inline int setns(int fd, int nstype) {
+ #ifndef LOOP_CTL_GET_FREE
+ #define LOOP_CTL_GET_FREE 0x4C82
+ #endif
++
++enum {
++	IFLA_IPTUN_UNSPEC,
++	IFLA_IPTUN_LINK,
++	IFLA_IPTUN_LOCAL,
++	IFLA_IPTUN_REMOTE,
++	IFLA_IPTUN_TTL,
++	IFLA_IPTUN_TOS,
++	IFLA_IPTUN_ENCAP_LIMIT,
++	IFLA_IPTUN_FLOWINFO,
++	IFLA_IPTUN_FLAGS,
++	IFLA_IPTUN_PROTO,
++	IFLA_IPTUN_PMTUDISC,
++	IFLA_IPTUN_6RD_PREFIX,
++	IFLA_IPTUN_6RD_RELAY_PREFIX,
++	IFLA_IPTUN_6RD_PREFIXLEN,
++	IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
++	__IFLA_IPTUN_MAX,
++};
++#define IFLA_IPTUN_MAX	(__IFLA_IPTUN_MAX - 1)
++
++#define IFLA_GRE_FLOWINFO	12
++#define IFLA_GRE_FLAGS		13
++#undef IFLA_GRE_MAX
++#define IFLA_GRE_MAX		IFLA_GRE_FLAGS
++
++enum {
++	IFLA_BRIDGE_FLAGS,
++	IFLA_BRIDGE_MODE,
++	IFLA_BRIDGE_VLAN_INFO,
++	__IFLA_BRIDGE_MAX,
++};
++#define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)

@@ -310,7 +310,7 @@
   }
 
   update() {
-    if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
       echo "updating $1..."
       mount -o remount,rw /flash
       mv $UPDATE_DIR/$2 $3 2>/dev/null
