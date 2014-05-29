@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="RetroArch"
-PKG_VERSION="a3f6904"
+PKG_VERSION="e909479"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -46,21 +46,23 @@ pre_configure_target() {
 }
 
 configure_target() {
-  ./configure --disable-vg --disable-ffmpeg --disable-sdl
+  ./configure --disable-vg --disable-ffmpeg --disable-sdl --enable-lakka
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
-  #mkdir -p $INSTALL/usr/share/retroarch
-  #  cp $PKG_BUILD/media/lakka/* $INSTALL/usr/share/retroarch
+  mkdir -p $INSTALL/usr/share/retroarch/lakka
+    cp $ROOT/$PKG_BUILD/media/lakka/* $INSTALL/usr/share/retroarch/lakka
   mkdir -p $INSTALL/etc
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
-    #cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
+    cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/retroarch.cfg $INSTALL/etc
+    cp /home/kivutar/Lakka/build.Lakka-Generic.x86_64-devel/liberation-fonts-ttf-2.00.1/LiberationSans-Regular.ttf $INSTALL/usr/bin/osd-font.ttf
   
   # General configuration
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# content_directory =/content_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savefile_directory =/savefile_directory =\/storage\/savefiles/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savestate_directory =/savestate_directory =\/storage\/savestates/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# system_directory =/system_directory =\/storage\/system/" $INSTALL/etc/retroarch.cfg
@@ -68,6 +70,10 @@ makeinstall_target() {
   sed -i -e "s/# video_shader_dir =/video_shader_dir =\/storage\/shaders/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# config_save_on_exit = false/config_save_on_exit = false/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# assets_directory =/assets_directory =\/usr\/share\/retroarch/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"lakka\"/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_font_path =/video_font_path =\/usr\/share\/fonts\/liberation\/LiberationSans-Regular.ttf/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_font_size = 48/video_font_size = 32/" $INSTALL/etc/retroarch.cfg
   
   # Video
   sed -i -e "s/# video_fullscreen = false/video_fullscreen = true/" $INSTALL/etc/retroarch.cfg
@@ -75,8 +81,8 @@ makeinstall_target() {
   #sed -i -e "s/# video_force_aspect = true/video_force_aspect = true/" $INSTALL/etc/retroarch.cfg
   #sed -i -e "s/# video_aspect_ratio =/video_aspect_ratio = 1.7777777/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_aspect_ratio_auto = false/video_aspect_ratio_auto = true/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# video_vsync = true/video_vsync = false/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
+  #sed -i -e "s/# video_vsync = true/video_vsync = false/" $INSTALL/etc/retroarch.cfg
+  #sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
   
   # Input
   sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
