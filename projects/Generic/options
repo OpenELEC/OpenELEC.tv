@@ -267,7 +267,7 @@
   XBMCPLAYER_DRIVER="default"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
-  VDPAU="yes"
+  VDPAU="no"
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
   VAAPI="yes"
