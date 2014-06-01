@@ -1,10 +1,16 @@
 diff --git a/src/shared/missing.h b/src/shared/missing.h
-index bc0fcd5..67ae221 100644
+index 716d3b8..58254ca 100644
 --- a/src/shared/missing.h
 +++ b/src/shared/missing.h
-@@ -378,3 +378,36 @@ static inline int setns(int fd, int nstype) {
- #ifndef LOOP_CTL_GET_FREE
- #define LOOP_CTL_GET_FREE 0x4C82
+@@ -410,8 +410,61 @@ enum {
+         IFLA_BOND_AD_LACP_RATE,
+         IFLA_BOND_AD_SELECT,
+         IFLA_BOND_AD_INFO,
+-        __IFLA_BOND_MAX,
++        __IFLA_BOND_MAX
+ };
+ 
+ #define IFLA_BOND_MAX	(__IFLA_BOND_MAX - 1)
  #endif
 +
 +enum {
@@ -23,12 +29,14 @@ index bc0fcd5..67ae221 100644
 +	IFLA_IPTUN_6RD_RELAY_PREFIX,
 +	IFLA_IPTUN_6RD_PREFIXLEN,
 +	IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
-+	__IFLA_IPTUN_MAX,
++	__IFLA_IPTUN_MAX
 +};
 +#define IFLA_IPTUN_MAX	(__IFLA_IPTUN_MAX - 1)
 +
-+#define IFLA_GRE_FLOWINFO	12
-+#define IFLA_GRE_FLAGS		13
++enum {
++	IFLA_GRE_FLOWINFO	= 12,
++	IFLA_GRE_FLAGS		= 13
++};
 +#undef IFLA_GRE_MAX
 +#define IFLA_GRE_MAX		IFLA_GRE_FLAGS
 +
@@ -36,6 +44,24 @@ index bc0fcd5..67ae221 100644
 +	IFLA_BRIDGE_FLAGS,
 +	IFLA_BRIDGE_MODE,
 +	IFLA_BRIDGE_VLAN_INFO,
-+	__IFLA_BRIDGE_MAX,
++	__IFLA_BRIDGE_MAX
 +};
 +#define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
++
++enum {
++    IFLA_MACVLAN_FLAGS	= 2
++};
++#undef IFLA_MACVLAN_MAX
++#define IFLA_MACVLAN_MAX IFLA_MACVLAN_FLAGS
++
++enum {
++    IFLA_VLAN_PROTOCOL	= 5
++};
++#undef IFLA_VLAN_MAX
++#define IFLA_VLAN_MAX IFLA_VLAN_PROTOCOL
++
++enum {
++    IFLA_PHYS_PORT_ID	= 34
++};
++#undef IFLA_MAX
++#define IFLA_MAX IFLA_PHYS_PORT_ID
