@@ -20,8 +20,8 @@
 ACTION!="add|change", GOTO="end"
 SUBSYSTEM!="net", ENV{INTERFACE}!="eth*", GOTO="end"
 
-# Broken drivers, usually they break suspend/wakeup
-DRIVERS=="e1000e", GOTO="broken"
+# disable WOL if /storage/.cache/openelec/disable_wol exists
+TEST=="/storage/.cache/openelec/disable_wol", GOTO="disable"
 
 # enable WOL and wakeup support
 LABEL="begin"
@@ -29,8 +29,7 @@ RUN+="/bin/sh -c 'echo enabled >/sys/class/net/$env{INTERFACE}/device/power/wake
 RUN+="/usr/sbin/ethtool -s $env{INTERFACE} wol g"
 GOTO="end"
 
-# disable WOL for broken drivers
-LABEL="broken"
+LABEL="disable"
 RUN+="/usr/sbin/ethtool -s $env{INTERFACE} wol d"
 GOTO="end"
 
