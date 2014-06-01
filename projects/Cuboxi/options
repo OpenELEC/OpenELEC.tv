@@ -1,5 +1,5 @@
-# Name of the Distro to build (full name, without special charcters)
-  DISTRONAME="OpenELEC"
+# Name of the Distro to build (full name, without special characters)
+  DISTRONAME="OpenELEC_Helix"
 
 # short project description
   DESCRIPTION="OpenELEC is a fast and userfriendly XBMC Mediacenter distribution."
@@ -115,7 +115,7 @@
   SQUASHFS_COMPRESSION="gzip"
 
 # Mediacenter to use (xbmc / no)
-  MEDIACENTER="xbmc"
+  MEDIACENTER="xbmc-master"
 
 # Skins to install (Confluence)
 # Space separated list is supported,
@@ -174,8 +174,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-#  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8723AU dvbhdhomerun"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU dvbhdhomerun"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU dvbhdhomerun"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"
@@ -254,7 +253,7 @@
 # Displayserver to use (x11 / no)
   DISPLAYSERVER="no"
 
-# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
+# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
   GRAPHIC_DRIVERS=""

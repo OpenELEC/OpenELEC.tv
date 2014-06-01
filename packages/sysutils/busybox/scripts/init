@@ -3,7 +3,7 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
-#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
@@ -80,6 +80,7 @@
         case $boot in
           CIFS=*|SMB=*|ISCSI=*|NBD=*|NFS=*)
             UPDATE_DISABLED=yes
+            FLASH_NETBOOT=yes
             ;;
         esac
         ;;
@@ -90,6 +91,12 @@
             STORAGE_NETBOOT=yes
             ;;
         esac
+        ;;
+      wol_mac=*)
+        wol_mac="${arg#*=}"
+        ;;
+      wol_wait=*)
+        wol_wait="${arg#*=}"
         ;;
       textmode)
         INIT_ARGS="$INIT_ARGS --unit=textmode.target"
@@ -406,14 +413,39 @@
     fi
   }
 
+  wakeonlan() {
+    if [ "$STORAGE_NETBOOT" = "yes" ]; then
+      wol_ip=${disk%:*}
+      wol_ip=${wol_ip#*=}
+    elif [ "$FLASH_NETBOOT" = "yes" ]; then
+      wol_ip=${boot%:*}
+      wol_ip=${wol_ip#*=}
+    else
+      return 0
+    fi
+      
+    if [ -n "$wol_ip" -a -n "$wol_mac" -a -n "$wol_wait" ]; then
+      progress "Sending Magic Packet (WOL) if needed"
+
+      if ! ping -q -c 2 "$wol_ip" &>/dev/null; then
+        ether-wake "$wol_mac"
+        sleep "$wol_wait"
+      fi
+    fi
+  }
+
   mount_flash() {
     progress "Mounting flash"
+
+    wakeonlan
 
     mount_part "$boot" "/flash" "ro,noatime"
   }
 
-  mount_storage() {
+  mount_storage() {    
     progress "Mounting storage"
+
+    wakeonlan
 
     if [ -n "$disk" ]; then
       if [ -n "$OVERLAY" ]; then
