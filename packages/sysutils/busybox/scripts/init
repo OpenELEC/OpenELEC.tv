@@ -329,6 +329,14 @@
     fi
   }
 
+  update_mtd() {
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+      echo "updating $1..."
+      flash_eraseall "$3"
+      nandwrite -p "$3" "$UPDATE_DIR/$2"
+    fi
+  }
+
   update_bootloader() {
     export BOOT_ROOT="/flash"
     export SYSTEM_ROOT="/sysroot"
@@ -534,7 +542,16 @@
       # get sizes
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
-      OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+
+      case $IMAGE_KERNEL in
+        /dev/mtd*)
+          OLD_KERNEL="0"
+          ;;
+        *)
+          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+          ;;
+      esac
+
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
       NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
@@ -556,7 +573,14 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+          case $IMAGE_KERNEL in
+            /dev/mtd*)
+              update_mtd "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+              ;;
+            *)
+              update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+              ;;
+          esac
           update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           REBOOT="1"
