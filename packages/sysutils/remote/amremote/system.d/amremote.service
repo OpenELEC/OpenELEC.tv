@@ -1,0 +1,10 @@
+[Unit]
+Description=Amlogic IR remote support
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/amremote_config /etc/remote.conf
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target
