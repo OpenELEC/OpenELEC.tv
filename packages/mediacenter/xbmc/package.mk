@@ -272,6 +272,8 @@ if [ ! "$XBMCPLAYER_DRIVER" = default ]; then
     XBMC_CXXFLAGS="$XBMC_CXXFLAGS $BCM2835_INCLUDES"
   elif [ "$XBMCPLAYER_DRIVER" = libfslvpuwrap ]; then
     XBMC_CODEC="--enable-codec=imxvpu"
+  elif [ "$XBMCPLAYER_DRIVER" = libamplayer ]; then
+    XBMC_CODEC="--enable-codec=amcodec"
   else
     XBMC_OPENMAX="--disable-openmax"
   fi

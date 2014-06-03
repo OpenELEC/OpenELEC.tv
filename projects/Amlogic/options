@@ -259,7 +259,7 @@
   GRAPHIC_DRIVERS=""
 
 # XBMC Player implementation to use (default / bcm2835-driver)
-  XBMCPLAYER_DRIVER=""
+  XBMCPLAYER_DRIVER="libamplayer"
 
 # Use VDPAU video acceleration (needs nVidia driver and a supported card)
   VDPAU="no"
