@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="e2fsprogs"
-PKG_VERSION="1.42.8"
+PKG_VERSION="1.42.10"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -37,7 +37,8 @@ if [ "$HFSTOOLS" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET diskdev_cmds"
 fi
 
-PKG_CONFIGURE_OPTS_TARGET="--prefix=/usr \
+PKG_CONFIGURE_OPTS_TARGET="BUILD_CC=$HOST_CC \
+                           --prefix=/usr \
                            --bindir=/bin \
                            --sbindir=/sbin \
                            --enable-verbose-makecmds \
@@ -64,33 +65,7 @@ PKG_CONFIGURE_OPTS_TARGET="--prefix=/usr \
                            --disable-rpath \
                            --with-gnu-ld"
 
-PKG_CONFIGURE_OPTS_INIT="--prefix=/ \
-                         --bindir=/bin \
-                         --sbindir=/sbin \
-                         --enable-verbose-makecmds \
-                         --enable-symlink-install \
-                         --enable-symlink-build \
-                         --disable-compression \
-                         --disable-htree \
-                         --disable-elf-shlibs \
-                         --disable-bsd-shlibs \
-                         --disable-profile \
-                         --disable-jbd-debug \
-                         --disable-blkid-debug \
-                         --disable-testio-debug \
-                         --enable-libuuid \
-                         --enable-libblkid \
-                         --disable-debugfs \
-                         --disable-imager \
-                         --disable-resizer \
-                         --enable-fsck \
-                         --disable-e2initrd-helper \
-                         --enable-tls \
-                         --disable-uuidd \
-                         --disable-nls \
-                         --disable-rpath \
-                         --with-gnu-ld"
-
+PKG_CONFIGURE_OPTS_INIT="$PKG_CONFIGURE_OPTS_TARGET"
 
 pre_configure_target() {
 # e2fsprogs fails to build with LTO support on gcc-4.9
