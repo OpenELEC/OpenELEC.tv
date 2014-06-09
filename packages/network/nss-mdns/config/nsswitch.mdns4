@@ -1,0 +1,18 @@
+#
+# Configuration of GNU Name Service Switch functionality with mdns4.
+#
+
+passwd:		files
+group:		files
+shadow:		files
+gshadow:	files
+
+hosts:		files mdns4_minimal [NOTFOUND=return] dns mdns4
+networks:	files dns
+
+protocols:	files
+services:	files
+ethers:		files
+rpc:		files
+
+netgroup:	files

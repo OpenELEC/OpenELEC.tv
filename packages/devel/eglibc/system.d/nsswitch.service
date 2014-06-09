@@ -1,0 +1,11 @@
+[Unit]
+Description=nsswitch.conf Setup
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/openelec/nsswitch-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=network.target
