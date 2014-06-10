@@ -178,10 +178,17 @@ post_makeinstall_target() {
 
 # create default configs
   mkdir -p $INSTALL/etc
-    cp $PKG_DIR/config/nsswitch.conf $INSTALL/etc
+    ln -s /var/run/nsswitch.conf $INSTALL/etc/nsswitch.conf
     cp $PKG_DIR/config/host.conf $INSTALL/etc
     cp $PKG_DIR/config/gai.conf $INSTALL/etc
 
+  mkdir -p $INSTALL/usr/config
+    cp $PKG_DIR/config/nsswitch.conf $INSTALL/usr/config
+
+# copy script
+  mkdir -p $INSTALL/usr/lib/openelec
+  cp $PKG_DIR/scripts/nsswitch-setup $INSTALL/usr/lib/openelec
+   
   if [ "$TARGET_ARCH" = "arm" -a "$TARGET_FLOAT" = "hard" ]; then
     ln -sf ld.so $INSTALL/lib/ld-linux.so.3
   fi
@@ -205,4 +212,8 @@ makeinstall_init() {
     if [ "$TARGET_ARCH" = "arm" -a "$TARGET_FLOAT" = "hard" ]; then
       ln -sf ld.so $INSTALL/lib/ld-linux.so.3
     fi
+}
+
+post_install() {
+  enable_service nsswitch.service
 }
