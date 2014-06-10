@@ -63,10 +63,6 @@
   # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
-  # clear screen and hide cursor
-  clear
-  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
-
   # parse command line arguments
   for arg in $(cat /proc/cmdline); do
     case $arg in
@@ -373,6 +369,12 @@
     done
   }
 
+  init_console() {
+    # clear screen and hide cursor
+    clear
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+  }
+
   load_splash() {
     if [ ! "$SPLASH" = "no" ]; then
       progress "Loading bootsplash"
@@ -653,6 +655,7 @@
   # main boot sequence
   for BOOT_STEP in \
       load_modules \
+      init_console \
       check_disks \
       mount_flash \
       load_splash \
