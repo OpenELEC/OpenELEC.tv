@@ -57,7 +57,6 @@ makeinstall_target() {
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/retroarch.cfg $INSTALL/etc
-    cp /home/kivutar/Lakka/build.Lakka-Generic.x86_64-devel/liberation-fonts-ttf-2.00.1/LiberationSans-Regular.ttf $INSTALL/usr/bin/osd-font.ttf
   
   # General configuration
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
