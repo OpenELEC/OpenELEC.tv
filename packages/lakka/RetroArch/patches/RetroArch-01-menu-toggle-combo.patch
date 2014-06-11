@@ -1,7 +1,7 @@
-diff -Naur RetroArch/frontend/menu/menu_common.c RetroArch.patch/frontend/menu/menu_common.c
---- RetroArch/frontend/menu/menu_common.c	2014-03-27 17:00:11.577434728 +0100
-+++ RetroArch.patch/frontend/menu/menu_common.c	2014-03-27 17:58:56.498440172 +0100
-@@ -545,7 +545,7 @@
+diff -Naur RetroArch/frontend/menu/menu_input_line_cb.c RetroArch.patch/frontend/menu/menu_input_line_cb.c
+--- RetroArch/frontend/menu/menu_input_line_cb.c	2014-06-10 16:03:43.344536341 +0200
++++ RetroArch.patch/frontend/menu/menu_input_line_cb.c	2014-06-10 16:25:34.567195093 +0200
+@@ -325,7 +325,7 @@
  #endif
     }
  
@@ -11,9 +11,9 @@ diff -Naur RetroArch/frontend/menu/menu_common.c RetroArch.patch/frontend/menu/m
     input_pop_analog_dpad((struct retro_keybind*)binds[0]);
     for (i = 0; i < MAX_PLAYERS; i++)
 diff -Naur RetroArch/retroarch.c RetroArch.patch/retroarch.c
---- RetroArch/retroarch.c	2014-03-27 17:00:11.653436474 +0100
-+++ RetroArch.patch/retroarch.c	2014-03-27 17:57:12.232040870 +0100
-@@ -3097,7 +3097,7 @@
+--- RetroArch/retroarch.c	2014-06-10 16:03:43.352536528 +0200
++++ RetroArch.patch/retroarch.c	2014-06-10 16:24:44.454023141 +0200
+@@ -3001,7 +3001,7 @@
     static bool old_rmenu_toggle = true;
  
     // Always go into menu if dummy core is loaded.
