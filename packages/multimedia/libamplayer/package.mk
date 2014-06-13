@@ -118,7 +118,6 @@ configure_target() {
               --disable-x11grab \
               --enable-runtime-cpudetect \
               --enable-pic \
-              --enable-librtmp \
               $FFMPEG_OPTIM \
               $FFMPEG_FPU
   cd ..
