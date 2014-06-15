@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="213"
+PKG_VERSION="214"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="http://www.freedesktop.org/software/systemd/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain attr libcap kmod util-linux glib libgcrypt"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux glib libgcrypt"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -55,7 +55,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-xz \
                            --disable-pam \
                            --disable-acl \
-                           --disable-xattr \
                            --disable-smack \
                            --disable-gcrypt \
                            --disable-audit \
@@ -115,6 +114,7 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/kernel/install.d
     rm -rf $INSTALL/usr/lib/rpm
     rm  -f $INSTALL/usr/bin/kernel-install
+    rm -rf $INSTALL/etc/xdg
 
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-OUI.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-acpi-vendor.hwdb
@@ -206,6 +206,9 @@ post_makeinstall_target() {
 
 post_install() {
   add_group systemd-journal 190
+
+  add_group systemd-network 193
+  add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
   add_group audio 63
   add_group cdrom 11
