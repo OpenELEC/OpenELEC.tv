@@ -19,8 +19,8 @@
 PKG_NAME="linux"
 case "$LINUX" in
   amlogic)
-    PKG_VERSION="amlogic-3.0.101"
-    PKG_URL="https://dl.dropboxusercontent.com/u/18902170/linux-amlogic-3.0.101.tar.xz"
+    PKG_VERSION="amlogic-3.0.101-60eaa25"
+    PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
     PKG_VERSION="cuboxi-592b2d9"
