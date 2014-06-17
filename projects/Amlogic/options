@@ -80,13 +80,13 @@
   GOLD_SUPPORT="no"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
-  BOOTLOADER="u-boot"
+  BOOTLOADER=""
 
 # u-boot version to use (default)
-  UBOOT_VERSION="imx6-cuboxi"
+  UBOOT_VERSION=""
 
 # Configuration for u-boot
-  UBOOT_CONFIG="mx6_cubox-i_config"
+  UBOOT_CONFIG=""
 
 # Target Configfile for u-boot
   UBOOT_CONFIGFILE=""

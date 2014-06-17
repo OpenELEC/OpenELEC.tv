@@ -123,7 +123,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   $SCRIPTS/install linux
   $SCRIPTS/install linux-drivers
   $SCRIPTS/install linux-firmware
-  $SCRIPTS/install $BOOTLOADER
+  if [ -n "$BOOTLOADER" ]; then
+    $SCRIPTS/install $BOOTLOADER
+  fi
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
@@ -188,7 +190,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     rm -rf $TARGET_IMG/$IMAGE_NAME.mach_kernel
 
 # copy kernel to target dir
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
     KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     KERNEL_IMAGE="zImage"

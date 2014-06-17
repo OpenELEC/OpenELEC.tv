@@ -53,7 +53,7 @@ fi
 
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
-if [ "$BOOTLOADER" = "u-boot" ]; then
+if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
   KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
 else
   KERNEL_IMAGE="bzImage"
