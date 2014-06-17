@@ -1,0 +1,12 @@
+diff -Naur linux-3.14.8/drivers/media/usb/dvb-usb-v2/rtl28xxu.c linux-3.14.8.patch/drivers/media/usb/dvb-usb-v2/rtl28xxu.c
+--- linux-3.14.8/drivers/media/usb/dvb-usb-v2/rtl28xxu.c	2014-06-16 22:41:19.000000000 +0200
++++ linux-3.14.8.patch/drivers/media/usb/dvb-usb-v2/rtl28xxu.c	2014-06-17 03:34:54.230287375 +0200
+@@ -1441,6 +1441,8 @@
+ 		&rtl2832u_props, "Sveon STV20", NULL) },
+ 	{ DVB_USB_DEVICE(USB_VID_KWORLD_2, USB_PID_SVEON_STV27,
+ 		&rtl2832u_props, "Sveon STV27", NULL) },
++	{ DVB_USB_DEVICE(USB_VID_GTEK, 0xa803,
++		&rtl2832u_props, "Realtek RTL2832U reference design", NULL) },
+ 
+ 	/* RTL2832P devices: */
+ 	{ DVB_USB_DEVICE(USB_VID_HANFTEK, 0x0131,
