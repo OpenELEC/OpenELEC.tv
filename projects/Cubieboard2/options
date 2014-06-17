@@ -1,4 +1,4 @@
-# Name of the Distro to build (full name, without special charcters)
+# Name of the Distro to build (full name, without special characters)
   DISTRONAME="Lakka"
 
 # short project description
@@ -12,7 +12,7 @@
   GREETING4=""
 
 # Root password to integrate in the target system
-  ROOT_PASSWORD="openelec"
+  ROOT_PASSWORD="root"
 
 # The TARGET_CPU variable controls which processor should be targeted for
 # generated code.
@@ -100,9 +100,8 @@
 # Additional kernel make parameters (for example to specify the u-boot loadaddress)
   KERNEL_MAKE_EXTRACMD=""
 
-# GCC to use. values can be:
-# default:  default mainline gcc
-  GCC_VERSION="4.7"
+# install Berryboot support tools
+  BERRYBOOT_TOOLS="no"
 
 # Kernel to use. values can be:
 # default:  default mainline kernel
@@ -148,7 +147,7 @@
   XBMC_VIS_FISHBMC="no"
 
 # build and install ALSA Audio support (yes / no)
-  ALSA_SUPPORT="no"
+  ALSA_SUPPORT="yes"
 
 # build and install PulseAudio support (yes / no)
   PULSEAUDIO_SUPPORT="no"
@@ -162,13 +161,13 @@
 
 # build and install with DVDCSS support
 # (DVD decryption support in XBMC) (yes / no)
-  DVDCSS_SUPPORT="yes"
+  DVDCSS_SUPPORT="no"
 
 # build and install with LAME cdrip encoder support
-  ENCODER_LAME="yes"
+  ENCODER_LAME="no"
 
 # build and install with BluRay support (yes / no)
-  BLURAY_SUPPORT="yes"
+  BLURAY_SUPPORT="no"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
@@ -233,10 +232,10 @@
   EXFAT="yes"
 
 # build and install NTFS-3G fuse support (yes / no)
-  NTFS3G="yes"
+  NTFS3G="no"
 
 # build and install hfs filesystem utilities (yes / no)
-  HFSTOOLS="yes"
+  HFSTOOLS="no"
 
 # OpenGL(X) implementation to use (no / Mesa)
   OPENGL="no"
@@ -244,7 +243,7 @@
 # OpenGL-ES implementation to use (no / bcm2835-driver)
   OPENGLES="no"
 
-# Windowmanager to use (ratpoison / fluxbox / dwm / none)
+# Windowmanager to use (ratpoison / fluxbox / none)
   WINDOWMANAGER="none"
 
 # include uvesafb support (yes / no)
@@ -253,7 +252,7 @@
 # Displayserver to use (x11 / no)
   DISPLAYSERVER="no"
 
-# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau,vmware)
+# Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
   GRAPHIC_DRIVERS=""
@@ -272,7 +271,7 @@
   CRYSTALHD="no"
 
 # build and install remote support (yes / no)
-  REMOTE_SUPPORT="yes"
+  REMOTE_SUPPORT="no"
 
 # build and install ATV IR remote support (yes / no)
   ATVCLIENT_SUPPORT="no"
@@ -314,7 +313,7 @@
   SENSOR_SUPPORT="yes"
 
 # build with swap support (yes / no)
-  SWAP_SUPPORT="yes"
+  SWAP_SUPPORT="no"
 
 # swap support enabled per default (yes / no)
   SWAP_ENABLED_DEFAULT="no"
@@ -335,7 +334,7 @@
   NANO_EDITOR="yes"
 
 # cron support (yes / no)
-  CRON_SUPPORT="yes"
+  CRON_SUPPORT="no"
 
 # Perf support in development builds (yes / no)
   PERF_SUPPORT="yes"

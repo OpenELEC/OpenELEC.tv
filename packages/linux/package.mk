@@ -19,7 +19,7 @@
 PKG_NAME="linux"
 case "$LINUX" in
   linux-sun7i)
-    PKG_VERSION="a6a667f"
+    PKG_VERSION="e37d760"
     PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
@@ -174,7 +174,7 @@ make_target() {
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a ! "$LINUX" = "linux-sun7i" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader

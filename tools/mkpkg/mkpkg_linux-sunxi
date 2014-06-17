@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d linux-sunxi.git ]; then
-    git clone -b stage/sunxi-3.4 git://github.com/linux-sunxi/linux-sunxi.git linux-sunxi.git
+    git clone -b sunxi-3.4 git://github.com/linux-sunxi/linux-sunxi.git linux-sunxi.git
   fi
 
   cd linux-sunxi.git
