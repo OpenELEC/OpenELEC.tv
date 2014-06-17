@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d hatari.git ]; then
-    git clone https://github.com/libretro/libretro-hatari.git -b version17 hatari.git
+    git clone https://github.com/libretro/hatari-libretro.git hatari.git
   fi
 
   cd hatari.git

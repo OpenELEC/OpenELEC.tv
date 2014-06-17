@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="hatari"
-PKG_VERSION="437c2b8"
+PKG_VERSION="1131245"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -29,22 +29,21 @@ PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
-PKG_SHORTDESC="An ARM-based SNES emulator for libretro"
-PKG_LONGDESC="An ARM-based SNES emulator for libretro"
+PKG_SHORTDESC="New rebasing of Hatari based on Mercurial upstream. Tries to be a shallow fork for easy upstreaming later on."
+PKG_LONGDESC="New rebasing of Hatari based on Mercurial upstream. Tries to be a shallow fork for easy upstreaming later on."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_configure_target() {
-  echo "LIBCO_SRCS += \$(LIBCOOBJ)/armeabi_asm.o" >> build/makefile_common.mk
-  sed -i -e "s/   CC = gcc//" build/Makefile
+configure_target() {
+  :
 }
 
 make_target() {
-  make -C build
+  make -C .. -f Makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/pocketsnes_libretro.so
+  cp ../libretro-hatari.so $INSTALL/usr/lib/libretro/
 }
