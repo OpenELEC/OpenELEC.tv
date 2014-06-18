@@ -3,7 +3,7 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
-#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
@@ -43,10 +43,11 @@
   IMAGE_SYSTEM="SYSTEM"
 
   BOOT_STEP="start"
-  REBOOT="0"
   MD5_FAILED="0"
   MD5_NOCHECK="0"
   SIZE_FAILED="0"
+  RUN_FSCK="yes"
+  RUN_FSCK_DISKS=""
 
   NBD_DEVS="0"
   FLASH_FREE_MIN="5"
@@ -80,6 +81,10 @@
         case $boot in
           CIFS=*|SMB=*|ISCSI=*|NBD=*|NFS=*)
             UPDATE_DISABLED=yes
+            FLASH_NETBOOT=yes
+            ;;
+          /dev/*|LABEL=*|UUID=*)
+            RUN_FSCK_DISKS="$RUN_FSCK_DISKS $boot"
             ;;
         esac
         ;;
@@ -89,7 +94,16 @@
           CIFS=*|SMB=*|ISCSI=*|NBD=*|NFS=*)
             STORAGE_NETBOOT=yes
             ;;
+          /dev/*|LABEL=*|UUID=*)
+            RUN_FSCK_DISKS="$RUN_FSCK_DISKS $disk"
+            ;;
         esac
+        ;;
+      wol_mac=*)
+        wol_mac="${arg#*=}"
+        ;;
+      wol_wait=*)
+        wol_wait="${arg#*=}"
         ;;
       textmode)
         INIT_ARGS="$INIT_ARGS --unit=textmode.target"
@@ -100,12 +114,12 @@
       debugging)
         DEBUG=yes
         ;;
-      ssh)
-        SSH=yes
-        ;;
       progress)
         PROGRESS=yes
         INIT_ARGS="$INIT_ARGS --show-status=1"
+        ;;
+      nofsck)
+        RUN_FSCK=no
         ;;
       nosplash)
         SPLASH=no
@@ -337,23 +351,6 @@
     umount /sysroot
   }
 
-  hfsdiskprep() {
-    for DEVICE in $(/bin/busybox blkid /dev/sd* | sed -e "s,\",,g"| grep $boot); do
-      for device in $(/bin/busybox blkid $DEVICE); do
-        case $device in
-          TYPE=*)
-            FS_TYPE=${device#TYPE=}
-            ;;
-        esac
-      done
-
-      if [ "$FS_TYPE" = "\"hfs\"" -o "$FS_TYPE" = "\"hfsplus\"" ]; then
-        progress "check filesystem $DEVICE [$FS_TYPE]..."
-        /bin/fsck_hfs -r -y $DEVICE >&$SILENT_OUT 2>&1
-      fi
-    done
-  }
-
   load_modules() {
     progress "Loading kernel modules"
 
@@ -397,23 +394,83 @@
     fi
   }
 
-  check_disks() {
-    progress "Checking disks"
+  do_reboot() {
+    echo "System reboots now..."
 
-    if [ -x /bin/fsck_hfs ]; then
-      # deal with hfs partitions
-      hfsdiskprep
+    # syncing filesystem
+      sync
+
+    # unmount filesystems
+      if /bin/busybox mountpoint -q /flash ; then
+         /bin/busybox umount /flash
+      fi
+
+      if /bin/busybox mountpoint -q /storage ; then
+        /bin/busybox umount /storage
+      fi
+
+    usleep 2000000
+    /bin/busybox reboot
+  }
+
+  check_disks() {
+    if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
+      progress "Checking disk(s): $RUN_FSCK_DISKS"
+        /sbin/fsck -T -M -p -a $RUN_FSCK_DISKS > /dev/null 2>&1
+        FSCK_RET="$?"
+
+        case "$FSCK_RET" in
+          0) # no errors found
+            progress "no filesystem errors found, continuing..."
+            ;;
+          1) # filesystem errors corrected
+            progress "filesystem errors corrected , continuing..."
+            ;;
+          2) # reboot needed
+            echo "filesystem repaired, reboot needed..."
+            do_reboot
+            ;;
+          4) # errors left
+            error "could not repair filesystem, dropping to debug shell, try to run 'fsck' manually"
+            do_reboot
+            ;;
+        esac
+    fi
+  }
+
+  wakeonlan() {
+    if [ "$STORAGE_NETBOOT" = "yes" ]; then
+      wol_ip=${disk%:*}
+      wol_ip=${wol_ip#*=}
+    elif [ "$FLASH_NETBOOT" = "yes" ]; then
+      wol_ip=${boot%:*}
+      wol_ip=${wol_ip#*=}
+    else
+      return 0
+    fi
+
+    if [ -n "$wol_ip" -a -n "$wol_mac" -a -n "$wol_wait" ]; then
+      progress "Sending Magic Packet (WOL) if needed"
+
+      if ! ping -q -c 2 "$wol_ip" &>/dev/null; then
+        ether-wake "$wol_mac"
+        sleep "$wol_wait"
+      fi
     fi
   }
 
   mount_flash() {
     progress "Mounting flash"
 
+    wakeonlan
+
     mount_part "$boot" "/flash" "ro,noatime"
   }
 
   mount_storage() {
     progress "Mounting storage"
+
+    wakeonlan
 
     if [ -n "$disk" ]; then
       if [ -n "$OVERLAY" ]; then
@@ -432,7 +489,6 @@
           disk="$target/$OVERLAY_DIR,$options"
         fi
       fi
-
       mount_part "$disk" "/storage" "rw,noatime"
     fi
   }
@@ -527,7 +583,7 @@
           update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
           update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
-          REBOOT="1"
+          do_reboot
         else
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           echo "md5 check failed. normal startup in 30s..."
@@ -541,12 +597,6 @@
         sync
         usleep 30000000
       fi
-    fi
-
-    if test "$REBOOT" -eq "1"; then
-      echo "System reboots now..."
-      usleep 2000000
-      reboot
     fi
   }
 

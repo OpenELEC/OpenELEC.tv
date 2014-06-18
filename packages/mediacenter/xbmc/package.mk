@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="13-482ccd3"
+PKG_VERSION="13-741d614"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -191,7 +191,7 @@ else
 fi
 
 if [ "$AVAHI_DAEMON" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET avahi"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET avahi nss-mdns"
   XBMC_AVAHI="--enable-avahi"
 else
   XBMC_AVAHI="--disable-avahi"
@@ -299,6 +299,11 @@ if [ "$CRYSTALHD" = yes ]; then
   XBMC_CRYSTALHD="--enable-crystalhd"
 else
   XBMC_CRYSTALHD="--disable-crystalhd"
+fi
+
+if [ "$TARGET_ARCH" = "i386" -o "$TARGET_ARCH" = "x86_64" ]; then
+# TODO: hack to for including FM patch on x86, rework this in OpenELEC-5.0
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET ffmpeg"
 fi
 
 export CXX_FOR_BUILD="$HOST_CXX"
@@ -511,4 +516,5 @@ post_install() {
   enable_service xbmc-waitonnetwork.service
   enable_service xbmc.service
   enable_service xbmc-lirc-suspend.service
+  enable_service display-manager.service
 }

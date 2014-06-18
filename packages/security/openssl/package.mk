@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="openssl"
-PKG_VERSION="1.0.1g"
+PKG_VERSION="1.0.1h"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -67,13 +67,13 @@ configure_target() {
               enable-rfc3779 \
               enable-cms \
               enable-md2 \
+              enable-ec \
+              enable-ecdh \
+              enable-ecdsa \
               no-krb5 \
               no-mdc2 \
               no-rc5 \
-              no-ec \
               no-ec2m \
-              no-ecdh \
-              no-ecdsa \
               no-srp \
               $OPENSSL_TARGET
 }

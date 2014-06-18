@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="gnutls"
-PKG_VERSION="3.2.8"
+PKG_VERSION="3.2.15"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -50,6 +50,7 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-hardware-acceleration \
                            --disable-guile \
                            --disable-valgrind-tests \
                            --without-lzo \
+                           --with-nettle-mini \
                            --with-gnu-ld"
 
 post_makeinstall_target() {

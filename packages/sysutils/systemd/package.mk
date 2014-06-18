@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="212"
+PKG_VERSION="214"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="http://www.freedesktop.org/software/systemd/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain attr libcap kmod util-linux glib libgcrypt"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux glib libgcrypt"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -51,17 +51,17 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-ima \
                            --disable-chkconfig \
                            --disable-selinux \
+                           --disable-apparmor \
                            --disable-xz \
-                           --disable-tcpwrap \
                            --disable-pam \
                            --disable-acl \
-                           --disable-xattr \
                            --disable-smack \
                            --disable-gcrypt \
                            --disable-audit \
                            --disable-libcryptsetup \
                            --disable-qrencode \
                            --disable-microhttpd \
+                           --disable-gnutls \
                            --disable-binfmt \
                            --disable-vconsole \
                            --disable-readahead \
@@ -69,25 +69,28 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-quotacheck \
                            --enable-tmpfiles \
                            --disable-randomseed \
-                           --enable-logind \
                            --disable-backlight \
+                           --disable-rfkill \
+                           --enable-logind \
                            --disable-machined \
                            --disable-hostnamed \
                            --disable-timedated \
+                           --disable-timesyncd \
                            --disable-localed \
                            --disable-coredump \
                            --disable-polkit \
-                           --disable-multi-seat-x \
+                           --disable-resolved \
                            --disable-networkd \
                            --disable-efi \
+                           --disable-multi-seat-x \
                            --disable-kdbus \
                            --disable-myhostname \
                            --enable-gudev \
                            --disable-manpages \
+                           --enable-split-usr \
                            --disable-tests \
                            --without-python \
                            --disable-python-devel \
-                           --enable-split-usr \
                            --with-firmware-path=/storage/.config/firmware:/lib/firmware \
                            --with-sysvinit-path= \
                            --with-sysvrcnd-path= \
@@ -111,6 +114,7 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/kernel/install.d
     rm -rf $INSTALL/usr/lib/rpm
     rm  -f $INSTALL/usr/bin/kernel-install
+    rm -rf $INSTALL/etc/xdg
 
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-OUI.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-acpi-vendor.hwdb
@@ -202,6 +206,9 @@ post_makeinstall_target() {
 
 post_install() {
   add_group systemd-journal 190
+
+  add_group systemd-network 193
+  add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
   add_group audio 63
   add_group cdrom 11
