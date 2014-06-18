@@ -40,6 +40,7 @@ configure_target() {
 }
 
 make_target() {
+  sed -i -e "s/   CC = gcc//" ../Makefile.libretro
   make -C .. -f Makefile.libretro
 }
 
