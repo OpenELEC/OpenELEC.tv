@@ -1,7 +1,7 @@
 PKG_NAME="sunxi-tools"
 PKG_VERSION="ed6f796"
 PKG_SITE="https://github.com/cubieboard/sunxi-tools"
-PKG_URL="http://localhost/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_URL="$LAKKA_MIRROR/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="GPL"
