@@ -24,7 +24,7 @@ if [ "$UBOOT_VERSION" = "default" ]; then
 elif [ "$UBOOT_VERSION" = "sunxi" ]; then
   PKG_VERSION="af9f405"
   PKG_SITE="https://github.com/linux-sunxi/u-boot-sunxi"
-  PKG_URL="http://localhost/u-boot-$PKG_VERSION.tar.xz"
+  PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_VERSION="imx6-ed888a1"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
