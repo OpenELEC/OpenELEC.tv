@@ -238,6 +238,8 @@ echo "#########################################################"
     dd if=3rdparty/bootloader/u-boot.imx of="$DISK" bs=1k seek=1 conv=fsync
   elif [ -e "3rdparty/bootloader/SPL" ];then
     dd if=3rdparty/bootloader/SPL of="$DISK" bs=1k seek=1 conv=fsync
+  elif [ -e "3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ];then
+    dd if=3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8
   else
      echo "ERROR: no bootloader image found!! please execute in archive folder"
   fi
@@ -247,7 +249,7 @@ echo "#########################################################"
   cp target/KERNEL $MOUNTPOINT
   cp target/SYSTEM $MOUNTPOINT
   cp 3rdparty/bootloader/* $MOUNTPOINT
-  cp openelec.ico $MOUNTPOINT
+  cp lakka.ico $MOUNTPOINT
   cp README.md $MOUNTPOINT
 
 # sync disk
@@ -257,10 +259,6 @@ echo "#########################################################"
 # unmount partition
   echo "unmounting partition $MOUNTPOINT ..."
   umount $MOUNTPOINT
-
-# u-boot
-  echo "installing bootloader on $DISK"
-  dd if=3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8
 
 # cleaning
   echo "cleaning tempdir..."
