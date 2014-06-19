@@ -20,7 +20,7 @@ PKG_NAME="linux"
 case "$LINUX" in
   linux-sun7i)
     PKG_VERSION="e37d760"
-    PKG_URL="http://localhost/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
     PKG_VERSION="cuboxi-592b2d9"
