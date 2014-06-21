@@ -22,6 +22,10 @@ case "$LINUX" in
     PKG_VERSION="e37d760"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
+  wandboard)
+    PKG_VERSION="4a8ad4e"
+    PKG_URL="http://mirror.r0x0r.me/openelec/wandboard/linux/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   imx6)
     PKG_VERSION="cuboxi-592b2d9"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"

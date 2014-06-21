@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib"
+PKG_DEPENDS_TARGET="toolchain alsa-lib freetype"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -38,6 +38,8 @@ if [ "$PROJECT" == "RPi" ]; then
   export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
   export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
   export LDFLAGS="$LDFLAGS -lGLESv2"
+elif [ "$PROJECT" == "WandBoard" ]; then
+  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11"
 fi
 
 pre_configure_target() {
@@ -46,7 +48,11 @@ pre_configure_target() {
 }
 
 configure_target() {
-  ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype
+  if [ "$PROJECT" == "WandBoard" ]; then
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype --enable-gles --enable-neon
+  else
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype
+  fi
 }
 
 makeinstall_target() {
