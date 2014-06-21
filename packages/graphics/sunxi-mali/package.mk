@@ -18,23 +18,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Cubieboard2"
-PKG_VERSION=""
+PKG_NAME="sunxi-mali"
+PKG_VERSION="d343311"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="lima-drm RetroArch snes9x-next retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/linux-sunxi/sunxi-mali"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Cubieboard2"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Sunxi Mali-400 support libraries."
+PKG_LONGDESC="Sunxi Mali-400 support libraries."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
+make_target() {
+  make ABI=armhf VERSION=r3p2-01rel1 EGL_TYPE=framebuffer
+}
+
+pre_makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib
+}

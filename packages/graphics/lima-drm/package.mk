@@ -18,23 +18,31 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Cubieboard2"
-PKG_VERSION=""
+PKG_NAME="lima-drm"
+PKG_VERSION="bd15856"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="lima-drm RetroArch snes9x-next retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/tobiasjakobi/lima-drm"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="sunxi-mali libdrm toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Cubieboard2"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="lima driver with some changes to support output via DRM"
+PKG_LONGDESC="lima driver with some changes to support output via DRM"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
+export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/libdrm"
+
+make_target() {
+  sed -i 's:DIRS = limare tools wrap:DIRS = limare:g' Makefile
+  sed -i 's:DIRS = lib tests:DIRS = lib:g' limare/Makefile
+  make
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib
+  cp limare/lib/liblimare.so $INSTALL/usr/lib/
+}

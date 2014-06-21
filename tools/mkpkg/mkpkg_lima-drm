@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,23 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Cubieboard2"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="lima-drm RetroArch snes9x-next retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Cubieboard2"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d lima-drm.git ]; then
+    git clone https://github.com/tobiasjakobi/lima-drm.git lima-drm.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd lima-drm.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
+echo "copying sources..."
+  rm -rf lima-drm-$GIT_REV
+  cp -R lima-drm.git lima-drm-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf lima-drm-$GIT_REV/.git
+  rm lima-drm-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf lima-drm-$GIT_REV.tar.xz lima-drm-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf lima-drm-$GIT_REV
