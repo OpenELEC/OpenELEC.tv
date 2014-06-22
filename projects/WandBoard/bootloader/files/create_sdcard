@@ -238,7 +238,7 @@ echo "#########################################################"
   cp target/SYSTEM $MOUNTPOINT
   cp 3rdparty/bootloader/* $MOUNTPOINT
   rm -f $MOUNTPOINT/u-boot.imx
-  cp openelec.ico $MOUNTPOINT
+  cp lakka.ico $MOUNTPOINT
   cp README.md $MOUNTPOINT
 
 # sync disk
