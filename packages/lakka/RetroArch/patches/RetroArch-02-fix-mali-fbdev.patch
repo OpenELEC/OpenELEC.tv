@@ -1,0 +1,24 @@
+diff -Naur RetroArch/gfx/context/mali_fbdev_ctx.c RetroArch.patch/gfx/context/mali_fbdev_ctx.c
+--- RetroArch/gfx/context/mali_fbdev_ctx.c	2014-06-17 17:45:16.848086508 +0200
++++ RetroArch.patch/gfx/context/mali_fbdev_ctx.c	2014-06-23 14:10:48.022021571 +0200
+@@ -199,7 +199,7 @@
+       EGL_NONE
+    };
+ 
+-   struct fbdev_window window = { width, height };
++   struct mali_native_window window = { width, height };
+    if ((g_egl_surf = eglCreateWindowSurface(g_egl_dpy, g_config, &window, 0)) == EGL_NO_SURFACE)
+    {
+       RARCH_ERR("eglCreateWindowSurface failed.\n");
+diff -Naur RetroArch/Makefile RetroArch.patch/Makefile
+--- RetroArch/Makefile	2014-06-17 17:45:16.788085119 +0200
++++ RetroArch.patch/Makefile	2014-06-23 14:16:18.645667337 +0200
+@@ -241,6 +241,8 @@
+ 
+    ifeq ($(HAVE_MALI_FBDEV), 1)
+       OBJ += gfx/context/mali_fbdev_ctx.o
++      DEFINES += $(EGL_CFLAGS)
++      LIBS += $(EGL_LIBS)
+    endif
+ 
+    ifeq ($(HAVE_X11), 1)
