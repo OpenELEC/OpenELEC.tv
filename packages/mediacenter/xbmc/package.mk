@@ -274,6 +274,7 @@ if [ ! "$XBMCPLAYER_DRIVER" = default ]; then
     XBMC_CODEC="--enable-codec=imxvpu"
   elif [ "$XBMCPLAYER_DRIVER" = libamplayer ]; then
     XBMC_CODEC="--enable-codec=amcodec"
+    XBMC_NEON="--enable-neon"
   else
     XBMC_OPENMAX="--disable-openmax"
   fi
@@ -376,6 +377,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_BLURAY \
                            --enable-texturepacker --with-texturepacker-root="$ROOT/$TOOLCHAIN" \
                            --disable-external-libraries \
+                           $XBMC_NEON \
                            $XBMC_CODEC \
                            $XBMC_PLAYER"
 
