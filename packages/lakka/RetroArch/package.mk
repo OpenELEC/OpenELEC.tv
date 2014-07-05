@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib"
+PKG_DEPENDS_TARGET="toolchain alsa-lib freetype"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -47,7 +47,7 @@ pre_configure_target() {
 
 configure_target() {
   if [ "$PROJECT" == "Cubieboard2" ]; then
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype
   else
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka
   fi
