@@ -36,7 +36,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make ABI=armhf VERSION=r3p2-01rel1 EGL_TYPE=framebuffer
+  make ABI=armhf VERSION=r3p0 EGL_TYPE=framebuffer
 }
 
 pre_makeinstall_target() {
