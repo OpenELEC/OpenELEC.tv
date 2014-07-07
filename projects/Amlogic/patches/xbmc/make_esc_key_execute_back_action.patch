@@ -1,5 +1,5 @@
 diff --git a/system/keymaps/keyboard.xml b/system/keymaps/keyboard.xml
-index 45682a2..c6e0ac2 100644
+index 45682a2..74fbd13 100644
 --- a/system/keymaps/keyboard.xml
 +++ b/system/keymaps/keyboard.xml
 @@ -57,7 +57,7 @@
@@ -11,3 +11,11 @@ index 45682a2..c6e0ac2 100644
        <i>Info</i>
        <menu>ContextMenu</menu>
        <c>ContextMenu</c>
+@@ -167,6 +167,7 @@
+   <VirtualKeyboard>
+     <keyboard>
+       <backspace>Backspace</backspace>
++      <escape>PreviousMenu</escape>
+     </keyboard>
+   </VirtualKeyboard>
+   <MyTV>
