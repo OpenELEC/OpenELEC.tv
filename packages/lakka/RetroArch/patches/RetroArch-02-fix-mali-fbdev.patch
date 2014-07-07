@@ -1,6 +1,15 @@
 diff -Naur RetroArch/gfx/context/mali_fbdev_ctx.c RetroArch.patch/gfx/context/mali_fbdev_ctx.c
 --- RetroArch/gfx/context/mali_fbdev_ctx.c	2014-06-17 17:45:16.848086508 +0200
-+++ RetroArch.patch/gfx/context/mali_fbdev_ctx.c	2014-06-23 14:10:48.022021571 +0200
++++ RetroArch.patch/gfx/context/mali_fbdev_ctx.c	2014-07-06 14:00:44.887542640 +0200
+@@ -189,7 +189,7 @@
+    if (!width || !fullscreen)
+       width = 1280;
+    if (!height || !fullscreen)
+-      height = 720;
++      height = 1024;
+ 
+    g_width = width;
+    g_height = height;
 @@ -199,7 +199,7 @@
        EGL_NONE
     };
