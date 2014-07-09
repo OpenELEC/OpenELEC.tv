@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
@@ -17,15 +16,24 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# creating initial settings file
-  if [ ! -f /storage/.cache/connman/settings ]; then
-    mkdir -p /storage/.cache/connman
-      cp /usr/share/connman/settings /storage/.cache/connman
-  fi
+PKG_NAME="libevdev"
+PKG_VERSION="1.2.2"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.freedesktop.org/wiki/Software/libevdev/"
+PKG_URL="http://www.freedesktop.org/software/libevdev/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="system"
+PKG_SHORTDESC="libevdev: a wrapper library for evdev devices."
+PKG_LONGDESC="libevdev is a wrapper library for evdev devices. it moves the common tasks when dealing with evdev devices into a library and provides a library interface to the callers, thus avoiding erroneous ioctls, etc."
 
-# set variable for connman main.conf location
-  if [ -f /storage/.config/connman_main.conf ]; then
-    export CONNMAN_MAIN="--config=/storage/.config/connman_main.conf"
-  else
-    export CONNMAN_MAIN="--config=/etc/connman/main.conf"
-  fi
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static"
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr/bin
+}
