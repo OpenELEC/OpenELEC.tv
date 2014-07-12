@@ -237,16 +237,22 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     fi
 
     echo "image: installing u-boot bootloader..."
-    if [ "$RELEASE_DIR/3rdparty/bootloader/SPL" ]; then
+    if [ -e "$RELEASE_DIR/3rdparty/bootloader/SPL" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/SPL" of="$DISK" bs=512 seek=2 conv=notrunc
-    elif [ "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
+    elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+    elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
+      dd if=$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8 conv=notrunc
     fi
 
     echo "image: copying files to part1..."
     cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/KERNEL"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
     cp $RELEASE_DIR/3rdparty/bootloader/u-boot.img "$OE_TMP"
+
+    if [ -f "$RELEASE_DIR/3rdparty/bootloader/script.bin" ]; then
+      cp $RELEASE_DIR/3rdparty/bootloader/script.bin "$OE_TMP"
+    fi
 
     for dtb in $(ls $RELEASE_DIR/3rdparty/bootloader/*.dtb) ; do
       cp "$dtb" "$OE_TMP"

@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,25 +18,27 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d linux-sunxi.git ]; then
-    git clone git://github.com/linux-sunxi/linux-sunxi.git -b stage/sunxi-3.4 linux-sunxi.git
-  fi
+PKG_NAME="sunxi-mali"
+PKG_VERSION="d343311"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="nonfree"
+PKG_SITE="https://github.com/linux-sunxi/sunxi-mali"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="libump"
+PKG_PRIORITY="optional"
+PKG_SECTION="graphics"
+PKG_SHORTDESC="Sunxi Mali-400 support libraries."
+PKG_LONGDESC="Sunxi Mali-400 support libraries."
 
-  cd linux-sunxi.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf linux-$GIT_REV
-  cp -R linux-sunxi.git linux-$GIT_REV
+make_target() {
+  make ABI=armhf VERSION=r3p0 EGL_TYPE=framebuffer
+}
 
-echo "cleaning sources..."
-  rm -rf linux-$GIT_REV/.git
-
-echo "packing sources..."
-  tar cvJf linux-$GIT_REV.tar.xz linux-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf linux-$GIT_REV
+pre_makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib
+}

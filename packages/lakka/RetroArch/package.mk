@@ -46,7 +46,11 @@ pre_configure_target() {
 }
 
 configure_target() {
-  ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype
+  if [ "$PROJECT" == "Cubieboard2" ]; then
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype
+  else
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka
+  fi
 }
 
 makeinstall_target() {

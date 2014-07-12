@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,25 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d linux-sunxi.git ]; then
-    git clone git://github.com/linux-sunxi/linux-sunxi.git -b stage/sunxi-3.4 linux-sunxi.git
-  fi
+PKG_NAME="libump"
+PKG_VERSION="ec06806"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="Apache2"
+PKG_SITE="https://github.com/linux-sunxi/libump"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="graphics"
+PKG_SHORTDESC="Unified Memory Provider userspace API source code needed for xf86-video-mali compilation"
+PKG_LONGDESC="Unified Memory Provider userspace API source code needed for xf86-video-mali compilation"
 
-  cd linux-sunxi.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
 
-echo "copying sources..."
-  rm -rf linux-$GIT_REV
-  cp -R linux-sunxi.git linux-$GIT_REV
-
-echo "cleaning sources..."
-  rm -rf linux-$GIT_REV/.git
-
-echo "packing sources..."
-  tar cvJf linux-$GIT_REV.tar.xz linux-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf linux-$GIT_REV

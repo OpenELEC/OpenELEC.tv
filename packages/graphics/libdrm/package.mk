@@ -40,7 +40,7 @@ configure_target() {
 
   get_graphicdrivers
 
-  DRM_CONFIG="--disable-libkms --disable-intel --disable-radeon"
+  DRM_CONFIG="--disable-kms --disable-intel --disable-radeon"
   DRM_CONFIG="$DRM_CONFIG --disable-nouveau --disable-vmwgfx"
 
   for drv in $GRAPHIC_DRIVERS; do

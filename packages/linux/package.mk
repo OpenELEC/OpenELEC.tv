@@ -19,7 +19,7 @@
 PKG_NAME="linux"
 case "$LINUX" in
   linux-sun7i)
-    PKG_VERSION="e37d760"
+    PKG_VERSION="6ce48b3"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)

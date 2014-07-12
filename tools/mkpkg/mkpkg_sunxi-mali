@@ -20,24 +20,27 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d linux-sunxi.git ]; then
-    git clone git://github.com/linux-sunxi/linux-sunxi.git -b stage/sunxi-3.4 linux-sunxi.git
+  if [ ! -d sunxi-mali.git ]; then
+    git clone https://github.com/linux-sunxi/sunxi-mali.git -b master sunxi-mali.git
   fi
 
-  cd linux-sunxi.git
+  cd sunxi-mali.git
     git pull
+    git submodule init
+    git submodule update
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf linux-$GIT_REV
-  cp -R linux-sunxi.git linux-$GIT_REV
+  rm -rf sunxi-mali-$GIT_REV
+  cp -R sunxi-mali.git sunxi-mali-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf linux-$GIT_REV/.git
+  rm -rf sunxi-mali-$GIT_REV/.git
+  rm sunxi-mali-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf linux-$GIT_REV.tar.xz linux-$GIT_REV
+  tar cvJf sunxi-mali-$GIT_REV.tar.xz sunxi-mali-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf linux-$GIT_REV
+  rm -rf sunxi-mali-$GIT_REV

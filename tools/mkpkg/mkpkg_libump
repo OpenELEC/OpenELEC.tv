@@ -20,24 +20,25 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d linux-sunxi.git ]; then
-    git clone git://github.com/linux-sunxi/linux-sunxi.git -b stage/sunxi-3.4 linux-sunxi.git
+  if [ ! -d libump.git ]; then
+    git clone https://github.com/linux-sunxi/libump.git libump.git
   fi
 
-  cd linux-sunxi.git
+  cd libump.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf linux-$GIT_REV
-  cp -R linux-sunxi.git linux-$GIT_REV
+  rm -rf libump-$GIT_REV
+  cp -R libump.git libump-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf linux-$GIT_REV/.git
+  rm -rf libump-$GIT_REV/.git
+  rm libump-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf linux-$GIT_REV.tar.xz linux-$GIT_REV
+  tar cvJf libump-$GIT_REV.tar.xz libump-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf linux-$GIT_REV
+  rm -rf libump-$GIT_REV
