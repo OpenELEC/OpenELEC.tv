@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="xorg-server"
-PKG_VERSION="1.15.1"
+PKG_VERSION="1.15.99.904"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/xserver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto scrnsaverproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto glproto presentproto libpciaccess libX11 libXfont libXinerama libxshmfence libxkbfile libdrm openssl freetype pixman fontsproto systemd xorg-launch-helper"
+PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto scrnsaverproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto glproto presentproto libpciaccess libX11 libXfont libXinerama libxshmfence libxkbfile libdrm openssl freetype pixman fontsproto libepoxy systemd xorg-launch-helper"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/xserver"
 PKG_SHORTDESC="xorg-server: The Xorg X server"
@@ -85,7 +85,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --enable-dpms \
                            --enable-config-udev \
                            --enable-config-udev-kms \
-                           --disable-config-dbus \
                            --disable-config-hal \
                            --disable-config-wscons \
                            --enable-xfree86-utils \
@@ -98,6 +97,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --enable-pciaccess \
                            --enable-linux-acpi \
                            --enable-linux-apm \
+                           --disable-systemd-logind \
                            --enable-xorg \
                            --disable-dmx \
                            --disable-xvfb \
@@ -105,6 +105,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --disable-xquartz \
                            --disable-standalone-xpbproxy \
                            --disable-xwin \
+                           --enable-glamor \
                            --disable-kdrive \
                            --disable-xephyr \
                            --disable-xfake \
@@ -125,6 +126,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --with-int10=x86emu \
                            --with-gnu-ld \
                            --with-sha1=libcrypto \
+                           --without-systemd-daemon \
                            --with-os-vendor=OpenELEC.tv \
                            --with-module-dir=$XORG_PATH_MODULES \
                            --with-xkb-path=$XORG_PATH_XKB \
