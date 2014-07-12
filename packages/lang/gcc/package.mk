@@ -17,7 +17,16 @@
 ################################################################################
 
 PKG_NAME="gcc"
-PKG_VERSION="4.7.4"
+
+case "$PROJECT" in
+  Amlogic)
+    PKG_VERSION="4.7.4"
+    ;;
+  *)
+    PKG_VERSION="4.9.0"
+    ;;
+esac
+
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
