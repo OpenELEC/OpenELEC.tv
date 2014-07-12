@@ -40,9 +40,8 @@ configure_target() {
 
   get_graphicdrivers
 
-  DRM_CONFIG="--disable-intel --disable-radeon"
+  DRM_CONFIG="--disable-kms --disable-intel --disable-radeon"
   DRM_CONFIG="$DRM_CONFIG --disable-nouveau --disable-vmwgfx"
-  DRM_CONFIG="$DRM_CONFIG --enable-exynos-experimental-api --disable-exynos-tests"
 
   for drv in $GRAPHIC_DRIVERS; do
     [ "$drv" = "i915" -o "$drv" = "i965" ] && \
