@@ -16,25 +16,20 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="glamor-egl"
-PKG_VERSION="0.6.0"
+PKG_NAME="libepoxy"
+PKG_VERSION="b2ae054"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://cgit.freedesktop.org/xorg/driver/glamor/"
-PKG_URL="http://cgit.freedesktop.org/xorg/driver/glamor/snapshot/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain Mesa xorg-server libdrm"
+PKG_SITE="https://github.com/anholt/libepoxy"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain Mesa"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
-PKG_SHORTDESC="glamor-egl: OpenGL based 2D rendering acceleration library"
-PKG_LONGDESC="glamor-egl is a OpenGL based 2D rendering acceleration library"
+PKG_SHORTDESC="libepoxy: a library for handling OpenGL function pointer management for you."
+PKG_LONGDESC="Epoxy is a library for handling OpenGL function pointer management for you."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-glamor-gles2 --enable-xv --disable-glamor-dri3 --enable-glx-tls"
-
-pre_configure_target() {
-  # glamor-egl fails to build with GOLD if we build with --enable-glx-tls
-  strip_gold
-}
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
