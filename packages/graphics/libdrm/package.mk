@@ -32,11 +32,6 @@ PKG_LONGDESC="The userspace interface library to kernel DRM services."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-#pre_makeinstall_target() {
-#  mkdir -p $INSTALL/usr/include/libdrm/
-#  cp ../exynos/exynos_drm.h $INSTALL/usr/include/libdrm/
-#}
-
 configure_target() {
 # overwrite default configure_target() to support $(kernel_path)
 
