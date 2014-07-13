@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Boot with performance governor, then switch to ondemand
+CPU=/sys/devices/system/cpu
+for i in $CPU/cpu0/cpufreq $CPU/cpu1/cpufreq; do
+    echo "ondemand" > $i/scaling_governor
+    echo "200000" > $i/scaling_min_freq
+    echo "1200000" > $i/scaling_max_freq
+done
