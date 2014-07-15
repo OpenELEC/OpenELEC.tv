@@ -38,3 +38,11 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-shared \
             --disable-debug-log \
             --enable-udev \
             --disable-examples-build"
+
+PKG_CONFIGURE_OPTS_HOST="--enable-shared \
+            --enable-static \
+            --disable-log \
+            --disable-debug-log \
+            --disable-udev \
+            --disable-examples-build"
+
