@@ -1,6 +1,6 @@
 # Lakka - The DIY retro emulation console
 
-Lakka is a lightweight Linux distribution that transforms a credit card sized computer into a full blown emulation console.
+Lakka is a lightweight Linux distribution that transforms a small computer into a full blown emulation console.
 
 ## Features
 
