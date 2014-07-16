@@ -226,7 +226,7 @@
 # build and install diskmounter support (udevil)
 # this service provide auto mounting support for external drives in the
 # mediacenter also automount internally drives at boottime via udev (yes / no)
-  UDEVIL="yes"
+  UDEVIL="no"
 
 # build and install exFAT fuse support (yes / no)
   EXFAT="yes"
