@@ -31,6 +31,12 @@ if [ -n "$PKG_URL" ]; then
   for i in $PKG_URL; do
     SOURCE_NAME="`basename $i`"
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
+
+    # no download if package is already present
+    if [ -f "$PACKAGE" ]; then
+      continue
+    fi
+
     PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
     [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
     WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
