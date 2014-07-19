@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="tvheadend"
-PKG_VERSION="3.9.1050"
+PKG_VERSION="3.9.1085"
 PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -36,6 +36,9 @@ PKG_AUTORECONF="no"
 pre_build_target() {
   mkdir -p $PKG_BUILD/.$TARGET_NAME
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$TARGET_NAME
+  # Copy git repository as well. It is needed during tvheadend build 
+  # to determine version number (see script tvheadend/support/version)
+  cp -RP $PKG_BUILD/.git* $PKG_BUILD/.$TARGET_NAME
 }
 
 configure_target() {
