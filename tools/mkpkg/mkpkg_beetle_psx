@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,28 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="mednafen-psx"
-PKG_VERSION="ef13654"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/libretro/mednafen-libretro"
-PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="RetroArch"
-PKG_SHORTDESC="libretro implementation of Mednafen PSX. (Playstation)"
-PKG_LONGDESC="libretro implementation of Mednafen PSX. (Playstation)"
+echo "getting sources..."
+  if [ ! -d beetle-psx.git ]; then
+    git clone https://github.com/libretro/beetle-psx-libretro.git -b master beetle-psx.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd beetle-psx.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-make_target() {
-  make core=psx
-}
+echo "copying sources..."
+  rm -rf beetle-psx-$GIT_REV
+  cp -R beetle-psx.git beetle-psx-$GIT_REV
 
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp mednafen_psx_libretro.so $INSTALL/usr/lib/libretro/
-}
+echo "cleaning sources..."
+  rm -rf beetle-psx-$GIT_REV/.git
+  rm beetle-psx-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf beetle-psx-$GIT_REV.tar.xz beetle-psx-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf beetle-psx-$GIT_REV
