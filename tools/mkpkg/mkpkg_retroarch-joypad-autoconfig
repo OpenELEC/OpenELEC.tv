@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d retroarch-joypad-autoconfig.git ]; then
-    git clone https://github.com/Niouby/retroarch-joypad-autoconfig.git -b master retroarch-joypad-autoconfig.git
+    git clone https://github.com/libretro/retroarch-joypad-autoconfig.git retroarch-joypad-autoconfig.git
   fi
 
   cd retroarch-joypad-autoconfig.git
