@@ -19,13 +19,13 @@
 ################################################################################
 
 PKG_NAME="RetroArch"
-PKG_VERSION="270bb93"
+PKG_VERSION="b320225"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib freetype"
+PKG_DEPENDS_TARGET="toolchain alsa-lib freetype retroarch-assets"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -55,8 +55,6 @@ configure_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
-  mkdir -p $INSTALL/usr/share/retroarch/lakka
-    cp $ROOT/$PKG_BUILD/media/lakka/* $INSTALL/usr/share/retroarch/lakka
   mkdir -p $INSTALL/etc
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
@@ -72,24 +70,20 @@ makeinstall_target() {
   sed -i -e "s/# screenshot_directory =/screenshot_directory =\/storage\/screenshots/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_shader_dir =/video_shader_dir =\/storage\/shaders/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# config_save_on_exit = false/config_save_on_exit = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# assets_directory =/assets_directory =\/usr\/share\/retroarch/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"lakka\"/" $INSTALL/etc/retroarch.cfg
   
   # Video
   sed -i -e "s/# video_fullscreen = false/video_fullscreen = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_smooth = true/video_smooth = false/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# video_force_aspect = true/video_force_aspect = true/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# video_aspect_ratio =/video_aspect_ratio = 1.7777777/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_aspect_ratio_auto = false/video_aspect_ratio_auto = true/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# video_vsync = true/video_vsync = false/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_vsync = true/video_vsync = false/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_font_path =/video_font_path =\/usr\/share\/fonts\/liberation\/LiberationSans-Regular.ttf/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_font_size = 48/video_font_size = 32/" $INSTALL/etc/retroarch.cfg
   
   # Input
   sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
-  #sed -i -e "s/# input_joypad_driver =/input_joypad_driver = udev/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# input_autodetect_enable = true/input_autodetect_enable = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# joypad_autoconfig_dir =/joypad_autoconfig_dir = \/etc\/retroarch-joypad-autoconfig/" $INSTALL/etc/retroarch.cfg
   
