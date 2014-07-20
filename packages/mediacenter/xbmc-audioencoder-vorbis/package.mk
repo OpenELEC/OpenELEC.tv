@@ -16,30 +16,29 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libXfont"
-PKG_VERSION="1.5.0"
+PKG_NAME="xbmc-audioencoder-vorbis"
+PKG_VERSION="143d10d"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="OSS"
-PKG_SITE="http://www.X.org"
-PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros fontcacheproto fontsproto xtrans freetype libfontenc"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.xbmc.org/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain libogg libvorbis"
 PKG_PRIORITY="optional"
-PKG_SECTION="x11/lib"
-PKG_SHORTDESC="libxfont: X font Library"
-PKG_LONGDESC="X font Library"
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="xbmc-audioencoder-vorbis: A audioencoder addon for XBMC"
+PKG_LONGDESC="xbmc-audioencoder-vorbis is a audioencoder addon for XBMC"
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
-                           --disable-ipv6 \
-                           --enable-freetype \
-                           --enable-builtins \
-                           --disable-pcfformat \
-                           --disable-bdfformat \
-                           --disable-snfformat \
-                           --enable-fc \
-                           --with-gnu-ld \
-                           --without-xmlto"
-
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/xbmc \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        -DOGG_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
+        -DVORBIS_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
+        -DVORBISENC_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
+        ..
+}

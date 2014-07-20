@@ -16,24 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="nasm"
-PKG_VERSION="2.11.02"
+PKG_NAME="xbmc-audioencoder-wav"
+PKG_VERSION="91a2b72"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://nasm.sourceforge.net/"
-PKG_URL="http://www.nasm.us/pub/nasm/releasebuilds/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_HOST=""
+PKG_SITE="http://www.xbmc.org/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="lang"
-PKG_SHORTDESC="nasm: A 80x86 assembler which can create a wide rande of object formats"
-PKG_LONGDESC="The Netwide Assembler, NASM, is an 80x86 assembler designed for portability and modularity. It supports a range of object file formats, including Linux, Microsoft 16-bit OBJ and Win32. It will also output plain binary files. Its syntax is designed to be sim- ple and easy to understand, similar to Intel's but less complex. It supports Pentium, P6 and MMX opcodes, and has macro capability. It includes a disassembler as well."
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="xbmc-audioencoder-wav: A audioencoder addon for XBMC"
+PKG_LONGDESC="xbmc-audioencoder-wav is a audioencoder addon for XBMC"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_configure_host() {
-# nasm fails to build in subdirs
-  cd $ROOT/$PKG_BUILD
-    rm -rf .$HOST_NAME
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/xbmc \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        ..
 }

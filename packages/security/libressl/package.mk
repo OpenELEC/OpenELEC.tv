@@ -16,30 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libXfont"
-PKG_VERSION="1.5.0"
+PKG_NAME="libressl"
+PKG_VERSION="2.0.2"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="OSS"
-PKG_SITE="http://www.X.org"
-PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros fontcacheproto fontsproto xtrans freetype libfontenc"
+PKG_LICENSE="BSD"
+PKG_SITE="http://www.libressl.org/"
+PKG_URL="http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="x11/lib"
-PKG_SHORTDESC="libxfont: X font Library"
-PKG_LONGDESC="X font Library"
+PKG_SECTION="security"
+PKG_SHORTDESC="libressl: a FREE version of the SSL/TLS protocol forked from OpenSSL"
+PKG_LONGDESC="LibreSSL is a FREE version of the SSL/TLS protocol forked from OpenSSL"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
-                           --disable-ipv6 \
-                           --enable-freetype \
-                           --enable-builtins \
-                           --disable-pcfformat \
-                           --disable-bdfformat \
-                           --disable-snfformat \
-                           --enable-fc \
-                           --with-gnu-ld \
-                           --without-xmlto"
-
+post_makeinstall_target() {
+# ca-certification: provides a tool to download and create ca-bundle.crt
+# download url: http://curl.haxx.se
+# create new cert: perl ./mk-ca-bundle.pl
+  mkdir -p $INSTALL/$SSL_CERTIFICATES
+    cp $PKG_DIR/cert/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cacert.pem
+}
