@@ -2,9 +2,6 @@
 Description=Retroarch
 After=graphical.target
 Requires=graphical.target
-#After=basic.target
-#Requires=basic.target
-
 
 [Service]
 Environment=DISPLAY=:0.0
