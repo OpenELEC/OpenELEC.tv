@@ -95,5 +95,6 @@ post_install() {
   # link default.target to retroarch.target
   ln -sf retroarch.target $INSTALL/usr/lib/systemd/system/default.target
   
+  enable_service retroarch-autostart.service
   enable_service retroarch.service
 }
