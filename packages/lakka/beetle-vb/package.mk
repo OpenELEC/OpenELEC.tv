@@ -18,12 +18,12 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="mednafen-vb"
-PKG_VERSION="c520e08"
+PKG_NAME="beetle-vb"
+PKG_VERSION="727ee02"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/libretro/mednafen-libretro"
+PKG_SITE="https://github.com/libretro/beetle-vb-libretro"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
@@ -34,10 +34,6 @@ PKG_LONGDESC="libretro implementation of Mednafen VB. (VirtualBoy)"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-make_target() {
-  make core=vb
-}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
