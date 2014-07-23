@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,38 +19,25 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="repository.unofficial.addon.pro"
-PKG_VERSION="4.3.0"
-PKG_REV="0"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://unofficial.addon.pro"
-PKG_URL=""
-PKG_DEPENDS_TARGET=""
-PKG_PRIORITY="optional"
-PKG_SECTION=""
-PKG_SHORTDESC="Unfficial OpenELEC.tv Add-on Repository"
-PKG_LONGDESC="Unfficial OpenELEC.tv Add-on Repository"
+echo "getting sources..."
+  if [ ! -d xbmc-audioencoder-lame.git ]; then
+    git clone https://github.com/xbmc/audioencoder.lame.git -b master xbmc-audioencoder-lame.git
+  fi
 
-PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.addon.repository"
+  cd xbmc-audioencoder-lame.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-PKG_AUTORECONF="no"
+echo "copying sources..."
+  rm -rf xbmc-audioencoder-lame-$GIT_REV
+  cp -R xbmc-audioencoder-lame.git xbmc-audioencoder-lame-$GIT_REV
 
-PKG_MAINTAINER="unofficial.addon.pro"
+echo "cleaning sources..."
+  rm -rf xbmc-audioencoder-lame-$GIT_REV/.git
 
-make_target() {
-  $SED -e "s|@ADDON_VERSION@|$ADDON_VERSION|g" \
-     -e "s|@PROJECT@|$PROJECT|g" \
-     -e "s|@ARCH@|$ARCH|g" \
-  -i addon.xml
-}
+echo "packing sources..."
+  tar cvJf xbmc-audioencoder-lame-$GIT_REV.tar.xz xbmc-audioencoder-lame-$GIT_REV
 
-makeinstall_target() {
-  : # nop
-}
-
-addon() {
-  mkdir -p $ADDON_BUILD/$PKG_ADDON_ID
-  cp -R $PKG_BUILD/* $ADDON_BUILD/$PKG_ADDON_ID
-}
+echo "remove temporary sourcedir..."
+  rm -rf xbmc-audioencoder-lame-$GIT_REV

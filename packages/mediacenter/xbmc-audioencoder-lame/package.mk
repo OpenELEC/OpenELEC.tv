@@ -16,29 +16,27 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="faad2"
-PKG_VERSION="2.7"
+PKG_NAME="xbmc-audioencoder-lame"
+PKG_VERSION="736b5f4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.audiocoding.com/"
-PKG_URL="$SOURCEFORGE_SRC/faac/faad2-src/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_SITE="http://www.xbmc.org/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain lame"
 PKG_PRIORITY="optional"
-PKG_SECTION="audio"
-PKG_SHORTDESC="faad: An MPEG-4 AAC decoder"
-PKG_LONGDESC="The FAAD project includes the AAC decoder FAAD2. It supports several MPEG-4 object types (LC, Main, LTP, HE AAC, PS) and file formats (ADTS AAC, raw AAC, MP4), multichannel and gapless decoding as well as MP4 metadata tags. The codecs are compatible with standard-compliant audio applications using one or more of these profiles."
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="xbmc-audioencoder-lame: A audioencoder addon for XBMC"
+PKG_LONGDESC="xbmc-audioencoder-lame is a audioencoder addon for XBMC"
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
 
-# package specific configure options
-PKG_CONFIGURE_OPTS_TARGET="--without-xmms \
-                           --without-drm \
-                           --without-mpeg4ip \
-                           --with-gnu-ld"
-
-
-post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/xbmc \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        -DLAME_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
+        ..
 }

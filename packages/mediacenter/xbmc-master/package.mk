@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="xbmc-master"
-PKG_VERSION="14-dae6f76"
+PKG_VERSION="14-92141a9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.xbmc.org"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi gnutls tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmodplug faad2 flac libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg xbmc-master:host"
+PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi gnutls tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmodplug libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg xbmc-master:host"
 PKG_DEPENDS_HOST="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -175,13 +175,6 @@ fi
 
 if [ "$FAAC_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET faac"
-fi
-
-if [ "$ENCODER_LAME" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lame"
-  XBMC_LAMEENC="--enable-libmp3lame"
-else
-  XBMC_LAMEENC="--disable-libmp3lame"
 fi
 
 if [ "$BLURAY_SUPPORT" = yes ]; then
@@ -348,7 +341,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_AFP \
                            --enable-libvorbisenc \
                            --disable-libcap \
-                           $XBMC_LAMEENC \
                            $XBMC_DVDCSS \
                            --disable-mid \
                            --disable-hal \
