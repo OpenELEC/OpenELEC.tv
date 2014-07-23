@@ -1,5 +1,18 @@
 #!/bin/sh
 
+# Set framebuffer size in CVBS mode to match the resolution,
+# for splash screen to be shown correctly
+hpd_state=$(cat /sys/class/amhdmitx/amhdmitx0/hpd_state)
+if [ "$hpd_state" != "1" ]; then # HDMI is not connected
+  display_height=480
+  display_mode=$(cat /sys/class/display/mode)
+  if [ "$display_mode" = "576cvbs" ]; then
+    display_height=576
+  fi
+  fbset -fb /dev/fb0 -g 720 "$display_height" 720 "$display_height" 32
+  fbset -fb /dev/fb1 -g 720 "$display_height" 720 "$display_height" 32
+fi
+
 # Boot with performance governor, then switch to ondemand
 CPU=/sys/devices/system/cpu
 for i in $CPU/cpu0/cpufreq $CPU/cpu1/cpufreq; do
