@@ -20,25 +20,25 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d mednafen-ngp.git ]; then
-    git clone https://github.com/libretro/mednafen-libretro.git -b master mednafen-ngp.git
+  if [ ! -d beetle-ngp.git ]; then
+    git clone https://github.com/libretro/beetle-ngp-libretro.git -b master beetle-ngp.git
   fi
 
-  cd mednafen-ngp.git
+  cd beetle-ngp.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf mednafen-ngp-$GIT_REV
-  cp -R mednafen-ngp.git mednafen-ngp-$GIT_REV
+  rm -rf beetle-ngp-$GIT_REV
+  cp -R beetle-ngp.git beetle-ngp-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf mednafen-ngp-$GIT_REV/.git
-  rm mednafen-ngp-$GIT_REV/.gitignore
+  rm -rf beetle-ngp-$GIT_REV/.git
+  rm beetle-ngp-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf mednafen-ngp-$GIT_REV.tar.xz mednafen-ngp-$GIT_REV
+  tar cvJf beetle-ngp-$GIT_REV.tar.xz beetle-ngp-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf mednafen-ngp-$GIT_REV
+  rm -rf beetle-ngp-$GIT_REV
