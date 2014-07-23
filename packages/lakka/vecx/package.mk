@@ -35,21 +35,14 @@ PKG_LONGDESC="libretro adaptation of vecx"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_configure_target() {
-  sed -i -e "s/if (CMAKE_BUILD_TYPE STREQUAL \"Libretro\")/if (1)/" ../CMakeLists.txt
-}
-
 configure_target() {
+  cd $ROOT/$PKG_BUILD
   cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
         -DCMAKE_INSTALL_PREFIX=/usr \
-  .. 
+        -DCMAKE_BUILD_TYPE=Libretro
 }
 
-make_target() {
-  :
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp libretro-vecx.so $INSTALL/usr/lib/libretro/vecx_libretro.so
 }
-
-#makeinstall_target() {
-#  mkdir -p $INSTALL/usr/lib/libretro
-#  cp nxengine_libretro.so $INSTALL/usr/lib/libretro/
-#}
