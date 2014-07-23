@@ -18,8 +18,8 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="mednafen-gba"
-PKG_VERSION="be896f2"
+PKG_NAME="beetle-gba"
+PKG_VERSION="bc0b54a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -34,10 +34,6 @@ PKG_LONGDESC="libretro implementation of Mednafen VBA/GBA. (Game Boy Advance)"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-make_target() {
-  make core=gba
-}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
