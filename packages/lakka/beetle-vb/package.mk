@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d mednafen-pcfx.git ]; then
-    git clone https://github.com/libretro/mednafen-libretro.git -b master mednafen-pcfx.git
-  fi
+PKG_NAME="beetle-vb"
+PKG_VERSION="727ee02"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/libretro/beetle-vb-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Mednafen VB. (VirtualBoy)"
+PKG_LONGDESC="libretro implementation of Mednafen VB. (VirtualBoy)"
 
-  cd mednafen-pcfx.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf mednafen-pcfx-$GIT_REV
-  cp -R mednafen-pcfx.git mednafen-pcfx-$GIT_REV
-
-echo "cleaning sources..."
-  rm -rf mednafen-pcfx-$GIT_REV/.git
-  rm mednafen-pcfx-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf mednafen-pcfx-$GIT_REV.tar.xz mednafen-pcfx-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf mednafen-pcfx-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mednafen_vb_libretro.so $INSTALL/usr/lib/libretro/
+}

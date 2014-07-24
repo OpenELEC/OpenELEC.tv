@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d mednafen-gba.git ]; then
-    git clone https://github.com/libretro/mednafen-libretro.git -b master mednafen-gba.git
-  fi
+PKG_NAME="beetle-wswan"
+PKG_VERSION="c3211e3"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/libretro/beetle-wswan-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="libretro implementation of Mednafen wswan"
+PKG_LONGDESC="libretro implementation of Mednafen wswan"
 
-  cd mednafen-gba.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf mednafen-gba-$GIT_REV
-  cp -R mednafen-gba.git mednafen-gba-$GIT_REV
-
-echo "cleaning sources..."
-  rm -rf mednafen-gba-$GIT_REV/.git
-  rm mednafen-gba-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf mednafen-gba-$GIT_REV.tar.xz mednafen-gba-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf mednafen-gba-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mednafen_wswan_libretro.so $INSTALL/usr/lib/libretro/
+}
