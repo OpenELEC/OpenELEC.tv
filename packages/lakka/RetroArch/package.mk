@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="RetroArch"
-PKG_VERSION="fd83a6b"
+PKG_VERSION="9dbb404"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -40,12 +40,8 @@ if [ "$PROJECT" == "RPi" ]; then
   export LDFLAGS="$LDFLAGS -lGLESv2"
 fi
 
-pre_configure_target() {
-  cd $ROOT/$PKG_BUILD
-  rm -rf .$TARGET_NAME
-}
-
 configure_target() {
+  cd $ROOT/$PKG_BUILD
   if [ "$PROJECT" == "Cubieboard2" ]; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype
   else
