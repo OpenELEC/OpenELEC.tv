@@ -1,0 +1,38 @@
+diff -Naur plymouth-lite-0.6.0/ply-frame-buffer.c plymouth-lite-0.6.0.patch/ply-frame-buffer.c
+--- plymouth-lite-0.6.0/ply-frame-buffer.c	2014-07-26 02:02:49.414330498 +0200
++++ plymouth-lite-0.6.0.patch/ply-frame-buffer.c	2014-07-26 02:06:39.630760085 +0200
+@@ -804,16 +804,18 @@
+     area = &buffer->area;
+ 
+ 
+-  for (row = y; row < y + area->height; row++)
++  for (row = area->y; row < area->y + area->height; row++)
+     {
+-      for (column = x; column < x + area->width; column++)
++      for (column = area->x; column < area->x + area->width; column++)
+         {
+-          buffer->shadow_buffer[(row-y) * buffer->area.width -x + column] = data[area->width * row + column];
++          buffer->shadow_buffer[row * buffer->area.width + column] = data[area->width * (row - area->y) + column - area->x];
+ 
+         }
+     }
+ 
+-  ply_frame_buffer_add_area_to_flush_area (buffer, area);
++  ply_frame_buffer_area_t area2;
++  ply_frame_buffer_get_size (buffer, &area2);
++  ply_frame_buffer_add_area_to_flush_area (buffer, &area2);
+ 
+   return ply_frame_buffer_flush (buffer);
+ }
+diff -Naur plymouth-lite-0.6.0/ply-image.c plymouth-lite-0.6.0.patch/ply-image.c
+--- plymouth-lite-0.6.0/ply-image.c	2014-07-26 02:02:49.414330498 +0200
++++ plymouth-lite-0.6.0.patch/ply-image.c	2014-07-26 02:08:18.454454113 +0200
+@@ -465,7 +465,7 @@
+       return exit_code;
+     }
+ 
+-  image = ply_image_resize(image, buffer->area.width, buffer->area.height);
++  //image = ply_image_resize(image, buffer->area.width, buffer->area.height);
+ 
+   animate_at_time (buffer, image);
+ 
