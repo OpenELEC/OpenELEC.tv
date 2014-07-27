@@ -38,14 +38,18 @@ if [ "$PROJECT" == "RPi" ]; then
   export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
   export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
   export LDFLAGS="$LDFLAGS -lGLESv2"
+elif [ "$PROJECT" == "WandBoard" ]; then
+  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gpu-viv-bin-mx6q"
 fi
 
 configure_target() {
   cd $ROOT/$PKG_BUILD
   if [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] ; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype
+  elif [ "$PROJECT" == "WandBoard" ]; then
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-vivante_fbdev --enable-lakka --enable-freetype
   else
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka
+    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype
   fi
 }
 

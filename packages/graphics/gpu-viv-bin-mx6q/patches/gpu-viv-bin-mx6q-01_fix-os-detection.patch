@@ -1,0 +1,24 @@
+diff -Naur gpu-viv-bin-mx6q/hardfp/usr/include/EGL/eglvivante.h gpu-viv-bin-mx6q.patch/hardfp/usr/include/EGL/eglvivante.h
+--- gpu-viv-bin-mx6q/hardfp/usr/include/EGL/eglvivante.h	2013-12-11 14:39:29.000000000 +0100
++++ gpu-viv-bin-mx6q.patch/hardfp/usr/include/EGL/eglvivante.h	2014-06-22 00:20:40.940946835 +0200
+@@ -217,7 +217,7 @@
+     typedef void*                               EGLNativeDisplayType;
+ #endif
+ 
+-#elif defined(LINUX) || defined(__APPLE__)
++#elif defined(LINUX) || defined(__APPLE__) || defined(__linux) || defined(linux)
+ /* X11 platform. */
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>
+diff -Naur gpu-viv-bin-mx6q/softfp/usr/include/EGL/eglvivante.h gpu-viv-bin-mx6q.patch/softfp/usr/include/EGL/eglvivante.h
+--- gpu-viv-bin-mx6q/softfp/usr/include/EGL/eglvivante.h	2013-12-12 10:43:16.000000000 +0100
++++ gpu-viv-bin-mx6q.patch/softfp/usr/include/EGL/eglvivante.h	2014-06-22 00:21:13.681700720 +0200
+@@ -217,7 +217,7 @@
+     typedef void*                               EGLNativeDisplayType;
+ #endif
+ 
+-#elif defined(LINUX) || defined(__APPLE__)
++#elif defined(LINUX) || defined(__APPLE__) || defined(__linux) || defined(linux)
+ /* X11 platform. */
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>

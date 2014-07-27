@@ -29,6 +29,10 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_VERSION="imx6-ed888a1"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+elif [ "$UBOOT_VERSION" = "imx6-wandboard" ]; then
+  PKG_VERSION="2014.04-rc3"
+  PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
+  PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
 fi
 PKG_REV="1"
 PKG_ARCH="arm"
