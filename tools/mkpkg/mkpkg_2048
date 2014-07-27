@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,24 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="Mesa RetroArch 2048 ppsspp dosbox beetle-vb beetle-wswan hatari desmume beetle-ngp beetle-pcfx mame beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine fceu-next gambatte stella vbam libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d 2048.git ]; then
+    git clone https://github.com/libretro/libretro-2048.git -b master 2048.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd 2048.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
+echo "copying sources..."
+  rm -rf 2048-$GIT_REV
+  cp -R 2048.git 2048-$GIT_REV
 
+echo "cleaning sources..."
+  rm -rf 2048-$GIT_REV/.git
+  rm 2048-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf 2048-$GIT_REV.tar.xz 2048-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf 2048-$GIT_REV
