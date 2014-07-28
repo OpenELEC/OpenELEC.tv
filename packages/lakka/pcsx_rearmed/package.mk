@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="pcsx_rearmed"
-PKG_VERSION="9c79adf"
+PKG_VERSION="496d559"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -40,10 +40,17 @@ configure_target() {
 }
 
 make_target() {
-  make -C .. -f Makefile.libretro
+  cd $ROOT/$PKG_BUILD
+  export CORTEX_A9=1
+  export ARM_HARDFLOAT=1
+  export ARM_NEON=1
+  export HAVE_NEON=1
+  export USE_DYNAREC=1
+  export BUILTIN_GPU=neon
+  make -f Makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../pcsx_rearmed_libretro.so $INSTALL/usr/lib/libretro/
+  cp pcsx_rearmed_libretro.so $INSTALL/usr/lib/libretro/
 }
