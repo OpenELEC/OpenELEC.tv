@@ -39,7 +39,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --enable-libuuid \
                            --enable-libblkid \
                            --enable-libmount \
-                           --disable-deprecated-mount \
                            --disable-mount \
                            --enable-fsck \
                            --disable-partx \
@@ -47,14 +46,11 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --disable-mountpoint \
                            --disable-fallocate \
                            --disable-unshare \
-                           --disable-arch \
-                           --disable-ddate \
                            --disable-eject \
                            --disable-agetty \
                            --disable-cramfs \
                            --disable-switch-root \
                            --disable-pivot-root \
-                           --disable-elvtune \
                            --disable-kill \
                            --disable-last \
                            --disable-utmpdump \
@@ -80,10 +76,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --disable-schedutils \
                            --disable-wall \
                            --disable-write \
-                           --disable-chkdupexe \
-                           --disable-socket-activation \
                            --disable-pg-bell \
-                           --disable-require-password \
                            --disable-use-tty-group \
                            --disable-makeinstall-chown \
                            --disable-makeinstall-setuid \
@@ -94,10 +87,17 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --without-ncurses \
                            --without-slang \
                            --without-utempter \
+                           --without-python \
                            --without-systemdsystemunitdir"
 
 PKG_CONFIGURE_OPTS_HOST="$PKG_CONFIGURE_OPTS_TARGET"
-PKG_CONFIGURE_OPTS_INIT="$PKG_CONFIGURE_OPTS_TARGET"
+PKG_CONFIGURE_OPTS_INIT="$PKG_CONFIGURE_OPTS_TARGET --disable-libsmartcols"
+
+if [ "$SWAP_SUPPORT" = "yes" ]; then
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-libsmartcols"
+else
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-libsmartcols"
+fi
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
