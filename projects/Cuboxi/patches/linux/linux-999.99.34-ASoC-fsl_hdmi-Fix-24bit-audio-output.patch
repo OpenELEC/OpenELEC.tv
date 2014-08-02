@@ -1,0 +1,26 @@
+From 7c2c21f2bf72f85c2df9da938466febec9daf8fa Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sat, 12 Jul 2014 16:47:59 +0200
+Subject: [PATCH 2/3] ASoC: fsl_hdmi: Fix 24bit audio output
+
+Since SNDRV_PCM_FORMAT_S24 uses 4 bytes, the constraint needs to be set to 32.
+---
+ sound/soc/fsl/fsl_hdmi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/fsl/fsl_hdmi.c b/sound/soc/fsl/fsl_hdmi.c
+index f190e8c..92b9c7d 100644
+--- a/sound/soc/fsl/fsl_hdmi.c
++++ b/sound/soc/fsl/fsl_hdmi.c
+@@ -301,7 +301,7 @@ static void fsl_hdmi_get_playback_sample_size(void)
+ 	playback_sample_size[i++] = 16;
+ 
+ 	if (edid_cfg.sample_sizes & 0x4)
+-		playback_sample_size[i++] = 24;
++		playback_sample_size[i++] = 32;
+ 
+ 	playback_constraint_bits.list = playback_sample_size;
+ 	playback_constraint_bits.count = i;
+-- 
+1.7.9.5
+

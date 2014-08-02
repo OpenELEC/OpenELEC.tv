@@ -1,0 +1,141 @@
+From 0abecf85bb55ad42f778a64c1aa9679ba31db259 Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sat, 26 Jul 2014 20:57:48 +0200
+Subject: [PATCH] [cuboxi] linux : Add mmap mode for HDMI audio when using
+ 24bit samples
+
+---
+ ...mi-dma-Add-support-for-mmap-mode-when-usi.patch | 121 +++++++++++++++++++++
+ 1 file changed, 121 insertions(+)
+ create mode 100644 config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/90-ASoC-imx-hdmi-dma-Add-support-for-mmap-mode-when-usi.patch
+
+diff --git a/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/90-ASoC-imx-hdmi-dma-Add-support-for-mmap-mode-when-usi.patch b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/90-ASoC-imx-hdmi-dma-Add-support-for-mmap-mode-when-usi.patch
+new file mode 100644
+index 0000000..6321812
+--- /dev/null
++++ b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/90-ASoC-imx-hdmi-dma-Add-support-for-mmap-mode-when-usi.patch
+@@ -0,0 +1,121 @@
++From f37f243210fd4efbb765891972d59ceb56abfde7 Mon Sep 17 00:00:00 2001
++From: Rudi <r.ihle@s-t.de>
++Date: Sat, 26 Jul 2014 20:21:42 +0200
++Subject: [PATCH 5/5] ASoC: imx-hdmi-dma: Add support for mmap mode when using
++ 24bit samples
++
++---
++ sound/soc/fsl/imx-hdmi-dma.c |   61 ++++++++++++++++++++++++++++++++++++------
++ 1 file changed, 53 insertions(+), 8 deletions(-)
++
++diff --git a/sound/soc/fsl/imx-hdmi-dma.c b/sound/soc/fsl/imx-hdmi-dma.c
++index 3af0450..fd42e5c 100644
++--- a/sound/soc/fsl/imx-hdmi-dma.c
+++++ b/sound/soc/fsl/imx-hdmi-dma.c
++@@ -310,32 +310,77 @@ static void hdmi_dma_copy_16_c_fast(u16 *src, u32 *dst, int samples)
++ 	}
++ }
++ 
++-static void hdmi_dma_copy_16(u16 *src, u32 *dst, int framecnt, int channelcnt)
+++static void hdmi_dma_copy_24_c_lut(u32 *src, u32 *dst, int samples,
+++				u8 *lookup_table)
+++{
+++	u32 sample, head;
+++	int i;
+++
+++	for (i = 0; i < samples; i++) {
+++		/* get source sample */
+++		sample = *src++ & 0x00ffffff;
+++
+++		/* get packet header and p-bit */
+++		head = *lookup_table++ ^ (odd_ones(sample) << 3);
+++
+++		/* store sample and header */
+++		*dst++ = (head << 24) | sample;
+++	}
+++}
+++
+++static void hdmi_dma_copy_24_c_fast(u32 *src, u32 *dst, int samples)
+++{
+++	u32 sample;
+++	int i;
+++
+++	for (i = 0; i < samples; i++) {
+++		/* get source sample */
+++		sample = *src++ & 0x00ffffff;
+++
+++		/* store sample and p-bit */
+++		*dst++ = (odd_ones(sample) << (3+24)) | sample;
+++	}
+++}
+++
+++static void hdmi_mmap_copy(u8 *src, int samplesize, u32 *dst, int framecnt, int channelcnt)
++ {
++ 	/* split input frames into 192-frame each */
++ 	int count_in_192 = (framecnt + 191) / 192;
++ 	int i;
++ 
+++	typedef void (*fn_copy_lut)(u8 *src, u32 *dst, int samples, u8 *lookup_table);
+++	typedef void (*fn_copy_fast)(u8 *src, u32 *dst, int samples);
+++	fn_copy_lut copy_lut;
+++	fn_copy_fast copy_fast;
+++
+++	if (samplesize == 4) {
+++		copy_lut = (fn_copy_lut)hdmi_dma_copy_24_c_lut;
+++		copy_fast = (fn_copy_fast)hdmi_dma_copy_24_c_fast;
+++	} else {
+++		copy_lut = (fn_copy_lut)hdmi_dma_copy_16_c_lut;
+++		copy_fast = (fn_copy_fast)hdmi_dma_copy_16_c_fast;
+++	}
+++
++ 	for (i = 0; i < count_in_192; i++) {
++ 		int count, samples;
++ 
++ 		/* handles frame index [0, 48) */
++ 		count = (framecnt < 48) ? framecnt : 48;
++ 		samples = count * channelcnt;
++-		hdmi_dma_copy_16_c_lut(src, dst, samples, g_packet_head_table);
+++		copy_lut(src, dst, samples, g_packet_head_table);
++ 		framecnt -= count;
++ 		if (framecnt == 0)
++ 			break;
++ 
++-		src  += samples;
+++		src  += samples * samplesize;
++ 		dst += samples;
++ 
++ 		/* handles frame index [48, 192) */
++ 		count = (framecnt < 192 - 48) ? framecnt : 192 - 48;
++ 		samples = count * channelcnt;
++-		hdmi_dma_copy_16_c_fast(src, dst, samples);
+++		copy_fast(src, dst, samples);
++ 		framecnt -= count;
++-		src  += samples;
+++		src  += samples * samplesize;
++ 		dst += samples;
++ 	}
++ }
++@@ -348,7 +393,6 @@ static void hdmi_dma_mmap_copy(struct snd_pcm_substream *substream,
++ 	struct hdmi_dma_priv *priv = runtime->private_data;
++ 	struct device *dev = rtd->platform->dev;
++ 	u32 framecount, *dst;
++-	u16 *src16;
++ 
++ 	framecount = count / (priv->sample_align * priv->channels);
++ 
++@@ -357,9 +401,10 @@ static void hdmi_dma_mmap_copy(struct snd_pcm_substream *substream,
++ 
++ 	switch (priv->format) {
++ 	case SNDRV_PCM_FORMAT_S16_LE:
+++	case SNDRV_PCM_FORMAT_S24_LE:
++ 		/* dma_buffer is the mmapped buffer we are copying pcm from. */
++-		src16 = (u16 *)(runtime->dma_area + offset);
++-		hdmi_dma_copy_16(src16, dst, framecount, priv->channels);
+++		hdmi_mmap_copy(runtime->dma_area + offset,
+++			       priv->sample_align, dst, framecount, priv->channels);
++ 		break;
++ 	default:
++ 		dev_err(dev, "unsupported sample format %s\n",
++-- 
++1.7.9.5
++
+-- 
+2.0.3
+

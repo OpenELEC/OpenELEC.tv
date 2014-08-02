@@ -1,0 +1,58 @@
+From c099d4e440b134733e1d55ab0fadc815497c39e8 Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sat, 19 Jul 2014 15:24:32 +0200
+Subject: [PATCH] [cuboxi] linux : Fix SPDIF clock selection for 88.2 and
+ 176.4kHz
+
+---
+ ...-i-hummingboard-fix-spdif-clock-selection.patch | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/993_cubox-i-hummingboard-fix-spdif-clock-selection.patch
+
+diff --git a/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/993_cubox-i-hummingboard-fix-spdif-clock-selection.patch b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/993_cubox-i-hummingboard-fix-spdif-clock-selection.patch
+new file mode 100644
+index 0000000..b337333
+--- /dev/null
++++ b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/993_cubox-i-hummingboard-fix-spdif-clock-selection.patch
+@@ -0,0 +1,38 @@
++--- a/arch/arm/boot/dts/imx6qdl-cubox-i.dtsi	2014-04-22 09:36:27.000000000 +0200
+++++ b/arch/arm/boot/dts/imx6qdl-cubox-i.dtsi	2014-07-19 09:18:57.744595248 +0200
++@@ -248,6 +248,16 @@
++ };
++ 
++ &spdif {
+++	clocks = <&clks 197>, <&clks 0>,
+++		  <&clks 197>, <&clks 0>,
+++		  <&clks 0>,   <&clks 0>,
+++		  <&clks 0>,  <&clks 0>,
+++		  <&clks 0>, <&clks 156>;
+++	clock-names = "core",  "rxtx0",
+++		      "rxtx1", "rxtx2",
+++		      "rxtx3", "rxtx4",
+++		      "rxtx5", "rxtx6",
+++		      "rxtx7", "dma";
++ 	status = "okay";
++ };
++ 
++--- a/arch/arm/boot/dts/imx6dl-hummingboard.dts	2014-04-22 09:36:27.000000000 +0200
+++++ b/arch/arm/boot/dts/imx6dl-hummingboard.dts	2014-07-19 10:50:25.768433095 +0200
++@@ -233,6 +219,16 @@
++ };
++ 
++ &spdif {
+++	clocks = <&clks 197>, <&clks 0>,
+++		  <&clks 197>, <&clks 0>,
+++		  <&clks 0>,   <&clks 0>,
+++		  <&clks 0>,  <&clks 0>,
+++		  <&clks 0>, <&clks 156>;
+++	clock-names = "core",  "rxtx0",
+++		      "rxtx1", "rxtx2",
+++		      "rxtx3", "rxtx4",
+++		      "rxtx5", "rxtx6",
+++		      "rxtx7", "dma";
++ 	status = "okay";
++ };
++ 
+-- 
+2.0.3
+

@@ -1,0 +1,56 @@
+From ceca50e9c17fe1821e9ad933d5bb7fa5397e9e90 Mon Sep 17 00:00:00 2001
+From: Anssi Hannula <anssi.hannula@iki.fi>
+Date: Fri, 6 Jun 2014 22:58:37 +0300
+Subject: [PATCH] ASoC: imx-hdmi: Add support for HBR/HD bitstreaming
+
+Enable HBR mode when the userspace sets 8 channel output with non-PCM
+indicated in PCM status bits (AES0 & 0x02).
+
+HBR mode allows passthrough/bitstreaming of TrueHD/DTS-HD encoded audio.
+
+ALSA needs an appropriate imx-hdmi-soc.conf for most applications to
+automatically set the AESx bits.
+
+Signed-off-by: Anssi Hannula <anssi.hannula@iki.fi>
+---
+ include/video/mxc_hdmi.h     | 3 ++-
+ sound/soc/fsl/imx-hdmi-dma.c | 9 +++++++++
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/include/video/mxc_hdmi.h b/include/video/mxc_hdmi.h
+index e63fde7..703bc1b 100644
+--- a/include/video/mxc_hdmi.h
++++ b/include/video/mxc_hdmi.h
+@@ -910,7 +910,8 @@ enum {
+ /* AHB_DMA_CONF0 field values */
+ 	HDMI_AHB_DMA_CONF0_SW_FIFO_RST_OFFSET = 7,
+ 	HDMI_AHB_DMA_CONF0_SW_FIFO_RST_MASK = 0x80,
+-	HDMI_AHB_DMA_CONF0_HBR = 0x10,
++	HDMI_AHB_DMA_CONF0_HBR_OFFSET = 4,
++	HDMI_AHB_DMA_CONF0_HBR_MASK = 0x10,
+ 	HDMI_AHB_DMA_CONF0_EN_HLOCK_OFFSET = 3,
+ 	HDMI_AHB_DMA_CONF0_EN_HLOCK_MASK = 0x08,
+ 	HDMI_AHB_DMA_CONF0_INCR_TYPE_OFFSET = 1,
+diff --git a/sound/soc/fsl/imx-hdmi-dma.c b/sound/soc/fsl/imx-hdmi-dma.c
+index c8eed27..4c7032e 100644
+--- a/sound/soc/fsl/imx-hdmi-dma.c
++++ b/sound/soc/fsl/imx-hdmi-dma.c
+@@ -785,6 +785,15 @@ static void hdmi_dma_trigger_init(struct snd_pcm_substream *substream,
+ 				struct hdmi_dma_priv *priv)
+ {
+ 	unsigned long status;
++	bool hbr;
++
++	/*
++	 * Set HBR mode (>192kHz IEC-61937 HD audio bitstreaming).
++	 * This is done this late because userspace may alter the AESx
++	 * parameters until the stream is finally prepared.
++	 */
++	hbr = (iec_header.B.non_pcm != 0 && priv->channels == 8);
++	hdmi_audio_writeb(AHB_DMA_CONF0, HBR, !!hbr);
+ 
+ 	priv->frame_idx = 0;
+ 
+-- 
+1.9.3
+

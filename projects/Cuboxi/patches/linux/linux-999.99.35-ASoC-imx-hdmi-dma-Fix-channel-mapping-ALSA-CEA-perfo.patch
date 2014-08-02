@@ -1,0 +1,96 @@
+From c19d7788d8ac6ab108fe9088207fe0e1ffbf79a1 Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sat, 12 Jul 2014 17:04:01 +0200
+Subject: [PATCH 3/3] ASoC: imx-hdmi-dma: Fix channel mapping ALSA <-> CEA,
+ performance tweak
+
+The speaker allocation defined by CEA-861 is different from what ALSA.
+This patch changes the order of the samples to honour this. The four
+channel mode is disabled, because this would require to run the hardware
+in six channel mode in fill in silence on the unused channels. Further-
+more the patch optimizes the inner copy loop for speed.
+---
+ sound/soc/fsl/fsl_hdmi.c     |    3 ++-
+ sound/soc/fsl/imx-hdmi-dma.c |   46 +++++++++++++++++++++++++++++++-----------
+ 2 files changed, 36 insertions(+), 13 deletions(-)
+
+diff --git a/sound/soc/fsl/fsl_hdmi.c b/sound/soc/fsl/fsl_hdmi.c
+index 92b9c7d..61ff64c 100644
+--- a/sound/soc/fsl/fsl_hdmi.c
++++ b/sound/soc/fsl/fsl_hdmi.c
+@@ -316,7 +316,8 @@ static void fsl_hdmi_get_playback_channels(void)
+ 
+ 	/* Always assume basic audio support */
+ 	playback_channels[i++] = channels;
+-	channels += 2;
++	/* Don't allow 4 channel mode because currently we can't map it correctly to CEA */
++	channels += 4;
+ 
+ 	while ((i < HDMI_MAX_CHANNEL_CONSTRAINTS) &&
+ 			(channels <= edid_cfg.max_channels)) {
+diff --git a/sound/soc/fsl/imx-hdmi-dma.c b/sound/soc/fsl/imx-hdmi-dma.c
+index 8b991ef..777d5b6 100644
+--- a/sound/soc/fsl/imx-hdmi-dma.c
++++ b/sound/soc/fsl/imx-hdmi-dma.c
+@@ -617,24 +617,46 @@ static int hdmi_dma_copy(struct snd_pcm_substream *substream, int channel,
+ 	struct hdmi_dma_priv *priv = runtime->private_data;
+ 	unsigned int count = frames_to_bytes(runtime, frames);
+ 	unsigned int pos_bytes = frames_to_bytes(runtime, pos);
+-	u32 *hw_buf;
+-	int subframe_idx;
+-	u32 pcm_data;
++	int channel_no, pcm_idx, subframe_no, bits_left, sample_bits;
++	u32 pcm_data[8], pcm_temp, *hw_buf, sample_block;
++	
++	static int channel_map_pcm[8] =	{ 0, 1, 4, 5, 3, 2, 6, 7 };
+ 
+ 	/* Adding frame info to pcm data from userspace and copy to hw_buffer */
+ 	hw_buf = (u32 *)(priv->hw_buffer.area + (pos_bytes * priv->buffer_ratio));
+ 
+-	while (count > 0) {
+-		for (subframe_idx = 1 ; subframe_idx <= priv->channels ; subframe_idx++) {
+-			if (copy_from_user(&pcm_data, buf, priv->sample_align))
+-				return -EFAULT;
++	sample_bits = priv->sample_align * 8;
++	sample_block = priv->sample_align * priv->channels;
+ 
+-			buf += priv->sample_align;
+-			count -= priv->sample_align;
++	while (count > 0) {
++		if (copy_from_user(pcm_data, buf, sample_block))
++			return -EFAULT;
++
++		buf += sample_block;
++		count -= sample_block;
++
++		channel_no = pcm_idx = 0;
++		do {
++			pcm_temp = pcm_data[pcm_idx++];
++			bits_left = 32;
++			for (;;) {
++				/* re-map channels */
++				subframe_no = (iec_header.B.non_pcm == 0) ? 
++							channel_map_pcm[channel_no] : channel_no;
++
++				/* Save the header info to the audio dma buffer */
++				hw_buf[subframe_no] = hdmi_dma_add_frame_info(priv, pcm_temp, subframe_no + 1);
++				channel_no++;
++
++				if (bits_left <= sample_bits)
++					break;
++
++				bits_left -= sample_bits;
++				pcm_temp >>= sample_bits;
++			}
++		} while (channel_no < priv->channels);
+ 
+-			/* Save the header info to the audio dma buffer */
+-			*hw_buf++ = hdmi_dma_add_frame_info(priv, pcm_data, subframe_idx);
+-		}
++		hw_buf += priv->channels;
+ 
+ 		priv->frame_idx++;
+ 		if (priv->frame_idx == 192)
+-- 
+1.7.9.5
+
