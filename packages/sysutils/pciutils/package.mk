@@ -59,5 +59,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/sbin/update-pciids
 
   mkdir -p $INSTALL/usr/share
-    cp $PKG_DIR/config/pci.ids $INSTALL/usr/share
+    wget -P $INSTALL/usr/share http://pciids.sourceforge.net/v2.2/pci.ids
 }
