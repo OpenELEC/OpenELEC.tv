@@ -5,9 +5,9 @@ cp "$BUILD"/image/system/usr/share/bootloader/u-boot.imx "$RELEASE_DIR"/3rdparty
 cp "$BUILD"/image/system/usr/share/bootloader/boot.scr "$RELEASE_DIR"/3rdparty/bootloader/ #$INSTALL?
 case "$SUBPROJ" in
   "quad")
-    cp "$BUILD"/image/system/usr/share/bootloader/imx6q-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/dtb #$INSTALL?
+    cp "$BUILD"/image/system/usr/share/bootloader/imx6q-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/wandboard.dtb #$INSTALL?
     ;;
   *)
-    cp "$BUILD"/image/system/usr/share/bootloader/imx6dl-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/dtb #$INSTALL?
+    cp "$BUILD"/image/system/usr/share/bootloader/imx6dl-wandboard.dtb "$RELEASE_DIR"/3rdparty/bootloader/wandboard.dtb #$INSTALL?
     ;;
 esac
