@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch-joypad-autoconfig"
-PKG_VERSION="7a465dd"
+PKG_VERSION="e6df111"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -41,5 +41,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/etc/retroarch-joypad-autoconfig
-  cp * $INSTALL/etc/retroarch-joypad-autoconfig
+  cp udev/* $INSTALL/etc/retroarch-joypad-autoconfig
 }
