@@ -21,8 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d wandboard-kernel.git ]; then
-#    git clone git://github.com/wandboard-org/linux.git --depth=1 -b wandboard_imx_3.0.35_4.1.0 wandboard-kernel.git
-    git clone git://github.com/wandboard-org/linux.git --depth=1 -b wandboard_imx_3.10.17_1.0.0_beta wandboard-kernel.git
+    git clone git://github.com/wandboard-org/linux.git --depth=1 -b wandboard_imx_3.10.17_1.0.0_ga wandboard-kernel.git
   fi
 
   cd wandboard-kernel.git
