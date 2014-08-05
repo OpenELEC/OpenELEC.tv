@@ -232,10 +232,10 @@
   EXFAT="yes"
 
 # build and install NTFS-3G fuse support (yes / no)
-  NTFS3G="no"
+  NTFS3G="yes"
 
 # build and install hfs filesystem utilities (yes / no)
-  HFSTOOLS="no"
+  HFSTOOLS="yes"
 
 # OpenGL(X) implementation to use (no / Mesa)
   OPENGL="no"
@@ -283,10 +283,10 @@
   JOYSTICK_SUPPORT="yes"
 
 # build and install CEC adapter support (yes / no)
-  CEC_SUPPORT="yes"
+  CEC_SUPPORT="no"
 
 # build and install iSCSI support - iscsistart (yes / no)
-  ISCSI_SUPPORT="yes"
+  ISCSI_SUPPORT="no"
 
 # LCD driver to Use - Possible drivers are ( Comma seperated:
 # bayrad,CFontz,CFontz633,CFontzPacket,curses,CwLnx,dm140,
