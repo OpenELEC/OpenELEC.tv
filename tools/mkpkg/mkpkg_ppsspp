@@ -21,13 +21,18 @@
 
 echo "getting sources..."
   if [ ! -d ppsspp.git ]; then
-    git clone https://github.com/libretro/ppsspp-libretro.git -b master ppsspp.git
+    git clone https://github.com/libretro/libretro-ppsspp.git -b master ppsspp.git
+    git clone https://github.com/libretro/ppsspp-native.git ppsspp.git/native
+    git clone https://github.com/libretro/ppsspp-ffmpeg.git ppsspp.git/ffmpeg
   fi
 
   cd ppsspp.git
     git pull
-    git submodule init
-    git submodule update
+    cd native
+    git pull
+    cd ../ffmpeg
+    git pull
+    cd ..
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
@@ -38,6 +43,8 @@ echo "copying sources..."
 echo "cleaning sources..."
   rm -rf ppsspp-$GIT_REV/.git
   rm ppsspp-$GIT_REV/.gitignore
+  rm -rf ppsspp-$GIT_REV/native/.git
+  rm -rf ppsspp-$GIT_REV/ffmpeg/.git
 
 echo "packing sources..."
   tar cvJf ppsspp-$GIT_REV.tar.xz ppsspp-$GIT_REV
