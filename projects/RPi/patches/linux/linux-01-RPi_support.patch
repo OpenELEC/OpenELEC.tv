@@ -1,7 +1,7 @@
-From 5467cba24db51cbc9e1f6e4efa03e3840f964518 Mon Sep 17 00:00:00 2001
+From a5ba2809a7860cfd19ad373ad024713a5ebb7b38 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 12 May 2013 12:24:19 +0100
-Subject: [PATCH 01/75] Main bcm2708 linux port
+Subject: [PATCH 01/81] Main bcm2708 linux port
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -8594,10 +8594,10 @@ index 7be12b8..a968bd6 100644
 2.0.3
 
 
-From cd12245102cb8c67e97564b94d8e979d13ec4b54 Mon Sep 17 00:00:00 2001
+From 53ef386cda383e7016807a97345f52b8ba0c8e64 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 7 May 2013 22:20:24 +0100
-Subject: [PATCH 02/75] Add quick config.
+Subject: [PATCH 02/81] Add quick config.
 
 This is designed for quick compiling when developing.
 No modules are needed and it includes all Pi specific drivers
@@ -8813,10 +8813,10 @@ index 0000000..e5efe75
 2.0.3
 
 
-From 8c898b0781986e981e095fc69d2ab6f288d5622b Mon Sep 17 00:00:00 2001
+From 4a960a086e5c561e036a573b7bbe5cf385c54a50 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:46:17 +0100
-Subject: [PATCH 03/75] Add dwc_otg driver
+Subject: [PATCH 03/81] Add dwc_otg driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -65888,10 +65888,10 @@ index 0000000..cdc9963
 2.0.3
 
 
-From f59a1813a419de088613aaba7085d945540f5bb7 Mon Sep 17 00:00:00 2001
+From 7ad8e6e32a563fc3d9de0d53644b96b8e9b19fed Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:54:32 +0100
-Subject: [PATCH 04/75] bcm2708 watchdog driver
+Subject: [PATCH 04/81] bcm2708 watchdog driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -66322,10 +66322,10 @@ index 0000000..8a27d68
 2.0.3
 
 
-From 92873013942898d3ec88c32823536d5742789334 Mon Sep 17 00:00:00 2001
+From 7f410ce72dc3b246c9ce8c8a8552fa195054994e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:55:09 +0100
-Subject: [PATCH 05/75] bcm2708 framebuffer driver
+Subject: [PATCH 05/81] bcm2708 framebuffer driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -69372,10 +69372,10 @@ index 3c14e43..7626beb 100644
 2.0.3
 
 
-From a419db4a9df89feffae650b129e54a3dd3d2bd85 Mon Sep 17 00:00:00 2001
+From ea23a7eee3f8ddb98b8e0cdf47828973e3a5798a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 2 Jul 2013 23:42:01 +0100
-Subject: [PATCH 06/75] bcm2708 vchiq driver
+Subject: [PATCH 06/81] bcm2708 vchiq driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -81927,10 +81927,10 @@ index 0000000..b6bfa21
 2.0.3
 
 
-From da0ed6083e6d21aea83388f59708c56806ab0c81 Mon Sep 17 00:00:00 2001
+From 23194c53077fd376e56d8895eb2988dbc398d39e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 12 May 2014 15:12:02 +0100
-Subject: [PATCH 07/75] vchiq: Avoid high load when blocked and unkillable
+Subject: [PATCH 07/81] vchiq: Avoid high load when blocked and unkillable
 
 vchiq: Include SIGSTOP and SIGCONT in list of signals not-masked by vchiq to allow gdb to work
 ---
@@ -82095,10 +82095,10 @@ index c2eefef..05e7979 100644
 2.0.3
 
 
-From 51a73411ccb8ba9d7645c6926d054f5220fc7771 Mon Sep 17 00:00:00 2001
+From aa62bfbd15aa087bb217dfdd150d0f0011fed3a5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:31:47 +0100
-Subject: [PATCH 08/75] cma: Add vc_cma driver to enable use of CMA
+Subject: [PATCH 08/81] cma: Add vc_cma driver to enable use of CMA
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -83390,10 +83390,10 @@ index 0000000..5325832
 2.0.3
 
 
-From 626c462c55ca0f7007bb6b0c7619e292cd7f4de4 Mon Sep 17 00:00:00 2001
+From 4de2e6840a08fb8c01c086f58ebb03d33de4aed8 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 26 Mar 2012 22:15:50 +0100
-Subject: [PATCH 09/75] bcm2708: alsa sound driver
+Subject: [PATCH 09/81] bcm2708: alsa sound driver
 
     Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -85757,10 +85757,10 @@ index 0000000..af3e6eb
 2.0.3
 
 
-From f52c1acaa9d3bf4f70f489a1136d08a5c8018f1a Mon Sep 17 00:00:00 2001
+From 3f704f893f93fe39a09ab3bb24a00bd05f13428c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 26 Apr 2013 10:08:31 -0700
-Subject: [PATCH 10/75] alsa: add mmap support and some cleanups to bcm2835
+Subject: [PATCH 10/81] alsa: add mmap support and some cleanups to bcm2835
  ALSA driver
 
 ---
@@ -86240,10 +86240,10 @@ index 080bd5c..36afee3 100755
 2.0.3
 
 
-From 26839949c6d28777c428ac176ecdddf91339deea Mon Sep 17 00:00:00 2001
+From c4bae551fcf8c2fd7f69aa23a79e165340199f20 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:51:55 +0100
-Subject: [PATCH 11/75] Add hwrng (hardware random number generator) driver
+Subject: [PATCH 11/81] Add hwrng (hardware random number generator) driver
 
 ---
  arch/arm/mach-bcm2708/include/mach/platform.h |   1 +
@@ -86425,10 +86425,10 @@ index 0000000..340f004
 2.0.3
 
 
-From 31e33eeeb8361f8a1b8688012885ab45a319acac Mon Sep 17 00:00:00 2001
+From a5fbd670dd3cbc4f88f171b5d1891c50a266cd27 Mon Sep 17 00:00:00 2001
 From: Aron Szabo <aron@aron.ws>
 Date: Sat, 16 Jun 2012 12:15:55 +0200
-Subject: [PATCH 12/75] lirc: added support for RaspberryPi GPIO
+Subject: [PATCH 12/81] lirc: added support for RaspberryPi GPIO
 
 lirc_rpi: Use read_current_timer to determine transmitter delay. Thanks to jjmz and others
 See: https://github.com/raspberrypi/linux/issues/525
@@ -87173,10 +87173,10 @@ index 0000000..57ffacf
 2.0.3
 
 
-From 1a438fe40dd523e6118d38a52a7098b68e62e620 Mon Sep 17 00:00:00 2001
+From 85f2e35d64890063b01d29cbd7c4c1262b52060e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 8 May 2012 23:12:13 +0100
-Subject: [PATCH 13/75] Fixes for sdhci-bcm2708
+Subject: [PATCH 13/81] Fixes for sdhci-bcm2708
 
 possible fix for sdcard missing status. Thank naren
 
@@ -88450,10 +88450,10 @@ index a968bd6..df54b9b 100644
 2.0.3
 
 
-From 203954eeb998751d16cd6b49e427b225fdff9e4e Mon Sep 17 00:00:00 2001
+From b810a7af7a371a1f9c963ad75a3b6be5e9e6c5c1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:49:20 +0100
-Subject: [PATCH 14/75] Add cpufreq driver
+Subject: [PATCH 14/81] Add cpufreq driver
 
 ---
  arch/arm/Kconfig                  |   1 +
@@ -88755,10 +88755,10 @@ index 0000000..7bc55bd
 2.0.3
 
 
-From c2a539c7b57dfc098a79f171986d744e7d2e32ea Mon Sep 17 00:00:00 2001
+From ef5102326c4fa37561cc64634fcffea2d5c65d43 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 19:24:24 +0000
-Subject: [PATCH 15/75] Added hwmon/thermal driver for reporting core
+Subject: [PATCH 15/81] Added hwmon/thermal driver for reporting core
  temperature. Thanks Dorian
 
 ---
@@ -89283,10 +89283,10 @@ index 0000000..85fceb5
 2.0.3
 
 
-From 684eea255743d18a889d1a7227471f71d3e7a84c Mon Sep 17 00:00:00 2001
+From 9543a69c2b90bd5709083bb0a83021e4a6a45b26 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 17:26:38 +0000
-Subject: [PATCH 16/75] Allow mac address to be set in smsc95xx
+Subject: [PATCH 16/81] Allow mac address to be set in smsc95xx
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -89380,10 +89380,10 @@ index 424db65e..fc1ef4e 100644
 2.0.3
 
 
-From a7364e5b06c949b8fc6c43f983a9ef6948f2d9db Mon Sep 17 00:00:00 2001
+From dadd0c675f30eaeb8d41f99de0633952ebfd6bbf Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 4 Nov 2013 18:56:10 +0000
-Subject: [PATCH 17/75] Add Chris Boot's i2c and spi drivers.
+Subject: [PATCH 17/81] Add Chris Boot's i2c and spi drivers.
 
 i2c-bcm2708: fixed baudrate
 
@@ -90767,10 +90767,10 @@ index 0000000..06dd02f
 2.0.3
 
 
-From a439ba718a5dd3fb9dedc6f1f3d951b6ba6480dd Mon Sep 17 00:00:00 2001
+From ed1fc584b74de29ea7f1239b92cd78e54e1fd482 Mon Sep 17 00:00:00 2001
 From: cbeytas <cbeytas@shaw.ca>
 Date: Mon, 24 Jun 2013 00:05:40 -0400
-Subject: [PATCH 18/75] Perform I2C combined transactions when possible
+Subject: [PATCH 18/81] Perform I2C combined transactions when possible
 
 Perform I2C combined transactions whenever possible, within the
 restrictions of the Broadcomm Serial Controller.
@@ -90845,10 +90845,10 @@ index f266f10..8750634 100644
 2.0.3
 
 
-From 17a30560858a5ad7aa9c2aa227e0a3f1dc68a4d9 Mon Sep 17 00:00:00 2001
+From 534c1871b94c522d19c1a4992a6657806beacd09 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 8 May 2013 11:46:50 +0100
-Subject: [PATCH 19/75] enabling the realtime clock 1-wire chip DS1307 and
+Subject: [PATCH 19/81] enabling the realtime clock 1-wire chip DS1307 and
  1-wire on GPIO4 (as a module)
 
 1-wire: Add support for configuring pin for w1-gpio kernel module
@@ -91123,10 +91123,10 @@ index 2820924..fd0550f 100644
 2.0.3
 
 
-From 3f65921735ae3a0a4dc12fe7dcd207cc3879b453 Mon Sep 17 00:00:00 2001
+From 4d4b69d64dfc55517bdfcc80d78b83d71915dc80 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 12 Apr 2013 23:58:47 +0100
-Subject: [PATCH 23/75] config: add missing options from 3.6.y kernel
+Subject: [PATCH 23/81] config: add missing options from 3.6.y kernel
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 755 ++++++++++++++++++++++++++++++++------
@@ -92176,10 +92176,10 @@ index 31f5afaa..78d789c 100644
 2.0.3
 
 
-From 743c4cf876e54e434946d78c65eeadd33ff228ca Mon Sep 17 00:00:00 2001
+From 82927414620788caff4074a3ea1023c470188839 Mon Sep 17 00:00:00 2001
 From: Harm Hanemaaijer <fgenfb@yahoo.com>
 Date: Thu, 20 Jun 2013 20:21:39 +0200
-Subject: [PATCH 24/75] Speed up console framebuffer imageblit function
+Subject: [PATCH 24/81] Speed up console framebuffer imageblit function
 
 Especially on platforms with a slower CPU but a relatively high
 framebuffer fill bandwidth, like current ARM devices, the existing
@@ -92391,10 +92391,10 @@ index a2bb276..436494f 100644
 2.0.3
 
 
-From c5f0407a84e62753eeef299174fb5055cb4e06f3 Mon Sep 17 00:00:00 2001
+From ade6c7997f76a49bfc9ea4a4ff275e2f7bf27315 Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 13:32:11 +0300
-Subject: [PATCH 25/75] fbdev: add FBIOCOPYAREA ioctl
+Subject: [PATCH 25/81] fbdev: add FBIOCOPYAREA ioctl
 
 Based on the patch authored by Ali Gholami Rudi at
     https://lkml.org/lkml/2009/7/13/153
@@ -92490,10 +92490,10 @@ index fb795c3..fa72af0 100644
 2.0.3
 
 
-From 0036a2c427d87dda9bdb1acba874f9042dd67024 Mon Sep 17 00:00:00 2001
+From 795dc56ad12e1e0b3f5da96f3986cc480146f406 Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 16:00:25 +0300
-Subject: [PATCH 26/75] bcm2708_fb: DMA acceleration for fb_copyarea
+Subject: [PATCH 26/81] bcm2708_fb: DMA acceleration for fb_copyarea
 
 Based on http://www.raspberrypi.org/phpBB3/viewtopic.php?p=62425#p62425
 Also used Simon's dmaer_master module as a reference for tweaking DMA
@@ -92951,10 +92951,10 @@ index 54cd760..798eb52 100644
 2.0.3
 
 
-From c12b6bb2ceaf4d38ed96019c02d3f18f613b2368 Mon Sep 17 00:00:00 2001
+From 40fcc4794c417a1ff7345fb889fbe53a62435f5d Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 18 Dec 2013 22:16:19 +0000
-Subject: [PATCH 27/75] config: Enable CONFIG_MEMCG, but leave it disabled (due
+Subject: [PATCH 27/81] config: Enable CONFIG_MEMCG, but leave it disabled (due
  to memory cost). Enable with cgroup_enable=memory.
 
 ---
@@ -93025,10 +93025,10 @@ index 67c927a..6512641 100644
 2.0.3
 
 
-From c5b247f800bc0be22e3e3f7a9a07e3c8ae0092bf Mon Sep 17 00:00:00 2001
+From 7896e6f1a7052b79e8acd445f8db213a71a4412c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:46:42 +0100
-Subject: [PATCH 28/75] Add FIQ patch to dwc_otg driver. Enable with
+Subject: [PATCH 28/81] Add FIQ patch to dwc_otg driver. Enable with
  dwc_otg.fiq_fix_enable=1. Should give about 10% more ARM performance. Thanks
  to Gordon and Costas
 
@@ -96350,10 +96350,10 @@ index 1b1f83c..c8590b5 100644
 2.0.3
 
 
-From 49b1f4bc5c6c26cdbf1c8e418ac017da2f4f4df8 Mon Sep 17 00:00:00 2001
+From 974c55e0b59c8f6f4d9ded8d3377e33302bf2864 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Wed, 19 Mar 2014 12:58:23 +0000
-Subject: [PATCH 29/75] dwc_otg: fiq_fsm: Base commit for driver rewrite
+Subject: [PATCH 29/81] dwc_otg: fiq_fsm: Base commit for driver rewrite
 
 This commit removes the previous FIQ fixes entirely and adds fiq_fsm.
 
@@ -101252,10 +101252,10 @@ index 5d310df..4b32941 100644
 2.0.3
 
 
-From fcd2237275891d3938b54ada0202d186da864157 Mon Sep 17 00:00:00 2001
+From b4c6788087cd8b5566769df99caca4b272b4f54f Mon Sep 17 00:00:00 2001
 From: Vincent Sanders <vincent.sanders@collabora.co.uk>
 Date: Wed, 30 Jan 2013 12:45:18 +0000
-Subject: [PATCH 30/75] bcm2835: add v4l2 camera device
+Subject: [PATCH 30/81] bcm2835: add v4l2 camera device
 
 - Supports raw YUV capture, preview, JPEG and H264.
 - Uses videobuf2 for data transfer, using dma_buf.
@@ -107243,10 +107243,10 @@ index 0000000..9d1d11e
 2.0.3
 
 
-From da0e9cfde86794100d82fa19d518f7ceb84c40e0 Mon Sep 17 00:00:00 2001
+From 7cc01d34940d07f55ccace3f27532c1e18704f86 Mon Sep 17 00:00:00 2001
 From: Dave Stevenson <dsteve@broadcom.com>
 Date: Mon, 9 Dec 2013 10:58:01 +0000
-Subject: [PATCH 31/75] V4L2: Fixes from 6by9
+Subject: [PATCH 31/81] V4L2: Fixes from 6by9
 
 V4L2: Fix EV values. Add manual shutter speed control
 
@@ -109621,10 +109621,10 @@ index a06fb44..76f249e 100644
 2.0.3
 
 
-From a0e4355cb41d1bd88e796bdd79c9fd8c7142a895 Mon Sep 17 00:00:00 2001
+From 6c669caef8625f9430ad0d5233cf23101d5b598f Mon Sep 17 00:00:00 2001
 From: Julian Scheel <julian@jusst.de>
 Date: Wed, 19 Feb 2014 16:06:59 +0100
-Subject: [PATCH 32/75] snd-bcm2835: Add support for spdif/hdmi passthrough
+Subject: [PATCH 32/81] snd-bcm2835: Add support for spdif/hdmi passthrough
 
 This adds a dedicated subdevice which can be used for passthrough of non-audio
 formats (ie encoded a52) through the hdmi audio link. In addition to this
@@ -110095,10 +110095,10 @@ index 36afee3..8c2fe26 100755
 2.0.3
 
 
-From ab9659af32b0a76b3b74b05ce907f0a9fec1328c Mon Sep 17 00:00:00 2001
+From 0c6a4e36d07cb9fb43d5d254979de5218b35c24a Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:22:53 +0100
-Subject: [PATCH 33/75] dmaengine: Add support for BCM2708
+Subject: [PATCH 33/81] dmaengine: Add support for BCM2708
 
 Add support for DMA controller of BCM2708 as used in the Raspberry Pi.
 Currently it only supports cyclic DMA.
@@ -110738,10 +110738,10 @@ index 0000000..b244293
 2.0.3
 
 
-From 0fa59e52ba5933537f39aaf219b0c393aadb7ef3 Mon Sep 17 00:00:00 2001
+From b8478559635687e2511b098b262aa3bf6d42ab6b Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:33:38 +0100
-Subject: [PATCH 34/75] ASoC: Add support for BCM2708
+Subject: [PATCH 34/81] ASoC: Add support for BCM2708
 
 This driver adds support for digital audio (I2S)
 for the BCM2708 SoC that is used by the
@@ -111739,10 +111739,10 @@ index 0000000..ebaf3d6
 2.0.3
 
 
-From 2db1d67c08b4fbb2bb9540dcb139e6a4d33a98e2 Mon Sep 17 00:00:00 2001
+From ca50f7e68fdf8871d1b8807770a9de9d37469f50 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:37:51 +0100
-Subject: [PATCH 35/75] BCM2708: Extend mach header
+Subject: [PATCH 35/81] BCM2708: Extend mach header
 
 Extend the headers of the mach-bcm2708
 in order to support I2S and DMA engine.
@@ -111787,10 +111787,10 @@ index 992a630..2e7e1bb 100644
 2.0.3
 
 
-From f829d054bf938c4b3eaeff44bdad551adc27e62f Mon Sep 17 00:00:00 2001
+From 32e46d0b5d8db6853a2f29d032bdb950a4a691c3 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:59:51 +0100
-Subject: [PATCH 36/75] ASoC: Add support for PCM5102A codec
+Subject: [PATCH 36/81] ASoC: Add support for PCM5102A codec
 
 Some definitions to support the PCM5102A codec
 by Texas Instruments.
@@ -111918,10 +111918,10 @@ index 0000000..126f1e9
 2.0.3
 
 
-From b5529800dd526cf30696bb052197e4e4716fe9d3 Mon Sep 17 00:00:00 2001
+From 0aba4426d952590c7ee681dc40cd1eaf75111748 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:04:54 +0100
-Subject: [PATCH 37/75] BCM2708: Add I2S support to board file
+Subject: [PATCH 37/81] BCM2708: Add I2S support to board file
 
 Adds the required initializations for I2S
 to the board file of mach-bcm2708.
@@ -111979,10 +111979,10 @@ index ef0935f..7cb8a8e 100644
 2.0.3
 
 
-From f0d70e723bffb6c75644e5af801947f17fb12d73 Mon Sep 17 00:00:00 2001
+From eabb81aacdd552aac86ef6413568e2e24ed16fb2 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:19:08 +0100
-Subject: [PATCH 38/75] ASoC: Add support for HifiBerry DAC
+Subject: [PATCH 38/81] ASoC: Add support for HifiBerry DAC
 
 This adds a machine driver for the HifiBerry DAC.
 It is a sound card that can
@@ -112134,10 +112134,10 @@ index 0000000..4b70b45
 2.0.3
 
 
-From 87a7376e772e30000c5bcacf4b9649f12b328946 Mon Sep 17 00:00:00 2001
+From d8973cdaef4eebd635df5f1f4266e2bcb68fca56 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:21:34 +0100
-Subject: [PATCH 39/75] BCM2708: Add HifiBerry DAC to board file
+Subject: [PATCH 39/81] BCM2708: Add HifiBerry DAC to board file
 
 This adds the initalization of the HifiBerry DAC
 to the mach-bcm2708 board file.
@@ -112188,10 +112188,10 @@ index 7cb8a8e..c4dc10e 100644
 2.0.3
 
 
-From 91d6a0abdba16f0eca40bcda159b20a36d1f4464 Mon Sep 17 00:00:00 2001
+From 0600c5811c11897ba84efa9ff6e97f9d1f31147b Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 6 Dec 2013 18:55:53 +0100
-Subject: [PATCH 40/75] ASoC: BCM2708: Add 24 bit support
+Subject: [PATCH 40/81] ASoC: BCM2708: Add 24 bit support
 
 This adds 24 bit support to the I2S driver of the BCM2708.
 Besides enabling the 24 bit flags, it includes two bug fixes:
@@ -112266,10 +112266,10 @@ index ebaf3d6..a179216 100644
 2.0.3
 
 
-From f40af02d021979ab3f86d8aa3dfc4d06503a26f7 Mon Sep 17 00:00:00 2001
+From b203cd6f749cdabddd49fcd7caa6a8eb47b3a84d Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Mon, 2 Dec 2013 20:28:22 +0100
-Subject: [PATCH 41/75] BCM2708: Add I2S and DMA support to default config
+Subject: [PATCH 41/81] BCM2708: Add I2S and DMA support to default config
 
 This commit adds several modules that are needed for
 I2S support for the Raspberry Pi to the defconfig.
@@ -112312,10 +112312,10 @@ index d70da44..36e7473 100644
 2.0.3
 
 
-From 2f1bceebde04d92b10e08d40ee60279ba4ffaf72 Mon Sep 17 00:00:00 2001
+From fd4a065114c8eaad7536acc3d429556479119b97 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 6 Dec 2013 20:50:28 +0100
-Subject: [PATCH 42/75] ASoC: BCM2708: Add support for RPi-DAC
+Subject: [PATCH 42/81] ASoC: BCM2708: Add support for RPi-DAC
 
 This adds a machine driver for the RPi-DAC.
 
@@ -112629,10 +112629,10 @@ index 0000000..b4eaa44
 2.0.3
 
 
-From 9470fbb506cdc027562c9cbb9ee17d2a07a803d1 Mon Sep 17 00:00:00 2001
+From 6dbce2b6f28adfc40b240e9e8f4c820aae638895 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Wed, 15 Jan 2014 21:41:23 +0100
-Subject: [PATCH 43/75] ASoC: wm8804: Implement MCLK configuration options, add
+Subject: [PATCH 43/81] ASoC: wm8804: Implement MCLK configuration options, add
  32bit support WM8804 can run with PLL frequencies of 256xfs and 128xfs for
  most sample rates. At 192kHz only 128xfs is supported. The existing driver
  selects 128xfs automatically for some lower samples rates. By using an
@@ -112749,10 +112749,10 @@ index 8ec14f5..e72d4f4 100644
 2.0.3
 
 
-From ce5f108e89f1b322a2fd33578b8ea79bd124b3d4 Mon Sep 17 00:00:00 2001
+From b666b1ce160223a3647b4ba8290528de430c2cbc Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Wed, 15 Jan 2014 21:42:08 +0100
-Subject: [PATCH 44/75] ASoC: BCM:Add support for HiFiBerry Digi. Driver is
+Subject: [PATCH 44/81] ASoC: BCM:Add support for HiFiBerry Digi. Driver is
  based on the patched WM8804 driver.
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -112958,10 +112958,10 @@ index 0000000..e4f769d
 2.0.3
 
 
-From b9bfa746eb08cfea8ac2500aab762500cab41570 Mon Sep 17 00:00:00 2001
+From cac75d2346d06b459abd8da150213d726e04d540 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:26:08 +0100
-Subject: [PATCH 45/75] BCM2708: Added support for HiFiBerry Digi board Board
+Subject: [PATCH 45/81] BCM2708: Added support for HiFiBerry Digi board Board
  initalization by I2C
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -113011,10 +113011,10 @@ index f2b3990..f5afd86 100644
 2.0.3
 
 
-From e5f6ea02ee335767ede415f0abf2284dd00c749d Mon Sep 17 00:00:00 2001
+From 362628023205e4a1a7feac802e11606ac07aa882 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:27:28 +0100
-Subject: [PATCH 46/75] BCM2708: Added HiFiBerry Digi configuration option It
+Subject: [PATCH 46/81] BCM2708: Added HiFiBerry Digi configuration option It
  will be compiled as a module by default. This also includes the WM8804
  driver.
 
@@ -113042,10 +113042,10 @@ index f877ab2..3d3c8ab 100644
 2.0.3
 
 
-From 78754e83a3fda7625d28717f4540fd93a2166421 Mon Sep 17 00:00:00 2001
+From 829e568f8eaeb9c55f524fd4da468fbdf432292e Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:36:35 +0100
-Subject: [PATCH 47/75] ASoC: wm8804: Set idle_bias_off to false Idle bias has
+Subject: [PATCH 47/81] ASoC: wm8804: Set idle_bias_off to false Idle bias has
  been change to remove warning on driver startup
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -113070,10 +113070,10 @@ index d8923c1..2787042 100644
 2.0.3
 
 
-From f89d418086d1f6ca41a2602f9bd566dd31f04092 Mon Sep 17 00:00:00 2001
+From 6e42995fc84a6229fb548777b73d75f74256543f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 12 Mar 2014 11:46:34 +0000
-Subject: [PATCH 48/75] ASoc: Don't report S24_LE support, it produces white
+Subject: [PATCH 48/81] ASoc: Don't report S24_LE support, it produces white
  noise with xbmc
 
 ---
@@ -113111,10 +113111,10 @@ index 126f1e9..7812d34 100644
 2.0.3
 
 
-From bde13d3bb321592464be85a85f86a40a60ea9204 Mon Sep 17 00:00:00 2001
+From 53992323fb8a9c6e234acbf216506bc84663100b Mon Sep 17 00:00:00 2001
 From: Gordon Garrity <gordon@iqaudio.com>
 Date: Sat, 8 Mar 2014 16:56:57 +0000
-Subject: [PATCH 49/75] Add IQaudIO Sound Card support for Raspberry Pi
+Subject: [PATCH 49/81] Add IQaudIO Sound Card support for Raspberry Pi
 
 ---
  arch/arm/configs/bcmrpi_defconfig |   1 +
@@ -113919,10 +113919,10 @@ index 6ee76aa..b2f518e 100644
 2.0.3
 
 
-From 4de996cea362a07e206e03f674b84915fa654378 Mon Sep 17 00:00:00 2001
+From 1ecb76a87dffdb1b19210c4fcb8354815d39eec7 Mon Sep 17 00:00:00 2001
 From: Howard Mitchell <hm@hmbedded.co.uk>
 Date: Fri, 28 Mar 2014 16:27:57 +0000
-Subject: [PATCH 50/75] Fix volsw_range functions so SOC_DOUBLE_R_RANGE_TLV
+Subject: [PATCH 50/81] Fix volsw_range functions so SOC_DOUBLE_R_RANGE_TLV
  works.
 
 This is so that the correct rabge of values as specified
@@ -113998,10 +113998,10 @@ index 051c006..bf39f16 100644
 2.0.3
 
 
-From 0539e786141e32e9379d9673d728994c51db6842 Mon Sep 17 00:00:00 2001
+From d1888d1dc197d62733b3e27b33ac869d5b7d2598 Mon Sep 17 00:00:00 2001
 From: Gordon Garrity <gordon@iqaudio.com>
 Date: Sun, 30 Mar 2014 13:52:33 +0100
-Subject: [PATCH 51/75] fix soc-core's inverse range and let IQaudIO DAC use
+Subject: [PATCH 51/81] fix soc-core's inverse range and let IQaudIO DAC use
  this fixed SOC_DOUBLE_R_RANGE_TLV support
 
 ---
@@ -114038,10 +114038,10 @@ index bf39f16..4d8917b 100644
 2.0.3
 
 
-From 741e94a40d0c1be0cf285465d2e5f0eebe740316 Mon Sep 17 00:00:00 2001
+From 07807526329cc3fd714388368b40970785909957 Mon Sep 17 00:00:00 2001
 From: Gordon Hollingworth <gordon@holliweb.co.uk>
 Date: Fri, 2 May 2014 16:13:59 +0100
-Subject: [PATCH 52/75] Move GPIO setup to hw_params.
+Subject: [PATCH 52/81] Move GPIO setup to hw_params.
 
 This is used to stop the I2S driver from breaking
 the GPIO setup for other uses of the PCM interface
@@ -114140,10 +114140,10 @@ index b25e158..9976571 100644
 2.0.3
 
 
-From d98cc925648b7d93f207003c968484ea5d3bef3c Mon Sep 17 00:00:00 2001
+From d9d0787e5e29f0f4ced9d956ca825a238f690abb Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 9 May 2014 15:45:13 +0100
-Subject: [PATCH 53/75] fb: distinguish physical and bus addresses
+Subject: [PATCH 53/81] fb: distinguish physical and bus addresses
 
 ---
  drivers/video/fbdev/bcm2708_fb.c | 15 +++++++++------
@@ -114218,10 +114218,10 @@ index 798eb52..b3b1e04 100644
 2.0.3
 
 
-From 96911e1c38ab31d1ffd3aeff5005523aa48e15bf Mon Sep 17 00:00:00 2001
+From aae0497628858b47a9e39ecdf9cc45dda3b20597 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 18 Jun 2014 13:42:01 +0100
-Subject: [PATCH 54/75] vmstat: Workaround for issue where dirty page count
+Subject: [PATCH 54/81] vmstat: Workaround for issue where dirty page count
  goes negative
 
 See:
@@ -114251,10 +114251,10 @@ index 45c9cd1..07dad05 100644
 2.0.3
 
 
-From 86d980250494282b87b611daae0f637cc1591784 Mon Sep 17 00:00:00 2001
+From 7c120aa95793cd46f9119514347014d280ae927e Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 20 Jun 2014 16:03:12 +0100
-Subject: [PATCH 55/75] dwc_otg: Fix various issues with root port and
+Subject: [PATCH 55/81] dwc_otg: Fix various issues with root port and
  transaction errors
 
 Process the host port interrupts correctly (and don't trample them).
@@ -114327,10 +114327,10 @@ index d3e2035..6182d3e 100644
 2.0.3
 
 
-From 88ec91c349b182050393c98b53a4fab9304369a6 Mon Sep 17 00:00:00 2001
+From 01edef697dfd9bd286805a6cce572b75450cd72e Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 20 Jun 2014 17:23:20 +0100
-Subject: [PATCH 56/75] fiq_fsm: Implement hack for Split Interrupt
+Subject: [PATCH 56/81] fiq_fsm: Implement hack for Split Interrupt
  transactions
 
 Hubs aren't too picky about which endpoint we send Control type split
@@ -114419,10 +114419,10 @@ index daea770..35721e5 100644
 2.0.3
 
 
-From a3435860ead389806d2481feb35825b7ac36ccc4 Mon Sep 17 00:00:00 2001
+From 187d9505cbfa744025a023fdcd8f552d681f802f Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 6 Jul 2014 12:07:25 +0200
-Subject: [PATCH 57/75] spi-bcm2708: Prepare for Common Clock Framework
+Subject: [PATCH 57/81] spi-bcm2708: Prepare for Common Clock Framework
  migration
 
 As part of migrating to use the Common Clock Framework, replace clk_enable()
@@ -114470,10 +114470,10 @@ index 06dd02f..0952f40 100644
 2.0.3
 
 
-From 859cdc3b386f14d1dc9d55ef47eaf80d54507915 Mon Sep 17 00:00:00 2001
+From b5be9cb4072736e3fe0420ab02d38cc306b070b3 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 6 Jul 2014 12:09:30 +0200
-Subject: [PATCH 58/75] BCM2708: Migrate to the Common Clock Framework
+Subject: [PATCH 58/81] BCM2708: Migrate to the Common Clock Framework
 
 As part of moving towards using Device Tree, the Common Clock Framework
 has to be used instead of the BCM2708 clock implementation.
@@ -114751,10 +114751,10 @@ index 5f9d725..0000000
 2.0.3
 
 
-From 23c465601e47d4e31b46b3e28193f105a3c0e7fa Mon Sep 17 00:00:00 2001
+From 26e1575fcc4b567aba504609c16ac5015d758f85 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 6 Jul 2014 16:31:31 +0200
-Subject: [PATCH 59/75] BCM2708: remove 'bcm2708_usb' clkdev
+Subject: [PATCH 59/81] BCM2708: remove 'bcm2708_usb' clkdev
 
 'bcm2708_usb' is currently not in use by the USB OTG driver.
 
@@ -114783,10 +114783,10 @@ index 26fe14e..ef5a55dc 100644
 2.0.3
 
 
-From 26042563c0c81d80d737cdca632adcd2203a337b Mon Sep 17 00:00:00 2001
+From 045f79a82dc551affa47060c73487b63aec7ce08 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 4 Jul 2014 22:54:16 +0100
-Subject: [PATCH 60/75] config: Add CONFIG_DEVPTS_MULTIPLE_INSTANCES
+Subject: [PATCH 60/81] config: Add CONFIG_DEVPTS_MULTIPLE_INSTANCES
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 1 +
@@ -114808,10 +114808,10 @@ index a024670..29fe486 100644
 2.0.3
 
 
-From 2069ba0b693ec5a63370fd39c7dd3227a61cb06b Mon Sep 17 00:00:00 2001
+From 0a1408c4901dc73575a1db8208ebd3cc41a1cdeb Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 26 Jun 2014 19:03:47 +0100
-Subject: [PATCH 61/75] bcm2708: Avoid hang when timer_set_next_event is called
+Subject: [PATCH 61/81] bcm2708: Avoid hang when timer_set_next_event is called
  with MAX_INT
 
 See: https://github.com/raspberrypi/linux/issues/616
@@ -114837,10 +114837,10 @@ index ef5a55dc..9bf2508 100644
 2.0.3
 
 
-From 3cf0438cfd3419f1d32772a007d381fc9a4e4934 Mon Sep 17 00:00:00 2001
+From 853943bf0d83b8136f2bc610e39645caf88f1a50 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 26 Jun 2014 19:00:28 +0100
-Subject: [PATCH 62/75] armctrl: Don't mask interrupts from ack
+Subject: [PATCH 62/81] armctrl: Don't mask interrupts from ack
 
 ---
  arch/arm/mach-bcm2708/armctrl.c | 2 +-
@@ -114863,10 +114863,10 @@ index 274aa30..d4c5333 100644
 2.0.3
 
 
-From 91069898e7e9c9f7bd09e7ed77cc4738005381a5 Mon Sep 17 00:00:00 2001
+From d3963b77dd15a714e6ee7aa0a33ca16b1b8465f9 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Wed, 9 Jul 2014 14:46:08 +0200
-Subject: [PATCH 63/75] BCM2708: Add core Device Tree support
+Subject: [PATCH 63/81] BCM2708: Add core Device Tree support
 
 Add the bare minimum needed to boot BCM2708 from a Device Tree.
 
@@ -115026,10 +115026,10 @@ index 9bf2508..6929e2e 100644
 2.0.3
 
 
-From 30a76591517a5470c5f9e38a3d63ff031ed162d5 Mon Sep 17 00:00:00 2001
+From 2fc5486e1cd396c0185d71da74e8d99b01638a94 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Wed, 9 Jul 2014 14:47:48 +0200
-Subject: [PATCH 64/75] BCM2708: armctrl: Add IRQ Device Tree support
+Subject: [PATCH 64/81] BCM2708: armctrl: Add IRQ Device Tree support
 
 Add Device Tree IRQ support for BCM2708.
 Usage is the same as for irq-bcm2835.
@@ -115196,10 +115196,10 @@ index d4c5333..42f5e1c 100644
 2.0.3
 
 
-From 1353698e10643c15999acf2bb251464815da6f09 Mon Sep 17 00:00:00 2001
+From 58c36be1efe648bf73f27c37ea50ea88619e7515 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Thu, 10 Jul 2014 13:59:47 +0200
-Subject: [PATCH 65/75] pinctrl: add bcm2708 driver
+Subject: [PATCH 65/81] pinctrl: add bcm2708 driver
 
 This driver is a verbatim copy of the pinctrl-bcm2835 driver, except for:
 * changed 2835 to 2708
@@ -116065,10 +116065,10 @@ index 0000000..40d9c86
 2.0.3
 
 
-From 8beebe66f1dd7315c1801c64b220a00d6d17ca46 Mon Sep 17 00:00:00 2001
+From 671c433f3e138539ecaa6d7368c1184442992e7a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 6 Jul 2014 14:58:44 +0100
-Subject: [PATCH 66/75] snd-bcm2708: Add mutex, improve logging
+Subject: [PATCH 66/81] snd-bcm2708: Add mutex, improve logging
 
 ---
  sound/arm/bcm2835-pcm.c   | 35 +++++++++++++++--
@@ -116449,10 +116449,10 @@ index 8c2fe26..0f71c5d 100755
 2.0.3
 
 
-From 0866c9ae43baf29d96bf79609fcf2f91537abcd1 Mon Sep 17 00:00:00 2001
+From 08152c73bc62a18932912cc16814d7b4b7a74dac Mon Sep 17 00:00:00 2001
 From: Phil Elwell <pelwell@broadcom.com>
 Date: Sun, 13 Jul 2014 20:48:30 +0100
-Subject: [PATCH 67/75] Fix for ALSA driver crash
+Subject: [PATCH 67/81] Fix for ALSA driver crash
 
 Avoids an issue when closing and opening vchiq where a message can arrive before service handle has been written
 ---
@@ -116534,10 +116534,10 @@ index a0b069d..bc27bea 100644
 2.0.3
 
 
-From 124f5aa674894f0020e8aa1d244c405e12e9b498 Mon Sep 17 00:00:00 2001
+From fa4faf59ca69cf318206ae890c757c8ffb33434c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 14 Jul 2014 22:02:09 +0100
-Subject: [PATCH 68/75] hid: Reduce default mouse polling interval to 60Hz
+Subject: [PATCH 68/81] hid: Reduce default mouse polling interval to 60Hz
 
 Reduces overhead when using X
 ---
@@ -116575,10 +116575,10 @@ index 7b88f4c..236a09b 100644
 2.0.3
 
 
-From 3e14a4a2cc266a074fd788581c92945bf877884e Mon Sep 17 00:00:00 2001
+From fe0c3d1105cfb2ef9fa131adc7e06c5e22f3dc8a Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Fri, 18 Jul 2014 18:15:57 +0200
-Subject: [PATCH 69/75] BCM2708: DT: change 'axi' nodename to 'soc'
+Subject: [PATCH 69/81] BCM2708: DT: change 'axi' nodename to 'soc'
 
 Change DT node named 'axi' to 'soc' so it matches ARCH_BCM2835.
 The VC4 bootloader fills in certain properties in the 'axi' subtree,
@@ -116606,10 +116606,10 @@ index 3f884b3..e02e67b 100644
 2.0.3
 
 
-From b01402f899257641e0728799d9e423cfb2874e1c Mon Sep 17 00:00:00 2001
+From 04362dc54b6d73502b9cfac91589d5fa67b45731 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:12:58 +0200
-Subject: [PATCH 70/75] spi: bcm2708: add device tree support
+Subject: [PATCH 70/81] spi: bcm2708: add device tree support
 
 Add DT support to driver and add to .dtsi file.
 Setup pins and spidev in .dts file.
@@ -116731,10 +116731,10 @@ index 0952f40..013611e 100644
 2.0.3
 
 
-From 5ca10b6d37ac99bfbcd84049d31efd88d6869d75 Mon Sep 17 00:00:00 2001
+From 64769a77a82521b10da01be8dd480b68dacec1ae Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:13:44 +0200
-Subject: [PATCH 71/75] BCM2708: don't register SPI controller when using DT
+Subject: [PATCH 71/81] BCM2708: don't register SPI controller when using DT
 
 The device for the SPI controller is in the Device Tree.
 Only register the device when not using DT.
@@ -116808,10 +116808,10 @@ index 6929e2e..d227f9b 100644
 2.0.3
 
 
-From a7c08652bbbe077943bf5e721eaa6cd6afe8a2d7 Mon Sep 17 00:00:00 2001
+From b38e7f90eb8739377845ef10dadb4988f7cbc5d6 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:14:05 +0200
-Subject: [PATCH 72/75] spi: bcm2835: make driver available on ARCH_BCM2708
+Subject: [PATCH 72/81] spi: bcm2835: make driver available on ARCH_BCM2708
 
 Make this driver available on ARCH_BCM2708
 
@@ -116837,10 +116837,10 @@ index 6015c1e..fa74d1f 100644
 2.0.3
 
 
-From 888e34872643cde6ea65e666e7762493ca2a1897 Mon Sep 17 00:00:00 2001
+From 180e86958b5fcd8a0bac18b243bce065e0abc2fc Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:04:49 +0200
-Subject: [PATCH 73/75] i2c: bcm2708: add device tree support
+Subject: [PATCH 73/81] i2c: bcm2708: add device tree support
 
 Add DT support to driver and add to .dtsi file.
 Setup pins in .dts file.
@@ -117008,10 +117008,10 @@ index 8750634..728cb69 100644
 2.0.3
 
 
-From f98cb89177702f75fe56e3ab4fdf24ccd47a43ba Mon Sep 17 00:00:00 2001
+From 8aa024e493f5779b320ae116e834dcca989b95dc Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:05:18 +0200
-Subject: [PATCH 74/75] bcm2708: don't register i2c controllers when using DT
+Subject: [PATCH 74/81] bcm2708: don't register i2c controllers when using DT
 
 The devices for the i2c controllers are in the Device Tree.
 Only register devices when not using DT.
@@ -117056,10 +117056,10 @@ index d227f9b..f67e552 100644
 2.0.3
 
 
-From 30d2c6249691737507c4b054f3224fddc0595ee0 Mon Sep 17 00:00:00 2001
+From 5cde34892b3eac8216baaf8f3f1ef137f09b65e9 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:05:39 +0200
-Subject: [PATCH 75/75] i2c: bcm2835: make driver available on ARCH_BCM2708
+Subject: [PATCH 75/81] i2c: bcm2835: make driver available on ARCH_BCM2708
 
 Make this driver available on ARCH_BCM2708
 
@@ -117081,6 +117081,1257 @@ index 09c620f..64e5e8a 100644
  	help
  	  If you say yes to this option, support will be included for the
  	  BCM2835 I2C controller.
+-- 
+2.0.3
+
+
+From 4e00e098889e969903d7ae61d4cbd0e4773a52af Mon Sep 17 00:00:00 2001
+From: Howard Mitchell <hm@hmbedded.co.uk>
+Date: Wed, 30 Jul 2014 10:02:00 +0100
+Subject: [PATCH 76/81] Revert "fix soc-core's inverse range and let IQaudIO
+ DAC use this fixed SOC_DOUBLE_R_RANGE_TLV support"
+
+---
+ sound/soc/soc-core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 4d8917b..bf39f16 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3058,8 +3058,8 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 
+ 	if (invert)
+ 		val = ((max - ucontrol->value.integer.value[0] + min) & mask);
+-	else
+-		val = (ucontrol->value.integer.value[0] & mask);
++    else
++	val = (ucontrol->value.integer.value[0] & mask);
+ 	val_mask = mask << shift;
+ 	val = val << shift;
+ 
+@@ -3070,8 +3070,8 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		if (invert)
+ 			val = ((max - ucontrol->value.integer.value[1] + min) & mask);
+-		else
+-			val = (ucontrol->value.integer.value[1] & mask);
++        else
++            val = (ucontrol->value.integer.value[1] & mask);
+ 		val_mask = mask << shift;
+ 		val = val << shift;
+ 
+-- 
+2.0.3
+
+
+From 6a4491eb889dccce1c0279cbfcb038158b4c3a91 Mon Sep 17 00:00:00 2001
+From: Howard Mitchell <hm@hmbedded.co.uk>
+Date: Wed, 30 Jul 2014 10:08:37 +0100
+Subject: [PATCH 77/81] Revert "Fix volsw_range functions so
+ SOC_DOUBLE_R_RANGE_TLV works."
+
+---
+ sound/soc/soc-core.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index bf39f16..051c006 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3024,8 +3024,8 @@ int snd_soc_info_volsw_range(struct snd_kcontrol *kcontrol,
+ 
+ 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+ 	uinfo->count = snd_soc_volsw_is_stereo(mc) ? 2 : 1;
+-	uinfo->value.integer.min = min;
+-	uinfo->value.integer.max = platform_max;
++	uinfo->value.integer.min = 0;
++	uinfo->value.integer.max = platform_max - min;
+ 
+ 	return 0;
+ }
+@@ -3056,10 +3056,9 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	unsigned int val, val_mask;
+ 	int ret;
+ 
++	val = ((ucontrol->value.integer.value[0] + min) & mask);
+ 	if (invert)
+-		val = ((max - ucontrol->value.integer.value[0] + min) & mask);
+-    else
+-	val = (ucontrol->value.integer.value[0] & mask);
++		val = max - val;
+ 	val_mask = mask << shift;
+ 	val = val << shift;
+ 
+@@ -3068,10 +3067,9 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return ret;
+ 
+ 	if (snd_soc_volsw_is_stereo(mc)) {
++		val = ((ucontrol->value.integer.value[1] + min) & mask);
+ 		if (invert)
+-			val = ((max - ucontrol->value.integer.value[1] + min) & mask);
+-        else
+-            val = (ucontrol->value.integer.value[1] & mask);
++			val = max - val;
+ 		val_mask = mask << shift;
+ 		val = val << shift;
+ 
+@@ -3109,14 +3107,18 @@ int snd_soc_get_volsw_range(struct snd_kcontrol *kcontrol,
+ 		(snd_soc_read(codec, reg) >> shift) & mask;
+ 	if (invert)
+ 		ucontrol->value.integer.value[0] =
+-			max - ucontrol->value.integer.value[0] + min;
++			max - ucontrol->value.integer.value[0];
++	ucontrol->value.integer.value[0] =
++		ucontrol->value.integer.value[0] - min;
+ 
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		ucontrol->value.integer.value[1] =
+ 			(snd_soc_read(codec, rreg) >> shift) & mask;
+ 		if (invert)
+ 			ucontrol->value.integer.value[1] =
+-				max - ucontrol->value.integer.value[1] + min;
++				max - ucontrol->value.integer.value[1];
++		ucontrol->value.integer.value[1] =
++			ucontrol->value.integer.value[1] - min;
+ 	}
+ 
+ 	return 0;
+-- 
+2.0.3
+
+
+From 30c03d03f4ecb018b425a1c1969515af60b07dc9 Mon Sep 17 00:00:00 2001
+From: Howard Mitchell <hm@hmbedded.co.uk>
+Date: Wed, 30 Jul 2014 10:20:03 +0100
+Subject: [PATCH 78/81] Revert "Add IQaudIO Sound Card support for Raspberry
+ Pi"
+
+---
+ arch/arm/configs/bcmrpi_defconfig |   1 -
+ arch/arm/mach-bcm2708/bcm2708.c   |  22 ----
+ sound/soc/bcm/Kconfig             |   7 --
+ sound/soc/bcm/Makefile            |   2 -
+ sound/soc/bcm/iqaudio-dac.c       | 111 -----------------
+ sound/soc/codecs/Kconfig          |   4 -
+ sound/soc/codecs/Makefile         |   2 -
+ sound/soc/codecs/pcm512x.c        | 243 ++++++++++++--------------------------
+ sound/soc/codecs/pcm512x.h        | 143 +++++++++++++---------
+ 9 files changed, 163 insertions(+), 372 deletions(-)
+ delete mode 100644 sound/soc/bcm/iqaudio-dac.c
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 29fe486..9888fc9 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -751,7 +751,6 @@ CONFIG_SND_BCM2708_SOC_RPI_DAC=m
+ CONFIG_SND_SOC_I2C_AND_SPI=m
+ CONFIG_SND_SOC_PCM5102A=m
+ CONFIG_SND_SOC_PCM1794A=m
+-CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC=m
+ CONFIG_SOUND_PRIME=m
+ CONFIG_HIDRAW=y
+ CONFIG_HID_A4TECH=m
+diff --git a/arch/arm/mach-bcm2708/bcm2708.c b/arch/arm/mach-bcm2708/bcm2708.c
+index f67e552..da38492 100644
+--- a/arch/arm/mach-bcm2708/bcm2708.c
++++ b/arch/arm/mach-bcm2708/bcm2708.c
+@@ -674,22 +674,6 @@ static struct platform_device snd_pcm1794a_codec_device = {
+ };
+ #endif
+ 
+-
+-#if defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) || defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC_MODULE)
+-static struct platform_device snd_rpi_iqaudio_dac_device = {
+-        .name = "snd-rpi-iqaudio-dac",
+-        .id = 0,
+-        .num_resources = 0,
+-};
+-
+-// Use the actual device name rather than generic driver name
+-static struct i2c_board_info __initdata snd_pcm512x_i2c_devices[] = {
+-	{
+-		I2C_BOARD_INFO("pcm5122", 0x4c)
+-	},
+-};
+-#endif
+-
+ int __init bcm_register_device(struct platform_device *pdev)
+ {
+ 	int ret;
+@@ -855,12 +839,6 @@ void __init bcm2708_init(void)
+         bcm_register_device(&snd_pcm1794a_codec_device);
+ #endif
+ 
+-#if defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) || defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC_MODULE)
+-        bcm_register_device(&snd_rpi_iqaudio_dac_device);
+-        i2c_register_board_info(1, snd_pcm512x_i2c_devices, ARRAY_SIZE(snd_pcm512x_i2c_devices));
+-#endif
+-
+-
+ 	for (i = 0; i < ARRAY_SIZE(amba_devs); i++) {
+ 		struct amba_device *d = amba_devs[i];
+ 		amba_device_register(d, &iomem_resource);
+diff --git a/sound/soc/bcm/Kconfig b/sound/soc/bcm/Kconfig
+index 84e4f27..e563dbc 100644
+--- a/sound/soc/bcm/Kconfig
++++ b/sound/soc/bcm/Kconfig
+@@ -39,10 +39,3 @@ config SND_BCM2708_SOC_RPI_DAC
+         select SND_SOC_PCM1794A
+         help
+          Say Y or M if you want to add support for RPi-DAC.
+-
+-config SND_BCM2708_SOC_IQAUDIO_DAC
+-	tristate "Support for IQaudIO-DAC"
+-	depends on SND_BCM2708_SOC_I2S
+-	select SND_SOC_PCM512x
+-	help
+-	  Say Y or M if you want to add support for IQaudIO-DAC.
+diff --git a/sound/soc/bcm/Makefile b/sound/soc/bcm/Makefile
+index d597fb0..826df7d 100644
+--- a/sound/soc/bcm/Makefile
++++ b/sound/soc/bcm/Makefile
+@@ -12,9 +12,7 @@ obj-$(CONFIG_SND_BCM2708_SOC_I2S) += snd-soc-bcm2708-i2s.o
+ snd-soc-hifiberry-dac-objs := hifiberry_dac.o
+ snd-soc-hifiberry-digi-objs := hifiberry_digi.o
+ snd-soc-rpi-dac-objs := rpi-dac.o
+-snd-soc-iqaudio-dac-objs := iqaudio-dac.o
+ 
+ obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DAC) += snd-soc-hifiberry-dac.o
+ obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DIGI) += snd-soc-hifiberry-digi.o
+ obj-$(CONFIG_SND_BCM2708_SOC_RPI_DAC) += snd-soc-rpi-dac.o
+-obj-$(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) += snd-soc-iqaudio-dac.o
+diff --git a/sound/soc/bcm/iqaudio-dac.c b/sound/soc/bcm/iqaudio-dac.c
+deleted file mode 100644
+index 515f044..0000000
+--- a/sound/soc/bcm/iqaudio-dac.c
++++ /dev/null
+@@ -1,111 +0,0 @@
+-/*
+- * ASoC Driver for IQaudIO DAC
+- *
+- * Author:	Florian Meier <florian.meier@koalo.de>
+- *		Copyright 2013
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License
+- * version 2 as published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- */
+-
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/pcm_params.h>
+-#include <sound/soc.h>
+-#include <sound/jack.h>
+-
+-static int snd_rpi_iqaudio_dac_init(struct snd_soc_pcm_runtime *rtd)
+-{
+-// NOT USED	struct snd_soc_codec *codec = rtd->codec;
+-
+-	return 0;
+-}
+-
+-static int snd_rpi_iqaudio_dac_hw_params(struct snd_pcm_substream *substream,
+-				       struct snd_pcm_hw_params *params)
+-{
+-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+-// NOT USED	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+-// NOT USED	struct snd_soc_codec *codec = rtd->codec;
+-	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+-
+-	unsigned int sample_bits =
+-		snd_pcm_format_physical_width(params_format(params));
+-
+-	return snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
+-}
+-
+-/* machine stream operations */
+-static struct snd_soc_ops snd_rpi_iqaudio_dac_ops = {
+-	.hw_params = snd_rpi_iqaudio_dac_hw_params,
+-};
+-
+-static struct snd_soc_dai_link snd_rpi_iqaudio_dac_dai[] = {
+-{
+-	.name		= "IQaudIO DAC",
+-	.stream_name	= "IQaudIO DAC HiFi",
+-	.cpu_dai_name	= "bcm2708-i2s.0",
+-	.codec_dai_name	= "pcm512x-hifi",
+-	.platform_name	= "bcm2708-i2s.0",
+-	.codec_name	= "pcm512x.1-004c",
+-	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+-				SND_SOC_DAIFMT_CBS_CFS,
+-	.ops		= &snd_rpi_iqaudio_dac_ops,
+-	.init		= snd_rpi_iqaudio_dac_init,
+-},
+-};
+-
+-/* audio machine driver */
+-static struct snd_soc_card snd_rpi_iqaudio_dac = {
+-	.name         = "snd_rpi_iqaudio_dac",
+-	.dai_link     = snd_rpi_iqaudio_dac_dai,
+-	.num_links    = ARRAY_SIZE(snd_rpi_iqaudio_dac_dai),
+-};
+-
+-static int snd_rpi_iqaudio_dac_probe(struct platform_device *pdev)
+-{
+-	int ret = 0;
+-
+-	snd_rpi_iqaudio_dac.dev = &pdev->dev;
+-	ret = snd_soc_register_card(&snd_rpi_iqaudio_dac);
+-	if (ret)
+-		dev_err(&pdev->dev,
+-			"snd_soc_register_card() failed: %d\n", ret);
+-
+-	return ret;
+-}
+-
+-static int snd_rpi_iqaudio_dac_remove(struct platform_device *pdev)
+-{
+-	return snd_soc_unregister_card(&snd_rpi_iqaudio_dac);
+-}
+-
+-static const struct of_device_id iqaudio_of_match[] = {
+-	{ .compatible = "iqaudio,iqaudio-dac", },
+-	{},
+-};
+-
+-static struct platform_driver snd_rpi_iqaudio_dac_driver = {
+-	.driver = {
+-		.name   = "snd-rpi-iqaudio-dac",
+-		.owner  = THIS_MODULE,
+-		.of_match_table = iqaudio_of_match,
+-	},
+-	.probe          = snd_rpi_iqaudio_dac_probe,
+-	.remove         = snd_rpi_iqaudio_dac_remove,
+-};
+-
+-module_platform_driver(snd_rpi_iqaudio_dac_driver);
+-
+-MODULE_AUTHOR("Florian Meier <florian.meier@koalo.de>");
+-MODULE_DESCRIPTION("ASoC Driver for IQAudio DAC");
+-MODULE_LICENSE("GPL v2");
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index b3a0488..54dec92 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -71,7 +71,6 @@ config SND_SOC_ALL_CODECS
+ 	select SND_SOC_PCM512x_SPI if SPI_MASTER
+ 	select SND_SOC_PCM1794A
+ 	select SND_SOC_PCM5102A
+-	select SND_SOC_PCM512x if SND_SOC_I2C_AND_SPI
+ 	select SND_SOC_RT5631 if I2C
+ 	select SND_SOC_RT5640 if I2C
+ 	select SND_SOC_SGTL5000 if I2C
+@@ -399,9 +398,6 @@ config SND_SOC_PCM1794A
+ config SND_SOC_PCM5102A
+ 	tristate
+ 
+-config SND_SOC_PCM512x
+-       tristate
+-
+ config SND_SOC_RT5631
+ 	tristate
+ 
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index 95600ec..7f0eefa 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -60,7 +60,6 @@ snd-soc-pcm512x-i2c-objs := pcm512x-i2c.o
+ snd-soc-pcm512x-spi-objs := pcm512x-spi.o
+ snd-soc-pcm1794a-objs := pcm1794a.o
+ snd-soc-pcm5102a-objs := pcm5102a.o
+-snd-soc-pcm512x-objs := pcm512x.o
+ snd-soc-rt5631-objs := rt5631.o
+ snd-soc-rt5640-objs := rt5640.o
+ snd-soc-sgtl5000-objs := sgtl5000.o
+@@ -214,7 +213,6 @@ obj-$(CONFIG_SND_SOC_PCM512x_I2C)	+= snd-soc-pcm512x-i2c.o
+ obj-$(CONFIG_SND_SOC_PCM512x_SPI)	+= snd-soc-pcm512x-spi.o
+ obj-$(CONFIG_SND_SOC_PCM1794A)	+= snd-soc-pcm1794a.o
+ obj-$(CONFIG_SND_SOC_PCM5102A)	+= snd-soc-pcm5102a.o
+-obj-$(CONFIG_SND_SOC_PCM512x)	+= snd-soc-pcm512x.o
+ obj-$(CONFIG_SND_SOC_RT5631)	+= snd-soc-rt5631.o
+ obj-$(CONFIG_SND_SOC_RT5640)	+= snd-soc-rt5640.o
+ obj-$(CONFIG_SND_SOC_SGTL5000)  += snd-soc-sgtl5000.o
+diff --git a/sound/soc/codecs/pcm512x.c b/sound/soc/codecs/pcm512x.c
+index b669e15..4b4c0c7 100644
+--- a/sound/soc/codecs/pcm512x.c
++++ b/sound/soc/codecs/pcm512x.c
+@@ -18,11 +18,9 @@
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/clk.h>
+-#include <linux/i2c.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/spi/spi.h>
+ #include <sound/soc.h>
+ #include <sound/soc-dapm.h>
+ #include <sound/tlv.h>
+@@ -30,7 +28,7 @@
+ #include "pcm512x.h"
+ 
+ #define PCM512x_NUM_SUPPLIES 3
+-static const char *pcm512x_supply_names[PCM512x_NUM_SUPPLIES] = {
++static const char * const pcm512x_supply_names[PCM512x_NUM_SUPPLIES] = {
+ 	"AVDD",
+ 	"DVDD",
+ 	"CPVDD",
+@@ -66,22 +64,29 @@ PCM512x_REGULATOR_EVENT(1)
+ PCM512x_REGULATOR_EVENT(2)
+ 
+ static const struct reg_default pcm512x_reg_defaults[] = {
+-	{ PCM512x_RESET,            0x00 },
+-	{ PCM512x_POWER,            0x00 },
+-	{ PCM512x_MUTE,             0x00 },
+-	{ PCM512x_DSP,              0x00 },
+-	{ PCM512x_PLL_REF,          0x00 },
+-	{ PCM512x_DAC_ROUTING,      0x11 },
+-	{ PCM512x_DSP_PROGRAM,      0x01 },
+-	{ PCM512x_CLKDET,           0x00 },
+-	{ PCM512x_AUTO_MUTE,        0x00 },
+-	{ PCM512x_ERROR_DETECT,     0x00 },
+-	{ PCM512x_DIGITAL_VOLUME_1, 0x00 },
+-	{ PCM512x_DIGITAL_VOLUME_2, 0x30 },
+-	{ PCM512x_DIGITAL_VOLUME_3, 0x30 },
+-	{ PCM512x_DIGITAL_MUTE_1,   0x22 },
+-	{ PCM512x_DIGITAL_MUTE_2,   0x00 },
+-	{ PCM512x_DIGITAL_MUTE_3,   0x07 },
++	{ PCM512x_RESET,             0x00 },
++	{ PCM512x_POWER,             0x00 },
++	{ PCM512x_MUTE,              0x00 },
++	{ PCM512x_DSP,               0x00 },
++	{ PCM512x_PLL_REF,           0x00 },
++	{ PCM512x_DAC_ROUTING,       0x11 },
++	{ PCM512x_DSP_PROGRAM,       0x01 },
++	{ PCM512x_CLKDET,            0x00 },
++	{ PCM512x_AUTO_MUTE,         0x00 },
++	{ PCM512x_ERROR_DETECT,      0x00 },
++	{ PCM512x_DIGITAL_VOLUME_1,  0x00 },
++	{ PCM512x_DIGITAL_VOLUME_2,  0x30 },
++	{ PCM512x_DIGITAL_VOLUME_3,  0x30 },
++	{ PCM512x_DIGITAL_MUTE_1,    0x22 },
++	{ PCM512x_DIGITAL_MUTE_2,    0x00 },
++	{ PCM512x_DIGITAL_MUTE_3,    0x07 },
++	{ PCM512x_OUTPUT_AMPLITUDE,  0x00 },
++	{ PCM512x_ANALOG_GAIN_CTRL,  0x00 },
++	{ PCM512x_UNDERVOLTAGE_PROT, 0x00 },
++	{ PCM512x_ANALOG_MUTE_CTRL,  0x00 },
++	{ PCM512x_ANALOG_GAIN_BOOST, 0x00 },
++	{ PCM512x_VCOM_CTRL_1,       0x00 },
++	{ PCM512x_VCOM_CTRL_2,       0x01 },
+ };
+ 
+ static bool pcm512x_readable(struct device *dev, unsigned int reg)
+@@ -141,9 +146,18 @@ static bool pcm512x_readable(struct device *dev, unsigned int reg)
+ 	case PCM512x_ANALOG_MUTE_DET:
+ 	case PCM512x_GPIN:
+ 	case PCM512x_DIGITAL_MUTE_DET:
++	case PCM512x_OUTPUT_AMPLITUDE:
++	case PCM512x_ANALOG_GAIN_CTRL:
++	case PCM512x_UNDERVOLTAGE_PROT:
++	case PCM512x_ANALOG_MUTE_CTRL:
++	case PCM512x_ANALOG_GAIN_BOOST:
++	case PCM512x_VCOM_CTRL_1:
++	case PCM512x_VCOM_CTRL_2:
++	case PCM512x_CRAM_CTRL:
+ 		return true;
+ 	default:
+-		return false;
++		/* There are 256 raw register addresses */
++		return reg < 0xff;
+ 	}
+ }
+ 
+@@ -159,17 +173,22 @@ static bool pcm512x_volatile(struct device *dev, unsigned int reg)
+ 	case PCM512x_ANALOG_MUTE_DET:
+ 	case PCM512x_GPIN:
+ 	case PCM512x_DIGITAL_MUTE_DET:
++	case PCM512x_CRAM_CTRL:
+ 		return true;
+ 	default:
+-		return false;
++		/* There are 256 raw register addresses */
++		return reg < 0xff;
+ 	}
+ }
+ 
+ static const DECLARE_TLV_DB_SCALE(digital_tlv, -10350, 50, 1);
++static const DECLARE_TLV_DB_SCALE(analog_tlv, -600, 600, 0);
++static const DECLARE_TLV_DB_SCALE(boost_tlv, 0, 80, 0);
+ 
+-static const char *pcm512x_dsp_program_texts[] = {
++static const char * const pcm512x_dsp_program_texts[] = {
+ 	"FIR interpolation with de-emphasis",
+ 	"Low latency IIR with de-emphasis",
++	"Fixed process flow",
+ 	"High attenuation with de-emphasis",
+ 	"Ringing-less low latency FIR",
+ };
+@@ -182,31 +201,31 @@ static const unsigned int pcm512x_dsp_program_values[] = {
+ 	7,
+ };
+ 
+-static const SOC_VALUE_ENUM_SINGLE_DECL(pcm512x_dsp_program,
+-					PCM512x_DSP_PROGRAM, 0, 0x1f,
+-					pcm512x_dsp_program_texts,
+-					pcm512x_dsp_program_values);
++static SOC_VALUE_ENUM_SINGLE_DECL(pcm512x_dsp_program,
++				  PCM512x_DSP_PROGRAM, 0, 0x1f,
++				  pcm512x_dsp_program_texts,
++				  pcm512x_dsp_program_values);
+ 
+-static const char *pcm512x_clk_missing_text[] = {
++static const char * const pcm512x_clk_missing_text[] = {
+ 	"1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s"
+ };
+ 
+ static const struct soc_enum pcm512x_clk_missing =
+-	SOC_ENUM_SINGLE(PCM512x_CLKDET, 0,  7, pcm512x_clk_missing_text);
++	SOC_ENUM_SINGLE(PCM512x_CLKDET, 0,  8, pcm512x_clk_missing_text);
+ 
+-static const char *pcm512x_autom_text[] = {
++static const char * const pcm512x_autom_text[] = {
+ 	"21ms", "106ms", "213ms", "533ms", "1.07s", "2.13s", "5.33s", "10.66s"
+ };
+ 
+ static const struct soc_enum pcm512x_autom_l =
+-	SOC_ENUM_SINGLE(PCM512x_AUTO_MUTE, PCM512x_ATML_SHIFT, 7,
++	SOC_ENUM_SINGLE(PCM512x_AUTO_MUTE, PCM512x_ATML_SHIFT, 8,
+ 			pcm512x_autom_text);
+ 
+ static const struct soc_enum pcm512x_autom_r =
+-	SOC_ENUM_SINGLE(PCM512x_AUTO_MUTE, PCM512x_ATMR_SHIFT, 7,
++	SOC_ENUM_SINGLE(PCM512x_AUTO_MUTE, PCM512x_ATMR_SHIFT, 8,
+ 			pcm512x_autom_text);
+ 
+-static const char *pcm512x_ramp_rate_text[] = {
++static const char * const pcm512x_ramp_rate_text[] = {
+ 	"1 sample/update", "2 samples/update", "4 samples/update",
+ 	"Immediate"
+ };
+@@ -223,7 +242,7 @@ static const struct soc_enum pcm512x_vedf =
+ 	SOC_ENUM_SINGLE(PCM512x_DIGITAL_MUTE_2, PCM512x_VEDF_SHIFT, 4,
+ 			pcm512x_ramp_rate_text);
+ 
+-static const char *pcm512x_ramp_step_text[] = {
++static const char * const pcm512x_ramp_step_text[] = {
+ 	"4dB/step", "2dB/step", "1dB/step", "0.5dB/step"
+ };
+ 
+@@ -239,10 +258,13 @@ static const struct soc_enum pcm512x_veds =
+ 	SOC_ENUM_SINGLE(PCM512x_DIGITAL_MUTE_2, PCM512x_VEDS_SHIFT, 4,
+ 			pcm512x_ramp_step_text);
+ 
+-/* Don't let the DAC go into clipping by limiting the alsa volume control range */
+ static const struct snd_kcontrol_new pcm512x_controls[] = {
+-SOC_DOUBLE_R_RANGE_TLV("Playback Digital Volume", PCM512x_DIGITAL_VOLUME_2,
+-		 PCM512x_DIGITAL_VOLUME_3, 0, 40, 255, 1, digital_tlv),
++SOC_DOUBLE_R_TLV("Playback Digital Volume", PCM512x_DIGITAL_VOLUME_2,
++		 PCM512x_DIGITAL_VOLUME_3, 0, 255, 1, digital_tlv),
++SOC_DOUBLE_TLV("Playback Volume", PCM512x_ANALOG_GAIN_CTRL,
++	       PCM512x_LAGN_SHIFT, PCM512x_RAGN_SHIFT, 1, 1, analog_tlv),
++SOC_DOUBLE_TLV("Playback Boost Volume", PCM512x_ANALOG_GAIN_BOOST,
++	       PCM512x_AGBL_SHIFT, PCM512x_AGBR_SHIFT, 1, 0, boost_tlv),
+ SOC_DOUBLE("Playback Digital Switch", PCM512x_MUTE, PCM512x_RQML_SHIFT,
+ 	   PCM512x_RQMR_SHIFT, 1, 1),
+ 
+@@ -343,27 +365,32 @@ static struct snd_soc_codec_driver pcm512x_codec_driver = {
+ 	.num_dapm_routes = ARRAY_SIZE(pcm512x_dapm_routes),
+ };
+ 
+-static const struct regmap_config pcm512x_regmap = {
++static const struct regmap_range_cfg pcm512x_range = {
++	.name = "Pages", .range_min = PCM512x_VIRT_BASE,
++	.range_max = PCM512x_MAX_REGISTER,
++	.selector_reg = PCM512x_PAGE,
++	.selector_mask = 0xff,
++	.window_start = 0, .window_len = 0x100,
++};
++
++const struct regmap_config pcm512x_regmap = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+ 
+ 	.readable_reg = pcm512x_readable,
+ 	.volatile_reg = pcm512x_volatile,
+ 
++	.ranges = &pcm512x_range,
++	.num_ranges = 1,
++
+ 	.max_register = PCM512x_MAX_REGISTER,
+ 	.reg_defaults = pcm512x_reg_defaults,
+ 	.num_reg_defaults = ARRAY_SIZE(pcm512x_reg_defaults),
+ 	.cache_type = REGCACHE_RBTREE,
+ };
++EXPORT_SYMBOL_GPL(pcm512x_regmap);
+ 
+-static const struct of_device_id pcm512x_of_match[] = {
+-	{ .compatible = "ti,pcm5121", },
+-	{ .compatible = "ti,pcm5122", },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(of, pcm512x_of_match);
+-
+-static int pcm512x_probe(struct device *dev, struct regmap *regmap)
++int pcm512x_probe(struct device *dev, struct regmap *regmap)
+ {
+ 	struct pcm512x_priv *pcm512x;
+ 	int i, ret;
+@@ -463,8 +490,6 @@ static int pcm512x_probe(struct device *dev, struct regmap *regmap)
+ 		goto err_pm;
+ 	}
+ 
+-	dev_info(dev, "Completed initialisation - pcm512x_probe");
+-
+ 	return 0;
+ 
+ err_pm:
+@@ -477,8 +502,9 @@ static int pcm512x_probe(struct device *dev, struct regmap *regmap)
+ 				     pcm512x->supplies);
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(pcm512x_probe);
+ 
+-static void pcm512x_remove(struct device *dev)
++void pcm512x_remove(struct device *dev)
+ {
+ 	struct pcm512x_priv *pcm512x = dev_get_drvdata(dev);
+ 
+@@ -489,8 +515,8 @@ static void pcm512x_remove(struct device *dev)
+ 	regulator_bulk_disable(ARRAY_SIZE(pcm512x->supplies),
+ 			       pcm512x->supplies);
+ }
++EXPORT_SYMBOL_GPL(pcm512x_remove);
+ 
+-/* TODO
+ static int pcm512x_suspend(struct device *dev)
+ {
+ 	struct pcm512x_priv *pcm512x = dev_get_drvdata(dev);
+@@ -553,125 +579,10 @@ static int pcm512x_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-// END OF PCM512x_suspend and resume calls TODO
+-*/
+-
+-static const struct dev_pm_ops pcm512x_pm_ops = {
++const struct dev_pm_ops pcm512x_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(pcm512x_suspend, pcm512x_resume, NULL)
+ };
+-
+-#if IS_ENABLED(CONFIG_I2C)
+-static int pcm512x_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
+-{
+-	struct regmap *regmap;
+-
+-	regmap = devm_regmap_init_i2c(i2c, &pcm512x_regmap);
+-	if (IS_ERR(regmap))
+-		return PTR_ERR(regmap);
+-
+-	return pcm512x_probe(&i2c->dev, regmap);
+-}
+-
+-static int pcm512x_i2c_remove(struct i2c_client *i2c)
+-{
+-	pcm512x_remove(&i2c->dev);
+-	return 0;
+-}
+-
+-static const struct i2c_device_id pcm512x_i2c_id[] = {
+-	{ "pcm5121", },
+-	{ "pcm5122", },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, pcm512x_i2c_id);
+-
+-static struct i2c_driver pcm512x_i2c_driver = {
+-	.probe 		= pcm512x_i2c_probe,
+-	.remove 	= pcm512x_i2c_remove,
+-	.id_table	= pcm512x_i2c_id,
+-	.driver		= {
+-		.name	= "pcm512x",
+-		.owner	= THIS_MODULE,
+-		.of_match_table = pcm512x_of_match,
+-		.pm     = &pcm512x_pm_ops,
+-	},
+-};
+-#endif
+-
+-#if defined(CONFIG_SPI_MASTER)
+-static int pcm512x_spi_probe(struct spi_device *spi)
+-{
+-	struct regmap *regmap;
+-	int ret;
+-
+-	regmap = devm_regmap_init_spi(spi, &pcm512x_regmap);
+-	if (IS_ERR(regmap)) {
+-		ret = PTR_ERR(regmap);
+-		return ret;
+-	}
+-
+-	return pcm512x_probe(&spi->dev, regmap);
+-}
+-
+-static int pcm512x_spi_remove(struct spi_device *spi)
+-{
+-	pcm512x_remove(&spi->dev);
+-	return 0;
+-}
+-
+-static const struct spi_device_id pcm512x_spi_id[] = {
+-	{ "pcm5121", },
+-	{ "pcm5122", },
+-	{ },
+-};
+-MODULE_DEVICE_TABLE(spi, pcm512x_spi_id);
+-
+-static struct spi_driver pcm512x_spi_driver = {
+-	.probe		= pcm512x_spi_probe,
+-	.remove		= pcm512x_spi_remove,
+-	.id_table	= pcm512x_spi_id,
+-	.driver = {
+-		.name	= "pcm512x",
+-		.owner	= THIS_MODULE,
+-		.of_match_table = pcm512x_of_match,
+-		.pm     = &pcm512x_pm_ops,
+-	},
+-};
+-#endif
+-
+-static int __init pcm512x_modinit(void)
+-{
+-	int ret = 0;
+-
+-#if IS_ENABLED(CONFIG_I2C)
+-	ret = i2c_add_driver(&pcm512x_i2c_driver);
+-	if (ret) {
+-		printk(KERN_ERR "Failed to register pcm512x I2C driver: %d\n",
+-		       ret);
+-	}
+-#endif
+-#if defined(CONFIG_SPI_MASTER)
+-	ret = spi_register_driver(&pcm512x_spi_driver);
+-	if (ret != 0) {
+-		printk(KERN_ERR "Failed to register pcm512x SPI driver: %d\n",
+-		       ret);
+-	}
+-#endif
+-	return ret;
+-}
+-module_init(pcm512x_modinit);
+-
+-static void __exit pcm512x_exit(void)
+-{
+-#if IS_ENABLED(CONFIG_I2C)
+-	i2c_del_driver(&pcm512x_i2c_driver);
+-#endif
+-#if defined(CONFIG_SPI_MASTER)
+-	spi_unregister_driver(&pcm512x_spi_driver);
+-#endif
+-}
+-module_exit(pcm512x_exit);
++EXPORT_SYMBOL_GPL(pcm512x_pm_ops);
+ 
+ MODULE_DESCRIPTION("ASoC PCM512x codec driver");
+ MODULE_AUTHOR("Mark Brown <broonie@linaro.org>");
+diff --git a/sound/soc/codecs/pcm512x.h b/sound/soc/codecs/pcm512x.h
+index b2f518e..6ee76aa 100644
+--- a/sound/soc/codecs/pcm512x.h
++++ b/sound/soc/codecs/pcm512x.h
+@@ -17,66 +17,81 @@
+ #ifndef _SND_SOC_PCM512X
+ #define _SND_SOC_PCM512X
+ 
+-#define PCM512x_PAGE_0_BASE 0
++#include <linux/pm.h>
++#include <linux/regmap.h>
++
++#define PCM512x_VIRT_BASE 0x100
++#define PCM512x_PAGE_LEN  0x100
++#define PCM512x_PAGE_BASE(n)  (PCM512x_VIRT_BASE + (PCM512x_PAGE_LEN * n))
+ 
+ #define PCM512x_PAGE              0
+ 
+-#define PCM512x_RESET             (PCM512x_PAGE_0_BASE +   1)
+-#define PCM512x_POWER             (PCM512x_PAGE_0_BASE +   2)
+-#define PCM512x_MUTE              (PCM512x_PAGE_0_BASE +   3)
+-#define PCM512x_PLL_EN            (PCM512x_PAGE_0_BASE +   4)
+-#define PCM512x_SPI_MISO_FUNCTION (PCM512x_PAGE_0_BASE +   6)
+-#define PCM512x_DSP               (PCM512x_PAGE_0_BASE +   7)
+-#define PCM512x_GPIO_EN           (PCM512x_PAGE_0_BASE +   8)
+-#define PCM512x_BCLK_LRCLK_CFG    (PCM512x_PAGE_0_BASE +   9)
+-#define PCM512x_DSP_GPIO_INPUT    (PCM512x_PAGE_0_BASE +  10)
+-#define PCM512x_MASTER_MODE       (PCM512x_PAGE_0_BASE +  12)
+-#define PCM512x_PLL_REF           (PCM512x_PAGE_0_BASE +  13)
+-#define PCM512x_PLL_COEFF_0       (PCM512x_PAGE_0_BASE +  20)
+-#define PCM512x_PLL_COEFF_1       (PCM512x_PAGE_0_BASE +  21)
+-#define PCM512x_PLL_COEFF_2       (PCM512x_PAGE_0_BASE +  22)
+-#define PCM512x_PLL_COEFF_3       (PCM512x_PAGE_0_BASE +  23)
+-#define PCM512x_PLL_COEFF_4       (PCM512x_PAGE_0_BASE +  24)
+-#define PCM512x_DSP_CLKDIV        (PCM512x_PAGE_0_BASE +  27)
+-#define PCM512x_DAC_CLKDIV        (PCM512x_PAGE_0_BASE +  28)
+-#define PCM512x_NCP_CLKDIV        (PCM512x_PAGE_0_BASE +  29)
+-#define PCM512x_OSR_CLKDIV        (PCM512x_PAGE_0_BASE +  30)
+-#define PCM512x_MASTER_CLKDIV_1   (PCM512x_PAGE_0_BASE +  32)
+-#define PCM512x_MASTER_CLKDIV_2   (PCM512x_PAGE_0_BASE +  33)
+-#define PCM512x_FS_SPEED_MODE     (PCM512x_PAGE_0_BASE +  34)
+-#define PCM512x_IDAC_1            (PCM512x_PAGE_0_BASE +  35)
+-#define PCM512x_IDAC_2            (PCM512x_PAGE_0_BASE +  36)
+-#define PCM512x_ERROR_DETECT      (PCM512x_PAGE_0_BASE +  37)
+-#define PCM512x_I2S_1             (PCM512x_PAGE_0_BASE +  40)
+-#define PCM512x_I2S_2             (PCM512x_PAGE_0_BASE +  41)
+-#define PCM512x_DAC_ROUTING       (PCM512x_PAGE_0_BASE +  42)
+-#define PCM512x_DSP_PROGRAM       (PCM512x_PAGE_0_BASE +  43)
+-#define PCM512x_CLKDET            (PCM512x_PAGE_0_BASE +  44)
+-#define PCM512x_AUTO_MUTE         (PCM512x_PAGE_0_BASE +  59)
+-#define PCM512x_DIGITAL_VOLUME_1  (PCM512x_PAGE_0_BASE +  60)
+-#define PCM512x_DIGITAL_VOLUME_2  (PCM512x_PAGE_0_BASE +  61)
+-#define PCM512x_DIGITAL_VOLUME_3  (PCM512x_PAGE_0_BASE +  62)
+-#define PCM512x_DIGITAL_MUTE_1    (PCM512x_PAGE_0_BASE +  63)
+-#define PCM512x_DIGITAL_MUTE_2    (PCM512x_PAGE_0_BASE +  64)
+-#define PCM512x_DIGITAL_MUTE_3    (PCM512x_PAGE_0_BASE +  65)
+-#define PCM512x_GPIO_OUTPUT_1     (PCM512x_PAGE_0_BASE +  80)
+-#define PCM512x_GPIO_OUTPUT_2     (PCM512x_PAGE_0_BASE +  81)
+-#define PCM512x_GPIO_OUTPUT_3     (PCM512x_PAGE_0_BASE +  82)
+-#define PCM512x_GPIO_OUTPUT_4     (PCM512x_PAGE_0_BASE +  83)
+-#define PCM512x_GPIO_OUTPUT_5     (PCM512x_PAGE_0_BASE +  84)
+-#define PCM512x_GPIO_OUTPUT_6     (PCM512x_PAGE_0_BASE +  85)
+-#define PCM512x_GPIO_CONTROL_1    (PCM512x_PAGE_0_BASE +  86)
+-#define PCM512x_GPIO_CONTROL_2    (PCM512x_PAGE_0_BASE +  87)
+-#define PCM512x_OVERFLOW          (PCM512x_PAGE_0_BASE +  90)
+-#define PCM512x_RATE_DET_1        (PCM512x_PAGE_0_BASE +  91)
+-#define PCM512x_RATE_DET_2        (PCM512x_PAGE_0_BASE +  92)
+-#define PCM512x_RATE_DET_3        (PCM512x_PAGE_0_BASE +  93)
+-#define PCM512x_RATE_DET_4        (PCM512x_PAGE_0_BASE +  94)
+-#define PCM512x_ANALOG_MUTE_DET   (PCM512x_PAGE_0_BASE + 108)
+-#define PCM512x_GPIN              (PCM512x_PAGE_0_BASE + 119)
+-#define PCM512x_DIGITAL_MUTE_DET  (PCM512x_PAGE_0_BASE + 120)
+-
+-#define PCM512x_MAX_REGISTER      (PCM512x_PAGE_0_BASE + 120)
++#define PCM512x_RESET             (PCM512x_PAGE_BASE(0) +   1)
++#define PCM512x_POWER             (PCM512x_PAGE_BASE(0) +   2)
++#define PCM512x_MUTE              (PCM512x_PAGE_BASE(0) +   3)
++#define PCM512x_PLL_EN            (PCM512x_PAGE_BASE(0) +   4)
++#define PCM512x_SPI_MISO_FUNCTION (PCM512x_PAGE_BASE(0) +   6)
++#define PCM512x_DSP               (PCM512x_PAGE_BASE(0) +   7)
++#define PCM512x_GPIO_EN           (PCM512x_PAGE_BASE(0) +   8)
++#define PCM512x_BCLK_LRCLK_CFG    (PCM512x_PAGE_BASE(0) +   9)
++#define PCM512x_DSP_GPIO_INPUT    (PCM512x_PAGE_BASE(0) +  10)
++#define PCM512x_MASTER_MODE       (PCM512x_PAGE_BASE(0) +  12)
++#define PCM512x_PLL_REF           (PCM512x_PAGE_BASE(0) +  13)
++#define PCM512x_PLL_COEFF_0       (PCM512x_PAGE_BASE(0) +  20)
++#define PCM512x_PLL_COEFF_1       (PCM512x_PAGE_BASE(0) +  21)
++#define PCM512x_PLL_COEFF_2       (PCM512x_PAGE_BASE(0) +  22)
++#define PCM512x_PLL_COEFF_3       (PCM512x_PAGE_BASE(0) +  23)
++#define PCM512x_PLL_COEFF_4       (PCM512x_PAGE_BASE(0) +  24)
++#define PCM512x_DSP_CLKDIV        (PCM512x_PAGE_BASE(0) +  27)
++#define PCM512x_DAC_CLKDIV        (PCM512x_PAGE_BASE(0) +  28)
++#define PCM512x_NCP_CLKDIV        (PCM512x_PAGE_BASE(0) +  29)
++#define PCM512x_OSR_CLKDIV        (PCM512x_PAGE_BASE(0) +  30)
++#define PCM512x_MASTER_CLKDIV_1   (PCM512x_PAGE_BASE(0) +  32)
++#define PCM512x_MASTER_CLKDIV_2   (PCM512x_PAGE_BASE(0) +  33)
++#define PCM512x_FS_SPEED_MODE     (PCM512x_PAGE_BASE(0) +  34)
++#define PCM512x_IDAC_1            (PCM512x_PAGE_BASE(0) +  35)
++#define PCM512x_IDAC_2            (PCM512x_PAGE_BASE(0) +  36)
++#define PCM512x_ERROR_DETECT      (PCM512x_PAGE_BASE(0) +  37)
++#define PCM512x_I2S_1             (PCM512x_PAGE_BASE(0) +  40)
++#define PCM512x_I2S_2             (PCM512x_PAGE_BASE(0) +  41)
++#define PCM512x_DAC_ROUTING       (PCM512x_PAGE_BASE(0) +  42)
++#define PCM512x_DSP_PROGRAM       (PCM512x_PAGE_BASE(0) +  43)
++#define PCM512x_CLKDET            (PCM512x_PAGE_BASE(0) +  44)
++#define PCM512x_AUTO_MUTE         (PCM512x_PAGE_BASE(0) +  59)
++#define PCM512x_DIGITAL_VOLUME_1  (PCM512x_PAGE_BASE(0) +  60)
++#define PCM512x_DIGITAL_VOLUME_2  (PCM512x_PAGE_BASE(0) +  61)
++#define PCM512x_DIGITAL_VOLUME_3  (PCM512x_PAGE_BASE(0) +  62)
++#define PCM512x_DIGITAL_MUTE_1    (PCM512x_PAGE_BASE(0) +  63)
++#define PCM512x_DIGITAL_MUTE_2    (PCM512x_PAGE_BASE(0) +  64)
++#define PCM512x_DIGITAL_MUTE_3    (PCM512x_PAGE_BASE(0) +  65)
++#define PCM512x_GPIO_OUTPUT_1     (PCM512x_PAGE_BASE(0) +  80)
++#define PCM512x_GPIO_OUTPUT_2     (PCM512x_PAGE_BASE(0) +  81)
++#define PCM512x_GPIO_OUTPUT_3     (PCM512x_PAGE_BASE(0) +  82)
++#define PCM512x_GPIO_OUTPUT_4     (PCM512x_PAGE_BASE(0) +  83)
++#define PCM512x_GPIO_OUTPUT_5     (PCM512x_PAGE_BASE(0) +  84)
++#define PCM512x_GPIO_OUTPUT_6     (PCM512x_PAGE_BASE(0) +  85)
++#define PCM512x_GPIO_CONTROL_1    (PCM512x_PAGE_BASE(0) +  86)
++#define PCM512x_GPIO_CONTROL_2    (PCM512x_PAGE_BASE(0) +  87)
++#define PCM512x_OVERFLOW          (PCM512x_PAGE_BASE(0) +  90)
++#define PCM512x_RATE_DET_1        (PCM512x_PAGE_BASE(0) +  91)
++#define PCM512x_RATE_DET_2        (PCM512x_PAGE_BASE(0) +  92)
++#define PCM512x_RATE_DET_3        (PCM512x_PAGE_BASE(0) +  93)
++#define PCM512x_RATE_DET_4        (PCM512x_PAGE_BASE(0) +  94)
++#define PCM512x_ANALOG_MUTE_DET   (PCM512x_PAGE_BASE(0) + 108)
++#define PCM512x_GPIN              (PCM512x_PAGE_BASE(0) + 119)
++#define PCM512x_DIGITAL_MUTE_DET  (PCM512x_PAGE_BASE(0) + 120)
++
++#define PCM512x_OUTPUT_AMPLITUDE  (PCM512x_PAGE_BASE(1) +   1)
++#define PCM512x_ANALOG_GAIN_CTRL  (PCM512x_PAGE_BASE(1) +   2)
++#define PCM512x_UNDERVOLTAGE_PROT (PCM512x_PAGE_BASE(1) +   5)
++#define PCM512x_ANALOG_MUTE_CTRL  (PCM512x_PAGE_BASE(1) +   6)
++#define PCM512x_ANALOG_GAIN_BOOST (PCM512x_PAGE_BASE(1) +   7)
++#define PCM512x_VCOM_CTRL_1       (PCM512x_PAGE_BASE(1) +   8)
++#define PCM512x_VCOM_CTRL_2       (PCM512x_PAGE_BASE(1) +   9)
++
++#define PCM512x_CRAM_CTRL         (PCM512x_PAGE_BASE(44) +  1)
++
++#define PCM512x_MAX_REGISTER      (PCM512x_PAGE_BASE(44) +  1)
+ 
+ /* Page 0, Register 1 - reset */
+ #define PCM512x_RSTR (1 << 0)
+@@ -139,4 +154,18 @@
+ #define PCM512x_AMLE_SHIFT 1
+ #define PCM512x_AMLR_SHIFT 0
+ 
++/* Page 1, Register 2 - analog volume control */
++#define PCM512x_RAGN_SHIFT 0
++#define PCM512x_LAGN_SHIFT 4
++
++/* Page 1, Register 7 - analog boost control */
++#define PCM512x_AGBR_SHIFT 0
++#define PCM512x_AGBL_SHIFT 4
++
++extern const struct dev_pm_ops pcm512x_pm_ops;
++extern const struct regmap_config pcm512x_regmap;
++
++int pcm512x_probe(struct device *dev, struct regmap *regmap);
++void pcm512x_remove(struct device *dev);
++
+ #endif
+-- 
+2.0.3
+
+
+From 0a5d48a65a72b4eed8da1b3e84a1ba4886d6552b Mon Sep 17 00:00:00 2001
+From: Gordon Garrity <gordon@iqaudio.com>
+Date: Sat, 8 Mar 2014 16:56:57 +0000
+Subject: [PATCH 79/81] Add IQaudIO Sound Card support for Raspberry Pi
+
+---
+ arch/arm/configs/bcmrpi_defconfig |   1 +
+ arch/arm/mach-bcm2708/bcm2708.c   |  22 ++++++++
+ sound/soc/bcm/Kconfig             |   7 +++
+ sound/soc/bcm/Makefile            |   2 +
+ sound/soc/bcm/iqaudio-dac.c       | 111 ++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 143 insertions(+)
+ create mode 100644 sound/soc/bcm/iqaudio-dac.c
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 9888fc9..29fe486 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -751,6 +751,7 @@ CONFIG_SND_BCM2708_SOC_RPI_DAC=m
+ CONFIG_SND_SOC_I2C_AND_SPI=m
+ CONFIG_SND_SOC_PCM5102A=m
+ CONFIG_SND_SOC_PCM1794A=m
++CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC=m
+ CONFIG_SOUND_PRIME=m
+ CONFIG_HIDRAW=y
+ CONFIG_HID_A4TECH=m
+diff --git a/arch/arm/mach-bcm2708/bcm2708.c b/arch/arm/mach-bcm2708/bcm2708.c
+index da38492..f67e552 100644
+--- a/arch/arm/mach-bcm2708/bcm2708.c
++++ b/arch/arm/mach-bcm2708/bcm2708.c
+@@ -674,6 +674,22 @@ static struct platform_device snd_pcm1794a_codec_device = {
+ };
+ #endif
+ 
++
++#if defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) || defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC_MODULE)
++static struct platform_device snd_rpi_iqaudio_dac_device = {
++        .name = "snd-rpi-iqaudio-dac",
++        .id = 0,
++        .num_resources = 0,
++};
++
++// Use the actual device name rather than generic driver name
++static struct i2c_board_info __initdata snd_pcm512x_i2c_devices[] = {
++	{
++		I2C_BOARD_INFO("pcm5122", 0x4c)
++	},
++};
++#endif
++
+ int __init bcm_register_device(struct platform_device *pdev)
+ {
+ 	int ret;
+@@ -839,6 +855,12 @@ void __init bcm2708_init(void)
+         bcm_register_device(&snd_pcm1794a_codec_device);
+ #endif
+ 
++#if defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) || defined(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC_MODULE)
++        bcm_register_device(&snd_rpi_iqaudio_dac_device);
++        i2c_register_board_info(1, snd_pcm512x_i2c_devices, ARRAY_SIZE(snd_pcm512x_i2c_devices));
++#endif
++
++
+ 	for (i = 0; i < ARRAY_SIZE(amba_devs); i++) {
+ 		struct amba_device *d = amba_devs[i];
+ 		amba_device_register(d, &iomem_resource);
+diff --git a/sound/soc/bcm/Kconfig b/sound/soc/bcm/Kconfig
+index e563dbc..c621a5e 100644
+--- a/sound/soc/bcm/Kconfig
++++ b/sound/soc/bcm/Kconfig
+@@ -39,3 +39,10 @@ config SND_BCM2708_SOC_RPI_DAC
+         select SND_SOC_PCM1794A
+         help
+          Say Y or M if you want to add support for RPi-DAC.
++
++config SND_BCM2708_SOC_IQAUDIO_DAC
++	tristate "Support for IQaudIO-DAC"
++	depends on SND_BCM2708_SOC_I2S
++	select SND_SOC_PCM512x_I2C
++	help
++	  Say Y or M if you want to add support for IQaudIO-DAC.
+diff --git a/sound/soc/bcm/Makefile b/sound/soc/bcm/Makefile
+index 826df7d..d597fb0 100644
+--- a/sound/soc/bcm/Makefile
++++ b/sound/soc/bcm/Makefile
+@@ -12,7 +12,9 @@ obj-$(CONFIG_SND_BCM2708_SOC_I2S) += snd-soc-bcm2708-i2s.o
+ snd-soc-hifiberry-dac-objs := hifiberry_dac.o
+ snd-soc-hifiberry-digi-objs := hifiberry_digi.o
+ snd-soc-rpi-dac-objs := rpi-dac.o
++snd-soc-iqaudio-dac-objs := iqaudio-dac.o
+ 
+ obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DAC) += snd-soc-hifiberry-dac.o
+ obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DIGI) += snd-soc-hifiberry-digi.o
+ obj-$(CONFIG_SND_BCM2708_SOC_RPI_DAC) += snd-soc-rpi-dac.o
++obj-$(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) += snd-soc-iqaudio-dac.o
+diff --git a/sound/soc/bcm/iqaudio-dac.c b/sound/soc/bcm/iqaudio-dac.c
+new file mode 100644
+index 0000000..8d0e2ae
+--- /dev/null
++++ b/sound/soc/bcm/iqaudio-dac.c
+@@ -0,0 +1,111 @@
++/*
++ * ASoC Driver for IQaudIO DAC
++ *
++ * Author:	Florian Meier <florian.meier@koalo.de>
++ *		Copyright 2013
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ */
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++
++#include <sound/core.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++#include <sound/jack.h>
++
++static int snd_rpi_iqaudio_dac_init(struct snd_soc_pcm_runtime *rtd)
++{
++// NOT USED	struct snd_soc_codec *codec = rtd->codec;
++
++	return 0;
++}
++
++static int snd_rpi_iqaudio_dac_hw_params(struct snd_pcm_substream *substream,
++				       struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++// NOT USED	struct snd_soc_dai *codec_dai = rtd->codec_dai;
++// NOT USED	struct snd_soc_codec *codec = rtd->codec;
++	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
++
++	unsigned int sample_bits =
++		snd_pcm_format_physical_width(params_format(params));
++
++	return snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
++}
++
++/* machine stream operations */
++static struct snd_soc_ops snd_rpi_iqaudio_dac_ops = {
++	.hw_params = snd_rpi_iqaudio_dac_hw_params,
++};
++
++static struct snd_soc_dai_link snd_rpi_iqaudio_dac_dai[] = {
++{
++	.name		= "IQaudIO DAC",
++	.stream_name	= "IQaudIO DAC HiFi",
++	.cpu_dai_name	= "bcm2708-i2s.0",
++	.codec_dai_name	= "pcm512x-hifi",
++	.platform_name	= "bcm2708-i2s.0",
++	.codec_name	= "pcm512x.1-004c",
++	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
++				SND_SOC_DAIFMT_CBS_CFS,
++	.ops		= &snd_rpi_iqaudio_dac_ops,
++	.init		= snd_rpi_iqaudio_dac_init,
++},
++};
++
++/* audio machine driver */
++static struct snd_soc_card snd_rpi_iqaudio_dac = {
++	.name         = "IQaudIODAC",
++	.dai_link     = snd_rpi_iqaudio_dac_dai,
++	.num_links    = ARRAY_SIZE(snd_rpi_iqaudio_dac_dai),
++};
++
++static int snd_rpi_iqaudio_dac_probe(struct platform_device *pdev)
++{
++	int ret = 0;
++
++	snd_rpi_iqaudio_dac.dev = &pdev->dev;
++	ret = snd_soc_register_card(&snd_rpi_iqaudio_dac);
++	if (ret)
++		dev_err(&pdev->dev,
++			"snd_soc_register_card() failed: %d\n", ret);
++
++	return ret;
++}
++
++static int snd_rpi_iqaudio_dac_remove(struct platform_device *pdev)
++{
++	return snd_soc_unregister_card(&snd_rpi_iqaudio_dac);
++}
++
++static const struct of_device_id iqaudio_of_match[] = {
++	{ .compatible = "iqaudio,iqaudio-dac", },
++	{},
++};
++
++static struct platform_driver snd_rpi_iqaudio_dac_driver = {
++	.driver = {
++		.name   = "snd-rpi-iqaudio-dac",
++		.owner  = THIS_MODULE,
++		.of_match_table = iqaudio_of_match,
++	},
++	.probe          = snd_rpi_iqaudio_dac_probe,
++	.remove         = snd_rpi_iqaudio_dac_remove,
++};
++
++module_platform_driver(snd_rpi_iqaudio_dac_driver);
++
++MODULE_AUTHOR("Florian Meier <florian.meier@koalo.de>");
++MODULE_DESCRIPTION("ASoC Driver for IQAudio DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+2.0.3
+
+
+From 38d43a3c52731319ed078146de6acc000dfa1837 Mon Sep 17 00:00:00 2001
+From: Howard Mitchell <hm@hmbedded.co.uk>
+Date: Wed, 30 Jul 2014 21:43:37 +0100
+Subject: [PATCH 80/81] soc-core: Fix volsw_range funcs so
+ SOC_DOUBLE_R_RANGE_TLV works.
+
+This is so that the correct range of values as specified
+with the SOC_DOUBLE_R_RANGE_TLV macro are sent to the
+hardware for both the normal and invert cases.
+---
+ sound/soc/soc-core.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 051c006..4d8917b 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3024,8 +3024,8 @@ int snd_soc_info_volsw_range(struct snd_kcontrol *kcontrol,
+ 
+ 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+ 	uinfo->count = snd_soc_volsw_is_stereo(mc) ? 2 : 1;
+-	uinfo->value.integer.min = 0;
+-	uinfo->value.integer.max = platform_max - min;
++	uinfo->value.integer.min = min;
++	uinfo->value.integer.max = platform_max;
+ 
+ 	return 0;
+ }
+@@ -3056,9 +3056,10 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	unsigned int val, val_mask;
+ 	int ret;
+ 
+-	val = ((ucontrol->value.integer.value[0] + min) & mask);
+ 	if (invert)
+-		val = max - val;
++		val = ((max - ucontrol->value.integer.value[0] + min) & mask);
++	else
++		val = (ucontrol->value.integer.value[0] & mask);
+ 	val_mask = mask << shift;
+ 	val = val << shift;
+ 
+@@ -3067,9 +3068,10 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return ret;
+ 
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+-		val = ((ucontrol->value.integer.value[1] + min) & mask);
+ 		if (invert)
+-			val = max - val;
++			val = ((max - ucontrol->value.integer.value[1] + min) & mask);
++		else
++			val = (ucontrol->value.integer.value[1] & mask);
+ 		val_mask = mask << shift;
+ 		val = val << shift;
+ 
+@@ -3107,18 +3109,14 @@ int snd_soc_get_volsw_range(struct snd_kcontrol *kcontrol,
+ 		(snd_soc_read(codec, reg) >> shift) & mask;
+ 	if (invert)
+ 		ucontrol->value.integer.value[0] =
+-			max - ucontrol->value.integer.value[0];
+-	ucontrol->value.integer.value[0] =
+-		ucontrol->value.integer.value[0] - min;
++			max - ucontrol->value.integer.value[0] + min;
+ 
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		ucontrol->value.integer.value[1] =
+ 			(snd_soc_read(codec, rreg) >> shift) & mask;
+ 		if (invert)
+ 			ucontrol->value.integer.value[1] =
+-				max - ucontrol->value.integer.value[1];
+-		ucontrol->value.integer.value[1] =
+-			ucontrol->value.integer.value[1] - min;
++				max - ucontrol->value.integer.value[1] + min;
+ 	}
+ 
+ 	return 0;
+-- 
+2.0.3
+
+
+From 8f39c5cb44f74baabbd511a82c212e675f097ddd Mon Sep 17 00:00:00 2001
+From: Howard Mitchell <hm@hmbedded.co.uk>
+Date: Fri, 28 Mar 2014 16:40:31 +0000
+Subject: [PATCH 81/81] pcm512x: Use a range macro for Volume and rename to
+ PCM.
+
+This allows limiting the output gain to avoid clipping in the
+DAC ouput stages.
+---
+ sound/soc/codecs/pcm512x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/codecs/pcm512x.c b/sound/soc/codecs/pcm512x.c
+index 4b4c0c7..ec7e034 100644
+--- a/sound/soc/codecs/pcm512x.c
++++ b/sound/soc/codecs/pcm512x.c
+@@ -259,8 +259,8 @@ static const struct soc_enum pcm512x_veds =
+ 			pcm512x_ramp_step_text);
+ 
+ static const struct snd_kcontrol_new pcm512x_controls[] = {
+-SOC_DOUBLE_R_TLV("Playback Digital Volume", PCM512x_DIGITAL_VOLUME_2,
+-		 PCM512x_DIGITAL_VOLUME_3, 0, 255, 1, digital_tlv),
++SOC_DOUBLE_R_RANGE_TLV("PCM", PCM512x_DIGITAL_VOLUME_2,
++		 PCM512x_DIGITAL_VOLUME_3, 0, 40, 255, 1, digital_tlv),
+ SOC_DOUBLE_TLV("Playback Volume", PCM512x_ANALOG_GAIN_CTRL,
+ 	       PCM512x_LAGN_SHIFT, PCM512x_RAGN_SHIFT, 1, 1, analog_tlv),
+ SOC_DOUBLE_TLV("Playback Boost Volume", PCM512x_ANALOG_GAIN_BOOST,
 -- 
 2.0.3
 
