@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mupen64plus"
-PKG_VERSION="c99ec0b"
+PKG_VERSION="4db2869"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -38,7 +38,7 @@ PKG_AUTORECONF="no"
 make_target() {
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
-  elif [ "$PROJECT" == "WandBoard" ]; then
+  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     make platform=imx6
   else
     make
