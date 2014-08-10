@@ -41,12 +41,11 @@ configure_target() {
 
 make_target() {
   cd $ROOT/$PKG_BUILD
-  export CORTEX_A9=1
-  export ARM_HARDFLOAT=1
-  export ARM_NEON=1
-  export HAVE_NEON=1
-  export USE_DYNAREC=1
-  export BUILTIN_GPU=neon
+  if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
+    export CFLAGS="$CFLAGS -DCORTEX_A9=1 -DARM_HARDFLOAT=1 -DARM_NEON=1 -DHAVE_NEON=1 -DUSE_DYNAREC=1 -DBUILTIN_GPU=neon"
+  elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ]; then
+    export CFLAGS="$CFLAGS -DCORTEX_A9=1 -DARM_HARDFLOAT=1 -DUSE_DYNAREC=1"
+  fi
   make -f Makefile.libretro
 }
 
