@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.ntfs-3g.org/"
 PKG_URL="http://tuxera.com/opensource/$PKG_NAME-$PKG_VERSION.tgz"
-PKG_DEPENDS_TARGET="toolchain fuse gnutls libgcrypt"
+PKG_DEPENDS_TARGET="toolchain fuse"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="ntfs-3g_ntfsprogs: NTFS-3G Read/Write userspace driver"
@@ -37,7 +37,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-dependency-tracking \
                            --enable-posix-acls \
                            --enable-mtab \
                            --enable-ntfsprogs \
-                           --enable-crypto \
+                           --disable-crypto \
                            --with-fuse=external \
                            --with-uuid"
 
@@ -45,6 +45,8 @@ post_makeinstall_target() {
   # dont include ntfsprogs.
   rm -rf $INSTALL/usr/sbin
   rm -rf $INSTALL/usr/bin
+  rm -rf $INSTALL/bin/lowntfs-3g
+  rm -rf $INSTALL/sbin/mount.lowntfs-3g
 
   mkdir -p $INSTALL/sbin
     ln -sf /bin/ntfs-3g $INSTALL/sbin/mount.ntfs

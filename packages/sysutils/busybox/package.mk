@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://www.busybox.net"
 PKG_URL="http://busybox.net/downloads/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_HOST=""
-PKG_DEPENDS_TARGET="toolchain busybox:host hdparm dosfstools e2fsprogs speedcontrol zip unzip pciutils usbutils parted"
+PKG_DEPENDS_TARGET="toolchain busybox:host hdparm dosfstools e2fsprogs zip unzip pciutils usbutils parted"
 PKG_DEPENDS_INIT="toolchain"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
@@ -231,10 +231,6 @@ makeinstall_init() {
   mkdir -p $INSTALL/etc
     touch $INSTALL/etc/fstab
     ln -sf /proc/self/mounts $INSTALL/etc/mtab
-
-    if [ -f $PROJECT_DIR/$PROJECT/initramfs/initramfs.conf ]; then
-      cp $PROJECT_DIR/$PROJECT/initramfs/initramfs.conf $INSTALL/etc
-    fi
 
   cp $PKG_DIR/scripts/init $INSTALL
   chmod 755 $INSTALL/init

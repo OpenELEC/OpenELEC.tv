@@ -206,7 +206,7 @@
   NFS_SUPPORT="yes"
 
 # build with afpfs-ng support (mounting AFP shares with XBMC) (yes / no)
-  AFP_SUPPORT="yes"
+  AFP_SUPPORT="no"
 
 # build and install Samba Client support (yes / no)
   SAMBA_SUPPORT="yes"
@@ -305,10 +305,10 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD"
 
 # Modules to install in initramfs for early boot
-  INITRAMFS_MODULES="xhci-hcd"
+  INITRAMFS_MODULES=""
 
 # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
 # Space separated list is supported,
@@ -344,9 +344,6 @@
 
 # Perf support in development builds (yes / no)
   PERF_SUPPORT="yes"
-
-# Coreboot support (yes / no)
-  COREBOOT="no"
 
 # Distribution Specific source location
   DISTRO_MIRROR="http://sources.openelec.tv/mirror"

@@ -55,11 +55,6 @@
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
   SYSTEM_TORAM_LIMIT=1024000
 
-  # load any configuration
-  if [ -f "/etc/initramfs.conf" ]; then
-    . /etc/initramfs.conf
-  fi
-
   # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
@@ -583,6 +578,7 @@
           update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
           update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
+          rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           do_reboot
         else
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
@@ -590,7 +586,6 @@
           sync
           usleep 30000000
         fi
-        rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
       else
         rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
         echo "size check failed. normal startup in 30s..."

@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="xbmc-717a0b5"
+PKG_VERSION="2.3.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://ffmpeg.org"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://www.ffmpeg.org/releases/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis gnutls"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
@@ -36,7 +36,7 @@ if [ "$VAAPI" = yes ]; then
 # configure GPU drivers and dependencies:
   get_graphicdrivers
 
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $LIBVA"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   FFMPEG_VAAPI="--enable-vaapi"
 else
   FFMPEG_VAAPI="--disable-vaapi"
@@ -224,7 +224,6 @@ configure_target() {
               --disable-altivec \
               $FFMPEG_CPU \
               $FFMPEG_FPU \
-              --disable-vis \
               --enable-yasm \
               --disable-sram \
               --disable-symver

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="nano"
-PKG_VERSION="2.3.1"
+PKG_VERSION="2.3.5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -31,6 +31,9 @@ PKG_LONGDESC="GNU nano (Nano's ANOther editor, or Not ANOther editor) is an enha
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--disable-utf8 \
+                           --disable-nls"
 
 export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/ncurses"
 export LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="214"
+PKG_VERSION="215"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -31,9 +31,6 @@ PKG_LONGDESC="systemd is a system and session manager for Linux, compatible with
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
-
-# libgcrypt is needed actually only for autoreconf
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libgcrypt"
 
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            KMOD=/usr/bin/kmod \
@@ -58,6 +55,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-smack \
                            --disable-gcrypt \
                            --disable-audit \
+                           --disable-elfutils \
                            --disable-libcryptsetup \
                            --disable-qrencode \
                            --disable-microhttpd \
@@ -68,6 +66,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-bootchart \
                            --disable-quotacheck \
                            --enable-tmpfiles \
+                           --disable-sysusers \
                            --disable-randomseed \
                            --disable-backlight \
                            --disable-rfkill \
@@ -143,10 +142,6 @@ post_makeinstall_target() {
       rm -rf $INSTALL/usr/bin/systemd-machine-id-setup
       cp $PKG_DIR/scripts/systemd-machine-id-setup $INSTALL/usr/bin
 
-  # copy openelec helper scripts
-    mkdir -p $INSTALL/usr/lib/openelec
-      cp $PKG_DIR/scripts/openelec-userconfig $INSTALL/usr/lib/openelec/
-
   # provide 'halt', 'shutdown', 'reboot' & co.
     mkdir -p $INSTALL/usr/sbin
       ln -sf /usr/bin/systemctl $INSTALL/usr/sbin/halt
@@ -189,6 +184,15 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/systemd/system/getty.target
     rm -rf $INSTALL/usr/lib/systemd/system/multi-user.target.wants/getty.target
 
+  # remove other notused or nonsense stuff (our /etc is ro)
+    rm -rf $INSTALL/usr/lib/systemd/system/systemd-update-done.service
+    rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/systemd-update-done.service
+    rm -rf $INSTALL/usr/lib/systemd/system/ldconfig.service
+    rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/ldconfig.service
+    rm -rf $INSTALL/usr/lib/systemd/system/systemd-udev-hwdb-update.service
+    rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/systemd-udev-hwdb-update.service
+    rm -rf $INSTALL/usr/lib/tmpfiles.d/etc.conf
+
   # remove rootfs fsck
     rm -rf $INSTALL/usr/lib/systemd/system/systemd-fsck-root.service
     rm -rf $INSTALL/usr/lib/systemd/system/local-fs.target.wants/systemd-fsck-root.service
@@ -221,6 +225,7 @@ post_install() {
   add_group tty 5
   add_group video 39
   add_group utmp 22
+  add_group input 199 # TODO change gid
 
   enable_service machine-id.service
   enable_service debugconfig.service
