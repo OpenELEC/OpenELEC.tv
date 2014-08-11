@@ -23,11 +23,11 @@ case "$LINUX" in
     PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
-    PKG_VERSION="cuboxi-27bb585"
+    PKG_VERSION="cuboxi-a5afa23"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.15.8"
+    PKG_VERSION="3.16"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac

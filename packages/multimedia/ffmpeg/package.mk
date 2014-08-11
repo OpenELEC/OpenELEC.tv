@@ -36,7 +36,7 @@ if [ "$VAAPI" = yes ]; then
 # configure GPU drivers and dependencies:
   get_graphicdrivers
 
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $LIBVA"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   FFMPEG_VAAPI="--enable-vaapi"
 else
   FFMPEG_VAAPI="--disable-vaapi"
@@ -59,13 +59,6 @@ if [ "$OPTIMIZATIONS" = size ]; then
   FFMPEG_OPTIM="--disable-small"
 else
   FFMPEG_OPTIM="--disable-small"
-fi
-
-if [ "$CRYSTALHD" = yes ]; then
-# disabled, we use XBMC's internal solution
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
-else
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
 fi
 
 case "$TARGET_ARCH" in
@@ -170,7 +163,7 @@ configure_target() {
               --enable-fft \
               --enable-mdct \
               --enable-rdft \
-              $FFMPEG_CRYSTALHD \
+              --disable-crystalhd \
               $FFMPEG_VAAPI \
               $FFMPEG_VDPAU \
               --disable-dxva2 \

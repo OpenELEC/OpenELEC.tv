@@ -79,7 +79,7 @@
 # GOLD (Google Linker) support
   GOLD_SUPPORT="yes"
 
-# Bootloader to use (syslinux / u-boot / atv-bootloader)
+# Bootloader to use (syslinux / u-boot)
   BOOTLOADER="syslinux"
 
 # u-boot version to use (default)
@@ -208,7 +208,7 @@
   NFS_SUPPORT="yes"
 
 # build with afpfs-ng support (mounting AFP shares with XBMC) (yes / no)
-  AFP_SUPPORT="yes"
+  AFP_SUPPORT="no"
 
 # build and install Samba Client support (yes / no)
   SAMBA_SUPPORT="yes"
@@ -273,10 +273,6 @@
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
   VAAPI="yes"
-
-# Use Broadcom CrystalHD Decoder Card for video acceleration 
-# (needs Kernelsupport for Broadcom Decoder Card and a supported card)
-  CRYSTALHD="yes"
 
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="yes"

@@ -1,7 +1,7 @@
-From d2121ba28b7f06885d5a8533188656039b28e5d5 Mon Sep 17 00:00:00 2001
+From 1cbeabd74a69bf58cff58187a6b9dcd5ebecf7b0 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 11 Dec 2013 17:21:54 +0000
-Subject: [PATCH 01/96] Move the reference-counting of Begin and End calls from
+Subject: [PATCH 01/91] Move the reference-counting of Begin and End calls from
  DX and GL source files into GUIFontTTF.cpp.
 
 ---
@@ -389,13 +389,13 @@ index c0bb53a..735fb3a 100644
  protected:
    virtual CBaseTexture* ReallocTexture(unsigned int& newHeight);
 -- 
-1.9.3
+2.0.3
 
 
-From ee2943f3681f2a2023c9383ce5a30a26987d4d7a Mon Sep 17 00:00:00 2001
+From dd49f1c895bb9832976d7595155ca50bcc237fc2 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 11 Dec 2013 18:47:54 +0000
-Subject: [PATCH 02/96] Convert CGUIFontTTFBase::m_vertex to be managed as a
+Subject: [PATCH 02/91] Convert CGUIFontTTFBase::m_vertex to be managed as a
  std::vector.
 
 Also retired CGUIFontTTFBase::m_vertex_count and
@@ -575,13 +575,13 @@ index 97853fd..b76c6a5 100644
      *vertices++ = m_vertex[i];
      *vertices++ = m_vertex[i+1];
 -- 
-1.9.3
+2.0.3
 
 
-From c54cb2e96f30c0d79420a9ff652ccc33fce71ccf Mon Sep 17 00:00:00 2001
+From db560c6886b6719551200d1e2f3374e3962d90e0 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Mon, 16 Dec 2013 18:58:12 +0000
-Subject: [PATCH 03/96] CGUIFontTTFBase::RenderCharacter can now append to
+Subject: [PATCH 03/91] CGUIFontTTFBase::RenderCharacter can now append to
  arbitrary vectors of vertices rather than only CGUIFontTTFBase::m_vertex
 
 ---
@@ -654,13 +654,13 @@ index 10a7060..dde0350 100644
  
    virtual CBaseTexture* ReallocTexture(unsigned int& newHeight) = 0;
 -- 
-1.9.3
+2.0.3
 
 
-From 4917717ce68ca276c9f9aff2f23f7b8a68a1a927 Mon Sep 17 00:00:00 2001
+From 4172b050eaa1856f319d1ebee07f94bb86c71320 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 15 Jan 2014 17:18:38 +0000
-Subject: [PATCH 04/96] Add a cache of font glyph bounding box vertices.
+Subject: [PATCH 04/91] Add a cache of font glyph bounding box vertices.
 
 This is implemented as a template because ultimately we will key on different
 parameters and store values of different types, depending upon whether we
@@ -682,113 +682,6 @@ applicable transformation matrices permit the use of hardware clipping.
  create mode 100644 xbmc/guilib/GUIFontCache.cpp
  create mode 100644 xbmc/guilib/GUIFontCache.h
 
-diff --git a/XBMC.xcodeproj/project.pbxproj b/XBMC.xcodeproj/project.pbxproj
-index 137a8cd..15aa46d 100644
---- a/XBMC.xcodeproj/project.pbxproj
-+++ b/XBMC.xcodeproj/project.pbxproj
-@@ -168,6 +168,9 @@
- 		1D638128161E211E003603ED /* PeripheralImon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D638126161E211E003603ED /* PeripheralImon.cpp */; };
- 		1DAFDB7C16DFDCA7007F8C68 /* PeripheralBusCEC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DAFDB7A16DFDCA7007F8C68 /* PeripheralBusCEC.cpp */; };
- 		1DE0443515828F4B005DDB4D /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DE0443315828F4B005DDB4D /* Exception.cpp */; };
-+		2F4564D51970129A00396109 /* GUIFontCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F4564D31970129A00396109 /* GUIFontCache.cpp */; };
-+		2F4564D61970129A00396109 /* GUIFontCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F4564D31970129A00396109 /* GUIFontCache.cpp */; };
-+		2F4564D71970129A00396109 /* GUIFontCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F4564D31970129A00396109 /* GUIFontCache.cpp */; };
- 		32C631281423A90F00F18420 /* JpegIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C631261423A90F00F18420 /* JpegIO.cpp */; };
- 		36A9443D15821E2800727135 /* DatabaseUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36A9443B15821E2800727135 /* DatabaseUtils.cpp */; };
- 		36A9444115821E7C00727135 /* SortUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36A9443F15821E7C00727135 /* SortUtils.cpp */; };
-@@ -4008,6 +4011,8 @@
- 		1DAFDB7B16DFDCA7007F8C68 /* PeripheralBusCEC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusCEC.h; sourceTree = "<group>"; };
- 		1DE0443315828F4B005DDB4D /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = commons/Exception.cpp; sourceTree = "<group>"; };
- 		1DE0443415828F4B005DDB4D /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = commons/Exception.h; sourceTree = "<group>"; };
-+		2F4564D31970129A00396109 /* GUIFontCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIFontCache.cpp; sourceTree = "<group>"; };
-+		2F4564D41970129A00396109 /* GUIFontCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIFontCache.h; sourceTree = "<group>"; };
- 		32C631261423A90F00F18420 /* JpegIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JpegIO.cpp; sourceTree = "<group>"; };
- 		32C631271423A90F00F18420 /* JpegIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JpegIO.h; sourceTree = "<group>"; };
- 		36A9443B15821E2800727135 /* DatabaseUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DatabaseUtils.cpp; sourceTree = "<group>"; };
-@@ -6512,6 +6517,8 @@
- 				18B7C7101294222D009E7A26 /* GUIFixedListContainer.h */,
- 				18B7C76B1294222E009E7A26 /* GUIFont.cpp */,
- 				18B7C7111294222D009E7A26 /* GUIFont.h */,
-+				2F4564D31970129A00396109 /* GUIFontCache.cpp */,
-+				2F4564D41970129A00396109 /* GUIFontCache.h */,
- 				18B7C76C1294222E009E7A26 /* GUIFontManager.cpp */,
- 				18B7C7121294222D009E7A26 /* GUIFontManager.h */,
- 				18B7C76D1294222E009E7A26 /* GUIFontTTF.cpp */,
-@@ -10989,6 +10996,7 @@
- 				7C5608C70F1754930056433A /* ExternalPlayer.cpp in Sources */,
- 				F584E12E0F257C5100DB26A5 /* HTTPDirectory.cpp in Sources */,
- 				F54C51D20F1E783200D46E3C /* GUIDialogKaraokeSongSelector.cpp in Sources */,
-+				2F4564D51970129A00396109 /* GUIFontCache.cpp in Sources */,
- 				F54C51D50F1E784800D46E3C /* karaokelyricscdg.cpp in Sources */,
- 				F54C51D80F1E785700D46E3C /* karaokelyrics.cpp in Sources */,
- 				F54C51E50F1E787700D46E3C /* karaokelyricstextkar.cpp in Sources */,
-@@ -12657,6 +12665,7 @@
- 				DFF0F45B17528350002DA3A4 /* Control.cpp in Sources */,
- 				DFF0F45C17528350002DA3A4 /* Dialog.cpp in Sources */,
- 				DFF0F45D17528350002DA3A4 /* File.cpp in Sources */,
-+				2F4564D71970129A00396109 /* GUIFontCache.cpp in Sources */,
- 				DFF0F45E17528350002DA3A4 /* InfoTagMusic.cpp in Sources */,
- 				DFF0F45F17528350002DA3A4 /* InfoTagVideo.cpp in Sources */,
- 				DFF0F46017528350002DA3A4 /* Keyboard.cpp in Sources */,
-@@ -13456,6 +13465,7 @@
- 				E499131D174E5DAD00741B6D /* GUIVisualisationControl.cpp in Sources */,
- 				E499131E174E5DAD00741B6D /* GUIWindow.cpp in Sources */,
- 				E499131F174E5DAD00741B6D /* GUIWindowManager.cpp in Sources */,
-+				2F4564D61970129A00396109 /* GUIFontCache.cpp in Sources */,
- 				E4991320174E5DAD00741B6D /* GUIWrappingListContainer.cpp in Sources */,
- 				E4991321174E5DAD00741B6D /* imagefactory.cpp in Sources */,
- 				E4991322174E5DAD00741B6D /* IWindowManagerCallback.cpp in Sources */,
-diff --git a/project/VS2010Express/XBMC.vcxproj b/project/VS2010Express/XBMC.vcxproj
-index 41af74d..6f50def 100644
---- a/project/VS2010Express/XBMC.vcxproj
-+++ b/project/VS2010Express/XBMC.vcxproj
-@@ -426,6 +426,7 @@
-     <ClCompile Include="..\..\xbmc\guilib\GUIFadeLabelControl.cpp" />
-     <ClCompile Include="..\..\xbmc\guilib\GUIFixedListContainer.cpp" />
-     <ClCompile Include="..\..\xbmc\guilib\GUIFont.cpp" />
-+    <ClCompile Include="..\..\xbmc\guilib\GUIFontCache.cpp" />
-     <ClCompile Include="..\..\xbmc\guilib\GUIFontManager.cpp" />
-     <ClCompile Include="..\..\xbmc\guilib\GUIFontTTF.cpp" />
-     <ClCompile Include="..\..\xbmc\guilib\GUIFontTTFDX.cpp" />
-@@ -1741,6 +1742,7 @@
-     <ClInclude Include="..\..\xbmc\guilib\GUIFadeLabelControl.h" />
-     <ClInclude Include="..\..\xbmc\guilib\GUIFixedListContainer.h" />
-     <ClInclude Include="..\..\xbmc\guilib\GUIFont.h" />
-+    <ClInclude Include="..\..\xbmc\guilib\GUIFontCache.h" />
-     <ClInclude Include="..\..\xbmc\guilib\GUIFontManager.h" />
-     <ClInclude Include="..\..\xbmc\guilib\GUIFontTTF.h" />
-     <ClInclude Include="..\..\xbmc\guilib\GUIFontTTFDX.h" />
-diff --git a/project/VS2010Express/XBMC.vcxproj.filters b/project/VS2010Express/XBMC.vcxproj.filters
-index fa284e6..f78e4fa 100644
---- a/project/VS2010Express/XBMC.vcxproj.filters
-+++ b/project/VS2010Express/XBMC.vcxproj.filters
-@@ -994,6 +994,9 @@
-     <ClCompile Include="..\..\xbmc\guilib\GUIFont.cpp">
-       <Filter>guilib</Filter>
-     </ClCompile>
-+    <ClCompile Include="..\..\xbmc\guilib\GUIFontCache.cpp">
-+      <Filter>guilib</Filter>
-+    </ClCompile>
-     <ClCompile Include="..\..\xbmc\guilib\GUIFontManager.cpp">
-       <Filter>guilib</Filter>
-     </ClCompile>
-@@ -3882,6 +3885,9 @@
-     <ClInclude Include="..\..\xbmc\guilib\GUIFont.h">
-       <Filter>guilib</Filter>
-     </ClInclude>
-+    <ClInclude Include="..\..\xbmc\guilib\GUIFontCache.h">
-+      <Filter>guilib</Filter>
-+    </ClInclude>
-     <ClInclude Include="..\..\xbmc\guilib\GUIFontManager.h">
-       <Filter>guilib</Filter>
-     </ClInclude>
-@@ -6034,4 +6040,4 @@
-       <Filter>interfaces\swig</Filter>
-     </None>
-   </ItemGroup>
--</Project>
-\ No newline at end of file
-+</Project>
 diff --git a/xbmc/guilib/GUIFontCache.cpp b/xbmc/guilib/GUIFontCache.cpp
 new file mode 100644
 index 0000000..2c72f9c
@@ -1427,13 +1320,13 @@ index f351c99..9036ba9 100644
 +  return !operator==(a, b);
 +}
 -- 
-1.9.3
+2.0.3
 
 
-From 6b2133e143b65a3014bacc40b4fb7f89c7769678 Mon Sep 17 00:00:00 2001
+From aa209733ce05e652607a4dd64d20d5b464d8c9bb Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Thu, 23 Jan 2014 22:24:17 +0000
-Subject: [PATCH 05/96] Lay the groundwork for hardware clipping.
+Subject: [PATCH 05/91] Lay the groundwork for hardware clipping.
 
 For glScissor() to replace CGraphicContext::ClipRect, a necessary condition
 is that no shear or rotation is introduced between the coordinate systems
@@ -1695,13 +1588,13 @@ index 98e398a..81ee49e 100644
    virtual void ResetScissors();
  
 -- 
-1.9.3
+2.0.3
 
 
-From 90e76c57ce1799ecfadf188ba83b99b19269fc18 Mon Sep 17 00:00:00 2001
+From 82379d243c0f77a2391042753a7e47a2b3f446a3 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Thu, 23 Jan 2014 16:42:22 +0000
-Subject: [PATCH 06/96] Increase font cache hit rate by keying on the
+Subject: [PATCH 06/91] Increase font cache hit rate by keying on the
  fractional part of m_originX and m_originY *after* they have been through the
  graphics context's transformation matrix, plus the scale/rotation elements of
  the matrix, rather than the origin in the original frame of reference plus
@@ -1902,13 +1795,13 @@ index 77111bc..39bfa52 100644
  private:
    virtual bool FirstBegin() = 0;
 -- 
-1.9.3
+2.0.3
 
 
-From eb873d30d3539bed1f08e9119a642044f8c7daed Mon Sep 17 00:00:00 2001
+From 05bfd7d9c6470c6fcd58a90c36a82b6da1c7b185 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 8 Jan 2014 12:16:33 +0000
-Subject: [PATCH 07/96] Rewrite of scrolling text code.
+Subject: [PATCH 07/91] Rewrite of scrolling text code.
 
 No longer shuffles the string round to minimise the number of characters
 before the clipping rectangle; this doesn't save much on rendering time but
@@ -2224,13 +2117,13 @@ index 2cda726..fbc579e 100644
  private:
    void Process();
 -- 
-1.9.3
+2.0.3
 
 
-From 4eb928a95b0801dfd3bfaf9e87cd8f84fcf943ca Mon Sep 17 00:00:00 2001
+From df1bddd031b6bc77bf4f4f5cb9f7ec04ab181515 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Mon, 27 Jan 2014 23:21:10 +0000
-Subject: [PATCH 08/96] Move the application of the translation offsets into
+Subject: [PATCH 08/91] Move the application of the translation offsets into
  the GLES code.
 
 Still all pure software at this stage. Main change is in the data types at
@@ -2424,13 +2317,13 @@ index 9935ea4..18c9358 100644
    memset(newTexture->GetPixels(), 0, m_textureHeight * newTexture->GetPitch());
    if (m_texture)
 -- 
-1.9.3
+2.0.3
 
 
-From 47cd619aade93c148853fd462a7ce93958306656 Mon Sep 17 00:00:00 2001
+From 20388f9421c57b49d4bf16461ea926af47b24daf Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 15 Jan 2014 15:28:06 +0000
-Subject: [PATCH 09/96] Rather than applying the translation offsets to the
+Subject: [PATCH 09/91] Rather than applying the translation offsets to the
  vertices, now applies them to the model view matrix from the top of the
  matrix stack and pushes it over to OpenGL. The vertices themselves are still
  all held client-side.
@@ -2574,13 +2467,13 @@ index 81ee49e..d2f9cd1 100644
  protected:
    virtual void SetVSyncImpl(bool enable) = 0;
 -- 
-1.9.3
+2.0.3
 
 
-From 4b35b86a4c8cc116af48aca9656930b463338e3f Mon Sep 17 00:00:00 2001
+From a9e79067d783011f2eff7693b2b10e43318ef804 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 29 Jan 2014 13:21:19 +0000
-Subject: [PATCH 10/96] Enable hardware clipping.
+Subject: [PATCH 10/91] Enable hardware clipping.
 
 ---
  xbmc/guilib/GUIFontTTF.cpp   | 4 ++--
@@ -2653,13 +2546,13 @@ index ea08bf4..b63e337 100644
      glUniformMatrix4fv(modelLoc, 1, GL_FALSE, g_matrices.GetMatrix(MM_MODELVIEW));
    }
 -- 
-1.9.3
+2.0.3
 
 
-From f75e7707f0d49ec2d07cbaa05a4f1c2ea2e05a2d Mon Sep 17 00:00:00 2001
+From b583334bdd9505b7e2d527baaf665688c888811b Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 15 Jan 2014 15:32:51 +0000
-Subject: [PATCH 11/96] Move the vertex data across to a vertex buffer object
+Subject: [PATCH 11/91] Move the vertex data across to a vertex buffer object
  just prior to drawing.
 
 ---
@@ -2710,13 +2603,13 @@ index b63e337..b00055d 100644
  
    // Disable the attributes used by this shader
 -- 
-1.9.3
+2.0.3
 
 
-From 74aa9f01cd0e8aeebe55cb445371f72969558a0b Mon Sep 17 00:00:00 2001
+From 7e85079f21961b8cb6afb05d81ea93b8bb0a85fb Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Wed, 15 Jan 2014 16:04:04 +0000
-Subject: [PATCH 12/96] Move vertex data into an OpenGL VBO when the font cache
+Subject: [PATCH 12/91] Move vertex data into an OpenGL VBO when the font cache
  entry is populated.
 
 The font cache now stores the "name" (handle) of the VBO, rather than a vector
@@ -2989,13 +2882,13 @@ index 735fb3a..6102c90 100644
  protected:
    virtual CBaseTexture* ReallocTexture(unsigned int& newHeight);
 -- 
-1.9.3
+2.0.3
 
 
-From c8c065a5da2d01cfe374d3332d03525d5ad837fa Mon Sep 17 00:00:00 2001
+From 7763c0907b155de5c6bfdca16007c373ebc599f8 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Thu, 16 Jan 2014 16:29:42 +0000
-Subject: [PATCH 13/96] Switch from glDrawArrays() to glDrawElements().
+Subject: [PATCH 13/91] Switch from glDrawArrays() to glDrawElements().
 
 This involves setting up a static VBO containing the indexes necessary to
 convert from quads to triangles on the fly in the GPU.
@@ -3216,13 +3109,13 @@ index 6de3532..258a293 100644
  
    if (m_display != EGL_NO_DISPLAY)
 -- 
-1.9.3
+2.0.3
 
 
-From c83be3bd099526f034b0f494fbf8e9531a324d1d Mon Sep 17 00:00:00 2001
+From d8f712671b3bda532577c45f68c1dbd8f17092a6 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 10 Jan 2014 12:10:43 +0000
-Subject: [PATCH 14/96] [rbp] Don't override dvdplayer with omxplayer.
+Subject: [PATCH 14/91] [rbp] Don't override dvdplayer with omxplayer.
 
 Using dvdplayer can be useful on the Pi. We can actually play sd (up to 640x480 MPEG-4 video) video in real time.
 This is useful for codec variants like DivX3 which we don't currently play.
@@ -3233,10 +3126,10 @@ This may expose bugs where dvdplayer is incorrectly used as the default player w
  1 file changed, 7 deletions(-)
 
 diff --git a/xbmc/cores/playercorefactory/PlayerCoreConfig.h b/xbmc/cores/playercorefactory/PlayerCoreConfig.h
-index 9524f94..2789bd8 100644
+index c590cca..57b524f 100644
 --- a/xbmc/cores/playercorefactory/PlayerCoreConfig.h
 +++ b/xbmc/cores/playercorefactory/PlayerCoreConfig.h
-@@ -88,14 +88,7 @@ friend class CPlayerCoreFactory;
+@@ -98,14 +98,7 @@ friend class CPlayerCoreFactory;
      {
        case EPC_MPLAYER:
        // TODO: this hack needs removal until we have a better player selection
@@ -3252,13 +3145,13 @@ index 9524f94..2789bd8 100644
        case EPC_EXTPLAYER: pPlayer = new CExternalPlayer(callback); break;
  #if defined(HAS_OMXPLAYER)
 -- 
-1.9.3
+2.0.3
 
 
-From cb93e3b0da270e0969ec4638df42d3dbd1fdd0c1 Mon Sep 17 00:00:00 2001
+From abf3c112e80a9e9c24bb8be1a6bd9e69c1232cf1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 10 Jan 2014 15:37:41 +0000
-Subject: [PATCH 15/96] [players] Use default players rather than hard coded
+Subject: [PATCH 15/91] [players] Use default players rather than hard coded
  DVDPlayer/PAPlayer
 
 ---
@@ -3314,13 +3207,13 @@ index 57dfcdd..7be9799 100644
    </rules>
  </playercorefactory>
 -- 
-1.9.3
+2.0.3
 
 
-From ef23e3a4e9cc8cd3a3828aa25dbef283729eae1e Mon Sep 17 00:00:00 2001
+From 84cf2101dfa1f557eaf740523a7b107eeee7f3d7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 11 Jan 2014 18:23:42 +0000
-Subject: [PATCH 16/96] [rbp] Don't force dvdplayer for airplay
+Subject: [PATCH 16/91] [rbp] Don't force dvdplayer for airplay
 
 ---
  xbmc/network/AirPlayServer.cpp | 2 ++
@@ -3343,13 +3236,13 @@ index 80ea552..497898f 100644
      }
    }
 -- 
-1.9.3
+2.0.3
 
 
-From 2b72d4c88abdb60a57fa12c852a2b1ce6a77314a Mon Sep 17 00:00:00 2001
+From b33ca38db5ac06bfe590b5d32d5a06e7b277bd7c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 13 Jan 2014 13:11:06 +0000
-Subject: [PATCH 17/96] [rbp] Give plugins omxplayer when they request
+Subject: [PATCH 17/91] [rbp] Give plugins omxplayer when they request
  dvdplayer on pi
 
 ---
@@ -3373,13 +3266,13 @@ index dfdca99..2a819ef 100644
      int getPLAYER_CORE_PAPLAYER() { return EPC_PAPLAYER; }
      int getTRAY_OPEN() { return TRAY_OPEN; }
 -- 
-1.9.3
+2.0.3
 
 
-From e4e11daf26a79a9b74b393ae3c4b8c40933b60b8 Mon Sep 17 00:00:00 2001
+From 10aebcf03045706dbab09edf04f1e9bfe5c826f1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 14 Jan 2014 18:04:07 +0000
-Subject: [PATCH 18/96] [rbp] Allow ALSA to be chosen in addition to Pi sink
+Subject: [PATCH 18/91] [rbp] Allow ALSA to be chosen in addition to Pi sink
 
 Needs --enable-alsa in ./configure step and alsa support on platform
 ---
@@ -3389,10 +3282,10 @@ Needs --enable-alsa in ./configure step and alsa support on platform
  3 files changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index ce82cd4..02306df 100644
+index fb02f14..8a4260d 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -695,7 +695,6 @@ case $use_platform in
+@@ -686,7 +686,6 @@ case $use_platform in
       use_arch="arm"
       use_cpu=arm1176jzf-s
       use_hardcoded_tables="yes"
@@ -3467,13 +3360,13 @@ index e42d973..715b4f1 100644
  
    info.m_deviceInfoList.clear();
 -- 
-1.9.3
+2.0.3
 
 
-From 6e44fa59c000735643fa40c038bac2016a367b87 Mon Sep 17 00:00:00 2001
+From 1f40508161e1e1f5f89eb45fe030569f834d7aca Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 16 Jan 2014 01:39:29 +0000
-Subject: [PATCH 19/96] [omxcodec] Add hardware decode to dvdplayer for Pi
+Subject: [PATCH 19/91] [omxcodec] Add hardware decode to dvdplayer for Pi
 
 Hijack the abandoned OpenMaxVideo codec
 ---
@@ -3495,10 +3388,10 @@ Hijack the abandoned OpenMaxVideo codec
  15 files changed, 894 insertions(+), 1099 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index 02306df..00abb63 100644
+index 8a4260d..63be749 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -1929,9 +1929,24 @@ if test "$host_vendor" = "apple" ; then
+@@ -1900,9 +1900,24 @@ if test "$host_vendor" = "apple" ; then
    USE_OPENMAX=0
    AC_MSG_NOTICE($openmax_disabled)
  elif test "$target_platform" = "target_raspberry_pi"; then
@@ -5953,10 +5846,10 @@ index e06c41d..9079c13 100644
  
  // defined(HAVE_LIBOPENMAX)
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 93df78c..49d5948 100644
+index cbdd299..5da4608 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-@@ -2968,7 +2968,9 @@ bool CDVDPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
+@@ -2958,7 +2958,9 @@ bool CDVDPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
        hint.aspect = aspect;
        hint.forced_aspect = true;
      }
@@ -5967,7 +5860,7 @@ index 93df78c..49d5948 100644
  
    CDVDInputStream::IMenus* pMenus = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream);
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index be532ec..7403fd4 100644
+index ac78f18..5fdd63b 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 @@ -324,6 +324,9 @@ void CDVDPlayerVideo::Process()
@@ -6020,10 +5913,10 @@ index be532ec..7403fd4 100644
  
    // we need to let decoder release any picture retained resources.
 diff --git a/xbmc/linux/OMXCore.cpp b/xbmc/linux/OMXCore.cpp
-index 6e7d9a9..99e407a 100644
+index 4ae29ba..6cc4970 100644
 --- a/xbmc/linux/OMXCore.cpp
 +++ b/xbmc/linux/OMXCore.cpp
-@@ -460,7 +460,12 @@ void COMXCoreComponent::FlushInput()
+@@ -431,7 +431,12 @@ void COMXCoreComponent::FlushInput()
      CLog::Log(LOGERROR, "COMXCoreComponent::FlushInput - Error on component %s omx_err(0x%08x)", 
                m_componentName.c_str(), (int)omx_err);
    }
@@ -6037,7 +5930,7 @@ index 6e7d9a9..99e407a 100644
  }
  
  void COMXCoreComponent::FlushOutput()
-@@ -477,7 +482,12 @@ void COMXCoreComponent::FlushOutput()
+@@ -448,7 +453,12 @@ void COMXCoreComponent::FlushOutput()
      CLog::Log(LOGERROR, "COMXCoreComponent::FlushOutput - Error on component %s omx_err(0x%08x)", 
                m_componentName.c_str(), (int)omx_err);
    }
@@ -6051,7 +5944,7 @@ index 6e7d9a9..99e407a 100644
  }
  
  // timeout in milliseconds
-@@ -1149,7 +1159,12 @@ OMX_STATETYPE COMXCoreComponent::GetState()
+@@ -1120,7 +1130,12 @@ OMX_STATETYPE COMXCoreComponent::GetState() const
  
    OMX_STATETYPE state;
  
@@ -6065,7 +5958,7 @@ index 6e7d9a9..99e407a 100644
    return state;
  }
  
-@@ -1307,6 +1322,8 @@ OMX_ERRORTYPE COMXCoreComponent::DisablePort(unsigned int port, bool wait)
+@@ -1278,6 +1293,8 @@ OMX_ERRORTYPE COMXCoreComponent::DisablePort(unsigned int port, bool wait)
  
  OMX_ERRORTYPE COMXCoreComponent::UseEGLImage(OMX_BUFFERHEADERTYPE** ppBufferHdr, OMX_U32 nPortIndex, OMX_PTR pAppPrivate, void* eglImage)
  {
@@ -6074,7 +5967,7 @@ index 6e7d9a9..99e407a 100644
    OMX_ERRORTYPE omx_err = OMX_ErrorNone;
  
    if(!m_handle)
-@@ -1383,8 +1400,21 @@ OMX_ERRORTYPE COMXCoreComponent::UseEGLImage(OMX_BUFFERHEADERTYPE** ppBufferHdr,
+@@ -1354,8 +1371,21 @@ OMX_ERRORTYPE COMXCoreComponent::UseEGLImage(OMX_BUFFERHEADERTYPE** ppBufferHdr,
  
    return omx_err;
  }
@@ -6097,7 +5990,7 @@ index 6e7d9a9..99e407a 100644
  {
    OMX_ERRORTYPE omx_err;
  
-@@ -1419,6 +1449,13 @@ bool COMXCoreComponent::Initialize( const std::string &component_name, OMX_INDEX
+@@ -1390,6 +1420,13 @@ bool COMXCoreComponent::Initialize( const std::string &component_name, OMX_INDEX
    m_callbacks.EmptyBufferDone = &COMXCoreComponent::DecoderEmptyBufferDoneCallback;
    m_callbacks.FillBufferDone  = &COMXCoreComponent::DecoderFillBufferDoneCallback;
  
@@ -6112,7 +6005,7 @@ index 6e7d9a9..99e407a 100644
    if(!m_handle)
    {
 diff --git a/xbmc/linux/OMXCore.h b/xbmc/linux/OMXCore.h
-index 1efb313..b4c8626 100644
+index 05052e5..6ade180 100644
 --- a/xbmc/linux/OMXCore.h
 +++ b/xbmc/linux/OMXCore.h
 @@ -107,7 +107,7 @@ class COMXCoreComponent
@@ -6121,17 +6014,17 @@ index 1efb313..b4c8626 100644
  
 -  bool          Initialize( const std::string &component_name, OMX_INDEXTYPE index);
 +  bool          Initialize( const std::string &component_name, OMX_INDEXTYPE index, OMX_CALLBACKTYPE *callbacks = NULL);
-   bool          IsInitialized();
+   bool          IsInitialized() const { return m_handle != NULL; }
    bool          Deinitialize();
  
 -- 
-1.9.3
+2.0.3
 
 
-From a74bceb3415ba76292e90e031d6f3b9078baf0ef Mon Sep 17 00:00:00 2001
+From f6ff245b61cc208a0e94d648d70c5bc2a53ba8a3 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 20 Jan 2014 16:03:40 +0000
-Subject: [PATCH 20/96] [omxcodec] Enable for dvd menus
+Subject: [PATCH 20/91] [omxcodec] Enable for dvd menus
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp | 4 ++++
@@ -6153,13 +6046,13 @@ index d58067c..f3fd3e2 100644
    {
       // If dvd is an mpeg2 and hint.stills
 -- 
-1.9.3
+2.0.3
 
 
-From 42b3309edcfffdbd8e2cf23c54637b7be1aa3a72 Mon Sep 17 00:00:00 2001
+From d2422910b697f3fb3cb725e1fc9e48eb778b8e1e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Feb 2014 22:27:44 +0000
-Subject: [PATCH 21/96] [omxcodec] Add omx specific texture
+Subject: [PATCH 21/91] [omxcodec] Add omx specific texture
  create/upload/delete functions
 
 ---
@@ -6234,13 +6127,13 @@ index 5a6a2be..52df291 100644
  
    // renderers
 -- 
-1.9.3
+2.0.3
 
 
-From 4895cd2d4cec2c04db9ff98683a3e9fcb1447a20 Mon Sep 17 00:00:00 2001
+From 7889fcd5a66465710f4df12bd903468016e07176 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Feb 2014 22:50:43 +0000
-Subject: [PATCH 22/96] [omxcodec] Add shared pointer to delay shutdown of
+Subject: [PATCH 22/91] [omxcodec] Add shared pointer to delay shutdown of
  codec until buffers are returned
 
 ---
@@ -6418,13 +6311,13 @@ index 9079c13..0975e8a 100644
    std::queue<double> m_dts_queue;
    std::queue<omx_demux_packet> m_demux_queue;
 -- 
-1.9.3
+2.0.3
 
 
-From 4df98c1fe2d2f67429aeda29e0dd844fe68e271d Mon Sep 17 00:00:00 2001
+From 309f45b9a429a9a58c9cc8feab9c6e8710a08c15 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Feb 2014 23:11:31 +0000
-Subject: [PATCH 23/96] [omxcodec] Fix for aspect ratio in non-square pixel
+Subject: [PATCH 23/91] [omxcodec] Fix for aspect ratio in non-square pixel
  modes
 
 ---
@@ -6510,13 +6403,13 @@ index 0975e8a..9138a20 100644
    bool m_port_settings_changed;
    const char        *m_pFormatName;
 -- 
-1.9.3
+2.0.3
 
 
-From 16e71dce7ab7e54d0737da0f0476ac0aedd4aaa6 Mon Sep 17 00:00:00 2001
+From dacc74e5fb68013be2631448af6d96885f55edb4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Feb 2014 23:19:22 +0000
-Subject: [PATCH 24/96] [omxcodec] Report error when codec not enabled
+Subject: [PATCH 24/91] [omxcodec] Report error when codec not enabled
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/OpenMaxVideo.cpp | 10 +++++++++-
@@ -6558,13 +6451,13 @@ index 7e23c87..2ae722b 100644
    if (!m_omx_decoder.Initialize("OMX.broadcom.video_decode", OMX_IndexParamVideoInit))
    {
 -- 
-1.9.3
+2.0.3
 
 
-From 9b5eb28227cf9392bedee48c7fbf05544386086b Mon Sep 17 00:00:00 2001
+From 599bafa6c92e0ba58029df285ac35409cde629ff Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 4 Feb 2014 17:29:37 +0000
-Subject: [PATCH 25/96] [omxcodec] Add deinterlace support
+Subject: [PATCH 25/91] [omxcodec] Add deinterlace support
 
 ---
  xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp    |   2 +-
@@ -6798,13 +6691,13 @@ index 9138a20..c8ad4d8 100644
    bool SendDecoderConfig(uint8_t *extradata, int extrasize);
    bool NaluFormatStartCodes(enum AVCodecID codec, uint8_t *extradata, int extrasize);
 -- 
-1.9.3
+2.0.3
 
 
-From b9496c96d6edb6a0d5fad13db0076ade3ec52c8e Mon Sep 17 00:00:00 2001
+From 821adbd7f057085b5fbbe6e34376d205eb9a118a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 5 Feb 2014 11:46:33 +0000
-Subject: [PATCH 26/96] [rbp/settings] Allow av sync type to be enabled
+Subject: [PATCH 26/91] [rbp/settings] Allow av sync type to be enabled
 
 It works for dvdplayer
 ---
@@ -6812,7 +6705,7 @@ It works for dvdplayer
  1 file changed, 7 deletions(-)
 
 diff --git a/system/settings/rbp.xml b/system/settings/rbp.xml
-index 2b7d0a6..1429256 100644
+index 28e68eb..60086d8 100644
 --- a/system/settings/rbp.xml
 +++ b/system/settings/rbp.xml
 @@ -1,13 +1,6 @@
@@ -6830,13 +6723,13 @@ index 2b7d0a6..1429256 100644
        <group id="1">
          <visible>false</visible>
 -- 
-1.9.3
+2.0.3
 
 
-From 5f3c1cdf6d1c20648a699cd80da8c09d88169a52 Mon Sep 17 00:00:00 2001
+From ec39f5cf99574273abeb58bc81fce46813853426 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Thu, 1 May 2014 16:28:39 +0100
-Subject: [PATCH 27/96] Improved file buffering in CArchive
+Subject: [PATCH 27/91] Improved file buffering in CArchive
 
 Even though memcpy is typically inlined by the compiler into byte/word loads
 and stores (at least for release builds), the frequency with which 1, 2 and 4
@@ -6896,13 +6789,13 @@ index 6ed0f8f..8506d95 100644
      }
      else
 -- 
-1.9.3
+2.0.3
 
 
-From cd0056264da4ea5ff2dcdc6f1675585c96d20d0e Mon Sep 17 00:00:00 2001
+From 5529f7076d6613afa65446592f69637646cef812 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 16 Feb 2014 17:38:05 +0000
-Subject: [PATCH 28/96] [omxcodec] Only do essential calls in texture thread
+Subject: [PATCH 28/91] [omxcodec] Only do essential calls in texture thread
  [omxcodec] Fix for files with no valid pts values. [omxcodec] Fix stall on
  seek/trickplay - need to reset start flag [omxcodec] Make sure we have a
  valid context when video decode starts before first fanart is decoded
@@ -7249,13 +7142,13 @@ index c8ad4d8..f234f6d 100644
    bool SendDecoderConfig(uint8_t *extradata, int extrasize);
    bool NaluFormatStartCodes(enum AVCodecID codec, uint8_t *extradata, int extrasize);
 -- 
-1.9.3
+2.0.3
 
 
-From dc94f76254be42735ab2fad0ba3df6cb2896c0e4 Mon Sep 17 00:00:00 2001
+From 3d0f3216d45afc3198ed3ceae730a1cc3dffeccf Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 8 Mar 2014 15:36:06 +0000
-Subject: [PATCH 29/96] [hifiberry] Hack: force it to be recognised as IEC958
+Subject: [PATCH 29/91] [hifiberry] Hack: force it to be recognised as IEC958
  capable to enable passthrough options
 
 ---
@@ -7278,35 +7171,35 @@ index 8dee4bc..cc79e80 100644
          info.m_displayName.substr(info.m_displayName.size()-5) == " HDMI")
      {
 -- 
-1.9.3
+2.0.3
 
 
-From 6c9a339a4c67356d3f740c3183ecbf5201219758 Mon Sep 17 00:00:00 2001
+From 29d5854e951dfd8f3f0c8c15d2298acfaa62b127 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 11 Mar 2014 18:50:23 +0000
-Subject: [PATCH 30/96] [dvdplayer] Use inexact seeking like omxplayer
+Subject: [PATCH 30/91] [dvdplayer] Use inexact seeking like omxplayer
 
 ---
  xbmc/cores/dvdplayer/DVDPlayer.cpp | 11 +++++++++++
  1 file changed, 11 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 49d5948..6198498 100644
+index 5da4608..b40188a 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-@@ -1887,7 +1887,11 @@ void CDVDPlayer::CheckAutoSceneSkip()
+@@ -1888,7 +1888,11 @@ void CDVDPlayer::CheckAutoSceneSkip()
      /*
       * Seeking is NOT flushed so any content up to the demux point is retained when playing forwards.
       */
 +#ifdef TARGET_RASPBERRY_PI
-+    m_messenger.Put(new CDVDMsgPlayerSeek((int)seek, true, true, true, false, true));
++    m_messenger.Put(new CDVDMsgPlayerSeek(seek, true, true, true, false, true));
 +#else
-     m_messenger.Put(new CDVDMsgPlayerSeek((int)seek, true, false, true, false, true));
+     m_messenger.Put(new CDVDMsgPlayerSeek(seek, true, false, true, false, true));
 +#endif
      /*
       * Seek doesn't always work reliably. Last physical seek time is recorded to prevent looping
       * if there was an error with seeking and it landed somewhere unexpected, perhaps back in the
-@@ -1905,7 +1909,11 @@ void CDVDPlayer::CheckAutoSceneSkip()
+@@ -1906,7 +1910,11 @@ void CDVDPlayer::CheckAutoSceneSkip()
      /*
       * Seeking is NOT flushed so any content up to the demux point is retained when playing forwards.
       */
@@ -7318,7 +7211,7 @@ index 49d5948..6198498 100644
      /*
       * Each commercial break is only skipped once so poorly detected commercial breaks can be
       * manually re-entered. Start and end are recorded to prevent looping and to allow seeking back
-@@ -3105,9 +3113,12 @@ void CDVDPlayer::UpdateClockMaster()
+@@ -3095,9 +3103,12 @@ void CDVDPlayer::UpdateClockMaster()
  void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
  {
    double startpts;
@@ -7332,13 +7225,13 @@ index 49d5948..6198498 100644
  
    /* call with demuxer pts */
 -- 
-1.9.3
+2.0.3
 
 
-From c6a8c45f2e33c4796ba01a11332db1f7729560c5 Mon Sep 17 00:00:00 2001
+From ab4401e16997d86be9ade4d16c2fe1a2a1b05b16 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 7 Apr 2014 18:19:32 +0100
-Subject: [PATCH 31/96] [rbp/omxplayer] When opening a stream don't try to
+Subject: [PATCH 31/91] [rbp/omxplayer] When opening a stream don't try to
  update gui so often
 
 ---
@@ -7362,13 +7255,13 @@ index e9ba7d3..0fdc3c2 100644
          g_windowManager.ProcessRenderLoop(false);
          if (allowCancel && dialog->IsCanceled())
 -- 
-1.9.3
+2.0.3
 
 
-From 3751b328369eccad9b1a744ea0e779b3c9949eb8 Mon Sep 17 00:00:00 2001
+From 24078afd12004d5dacde1ba51bfddffe83fd6ee4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 7 Apr 2014 15:28:57 +0100
-Subject: [PATCH 32/96] [omxcodec] Clamp video texture at edges to avoid image
+Subject: [PATCH 32/91] [omxcodec] Clamp video texture at edges to avoid image
  wrapping
 
 ---
@@ -7389,13 +7282,13 @@ index 51f56aa..2929a37 100644
    g_Windowing.EnableGUIShader(SM_TEXTURE_RGBA);
  
 -- 
-1.9.3
+2.0.3
 
 
-From 40cdfc39a5978dce7923d6039a74e9eb8e0d8c34 Mon Sep 17 00:00:00 2001
+From 266e8a53b98276ca31936c3f5f44ded21fbba0a9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 30 Mar 2014 15:54:34 +0100
-Subject: [PATCH 33/96] [omxplayer] Make the sharpness control act as a
+Subject: [PATCH 33/91] [omxplayer] Make the sharpness control act as a
  sharpness control.
 
 This fixes scaling kernel as Mitchell Netravali, and varies sharpness over range B=[5/3,0] C=[-1/3,1/2]
@@ -7404,11 +7297,11 @@ This fixes scaling kernel as Mitchell Netravali, and varies sharpness over range
  1 file changed, 338 insertions(+)
 
 diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index 29ea4ae..49c82e4 100644
+index e7a39fa..60ecf9a 100644
 --- a/xbmc/cores/omxplayer/OMXPlayer.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
-@@ -1042,6 +1042,334 @@ bool COMXPlayer::IsBetterStream(COMXCurrentStream& current, CDemuxStream* stream
-   return false;
+@@ -1043,6 +1043,334 @@ void CDVDPlayer::CheckBetterStream(CCurrentStream& current, CDemuxStream* stream
+     OpenStream(current, stream->iId, stream->source);
  }
  
 +static void SetSharpness(float sharpness)
@@ -7739,10 +7632,10 @@ index 29ea4ae..49c82e4 100644
 +  }
 +}
 +
- void COMXPlayer::Process()
+ void CDVDPlayer::Process()
  {
    bool bOmxWaitVideo = false;
-@@ -1174,6 +1502,8 @@ void COMXPlayer::Process()
+@@ -1175,6 +1503,8 @@ void CDVDPlayer::Process()
      SetCaching(CACHESTATE_FLUSH);
  
    EDEINTERLACEMODE current_deinterlace = CMediaSettings::Get().GetCurrentVideoSettings().m_DeinterlaceMode;
@@ -7751,7 +7644,7 @@ index 29ea4ae..49c82e4 100644
  
    while (!m_bAbortRequest)
    {
-@@ -1205,6 +1535,13 @@ void COMXPlayer::Process()
+@@ -1205,6 +1535,13 @@ void CDVDPlayer::Process()
          current_deinterlace = CMediaSettings::Get().GetCurrentVideoSettings().m_DeinterlaceMode;
        }
  
@@ -7762,25 +7655,25 @@ index 29ea4ae..49c82e4 100644
 +        SetSharpness(current_sharpness);
 +      }
 +
-       m_video_fifo = (int)(100.0*(m_omxPlayerVideo.GetDecoderBufferSize()-m_omxPlayerVideo.GetDecoderFreeSpace())/m_omxPlayerVideo.GetDecoderBufferSize());
-       m_audio_fifo = (int)(100.0*audio_fifo/m_omxPlayerAudio.GetCacheTotal());
+       m_video_fifo = (int)(100.0*(m_dvdPlayerVideo.GetDecoderBufferSize()-m_dvdPlayerVideo.GetDecoderFreeSpace())/m_dvdPlayerVideo.GetDecoderBufferSize());
+       m_audio_fifo = (int)(100.0*audio_fifo/m_dvdPlayerAudio.GetCacheTotal());
  
-@@ -4552,6 +4889,7 @@ void COMXPlayer::GetRenderFeatures(std::vector<int> &renderFeatures)
+@@ -4398,6 +4735,7 @@ void CDVDPlayer::GetRenderFeatures(std::vector<int> &renderFeatures)
    renderFeatures.push_back(RENDERFEATURE_CROP);
    renderFeatures.push_back(RENDERFEATURE_PIXEL_RATIO);
    renderFeatures.push_back(RENDERFEATURE_ZOOM);
 +  renderFeatures.push_back(RENDERFEATURE_SHARPNESS);
  }
  
- void COMXPlayer::GetDeinterlaceMethods(std::vector<int> &deinterlaceMethods)
+ void CDVDPlayer::GetDeinterlaceMethods(std::vector<int> &deinterlaceMethods)
 -- 
-1.9.3
+2.0.3
 
 
-From d1bd1f1e75e7ab45cfddfabf55fdc6ea774c484d Mon Sep 17 00:00:00 2001
+From 86ef8eb6091d0b614505382d67873dc3b02dd42e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 16 Apr 2014 21:18:06 +0100
-Subject: [PATCH 34/96] [omxplayer] Don't propagate 3d flags based on supported
+Subject: [PATCH 34/91] [omxplayer] Don't propagate 3d flags based on supported
  3d modes
 
 ---
@@ -7788,10 +7681,10 @@ Subject: [PATCH 34/96] [omxplayer] Don't propagate 3d flags based on supported
  1 file changed, 4 insertions(+), 25 deletions(-)
 
 diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
-index af439e7..77dad37 100644
+index af71235..0514e78 100644
 --- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
-@@ -747,36 +747,15 @@ void OMXPlayerVideo::ResolutionUpdateCallBack(uint32_t width, uint32_t height, f
+@@ -753,36 +753,15 @@ void OMXPlayerVideo::ResolutionUpdateCallBack(uint32_t width, uint32_t height, f
    unsigned flags = 0;
    ERenderFormat format = RENDER_FMT_BYPASS;
  
@@ -7833,13 +7726,13 @@ index af439e7..77dad37 100644
    unsigned int iDisplayWidth  = width;
    unsigned int iDisplayHeight = height;
 -- 
-1.9.3
+2.0.3
 
 
-From 5326864f88b3ab1140987681d68efa10a2d02930 Mon Sep 17 00:00:00 2001
+From 4861ea3e10de834875867c4badcdfb98a7eaa6dc Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 Apr 2014 13:00:52 +0100
-Subject: [PATCH 35/96] [graphics] Don't set stereo mode based on resolution
+Subject: [PATCH 35/91] [graphics] Don't set stereo mode based on resolution
 
 The resolution change should follow stereo mode
 ---
@@ -7880,13 +7773,13 @@ index 5bffdf5..7e4fdd4 100644
  
    m_iScreenWidth  = info_mod.iWidth;
 -- 
-1.9.3
+2.0.3
 
 
-From ea1869e7f4fcdba26dddafad47ecbe3dd5ad0f68 Mon Sep 17 00:00:00 2001
+From 86493847b7198a719e8512b1528b3381d6ac1056 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 Apr 2014 13:01:51 +0100
-Subject: [PATCH 36/96] [graphics] Allow switching to a more suitable 3D
+Subject: [PATCH 36/91] [graphics] Allow switching to a more suitable 3D
  resolution
 
 ---
@@ -7973,13 +7866,13 @@ index 0a27643..df55e92 100644
    void ResetOverscan(RESOLUTION_INFO &resinfo);
    void ResetScreenParameters(RESOLUTION res);
 -- 
-1.9.3
+2.0.3
 
 
-From 5f1fdb44ba52842a1e91dd42ae98c0d435beea53 Mon Sep 17 00:00:00 2001
+From 137035fb6a2333d2867f17ce0f0ae93e25f2638e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 Apr 2014 13:38:55 +0100
-Subject: [PATCH 37/96] [3D] Support switching to 3D resolutions
+Subject: [PATCH 37/91] [3D] Support switching to 3D resolutions
 
 Include matching 3D flags (SBS/TAB) in the score of a resolution to switch to, to enable switching to 3d modes.
 Also remove the old code that treated 3D modes differently when assigning a score.
@@ -8061,13 +7954,13 @@ index 83c3adb..8076e76 100644
    return current;
  }
 -- 
-1.9.3
+2.0.3
 
 
-From e076e8dee1a9fa9267de264ec80abc35ed1a84e8 Mon Sep 17 00:00:00 2001
+From cb0d9b2df5add8e3a0a600bb58ec04886400bfdc Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 23 Apr 2014 00:05:07 +0100
-Subject: [PATCH 38/96] [graphics] Make pixel ratio for 3d modes consistent
+Subject: [PATCH 38/91] [graphics] Make pixel ratio for 3d modes consistent
 
 Note: Use the stored stereo flags from lists of resolutions.
 Use current stereo mode for current resolution.
@@ -8216,10 +8109,10 @@ index df55e92..c77f2ff 100644
    /* \brief Get UI scaling information from a given resolution to the screen resolution.
     Takes account of overscan and UI zooming.
 diff --git a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-index a9c51ca..a3edf0e 100644
+index c58c28a..bf1e589 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-@@ -448,15 +448,9 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+@@ -449,15 +449,9 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
        m_desktopRes.fPixelRatio  = get_display_aspect_ratio((HDMI_ASPECT_T)tv_state.display.hdmi.display_options.aspect) / ((float)m_desktopRes.iScreenWidth / (float)m_desktopRes.iScreenHeight);
        // Also add 3D flags
        if (tv_state.display.hdmi.format_3d == HDMI_3D_FORMAT_SBS_HALF)
@@ -8235,7 +8128,7 @@ index a9c51ca..a3edf0e 100644
        HDMI_PROPERTY_PARAM_T property;
        property.property = HDMI_PROPERTY_PIXEL_CLOCK_TYPE;
        vc_tv_hdmi_get_property(&property);
-@@ -599,7 +593,6 @@ void CEGLNativeTypeRaspberryPI::GetSupportedModes(HDMI_RES_GROUP_T group, std::v
+@@ -600,7 +594,6 @@ void CEGLNativeTypeRaspberryPI::GetSupportedModes(HDMI_RES_GROUP_T group, std::v
          RESOLUTION_INFO res2 = res;
          res2.dwFlags |= D3DPRESENTFLAG_MODE3DSBS;
          res2.fPixelRatio    = get_display_aspect_ratio((HDMI_ASPECT_T)tv->aspect_ratio) / ((float)res2.iScreenWidth / (float)res2.iScreenHeight);
@@ -8243,7 +8136,7 @@ index a9c51ca..a3edf0e 100644
          res2.iSubtitles    = (int)(0.965 * res2.iHeight);
  
          AddUniqueResolution(res2, resolutions);
-@@ -615,7 +608,6 @@ void CEGLNativeTypeRaspberryPI::GetSupportedModes(HDMI_RES_GROUP_T group, std::v
+@@ -616,7 +609,6 @@ void CEGLNativeTypeRaspberryPI::GetSupportedModes(HDMI_RES_GROUP_T group, std::v
          RESOLUTION_INFO res2 = res;
          res2.dwFlags |= D3DPRESENTFLAG_MODE3DTB;
          res2.fPixelRatio    = get_display_aspect_ratio((HDMI_ASPECT_T)tv->aspect_ratio) / ((float)res2.iScreenWidth / (float)res2.iScreenHeight);
@@ -8252,139 +8145,13 @@ index a9c51ca..a3edf0e 100644
  
          AddUniqueResolution(res2, resolutions);
 -- 
-1.9.3
+2.0.3
 
 
-From 20d7fdefdce70b52bb3bc46416240dc98225c2a7 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 23 Apr 2014 21:07:51 +0100
-Subject: [PATCH 39/96] [PiSink] More attempts to reduce underrun audio
- glitches with multichannl and high samplerate
-
----
- xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp | 78 ++++++++++++-------------------
- 1 file changed, 30 insertions(+), 48 deletions(-)
-
-diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-index 19a9411..0a09275 100644
---- a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-+++ b/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-@@ -186,7 +186,7 @@ bool CAESinkPi::Initialize(AEAudioFormat &format, std::string &device)
-   unsigned int sample_size = CAEUtil::DataFormatToBits(format.m_dataFormat) >> 3;
-   format.m_frameSize     = sample_size * channels;
-   format.m_sampleRate    = std::max(8000U, std::min(192000U, format.m_sampleRate));
--  format.m_frames        = format.m_sampleRate * AUDIO_PLAYBUFFER;
-+  format.m_frames        = format.m_sampleRate * AUDIO_PLAYBUFFER / NUM_OMX_BUFFERS;
-   format.m_frameSamples  = format.m_frames * channels;
- 
-   SetAudioProps(m_passthrough, GetChannelMap(format, m_passthrough));
-@@ -232,7 +232,7 @@ bool CAESinkPi::Initialize(AEAudioFormat &format, std::string &device)
-     CLog::Log(LOGERROR, "%s:%s - error get OMX_IndexParamPortDefinition (input) omx_err(0x%08x)", CLASSNAME, __func__, omx_err);
- 
-   port_param.nBufferCountActual = std::max((unsigned int)port_param.nBufferCountMin, (unsigned int)NUM_OMX_BUFFERS);
--  port_param.nBufferSize = m_format.m_frameSize * m_format.m_frames / port_param.nBufferCountActual;
-+  port_param.nBufferSize = m_format.m_frameSize * m_format.m_frames;
- 
-   omx_err = m_omx_render.SetParameter(OMX_IndexParamPortDefinition, &port_param);
-   if (omx_err != OMX_ErrorNone)
-@@ -306,61 +306,43 @@ double CAESinkPi::GetCacheTotal()
- 
- unsigned int CAESinkPi::AddPackets(uint8_t **data, unsigned int frames, unsigned int offset)
- {
--  unsigned int sent = 0;
-   uint8_t *buffer = data[0]+offset*m_format.m_frameSize;
- 
--  if (!m_Initialized)
-+  if (!m_Initialized || !frames)
-     return frames;
- 
-   OMX_ERRORTYPE omx_err   = OMX_ErrorNone;
-   OMX_BUFFERHEADERTYPE *omx_buffer = NULL;
--  while (sent < frames)
-+
-+  AEDelayStatus status;
-+  GetDelay(status);
-+  double delay = status.GetDelay();
-+  if (delay <= 0.0 && m_submitted)
-+    CLog::Log(LOGNOTICE, "%s:%s Underrun (delay:%.2f frames:%d)", CLASSNAME, __func__, delay, frames);
-+
-+  omx_buffer = m_omx_render.GetInputBuffer(1000);
-+  if (omx_buffer == NULL)
-   {
--    AEDelayStatus status;
--    GetDelay(status);
--    double delay = status.GetDelay();
--    double ideal_submission_time = AUDIO_PLAYBUFFER - delay;
--    // ideal amount of audio we'd like submit (to make delay match AUDIO_PLAYBUFFER)
--    int timeout = 1000;
--    int ideal_submission_samples = ideal_submission_time / (m_sinkbuffer_sec_per_byte * m_format.m_frameSize);
--    // if we are almost full then sleep (to avoid repeatedly sending a few samples)
--    bool too_laggy = ideal_submission_time < 0.25 * AUDIO_PLAYBUFFER;
--    int sleeptime = (int)(AUDIO_PLAYBUFFER * 0.25 * 1000.0);
--    if (too_laggy)
--    {
--      Sleep(sleeptime);
--      continue;
--    }
--    omx_buffer = m_omx_render.GetInputBuffer(timeout);
--    if (omx_buffer == NULL)
--    {
--      CLog::Log(LOGERROR, "COMXAudio::Decode timeout");
--      break;
--    }
--
--    unsigned int space = omx_buffer->nAllocLen / m_format.m_frameSize;
--    unsigned int samples = std::min(std::min(space, (unsigned int)ideal_submission_samples), frames - sent);
--
--    omx_buffer->nFilledLen = samples * m_format.m_frameSize;
--    omx_buffer->nTimeStamp = ToOMXTime(0);
--    omx_buffer->nFlags = 0;
--    memcpy(omx_buffer->pBuffer, (uint8_t *)buffer + sent * m_format.m_frameSize, omx_buffer->nFilledLen);
--
--    sent += samples;
--
--    if (sent == frames)
--      omx_buffer->nFlags |= OMX_BUFFERFLAG_ENDOFFRAME;
--
--    if (delay <= 0.0 && m_submitted)
--      CLog::Log(LOGNOTICE, "%s:%s Underrun (delay:%.2f frames:%d)", CLASSNAME, __func__, delay, frames);
--
--    omx_err = m_omx_render.EmptyThisBuffer(omx_buffer);
--    if (omx_err != OMX_ErrorNone)
--      CLog::Log(LOGERROR, "%s:%s frames=%d err=%x", CLASSNAME, __func__, frames, omx_err);
--    m_submitted++;
-+    CLog::Log(LOGERROR, "CAESinkPi::AddPackets timeout");
-+    return 0;
-   }
- 
--  return sent;
-+  omx_buffer->nFilledLen = frames * m_format.m_frameSize;
-+  // must be true
-+  assert(omx_buffer->nFilledLen <= omx_buffer->nAllocLen);
-+  omx_buffer->nTimeStamp = ToOMXTime(0);
-+  omx_buffer->nFlags = OMX_BUFFERFLAG_ENDOFFRAME;
-+  memcpy(omx_buffer->pBuffer, buffer, omx_buffer->nFilledLen);
-+
-+  omx_err = m_omx_render.EmptyThisBuffer(omx_buffer);
-+  if (omx_err != OMX_ErrorNone)
-+    CLog::Log(LOGERROR, "%s:%s frames=%d err=%x", CLASSNAME, __func__, frames, omx_err);
-+  m_submitted++;
-+  GetDelay(status);
-+  delay = status.GetDelay();
-+  if (delay > AUDIO_PLAYBUFFER)
-+    Sleep((int)(1000.0f * (delay - AUDIO_PLAYBUFFER)));
-+  return frames;
- }
- 
- void CAESinkPi::Drain()
--- 
-1.9.3
-
-
-From 26cbc10ebc45ee423eafd305ba9dea7f2cade657 Mon Sep 17 00:00:00 2001
+From fba69e34eb89cfcc7e2683d568cba80f680c8e81 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 22 Apr 2014 12:23:23 +0100
-Subject: [PATCH 40/96] [omxplayer] Make dvdplayer the default for dvd images
+Subject: [PATCH 39/91] [omxplayer] Make dvdplayer the default for dvd images
 
 ---
  xbmc/cores/omxplayer/omxplayer_advancedsettings.xml | 2 +-
@@ -8403,13 +8170,13 @@ index 77c6a15..51c0daf 100644
    </video>
  </advancedsettings>
 -- 
-1.9.3
+2.0.3
 
 
-From 8cd7839f381229d205d038a1e0a421787dd63ad3 Mon Sep 17 00:00:00 2001
+From 85dd9e0aabf0169c3ac0a156ddb8428a17be6e32 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 26 Apr 2014 17:27:52 +0100
-Subject: [PATCH 41/96] [cec] Don't suspend pi on tv switch off - it can't wake
+Subject: [PATCH 40/91] [cec] Don't suspend pi on tv switch off - it can't wake
  up
 
 ---
@@ -8430,13 +8197,13 @@ index a906628..9b5271a 100644
      <setting key="use_tv_menu_language" type="bool" value="1" label="36018" order="10" />
      <setting key="pause_playback_on_deactivate" type="bool" value="1" label="36033" order="11" />
 -- 
-1.9.3
+2.0.3
 
 
-From 7f24214a6d87592f00a4e79eb28e8776b01f4d6f Mon Sep 17 00:00:00 2001
+From 562b683026b3d9802c6c2dace7de21bb354e6f1e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 27 Jun 2013 01:25:57 +0100
-Subject: [PATCH 43/96] [rbp/omxplayer] Do we need discontinuity handling?
+Subject: [PATCH 42/91] [rbp/omxplayer] Do we need discontinuity handling?
 
 So far I've not seen what this is needed for and it does cause problems for some files.
 ---
@@ -8444,25 +8211,25 @@ So far I've not seen what this is needed for and it does cause problems for some
  1 file changed, 1 insertion(+)
 
 diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index 49c82e4..13284d1 100644
+index 60ecf9a..16417b6 100644
 --- a/xbmc/cores/omxplayer/OMXPlayer.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
-@@ -2382,6 +2382,7 @@ static void UpdateLimits(double& minimum, double& maximum, double dts)
+@@ -2351,6 +2351,7 @@ static void UpdateLimits(double& minimum, double& maximum, double dts)
  
- void COMXPlayer::CheckContinuity(COMXCurrentStream& current, DemuxPacket* pPacket)
+ void CDVDPlayer::CheckContinuity(CCurrentStream& current, DemuxPacket* pPacket)
  {
 +return;
    if (m_playSpeed < DVD_PLAYSPEED_PAUSE)
      return;
  
 -- 
-1.9.3
+2.0.3
 
 
-From 72c21756bd6ddbc68238f8afe5560a525686fad6 Mon Sep 17 00:00:00 2001
+From 20de945594f9bd63ff1131ac90ece60f7d7e3881 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 24 Oct 2013 00:53:26 +0100
-Subject: [PATCH 44/96] [rbp/omxplayer] Avoid marking non-monotonic timestamps
+Subject: [PATCH 43/91] [rbp/omxplayer] Avoid marking non-monotonic timestamps
  as unknown
 
 Following a single spurious timestamp that is in the future,
@@ -8472,10 +8239,10 @@ all subsequent timestamps will be marked unknown causing out of sync.
  1 file changed, 2 insertions(+), 14 deletions(-)
 
 diff --git a/xbmc/cores/omxplayer/OMXAudio.cpp b/xbmc/cores/omxplayer/OMXAudio.cpp
-index 77731a9..5f9d028 100644
+index a2f9b0c..c0c3a3f 100644
 --- a/xbmc/cores/omxplayer/OMXAudio.cpp
 +++ b/xbmc/cores/omxplayer/OMXAudio.cpp
-@@ -1210,22 +1210,10 @@ unsigned int COMXAudio::AddPackets(const void* data, unsigned int len, double dt
+@@ -1211,22 +1211,10 @@ unsigned int COMXAudio::AddPackets(const void* data, unsigned int len, double dt
      }
      else
      {
@@ -8501,13 +8268,13 @@ index 77731a9..5f9d028 100644
  
      omx_buffer->nTimeStamp = ToOMXTime(val);
 -- 
-1.9.3
+2.0.3
 
 
-From c7047bcd2ae474576f11a8e44481497aa81d5cd0 Mon Sep 17 00:00:00 2001
+From e63de20cabe6f3f84d8d63879a9ab2e5dbf0f64a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 13 Dec 2013 16:25:23 +0000
-Subject: [PATCH 46/96] Add time taken to resample to log
+Subject: [PATCH 45/91] Add time taken to resample to log
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp    | 7 +++++++
@@ -8548,13 +8315,13 @@ index 01aafe3..5ab83a2 100644
    bool m_isSeekPosible;
    int m_fileSize;
 -- 
-1.9.3
+2.0.3
 
 
-From f26442e9d58dd8d4c32d93416ae028c9e4099afa Mon Sep 17 00:00:00 2001
+From 289d977ef08d7e4f17856b16f12e09f9d99e942f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 14 Dec 2013 16:55:05 +0000
-Subject: [PATCH 47/96] logging: Add microsecond timer to log messages
+Subject: [PATCH 46/91] logging: Add microsecond timer to log messages
 
 ---
  xbmc/utils/log.cpp | 12 +++++++++---
@@ -8612,13 +8379,13 @@ index dd6ef26..8edf2fd 100644
                                      levelNames[loglevel]);
  
 -- 
-1.9.3
+2.0.3
 
 
-From 3c92b7531b5194a284f3a528c46fc69d8aff12ef Mon Sep 17 00:00:00 2001
+From 6026ce07f260adea5f36f41d80c8ad4575523909 Mon Sep 17 00:00:00 2001
 From: Jonathan Marshall <jmarshall@xbmc.org>
 Date: Sat, 2 Nov 2013 23:49:17 +1300
-Subject: [PATCH 48/96] adds GetTvShowSeasons
+Subject: [PATCH 47/91] adds GetTvShowSeasons
 
 ---
  xbmc/video/VideoDatabase.cpp | 30 ++++++++++++++++++++++++------
@@ -8626,10 +8393,10 @@ Subject: [PATCH 48/96] adds GetTvShowSeasons
  2 files changed, 25 insertions(+), 6 deletions(-)
 
 diff --git a/xbmc/video/VideoDatabase.cpp b/xbmc/video/VideoDatabase.cpp
-index 55036e0..8ef5311 100644
+index 796d8f3..7b28f94 100644
 --- a/xbmc/video/VideoDatabase.cpp
 +++ b/xbmc/video/VideoDatabase.cpp
-@@ -4075,7 +4075,7 @@ bool CVideoDatabase::RemoveArtForItem(int mediaId, const MediaType &mediaType, c
+@@ -4108,7 +4108,7 @@ bool CVideoDatabase::RemoveArtForItem(int mediaId, const MediaType &mediaType, c
    return result;
  }
  
@@ -8638,7 +8405,7 @@ index 55036e0..8ef5311 100644
  {
    try
    {
-@@ -4086,19 +4086,37 @@ bool CVideoDatabase::GetTvShowSeasonArt(int showId, map<int, map<string, string>
+@@ -4119,19 +4119,37 @@ bool CVideoDatabase::GetTvShowSeasonArt(int showId, map<int, map<string, string>
      CStdString sql = PrepareSQL("select idSeason,season from seasons where idShow=%i", showId);
      m_pDS2->query(sql.c_str());
  
@@ -8694,13 +8461,13 @@ index 492eebb..f6026c2 100644
    bool GetArtTypes(const MediaType &mediaType, std::vector<std::string> &artTypes);
  
 -- 
-1.9.3
+2.0.3
 
 
-From c86fb34c7cc34de9c68e3d7f9fb8be0acdfcb922 Mon Sep 17 00:00:00 2001
+From 562a61b7178897baff6d981909deb87448c1199d Mon Sep 17 00:00:00 2001
 From: Jonathan Marshall <jmarshall@xbmc.org>
 Date: Sat, 2 Nov 2013 23:50:10 +1300
-Subject: [PATCH 49/96] move AddSeason() public.
+Subject: [PATCH 48/91] move AddSeason() public.
 
 ---
  xbmc/video/VideoDatabase.h | 2 +-
@@ -8727,13 +8494,13 @@ index f6026c2..a7acea3 100644
    /*! \brief Adds a path to the tvshow link table.
     \param idShow the id of the show.
 -- 
-1.9.3
+2.0.3
 
 
-From 3151599efa7da405564ff0d20f607e7f980363bc Mon Sep 17 00:00:00 2001
+From 641374b5df817a5cb5813352b65e67a7849e6742 Mon Sep 17 00:00:00 2001
 From: Jonathan Marshall <jmarshall@xbmc.org>
 Date: Sat, 2 Nov 2013 23:48:24 +1300
-Subject: [PATCH 50/96] adds GetArt function to (video) scraper, allowing art
+Subject: [PATCH 49/91] adds GetArt function to (video) scraper, allowing art
  to be fetched given the video identifier.
 
 ---
@@ -8744,7 +8511,7 @@ Subject: [PATCH 50/96] adds GetArt function to (video) scraper, allowing art
  4 files changed, 53 insertions(+)
 
 diff --git a/xbmc/addons/Scraper.cpp b/xbmc/addons/Scraper.cpp
-index 225220b..4f93865 100644
+index b9991ae..240f46a 100644
 --- a/xbmc/addons/Scraper.cpp
 +++ b/xbmc/addons/Scraper.cpp
 @@ -925,6 +925,44 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl
@@ -8848,13 +8615,13 @@ index 22ac229..75bc341 100644
    enum LOOKUP_STATE { DO_NOTHING = 0,
                        FIND_MOVIE = 1,
 -- 
-1.9.3
+2.0.3
 
 
-From 7a91a4dee427c37265bd8ef2d0ecc800b498631a Mon Sep 17 00:00:00 2001
+From e2ab15d9d9e46e54719ee50d1d978bf9b355650d Mon Sep 17 00:00:00 2001
 From: Jonathan Marshall <jmarshall@xbmc.org>
 Date: Sat, 2 Nov 2013 23:53:14 +1300
-Subject: [PATCH 51/96] refresh season art if a new season is found that isn't
+Subject: [PATCH 50/91] refresh season art if a new season is found that isn't
  recorded in the database yet. Fixes #14339
 
 ---
@@ -8958,13 +8725,13 @@ index 7da1bf2..c764e20 100644
      bool ProcessItemByVideoInfoTag(const CFileItem *item, EPISODELIST &episodeList);
  
 -- 
-1.9.3
+2.0.3
 
 
-From 506acd133473c2266aa80d9b6fd5edcd2431e9e9 Mon Sep 17 00:00:00 2001
+From 31ea9ad54afd362c4837ceb9cbdcd3508c17a0e9 Mon Sep 17 00:00:00 2001
 From: Jonathan Marshall <jmarshall@xbmc.org>
 Date: Sat, 2 Nov 2013 23:53:34 +1300
-Subject: [PATCH 52/96] REMOVEME: updated thetvdb.com scraper to support art
+Subject: [PATCH 51/91] REMOVEME: updated thetvdb.com scraper to support art
  updates
 
 ---
@@ -9072,23 +8839,23 @@ index 39e604d..60a0e96 100644
  	<!-- input:	$1=html !-->
  	<!-- input:	$2=series url !-->
 -- 
-1.9.3
+2.0.3
 
 
-From 14a9a98eacad9fff8413e654ff1d0b4443cb6302 Mon Sep 17 00:00:00 2001
+From 7f6ba0f1d583378a7c3b4d4b5e81cb9eddf586d7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 22 Mar 2014 16:40:01 +0000
-Subject: [PATCH 53/96] Enable PYTHONOPTIMIZE for Pi
+Subject: [PATCH 52/91] Enable PYTHONOPTIMIZE for Pi
 
 ---
  xbmc/interfaces/python/XBPython.cpp | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git a/xbmc/interfaces/python/XBPython.cpp b/xbmc/interfaces/python/XBPython.cpp
-index 099c042..95caaa0 100644
+index cba242d..35a4509 100644
 --- a/xbmc/interfaces/python/XBPython.cpp
 +++ b/xbmc/interfaces/python/XBPython.cpp
-@@ -462,6 +462,10 @@ bool XBPython::InitializeEngine()
+@@ -492,6 +492,10 @@ bool XBPython::InitializeEngine()
        }
  #endif
  
@@ -9100,13 +8867,13 @@ index 099c042..95caaa0 100644
  // Darwin packs .pyo files, we need PYTHONOPTIMIZE on in order to load them.
  #if defined(TARGET_DARWIN)
 -- 
-1.9.3
+2.0.3
 
 
-From ea3009d7804821c13400944b0292aa939dd7a80b Mon Sep 17 00:00:00 2001
+From 0e411aebdf07c9abeed4f5fca499003942892c62 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 28 Apr 2014 18:07:45 +0100
-Subject: [PATCH 54/96] [rpi] Make ActiveAE thread higher priority to make
+Subject: [PATCH 53/91] [rpi] Make ActiveAE thread higher priority to make
  audio underrun less likely
 
 ---
@@ -9131,13 +8898,13 @@ index 08346d2..e302098 100644
    if (m_controlPort.SendOutMessageSync(CActiveAEControlProtocol::INIT,
                                                   &reply,
 -- 
-1.9.3
+2.0.3
 
 
-From 2868b25ce52b71614d5d8019dd91e9362b8dc9c5 Mon Sep 17 00:00:00 2001
+From fe4d2f27a7005e66c32157cd7238cbad6525944f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 29 Apr 2014 15:23:22 +0100
-Subject: [PATCH 55/96] [ffmpeg] Speed up wtv index creation
+Subject: [PATCH 54/91] [ffmpeg] Speed up wtv index creation
 
 The index creation is O(N^2) with number of entries (typically thousands).
 On a Pi this can take more than 60 seconds to execute for a recording of a few hours.
@@ -9223,13 +8990,13 @@ index 0000000..8f5f989
 +             }
 +         }
 -- 
-1.9.3
+2.0.3
 
 
-From ccd0b93b852fb15f5ec08a4836e68c24df34ab58 Mon Sep 17 00:00:00 2001
+From eb9f538f829ad218620c21e478daf6b9ac90f927 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 8 Jul 2014 15:18:47 +0100
-Subject: [PATCH 56/96] ffmpeg: Add armv6 acceleration for imdct/fft used by
+Subject: [PATCH 55/91] ffmpeg: Add armv6 acceleration for imdct/fft used by
  ac3/aac
 
 armv6: Accelerate ff_imdct_half for general case (mdct_bits != 6)
@@ -10120,13 +9887,13 @@ index 0000000..db0118f
 +--
 +1.9.3
 -- 
-1.9.3
+2.0.3
 
 
-From 648d3c9d161483f45285e2d280faa75372f69040 Mon Sep 17 00:00:00 2001
+From a83ea82753c5ef561bfe1d215d0dfdc709b2b57b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 12 May 2014 23:06:43 +0100
-Subject: [PATCH 57/96] [omxcodec] Updates to work better with dropping and
+Subject: [PATCH 56/91] [omxcodec] Updates to work better with dropping and
  lateness detection
 
 ---
@@ -10415,13 +10182,13 @@ index f234f6d..adf53b5 100644
    bool SendDecoderConfig(uint8_t *extradata, int extrasize);
    bool NaluFormatStartCodes(enum AVCodecID codec, uint8_t *extradata, int extrasize);
 -- 
-1.9.3
+2.0.3
 
 
-From 01919034acb90274adc369bbfccdad97775ae220 Mon Sep 17 00:00:00 2001
+From 712f9030e096352fcdc8f8e6a10b86c6f792b92f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 11 Apr 2014 16:12:27 +0100
-Subject: [PATCH 58/96] [omxplayer] Add ability to log more timestamp info in
+Subject: [PATCH 57/91] [omxplayer] Add ability to log more timestamp info in
  extra debug settings
 
 ---
@@ -10434,10 +10201,10 @@ Subject: [PATCH 58/96] [omxplayer] Add ability to log more timestamp info in
  6 files changed, 44 insertions(+), 34 deletions(-)
 
 diff --git a/language/English/strings.po b/language/English/strings.po
-index 3b3fdd0..65628bf 100755
+index a78c892..2679312 100755
 --- a/language/English/strings.po
 +++ b/language/English/strings.po
-@@ -2879,6 +2879,11 @@ msgctxt "#679"
+@@ -2880,6 +2880,11 @@ msgctxt "#679"
  msgid "Verbose logging for CEC library"
  msgstr ""
  
@@ -10462,12 +10229,12 @@ index 4bf5d83..3fb7cc3 100644
  #ifdef __GNUC__
  #define ATTRIB_LOG_FORMAT __attribute__((format(printf,3,4)))
 diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index 13284d1..ed78b09 100644
+index 16417b6..87296cd 100644
 --- a/xbmc/cores/omxplayer/OMXPlayer.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
-@@ -1545,27 +1545,28 @@ void COMXPlayer::Process()
-       m_video_fifo = (int)(100.0*(m_omxPlayerVideo.GetDecoderBufferSize()-m_omxPlayerVideo.GetDecoderFreeSpace())/m_omxPlayerVideo.GetDecoderBufferSize());
-       m_audio_fifo = (int)(100.0*audio_fifo/m_omxPlayerAudio.GetCacheTotal());
+@@ -1545,27 +1545,28 @@ void CDVDPlayer::Process()
+       m_video_fifo = (int)(100.0*(m_dvdPlayerVideo.GetDecoderBufferSize()-m_dvdPlayerVideo.GetDecoderFreeSpace())/m_dvdPlayerVideo.GetDecoderBufferSize());
+       m_audio_fifo = (int)(100.0*audio_fifo/m_dvdPlayerAudio.GetCacheTotal());
  
 -      #ifdef _DEBUG
 -      static unsigned count;
@@ -10475,45 +10242,45 @@ index 13284d1..ed78b09 100644
 +      if (g_advancedSettings.CanLogComponent(LOGOMXPLAYER))
        {
 -        char response[80];
--        if (m_omxPlayerVideo.GetDecoderBufferSize() && m_omxPlayerAudio.GetCacheTotal())
+-        if (m_dvdPlayerVideo.GetDecoderBufferSize() && m_dvdPlayerAudio.GetCacheTotal())
 -          vc_gencmd(response, sizeof response, "render_bar 4 video_fifo %d %d %d %d",
 -              m_video_fifo,
--              (int)(100.0*video_fifo/m_omxPlayerAudio.GetCacheTotal()),
+-              (int)(100.0*video_fifo/m_dvdPlayerAudio.GetCacheTotal()),
 -              0, 100);
--        if (m_omxPlayerAudio.GetCacheTotal())
+-        if (m_dvdPlayerAudio.GetCacheTotal())
 -          vc_gencmd(response, sizeof response, "render_bar 5 audio_fifo %d %d %d %d",
 -              m_audio_fifo,
--              (int)(100.0*m_omxPlayerAudio.GetDelay()/m_omxPlayerAudio.GetCacheTotal()),
+-              (int)(100.0*m_dvdPlayerAudio.GetDelay()/m_dvdPlayerAudio.GetCacheTotal()),
 -              0, 100);
 -        vc_gencmd(response, sizeof response, "render_bar 6 video_queue %d %d %d %d",
--              m_omxPlayerVideo.GetLevel(), 0, 0, 100);
+-              m_dvdPlayerVideo.GetLevel(), 0, 0, 100);
 -        vc_gencmd(response, sizeof response, "render_bar 7 audio_queue %d %d %d %d",
--              m_omxPlayerAudio.GetLevel(), 0, 0, 100);
+-              m_dvdPlayerAudio.GetLevel(), 0, 0, 100);
 +        static unsigned count;
 +        if ((count++ & 7) == 0)
 +        {
 +          char response[80];
-+          if (m_omxPlayerVideo.GetDecoderBufferSize() && m_omxPlayerAudio.GetCacheTotal())
++          if (m_dvdPlayerVideo.GetDecoderBufferSize() && m_dvdPlayerAudio.GetCacheTotal())
 +            vc_gencmd(response, sizeof response, "render_bar 4 video_fifo %d %d %d %d",
 +                m_video_fifo,
-+                (int)(100.0*video_fifo/m_omxPlayerAudio.GetCacheTotal()),
++                (int)(100.0*video_fifo/m_dvdPlayerAudio.GetCacheTotal()),
 +                0, 100);
-+          if (m_omxPlayerAudio.GetCacheTotal())
++          if (m_dvdPlayerAudio.GetCacheTotal())
 +            vc_gencmd(response, sizeof response, "render_bar 5 audio_fifo %d %d %d %d",
 +                m_audio_fifo,
-+                (int)(100.0*m_omxPlayerAudio.GetDelay()/m_omxPlayerAudio.GetCacheTotal()),
++                (int)(100.0*m_dvdPlayerAudio.GetDelay()/m_dvdPlayerAudio.GetCacheTotal()),
 +                0, 100);
 +          vc_gencmd(response, sizeof response, "render_bar 6 video_queue %d %d %d %d",
-+                m_omxPlayerVideo.GetLevel(), 0, 0, 100);
++                m_dvdPlayerVideo.GetLevel(), 0, 0, 100);
 +          vc_gencmd(response, sizeof response, "render_bar 7 audio_queue %d %d %d %d",
-+                m_omxPlayerAudio.GetLevel(), 0, 0, 100);
++                m_dvdPlayerAudio.GetLevel(), 0, 0, 100);
 +        }
        }
 -      #endif
        if (audio_pts != DVD_NOPTS_VALUE)
        {
          audio_fifo_low = m_HasAudio && audio_fifo < threshold;
-@@ -1581,13 +1582,12 @@ void COMXPlayer::Process()
+@@ -1581,13 +1582,12 @@ void CDVDPlayer::Process()
        if (!m_HasVideo && m_HasAudio)
          video_fifo_high = true;
  
@@ -10522,22 +10289,22 @@ index 13284d1..ed78b09 100644
 -        m_stamp*1e-6, m_av_clock.OMXClockAdjustment()*1e-6, audio_pts*1e-6, video_pts*1e-6, m_av_clock.OMXIsPaused(), bOmxSentEOFs, not_accepts_data, m_playSpeed * (1.0f/DVD_PLAYSPEED_NORMAL),
 -        audio_pts == DVD_NOPTS_VALUE ? 0.0:audio_fifo, video_pts == DVD_NOPTS_VALUE ? 0.0:video_fifo, m_threshold,
 -        audio_fifo_low, audio_fifo_high, video_fifo_low, video_fifo_high,
--        m_omxPlayerAudio.GetLevel(), m_omxPlayerVideo.GetLevel(), m_omxPlayerAudio.GetDelay(), (float)m_omxPlayerAudio.GetCacheTotal());
+-        m_dvdPlayerAudio.GetLevel(), m_dvdPlayerVideo.GetLevel(), m_dvdPlayerAudio.GetDelay(), (float)m_dvdPlayerAudio.GetCacheTotal());
 -      #endif
 +      if (g_advancedSettings.CanLogComponent(LOGOMXPLAYER))
 +        CLog::Log(LOGDEBUG, "%s - M:%.6f-%.6f (A:%.6f V:%.6f) PEF:%d%d%d S:%.2f A:%.2f V:%.2f/T:%.2f (A:%d%d V:%d%d) A:%d%% V:%d%% (%.2f,%.2f)", __FUNCTION__,
 +          m_stamp*1e-6, m_av_clock.OMXClockAdjustment()*1e-6, audio_pts*1e-6, video_pts*1e-6, m_av_clock.OMXIsPaused(), bOmxSentEOFs, not_accepts_data, m_playSpeed * (1.0f/DVD_PLAYSPEED_NORMAL),
 +          audio_pts == DVD_NOPTS_VALUE ? 0.0:audio_fifo, video_pts == DVD_NOPTS_VALUE ? 0.0:video_fifo, m_threshold,
 +          audio_fifo_low, audio_fifo_high, video_fifo_low, video_fifo_high,
-+          m_omxPlayerAudio.GetLevel(), m_omxPlayerVideo.GetLevel(), m_omxPlayerAudio.GetDelay(), (float)m_omxPlayerAudio.GetCacheTotal());
++          m_dvdPlayerAudio.GetLevel(), m_dvdPlayerVideo.GetLevel(), m_dvdPlayerAudio.GetDelay(), (float)m_dvdPlayerAudio.GetCacheTotal());
  
        if (TP(m_playSpeed))
        {
 diff --git a/xbmc/cores/omxplayer/OMXPlayerAudio.cpp b/xbmc/cores/omxplayer/OMXPlayerAudio.cpp
-index 4ed8d17..a4a491e 100644
+index c1b7a0d..37b544c 100644
 --- a/xbmc/cores/omxplayer/OMXPlayerAudio.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayerAudio.cpp
-@@ -366,10 +366,10 @@ void OMXPlayerAudio::Process()
+@@ -364,10 +364,10 @@ void OMXPlayerAudio::Process()
        DemuxPacket* pPacket = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacket();
        bool bPacketDrop     = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacketDrop();
  
@@ -10553,7 +10320,7 @@ index 4ed8d17..a4a491e 100644
        {
          // we are not running until something is cached in output device
 diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
-index 77dad37..605ea80 100644
+index 0514e78..811f087 100644
 --- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
 @@ -42,6 +42,7 @@
@@ -10564,7 +10331,7 @@ index 77dad37..605ea80 100644
  #include "settings/MediaSettings.h"
  #include "cores/VideoRenderers/RenderFormats.h"
  #include "cores/VideoRenderers/RenderFlags.h"
-@@ -452,10 +453,10 @@ void OMXPlayerVideo::Process()
+@@ -450,10 +451,10 @@ void OMXPlayerVideo::Process()
        DemuxPacket* pPacket = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacket();
        bool bPacketDrop     = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacketDrop();
  
@@ -10580,7 +10347,7 @@ index 77dad37..605ea80 100644
        ||  m_speed < 0)
        {
 diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
-index d1797ac..9af1d5a 100644
+index 5f3f2d8..56f9783 100644
 --- a/xbmc/settings/AdvancedSettings.cpp
 +++ b/xbmc/settings/AdvancedSettings.cpp
 @@ -1386,6 +1386,9 @@ void CAdvancedSettings::SettingOptionsLoggingComponentsFiller(const CSetting *se
@@ -10594,13 +10361,13 @@ index d1797ac..9af1d5a 100644
  
  void CAdvancedSettings::setExtraLogLevel(const std::vector<CVariant> &components)
 -- 
-1.9.3
+2.0.3
 
 
-From 651ae93d3301b9fbc54c1abe8c7a6b7a18471001 Mon Sep 17 00:00:00 2001
+From 1769861229b904c1a9a3992194f7a96713669621 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 7 Apr 2014 23:13:55 +0100
-Subject: [PATCH 59/96] [omxplayer] Add ability to dump out audio/video data
+Subject: [PATCH 58/91] [omxplayer] Add ability to dump out audio/video data
  for later debugging
 
 ---
@@ -10612,10 +10379,10 @@ Subject: [PATCH 59/96] [omxplayer] Add ability to dump out audio/video data
  5 files changed, 112 insertions(+)
 
 diff --git a/language/English/strings.po b/language/English/strings.po
-index 65628bf..5ef9534 100755
+index 2679312..a03eb0b 100755
 --- a/language/English/strings.po
 +++ b/language/English/strings.po
-@@ -2884,6 +2884,16 @@ msgctxt "#697"
+@@ -2885,6 +2885,16 @@ msgctxt "#697"
  msgid "Verbose logging for OMXPLAYER"
  msgstr ""
  
@@ -10646,10 +10413,10 @@ index 3fb7cc3..4d722a0 100644
  #ifdef __GNUC__
  #define ATTRIB_LOG_FORMAT __attribute__((format(printf,3,4)))
 diff --git a/xbmc/cores/omxplayer/OMXAudio.cpp b/xbmc/cores/omxplayer/OMXAudio.cpp
-index 5f9d028..1bcc53e0 100644
+index c0c3a3f..5068017 100644
 --- a/xbmc/cores/omxplayer/OMXAudio.cpp
 +++ b/xbmc/cores/omxplayer/OMXAudio.cpp
-@@ -59,6 +59,49 @@ static const uint16_t AC3FSCod   [] = {48000, 44100, 32000, 0};
+@@ -60,6 +60,49 @@ static const uint16_t AC3FSCod   [] = {48000, 44100, 32000, 0};
  
  static const uint16_t DTSFSCod   [] = {0, 8000, 16000, 32000, 0, 0, 11025, 22050, 44100, 0, 0, 12000, 24000, 48000, 0, 0};
  
@@ -10699,7 +10466,7 @@ index 5f9d028..1bcc53e0 100644
  //////////////////////////////////////////////////////////////////////
  // Construction/Destruction
  //////////////////////////////////////////////////////////////////////
-@@ -866,6 +909,7 @@ bool COMXAudio::Initialize(AEAudioFormat format, OMXClock *clock, CDVDStreamInfo
+@@ -867,6 +910,7 @@ bool COMXAudio::Initialize(AEAudioFormat format, OMXClock *clock, CDVDStreamInfo
      memcpy((unsigned char *)omx_buffer->pBuffer, &m_wave_header, omx_buffer->nFilledLen);
      omx_buffer->nFlags = OMX_BUFFERFLAG_CODECCONFIG | OMX_BUFFERFLAG_ENDOFFRAME;
  
@@ -10707,7 +10474,7 @@ index 5f9d028..1bcc53e0 100644
      omx_err = m_omx_decoder.EmptyThisBuffer(omx_buffer);
      if (omx_err != OMX_ErrorNone)
      {
-@@ -898,6 +942,7 @@ bool COMXAudio::Initialize(AEAudioFormat format, OMXClock *clock, CDVDStreamInfo
+@@ -899,6 +943,7 @@ bool COMXAudio::Initialize(AEAudioFormat format, OMXClock *clock, CDVDStreamInfo
        memcpy((unsigned char *)omx_buffer->pBuffer, m_extradata, omx_buffer->nFilledLen);
        omx_buffer->nFlags = OMX_BUFFERFLAG_CODECCONFIG | OMX_BUFFERFLAG_ENDOFFRAME;
    
@@ -10715,7 +10482,7 @@ index 5f9d028..1bcc53e0 100644
        omx_err = m_omx_decoder.EmptyThisBuffer(omx_buffer);
        if (omx_err != OMX_ErrorNone)
        {
-@@ -934,6 +979,8 @@ bool COMXAudio::Deinitialize()
+@@ -935,6 +980,8 @@ bool COMXAudio::Deinitialize()
  {
    CSingleLock lock (m_critSection);
  
@@ -10724,7 +10491,7 @@ index 5f9d028..1bcc53e0 100644
    if ( m_omx_tunnel_clock_analog.IsInitialized() )
      m_omx_tunnel_clock_analog.Deestablish();
    if ( m_omx_tunnel_clock_hdmi.IsInitialized() )
-@@ -1226,6 +1273,7 @@ unsigned int COMXAudio::AddPackets(const void* data, unsigned int len, double dt
+@@ -1227,6 +1274,7 @@ unsigned int COMXAudio::AddPackets(const void* data, unsigned int len, double dt
      int nRetry = 0;
      while(true)
      {
@@ -10732,7 +10499,7 @@ index 5f9d028..1bcc53e0 100644
        omx_err = m_omx_decoder.EmptyThisBuffer(omx_buffer);
        if (omx_err == OMX_ErrorNone)
        {
-@@ -1492,6 +1540,7 @@ void COMXAudio::SubmitEOS()
+@@ -1493,6 +1541,7 @@ void COMXAudio::SubmitEOS()
  
    omx_buffer->nFlags = OMX_BUFFERFLAG_ENDOFFRAME | OMX_BUFFERFLAG_EOS | OMX_BUFFERFLAG_TIME_UNKNOWN;
  
@@ -10741,7 +10508,7 @@ index 5f9d028..1bcc53e0 100644
    if (omx_err != OMX_ErrorNone)
    {
 diff --git a/xbmc/cores/omxplayer/OMXVideo.cpp b/xbmc/cores/omxplayer/OMXVideo.cpp
-index 820ea44..6639804 100644
+index b9256ea..7759da8 100644
 --- a/xbmc/cores/omxplayer/OMXVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXVideo.cpp
 @@ -63,6 +63,49 @@
@@ -10802,7 +10569,7 @@ index 820ea44..6639804 100644
      omx_err = m_omx_decoder.EmptyThisBuffer(omx_buffer);
      if (omx_err != OMX_ErrorNone)
      {
-@@ -687,6 +731,7 @@ bool COMXVideo::Open(CDVDStreamInfo &hints, OMXClock *clock, EDEINTERLACEMODE de
+@@ -707,6 +751,7 @@ bool COMXVideo::Open(CDVDStreamInfo &hints, OMXClock *clock, EDEINTERLACEMODE de
  void COMXVideo::Close()
  {
    CSingleLock lock (m_critSection);
@@ -10810,7 +10577,7 @@ index 820ea44..6639804 100644
    m_omx_tunnel_clock.Deestablish();
    m_omx_tunnel_decoder.Deestablish();
    if(m_deinterlace)
-@@ -781,6 +826,7 @@ int COMXVideo::Decode(uint8_t *pData, int iSize, double pts)
+@@ -801,6 +846,7 @@ int COMXVideo::Decode(uint8_t *pData, int iSize, double pts)
        int nRetry = 0;
        while(true)
        {
@@ -10818,7 +10585,7 @@ index 820ea44..6639804 100644
          omx_err = m_omx_decoder.EmptyThisBuffer(omx_buffer);
          if (omx_err == OMX_ErrorNone)
          {
-@@ -910,6 +956,7 @@ void COMXVideo::SubmitEOS()
+@@ -930,6 +976,7 @@ void COMXVideo::SubmitEOS()
  
    omx_buffer->nFlags = OMX_BUFFERFLAG_ENDOFFRAME | OMX_BUFFERFLAG_EOS | OMX_BUFFERFLAG_TIME_UNKNOWN;
    
@@ -10827,7 +10594,7 @@ index 820ea44..6639804 100644
    if (omx_err != OMX_ErrorNone)
    {
 diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
-index 9af1d5a..5020105 100644
+index 56f9783..627080b 100644
 --- a/xbmc/settings/AdvancedSettings.cpp
 +++ b/xbmc/settings/AdvancedSettings.cpp
 @@ -1389,6 +1389,10 @@ void CAdvancedSettings::SettingOptionsLoggingComponentsFiller(const CSetting *se
@@ -10842,13 +10609,13 @@ index 9af1d5a..5020105 100644
  
  void CAdvancedSettings::setExtraLogLevel(const std::vector<CVariant> &components)
 -- 
-1.9.3
+2.0.3
 
 
-From d72b8595f0c567d26017c10bb4439409b85c3d1f Mon Sep 17 00:00:00 2001
+From 660fd3e724902110bf2e3250d1254d9cf07a91f0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 28 May 2014 18:30:51 +0100
-Subject: [PATCH 60/96] [omxcodec] Reduce GPU memory use by 2 video frames
+Subject: [PATCH 59/91] [omxcodec] Reduce GPU memory use by 2 video frames
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/OpenMaxVideo.cpp | 14 ++++++++++++++
@@ -10880,13 +10647,13 @@ index 612ae21..494fdf5 100644
    OMX_CONFIG_REQUESTCALLBACKTYPE notifications;
    OMX_INIT_STRUCTURE(notifications);
 -- 
-1.9.3
+2.0.3
 
 
-From 5f36232a5172f3fd4de3b8b1197ec642dda7cdb1 Mon Sep 17 00:00:00 2001
+From a972af14b596e85431e7fa252fbf2fe12ca974ed Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 30 May 2014 14:58:43 +0100
-Subject: [PATCH 61/96] [settings] Experiment: Report DESKTOP resolution in
+Subject: [PATCH 60/91] [settings] Experiment: Report DESKTOP resolution in
  video settings
 
 ---
@@ -10908,13 +10675,13 @@ index bb31f15..eae549b 100644
          StringUtils::Format("%dx%d%s", resolution->width, resolution->height,
                              ModeFlagsToString(resolution->flags, false).c_str()),
 -- 
-1.9.3
+2.0.3
 
 
-From 7577000978940f083411ba820ea6a54d65caa1db Mon Sep 17 00:00:00 2001
+From cc5c3093709ac78fa0c9f0b71414ea40d2b0a681 Mon Sep 17 00:00:00 2001
 From: Matthias Kortstiege <vdrfan@xbmc.org>
 Date: Sun, 1 Jun 2014 18:47:20 +0200
-Subject: [PATCH 62/96] changed: avoid useless filesytem io while searching for
+Subject: [PATCH 61/91] changed: avoid useless filesytem io while searching for
  subtitles
 
 ---
@@ -10922,7 +10689,7 @@ Subject: [PATCH 62/96] changed: avoid useless filesytem io while searching for
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/xbmc/Util.cpp b/xbmc/Util.cpp
-index 3152a0f..9afa557 100644
+index 042c3f7..d8c50e8 100644
 --- a/xbmc/Util.cpp
 +++ b/xbmc/Util.cpp
 @@ -1982,7 +1982,7 @@ void CUtil::ScanForExternalSubtitles(const std::string& strMovie, std::vector<st
@@ -10944,116 +10711,13 @@ index 3152a0f..9afa557 100644
    }
    else
 -- 
-1.9.3
+2.0.3
 
 
-From 34ceb8e78c9a5e7f8bf73989f557d1b48b480bfc Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 4 Jun 2014 19:10:27 +0100
-Subject: [PATCH 63/96] [pisink] Support planar formats
-
----
- xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp | 35 ++++++++++++++++++++++++++-----
- 1 file changed, 30 insertions(+), 5 deletions(-)
-
-diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-index 0a09275..5a45653 100644
---- a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-+++ b/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
-@@ -180,7 +180,9 @@ bool CAESinkPi::Initialize(AEAudioFormat &format, std::string &device)
-     format.m_channelLayout = AE_CH_LAYOUT_2_0;
- 
-   // setup for a 50ms sink feed from SoftAE
--  if (format.m_dataFormat != AE_FMT_FLOAT && format.m_dataFormat != AE_FMT_S32LE)
-+  if (format.m_dataFormat != AE_FMT_FLOATP && format.m_dataFormat != AE_FMT_FLOAT &&
-+      format.m_dataFormat != AE_FMT_S32NE && format.m_dataFormat != AE_FMT_S32NEP && format.m_dataFormat != AE_FMT_S32LE &&
-+      format.m_dataFormat != AE_FMT_S16NE && format.m_dataFormat != AE_FMT_S16NEP && format.m_dataFormat != AE_FMT_S16LE)
-     format.m_dataFormat = AE_FMT_S16LE;
-   unsigned int channels    = format.m_channelLayout.Count();
-   unsigned int sample_size = CAEUtil::DataFormatToBits(format.m_dataFormat) >> 3;
-@@ -210,7 +212,13 @@ bool CAESinkPi::Initialize(AEAudioFormat &format, std::string &device)
-   m_pcm_input.eEndian               = OMX_EndianLittle;
-   m_pcm_input.bInterleaved          = OMX_TRUE;
-   m_pcm_input.nBitPerSample         = sample_size * 8;
--  m_pcm_input.ePCMMode              = m_format.m_dataFormat == AE_FMT_FLOAT ? (OMX_AUDIO_PCMMODETYPE)0x8000 : OMX_AUDIO_PCMModeLinear;
-+  // 0x8000 = float, 0x10000 = planar
-+  uint32_t flags = 0;
-+  if (m_format.m_dataFormat == AE_FMT_FLOAT || m_format.m_dataFormat == AE_FMT_FLOATP)
-+   flags |= 0x8000;
-+  if (AE_IS_PLANAR(m_format.m_dataFormat))
-+   flags |= 0x10000;
-+  m_pcm_input.ePCMMode              = flags == 0 ? OMX_AUDIO_PCMModeLinear : (OMX_AUDIO_PCMMODETYPE)flags;
-   m_pcm_input.nChannels             = channels;
-   m_pcm_input.nSamplingRate         = m_format.m_sampleRate;
- 
-@@ -306,14 +314,18 @@ double CAESinkPi::GetCacheTotal()
- 
- unsigned int CAESinkPi::AddPackets(uint8_t **data, unsigned int frames, unsigned int offset)
- {
--  uint8_t *buffer = data[0]+offset*m_format.m_frameSize;
--
-   if (!m_Initialized || !frames)
-     return frames;
- 
-   OMX_ERRORTYPE omx_err   = OMX_ErrorNone;
-   OMX_BUFFERHEADERTYPE *omx_buffer = NULL;
- 
-+  unsigned int channels    = m_format.m_channelLayout.Count();
-+  unsigned int sample_size = CAEUtil::DataFormatToBits(m_format.m_dataFormat) >> 3;
-+  const int planes = AE_IS_PLANAR(m_format.m_dataFormat) ? channels : 1;
-+  const int chans  = AE_IS_PLANAR(m_format.m_dataFormat) ? 1 : channels;
-+  const int pitch  = chans * sample_size;
-+
-   AEDelayStatus status;
-   GetDelay(status);
-   double delay = status.GetDelay();
-@@ -332,8 +344,13 @@ unsigned int CAESinkPi::AddPackets(uint8_t **data, unsigned int frames, unsigned
-   assert(omx_buffer->nFilledLen <= omx_buffer->nAllocLen);
-   omx_buffer->nTimeStamp = ToOMXTime(0);
-   omx_buffer->nFlags = OMX_BUFFERFLAG_ENDOFFRAME;
--  memcpy(omx_buffer->pBuffer, buffer, omx_buffer->nFilledLen);
- 
-+  if (omx_buffer->nFilledLen)
-+  {
-+    int planesize = omx_buffer->nFilledLen / planes;
-+    for (int i=0; i < planes; i++)
-+      memcpy((uint8_t *)omx_buffer->pBuffer + i * planesize, data[i] + offset * pitch, planesize);
-+  }
-   omx_err = m_omx_render.EmptyThisBuffer(omx_buffer);
-   if (omx_err != OMX_ErrorNone)
-     CLog::Log(LOGERROR, "%s:%s frames=%d err=%x", CLASSNAME, __func__, frames, omx_err);
-@@ -370,8 +387,13 @@ void CAESinkPi::EnumerateDevicesEx(AEDeviceInfoList &list, bool force)
-   for (unsigned int i=0; i<sizeof PassthroughSampleRates/sizeof *PassthroughSampleRates; i++)
-     m_info.m_sampleRates.push_back(PassthroughSampleRates[i]);
-   m_info.m_dataFormats.push_back(AE_FMT_FLOAT);
-+  m_info.m_dataFormats.push_back(AE_FMT_S32NE);
-+  m_info.m_dataFormats.push_back(AE_FMT_S16NE);
-   m_info.m_dataFormats.push_back(AE_FMT_S32LE);
-   m_info.m_dataFormats.push_back(AE_FMT_S16LE);
-+  m_info.m_dataFormats.push_back(AE_FMT_FLOATP);
-+  m_info.m_dataFormats.push_back(AE_FMT_S32NEP);
-+  m_info.m_dataFormats.push_back(AE_FMT_S16NEP);
-   m_info.m_dataFormats.push_back(AE_FMT_AC3);
-   m_info.m_dataFormats.push_back(AE_FMT_DTS);
-   m_info.m_dataFormats.push_back(AE_FMT_EAC3);
-@@ -392,6 +414,9 @@ void CAESinkPi::EnumerateDevicesEx(AEDeviceInfoList &list, bool force)
-   m_info.m_dataFormats.push_back(AE_FMT_FLOAT);
-   m_info.m_dataFormats.push_back(AE_FMT_S32LE);
-   m_info.m_dataFormats.push_back(AE_FMT_S16LE);
-+  m_info.m_dataFormats.push_back(AE_FMT_FLOATP);
-+  m_info.m_dataFormats.push_back(AE_FMT_S32NEP);
-+  m_info.m_dataFormats.push_back(AE_FMT_S16NEP);
- 
-   list.push_back(m_info);
- }
--- 
-1.9.3
-
-
-From 970e9f211b03473161cd850a17bc2bc9539cc511 Mon Sep 17 00:00:00 2001
+From 0eb97f948647e5858925041d97f1cb0b4caf8c1e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 30 Dec 2013 12:02:14 +0000
-Subject: [PATCH 64/96] [rbp] Hardware accelerated resampling
+Subject: [PATCH 62/91] [rbp] Hardware accelerated resampling
 
 This replaces the format conversion, up/down mixing and resampling code from ActiveAE with a GPU accelerated version.
 Should significantly reduce CPU when using paplayer or dvdplayer.
@@ -11861,10 +11525,10 @@ index 5a45653..2733054 100644
    m_format = format;
    m_sinkbuffer_sec_per_byte = 1.0 / (double)(m_format.m_frameSize * m_format.m_sampleRate);
 diff --git a/xbmc/linux/OMXCore.cpp b/xbmc/linux/OMXCore.cpp
-index 99e407a..8d3c86a 100644
+index 6cc4970..2ac9b7e 100644
 --- a/xbmc/linux/OMXCore.cpp
 +++ b/xbmc/linux/OMXCore.cpp
-@@ -448,7 +448,7 @@ void COMXCoreComponent::FlushAll()
+@@ -419,7 +419,7 @@ void COMXCoreComponent::FlushAll()
  
  void COMXCoreComponent::FlushInput()
  {
@@ -11873,7 +11537,7 @@ index 99e407a..8d3c86a 100644
      return;
  
    OMX_ERRORTYPE omx_err = OMX_ErrorNone;
-@@ -470,7 +470,7 @@ void COMXCoreComponent::FlushInput()
+@@ -441,7 +441,7 @@ void COMXCoreComponent::FlushInput()
  
  void COMXCoreComponent::FlushOutput()
  {
@@ -11883,13 +11547,13 @@ index 99e407a..8d3c86a 100644
  
    OMX_ERRORTYPE omx_err = OMX_ErrorNone;
 -- 
-1.9.3
+2.0.3
 
 
-From b3f51b63f352cf3d9066e1ff55c22993d64c7dee Mon Sep 17 00:00:00 2001
+From f142e58e1b88b61baa9f605e1b986cc35cd23bfc Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 1 Jun 2014 12:15:17 +0100
-Subject: [PATCH 65/96] [resamplepi] Support planar formats
+Subject: [PATCH 63/91] [resamplepi] Support planar formats
 
 ---
  .../Engines/ActiveAE/ActiveAEResamplePi.cpp        | 101 ++++++++++++---------
@@ -12086,13 +11750,13 @@ index 9a1e549..1604030 100644
  {
    #ifdef DEBUG_VERBOSE
 -- 
-1.9.3
+2.0.3
 
 
-From fde445f872e70c80006dd7d5cc26b1cec2d6dd2f Mon Sep 17 00:00:00 2001
+From 68b5c485d9a00787deaeb2e4da0723f4d4183d7d Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 15 Jun 2014 13:20:53 +0100
-Subject: [PATCH 66/96] gles: Avoid crash when capturing snapshot when using
+Subject: [PATCH 64/91] gles: Avoid crash when capturing snapshot when using
  dvdplayer
 
 Note: snapshot will be blank, but that's better than crashing
@@ -12115,13 +11779,13 @@ index 2929a37..53873f6 100644
      capture->BeginRender();
      capture->EndRender();
 -- 
-1.9.3
+2.0.3
 
 
-From 0f35c1be74e71abdc5565ea579ac7d88cfd9202f Mon Sep 17 00:00:00 2001
+From ca2935c4933faa21cb10618750f82bc6e5a07868 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 16 Jun 2014 19:05:14 +0100
-Subject: [PATCH 67/96] sqlite: Bump to 3080500
+Subject: [PATCH 65/91] sqlite: Bump to 3080500
 
 ---
  tools/depends/target/sqlite3/Makefile | 4 +++-
@@ -12143,13 +11807,13 @@ index 87f7eaa..8fe61e8 100644
  ARCHIVE=$(SOURCE).tar.gz
  
 -- 
-1.9.3
+2.0.3
 
 
-From 2e6615467ae671a1f21d603c7925ae6b21bd1e31 Mon Sep 17 00:00:00 2001
+From c7c9cd989caf9c41c70c1dae8bb587df4eb059ba Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 16 Jun 2014 19:06:00 +0100
-Subject: [PATCH 68/96] [experimental] Disable quiet-noise generation
+Subject: [PATCH 66/91] [experimental] Disable quiet-noise generation
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp | 2 ++
@@ -12176,13 +11840,13 @@ index 488a0df..d9f4a43 100644
  
  void CActiveAESink::SetSilenceTimer()
 -- 
-1.9.3
+2.0.3
 
 
-From 58bf7fd018f9e6807b7d24ab00034cd415ecf6cf Mon Sep 17 00:00:00 2001
+From 9a0eb0ab99c78ed605336a8434fb564bd17d9aaa Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 16 Jun 2014 19:07:21 +0100
-Subject: [PATCH 69/96] [omxcodec] Adjust asserts
+Subject: [PATCH 67/91] [omxcodec] Adjust asserts
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/OpenMaxVideo.cpp | 11 +++++++----
@@ -12218,13 +11882,13 @@ index 494fdf5..23aaa9f 100644
    }
  #endif
 -- 
-1.9.3
+2.0.3
 
 
-From 0e4af5404d4392c281b2313c85b905a4701c16c2 Mon Sep 17 00:00:00 2001
+From aaf052a53805336f9b78633044350955d9363241 Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Thu, 11 Apr 2013 18:24:42 +0200
-Subject: [PATCH 70/96] Added some vc_tv_* functions that were missing in
+Subject: [PATCH 68/91] Added some vc_tv_* functions that were missing in
  DllBCM.
 
 ---
@@ -12259,13 +11923,13 @@ index b92fdb8..9c7e293 100644
                                         HDMI_INTERLACED_T scan_mode, EDID_MODE_MATCH_FLAG_T match_flags)
      { return ::vc_tv_hdmi_power_on_best(width, height, frame_rate, scan_mode, match_flags); };
 -- 
-1.9.3
+2.0.3
 
 
-From 8fa8232eb4537f9ca362ea8d597eadd8e57907a6 Mon Sep 17 00:00:00 2001
+From e9d75809a4c4ad769667ff5ec7052e79357c90af Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Thu, 11 Apr 2013 18:29:03 +0200
-Subject: [PATCH 71/96] Added private utility function to map a float display
+Subject: [PATCH 69/91] Added private utility function to map a float display
  aspect, to the respective SDTV_ASPECT_* enum value.
 
 ---
@@ -12273,10 +11937,10 @@ Subject: [PATCH 71/96] Added private utility function to map a float display
  1 file changed, 19 insertions(+)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-index a3edf0e..5ae2b59 100644
+index bf1e589..518a87d 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-@@ -410,6 +410,25 @@ static void SetResolutionString(RESOLUTION_INFO &res)
+@@ -411,6 +411,25 @@ static void SetResolutionString(RESOLUTION_INFO &res)
      res.dwFlags & D3DPRESENTFLAG_MODE3DTB   ? " 3DTB" : "",
      res.dwFlags & D3DPRESENTFLAG_MODE3DSBS  ? " 3DSBS" : "");
  }
@@ -12303,13 +11967,13 @@ index a3edf0e..5ae2b59 100644
  
  bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
 -- 
-1.9.3
+2.0.3
 
 
-From 87072dd2315f748306b7c1ce6a4a7a503d2b7bc4 Mon Sep 17 00:00:00 2001
+From e127de5de4e3909cb8c00d41266cb91367e546d5 Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Thu, 11 Apr 2013 19:50:58 +0200
-Subject: [PATCH 72/96] Changed SDTV resolutions to be treated similarly to
+Subject: [PATCH 70/91] Changed SDTV resolutions to be treated similarly to
  HDMI resolutions in SetNativeResolution. This means that the SDTV interface
  is powered up and set to the right mode.
 
@@ -12319,10 +11983,10 @@ Subject: [PATCH 72/96] Changed SDTV resolutions to be treated similarly to
  2 files changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-index 5ae2b59..712fe9c 100644
+index 518a87d..9dc39d5 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-@@ -220,7 +220,7 @@ bool CEGLNativeTypeRaspberryPI::SetNativeResolution(const RESOLUTION_INFO &res)
+@@ -221,7 +221,7 @@ bool CEGLNativeTypeRaspberryPI::SetNativeResolution(const RESOLUTION_INFO &res)
  
    DestroyDispmaxWindow();
  
@@ -12331,7 +11995,7 @@ index 5ae2b59..712fe9c 100644
    {
      sem_init(&m_tv_synced, 0, 0);
      m_DllBcmHost->vc_tv_register_callback(CallbackTvServiceCallback, this);
-@@ -274,6 +274,33 @@ bool CEGLNativeTypeRaspberryPI::SetNativeResolution(const RESOLUTION_INFO &res)
+@@ -275,6 +275,33 @@ bool CEGLNativeTypeRaspberryPI::SetNativeResolution(const RESOLUTION_INFO &res)
  
      m_desktopRes = res;
    }
@@ -12365,7 +12029,7 @@ index 5ae2b59..712fe9c 100644
  
    m_dispman_display = m_DllBcmHost->vc_dispmanx_display_open(0);
  
-@@ -439,8 +466,6 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+@@ -440,8 +467,6 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
    if(!m_DllBcmHost)
      return false;
  
@@ -12374,7 +12038,7 @@ index 5ae2b59..712fe9c 100644
    /* read initial desktop resolution before probe resolutions.
     * probing will replace the desktop resolution when it finds the same one.
     * we raplace it because probing will generate more detailed 
-@@ -483,7 +508,7 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+@@ -484,7 +509,7 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
        m_desktopRes.iHeight      = tv_state.display.sdtv.height;
        m_desktopRes.iScreenWidth = tv_state.display.sdtv.width;
        m_desktopRes.iScreenHeight= tv_state.display.sdtv.height;
@@ -12383,7 +12047,7 @@ index 5ae2b59..712fe9c 100644
        m_desktopRes.fRefreshRate = (float)tv_state.display.sdtv.frame_rate;
        m_desktopRes.fPixelRatio  = get_display_aspect_ratio((SDTV_ASPECT_T)tv_state.display.sdtv.display_options.aspect) / ((float)m_desktopRes.iScreenWidth / (float)m_desktopRes.iScreenHeight);
      }
-@@ -506,9 +531,6 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+@@ -507,9 +532,6 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
      CLog::Log(LOGDEBUG, "EGL probe resolution %s:%x\n", m_desktopRes.strMode.c_str(), m_desktopRes.dwFlags);
    }
  
@@ -12406,13 +12070,13 @@ index 59401f5..a0acb1a 100644
    int                           m_width;
    int                           m_height;
 -- 
-1.9.3
+2.0.3
 
 
-From d6f894a9f61304ab710da8765fca1756bf69d64c Mon Sep 17 00:00:00 2001
+From 1c0fdc88b53ea2806021c1b18e2d586c6ad87b2f Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Thu, 11 Apr 2013 19:54:59 +0200
-Subject: [PATCH 73/96] Added methods SuspendVideoOutput() and
+Subject: [PATCH 71/91] Added methods SuspendVideoOutput() and
  ResumeVideoOutput() to CRBP class, which can be used to power down the
  Raspberry PI's video interface, and restore it at a later point.
 
@@ -12423,10 +12087,10 @@ Subject: [PATCH 73/96] Added methods SuspendVideoOutput() and
  3 files changed, 21 insertions(+)
 
 diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index 9a5e9cb..87619e9 100644
+index 73a42c4..e03d673 100644
 --- a/xbmc/linux/RBP.cpp
 +++ b/xbmc/linux/RBP.cpp
-@@ -165,4 +165,19 @@ void CRBP::Deinitialize()
+@@ -173,4 +173,19 @@ void CRBP::Deinitialize()
    m_initialized     = false;
    m_omx_initialized = false;
  }
@@ -12447,10 +12111,10 @@ index 9a5e9cb..87619e9 100644
 +
  #endif
 diff --git a/xbmc/linux/RBP.h b/xbmc/linux/RBP.h
-index 2aae579..f06687c 100644
+index e9a2d5a..04ddaa0 100644
 --- a/xbmc/linux/RBP.h
 +++ b/xbmc/linux/RBP.h
-@@ -57,6 +57,9 @@ class CRBP
+@@ -58,6 +58,9 @@ class CRBP
    unsigned char *CaptureDisplay(int width, int height, int *stride, bool swap_red_blue, bool video_only = true);
    DllOMX *GetDllOMX() { return m_OMX ? m_OMX->GetDll() : NULL; }
  
@@ -12461,10 +12125,10 @@ index 2aae579..f06687c 100644
    DllBcmHost *m_DllBcmHost;
    bool       m_initialized;
 diff --git a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-index 712fe9c..40d303e 100644
+index 9dc39d5..ca36082 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
-@@ -58,7 +58,10 @@
+@@ -59,7 +59,10 @@
  # define DLOG(fmt, args...)
  #endif
  
@@ -12476,13 +12140,13 @@ index 712fe9c..40d303e 100644
  CEGLNativeTypeRaspberryPI::CEGLNativeTypeRaspberryPI()
  {
 -- 
-1.9.3
+2.0.3
 
 
-From 4f8734f9fe9f455e11feb8ec979ff0870b549117 Mon Sep 17 00:00:00 2001
+From 308b3cf08abd7763a2869baafef5ba79e9cbd1fa Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 11 Aug 2013 15:03:36 +0100
-Subject: [PATCH 74/96] PowerManager (and its IPowerSyscall instance) now gets
+Subject: [PATCH 72/91] PowerManager (and its IPowerSyscall instance) now gets
  called from CApplication::OnKey() and can process and suppress key presses.
  This is a requirement to implement a virtual sleep state.
 
@@ -12494,10 +12158,10 @@ Subject: [PATCH 74/96] PowerManager (and its IPowerSyscall instance) now gets
  4 files changed, 23 insertions(+)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index a25f44f..d595c86 100644
+index a2e4fe8..995781e 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -2369,6 +2369,13 @@ bool CApplication::OnKey(const CKey& key)
+@@ -2365,6 +2365,13 @@ bool CApplication::OnKey(const CKey& key)
    // special handling if the screensaver is active
    CAction action = CButtonTranslator::GetInstance().GetAction(iWin, key);
  
@@ -12537,10 +12201,10 @@ index 7f9e7ed..711abea 100644
  
  class CPowerSyscallWithoutEvents : public IPowerSyscall
 diff --git a/xbmc/powermanagement/PowerManager.cpp b/xbmc/powermanagement/PowerManager.cpp
-index fe72016..b392f76 100644
+index 5900f98..6e819d9 100644
 --- a/xbmc/powermanagement/PowerManager.cpp
 +++ b/xbmc/powermanagement/PowerManager.cpp
-@@ -232,6 +232,12 @@ void CPowerManager::ProcessEvents()
+@@ -225,6 +225,12 @@ void CPowerManager::ProcessEvents()
    nesting--;
  }
  
@@ -12575,13 +12239,13 @@ index 0b1f10a..e42b143 100644
    void OnSleep();
    void OnWake();
 -- 
-1.9.3
+2.0.3
 
 
-From 6af27c90ce350d2aebf4b35951dadf94e5cf7391 Mon Sep 17 00:00:00 2001
+From 806b047efbb3dc47b1ed88de61df5338b12b9a3b Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Wed, 17 Apr 2013 13:23:01 +0200
-Subject: [PATCH 75/96] Added CPowerSyscallVirtualSleep class, which acts as a
+Subject: [PATCH 73/91] Added CPowerSyscallVirtualSleep class, which acts as a
  base class for devices that have no native standby mode, and need to fake it
  in some way.
 
@@ -12757,13 +12421,13 @@ index 0000000..ef6e682
 +
 +#endif // _POWER_SYSCALL_VIRTUAL_SLEEP_H_
 -- 
-1.9.3
+2.0.3
 
 
-From 9eba1531e9c53354d4f45398f6a5443ba209f2aa Mon Sep 17 00:00:00 2001
+From 7052670b16d0ee7853cf565aee76b45778615080 Mon Sep 17 00:00:00 2001
 From: macrule <macrule2001@yahoo.de>
 Date: Wed, 17 Apr 2013 13:24:22 +0200
-Subject: [PATCH 76/96] Added power management support for the Raspberry Pi.
+Subject: [PATCH 74/91] Added power management support for the Raspberry Pi.
  Since it doesn't support true standby, we fake it by turning video on or off,
  and ignoring remote inputs during the standby phase.
 
@@ -12777,7 +12441,7 @@ Subject: [PATCH 76/96] Added power management support for the Raspberry Pi.
  create mode 100644 xbmc/powermanagement/linux/RaspberryPIPowerSyscall.h
 
 diff --git a/xbmc/powermanagement/PowerManager.cpp b/xbmc/powermanagement/PowerManager.cpp
-index b392f76..7dd691c 100644
+index 6e819d9..2d8c750 100644
 --- a/xbmc/powermanagement/PowerManager.cpp
 +++ b/xbmc/powermanagement/PowerManager.cpp
 @@ -38,6 +38,8 @@
@@ -12789,7 +12453,7 @@ index b392f76..7dd691c 100644
  #elif defined(TARGET_ANDROID)
  #include "android/AndroidPowerSyscall.h"
  #elif defined(TARGET_POSIX)
-@@ -74,6 +76,8 @@ void CPowerManager::Initialize()
+@@ -71,6 +73,8 @@ void CPowerManager::Initialize()
  {
  #if defined(TARGET_DARWIN)
    m_instance = new CCocoaPowerSyscall();
@@ -12799,13 +12463,12 @@ index b392f76..7dd691c 100644
    m_instance = new CAndroidPowerSyscall();
  #elif defined(TARGET_POSIX)
 diff --git a/xbmc/powermanagement/linux/Makefile b/xbmc/powermanagement/linux/Makefile
-index fc6f8b5..10809da 100644
+index e9d95fb..b130812 100644
 --- a/xbmc/powermanagement/linux/Makefile
 +++ b/xbmc/powermanagement/linux/Makefile
-@@ -1,6 +1,7 @@
+@@ -1,5 +1,6 @@
  SRCS=ConsoleDeviceKitPowerSyscall.cpp \
       ConsoleUPowerSyscall.cpp \
-      HALPowerSyscall.cpp \
 +     RaspberryPIPowerSyscall.cpp \
       UPowerSyscall.cpp \
       LogindUPowerSyscall.cpp
@@ -12910,13 +12573,13 @@ index 0000000..fd1d67c
 +
 +#endif // _RASPBERRY_PI_POWER_SYSCALL_H_
 -- 
-1.9.3
+2.0.3
 
 
-From 6a0e568fd983187f8da76a0782839f6a79c5c2dc Mon Sep 17 00:00:00 2001
+From 63ed5533460e6b13c16bba7e963a7e10e77820d9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Mar 2014 16:16:29 +0000
-Subject: [PATCH 77/96] [power] hack - don't kill lirc or cec
+Subject: [PATCH 75/91] [power] hack - don't kill lirc or cec
 
 ---
  xbmc/peripherals/devices/PeripheralCecAdapter.cpp | 37 +++++++++++++++++++++++
@@ -12978,10 +12641,10 @@ index 6950f0c..4c8416f 100644
    else if (flag == System && !strcmp(sender, "xbmc") && !strcmp(message, "OnWake"))
    {
 diff --git a/xbmc/powermanagement/PowerManager.cpp b/xbmc/powermanagement/PowerManager.cpp
-index 7dd691c..17f118a 100644
+index 2d8c750..901f449 100644
 --- a/xbmc/powermanagement/PowerManager.cpp
 +++ b/xbmc/powermanagement/PowerManager.cpp
-@@ -248,7 +248,7 @@ void CPowerManager::OnSleep()
+@@ -241,7 +241,7 @@ void CPowerManager::OnSleep()
    CLog::Log(LOGNOTICE, "%s: Running sleep jobs", __FUNCTION__);
  
    // stop lirc
@@ -12990,7 +12653,7 @@ index 7dd691c..17f118a 100644
    CLog::Log(LOGNOTICE, "%s: Stopping lirc", __FUNCTION__);
    CBuiltins::Execute("LIRC.Stop");
  #endif
-@@ -284,7 +284,7 @@ void CPowerManager::OnWake()
+@@ -277,7 +277,7 @@ void CPowerManager::OnWake()
  #endif
  
    // restart lirc
@@ -13000,13 +12663,13 @@ index 7dd691c..17f118a 100644
    CBuiltins::Execute("LIRC.Start");
  #endif
 -- 
-1.9.3
+2.0.3
 
 
-From 841c0d0794dfaf063d4f42abaf2b1ce0e5713707 Mon Sep 17 00:00:00 2001
+From b77cb024976fee6b9898c9274e995d368a1cc5d3 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Mar 2014 16:47:54 +0000
-Subject: [PATCH 78/96] [power] hack - wake on any action
+Subject: [PATCH 76/91] [power] hack - wake on any action
 
 ---
  xbmc/powermanagement/PowerSyscallVirtualSleep.cpp | 6 +++---
@@ -13035,13 +12698,13 @@ index 6a1e47b..a717a09 100644
        if(VirtualWake())
        {
 -- 
-1.9.3
+2.0.3
 
 
-From e5165963a436e99cbe88f8ff30104febccd29c92 Mon Sep 17 00:00:00 2001
+From b45f716af31d0add8094faa2cc2b066b2405f6d4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 3 Mar 2014 17:30:07 +0000
-Subject: [PATCH 79/96] [power] hack - Make suspend toggle suspend state
+Subject: [PATCH 77/91] [power] hack - Make suspend toggle suspend state
 
 ---
  xbmc/powermanagement/PowerSyscallVirtualSleep.cpp | 5 +++++
@@ -13064,13 +12727,13 @@ index a717a09..d39c3ed 100644
    return false;
  }
 -- 
-1.9.3
+2.0.3
 
 
-From 0d2b1260fecad565f42a084e13b55d5658a5295d Mon Sep 17 00:00:00 2001
+From 6e25c74f0b927fac75b30596c7e7a2db1fbae5a9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 4 Mar 2014 19:33:44 +0000
-Subject: [PATCH 80/96] [power] Add back in powerdown and reboot
+Subject: [PATCH 78/91] [power] Add back in powerdown and reboot
 
 ---
  .../linux/RaspberryPIPowerSyscall.cpp              | 34 ++++++++++++++++++++++
@@ -13148,56 +12811,25 @@ index fd1d67c..062132e 100644
    virtual bool CanReboot()    { return true; }
  
 -- 
-1.9.3
+2.0.3
 
 
-From 3e0e20fbe01b34e879b161b92fa9245d7c8bb822 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 18 Jun 2014 23:11:28 +0100
-Subject: [PATCH 81/96] [rbp] Reduce GPU memory use when limited
-
-Switching from default triple buffered output to double buffered saves 8M with 1080p GUI.
-This may slightly reduce framerate, but is likely to be minimal.
-
-Assume if gpu_mem is set below the default 128M that this memory reduction is wanted
----
- xbmc/linux/RBP.cpp | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index 87619e9..9f72a36 100644
---- a/xbmc/linux/RBP.cpp
-+++ b/xbmc/linux/RBP.cpp
-@@ -72,6 +72,9 @@ bool CRBP::Initialize()
-   if (vc_gencmd(response, sizeof response, "codec_enabled WVC1") == 0)
-     m_codec_wvc1_enabled = strcmp("WVC1=enabled", response) == 0;
- 
-+  if (m_gpu_mem < 128)
-+    setenv("V3D_DOUBLE_BUFFER", "1", 1);
-+
-   g_OMXImage.Initialize();
-   m_omx_image_init = true;
-   return true;
--- 
-1.9.3
-
-
-From 3d2b77f125b24f69d68bd57a773b0b6aa09ba64e Mon Sep 17 00:00:00 2001
+From 58203679b87964b5ec2e1d8330c2a379f08debb0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 27 Jun 2014 00:01:05 +0100
-Subject: [PATCH 84/96] [rbp] Resume video output on startup
+Subject: [PATCH 81/91] [rbp] Resume video output on startup
 
 ---
  xbmc/linux/RBP.cpp | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index 9f72a36..f789bf1 100644
+index e03d673..cea5ac5 100644
 --- a/xbmc/linux/RBP.cpp
 +++ b/xbmc/linux/RBP.cpp
-@@ -75,6 +75,9 @@ bool CRBP::Initialize()
-   if (m_gpu_mem < 128)
-     setenv("V3D_DOUBLE_BUFFER", "1", 1);
+@@ -80,6 +80,9 @@ bool CRBP::Initialize()
+   if (!m_gui_resolution_limit)
+     m_gui_resolution_limit = m_gpu_mem < 128 ? 720:1080;
  
 +  // in case xbcm was restarted when suspended
 +  ResumeVideoOutput();
@@ -13206,29 +12838,91 @@ index 9f72a36..f789bf1 100644
    m_omx_image_init = true;
    return true;
 -- 
-1.9.3
+2.0.3
 
 
-From 70d534a44d5d261290b0e463b0b71a35d241b393 Mon Sep 17 00:00:00 2001
+From dc1ecd3ff0d11ab94870da74b8964f1ff68a17f8 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 9 Jul 2014 22:45:43 +0100
+Subject: [PATCH 82/91] [rbp] Make cachemembuffersize default depend on memory
+ size
+
+---
+ xbmc/linux/RBP.cpp                 | 5 +++++
+ xbmc/settings/AdvancedSettings.cpp | 5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
+index cea5ac5..162b505 100644
+--- a/xbmc/linux/RBP.cpp
++++ b/xbmc/linux/RBP.cpp
+@@ -22,6 +22,7 @@
+ #if defined(TARGET_RASPBERRY_PI)
+ 
+ #include "settings/Settings.h"
++#include "settings/AdvancedSettings.h"
+ #include "utils/log.h"
+ 
+ #include "cores/omxplayer/OMXImage.h"
+@@ -80,6 +81,9 @@ bool CRBP::Initialize()
+   if (!m_gui_resolution_limit)
+     m_gui_resolution_limit = m_gpu_mem < 128 ? 720:1080;
+ 
++  if (g_advancedSettings.m_cacheMemBufferSize == ~0)
++    g_advancedSettings.m_cacheMemBufferSize = m_arm_mem < 256 ? 1024 * 1024 * 2 : 1024 * 1024 * 20;
++
+   // in case xbcm was restarted when suspended
+   ResumeVideoOutput();
+ 
+@@ -95,6 +99,7 @@ void CRBP::LogFirmwareVerison()
+   response[sizeof(response) - 1] = '\0';
+   CLog::Log(LOGNOTICE, "Raspberry PI firmware version: %s", response);
+   CLog::Log(LOGNOTICE, "ARM mem: %dMB GPU mem: %dMB MPG2:%d WVC1:%d", m_arm_mem, m_gpu_mem, m_codec_mpg2_enabled, m_codec_wvc1_enabled);
++  CLog::Log(LOGNOTICE, "cacheMemBufferSize: %dMB",  g_advancedSettings.m_cacheMemBufferSize >> 20);
+   m_DllBcmHost->vc_gencmd(response, sizeof response, "get_config int");
+   response[sizeof(response) - 1] = '\0';
+   CLog::Log(LOGNOTICE, "Config:\n%s", response);
+diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
+index 627080b..d5708ad 100644
+--- a/xbmc/settings/AdvancedSettings.cpp
++++ b/xbmc/settings/AdvancedSettings.cpp
+@@ -364,7 +364,12 @@ void CAdvancedSettings::Initialize()
+ 
+   m_measureRefreshrate = false;
+ 
++#ifdef TARGET_RASPBERRY_PI
++  // want default to be memory dependent, but interface to gpu not available yet, so set in RBP.cpp
++  m_cacheMemBufferSize = ~0;
++#else
+   m_cacheMemBufferSize = 1024 * 1024 * 20;
++#endif
+   m_networkBufferMode = 0; // Default (buffer all internet streams/filesystems)
+   // the following setting determines the readRate of a player data
+   // as multiply of the default data read rate
+-- 
+2.0.3
+
+
+From f4f79ff0ef42a643e0d82c238fc291e0cc5120c0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 27 Jun 2014 00:36:29 +0100
-Subject: [PATCH 85/96] [omxplayer] Experimental support for anaglyph rendering
+Subject: [PATCH 83/91] [omxplayer] Experimental support for anaglyph rendering
  of 3d videos
 
 Requires updated firmware
 ---
- xbmc/cores/omxplayer/OMXPlayer.cpp      | 12 ++++++++--
- xbmc/cores/omxplayer/OMXPlayerVideo.cpp | 32 ++++++++++++++++++++++++++-
- xbmc/cores/omxplayer/OMXVideo.cpp       | 39 +++++++++++++++++++++------------
+ xbmc/cores/omxplayer/OMXPlayer.cpp      | 12 +++++++--
+ xbmc/cores/omxplayer/OMXPlayerVideo.cpp | 32 +++++++++++++++++++++++-
+ xbmc/cores/omxplayer/OMXVideo.cpp       | 43 +++++++++++++++++++++------------
  xbmc/cores/omxplayer/OMXVideo.h         |  3 ++-
- xbmc/rendering/RenderSystem.cpp         |  4 ++++
- 5 files changed, 72 insertions(+), 18 deletions(-)
+ xbmc/rendering/RenderSystem.cpp         |  4 +++
+ 5 files changed, 74 insertions(+), 20 deletions(-)
 
 diff --git a/xbmc/cores/omxplayer/OMXPlayer.cpp b/xbmc/cores/omxplayer/OMXPlayer.cpp
-index ed78b09..55abc65 100644
+index 87296cd..9617d5a 100644
 --- a/xbmc/cores/omxplayer/OMXPlayer.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayer.cpp
-@@ -1502,6 +1502,8 @@ void COMXPlayer::Process()
+@@ -1503,6 +1503,8 @@ void CDVDPlayer::Process()
      SetCaching(CACHESTATE_FLUSH);
  
    EDEINTERLACEMODE current_deinterlace = CMediaSettings::Get().GetCurrentVideoSettings().m_DeinterlaceMode;
@@ -13237,7 +12931,7 @@ index ed78b09..55abc65 100644
    float current_sharpness = CMediaSettings::Get().GetCurrentVideoSettings().m_Sharpness;
    SetSharpness(current_sharpness);
  
-@@ -1524,8 +1526,13 @@ void COMXPlayer::Process()
+@@ -1525,14 +1527,20 @@ void CDVDPlayer::Process()
        float threshold = 0.1f;
        bool audio_fifo_low = false, video_fifo_low = false, audio_fifo_high = false, video_fifo_high = false;
  
@@ -13251,9 +12945,8 @@ index ed78b09..55abc65 100644
 +          (current_stereomode == RENDER_STEREO_MODE_ANAGLYPH_RED_CYAN || current_stereomode == RENDER_STEREO_MODE_ANAGLYPH_GREEN_MAGENTA) !=
 +          (stereomode == RENDER_STEREO_MODE_ANAGLYPH_RED_CYAN || stereomode == RENDER_STEREO_MODE_ANAGLYPH_GREEN_MAGENTA)))
        {
-         int iStream = m_CurrentVideo.id, source = m_CurrentVideo.source;
-         CloseVideoStream(false);
-@@ -1533,6 +1540,7 @@ void COMXPlayer::Process()
+         CloseStream(m_CurrentVideo, false);
+         OpenStream(m_CurrentVideo, m_CurrentVideo.id, m_CurrentVideo.source);
          if (m_State.canseek)
            m_messenger.Put(new CDVDMsgPlayerSeek(GetTime(), true, true, true, true, true));
          current_deinterlace = CMediaSettings::Get().GetCurrentVideoSettings().m_DeinterlaceMode;
@@ -13262,10 +12955,10 @@ index ed78b09..55abc65 100644
  
        // if sharpness setting has changed, we should update it
 diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
-index 605ea80..b2cb610 100644
+index 811f087..050c62c 100644
 --- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
-@@ -550,7 +550,29 @@ bool OMXPlayerVideo::OpenDecoder()
+@@ -556,7 +556,29 @@ bool OMXPlayerVideo::OpenDecoder()
    else
      m_fForcedAspectRatio = 0.0;
  
@@ -13296,7 +12989,7 @@ index 605ea80..b2cb610 100644
    m_omxVideo.RegisterResolutionUpdateCallBack((void *)this, ResolutionUpdateCallBack);
  
    if(!bVideoDecoderOpen)
-@@ -695,6 +717,10 @@ void OMXPlayerVideo::SetVideoRect(const CRect &InSrcRect, const CRect &InDestRec
+@@ -701,6 +723,10 @@ void OMXPlayerVideo::SetVideoRect(const CRect &InSrcRect, const CRect &InDestRec
        video_stereo_mode = RENDER_STEREO_MODE_OFF;
        display_stereo_mode = RENDER_STEREO_MODE_OFF;
      }
@@ -13307,7 +13000,7 @@ index 605ea80..b2cb610 100644
      else if (stereo_invert)
      {
        SrcRect.x1 += m_hints.width / 2;
-@@ -711,6 +737,10 @@ void OMXPlayerVideo::SetVideoRect(const CRect &InSrcRect, const CRect &InDestRec
+@@ -717,6 +743,10 @@ void OMXPlayerVideo::SetVideoRect(const CRect &InSrcRect, const CRect &InDestRec
        video_stereo_mode = RENDER_STEREO_MODE_OFF;
        display_stereo_mode = RENDER_STEREO_MODE_OFF;
      }
@@ -13319,7 +13012,7 @@ index 605ea80..b2cb610 100644
      {
        SrcRect.y1 += m_hints.height / 2;
 diff --git a/xbmc/cores/omxplayer/OMXVideo.cpp b/xbmc/cores/omxplayer/OMXVideo.cpp
-index 6639804..07c4643 100644
+index 7759da8..b100018 100644
 --- a/xbmc/cores/omxplayer/OMXVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXVideo.cpp
 @@ -113,6 +113,7 @@ COMXVideo::COMXVideo() : m_video_codec_name("")
@@ -13351,37 +13044,44 @@ index 6639804..07c4643 100644
    {
      if(!m_omx_image_fx.Initialize("OMX.broadcom.image_fx", OMX_IndexParamImageInit))
        return false;
-@@ -296,16 +297,24 @@ bool COMXVideo::PortSettingsChanged()
+@@ -296,7 +297,7 @@ bool COMXVideo::PortSettingsChanged()
      }
    }
  
 -  if(m_deinterlace)
 +  if(m_deinterlace || m_anaglyph)
    {
-     OMX_CONFIG_IMAGEFILTERPARAMSTYPE image_filter;
+     bool advanced_deinterlace = port_image.format.video.nFrameWidth * port_image.format.video.nFrameHeight <= 576 * 720;
+ 
+@@ -319,13 +320,21 @@ bool COMXVideo::PortSettingsChanged()
      OMX_INIT_STRUCTURE(image_filter);
  
      image_filter.nPortIndex = m_omx_image_fx.GetOutputPort();
 -    image_filter.nNumParams = 1;
 -    image_filter.nParams[0] = 3;
--    image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
--
+-    if (!advanced_deinterlace)
+-      image_filter.eImageFilter = OMX_ImageFilterDeInterlaceFast;
 +    if (m_anaglyph != OMX_ImageFilterAnaglyphNone)
 +    {
 +      image_filter.nNumParams = 1;
 +      image_filter.nParams[0] = m_anaglyph;
 +      image_filter.eImageFilter = OMX_ImageFilterAnaglyph;
 +    }
-+    else
+     else
+-      image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
+-
 +    {
 +      image_filter.nNumParams = 1;
 +      image_filter.nParams[0] = 3;
-+      image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
++      if (!advanced_deinterlace)
++        image_filter.eImageFilter = OMX_ImageFilterDeInterlaceFast;
++      else
++        image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
 +    }
      omx_err = m_omx_image_fx.SetConfig(OMX_IndexConfigCommonImageFilterParameters, &image_filter);
      if(omx_err != OMX_ErrorNone)
      {
-@@ -314,7 +323,7 @@ bool COMXVideo::PortSettingsChanged()
+@@ -334,7 +343,7 @@ bool COMXVideo::PortSettingsChanged()
      }
    }
  
@@ -13390,7 +13090,7 @@ index 6639804..07c4643 100644
    {
      m_omx_tunnel_decoder.Initialize(&m_omx_decoder, m_omx_decoder.GetOutputPort(), &m_omx_image_fx, m_omx_image_fx.GetInputPort());
      m_omx_tunnel_image_fx.Initialize(&m_omx_image_fx, m_omx_image_fx.GetOutputPort(), &m_omx_sched, m_omx_sched.GetInputPort());
-@@ -341,7 +350,7 @@ bool COMXVideo::PortSettingsChanged()
+@@ -361,7 +370,7 @@ bool COMXVideo::PortSettingsChanged()
      return false;
    }
  
@@ -13399,7 +13099,7 @@ index 6639804..07c4643 100644
    {
      omx_err = m_omx_tunnel_image_fx.Establish();
      if(omx_err != OMX_ErrorNone)
-@@ -383,7 +392,7 @@ bool COMXVideo::PortSettingsChanged()
+@@ -403,7 +412,7 @@ bool COMXVideo::PortSettingsChanged()
    return true;
  }
  
@@ -13408,7 +13108,7 @@ index 6639804..07c4643 100644
  {
    CSingleLock lock (m_critSection);
    bool vflip = false;
-@@ -523,6 +532,7 @@ bool COMXVideo::Open(CDVDStreamInfo &hints, OMXClock *clock, EDEINTERLACEMODE de
+@@ -543,6 +552,7 @@ bool COMXVideo::Open(CDVDStreamInfo &hints, OMXClock *clock, EDEINTERLACEMODE de
      break;
    }
    m_deinterlace_request = deinterlace;
@@ -13416,7 +13116,7 @@ index 6639804..07c4643 100644
  
    if(!m_omx_decoder.Initialize(decoder_name, OMX_IndexParamVideoInit))
      return false;
-@@ -734,7 +744,7 @@ void COMXVideo::Close()
+@@ -754,7 +764,7 @@ void COMXVideo::Close()
    dump_omx_buffer(NULL);
    m_omx_tunnel_clock.Deestablish();
    m_omx_tunnel_decoder.Deestablish();
@@ -13425,7 +13125,7 @@ index 6639804..07c4643 100644
      m_omx_tunnel_image_fx.Deestablish();
    m_omx_tunnel_sched.Deestablish();
  
-@@ -742,7 +752,7 @@ void COMXVideo::Close()
+@@ -762,7 +772,7 @@ void COMXVideo::Close()
  
    m_omx_sched.Deinitialize();
    m_omx_decoder.Deinitialize();
@@ -13434,7 +13134,7 @@ index 6639804..07c4643 100644
      m_omx_image_fx.Deinitialize();
    m_omx_render.Deinitialize();
  
-@@ -755,6 +765,7 @@ void COMXVideo::Close()
+@@ -775,6 +785,7 @@ void COMXVideo::Close()
  
    m_video_codec_name  = "";
    m_deinterlace       = false;
@@ -13442,7 +13142,7 @@ index 6639804..07c4643 100644
    m_av_clock          = NULL;
  
    m_res_ctx           = NULL;
-@@ -878,7 +889,7 @@ void COMXVideo::Reset(void)
+@@ -898,7 +909,7 @@ void COMXVideo::Reset(void)
  
    m_setStartTime = true;
    m_omx_decoder.FlushInput();
@@ -13473,10 +13173,10 @@ index 226000e..e2e79c2 100644
    ResolutionUpdateCallBackFn m_res_callback;
    void              *m_res_ctx;
 diff --git a/xbmc/rendering/RenderSystem.cpp b/xbmc/rendering/RenderSystem.cpp
-index 16102bb..a8d59f9 100644
+index 64e0d16..8a58893 100644
 --- a/xbmc/rendering/RenderSystem.cpp
 +++ b/xbmc/rendering/RenderSystem.cpp
-@@ -74,6 +74,10 @@ bool CRenderSystemBase::SupportsStereo(RENDER_STEREO_MODE mode) const
+@@ -75,6 +75,10 @@ bool CRenderSystemBase::SupportsStereo(RENDER_STEREO_MODE mode) const
      case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
      case RENDER_STEREO_MODE_SPLIT_VERTICAL:
      case RENDER_STEREO_MODE_MONO:
@@ -13488,13 +13188,13 @@ index 16102bb..a8d59f9 100644
      default:
        return false;
 -- 
-1.9.3
+2.0.3
 
 
-From 5e9cfd8e6b4a8876ccedc0395d9ac403fee01406 Mon Sep 17 00:00:00 2001
+From aeb785ef86aae422bc3c9ce0af485a1358f04688 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 2 Jul 2014 12:24:01 +0100
-Subject: [PATCH 86/96] [settings] Add update flag to omx acceleration
+Subject: [PATCH 84/91] [settings] Add update flag to omx acceleration
 
 ---
  system/settings/settings.xml | 3 +++
@@ -13502,7 +13202,7 @@ Subject: [PATCH 86/96] [settings] Add update flag to omx acceleration
  2 files changed, 4 insertions(+)
 
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index 637ddea..88fc18f 100644
+index cc331b7..5378c97 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -740,6 +740,9 @@
@@ -13528,232 +13228,13 @@ index b5ed60a..84b3225 100644
  
    settingSet.clear();
 -- 
-1.9.3
+2.0.3
 
 
-From 1f1de47805bc278aab6359b9be3bbca25dd18094 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Tue, 1 Jul 2014 00:38:54 +0100
-Subject: [PATCH 87/96] [omx] Avoid hang following jpegs that failed to decode
-
-There's a few instanced of xbmc hanging following a jpeg that failed to decode on GPU:
-http://forum.stmlabs.com/showthread.php?tid=14839
-https://github.com/raspberrypi/firmware/issues/288
-http://openelec.tv/forum/120-news-announcements/70709-openelec-4-0-released?start=15#105219
-
-It should fail and continue with software decode. It hangs on the OMX_FreeBuffer call.
-Looks like image_decode component should be returned to idle state before freeing buffers
-when operation did not complete successfully
----
- xbmc/cores/omxplayer/OMXImage.cpp | 78 ++++++++++++++++++++++++++-------------
- xbmc/cores/omxplayer/OMXImage.h   |  4 ++
- 2 files changed, 56 insertions(+), 26 deletions(-)
-
-diff --git a/xbmc/cores/omxplayer/OMXImage.cpp b/xbmc/cores/omxplayer/OMXImage.cpp
-index d2f6b21..085d050 100644
---- a/xbmc/cores/omxplayer/OMXImage.cpp
-+++ b/xbmc/cores/omxplayer/OMXImage.cpp
-@@ -905,6 +905,7 @@ COMXImageDec::COMXImageDec()
- {
-   m_decoded_buffer = NULL;
-   OMX_INIT_STRUCTURE(m_decoded_format);
-+  m_success = false;
- }
- 
- COMXImageDec::~COMXImageDec()
-@@ -919,15 +920,20 @@ void COMXImageDec::Close()
- {
-   CSingleLock lock(m_OMXSection);
- 
--  if(m_omx_decoder.IsInitialized())
--  {
--    m_omx_decoder.FlushInput();
--    m_omx_decoder.FreeInputBuffers();
--  }
--  if(m_omx_resize.IsInitialized())
-+  if (!m_success)
-   {
--    m_omx_resize.FlushOutput();
--    m_omx_resize.FreeOutputBuffers();
-+    if(m_omx_decoder.IsInitialized())
-+    {
-+      m_omx_decoder.SetStateForComponent(OMX_StateIdle);
-+      m_omx_decoder.FlushInput();
-+      m_omx_decoder.FreeInputBuffers();
-+    }
-+    if(m_omx_resize.IsInitialized())
-+    {
-+      m_omx_resize.SetStateForComponent(OMX_StateIdle);
-+      m_omx_resize.FlushOutput();
-+      m_omx_resize.FreeOutputBuffers();
-+    }
-   }
-   if(m_omx_tunnel_decode.IsInitialized())
-     m_omx_tunnel_decode.Deestablish();
-@@ -1180,6 +1186,7 @@ bool COMXImageDec::Decode(const uint8_t *demuxer_content, unsigned demuxer_bytes
- 
-   memcpy( (char*)pixels, m_decoded_buffer->pBuffer, stride * height);
- 
-+  m_success = true;
-   Close();
-   return true;
- }
-@@ -1194,6 +1201,7 @@ COMXImageEnc::COMXImageEnc()
-   CSingleLock lock(m_OMXSection);
-   OMX_INIT_STRUCTURE(m_encoded_format);
-   m_encoded_buffer = NULL;
-+  m_success = false;
- }
- 
- COMXImageEnc::~COMXImageEnc()
-@@ -1419,6 +1427,7 @@ COMXImageReEnc::COMXImageReEnc()
-   m_encoded_buffer = NULL;
-   m_pDestBuffer = NULL;
-   m_nDestAllocSize = 0;
-+  m_success = false;
- }
- 
- COMXImageReEnc::~COMXImageReEnc()
-@@ -1434,15 +1443,24 @@ void COMXImageReEnc::Close()
- {
-   CSingleLock lock(m_OMXSection);
- 
--  if(m_omx_decoder.IsInitialized())
--  {
--    m_omx_decoder.FlushInput();
--    m_omx_decoder.FreeInputBuffers();
--  }
--  if(m_omx_encoder.IsInitialized())
-+  if (!m_success)
-   {
--    m_omx_encoder.FlushOutput();
--    m_omx_encoder.FreeOutputBuffers();
-+    if(m_omx_decoder.IsInitialized())
-+    {
-+      m_omx_decoder.SetStateForComponent(OMX_StateIdle);
-+      m_omx_decoder.FlushInput();
-+      m_omx_decoder.FreeInputBuffers();
-+    }
-+    if(m_omx_resize.IsInitialized())
-+    {
-+      m_omx_resize.SetStateForComponent(OMX_StateIdle);
-+    }
-+    if(m_omx_encoder.IsInitialized())
-+    {
-+      m_omx_encoder.SetStateForComponent(OMX_StateIdle);
-+      m_omx_encoder.FlushOutput();
-+      m_omx_encoder.FreeOutputBuffers();
-+    }
-   }
-   if(m_omx_tunnel_decode.IsInitialized())
-     m_omx_tunnel_decode.Deestablish();
-@@ -1859,14 +1877,15 @@ bool COMXImageReEnc::ReEncode(COMXImageFile &srcFile, unsigned int maxWidth, uns
-     }
-   }
- 
--  Close();
--
-   if(m_omx_decoder.BadState())
-     return false;
- 
-   pDestBuffer = m_pDestBuffer;
-   CLog::Log(LOGDEBUG, "%s::%s : %s %dx%d -> %dx%d\n", CLASSNAME, __func__, srcFile.GetFilename(), srcFile.GetWidth(), srcFile.GetHeight(), maxWidth, maxHeight);
- 
-+  m_success = true;
-+  Close();
-+
-   return true;
- }
- 
-@@ -1878,6 +1897,7 @@ bool COMXImageReEnc::ReEncode(COMXImageFile &srcFile, unsigned int maxWidth, uns
- 
- COMXTexture::COMXTexture()
- {
-+  m_success = false;
- }
- 
- COMXTexture::~COMXTexture()
-@@ -1889,15 +1909,20 @@ void COMXTexture::Close()
- {
-   CSingleLock lock(m_OMXSection);
- 
--  if(m_omx_decoder.IsInitialized())
--  {
--    m_omx_decoder.FlushInput();
--    m_omx_decoder.FreeInputBuffers();
--  }
--  if(m_omx_egl_render.IsInitialized())
-+  if (!m_success)
-   {
--    m_omx_egl_render.FlushOutput();
--    m_omx_egl_render.FreeOutputBuffers();
-+    if(m_omx_decoder.IsInitialized())
-+    {
-+      m_omx_decoder.SetStateForComponent(OMX_StateIdle);
-+      m_omx_decoder.FlushInput();
-+      m_omx_decoder.FreeInputBuffers();
-+    }
-+    if(m_omx_egl_render.IsInitialized())
-+    {
-+      m_omx_egl_render.SetStateForComponent(OMX_StateIdle);
-+      m_omx_egl_render.FlushOutput();
-+      m_omx_egl_render.FreeOutputBuffers();
-+    }
-   }
-   if (m_omx_tunnel_decode.IsInitialized())
-     m_omx_tunnel_decode.Deestablish();
-@@ -2199,6 +2224,7 @@ bool COMXTexture::Decode(const uint8_t *demuxer_content, unsigned demuxer_bytes,
-       eos = true;
-     }
-   }
-+  m_success = true;
-   Close();
-   return true;
- }
-diff --git a/xbmc/cores/omxplayer/OMXImage.h b/xbmc/cores/omxplayer/OMXImage.h
-index 9518190..90e513a 100644
---- a/xbmc/cores/omxplayer/OMXImage.h
-+++ b/xbmc/cores/omxplayer/OMXImage.h
-@@ -132,6 +132,7 @@ class COMXImageDec
-   OMX_BUFFERHEADERTYPE          *m_decoded_buffer;
-   OMX_PARAM_PORTDEFINITIONTYPE  m_decoded_format;
-   CCriticalSection              m_OMXSection;
-+  bool                          m_success;
- };
- 
- class COMXImageEnc
-@@ -150,6 +151,7 @@ class COMXImageEnc
-   OMX_BUFFERHEADERTYPE          *m_encoded_buffer;
-   OMX_PARAM_PORTDEFINITIONTYPE  m_encoded_format;
-   CCriticalSection              m_OMXSection;
-+  bool                          m_success;
- };
- 
- class COMXImageReEnc
-@@ -173,6 +175,7 @@ class COMXImageReEnc
-   CCriticalSection              m_OMXSection;
-   void                          *m_pDestBuffer;
-   unsigned int                  m_nDestAllocSize;
-+  bool                          m_success;
- };
- 
- class COMXTexture
-@@ -197,6 +200,7 @@ class COMXTexture
- 
-   OMX_BUFFERHEADERTYPE *m_egl_buffer;
-   CCriticalSection              m_OMXSection;
-+  bool              m_success;
- };
- 
- extern COMXImage g_OMXImage;
--- 
-1.9.3
-
-
-From f6de911dac602d842fed40ab29ed63c1480b6423 Mon Sep 17 00:00:00 2001
+From 70a1ad0ca5d468496ebf69b0c97af715d503c5f1 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 2 Jul 2014 20:41:29 +0100
-Subject: [PATCH 88/96] [pi] Reduce time textures are held for when memory is
+Subject: [PATCH 85/91] [pi] Reduce time textures are held for when memory is
  low
 
 ---
@@ -13763,10 +13244,10 @@ Subject: [PATCH 88/96] [pi] Reduce time textures are held for when memory is
  3 files changed, 20 insertions(+)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index d595c86..4f6e44c 100644
+index 995781e..6efd2a1 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -352,6 +352,10 @@
+@@ -348,6 +348,10 @@
  #include "utils/AMLUtils.h"
  #endif
  
@@ -13777,7 +13258,7 @@ index d595c86..4f6e44c 100644
  #include "cores/FFmpeg.h"
  
  using namespace std;
-@@ -5198,6 +5202,11 @@ void CApplication::ProcessSlow()
+@@ -5195,6 +5199,11 @@ void CApplication::ProcessSlow()
    if (!m_pPlayer->IsPlayingVideo())
      g_largeTextureManager.CleanupUnusedImages();
  
@@ -13790,10 +13271,10 @@ index d595c86..4f6e44c 100644
  
  #ifdef HAS_DVD_DRIVE
 diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index f789bf1..65c95a3 100644
+index 162b505..f26a7f1 100644
 --- a/xbmc/linux/RBP.cpp
 +++ b/xbmc/linux/RBP.cpp
-@@ -83,6 +83,16 @@ bool CRBP::Initialize()
+@@ -92,6 +92,16 @@ bool CRBP::Initialize()
    return true;
  }
  
@@ -13811,7 +13292,7 @@ index f789bf1..65c95a3 100644
  {
    char  response[1024];
 diff --git a/xbmc/linux/RBP.h b/xbmc/linux/RBP.h
-index f06687c..bf6dfdb 100644
+index 04ddaa0..3ad2327 100644
 --- a/xbmc/linux/RBP.h
 +++ b/xbmc/linux/RBP.h
 @@ -50,6 +50,7 @@ class CRBP
@@ -13823,189 +13304,44 @@ index f06687c..bf6dfdb 100644
    bool GetCodecWvc1() { return m_codec_wvc1_enabled; }
    void GetDisplaySize(int &width, int &height);
 -- 
-1.9.3
+2.0.3
 
 
-From 36ce7c955536898171e2770eeb22bcfce168b5e9 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 2 Jul 2014 21:03:59 +0100
-Subject: [PATCH 89/96] [omx] Restrict the number of outstanding jpeg calls to
- gpu
-
-Allowing more than one outstanding call to gpu for texture encode/decode can be beneficial as processing
-can be overlapped with vchiq message transfer.
-
-Experimentally, 3 outstanding operations is optimal.
-
-Allowing more that this ties up memory on GPU without any performance benefit, so avoid submitting more jobs
----
- xbmc/cores/omxplayer/OMXImage.cpp | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
-
-diff --git a/xbmc/cores/omxplayer/OMXImage.cpp b/xbmc/cores/omxplayer/OMXImage.cpp
-index 085d050..efd3343 100644
---- a/xbmc/cores/omxplayer/OMXImage.cpp
-+++ b/xbmc/cores/omxplayer/OMXImage.cpp
-@@ -49,6 +49,33 @@
- #define EXIF_TAG_ORIENTATION    0x0112
- 
- 
-+// A helper for restricting threads calling GPU functions to limit memory use
-+static XbmcThreads::ConditionVariable g_count_cond;
-+static CCriticalSection               g_count_lock;
-+static int g_count_val;
-+
-+static void limit_calls_enter(int &count, int allowed)
-+{
-+  //printf("%s  in=%d\n", __func__, m_count_val);
-+  CSingleLock lock(g_count_lock);
-+  while (count >= allowed)
-+  {
-+    g_count_cond.wait(lock);
-+  }
-+  count++;
-+  //printf("%s out=%d\n", __func__, m_count_val);
-+}
-+
-+static void limit_calls_leave(int &count)
-+{
-+  //printf("%s  in=%d\n", __func__, m_count_val);
-+  CSingleLock lock(g_count_lock);
-+  count--;
-+  g_count_cond.notifyAll();
-+  //printf("%s out=%d\n", __func__, m_count_val);
-+}
-+
-+
- #ifdef CLASSNAME
- #undef CLASSNAME
- #endif
-@@ -903,6 +930,7 @@ bool COMXImageFile::ReadFile(const std::string& inputFile)
- 
- COMXImageDec::COMXImageDec()
- {
-+  limit_calls_enter(g_count_val, 3);
-   m_decoded_buffer = NULL;
-   OMX_INIT_STRUCTURE(m_decoded_format);
-   m_success = false;
-@@ -914,6 +942,7 @@ COMXImageDec::~COMXImageDec()
- 
-   OMX_INIT_STRUCTURE(m_decoded_format);
-   m_decoded_buffer = NULL;
-+  limit_calls_leave(g_count_val);
- }
- 
- void COMXImageDec::Close()
-@@ -1198,6 +1227,7 @@ bool COMXImageDec::Decode(const uint8_t *demuxer_content, unsigned demuxer_bytes
- 
- COMXImageEnc::COMXImageEnc()
- {
-+  limit_calls_enter(g_count_val, 3);
-   CSingleLock lock(m_OMXSection);
-   OMX_INIT_STRUCTURE(m_encoded_format);
-   m_encoded_buffer = NULL;
-@@ -1212,6 +1242,7 @@ COMXImageEnc::~COMXImageEnc()
-   m_encoded_buffer = NULL;
-   if(m_omx_encoder.IsInitialized())
-     m_omx_encoder.Deinitialize();
-+  limit_calls_leave(g_count_val);
- }
- 
- bool COMXImageEnc::Encode(unsigned char *buffer, int size, unsigned width, unsigned height, unsigned int pitch)
-@@ -1424,6 +1455,7 @@ bool COMXImageEnc::CreateThumbnailFromSurface(unsigned char* buffer, unsigned in
- 
- COMXImageReEnc::COMXImageReEnc()
- {
-+  limit_calls_enter(g_count_val, 3);
-   m_encoded_buffer = NULL;
-   m_pDestBuffer = NULL;
-   m_nDestAllocSize = 0;
-@@ -1437,6 +1469,7 @@ COMXImageReEnc::~COMXImageReEnc()
-     free (m_pDestBuffer);
-   m_pDestBuffer = NULL;
-   m_nDestAllocSize = 0;
-+  limit_calls_leave(g_count_val);
- }
- 
- void COMXImageReEnc::Close()
-@@ -1897,12 +1930,14 @@ bool COMXImageReEnc::ReEncode(COMXImageFile &srcFile, unsigned int maxWidth, uns
- 
- COMXTexture::COMXTexture()
- {
-+  limit_calls_enter(g_count_val, 3);
-   m_success = false;
- }
- 
- COMXTexture::~COMXTexture()
- {
-   Close();
-+  limit_calls_leave(g_count_val);
- }
- 
- void COMXTexture::Close()
--- 
-1.9.3
-
-
-From e67029fd4675c39caa97ee134f77e6201424d2f2 Mon Sep 17 00:00:00 2001
+From 7eefe3eb6afd498f2ca6508ea99cff40a383e93a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 5 Jul 2014 19:26:46 +0100
-Subject: [PATCH 90/96] [omxplayer] Explictly choose deinterlace method for
+Subject: [PATCH 86/91] [omxplayer] Explictly choose deinterlace method for
  1080i
 
 As the 1080i deinterlace doesn't require the 3 frames of context we can save ~9MB by requesting it explicitly
 ---
- xbmc/cores/omxplayer/OMXVideo.cpp | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ xbmc/cores/omxplayer/OMXVideo.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/xbmc/cores/omxplayer/OMXVideo.cpp b/xbmc/cores/omxplayer/OMXVideo.cpp
-index 07c4643..15b62af 100644
+index b100018..15b62af 100644
 --- a/xbmc/cores/omxplayer/OMXVideo.cpp
 +++ b/xbmc/cores/omxplayer/OMXVideo.cpp
-@@ -299,6 +299,23 @@ bool COMXVideo::PortSettingsChanged()
- 
-   if(m_deinterlace || m_anaglyph)
+@@ -301,9 +301,9 @@ bool COMXVideo::PortSettingsChanged()
    {
-+    bool advanced_deinterlace = port_image.format.video.nFrameWidth * port_image.format.video.nFrameHeight <= 576 * 720;
-+
-+    if (m_anaglyph != OMX_ImageFilterAnaglyphNone || !advanced_deinterlace)
-+    {
-+      // Image_fx assumed 3 frames of context. anaglyph and simple deinterlace don't require this
-+      OMX_PARAM_U32TYPE extra_buffers;
-+      OMX_INIT_STRUCTURE(extra_buffers);
-+      extra_buffers.nU32 = -2;
-+
-+      omx_err = m_omx_image_fx.SetParameter(OMX_IndexParamBrcmExtraBuffers, &extra_buffers);
-+      if(omx_err != OMX_ErrorNone)
-+      {
-+        CLog::Log(LOGERROR, "%s::%s error OMX_IndexParamBrcmExtraBuffers omx_err(0x%08x)", CLASSNAME, __func__, omx_err);
-+        return false;
-+      }
-+    }
-+
-     OMX_CONFIG_IMAGEFILTERPARAMSTYPE image_filter;
-     OMX_INIT_STRUCTURE(image_filter);
+     bool advanced_deinterlace = port_image.format.video.nFrameWidth * port_image.format.video.nFrameHeight <= 576 * 720;
  
-@@ -313,7 +330,10 @@ bool COMXVideo::PortSettingsChanged()
+-    if (!advanced_deinterlace)
++    if (m_anaglyph != OMX_ImageFilterAnaglyphNone || !advanced_deinterlace)
      {
-       image_filter.nNumParams = 1;
-       image_filter.nParams[0] = 3;
--      image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
-+      if (!advanced_deinterlace)
-+        image_filter.eImageFilter = OMX_ImageFilterDeInterlaceFast;
-+      else
-+        image_filter.eImageFilter = OMX_ImageFilterDeInterlaceAdvanced;
-     }
-     omx_err = m_omx_image_fx.SetConfig(OMX_IndexConfigCommonImageFilterParameters, &image_filter);
-     if(omx_err != OMX_ErrorNone)
+-      // Image_fx assumed 3 frames of context. simple deinterlace doesn't require this
++      // Image_fx assumed 3 frames of context. anaglyph and simple deinterlace don't require this
+       OMX_PARAM_U32TYPE extra_buffers;
+       OMX_INIT_STRUCTURE(extra_buffers);
+       extra_buffers.nU32 = -2;
 -- 
-1.9.3
+2.0.3
 
 
-From ec10e2c17dbf469e4f91d2651fe7823fd09e7ac2 Mon Sep 17 00:00:00 2001
+From 283a873a213bfccfaa4d4884900f9366a6abc9ba Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 8 Jul 2014 21:00:44 +0100
-Subject: [PATCH 91/96] [omxcodec] Fix 3D rendering for dvdplayer
+Subject: [PATCH 87/91] [omxcodec] Fix 3D rendering for dvdplayer
 
 Similar to https://github.com/xbmc/xbmc/pull/3887
 ---
@@ -14069,128 +13405,13 @@ index 53873f6..84a46ec 100644
    return true;
  }
 -- 
-1.9.3
+2.0.3
 
 
-From 257fe64e6cd941986314da84749a81f4df222e7f Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 9 Jul 2014 22:45:43 +0100
-Subject: [PATCH 92/96] [rbp] Make cachemembuffersize default depend on memory
- size
-
----
- xbmc/linux/RBP.cpp                 | 5 +++++
- xbmc/settings/AdvancedSettings.cpp | 5 +++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index 65c95a3..bbf7ab5 100644
---- a/xbmc/linux/RBP.cpp
-+++ b/xbmc/linux/RBP.cpp
-@@ -21,6 +21,7 @@
- #include "RBP.h"
- #if defined(TARGET_RASPBERRY_PI)
- 
-+#include "settings/AdvancedSettings.h"
- #include "utils/log.h"
- 
- #include "cores/omxplayer/OMXImage.h"
-@@ -75,6 +76,9 @@ bool CRBP::Initialize()
-   if (m_gpu_mem < 128)
-     setenv("V3D_DOUBLE_BUFFER", "1", 1);
- 
-+  if (g_advancedSettings.m_cacheMemBufferSize == ~0)
-+    g_advancedSettings.m_cacheMemBufferSize = m_arm_mem < 256 ? 1024 * 1024 * 2 : 1024 * 1024 * 20;
-+
-   // in case xbcm was restarted when suspended
-   ResumeVideoOutput();
- 
-@@ -100,6 +104,7 @@ void CRBP::LogFirmwareVerison()
-   response[sizeof(response) - 1] = '\0';
-   CLog::Log(LOGNOTICE, "Raspberry PI firmware version: %s", response);
-   CLog::Log(LOGNOTICE, "ARM mem: %dMB GPU mem: %dMB MPG2:%d WVC1:%d", m_arm_mem, m_gpu_mem, m_codec_mpg2_enabled, m_codec_wvc1_enabled);
-+  CLog::Log(LOGNOTICE, "cacheMemBufferSize: %dMB",  g_advancedSettings.m_cacheMemBufferSize >> 20);
-   m_DllBcmHost->vc_gencmd(response, sizeof response, "get_config int");
-   response[sizeof(response) - 1] = '\0';
-   CLog::Log(LOGNOTICE, "Config:\n%s", response);
-diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
-index 5020105..7f2d65b 100644
---- a/xbmc/settings/AdvancedSettings.cpp
-+++ b/xbmc/settings/AdvancedSettings.cpp
-@@ -364,7 +364,12 @@ void CAdvancedSettings::Initialize()
- 
-   m_measureRefreshrate = false;
- 
-+#ifdef TARGET_RASPBERRY_PI
-+  // want default to be memory dependent, but interface to gpu not available yet, so set in RBP.cpp
-+  m_cacheMemBufferSize = ~0;
-+#else
-   m_cacheMemBufferSize = 1024 * 1024 * 20;
-+#endif
-   m_networkBufferMode = 0; // Default (buffer all internet streams/filesystems)
-   // the following setting determines the readRate of a player data
-   // as multiply of the default data read rate
--- 
-1.9.3
-
-
-From dd4ff79f51a015a2a4e2c57726b402db0ee1e997 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Wed, 9 Jul 2014 23:31:32 +0100
-Subject: [PATCH 93/96] [rbp] Make gui limit default to 720 when memory is
- limited
-
----
- system/settings/rbp.xml | 4 ++--
- xbmc/linux/RBP.cpp      | 4 ++++
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/system/settings/rbp.xml b/system/settings/rbp.xml
-index 1429256..5d47c28 100644
---- a/system/settings/rbp.xml
-+++ b/system/settings/rbp.xml
-@@ -32,9 +32,9 @@
-         </setting>
-         <setting id="videoscreen.limitgui" type="integer" label="37021" help="36548">
-           <level>2</level>
--          <default>1080</default>
-+          <default>0</default>
-           <constraints>
--            <minimum>540</minimum>
-+            <minimum>0</minimum>
-             <step>16</step>
-             <maximum>1080</maximum>
-           </constraints>
-diff --git a/xbmc/linux/RBP.cpp b/xbmc/linux/RBP.cpp
-index bbf7ab5..85e1f21 100644
---- a/xbmc/linux/RBP.cpp
-+++ b/xbmc/linux/RBP.cpp
-@@ -22,6 +22,7 @@
- #if defined(TARGET_RASPBERRY_PI)
- 
- #include "settings/AdvancedSettings.h"
-+#include "settings/Settings.h"
- #include "utils/log.h"
- 
- #include "cores/omxplayer/OMXImage.h"
-@@ -79,6 +80,9 @@ bool CRBP::Initialize()
-   if (g_advancedSettings.m_cacheMemBufferSize == ~0)
-     g_advancedSettings.m_cacheMemBufferSize = m_arm_mem < 256 ? 1024 * 1024 * 2 : 1024 * 1024 * 20;
- 
-+  if (!CSettings::Get().GetInt("videoscreen.limitgui"))
-+    CSettings::Get().SetInt("videoscreen.limitgui", m_gpu_mem < 128 ? 720:1080);
-+
-   // in case xbcm was restarted when suspended
-   ResumeVideoOutput();
- 
--- 
-1.9.3
-
-
-From 7ea807a6573bdc7c07127ea3ed7349f92a54ef0a Mon Sep 17 00:00:00 2001
+From 32f827f30158fa7dac5703b02a7559cfcfbdd597 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 13 Jul 2014 11:28:20 +0100
-Subject: [PATCH 94/96] [ResamplePi] Fix xbmc crash with usb audio when music
+Subject: [PATCH 88/91] [ResamplePi] Fix xbmc crash with usb audio when music
  file switched
 
 Need to handle the case where AE requests fewer output samples that are produced.
@@ -14338,4 +13559,37 @@ index 47a9e08..b88a90b 100644
  
  }
 -- 
-1.9.3
+2.0.3
+
+
+From a10235c5a0644144b4cc6cae0ed4e6f1ec2f4df6 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Tue, 5 Aug 2014 00:44:35 +0100
+Subject: [PATCH 91/91] [airplay] Fix for airplay init race condition
+
+http://forum.xbmc.org/showthread.php?tid=201355
+---
+ xbmc/network/AirTunesServer.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/network/AirTunesServer.cpp b/xbmc/network/AirTunesServer.cpp
+index 1ba4136..167faf3 100644
+--- a/xbmc/network/AirTunesServer.cpp
++++ b/xbmc/network/AirTunesServer.cpp
+@@ -265,8 +265,11 @@ void  CAirTunesServer::AudioOutputFunctions::audio_process(void *cls, void *sess
+ 
+ void  CAirTunesServer::AudioOutputFunctions::audio_flush(void *cls, void *session)
+ {
+-  XFILE::CPipeFile *pipe=(XFILE::CPipeFile *)cls;
+-  pipe->Flush();
++  if (g_application.m_pPlayer && g_application.m_pPlayer->IsPlaying())
++  {
++    XFILE::CPipeFile *pipe=(XFILE::CPipeFile *)cls;
++    pipe->Flush();
++  }
+ }
+ 
+ void  CAirTunesServer::AudioOutputFunctions::audio_destroy(void *cls, void *session)
+-- 
+2.0.3
+
