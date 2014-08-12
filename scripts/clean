@@ -29,7 +29,7 @@ if [ ! -z "$1" ]; then
     return
   fi
 
-  for i in $BUILD/$1-*; do
+  for i in $BUILD/$1*; do
     if [ -d $i -a -f "$i/.openelec-unpack" ] ; then
       . "$i/.openelec-unpack"
       if [ "$STAMP_PKG_NAME" = "$1" ]; then
