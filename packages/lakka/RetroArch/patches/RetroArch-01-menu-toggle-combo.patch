@@ -1,7 +1,7 @@
 diff -Naur RetroArch/frontend/menu/menu_input_line_cb.c RetroArch.patch/frontend/menu/menu_input_line_cb.c
---- RetroArch/frontend/menu/menu_input_line_cb.c	2014-07-20 20:01:17.849688208 +0200
-+++ RetroArch.patch/frontend/menu/menu_input_line_cb.c	2014-07-20 21:36:42.344190863 +0200
-@@ -321,7 +321,7 @@
+--- RetroArch/frontend/menu/menu_input_line_cb.c	2014-08-12 20:40:51.926576498 +0200
++++ RetroArch.patch/frontend/menu/menu_input_line_cb.c	2014-08-13 17:50:04.436946099 +0200
+@@ -333,7 +333,7 @@
  #endif
        }
     }
@@ -11,14 +11,14 @@ diff -Naur RetroArch/frontend/menu/menu_input_line_cb.c RetroArch.patch/frontend
     input_pop_analog_dpad((struct retro_keybind*)binds[0]);
     for (i = 0; i < MAX_PLAYERS; i++)
 diff -Naur RetroArch/retroarch.c RetroArch.patch/retroarch.c
---- RetroArch/retroarch.c	2014-07-20 20:01:17.925689985 +0200
-+++ RetroArch.patch/retroarch.c	2014-07-20 21:38:15.366372088 +0200
+--- RetroArch/retroarch.c	2014-08-12 20:40:52.006578369 +0200
++++ RetroArch.patch/retroarch.c	2014-08-13 17:51:22.538773502 +0200
 @@ -3021,7 +3021,7 @@
+ static inline bool check_enter_menu(void)
+ {
     static bool old_rmenu_toggle = true;
+-   bool rmenu_toggle            = input_key_pressed_func(RARCH_MENU_TOGGLE) || (g_extern.libretro_dummy && !old_rmenu_toggle);
++   bool rmenu_toggle = input_key_pressed_func(RARCH_MENU_TOGGLE) || (input_key_pressed_func(RETRO_DEVICE_ID_JOYPAD_L3) && input_key_pressed_func(RETRO_DEVICE_ID_JOYPAD_R3)) || (g_extern.libretro_dummy && !old_rmenu_toggle);
  
     // Always go into menu if dummy core is loaded.
--   bool rmenu_toggle = input_key_pressed_func(RARCH_MENU_TOGGLE) || (g_extern.libretro_dummy && !old_rmenu_toggle);
-+   bool rmenu_toggle = input_key_pressed_func(RARCH_MENU_TOGGLE) || (input_key_pressed_func(RETRO_DEVICE_ID_JOYPAD_L3) && input_key_pressed_func(RETRO_DEVICE_ID_JOYPAD_R3)) || (g_extern.libretro_dummy && !old_rmenu_toggle);
     if (rmenu_toggle && !old_rmenu_toggle)
-    {
-       g_extern.lifecycle_state |= (1ULL << MODE_MENU_PREINIT);
