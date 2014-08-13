@@ -1,0 +1,45 @@
+From 8e90e81cdb3c78d2d97c37433a7c04e5a9437f9c Mon Sep 17 00:00:00 2001
+From: Liu Ying <Ying.Liu@freescale.com>
+Date: Wed, 4 Dec 2013 11:48:27 +0800
+Subject: [PATCH] ENGR00290635-2 IPUv3 stripe:Fix a build warning
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch fixes the following build warning by
+initializing some local variables:
+drivers/mxc/ipu3/ipu_calc_stripes_sizes.c: In function ‘ipu_calc_stripes_sizes’:
+drivers/mxc/ipu3/ipu_calc_stripes_sizes.c:393:3: warning: ‘difwr’ may be used uninitialized in this function [-Wuninitialized]
+drivers/mxc/ipu3/ipu_calc_stripes_sizes.c:393:3: warning: ‘onw’ may be used uninitialized in this function [-Wuninitialized]
+drivers/mxc/ipu3/ipu_calc_stripes_sizes.c:393:3: warning: ‘inw’ may be used uninitialized in this function [-Wuninitialized]
+
+Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+(cherry picked from commit f3062175336e217dc6651761682344af88a6039c)
+(cherry picked from commit b932a3771133195290b56f947264f74223bd4a4a)
+---
+ drivers/mxc/ipu3/ipu_calc_stripes_sizes.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+index d0f643c..89beda8 100644
+--- a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
++++ b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+@@ -250,13 +250,13 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 	unsigned int status;
+ 	unsigned int temp;
+ 	unsigned int onw_min;
+-	unsigned int inw, onw, inw_best = 0;
++	unsigned int inw = 0, onw = 0, inw_best = 0;
+ 	/* number of pixels in the left stripe NOT hidden by the right stripe */
+ 	u64 irr_opt; /* the optimal inverse resizing ratio */
+ 	u64 rr_opt; /* the optimal resizing ratio = 1/irr_opt*/
+ 	u64 dinw; /* the misalignment between the stripes */
+ 	/* (measured in units of input columns) */
+-	u64 difwl, difwr;
++	u64 difwl, difwr = 0;
+ 	/* The number of input columns not reflected in the output */
+ 	/* the resizing ratio used for the right stripe is */
+ 	/*   left->irr and right->irr respectively */
+-- 
+1.8.5.1
+

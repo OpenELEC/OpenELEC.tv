@@ -1,0 +1,16 @@
+--- a/arch/arm/mach-mx6/board-mx6q_sabresd.c	2013-12-26 10:00:39.000000000 +0100
++++ b/arch/arm/mach-mx6/board-mx6q_sabresd.c	2014-07-27 16:46:34.000000000 +0200
+@@ -2094,10 +2094,12 @@
+ 
+ 	//added 2013 10 25 Enable Fan gpio_set_value(SABRESD_FAN_POWER_EN, 1);
+ //	gpio_request(SABRESD_FAN_POWER_EN, "fan_en");
++	gpio_export(SABRESD_FAN_POWER_EN, true);
+ //	gpio_direction_output(SABRESD_FAN_POWER_EN, 1);
+ //	gpio_set_value(SABRESD_FAN_POWER_EN, 1);
+ 
+ 	gpio_request(SABRESD_USR_DEF_RED_LED, "blue_en");
++	gpio_export(SABRESD_USR_DEF_RED_LED, true);
+ 	gpio_direction_output(SABRESD_USR_DEF_RED_LED, 1);
+ 	gpio_set_value(SABRESD_USR_DEF_RED_LED, 1);
+ 	//end	
+

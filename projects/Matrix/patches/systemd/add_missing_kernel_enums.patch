@@ -1,0 +1,42 @@
+--- a/src/shared/missing.h	2014-07-20 17:56:36.000000000 +0200
++++ b/src/shared/missing.h	2014-07-20 17:58:26.000000000 +0200
+@@ -479,3 +479,39 @@
+ 
+ #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
+ #endif
++
++#ifndef IFLA_MACVLAN_FLAGS
++enum {
++    IFLA_MACVLAN_FLAGS = (__IFLA_MACVLAN_MAX)
++};
++
++#undef __IFLA_MACVLAN_MAX
++#define __IFLA_MACVLAN_MAX (IFLA_MACVLAN_FLAGS + 1)
++#define IFLA_MACVLAN_MAX (__IFLA_MACVLAN_MAX - 1)
++#endif
++
++#ifndef __IFLA_VTI_MAX
++enum {
++    IFLA_VTI_UNSPEC,
++    IFLA_VTI_LINK,
++    IFLA_VTI_IKEY,
++    IFLA_VTI_OKEY,
++    IFLA_VTI_LOCAL,
++    IFLA_VTI_REMOTE,
++    __IFLA_VTI_MAX,
++};
++
++#define IFLA_VTI_MAX (__IFLA_VTI_MAX - 1)
++#endif
++
++#ifndef IFLA_EXT_MASK
++/* define IFLA_EXT_MASK for TBS kernel 3.0.35 */
++enum {
++    IFLA_EXT_MASK = (__IFLA_MAX)
++};
++
++#undef __IFLA_MAX
++#define __IFLA_MAX (IFLA_EXT_MASK + 1)
++#define IFLA_MAX (__IFLA_MAX - 1)
++#endif
++

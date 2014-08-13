@@ -32,6 +32,7 @@ if [ -n "$PKG_URL" ]; then
     SOURCE_NAME="`basename $i`"
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
     PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
+    PACKAGE_DEVEL="$DISTRO_SRC/../devel/$SOURCE_NAME"
     [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
     WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
 
@@ -54,7 +55,7 @@ if [ -n "$PKG_URL" ]; then
     printf "%${BUILD_INDENT}c ${boldcyan}GET${endcolor}      $1\n" ' '>&$SILENT_OUT
     export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
-    until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR; do
+    until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR || $WGET_CMD $PACKAGE_DEVEL; do
       NBWGET=$(($NBWGET+1))
       if [ "$NBWGET" -gt "10" ]; then
         echo -e "\nCant't get $1 sources : $i\n Try later !!"

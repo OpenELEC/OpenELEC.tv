@@ -1,0 +1,25 @@
+  <audiooutput>
+    <ac3passthrough default="true">true</ac3passthrough>
+    <ac3transcode default="true">false</ac3transcode>
+    <audiodevice>ALSA:sysdefault:CARD=imxhdmisoc</audiodevice>
+    <channels default="true">1</channels>
+    <config default="true">2</config>
+    <dtshdpassthrough default="true">false</dtshdpassthrough>
+    <dtspassthrough default="true">false</dtspassthrough>
+    <eac3passthrough default="true">false</eac3passthrough>
+    <guisoundmode default="true">1</guisoundmode>
+    <normalizelevels default="true">true</normalizelevels>
+    <passthrough default="true">false</passthrough>
+    <passthroughdevice default="true">ALSA:sysdefault:CARD=imxspdif</passthroughdevice>
+    <processquality default="true">30</processquality>
+    <samplerate default="true">48000</samplerate>
+    <stereoupmix default="true">false</stereoupmix>
+    <streamsilence default="true">1</streamsilence>
+    <truehdpassthrough default="true">false</truehdpassthrough>
+  </audiooutput>
+  <filelists>
+    <allowfiledeletion>true</allowfiledeletion>
+  </filelists>
+  <lookandfeel>
+    <enablerssfeeds>false</enablerssfeeds>
+  </lookandfeel>

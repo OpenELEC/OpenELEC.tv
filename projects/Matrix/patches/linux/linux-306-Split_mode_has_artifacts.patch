@@ -1,0 +1,179 @@
+From 537abf71550a5bba0df21b6f04dcbb3de50ff438 Mon Sep 17 00:00:00 2001
+From: Oliver Brown <oliver.brown@freescale.com>
+Date: Mon, 18 Nov 2013 14:52:27 -0600
+Subject: [PATCH] ENGR00274166 - Split mode has artifacts
+
+- Need to use different multiple and index parameters for vertical
+and horizontal stripes
+- Use correct multiple and index based upon pixel format
+- Allow input crop and size to be larger than width by upto 16 pixels
+
+Signed-off-by: Oliver Brown <oliver.brown@freescale.com>
+(cherry picked from commit 5ccc316b87b462575d1964b230bb24bf46f8b6c2)
+
+Conflicts:
+	drivers/mxc/ipu3/ipu_device.c
+---
+ drivers/mxc/ipu3/ipu_calc_stripes_sizes.c | 88 +++++++++++++++++++++++--------
+ 1 file changed, 66 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+index b850e41..d0f643c 100644
+--- a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
++++ b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+@@ -54,7 +54,13 @@ static unsigned int f_calc(unsigned int pfs, unsigned int bpp, unsigned int *wri
+ 	case IPU_PIX_FMT_YUV420P:
+ 	case IPU_PIX_FMT_YVU420P:
+ 	case IPU_PIX_FMT_YUV444P:
+-		f_calculated = 16;
++		f_calculated = 8;
++		break;
++
++	case IPU_PIX_FMT_RGB565:
++	case IPU_PIX_FMT_YUYV:
++	case IPU_PIX_FMT_UYVY:
++		f_calculated = 8;
+ 		break;
+ 
+ 	case IPU_PIX_FMT_NV12:
+@@ -108,17 +114,17 @@ static unsigned int m_calc(unsigned int pfs)
+ 	case IPU_PIX_FMT_YUV422P:
+ 	case IPU_PIX_FMT_YVU420P:
+ 	case IPU_PIX_FMT_YUV444P:
+-	case IPU_PIX_FMT_NV12:
+-		m_calculated = 8;
++		m_calculated = 16;
+ 		break;
+ 
++	case IPU_PIX_FMT_NV12:
+ 	case IPU_PIX_FMT_YUYV:
+ 	case IPU_PIX_FMT_UYVY:
+-		m_calculated = 2;
++		m_calculated = 8;
+ 		break;
+ 
+ 	default:
+-		m_calculated = 1;
++		m_calculated = 8;
+ 		break;
+ 
+ 	}
+@@ -184,11 +190,16 @@ static int calc_split_resize_coeffs(unsigned int inSize, unsigned int outSize,
+ 	i.MX31: 720, i.MX35: 800, i.MX37/51/53: 1024
+ cirr = the maximal inverse resizing ratio for which overlap in the input
+ 	is requested; typically cirr~2
+-equal_stripes:
+-	0: each stripe is allowed to have independent parameters
++flags
++	bit 0 - equal_stripes
++		0  each stripe is allowed to have independent parameters
+ 		for maximal image quality
+-	1: the stripes are requested to have identical parameters
++		1  the stripes are requested to have identical parameters
+ 	(except the base address), for maximal performance
++	bit 1 - vertical/horizontal
++		0 horizontal
++		1 vertical
++
+ If performance is the top priority (above image quality)
+ 	Avoid overlap, by setting CIRR = 0
+ 		This will also force effectively identical_stripes = 1
+@@ -223,7 +234,7 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 			   const unsigned int maximal_stripe_width,
+ 			   /* the maximal width allowed for a stripe */
+ 			   const unsigned long long cirr, /* see above */
+-			   const unsigned int equal_stripes, /* see above */
++			   const unsigned int flags, /* see above */
+ 			   u32 input_pixelformat,/* pixel format after of read channel*/
+ 			   u32 output_pixelformat,/* pixel format after of write channel*/
+ 			   struct stripe_param *left,
+@@ -251,6 +262,8 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 	/*   left->irr and right->irr respectively */
+ 	u64 cost, cost_min;
+ 	u64 div; /* result of division */
++	bool equal_stripes = (flags & 0x1) != 0;
++	bool vertical =      (flags & 0x2) != 0;
+ 
+ 	unsigned int input_m, input_f, output_m, output_f; /* parameters for upsizing by stripes */
+ 	unsigned int resize_coeff;
+@@ -258,19 +271,17 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 
+ 	status = 0;
+ 
+-	/* M, F calculations */
+-	/* read back pfs from params */
+-
+-	input_f = f_calc(input_pixelformat, 0, NULL);
+-	input_m = 16;
+-	/* BPP should be used in the out_F calc */
+-	/* Temporarily not used */
+-	/* out_F = F_calc(idmac->pfs, idmac->bpp, NULL); */
+-
+-	output_f = 16;
+-	output_m = m_calc(output_pixelformat);
+-
+-
++	if (vertical) {
++		input_f = 2;
++		input_m = 8;
++		output_f = 8;
++		output_m = 2;
++	} else {
++		input_f = f_calc(input_pixelformat, 0, NULL);
++		input_m = m_calc(input_pixelformat);
++		output_f = input_m;
++		output_m = m_calc(output_pixelformat);
++	}
+ 	if ((input_frame_width < 4) || (output_frame_width < 4))
+ 		return 1;
+ 
+@@ -297,6 +308,31 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 		status += 4;
+ 	}
+ 
++	pr_debug("---------------->\n"
++		   "if  = %d\n"
++		   "im  = %d\n"
++		   "of = %d\n"
++		   "om = %d\n"
++		   "irr_opt  = %llu\n"
++		   "rr_opt   = %llu\n"
++		   "cirr     = %llu\n"
++		   "pixel in  = %08x\n"
++		   "pixel out = %08x\n"
++		   "ifw = %d\n"
++		   "ofwidth = %d\n",
++		   input_f,
++		   input_m,
++		   output_f,
++		   output_m,
++		   irr_opt,
++		   rr_opt,
++		   cirr,
++		   input_pixelformat,
++		   output_pixelformat,
++		   input_frame_width,
++		   output_frame_width
++		   );
++
+ 	if (equal_stripes) {
+ 		if ((irr_opt > cirr) /* overlap in the input is not requested */
+ 		    && ((input_frame_width % (input_m << 1)) == 0)
+@@ -354,6 +390,14 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 			left->irr = right->irr =
+ 				(downsize_coeff << 14) | resize_coeff;
+ 		}
++		pr_debug("inw %d, onw %d, ilw %d, ilc %d, olw %d,"
++			 " irw %d, irc %d, orw %d, orc %d, "
++			 "difwr  %llu, lirr %u\n",
++			 inw, onw, left->input_width,
++			 left->input_column, left->output_width,
++			 right->input_width, right->input_column,
++			 right->output_width,
++			 right->output_column, difwr, left->irr);
+ 		} else { /* independent stripes */
+ 		onw_min = output_frame_width - maximal_stripe_width;
+ 		/* onw is a multiple of output_f, in the range */
+-- 
+1.8.5.1
+

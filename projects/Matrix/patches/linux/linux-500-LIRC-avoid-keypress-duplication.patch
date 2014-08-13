@@ -1,0 +1,14 @@
+diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
+index a74a931..705e2d6 100644
+--- a/drivers/media/rc/rc-main.c
++++ b/drivers/media/rc/rc-main.c
+@@ -31,7 +31,7 @@ extern void ledtrig_rc_activity(void);
+ #define IR_TAB_MAX_SIZE	8192
+ 
+ /* FIXME: IR_KEYPRESS_TIMEOUT should be protocol specific */
+-#define IR_KEYPRESS_TIMEOUT 250
++#define IR_KEYPRESS_TIMEOUT 550
+ 
+ /* Used to keep track of known keymaps */
+ static LIST_HEAD(rc_map_list);
+

@@ -1,0 +1,13 @@
+[Unit]
+Description=Save Time to RTC when reboot
+After=xbmc.service
+Before=systemd-reboot.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=-hwclock -w
+RemainAfterExit=yes
+
+[Install]
+WantedBy=reboot.target

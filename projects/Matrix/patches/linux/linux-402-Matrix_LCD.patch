@@ -1,0 +1,50 @@
+--- a/arch/arm/mach-mx6/board-mx6q_sabresd.h	2014-03-25 16:29:48.000000000 +0800
++++ b/arch/arm/mach-mx6/board-mx6q_sabresd.h	2014-04-18 11:28:18.000000000 +0800
+@@ -181,6 +181,10 @@
+ 	MX6Q_PAD_EIM_D24__UART3_TXD,
+ 	MX6Q_PAD_EIM_D25__UART3_RXD,
+ 
++	/* UART2 */
++	MX6Q_PAD_EIM_D26__UART2_TXD,
++	MX6Q_PAD_EIM_D27__UART2_RXD,
++
+ 	/* USBOTG ID pin */
+ 	MX6Q_PAD_ENET_RX_ER__ANATOP_USBOTG_ID,
+
+
+--- a/arch/arm/mach-mx6/board-mx6q_sabresd.c	2014-03-25 16:29:48.000000000 +0800
++++ b/arch/arm/mach-mx6/board-mx6q_sabresd.c	2014-04-18 11:32:13.000000000 +0800
+@@ -256,6 +256,7 @@
+ {
+ 	imx6q_add_imx_uart(2, NULL);
+ 	imx6q_add_imx_uart(0, NULL);
++	imx6q_add_imx_uart(1, NULL);
+ }
+ 
+ static int mx6q_sabresd_fec_phy_init(struct phy_device *phydev)
+@@ -754,6 +755,14 @@
+ 	},
+ };
+ 
++static struct i2c_board_info mxc_i2c2_board_info[] __initdata = {
++	{
++		I2C_BOARD_INFO("ds1307_i2c", 0x68),
++		.type = "ds1338",
++	},
++};
++
++
+ static int epdc_get_pins(void)
+ {
+ 	int ret = 0;
+@@ -1909,6 +1918,9 @@
+ 			ARRAY_SIZE(mxc_i2c0_board_info));
+ 	i2c_register_board_info(1, mxc_i2c1_board_info,
+ 			ARRAY_SIZE(mxc_i2c1_board_info));
++	i2c_register_board_info(2, mxc_i2c2_board_info,
++			ARRAY_SIZE(mxc_i2c2_board_info));
++
+ 
+ 	imx6q_add_mxc_hdmi(&hdmi_data);
+ 
+ 

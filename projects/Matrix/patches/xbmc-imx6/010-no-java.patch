@@ -1,0 +1,12 @@
+--- ./configure.in.orig	2012-09-27 21:19:10.427436701 -0600
++++ ./configure.in	2012-09-27 22:10:42.072768439 -0600
+@@ -1618,9 +1618,6 @@ final_message="$final_message\n  SWIG Av
+ 
+ echo "Checking for a jre installation"
+ AC_PATH_PROG(JAVA_EXE, java, "none")
+-if test "$JAVA_EXE" = "none"; then
+-  AC_MSG_ERROR($missing_program)
+-fi
+ final_message="$final_message\n  JRE Available:\tYes"
+ 
+ echo "Checking for doxygen installation"

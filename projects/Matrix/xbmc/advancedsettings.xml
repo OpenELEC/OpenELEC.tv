@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<advancedsettings>
+  <showexitbutton>false</showexitbutton>
+
+  <cputempcommand>cat /sys/devices/virtual/thermal/thermal_zone0/temp</cputempcommand>
+  <gputempcommand>cat /sys/devices/virtual/thermal/thermal_zone0/temp</gputempcommand>
+  
+<!---
+  <gui>
+    <nofliptimeout>-1</nofliptimeout>
+    <algorithmdirtyregions>1</algorithmdirtyregions>
+  </gui>
+--->
+
+  <video>
+    <busydialogdelayms>750</busydialogdelayms>
+  </video>
+
+  <audio>
+    <streamsilence>false</streamsilence>
+  </audio>
+
+  <samba>
+    <clienttimeout>30</clienttimeout>
+  </samba>
+
+  <network>
+    <readbufferfactor>4.0</readbufferfactor>
+  </network>
+
+</advancedsettings>

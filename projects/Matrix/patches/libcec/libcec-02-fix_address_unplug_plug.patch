@@ -1,0 +1,51 @@
+From d821a5f9b03a436950570ee9d7741452248f72e8 Mon Sep 17 00:00:00 2001
+From: wolfgar <stephan.rafin@laposte.net>
+Date: Wed, 23 Apr 2014 03:16:04 +0200
+Subject: [PATCH] Fix physical address retrieval and notify new address after
+ unplug/plug
+
+---
+ src/lib/adapter/IMX/IMXCECAdapterCommunication.cpp | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/lib/adapter/IMX/IMXCECAdapterCommunication.cpp b/src/lib/adapter/IMX/IMXCECAdapterCommunication.cpp
+index 54e5662..a226a70 100644
+--- a/src/lib/adapter/IMX/IMXCECAdapterCommunication.cpp
++++ b/src/lib/adapter/IMX/IMXCECAdapterCommunication.cpp
+@@ -189,14 +189,18 @@ cec_vendor_id CIMXCECAdapterCommunication::GetVendorId(void)
+ uint16_t CIMXCECAdapterCommunication::GetPhysicalAddress(void)
+ {
+   uint32_t info;
++  uint16_t phy_addr;
+ 
+   if (m_dev->Ioctl(HDMICEC_IOC_GETPHYADDRESS, &info) != 0)
+   {
+     LIB_CEC->AddLog(CEC_LOG_ERROR, "%s: HDMICEC_IOC_GETPHYADDRESS failed !", __func__);
+     return CEC_INVALID_PHYSICAL_ADDRESS; 
+   }
++  /* Rebuild 16 bit raw value from fsl 32 bits value */
++  phy_addr = ((info & 0x0f) << 12) | (info & 0x0f00) |
++             ((info & 0x0f0000) >> 12) | ((info & 0x0f000000) >> 24);
+ 
+-  return info;
++  return phy_addr;
+ }
+ 
+ 
+@@ -266,6 +270,13 @@ void *CIMXCECAdapterCommunication::Process(void)
+         if (!IsStopped())
+           m_callback->OnCommandReceived(cmd);
+       }
++
++      if (event.event_type == MESSAGE_TYPE_CONNECTED)
++      /* HDMI has just been reconnected - Notify  phy address*/
++      {
++        uint16_t iNewAddress = GetPhysicalAddress();
++        m_callback->HandlePhysicalAddressChanged(iNewAddress);
++      }
+       /* We are not interested in other events */
+     } /*else {
+       LIB_CEC->AddLog(CEC_LOG_DEBUG, "%s: Read returned %d", __func__, ret);
+-- 
+2.0.3
+

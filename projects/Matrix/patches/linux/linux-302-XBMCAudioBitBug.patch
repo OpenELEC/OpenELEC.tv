@@ -1,0 +1,17 @@
+--- a/sound/soc/imx/imx-ssi.c	2013-10-01 11:29:43.000000000 +0800
++++ b/sound/soc/imx/imx-ssi.c	2014-01-06 11:30:21.000000000 +0800
+@@ -61,8 +61,13 @@
+ 
+ #define SSI_SACNT_DEFAULT (SSI_SACNT_AC97EN | SSI_SACNT_FV)
+ #define IMX_SSI_FORMATS \
++	(SNDRV_PCM_FMTBIT_S16_LE)
++
++
++/*
++	#define IMX_SSI_FORMATS \
+ 	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
+-	SNDRV_PCM_FMTBIT_S24_LE)
++	SNDRV_PCM_FMTBIT_S24_LE)*/
+ #ifdef CONFIG_SND_MXC_SOC_IRAM
+ static int UseIRAM;
+ #endif

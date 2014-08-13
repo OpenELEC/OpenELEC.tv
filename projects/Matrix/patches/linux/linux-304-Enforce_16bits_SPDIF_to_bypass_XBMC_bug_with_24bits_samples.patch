@@ -1,0 +1,30 @@
+From 1fdf676a3d147d871c0a42b8fcfe5d77183c4c78 Mon Sep 17 00:00:00 2001
+From: wolfgar <stephan.rafin@laposte.net>
+Date: Tue, 28 Jan 2014 21:13:23 +0100
+Subject: [PATCH] Enforce 16bits SPDIF to bypass XBMC bug with 24bits samples
+ patch 301 from GeeXbox
+
+---
+ sound/soc/codecs/mxc_spdif.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/sound/soc/codecs/mxc_spdif.h b/sound/soc/codecs/mxc_spdif.h
+index 18ec3a7..119da1a 100644
+--- a/sound/soc/codecs/mxc_spdif.h
++++ b/sound/soc/codecs/mxc_spdif.h
+@@ -150,9 +150,13 @@ enum spdif_wdl {
+ 					 SNDRV_PCM_RATE_64000 | \
+ 					 SNDRV_PCM_RATE_96000)
+ 
++// !!! temporary workaround for broken 24bit mode !!!
++#define MXC_SPDIF_FORMATS_PLAYBACK	(SNDRV_PCM_FMTBIT_S16_LE)
++/*
+ #define MXC_SPDIF_FORMATS_PLAYBACK	(SNDRV_PCM_FMTBIT_S16_LE | \
+ 					 SNDRV_PCM_FMTBIT_S20_3LE | \
+ 					 SNDRV_PCM_FMTBIT_S24_LE)
++*/
+ 
+ #define MXC_SPDIF_FORMATS_CAPTURE	(SNDRV_PCM_FMTBIT_S24_LE)
+ 
+-- 
+1.8.5.1

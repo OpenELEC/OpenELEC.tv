@@ -1,0 +1,13 @@
+[Unit]
+Description=Save Time to RTC when power off
+After=xbmc.service
+Before=systemd-poweroff.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=-hwclock -w
+RemainAfterExit=yes
+
+[Install]
+WantedBy=poweroff.target

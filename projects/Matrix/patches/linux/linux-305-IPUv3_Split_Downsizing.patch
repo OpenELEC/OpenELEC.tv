@@ -1,0 +1,487 @@
+From b8df52269b318be5a306dddc6fd3961cd677f966 Mon Sep 17 00:00:00 2001
+From: Oliver Brown <oliver.brown@freescale.com>
+Date: Tue, 19 Nov 2013 09:49:53 -0600
+Subject: [PATCH] ENGR00272541 IPUv3 IC: Split Downsizing overflow for size
+ greater than 1024
+
+For downscaling, it is possible that downscaler output is greater
+than 1024. Added a function, calc_split_resize_coeffs, based upon
+_calc_resize_coeffs to calculate resizing and downscaling coefficients.
+
+In ipu_ic.c, checks for the range of *_resize_ratio are no longer needed.
+ Non split cases will always have  *_resize_ratio of zero.
+
+In ipu_device, additional checks are needed to check for an error from
+ipu_calc_stripes_sizes if calc_split_resize_coeffs fails.
+
+Signed-off-by: Oliver Brown <oliver.brown@freescale.com>
+(cherry picked from commit bdbaccc90e26cbacf2897cad411902b6cf1bca36)
+
+Conflicts:
+	drivers/mxc/ipu3/ipu_ic.c
+---
+ drivers/mxc/ipu3/ipu_calc_stripes_sizes.c |  80 +++++++++++++-
+ drivers/mxc/ipu3/ipu_device.c             |   2 +-
+ drivers/mxc/ipu3/ipu_ic.c                 | 169 +++++++++++++++++++-----------
+ drivers/mxc/ipu3/ipu_prv.h                |   6 +-
+ 4 files changed, 189 insertions(+), 68 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+index 3a27195..b850e41 100644
+--- a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
++++ b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+@@ -125,6 +125,57 @@ static unsigned int m_calc(unsigned int pfs)
+ 	return m_calculated;
+ }
+ 
++static int calc_split_resize_coeffs(unsigned int inSize, unsigned int outSize,
++				    unsigned int *resizeCoeff,
++				    unsigned int *downsizeCoeff)
++{
++	uint32_t tempSize;
++	uint32_t tempDownsize;
++
++	if (inSize > 4096) {
++		pr_debug("IC input size(%d) cannot exceed 4096\n",
++			inSize);
++		return -EINVAL;
++	}
++
++	if (outSize > 1024) {
++		pr_debug("IC output size(%d) cannot exceed 1024\n",
++			outSize);
++		return -EINVAL;
++	}
++
++	if ((outSize << 3) < inSize) {
++		pr_debug("IC cannot downsize more than 8:1\n");
++		return -EINVAL;
++	}
++
++	/* Compute downsizing coefficient */
++	/* Output of downsizing unit cannot be more than 1024 */
++	tempDownsize = 0;
++	tempSize = inSize;
++	while (((tempSize > 1024) || (tempSize >= outSize * 2)) &&
++	       (tempDownsize < 2)) {
++		tempSize >>= 1;
++		tempDownsize++;
++	}
++	*downsizeCoeff = tempDownsize;
++
++	/* compute resizing coefficient using the following equation:
++	   resizeCoeff = M*(SI -1)/(SO - 1)
++	   where M = 2^13, SI - input size, SO - output size    */
++	*resizeCoeff = (8192L * (tempSize - 1)) / (outSize - 1);
++	if (*resizeCoeff >= 16384L) {
++		pr_debug("Overflow on IC resize coefficient.\n");
++		return -EINVAL;
++	}
++
++	pr_debug("resizing from %u -> %u pixels, "
++		"downsize=%u, resize=%u.%lu (reg=%u)\n", inSize, outSize,
++		*downsizeCoeff, (*resizeCoeff >= 8192L) ? 1 : 0,
++		((*resizeCoeff & 0x1FFF) * 10000L) / 8192L, *resizeCoeff);
++
++	return 0;
++}
+ 
+ /* Stripe parameters calculator */
+ /**************************************************************************
+@@ -202,6 +253,8 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 	u64 div; /* result of division */
+ 
+ 	unsigned int input_m, input_f, output_m, output_f; /* parameters for upsizing by stripes */
++	unsigned int resize_coeff;
++	unsigned int downsize_coeff;
+ 
+ 	status = 0;
+ 
+@@ -292,7 +345,16 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 			left->output_column = 0;
+ 			right->output_column = onw;
+ 		}
+-	} else { /* independent stripes */
++		if (left->input_width > left->output_width) {
++			if (calc_split_resize_coeffs(left->input_width,
++						     left->output_width,
++						     &resize_coeff,
++						     &downsize_coeff) < 0)
++				return -EINVAL;
++			left->irr = right->irr =
++				(downsize_coeff << 14) | resize_coeff;
++		}
++		} else { /* independent stripes */
+ 		onw_min = output_frame_width - maximal_stripe_width;
+ 		/* onw is a multiple of output_f, in the range */
+ 		/* [max(output_f,output_frame_width-maximal_stripe_width),*/
+@@ -363,6 +425,22 @@ int ipu_calc_stripes_sizes(const unsigned int input_frame_width,
+ 		right->input_column = left->input_column + inw;
+ 		left->output_column = 0;
+ 		right->output_column = onw;
++		if (left->input_width > left->output_width) {
++			if (calc_split_resize_coeffs(left->input_width,
++						     left->output_width,
++						     &resize_coeff,
++						     &downsize_coeff) < 0)
++				return -EINVAL;
++			left->irr = (downsize_coeff << 14) | resize_coeff;
++		}
++		if (right->input_width > right->output_width) {
++			if (calc_split_resize_coeffs(right->input_width,
++						     right->output_width,
++						     &resize_coeff,
++						     &downsize_coeff) < 0)
++				return -EINVAL;
++			right->irr = (downsize_coeff << 14) | resize_coeff;
++		}
+ 	}
+ 	return status;
+ }
+diff --git a/drivers/mxc/ipu3/ipu_device.c b/drivers/mxc/ipu3/ipu_device.c
+index 8052896..f0d9a0e 100644
+--- a/drivers/mxc/ipu3/ipu_device.c
++++ b/drivers/mxc/ipu3/ipu_device.c
+@@ -855,7 +855,7 @@ static int update_split_setting(struct ipu_task_entry *t, bool vdi_split)
+ 				t->output.format,
+ 				&left_stripe,
+ 				&right_stripe);
+-		if (ret)
++                if (ret)
+ 			dev_dbg(t->dev, "Warn: no:0x%x,calc_stripes ret:%d\n",
+ 				 t->task_no, ret);
+ 		t->set.sp_setting.iw = left_stripe.input_width;
+diff --git a/drivers/mxc/ipu3/ipu_ic.c b/drivers/mxc/ipu3/ipu_ic.c
+index 0f528d0..3a713b6 100644
+--- a/drivers/mxc/ipu3/ipu_ic.c
++++ b/drivers/mxc/ipu3/ipu_ic.c
+@@ -30,6 +30,7 @@
+ #include "ipu_regs.h"
+ #include "ipu_param_mem.h"
+ 
++
+ enum {
+ 	IC_TASK_VIEWFINDER,
+ 	IC_TASK_ENCODER,
+@@ -38,7 +39,8 @@ enum {
+ 
+ static void _init_csc(struct ipu_soc *ipu, uint8_t ic_task, ipu_color_space_t in_format,
+ 		      ipu_color_space_t out_format, int csc_index);
+-static bool _calc_resize_coeffs(struct ipu_soc *ipu,
++
++static int _calc_resize_coeffs(struct ipu_soc *ipu,
+ 				uint32_t inSize, uint32_t outSize,
+ 				uint32_t *resizeCoeff,
+ 				uint32_t *downsizeCoeff);
+@@ -234,31 +236,40 @@ void _ipu_vdi_uninit(struct ipu_soc *ipu)
+ 	ipu_vdi_write(ipu, 0, VDI_C);
+ }
+ 
+-void _ipu_ic_init_prpvf(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi)
++int _ipu_ic_init_prpvf(struct ipu_soc *ipu, ipu_channel_params_t *params,
++		       bool src_is_csi)
+ {
+ 	uint32_t reg, ic_conf;
+ 	uint32_t downsizeCoeff, resizeCoeff;
+ 	ipu_color_space_t in_fmt, out_fmt;
++	int ret = 0;
+ 
+ 	/* Setup vertical resizing */
+-	if (!(params->mem_prp_vf_mem.outv_resize_ratio) ||
+-		(params->mem_prp_vf_mem.outv_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_prp_vf_mem.in_height,
+-				params->mem_prp_vf_mem.out_height,
+-				&resizeCoeff, &downsizeCoeff);
++	if (!params->mem_prp_vf_mem.outv_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu, params->mem_prp_vf_mem.in_height,
++					params->mem_prp_vf_mem.out_height,
++					&resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate prpvf height "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg = (downsizeCoeff << 30) | (resizeCoeff << 16);
+ 	} else
+ 		reg = (params->mem_prp_vf_mem.outv_resize_ratio) << 16;
+ 
+ 	/* Setup horizontal resizing */
+-	/* Upadeted for IC split case */
+-	if (!(params->mem_prp_vf_mem.outh_resize_ratio) ||
+-		(params->mem_prp_vf_mem.outh_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_prp_vf_mem.in_width,
+-				params->mem_prp_vf_mem.out_width,
+-				&resizeCoeff, &downsizeCoeff);
++	if (!params->mem_prp_vf_mem.outh_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu, params->mem_prp_vf_mem.in_width,
++					params->mem_prp_vf_mem.out_width,
++					&resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate prpvf width "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg |= (downsizeCoeff << 14) | resizeCoeff;
+ 	} else
+ 		reg |= params->mem_prp_vf_mem.outh_resize_ratio;
+@@ -339,6 +350,8 @@ void _ipu_ic_init_prpvf(struct ipu_soc *ipu, ipu_channel_params_t *params, bool
+ 		ic_conf |= IC_CONF_RWS_EN;
+ 
+ 	ipu_ic_write(ipu, ic_conf, IC_CONF);
++
++	return ret;
+ }
+ 
+ void _ipu_ic_uninit_prpvf(struct ipu_soc *ipu)
+@@ -363,31 +376,41 @@ void _ipu_ic_uninit_rotate_vf(struct ipu_soc *ipu)
+ 	ipu_ic_write(ipu, reg, IC_CONF);
+ }
+ 
+-void _ipu_ic_init_prpenc(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi)
++int _ipu_ic_init_prpenc(struct ipu_soc *ipu, ipu_channel_params_t *params,
++			bool src_is_csi)
+ {
+ 	uint32_t reg, ic_conf;
+ 	uint32_t downsizeCoeff, resizeCoeff;
+ 	ipu_color_space_t in_fmt, out_fmt;
++	int ret = 0;
+ 
+ 	/* Setup vertical resizing */
+-	if (!(params->mem_prp_enc_mem.outv_resize_ratio) ||
+-		(params->mem_prp_enc_mem.outv_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_prp_enc_mem.in_height,
+-				params->mem_prp_enc_mem.out_height,
+-				&resizeCoeff, &downsizeCoeff);
++	if (!params->mem_prp_enc_mem.outv_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu,
++					params->mem_prp_enc_mem.in_height,
++					params->mem_prp_enc_mem.out_height,
++					&resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate prpenc height "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg = (downsizeCoeff << 30) | (resizeCoeff << 16);
+ 	} else
+ 		reg = (params->mem_prp_enc_mem.outv_resize_ratio) << 16;
+ 
+ 	/* Setup horizontal resizing */
+-	/* Upadeted for IC split case */
+-	if (!(params->mem_prp_enc_mem.outh_resize_ratio) ||
+-		(params->mem_prp_enc_mem.outh_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_prp_enc_mem.in_width,
+-				params->mem_prp_enc_mem.out_width,
+-				&resizeCoeff, &downsizeCoeff);
++	if (!params->mem_prp_enc_mem.outh_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu, params->mem_prp_enc_mem.in_width,
++					params->mem_prp_enc_mem.out_width,
++					&resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate prpenc width "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg |= (downsizeCoeff << 14) | resizeCoeff;
+ 	} else
+ 		reg |= params->mem_prp_enc_mem.outh_resize_ratio;
+@@ -422,6 +445,8 @@ void _ipu_ic_init_prpenc(struct ipu_soc *ipu, ipu_channel_params_t *params, bool
+ 		ic_conf |= IC_CONF_RWS_EN;
+ 
+ 	ipu_ic_write(ipu, ic_conf, IC_CONF);
++
++	return ret;
+ }
+ 
+ void _ipu_ic_uninit_prpenc(struct ipu_soc *ipu)
+@@ -446,32 +471,40 @@ void _ipu_ic_uninit_rotate_enc(struct ipu_soc *ipu)
+ 	ipu_ic_write(ipu, reg, IC_CONF);
+ }
+ 
+-void _ipu_ic_init_pp(struct ipu_soc *ipu, ipu_channel_params_t *params)
++int _ipu_ic_init_pp(struct ipu_soc *ipu, ipu_channel_params_t *params)
+ {
+ 	uint32_t reg, ic_conf;
+ 	uint32_t downsizeCoeff, resizeCoeff;
+ 	ipu_color_space_t in_fmt, out_fmt;
++	int ret = 0;
+ 
+ 	/* Setup vertical resizing */
+-	if (!(params->mem_pp_mem.outv_resize_ratio) ||
+-		(params->mem_pp_mem.outv_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_pp_mem.in_height,
+-			    params->mem_pp_mem.out_height,
+-			    &resizeCoeff, &downsizeCoeff);
++	if (!params->mem_pp_mem.outv_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu, params->mem_pp_mem.in_height,
++				    params->mem_pp_mem.out_height,
++				    &resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate pp height "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg = (downsizeCoeff << 30) | (resizeCoeff << 16);
+ 	} else {
+ 		reg = (params->mem_pp_mem.outv_resize_ratio) << 16;
+ 	}
+ 
+ 	/* Setup horizontal resizing */
+-	/* Upadeted for IC split case */
+-	if (!(params->mem_pp_mem.outh_resize_ratio) ||
+-		(params->mem_pp_mem.outh_resize_ratio >=
+-						IC_RSZ_MAX_RESIZE_RATIO)) {
+-		_calc_resize_coeffs(ipu, params->mem_pp_mem.in_width,
+-							params->mem_pp_mem.out_width,
+-							&resizeCoeff, &downsizeCoeff);
++	if (!params->mem_pp_mem.outh_resize_ratio) {
++		ret = _calc_resize_coeffs(ipu, params->mem_pp_mem.in_width,
++					params->mem_pp_mem.out_width,
++					&resizeCoeff, &downsizeCoeff);
++		if (ret < 0) {
++			dev_err(ipu->dev, "failed to calculate pp width "
++				"scaling coefficients\n");
++			return ret;
++		}
++
+ 		reg |= (downsizeCoeff << 14) | resizeCoeff;
+ 	} else {
+ 		reg |= params->mem_pp_mem.outh_resize_ratio;
+@@ -549,6 +582,8 @@ void _ipu_ic_init_pp(struct ipu_soc *ipu, ipu_channel_params_t *params)
+ 	}
+ 
+ 	ipu_ic_write(ipu, ic_conf, IC_CONF);
++
++	return ret;
+ }
+ 
+ void _ipu_ic_uninit_pp(struct ipu_soc *ipu)
+@@ -698,15 +733,16 @@ int _ipu_ic_idma_init(struct ipu_soc *ipu, int dma_chan,
+ static void _init_csc(struct ipu_soc *ipu, uint8_t ic_task, ipu_color_space_t in_format,
+ 		      ipu_color_space_t out_format, int csc_index)
+ {
+-
+-/*     Y = R *  .299 + G *  .587 + B *  .114;
+-       U = R * -.169 + G * -.332 + B *  .500 + 128.;
+-       V = R *  .500 + G * -.419 + B * -.0813 + 128.;*/
++	/*
++	 * Y =  0.257 * R + 0.504 * G + 0.098 * B +  16;
++	 * U = -0.148 * R - 0.291 * G + 0.439 * B + 128;
++	 * V =  0.439 * R - 0.368 * G - 0.071 * B + 128;
++	 */
+ 	static const uint32_t rgb2ycbcr_coeff[4][3] = {
+-		{0x004D, 0x0096, 0x001D},
+-		{0x01D5, 0x01AB, 0x0080},
+-		{0x0080, 0x0195, 0x01EB},
+-		{0x0000, 0x0200, 0x0200},	/* A0, A1, A2 */
++		{0x0042, 0x0081, 0x0019},
++		{0x01DA, 0x01B6, 0x0070},
++		{0x0070, 0x01A2, 0x01EE},
++		{0x0040, 0x0200, 0x0200},	/* A0, A1, A2 */
+ 	};
+ 
+ 	/* transparent RGB->RGB matrix for combining
+@@ -821,7 +857,7 @@ static void _init_csc(struct ipu_soc *ipu, uint8_t ic_task, ipu_color_space_t in
+ 	}
+ }
+ 
+-static bool _calc_resize_coeffs(struct ipu_soc *ipu,
++static int _calc_resize_coeffs(struct ipu_soc *ipu,
+ 				uint32_t inSize, uint32_t outSize,
+ 				uint32_t *resizeCoeff,
+ 				uint32_t *downsizeCoeff)
+@@ -829,14 +865,22 @@ static bool _calc_resize_coeffs(struct ipu_soc *ipu,
+ 	uint32_t tempSize;
+ 	uint32_t tempDownsize;
+ 
+-	/* Input size cannot be more than 4096 */
+-	/* Output size cannot be more than 1024 */
+-	if ((inSize > 4096) || (outSize > 1024))
+-		return false;
++	if (inSize > 4096) {
++		dev_err(ipu->dev, "IC input size(%d) cannot exceed 4096\n",
++			inSize);
++		return -EINVAL;
++	}
++
++	if (outSize > 1024) {
++		dev_err(ipu->dev, "IC output size(%d) cannot exceed 1024\n",
++			outSize);
++		return -EINVAL;
++	}
+ 
+-	/* Cannot downsize more than 8:1 */
+-	if ((outSize << 3) < inSize)
+-		return false;
++	if ((outSize << 3) < inSize) {
++		dev_err(ipu->dev, "IC cannot downsize more than 8:1\n");
++		return -EINVAL;
++	}
+ 
+ 	/* Compute downsizing coefficient */
+ 	/* Output of downsizing unit cannot be more than 1024 */
+@@ -854,8 +898,8 @@ static bool _calc_resize_coeffs(struct ipu_soc *ipu,
+ 	   where M = 2^13, SI - input size, SO - output size    */
+ 	*resizeCoeff = (8192L * (tempSize - 1)) / (outSize - 1);
+ 	if (*resizeCoeff >= 16384L) {
+-		dev_dbg(ipu->dev, "Warning! Overflow on resize coeff.\n");
+-		*resizeCoeff = 0x3FFF;
++		dev_err(ipu->dev, "Overflow on IC resize coefficient.\n");
++		return -EINVAL;
+ 	}
+ 
+ 	dev_dbg(ipu->dev, "resizing from %u -> %u pixels, "
+@@ -863,7 +907,7 @@ static bool _calc_resize_coeffs(struct ipu_soc *ipu,
+ 		*downsizeCoeff, (*resizeCoeff >= 8192L) ? 1 : 0,
+ 		((*resizeCoeff & 0x1FFF) * 10000L) / 8192L, *resizeCoeff);
+ 
+-	return true;
++	return 0;
+ }
+ 
+ void _ipu_vdi_toggle_top_field_man(struct ipu_soc *ipu)
+@@ -880,4 +924,3 @@ void _ipu_vdi_toggle_top_field_man(struct ipu_soc *ipu)
+ 
+ 	ipu_vdi_write(ipu, reg, VDI_C);
+ }
+-
+diff --git a/drivers/mxc/ipu3/ipu_prv.h b/drivers/mxc/ipu3/ipu_prv.h
+index a0d71dd..1dc8aee 100644
+--- a/drivers/mxc/ipu3/ipu_prv.h
++++ b/drivers/mxc/ipu3/ipu_prv.h
+@@ -287,7 +287,7 @@ int _ipu_dp_init(struct ipu_soc *ipu, ipu_channel_t channel, uint32_t in_pixel_f
+ 
+ void _ipu_ic_enable_task(struct ipu_soc *ipu, ipu_channel_t channel);
+ void _ipu_ic_disable_task(struct ipu_soc *ipu, ipu_channel_t channel);
+-void _ipu_ic_init_prpvf(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi);
++int _ipu_ic_init_prpvf(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi);
+ void _ipu_vdi_init(struct ipu_soc *ipu, ipu_channel_t channel, ipu_channel_params_t *params);
+ void _ipu_vdi_uninit(struct ipu_soc *ipu);
+ void _ipu_ic_uninit_prpvf(struct ipu_soc *ipu);
+@@ -295,11 +295,11 @@ int _ipu_dp_init(struct ipu_soc *ipu, ipu_channel_t channel, uint32_t in_pixel_f
+ void _ipu_ic_uninit_rotate_vf(struct ipu_soc *ipu);
+ void _ipu_ic_init_csi(struct ipu_soc *ipu, ipu_channel_params_t *params);
+ void _ipu_ic_uninit_csi(struct ipu_soc *ipu);
+-void _ipu_ic_init_prpenc(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi);
++int _ipu_ic_init_prpenc(struct ipu_soc *ipu, ipu_channel_params_t *params, bool src_is_csi);
+ void _ipu_ic_uninit_prpenc(struct ipu_soc *ipu);
+ void _ipu_ic_init_rotate_enc(struct ipu_soc *ipu, ipu_channel_params_t *params);
+ void _ipu_ic_uninit_rotate_enc(struct ipu_soc *ipu);
+-void _ipu_ic_init_pp(struct ipu_soc *ipu, ipu_channel_params_t *params);
++int _ipu_ic_init_pp(struct ipu_soc *ipu, ipu_channel_params_t *params);
+ void _ipu_ic_uninit_pp(struct ipu_soc *ipu);
+ void _ipu_ic_init_rotate_pp(struct ipu_soc *ipu, ipu_channel_params_t *params);
+ void _ipu_ic_uninit_rotate_pp(struct ipu_soc *ipu);
+-- 
+1.8.5.1
+
