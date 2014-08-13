@@ -1,0 +1,19 @@
+#
+# fanmonitor.conf - fanmonitor config file
+#
+
+# default limits without config file
+# when fan is turned on
+#   high=70
+# when fan is turned off
+#   low=55
+# temperature checking interval
+#   interval=30
+# periodically show temperature
+#   debug=0
+
+high=70
+low=55
+interval=30
+debug=0
+

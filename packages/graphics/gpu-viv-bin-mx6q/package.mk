@@ -17,7 +17,14 @@
 ################################################################################
 
 PKG_NAME="gpu-viv-bin-mx6q"
-PKG_VERSION="3.10.17-1.0.0-1"
+case "$PROJECT" in
+  Matrix)
+    PKG_VERSION="3.5.7-1.0.0"
+    ;;
+  *)
+    PKG_VERSION="3.10.17-1.0.0-1"
+    ;;
+esac
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="nonfree"
@@ -45,6 +52,11 @@ make_target() {
 makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/include
     cp -PRv $FLOAT/usr/include/* $SYSROOT_PREFIX/usr/include
+
+    if [ "$PROJECT" = "Matrix" ]; then
+      # missing fb file (not used actually)
+      touch $FLOAT/usr/lib/libGLESv2-fb.so
+    fi
 
   mkdir -p $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/usr/lib/libEGL-fb.so \

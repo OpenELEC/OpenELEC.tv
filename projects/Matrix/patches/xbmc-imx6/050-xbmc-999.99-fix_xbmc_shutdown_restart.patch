@@ -1,0 +1,22 @@
+--- a/xbmc/ApplicationMessenger.cpp	2014-07-31 09:35:19.000000000 +0200
++++ b/xbmc/ApplicationMessenger.cpp	2014-08-01 09:08:58.000000000 +0200
+@@ -224,6 +224,19 @@
+ 
+ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
+ {
++  /* not nice but it do it's job (until better fix) */
++  switch (pMsg->dwMessage)
++  {
++    case TMSG_POWERDOWN:
++      system("/usr/sbin/poweroff &");
++      break;
++
++    case TMSG_RESTART:
++    case TMSG_RESET:
++      system("/usr/sbin/reboot &");
++      break;
++  }
++
+   switch (pMsg->dwMessage)
+   {
+     case TMSG_SHUTDOWN:

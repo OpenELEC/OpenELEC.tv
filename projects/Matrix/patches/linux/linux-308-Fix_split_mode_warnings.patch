@@ -1,0 +1,29 @@
+From 72bc1a85a9bec2fe827b3a663d49e51d56c243b6 Mon Sep 17 00:00:00 2001
+From: Oliver Brown <oliver.brown@freescale.com>
+Date: Tue, 3 Dec 2013 09:30:02 -0600
+Subject: [PATCH] ENGR00290579 IPUv3: Fix split mode warnings
+
+Changed alignement for planar formats back to 16 pixels.
+
+Signed-off-by: Oliver Brown <oliver.brown@freescale.com>
+(cherry picked from commit e5be4002a9f87d6ff7d32359be61995e026f1062)
+---
+ drivers/mxc/ipu3/ipu_calc_stripes_sizes.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+index 89beda8..9e77fb8 100644
+--- a/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
++++ b/drivers/mxc/ipu3/ipu_calc_stripes_sizes.c
+@@ -54,7 +54,7 @@ static unsigned int f_calc(unsigned int pfs, unsigned int bpp, unsigned int *wri
+ 	case IPU_PIX_FMT_YUV420P:
+ 	case IPU_PIX_FMT_YVU420P:
+ 	case IPU_PIX_FMT_YUV444P:
+-		f_calculated = 8;
++		f_calculated = 16;
+ 		break;
+ 
+ 	case IPU_PIX_FMT_RGB565:
+-- 
+1.8.5.1
+

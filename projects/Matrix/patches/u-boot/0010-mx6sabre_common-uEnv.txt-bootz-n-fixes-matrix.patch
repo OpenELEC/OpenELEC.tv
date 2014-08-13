@@ -1,0 +1,187 @@
+diff -urN u-boot-imx6-ed888a1.orig/boards.cfg u-boot-imx6-ed888a1/boards.cfg
+--- u-boot-imx6-ed888a1.orig/boards.cfg	2014-04-13 01:27:26.000000000 +0200
++++ u-boot-imx6-ed888a1/boards.cfg	2014-08-11 15:13:42.000000000 +0200
+@@ -300,7 +300,7 @@
+ Active  arm         armv7          mx6         freescale       mx6qarm2            mx6qarm2                             mx6qarm2:IMX_CONFIG=board/freescale/mx6qarm2/imximage.cfg                                                                         Jason Liu <r64343@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6qsabreauto       mx6qsabreauto                        mx6qsabreauto:IMX_CONFIG=board/freescale/mx6qsabreauto/imximage.cfg,MX6Q                                                          Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6sabresd          mx6dlsabresd                         mx6sabresd:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6dl.cfg,MX6DL                                                             Fabio Estevam <fabio.estevam@freescale.com>
+-Active  arm         armv7          mx6         freescale       mx6sabresd          mx6qsabresd                          mx6sabresd:IMX_CONFIG=board/freescale/imx/ddr/mx6q_4x_mt41j128.cfg,MX6Q                                                           Fabio Estevam <fabio.estevam@freescale.com>
++Active  arm         armv7          mx6         freescale       mx6sabresd          tbs2910                              mx6sabresd:IMX_CONFIG=board/boundary/nitrogen6x/nitrogen6q2g.cfg,MX6Q,DEFAULT_FDT_FILE="imx6q-sabresd-ldo.dtb",DDR_MB=2048        Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       mx6slevk            mx6slevk                             mx6slevk:IMX_CONFIG=board/freescale/mx6slevk/imximage.cfg,MX6SL                                                                   Fabio Estevam <fabio.estevam@freescale.com>
+ Active  arm         armv7          mx6         freescale       titanium            titanium                             titanium:IMX_CONFIG=board/freescale/titanium/imximage.cfg                                                                         Stefan Roese <sr@denx.de>
+ Active  arm         armv7          mx6         solidrun        mx6_c1              mx6_c1solo                           mx6_c1:IMX_CONFIG=board/solidrun/mx6_c1/mx6_c1solo.cfg,MX6S,DDR_MB=512
+diff -urN u-boot-imx6-ed888a1.orig/include/configs/mx6sabre_common.h u-boot-imx6-ed888a1/include/configs/mx6sabre_common.h
+--- u-boot-imx6-ed888a1.orig/include/configs/mx6sabre_common.h	2014-04-13 01:27:26.000000000 +0200
++++ u-boot-imx6-ed888a1/include/configs/mx6sabre_common.h	2014-08-11 17:54:39.000000000 +0200
+@@ -46,6 +46,10 @@
+ #define CONFIG_CMD_FAT
+ #define CONFIG_DOS_PARTITION
+ 
++#define CONFIG_CMD_EXT4
++#define CONFIG_CMD_FS_GENERIC			/* Generic load commands */
++#define CONFIG_SUPPORT_RAW_INITRD
++
+ #define CONFIG_CMD_PING
+ #define CONFIG_CMD_DHCP
+ #define CONFIG_CMD_MII
+@@ -79,13 +83,16 @@
+ #define CONFIG_SYS_TEXT_BASE           0x17800000
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
++	"zImage=KERNEL\0" \
+ 	"script=boot.scr\0" \
+ 	"uimage=uImage\0" \
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
+-	"fdt_addr=0x11000000\0" \
++	"fdt_addr=0x18000000\0" \
+ 	"boot_fdt=try\0" \
+ 	"ip_dyn=yes\0" \
+-	"console=" CONFIG_CONSOLE_DEV "\0" \
++	"console=ttymxc0,115200\0" \
++	"optargs=\0" \
++	"video=\0" \
+ 	"fdt_high=0xffffffff\0"	  \
+ 	"initrd_high=0xffffffff\0" \
+ 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
+@@ -104,28 +111,36 @@
+ 				"mmc write ${loadaddr} 0x2 ${fw_sz}; " \
+ 			"fi; "	\
+ 		"fi\0" \
+-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+-		"root=${mmcroot}\0" \
++	"mmcrootfstype=ext4 rootwait fixrtc\0" \
++	"mmcargs=setenv bootargs console=${console}" \
++		"${optargs} " \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype} " \
++		"video=${video}\0" \
+ 	"loadbootscript=" \
+ 		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+ 	"bootscript=echo Running bootscript from mmc ...; " \
+ 		"source\0" \
+-	"loaduimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${uimage}\0" \
+-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
++	"loadbootenv=" \
++		"load mmc ${mmcdev}:${mmcpart} ${loadaddr} uEnv.txt;\0" \
++	"importbootenv=echo Importing environment from mmc (uEnv.txt)...; " \
++		"env import -t ${loadaddr} ${filesize}\0" \
++	"loadzimage=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${zImage}\0" \
++	"loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+ 	"mmcboot=echo Booting from mmc ...; " \
+ 		"run mmcargs; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if run loadfdt; then " \
+-				"bootm ${loadaddr} - ${fdt_addr}; " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootm; " \
++					"bootz; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootm; " \
++			"bootz; " \
+ 		"fi;\0" \
+ 	"netargs=setenv bootargs console=${console},${baudrate} " \
+ 		"root=/dev/nfs " \
+@@ -140,30 +155,63 @@
+ 		"${get_cmd} ${uimage}; " \
+ 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+ 			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
+-				"bootm ${loadaddr} - ${fdt_addr}; " \
++				"bootz ${loadaddr} - ${fdt_addr}; " \
+ 			"else " \
+ 				"if test ${boot_fdt} = try; then " \
+-					"bootm; " \
++					"bootz; " \
+ 				"else " \
+ 					"echo WARN: Cannot load the DT; " \
+ 				"fi; " \
+ 			"fi; " \
+ 		"else " \
+-			"bootm; " \
++			"bootz ${loadaddr}; " \
+ 		"fi;\0"
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"mmc dev ${mmcdev};" \
++	"echo SD/MMC device set to ${mmcdev} but checking from 0 to 2;" \
++	"setenv mmcdevold ${mmcdev}; " \
++	"mmc dev 0;" \
+ 	"if mmc rescan; then " \
+-		"if run loadbootscript; then " \
+-		"run bootscript; " \
++		"setenv mmcdev 0; " \
++	"else " \
++		"mmc dev 1;" \
++		"if mmc rescan; then " \
++			"setenv mmcdev 1; " \
+ 		"else " \
+-			"if run loaduimage; then " \
+-				"run mmcboot; " \
+-			"else run netboot; " \
++			"mmc dev 2;" \
++			"if mmc rescan; then " \
++				"setenv mmcdev 2; " \
++			"else " \
++				"echo No SD/MMC found from device 0 to 2;" \
++				"setenv mmcdev ${mmcdevold}; " \
+ 			"fi; " \
+ 		"fi; " \
+-	"else run netboot; fi"
++	"fi; " \
++	"setenv mmcdevold; " \
++	"echo New SD/MMC device ${mmcdev};" \
++	"mmc dev ${mmcdev};" \
++	"if mmc rescan; then " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
++			"echo boot_fdt is yes or try;" \
++		  "if run loadzimage; then " \
++		  	"run loadfdt;" \
++		  	"run mmcboot;" \
++		  "fi;" \
++		"else " \
++			"echo boot_fdt is no;" \
++		  "if run loadzimage; then " \
++		  	"run mmcboot;" \
++		  "fi;" \
++		"fi;" \
++	"fi;"
+ 
+ #define CONFIG_ARP_TIMEOUT     200UL
+ 
+diff -urN u-boot-imx6-ed888a1.orig/include/configs/mx6sabresd.h u-boot-imx6-ed888a1/include/configs/mx6sabresd.h
+--- u-boot-imx6-ed888a1.orig/include/configs/mx6sabresd.h	2014-04-13 01:27:26.000000000 +0200
++++ u-boot-imx6-ed888a1/include/configs/mx6sabresd.h	2014-08-11 18:00:58.000000000 +0200
+@@ -17,17 +17,17 @@
+ #define CONFIG_CONSOLE_DEV		"ttymxc0"
+ #define CONFIG_MMCROOT			"/dev/mmcblk1p2"
+ #if defined(CONFIG_MX6Q)
+-#define CONFIG_DEFAULT_FDT_FILE	"imx6q-sabresd.dtb"
++/*#define CONFIG_DEFAULT_FDT_FILE	"imx6q-sabresd.dtb"*/
+ #elif defined(CONFIG_MX6DL)
+ #define CONFIG_DEFAULT_FDT_FILE	"imx6dl-sabresd.dtb"
+ #endif
+-#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
++#define PHYS_SDRAM_SIZE		(2u * 1024 * 1024 * 1024)
+ 
+ #include "mx6sabre_common.h"
+ 
+ #define CONFIG_SYS_FSL_USDHC_NUM	3
+ #if defined(CONFIG_ENV_IS_IN_MMC)
+-#define CONFIG_SYS_MMC_ENV_DEV		1	/* SDHC3 */
++#define CONFIG_SYS_MMC_ENV_DEV		2	/* eMMC/uSDHC4 */ 
+ #endif
+ 
+ /* Framebuffer */

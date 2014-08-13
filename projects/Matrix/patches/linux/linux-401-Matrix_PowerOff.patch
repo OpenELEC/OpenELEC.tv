@@ -1,0 +1,33 @@
+--- a/kernel/sys.c	2012-06-18 02:23:33.000000000 +0800
++++ b/kernel/sys.c	2014-05-09 14:41:58.000000000 +0800
+@@ -54,6 +54,8 @@
+ #include <asm/io.h>
+ #include <asm/unistd.h>
+ 
++#include <linux/gpio.h>
++
+ #ifndef SET_UNALIGN_CTL
+ # define SET_UNALIGN_CTL(a,b)	(-EINVAL)
+ #endif
+@@ -372,8 +374,12 @@
+  *
+  *	Shutdown everything and perform a clean system power_off.
+  */
++#define SABRESD_USR_DEF_RED_LED	IMX_GPIO_NR(1, 2)
++#define SABRESD_POWER_EN	IMX_GPIO_NR(5, 2)
+ void kernel_power_off(void)
+ {
++	gpio_set_value(SABRESD_USR_DEF_RED_LED, 0);
++
+ 	kernel_shutdown_prepare(SYSTEM_POWER_OFF);
+ 	if (pm_power_off_prepare)
+ 		pm_power_off_prepare();
+@@ -382,6 +388,8 @@
+ 	printk(KERN_EMERG "Power down.\n");
+ 	kmsg_dump(KMSG_DUMP_POWEROFF);
+ 	machine_power_off();
++	
++	gpio_set_value(SABRESD_POWER_EN, 0);
+ }
+ EXPORT_SYMBOL_GPL(kernel_power_off);
+ 

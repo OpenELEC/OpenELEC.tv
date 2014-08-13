@@ -1,0 +1,8 @@
+[Unit]
+Description=Fan monitor service
+
+[Service]
+ExecStart=/usr/bin/fanmonitor
+
+[Install]
+WantedBy=multi-user.target

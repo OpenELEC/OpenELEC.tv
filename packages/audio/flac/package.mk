@@ -34,7 +34,7 @@ PKG_AUTORECONF="yes"
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
-                           --disable-shared \
+                           --enable-shared \
                            --disable-rpath \
                            --disable-altivec \
                            --disable-doxygen-docs \

@@ -1,0 +1,378 @@
+--- a/drivers/mxc/ipu3/ipu_device.c	2013-10-01 11:33:09.000000000 +0800
++++ b/drivers/mxc/ipu3/ipu_device.c	2014-01-09 14:42:03.000000000 +0800
+@@ -18,6 +18,7 @@
+  *
+  * @ingroup IPU
+  */
++
+ #include <linux/types.h>
+ #include <linux/init.h>
+ #include <linux/platform_device.h>
+@@ -44,6 +45,7 @@
+ #include "ipu_param_mem.h"
+ #include "vdoa.h"
+ 
++
+ #define CHECK_RETCODE(cont, str, err, label, ret)			\
+ do {									\
+ 	if (cont) {							\
+@@ -711,9 +713,11 @@
+ 		}
+ 	} else {
+ 		if (crop->w || crop->h) {
+-			if (((crop->w + crop->pos.x) > width)
+-			|| ((crop->h + crop->pos.y) > height))
++			if (((crop->w + crop->pos.x) > (width + 16))
++			|| ((crop->h + crop->pos.y) > height + 16)) {
++				pr_err("set_crop error exceeds width/height.\n");
+ 				return -EINVAL;
++			}
+ 		} else {
+ 			crop->pos.x = 0;
+ 			crop->pos.y = 0;
+@@ -870,7 +874,7 @@
+ 		t->set.sp_setting.i_right_pos = 0;
+ 		t->set.sp_setting.o_right_pos = 0;
+ 	}
+-	if ((t->set.sp_setting.iw + t->set.sp_setting.i_right_pos) > iw)
++	if ((t->set.sp_setting.iw + t->set.sp_setting.i_right_pos) > (iw+16))
+ 		return IPU_CHECK_ERR_SPLIT_INPUTW_OVER;
+ 	if (((t->set.sp_setting.ow + t->set.sp_setting.o_right_pos) > ow)
+ 		|| (t->set.sp_setting.ow > soc_max_out_width()))
+@@ -889,7 +893,7 @@
+ 				oh,
+ 				soc_max_out_height(),
+ 				(((unsigned long long)1) << 32), /* 32bit for fractional*/
+-				1, /* equal stripes */
++				0x1 | 0x2, /* equal stripes and vertical */
+ 				t->input.format,
+ 				t->output.format,
+ 				&up_stripe,
+@@ -913,7 +917,15 @@
+ 		t->set.sp_setting.i_bottom_pos = 0;
+ 		t->set.sp_setting.o_bottom_pos = 0;
+ 	}
+-	if ((t->set.sp_setting.ih + t->set.sp_setting.i_bottom_pos) > ih)
++
++	/* downscale case: enforce limits */
++	if (((t->set.sp_setting.ih + t->set.sp_setting.i_bottom_pos) > (ih))
++	     && (t->set.sp_setting.ih >= t->set.sp_setting.oh))
++		return IPU_CHECK_ERR_SPLIT_INPUTH_OVER;
++	/* upscale case: relax limits because ipu_calc_stripes_sizes() may
++	   create input stripe that falls just outside of the input window */
++	else if ((t->set.sp_setting.ih + t->set.sp_setting.i_bottom_pos)
++		 > (ih+16))
+ 		return IPU_CHECK_ERR_SPLIT_INPUTH_OVER;
+ 	if (((t->set.sp_setting.oh + t->set.sp_setting.o_bottom_pos) > oh)
+ 		|| (t->set.sp_setting.oh > soc_max_out_height()))
+@@ -928,6 +940,7 @@
+ 	int ret = IPU_CHECK_OK;
+ 	int timeout;
+ 	bool vdi_split = false;
++	int ocw, och;
+ 
+ 	if ((IPU_PIX_FMT_TILED_NV12 == t->overlay.format) ||
+ 		(IPU_PIX_FMT_TILED_NV12F == t->overlay.format) ||
+@@ -964,6 +977,7 @@
+ 				&t->set.o_off, &t->set.o_uoff,
+ 				&t->set.o_voff, &t->set.ostride);
+ 
++
+ 	if ((IPU_PIX_FMT_TILED_NV12 == t->input.format) ||
+ 		(IPU_PIX_FMT_TILED_NV12F == t->input.format)) {
+ 		if ((t->input.crop.w > soc_max_in_width(1)) ||
+@@ -994,14 +1008,15 @@
+ 			ret = IPU_CHECK_ERR_OVERLAY_CROP;
+ 			goto done;
+ 		} else {
+-			int ow = t->output.crop.w;
+-			int oh = t->output.crop.h;
++			ocw = t->output.crop.w;
++			och = t->output.crop.h;
+ 
+ 			if (t->output.rotate >= IPU_ROTATE_90_RIGHT) {
+-				ow = t->output.crop.h;
+-				oh = t->output.crop.w;
++				ocw = t->output.crop.h;
++				och = t->output.crop.w;
+ 			}
+-			if ((t->overlay.crop.w != ow) || (t->overlay.crop.h != oh)) {
++			if ((t->overlay.crop.w != ocw) ||
++			    (t->overlay.crop.h != och)) {
+ 				ret = IPU_CHECK_ERR_OV_OUT_NO_FIT;
+ 				goto done;
+ 			}
+@@ -1144,8 +1159,7 @@
+ 		return -EINVAL;
+ 
+ 	if (t->set.mode & VDI_MODE) {
+-		if (t->task_id != IPU_TASK_ID_VF)
+-			t->task_id = IPU_TASK_ID_VF;
++		t->task_id = IPU_TASK_ID_VF;
+ 		t->set.task = VDI_VF;
+ 		if (t->set.mode & ROT_MODE)
+ 			t->set.task |= ROT_VF;
+@@ -1385,7 +1399,7 @@
+ 	tsk->overlay_en = task->overlay_en;
+ 	if (tsk->overlay_en)
+ 		tsk->overlay = task->overlay;
+-	if (tsk->timeout && (tsk->timeout > DEF_TIMEOUT_MS))
++	if (task->timeout > DEF_TIMEOUT_MS)
+ 		tsk->timeout = task->timeout;
+ 	else
+ 		tsk->timeout = DEF_TIMEOUT_MS;
+@@ -1397,8 +1411,6 @@
+ {
+ 	struct ipu_task_entry *tsk =
+ 			container_of(ref, struct ipu_task_entry, refcount);
+-
+-	memset(tsk, 0, sizeof(*tsk));
+ 	kfree(tsk);
+ }
+ 
+@@ -1714,7 +1726,6 @@
+ 		if (!tsk)
+ 			continue;
+ 		kfree(tsk);
+-		memset(tsk, 0, sizeof(*tsk));
+ 	}
+ 	t->state = STATE_ERR;
+ 	return ret;
+@@ -2337,9 +2348,6 @@
+ 	u32 task_no;
+ 	u32 i, offset_addr;
+ 	unsigned char  *base_off;
+-	u32 pixwidth;
+-	u32 crop_width;
+-
+ 	struct ipu_task_entry *parent = t->parent;
+ 
+ 	if (!parent) {
+@@ -2349,30 +2357,21 @@
+ 	stripe_mode = t->task_no & 0xf;
+ 	task_no = t->task_no >> 4;
+ 
+-	pixwidth = fmt_to_bpp(t->output.format)/8;
+-	crop_width = t->output.crop.w * pixwidth;
+-
+-	if (pfn_valid(t->output.paddr >> PAGE_SHIFT))
+-		base_off = page_address(pfn_to_page(t->output.paddr >> PAGE_SHIFT));
+-	else
+-		base_off = (char *)ioremap_nocache(t->output.paddr,
+-				t->output.width * t->output.height *
+-				pixwidth);
+-
++	base_off = (char *) __va(t->output.paddr);
+ 	if (base_off == NULL) {
+ 		dev_err(t->dev, "ERR[0x%p]Falied get vitual address\n", t);
+ 		return;
+ 	}
+ 
+ 	vdi_save_lines = (t->output.crop.h - t->set.sp_setting.ud_split_line)/2;
+-	vdi_size = vdi_save_lines * t->output.crop.w * pixwidth;
++	vdi_size = vdi_save_lines * t->output.crop.w * 2;
+ 
+ 	if (vdi_save_lines <= 0) {
+ 		dev_err(t->dev, "[0x%p] vdi_save_line error\n", (void *)t);
+ 		return;
+ 	}
+ 
+-	/* Check vditmpbuf buffer have alloced or buffer size is changed */
++	/*check vditmpbuf buffer have alloced or buffer size is changed */
+ 	if ((vdi_save_lines != parent->old_save_lines) ||
+ 		(vdi_size != parent->old_size)) {
+ 		if (parent->vditmpbuf[0] != NULL)
+@@ -2404,93 +2403,120 @@
+ 	if ((stripe_mode == UP_STRIPE) ||
+ 			(stripe_mode == (UP_STRIPE | LEFT_STRIPE))) {
+ 		if (!parent->buf0filled) {
+-			offset_addr = t->set.o_off * pixwidth +
+-				t->set.sp_setting.ud_split_line * t->set.ostride ;
++			offset_addr = t->set.o_off +
++				t->set.sp_setting.ud_split_line*t->set.ostride;
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + vdi_size);
++			outer_flush_range(t->output.paddr + offset_addr,
++				t->output.paddr + offset_addr + vdi_size);
+ 
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(parent->vditmpbuf[0] + i * crop_width,
++				memcpy(parent->vditmpbuf[0] + i*t->output.crop.w*2,
+ 					base_off + offset_addr +
+-					i * t->set.ostride, crop_width);
++					i*t->set.ostride, t->output.crop.w*2);
+ 			parent->buf0filled = true;
+ 		} else {
+-			offset_addr = t->set.o_off * pixwidth + (t->output.crop.h -
++			offset_addr = t->set.o_off + (t->output.crop.h -
+ 					vdi_save_lines) * t->set.ostride;
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(base_off + offset_addr + i * t->set.ostride,
+-						parent->vditmpbuf[0] + i * crop_width,
+-						crop_width);
+-
++				memcpy(base_off + offset_addr + i*t->set.ostride,
++						parent->vditmpbuf[0] + i*t->output.crop.w*2,
++						t->output.crop.w*2);
++
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + i*t->set.ostride);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + i*t->set.ostride);
+ 			parent->buf0filled = false;
+ 		}
+ 	}
+-	/* Down stripe or Down&Left stripe */
++	/*Down stripe or Down&Left stripe*/
+ 	else if ((stripe_mode == DOWN_STRIPE) ||
+ 			(stripe_mode == (DOWN_STRIPE | LEFT_STRIPE))) {
+ 		if (!parent->buf0filled) {
+-			offset_addr = t->set.o_off * pixwidth +
+-				vdi_save_lines * t->set.ostride;
++			offset_addr = t->set.o_off + vdi_save_lines*t->set.ostride;
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + vdi_size);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + vdi_size);
+ 
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(parent->vditmpbuf[0] + i * crop_width,
+-						base_off + offset_addr + i * t->set.ostride,
+-						crop_width);
++				memcpy(parent->vditmpbuf[0] + i*t->output.crop.w*2,
++						base_off + offset_addr + i*t->set.ostride,
++						t->output.crop.w*2);
+ 			parent->buf0filled = true;
+-
+ 		} else {
+-			offset_addr = t->set.o_off * pixwidth;
++			offset_addr = t->set.o_off;
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(base_off + offset_addr + i * t->set.ostride,
+-						parent->vditmpbuf[0] + i * crop_width,
+-						crop_width);
+-
++				memcpy(base_off + offset_addr + i*t->set.ostride,
++						parent->vditmpbuf[0] + i*t->output.crop.w*2,
++						t->output.crop.w*2);
++
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + i*t->set.ostride);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + i*t->set.ostride);
+ 			parent->buf0filled = false;
+ 		}
+ 	}
+-	/* Up&Right stripe */
++	/*Up&Right stripe*/
+ 	else if (stripe_mode == (UP_STRIPE | RIGHT_STRIPE)) {
+ 		if (!parent->buf1filled) {
+-			offset_addr = t->set.o_off * pixwidth +
+-				t->set.sp_setting.ud_split_line * t->set.ostride;
++			offset_addr = t->set.o_off +
++				t->set.sp_setting.ud_split_line*t->set.ostride;
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + vdi_size);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + vdi_size);
+ 
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(parent->vditmpbuf[1] + i * crop_width,
+-						base_off + offset_addr + i * t->set.ostride,
+-						crop_width);
++				memcpy(parent->vditmpbuf[1] + i*t->output.crop.w*2,
++						base_off + offset_addr + i*t->set.ostride,
++						t->output.crop.w*2);
+ 			parent->buf1filled = true;
+ 		} else {
+-			offset_addr = t->set.o_off * pixwidth +
+-				(t->output.crop.h - vdi_save_lines) * t->set.ostride;
++			offset_addr = t->set.o_off +
++				(t->output.crop.h - vdi_save_lines)*t->set.ostride;
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(base_off + offset_addr + i * t->set.ostride,
+-						parent->vditmpbuf[1] + i * crop_width,
+-						crop_width);
+-
++				memcpy(base_off + offset_addr + i*t->set.ostride,
++						parent->vditmpbuf[1] + i*t->output.crop.w*2,
++						t->output.crop.w*2);
++
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + i*t->set.ostride);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + i*t->set.ostride);
+ 			parent->buf1filled = false;
+ 		}
+ 	}
+-	/* Down stripe or Down&Right stript */
++	/*Down stripe or Down&Right stript*/
+ 	else if (stripe_mode == (DOWN_STRIPE | RIGHT_STRIPE)) {
+ 		if (!parent->buf1filled) {
+-			offset_addr = t->set.o_off * pixwidth +
+-				vdi_save_lines * t->set.ostride;
++			offset_addr = t->set.o_off + vdi_save_lines*t->set.ostride;
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + vdi_save_lines*t->set.ostride);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + vdi_save_lines*t->set.ostride);
+ 
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(parent->vditmpbuf[1] + i * crop_width,
+-						base_off + offset_addr + i * t->set.ostride,
+-						crop_width);
++				memcpy(parent->vditmpbuf[1] + i*t->output.crop.w*2,
++						base_off + offset_addr + i*t->set.ostride,
++						t->output.crop.w*2);
+ 			parent->buf1filled = true;
+ 		} else {
+-			offset_addr = t->set.o_off * pixwidth;
++			offset_addr = t->set.o_off;
+ 			for (i = 0; i < vdi_save_lines; i++)
+-				memcpy(base_off + offset_addr + i * t->set.ostride,
+-						parent->vditmpbuf[1] + i * crop_width,
+-						crop_width);
+-
++				memcpy(base_off + offset_addr + i*t->set.ostride,
++						parent->vditmpbuf[1] + i*t->output.crop.w*2,
++						t->output.crop.w*2);
++
++			dmac_flush_range(base_off + offset_addr,
++					base_off + offset_addr + vdi_save_lines*t->set.ostride);
++			outer_flush_range(t->output.paddr + offset_addr,
++					t->output.paddr + offset_addr + vdi_save_lines*t->set.ostride);
+ 			parent->buf1filled = false;
+ 		}
+ 	}
+-	if (!pfn_valid(t->output.paddr >> PAGE_SHIFT))
+-		iounmap(base_off);
+ }
+ 
+ static void do_task_release(struct ipu_task_entry *t, int fail)
+@@ -3138,7 +3164,7 @@
+ 		int split_parent;
+ 		int split_child;
+ 
+-		wait_event(thread_waitq, find_task(&tsk, curr_thread_id));
++		wait_event_interruptible(thread_waitq, find_task(&tsk, curr_thread_id));
+ 
+ 		if (!tsk) {
+ 			pr_err("thread:%d can not find task.\n",
+@@ -3190,7 +3216,7 @@
+ 					dev_err(tsk->dev,
+ 					"ERR: no-0x%x,can not get split_tsk0\n",
+ 					tsk->task_no);
+-				wake_up(&thread_waitq);
++				wake_up_interruptible(&thread_waitq);
+ 				get_res_do_task(sp_tsk0);
+ 				dev_dbg(sp_tsk0->dev,
+ 					"thread:%d complete tsk no:0x%x.\n",
+@@ -3294,7 +3320,7 @@
+ 	tsk->task_in_list = 1;
+ 	dev_dbg(tsk->dev, "[0x%p,no-0x%x] list_add_tail\n", tsk, tsk->task_no);
+ 	spin_unlock_irqrestore(&ipu_task_list_lock, flags);
+-	wake_up(&thread_waitq);
++	wake_up_interruptible(&thread_waitq);
+ 
+ 	ret = wait_event_timeout(tsk->task_waitq, atomic_read(&tsk->done),
+ 						msecs_to_jiffies(tsk->timeout));

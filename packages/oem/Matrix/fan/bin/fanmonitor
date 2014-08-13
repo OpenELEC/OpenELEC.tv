@@ -1,0 +1,80 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+myecho() {
+	if [ $debug = 1 ]; then
+		echo $*
+	fi
+}
+
+# fan output pin
+PIN=92
+
+if [ ! -d /sys/class/gpio/gpio${PIN} ]; then
+	echo $PIN  > /sys/class/gpio/export
+	echo "out" > /sys/class/gpio/gpio${PIN}/direction
+fi
+
+# default limits
+high=75
+low=60
+interval=30
+debug=0
+
+userconfig=/storage/.config/fanmonitor.conf
+if [ -f $userconfig ]; then
+	. $userconfig
+	echo "Values from config: low=$low high=$high interval=$interval debug=$debug"
+else
+	echo "Default values: low=$low high=$high interval=$interval debug=$debug"
+fi
+
+(
+  # turn fan on for a moment 
+  echo 1 > /sys/class/gpio/gpio${PIN}/value
+  usleep 1000000
+  # and turn it off
+  echo 0 > /sys/class/gpio/gpio${PIN}/value
+
+	# blue led blink
+	echo 0 > /sys/class/gpio/gpio2/value
+	sleep 1
+	echo 1 > /sys/class/gpio/gpio2/value
+	sleep 1
+	echo 0 > /sys/class/gpio/gpio2/value
+	sleep 1
+	echo 1 > /sys/class/gpio/gpio2/value
+)&
+
+while true; do
+	temp=$(cat /sys/devices/virtual/thermal/thermal_zone0/temp)
+  myecho "CPU temp: $temp [low: $low, high: $high]"
+	if [ $temp -gt $high ]; then
+		myecho "CPU temp exceeds $high celsius, fan on"
+	  echo 1 > /sys/class/gpio/gpio${PIN}/value
+	fi
+	
+	if [ $temp -lt $low ]; then
+		myecho "CPU temp below $low celsius, fan off"
+	  echo 0 > /sys/class/gpio/gpio${PIN}/value
+  fi
+  
+  sleep $interval
+done

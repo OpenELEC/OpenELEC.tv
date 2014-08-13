@@ -17,13 +17,24 @@
 ################################################################################
 
 PKG_NAME="libfslvpuwrap"
-PKG_VERSION="1.0.46"
+case "$PROJECT" in
+  Matrix)
+    PKG_VERSION="3.5.7-1.0.0"
+    ;;
+  *)
+    PKG_VERSION="1.0.46"
+    ;;
+esac
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="other"
 PKG_SITE="http://www.freescale.com"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain imx-vpu"
+if [ "$PROJECT" = "Matrix" ]; then
+  PKG_DEPENDS_TARGET="toolchain imx-lib"
+else
+  PKG_DEPENDS_TARGET="toolchain imx-vpu"
+fi
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="libfslvpuwrap: Freescale Multimedia VPU wrapper"

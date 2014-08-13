@@ -1,0 +1,21 @@
+012_path-max-limits.diff
+
+From: Benjamin Zores <ben@q6600.(none)>
+
+
+---
+ scripts/mod/sumversion.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/scripts/mod/sumversion.c b/scripts/mod/sumversion.c
+index ecf9c7d..1ba95c3 100644
+--- a/scripts/mod/sumversion.c
++++ b/scripts/mod/sumversion.c
+@@ -4,6 +4,7 @@
+ #else
+ #include <stdint.h>
+ #endif
++#include <limits.h>
+ #include <ctype.h>
+ #include <errno.h>
+ #include <string.h>

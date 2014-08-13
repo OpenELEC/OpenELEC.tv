@@ -36,21 +36,26 @@ for i in $SKINS; do
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $MEDIACENTER-theme-$i"
 done
 
-if [ "$MEDIACENTER" = "xbmc" ]; then
+if [ "$MEDIACENTER" = "xbmc" -o "$MEDIACENTER" = "xbmc-imx6" ]; then
 # some python stuff needed for various addons
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Imaging"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET simplejson"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
 
 # XBMC audio encoder addons
-  if [ "$OPTICAL_DRIVE_SUPPORT" = "yes" ]; then
+  if [ "$MEDIACENTER" = "xbmc" -a "$OPTICAL_DRIVE_SUPPORT" = "yes" ]; then
     for audioencoder in $XBMC_AUDIOENCODER_ADDONS; do
       PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xbmc-audioencoder-$audioencoder"
     done
   fi
 
 # various PVR clients
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xbmc-pvr-addons"
+  if [ "$MEDIACENTER" = "xbmc-imx6" ]; then
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xbmc-pvr-addons-imx6"  
+  else
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xbmc-pvr-addons"
+  fi
+
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xbmc-addon-xvdr"
 
 # other packages

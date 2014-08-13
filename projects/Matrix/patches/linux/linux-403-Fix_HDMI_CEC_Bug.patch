@@ -1,0 +1,47 @@
+From 5403341d8e35384a4efb4c5a6a00d023c6b668b6 Mon Sep 17 00:00:00 2001
+From: wolfgar <stephan.rafin@laposte.net>
+Date: Sat, 26 Apr 2014 02:11:13 +0200
+Subject: [PATCH] Handle properly CEC clock on FB evenet and cable
+ disconnection     Thanks to mk01 for this patch
+
+---
+ drivers/video/mxc_hdmi.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/mxc_hdmi.c b/drivers/video/mxc_hdmi.c
+index c852fcf..434b571 100644
+--- a/drivers/video/mxc_hdmi.c
++++ b/drivers/video/mxc_hdmi.c
+@@ -1698,8 +1698,12 @@ static void mxc_hdmi_enable_video_path(struct mxc_hdmi *hdmi)
+ 	hdmi_writeb(0x16, HDMI_FC_CH1PREAM);
+ 	hdmi_writeb(0x21, HDMI_FC_CH2PREAM);
+ 
++	/* Save CEC clock */
++	clkdis = hdmi_readb(HDMI_MC_CLKDIS) & HDMI_MC_CLKDIS_CECCLK_DISABLE;
++	clkdis |= ~HDMI_MC_CLKDIS_CECCLK_DISABLE;
++
+ 	/* Enable pixel clock and tmds data path */
+-	clkdis = 0x7F;
++	clkdis = 0x7F & clkdis;
+ 	clkdis &= ~HDMI_MC_CLKDIS_PIXELCLK_DISABLE;
+ 	hdmi_writeb(clkdis, HDMI_MC_CLKDIS);
+ 
+@@ -2029,10 +2033,15 @@ static void mxc_hdmi_power_off(struct mxc_dispdrv_handle *disp)
+ 
+ static void mxc_hdmi_cable_disconnected(struct mxc_hdmi *hdmi)
+ {
++	u8 clkdis;
+ 	dev_dbg(&hdmi->pdev->dev, "%s\n", __func__);
+ 
++	/* Save CEC clock */
++	clkdis = hdmi_readb(HDMI_MC_CLKDIS) & HDMI_MC_CLKDIS_CECCLK_DISABLE;
++	clkdis |= ~HDMI_MC_CLKDIS_CECCLK_DISABLE;
++
+ 	/* Disable All HDMI clock */
+-	hdmi_writeb(0xff, HDMI_MC_CLKDIS);
++	hdmi_writeb(0xff & clkdis, HDMI_MC_CLKDIS);
+ 
+ 	mxc_hdmi_phy_disable(hdmi);
+ 
+-- 
+1.9.1

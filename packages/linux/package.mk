@@ -22,6 +22,10 @@ case "$LINUX" in
     PKG_VERSION="cuboxi-a5afa23"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
+  tbs2910)
+    PKG_VERSION=3.0.35-20131226
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   *)
     PKG_VERSION="3.16"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -173,7 +177,9 @@ makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
-      cp $dtb $INSTALL/usr/share/bootloader
+      if [ -f $dtb ] ; then
+        cp $dtb $INSTALL/usr/share/bootloader
+      fi
     done
   fi
 

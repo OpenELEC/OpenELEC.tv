@@ -1,0 +1,12 @@
+--- xbmc-frodo-r912432b2027/xbmc/windowing/WinEventsSDL.cpp	2012-10-17 11:56:47.000000000 +0200
++++ xbmc-frodo-r912432b2027/xbmc/windowing/WinEventsSDL.cpp-new	2012-10-17 17:27:33.114057669 +0200
+@@ -37,6 +37,9 @@
+ 
+ #if defined(_LINUX) && !defined(__APPLE__) && !defined(__ANDROID__)
+ #include <X11/Xlib.h>
++#ifndef Status
++#define Status int
++#endif
+ #include <X11/XKBlib.h>
+ #include "input/XBMC_keysym.h"
+ #include "utils/log.h"

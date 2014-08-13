@@ -1,0 +1,33 @@
+From 5234cfe50ba635027c43cab4dea4b879a42b1270 Mon Sep 17 00:00:00 2001
+From: wolfgar <stephan.rafin@laposte.net>
+Date: Fri, 24 Jan 2014 01:37:43 +0100
+Subject: [PATCH] Fix the remaining flickering spot in the middle of the screen
+ when deinterlacing This is not a definitive fix as the called function was
+ useful to solve another middle line issue with deinterlacing But it is better
+ that way for now...
+
+---
+ drivers/mxc/ipu3/ipu_device.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mxc/ipu3/ipu_device.c b/drivers/mxc/ipu3/ipu_device.c
+index f0d9a0e..b057a49 100644
+--- a/drivers/mxc/ipu3/ipu_device.c
++++ b/drivers/mxc/ipu3/ipu_device.c
+@@ -2524,9 +2524,11 @@ static void do_task_release(struct ipu_task_entry *t, int fail)
+ 	int ret;
+ 	struct ipu_soc *ipu = t->ipu;
+ 
+-	if (t->input.deinterlace.enable && !fail &&
++/* FIXME SR : Do not call this middle line correction function
++ * as it is responsible for a flickering spot in the middle of the screen. */
++/*	if (t->input.deinterlace.enable && !fail &&
+ 			(t->task_no & (UP_STRIPE | DOWN_STRIPE)))
+-		vdi_split_process(ipu, t);
++		vdi_split_process(ipu, t); */
+ 
+ 	ipu_free_irq(ipu, t->irq, t);
+ 
+-- 
+1.8.5.1
+

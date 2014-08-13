@@ -1,0 +1,12 @@
+diff -Naur linux-imx6-2.6.38-11.11.01.orig/drivers/mxc/gpu-viv/Kbuild linux-imx6-2.6.38-11.11.01/drivers/mxc/gpu-viv/Kbuild
+--- linux-imx6-2.6.38-11.11.01.orig/drivers/mxc/gpu-viv/Kbuild	2011-12-23 14:06:20.071055900 +0100
++++ linux-imx6-2.6.38-11.11.01/drivers/mxc/gpu-viv/Kbuild	2011-12-23 14:06:45.571056480 +0100
+@@ -36,8 +36,6 @@
+ ARCH_VG_KERNEL_DIR := arch/$(notdir $(AQVGARCH))/hal/kernel
+ HAL_KERNEL_DIR  := hal/kernel
+ 
+-EXTRA_CFLAGS += -Werror
+-
+ OBJS := $(OS_KERNEL_DIR)/gc_hal_kernel_device.o \
+         $(OS_KERNEL_DIR)/gc_hal_kernel_driver.o \
+         $(OS_KERNEL_DIR)/gc_hal_kernel_linux.o \

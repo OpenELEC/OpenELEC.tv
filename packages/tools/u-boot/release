@@ -35,10 +35,14 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
     cp -PR $BUILD/u-boot-*/u-boot.imx $RELEASE_DIR/3rdparty/bootloader
   fi
 
-  cp -PR $BUILD/u-boot-*/u-boot.img $RELEASE_DIR/3rdparty/bootloader
+	if [ -e $BUILD/u-boot-*/u-boot.img ] ;then
+    cp -PR $BUILD/u-boot-*/u-boot.img $RELEASE_DIR/3rdparty/bootloader
+  fi
 
   for dtb in $BUILD/linux-*/arch/arm/boot/dts/*.dtb; do
-    cp -PR $dtb $RELEASE_DIR/3rdparty/bootloader
+    if [ -f $dtb ] ; then
+      cp -PR $dtb $RELEASE_DIR/3rdparty/bootloader
+    fi
   done
 
   if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
