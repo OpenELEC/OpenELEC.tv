@@ -34,6 +34,10 @@ PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$SAMBA_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
+fi
+
 if [ "$PROJECT" == "RPi" ]; then
   export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
   export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
