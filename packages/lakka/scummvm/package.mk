@@ -42,10 +42,11 @@ configure_target() {
 }
 
 make_target() {
-  make -C ../backends/platform/libretro/build/
+  cd $ROOT/$PKG_BUILD
+  make -C backends/platform/libretro/build/
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../backends/platform/libretro/build/scummvm_libretro.so $INSTALL/usr/lib/libretro/
+  cp backends/platform/libretro/build/scummvm_libretro.so $INSTALL/usr/lib/libretro/
 }
