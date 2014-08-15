@@ -40,5 +40,5 @@ makeinstall_target() {
     cp -P lsusb $INSTALL/usr/bin
 
   mkdir -p $INSTALL/usr/share
-    cp $PKG_DIR/config/usb.ids $INSTALL/usr/share
+    wget -P $INSTALL/usr/share http://www.linux-usb.org/usb.ids
 }
