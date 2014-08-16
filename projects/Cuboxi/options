@@ -79,7 +79,7 @@
 # GOLD (Google Linker) support
   GOLD_SUPPORT="yes"
 
-# Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
+# Bootloader to use (syslinux / u-boot / bcm2835-bootloader)
   BOOTLOADER="u-boot"
 
 # u-boot version to use (default)
@@ -164,9 +164,6 @@
 # (DVD decryption support in XBMC) (yes / no)
   DVDCSS_SUPPORT="yes"
 
-# build and install with LAME cdrip encoder support
-  ENCODER_LAME="yes"
-
 # build and install with BluRay support (yes / no)
   BLURAY_SUPPORT="yes"
 
@@ -196,6 +193,11 @@
 
 # build xbmc with optical drive support (yes / no)
   OPTICAL_DRIVE_SUPPORT="no"
+
+# XBMC Audio encoders for usage with optical drive support
+# Space separated list is supported,
+# e.g. XBMC_AUDIOENCODER_ADDONS="ENCODER1 ENCODER2"
+  XBMC_AUDIOENCODER_ADDONS="flac lame vorbis wav"
 
 # build with AirPlay support (stream videos from iDevices to XBMC) (yes / no)
   AIRPLAY_SUPPORT="no"
@@ -266,10 +268,6 @@
 
 # Use VAAPI video acceleration (needs intel i965 driver and a supported card)
   VAAPI="no"
-
-# Use Broadcom CrystalHD Decoder Card for video acceleration 
-# (needs Kernelsupport for Broadcom Decoder Card and a supported card)
-  CRYSTALHD="no"
 
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="no"

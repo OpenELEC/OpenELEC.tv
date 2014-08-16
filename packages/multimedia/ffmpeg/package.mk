@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.2.4"
+PKG_VERSION="2.3.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://ffmpeg.org"
 PKG_URL="https://www.ffmpeg.org/releases/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis gnutls"
+PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis libressl"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video."
@@ -36,7 +36,7 @@ if [ "$VAAPI" = yes ]; then
 # configure GPU drivers and dependencies:
   get_graphicdrivers
 
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $LIBVA"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   FFMPEG_VAAPI="--enable-vaapi"
 else
   FFMPEG_VAAPI="--disable-vaapi"
@@ -59,13 +59,6 @@ if [ "$OPTIMIZATIONS" = size ]; then
   FFMPEG_OPTIM="--disable-small"
 else
   FFMPEG_OPTIM="--disable-small"
-fi
-
-if [ "$CRYSTALHD" = yes ]; then
-# disabled, we use XBMC's internal solution
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
-else
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
 fi
 
 case "$TARGET_ARCH" in
@@ -162,7 +155,7 @@ configure_target() {
               --disable-w32threads \
               --disable-x11grab \
               --enable-network \
-              --enable-gnutls \
+              --disable-gnutls --enable-libressl \
               --disable-gray \
               --enable-swscale-alpha \
               $FFMPEG_OPTIM \
@@ -170,7 +163,7 @@ configure_target() {
               --enable-fft \
               --enable-mdct \
               --enable-rdft \
-              $FFMPEG_CRYSTALHD \
+              --disable-crystalhd \
               $FFMPEG_VAAPI \
               $FFMPEG_VDPAU \
               --disable-dxva2 \
@@ -224,7 +217,6 @@ configure_target() {
               --disable-altivec \
               $FFMPEG_CPU \
               $FFMPEG_FPU \
-              --disable-vis \
               --enable-yasm \
               --disable-sram \
               --disable-symver

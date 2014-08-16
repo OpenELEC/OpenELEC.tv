@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="xorg-server"
-PKG_VERSION="1.15.99.904"
+PKG_VERSION="1.16.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/xserver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto scrnsaverproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto glproto presentproto libpciaccess libX11 libXfont libXinerama libxshmfence libxkbfile libdrm openssl freetype pixman fontsproto libepoxy systemd xorg-launch-helper"
+PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto scrnsaverproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto glproto presentproto libpciaccess libX11 libXfont libXinerama libxshmfence libxkbfile libdrm libressl freetype pixman fontsproto libepoxy systemd xorg-launch-helper"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/xserver"
 PKG_SHORTDESC="xorg-server: The Xorg X server"
@@ -95,8 +95,8 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --enable-libdrm \
                            --enable-clientids \
                            --enable-pciaccess \
-                           --enable-linux-acpi \
-                           --enable-linux-apm \
+                           --disable-linux-acpi \
+                           --disable-linux-apm \
                            --disable-systemd-logind \
                            --enable-xorg \
                            --disable-dmx \

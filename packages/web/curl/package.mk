@@ -25,13 +25,13 @@
 #   there: http://forum.xbmc.org/showthread.php?tid=177557
 
 PKG_NAME="curl"
-PKG_VERSION="7.36.0"
+PKG_VERSION="7.37.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="http://curl.haxx.se"
 PKG_URL="http://curl.haxx.se/download/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain zlib openssl rtmpdump"
+PKG_DEPENDS_TARGET="toolchain zlib libressl rtmpdump"
 PKG_PRIORITY="optional"
 PKG_SECTION="web"
 PKG_SHORTDESC="curl: Client and library for (HTTP, HTTPS, FTP, ...) transfers"
