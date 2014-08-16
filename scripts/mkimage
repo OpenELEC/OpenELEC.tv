@@ -176,12 +176,12 @@ MENU COLOR tabmsg       31;40   #ff868787 #00000000 std
 LABEL installer
   MENU LABEL Run $DISTRONAME Installer
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current vt.global_cursor_default=0 loglevel=2
 
 LABEL live
   MENU LABEL Run $DISTRONAME Live
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet vga=current
+  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet ssh tty vga=current vt.global_cursor_default=0 loglevel=2
 EOF
 
   # install extlinux
@@ -209,14 +209,14 @@ DEFAULT installer
 
 LABEL installer
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current vt.global_cursor_default=0 loglevel=2
 EOF
     fi
 elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
   # create bootloader configuration
     echo "image: creating bootloader configuration..."
     cat << EOF > "$OE_TMP"/cmdline.txt
-boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 quiet ssh vt.global_cursor_default=0 loglevel=2
+boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 quiet ssh tty vt.global_cursor_default=0 loglevel=2
 EOF
 
   # copy files
