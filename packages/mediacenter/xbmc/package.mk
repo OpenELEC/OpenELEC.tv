@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xbmc"
-PKG_VERSION="14-94bc482"
+PKG_VERSION="14-fa5bf23"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -498,7 +498,6 @@ post_install() {
 
   enable_service xbmc-autostart.service
   enable_service xbmc-cleanlogs.service
-  enable_service xbmc-config.service
   enable_service xbmc-hacks.service
   enable_service xbmc-sources.service
   enable_service xbmc-halt.service

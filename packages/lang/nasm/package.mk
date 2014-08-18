@@ -16,33 +16,24 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="lm_sensors"
-PKG_VERSION="3.3.4"
+PKG_NAME="nasm"
+PKG_VERSION="2.11.02"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://secure.netroedge.com/~lm78/"
-PKG_URL="http://ftp.gwdg.de/pub/linux/misc/lm-sensors/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_SITE="http://nasm.sourceforge.net/"
+PKG_URL="http://www.nasm.us/pub/nasm/releasebuilds/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_HOST=""
 PKG_PRIORITY="optional"
-PKG_SECTION="system"
-PKG_SHORTDESC="lm_sensors: Hardware monitoring via the SMBus"
-PKG_LONGDESC="lm_sensors is a package to get data from the SMB (System Management Bus - an i2c bus) on modern mainboards. It consists of kernel modules and users space tools to get stuff like cpu / mb temperature, voltages, fan speed..."
+PKG_SECTION="lang"
+PKG_SHORTDESC="nasm: A 80x86 assembler which can create a wide rande of object formats"
+PKG_LONGDESC="The Netwide Assembler, NASM, is an 80x86 assembler designed for portability and modularity. It supports a range of object file formats, including Linux, Microsoft 16-bit OBJ and Win32. It will also output plain binary files. Its syntax is designed to be sim- ple and easy to understand, similar to Intel's but less complex. It supports Pentium, P6 and MMX opcodes, and has macro capability. It includes a disassembler as well."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_TARGET="PREFIX=/usr CC=$TARGET_CC AR=$TARGET_AR"
-PKG_MAKEINSTALL_OPTS_TARGET="PREFIX=/usr"
-
-pre_make_target() {
-  export CFLAGS="$TARGET_CFLAGS"
-  export CPPFLAGS="$TARGET_CPPFLAGS"
-}
-
-post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin/sensors-conf-convert
-  rm -rf $INSTALL/usr/sbin/
-  rm -rf $INSTALL/usr/lib
-  $STRIP $INSTALL/usr/bin/sensors
+pre_configure_host() {
+# nasm fails to build in subdirs
+  cd $ROOT/$PKG_BUILD
+    rm -rf .$HOST_NAME
 }
