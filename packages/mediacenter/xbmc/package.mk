@@ -81,14 +81,6 @@ else
   XBMC_ALSA="--disable-alsa"
 fi
 
-if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
-# for PulseAudio support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
-  XBMC_PULSEAUDIO="--enable-pulse"
-else
-  XBMC_PULSEAUDIO="--disable-pulse"
-fi
-
 if [ "$ESPEAK_SUPPORT" = yes ]; then
 # for espeak support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET espeak"
@@ -326,7 +318,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $XBMC_XORG \
                            --disable-ccache \
                            $XBMC_ALSA \
-                           $XBMC_PULSEAUDIO \
+                           --disable-pulse \
                            --enable-rtmp \
                            $XBMC_SAMBA \
                            $XBMC_NFS \
