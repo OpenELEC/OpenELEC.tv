@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="ppsspp"
-PKG_VERSION="1019d4b"
+PKG_VERSION="63fa4fc"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -35,14 +35,11 @@ PKG_LONGDESC="A fast and portable PSP emulator"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-configure_target() {
-  cd $ROOT/$PKG_BUILD
-  #cmake -DARM:BOOL=ON -DARMV7:BOOL=ON -DUSING_GLES2:BOOL=ON .
-  strip_lto
-  cmake -DOPENGL_INCLUDE_DIR:STRING=$SYSROOT_PREFIX/usr/include .
+make_target() {
+  cd ../libretro
+  make
 }
-
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp lib/libPPSSPPLibretro.so $INSTALL/usr/lib/libretro/ppsspp_libretro.so
+  cp ../libretro/ppsspp_libretro.so $INSTALL/usr/lib/libretro/
 }
