@@ -35,6 +35,10 @@ PKG_LONGDESC="Port of 2048 puzzle game to the libretro API."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  make -f Makefile.libretro
+}
+
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp 2048_libretro.so $INSTALL/usr/lib/libretro/
