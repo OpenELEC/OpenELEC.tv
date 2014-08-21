@@ -43,7 +43,7 @@ make_target() {
   cd $ROOT/$PKG_BUILD
   if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     make -f Makefile.libretro HAVE_NEON=1 USE_DYNAREC=1 BUILTIN_GPU=neon
-  elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ]; then
+  elif [ "$PROJECT" == "RPi" ] || [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ]; then
     make -f Makefile.libretro USE_DYNAREC=1 BUILTIN_GPU=neon
   fi
 }
