@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,20 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="Mesa RetroArch bsnes-mercury tyrquake 2048 virtualjaguar ppsspp dosbox beetle-vb beetle-wswan hatari desmume beetle-ngp beetle-pcfx mame beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine fceu-next gambatte stella vbam libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d bsnes-mercury.git ]; then
+    git clone https://github.com/libretro/bsnes-mercury.git -b master bsnes-mercury.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd bsnes-mercury.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
+echo "copying sources..."
+  rm -rf bsnes-mercury-$GIT_REV
+  cp -R bsnes-mercury.git bsnes-mercury-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf bsnes-mercury-$GIT_REV/.git
+  rm bsnes-mercury-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf bsnes-mercury-$GIT_REV.tar.xz bsnes-mercury-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf bsnes-mercury-$GIT_REV

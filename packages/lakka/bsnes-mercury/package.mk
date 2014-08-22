@@ -18,20 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
+PKG_NAME="bsnes-mercury"
+PKG_VERSION="96fc84a"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="Mesa RetroArch bsnes-mercury tyrquake 2048 virtualjaguar ppsspp dosbox beetle-vb beetle-wswan hatari desmume beetle-ngp beetle-pcfx mame beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine fceu-next gambatte stella vbam libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_LICENSE="GPLv3"
+PKG_SITE="https://github.com/libretro/bsnes-mercury"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Fork of bsnes with HLE DSP emulation restored."
+PKG_LONGDESC="Fork of bsnes with HLE DSP emulation restored."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  make compiler=$CXX ui='target-libretro' profile='balanced' 
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp out/bsnes_mercury_libretro.so $INSTALL/usr/lib/libretro/bsnes_mercury_balanced_libretro.so
+}
