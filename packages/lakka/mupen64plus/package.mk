@@ -36,12 +36,18 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
+  DYNAREC=$ARCH
+
+  if [ "$ARCH" == "i386" ]; then
+    DYNAREC=x86
+  fi
+
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
   elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     make platform=imx6
   else
-    make
+    make WITH_DYNAREC=$DYNAREC
   fi
 }
 
