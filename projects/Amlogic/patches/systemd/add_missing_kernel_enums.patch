@@ -1,27 +1,10 @@
 diff --git a/src/shared/missing.h b/src/shared/missing.h
-index f129f0b..d5b56ca 100644
+index f129f0b..8f31822 100644
 --- a/src/shared/missing.h
 +++ b/src/shared/missing.h
-@@ -478,3 +478,22 @@ static inline int setns(int fd, int nstype) {
+@@ -478,3 +478,5 @@ static inline int setns(int fd, int nstype) {
  
  #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
  #endif
 +
-+enum {
-+    IFLA_MACVLAN_FLAGS= 2
-+};
-+
-+#undef IFLA_MACVLAN_MAX
-+#define IFLA_MACVLAN_MAX IFLA_MACVLAN_FLAGS
-+
-+enum {
-+    IFLA_VTI_UNSPEC,
-+    IFLA_VTI_LINK,
-+    IFLA_VTI_IKEY,
-+    IFLA_VTI_OKEY,
-+    IFLA_VTI_LOCAL,
-+    IFLA_VTI_REMOTE,
-+    __IFLA_VTI_MAX,
-+};
-+
-+#define IFLA_VTI_MAX (__IFLA_VTI_MAX - 1)
++#define BPF_XOR 0xa0
