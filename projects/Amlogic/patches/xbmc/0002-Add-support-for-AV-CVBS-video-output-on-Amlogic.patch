@@ -1,15 +1,18 @@
-From 0f319e0bf3417d216a28806f827a82d101720b9a Mon Sep 17 00:00:00 2001
+From 3a801a511b03ffecc1c33f1350047ae28d581ee2 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 23 Jul 2014 22:23:34 +0300
-Subject: [PATCH 2/2] Add support for AV (CVBS) video output on Amlogic
+Subject: [PATCH] Add support for AV (CVBS) video output on Amlogic
 
+Conflicts:
+
+	xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 ---
- xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   56 ++++++++++++++++++++++++---
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   57 ++++++++++++++++++++++++---
  xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    1 +
- 2 files changed, 51 insertions(+), 6 deletions(-)
+ 2 files changed, 52 insertions(+), 6 deletions(-)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index 6235153..e4d5e8d 100644
+index 63f52d3..bdf2b19 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 @@ -159,6 +159,10 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
@@ -34,19 +37,19 @@ index 6235153..e4d5e8d 100644
        }
        break;
      case 30:
-@@ -189,10 +197,18 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+@@ -189,9 +197,18 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
  
  bool CEGLNativeTypeAmlogic::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
  {
 -  char valstr[256] = {0};
 -  aml_get_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_cap", valstr, 255);
-   std::vector<CStdString> probe_str;
--  StringUtils::SplitString(valstr, "\n", probe_str);
+-  std::vector<std::string> probe_str = StringUtils::Split(valstr, "\n");
++  std::vector<std::string> probe_str;
 +  if (IsHdmiConnected())
 +  {
 +    char valstr[256] = {0};
 +    aml_get_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_cap", valstr, 255);
-+    StringUtils::SplitString(valstr, "\n", probe_str);
++    probe_str = StringUtils::Split(valstr, "\n");
 +  }
 +  else
 +  {
@@ -56,7 +59,7 @@ index 6235153..e4d5e8d 100644
  
    resolutions.clear();
    RESOLUTION_INFO res;
-@@ -210,8 +226,11 @@ bool CEGLNativeTypeAmlogic::GetPreferredResolution(RESOLUTION_INFO *res) const
+@@ -209,8 +226,11 @@ bool CEGLNativeTypeAmlogic::GetPreferredResolution(RESOLUTION_INFO *res) const
    // check display/mode, it gets defaulted at boot
    if (!GetNativeResolution(res))
    {
@@ -70,7 +73,7 @@ index 6235153..e4d5e8d 100644
    }
  
    return true;
-@@ -257,7 +276,25 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
+@@ -256,7 +276,25 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
    if (StringUtils::EndsWith(fromMode, "*"))
      fromMode.erase(fromMode.size() - 1);
  
@@ -97,7 +100,7 @@ index 6235153..e4d5e8d 100644
    {
      res->iWidth = 1280;
      res->iHeight= 720;
-@@ -430,3 +467,10 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
+@@ -429,3 +467,10 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
      close(fd0);
    }
  }
