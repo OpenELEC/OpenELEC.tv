@@ -36,8 +36,12 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  cd ../libretro
-  make
+  cd $ROOT/$PKG_BUILD/libretro
+  if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
+    SYSROOT_PREFIX=$SYSROOT_PREFIX make platform=imx6
+  else
+    make
+  fi
 }
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro

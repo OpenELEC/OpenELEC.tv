@@ -1,0 +1,47 @@
+diff -Naur ppsspp/libretro/libretro.cpp ppsspp.patch/libretro/libretro.cpp
+--- ppsspp/libretro/libretro.cpp	2014-08-25 22:17:55.067715007 +0200
++++ ppsspp.patch/libretro/libretro.cpp	2014-08-26 09:58:08.687629029 +0200
+@@ -1018,13 +1018,13 @@
+ 
+       if (!gl_initialized)
+       {
+-         if (glewInit() != GLEW_OK)
++         /*if (glewInit() != GLEW_OK)
+          {
+             if (log_cb)
+                log_cb(RETRO_LOG_ERROR, "glewInit() failed.\n");
+             environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, nullptr);
+             return;
+-         }
++         }*/
+ 
+          glstate.Initialize();
+          CheckGLExtensions();
+diff -Naur ppsspp/libretro/Makefile ppsspp.patch/libretro/Makefile
+--- ppsspp/libretro/Makefile	2014-08-25 22:17:55.063714913 +0200
++++ ppsspp.patch/libretro/Makefile	2014-08-26 11:10:07.720648453 +0200
+@@ -91,9 +91,9 @@
+    PLATFORM_EXT := unix
+    WITH_DYNAREC=arm
+    HAVE_NEON=1
+-	FFMPEGINCFLAGS += -I$(FFMPEGDIR)/linux/armv7/include
+-	FFMPEGLIBDIR :=   $(FFMPEGDIR)/linux/armv7/lib
+-	FFMPEGLDFLAGS += -L$(FFMPEGLIBDIR) -lavformat -lavcodec -lavutil -lswresample -lswscale
++   FFMPEGINCFLAGS += -I$(SYSROOT_PREFIX)/usr/include
++   FFMPEGLIBDIR := $(SYSROOT_PREFIX)/usr/lib
++   FFMPEGLDFLAGS += -L$(FFMPEGLIBDIR) -lavformat -lavcodec -lavutil -lswresample -lswscale
+ else ifneq (,$(findstring osx,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.dylib
+    LDFLAGS += -dynamiclib
+diff -Naur ppsspp/libretro/Makefile.common ppsspp.patch/libretro/Makefile.common
+--- ppsspp/libretro/Makefile.common	2014-08-25 22:17:55.063714913 +0200
++++ ppsspp.patch/libretro/Makefile.common	2014-08-26 10:03:19.258892647 +0200
+@@ -14,7 +14,7 @@
+ 	-I$(EXTDIR)/xbrz \
+ 	-I$(EXTDIR)/xxhash
+ 
+-CFILES   += $(LIBRETRODIR)/ext/glew/glew.c
++#CFILES   += $(LIBRETRODIR)/ext/glew/glew.c
+ CXXFILES += $(NATIVEDIR)/ext/rg_etc1/rg_etc1.cpp
+ CXXFILES += $(EXTDIR)/snappy/snappy-c.cpp
+ CFILES   += $(NATIVEDIR)/ext/stb_vorbis/stb_vorbis.c \
