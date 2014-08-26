@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d libretro-ffmpeg.git ]; then
-    git clone https://github.com/libretro/libretro-ffmpeg.git -b master libretro-ffmpeg.git
+    git clone https://github.com/libretro/FFmpeg.git -b master libretro-ffmpeg.git
   fi
 
   cd libretro-ffmpeg.git

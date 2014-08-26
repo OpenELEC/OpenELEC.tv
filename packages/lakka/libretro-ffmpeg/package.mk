@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="libretro-ffmpeg"
-PKG_VERSION="e38d235"
+PKG_VERSION="356addc"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -39,6 +39,25 @@ PKG_AUTORECONF="no"
 #pre_configure_target() {
 #  sed -i -e "s/CC         = gcc//" Makefile
 #}
+
+configure_target() {
+  :
+}
+
+make_target() {
+  cd ../libretro
+  case $ARCH in
+    arm)
+      ARCH_ARM=1 make
+      ;;
+    x86_64)
+      ARCH_X86=1 ARCH_X86_64=1 make
+      ;;
+    *)
+      ARCH_X86=1 make
+      ;;
+  esac
+}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
