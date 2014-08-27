@@ -48,7 +48,7 @@ fi
 
 configure_target() {
   cd $ROOT/$PKG_BUILD
-  if [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] ; then
+  if [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ] ; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype
   elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-vivante_fbdev --enable-lakka --enable-freetype
