@@ -11,7 +11,7 @@ Lakka is a lightweight Linux distribution that transforms a small computer into 
 
 ## Installation instructions
 
-Please refer to our website http://www.lakka.tv/getlakka on how to setup Lakka.
+Please refer to our website http://www.lakka.tv/get on how to setup Lakka.
 
 ## Support
 
