@@ -129,13 +129,13 @@
   XBMC_EXTRA_FONTS="yes"
 
 # build and install 'RSXS' Screensaver (yes / no)
-  XBMC_SCR_RSXS="no"
+  XBMC_SCR_RSXS="yes"
 
 # build and install 'ProjectM' Visualization (yes / no)
-  XBMC_VIS_PROJECTM="no"
+  XBMC_VIS_PROJECTM="yes"
 
 # build and install 'GOOM' Visualization (yes / no)
-  XBMC_VIS_GOOM="no"
+  XBMC_VIS_GOOM="yes"
 
 # build and install 'Waveform' Visualization (yes / no)
   XBMC_VIS_WAVEFORM="yes"
@@ -145,7 +145,7 @@
 
 # build and install 'FishBMC' Visualization (yes / no)
   # does not work on RPi
-  XBMC_VIS_FISHBMC="no"
+  XBMC_VIS_FISHBMC="yes"
 
 # build and install ALSA Audio support (yes / no)
   ALSA_SUPPORT="yes"
