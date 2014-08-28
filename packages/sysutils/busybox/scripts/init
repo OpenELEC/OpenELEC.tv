@@ -414,7 +414,7 @@
   check_disks() {
     if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
       progress "Checking disk(s): $RUN_FSCK_DISKS"
-        /sbin/fsck -T -M -p -a $RUN_FSCK_DISKS > /dev/null 2>&1
+        /sbin/fsck -T -M -y $RUN_FSCK_DISKS > /dev/null 2>&1
         FSCK_RET="$?"
 
         case "$FSCK_RET" in
