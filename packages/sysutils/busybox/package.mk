@@ -233,6 +233,11 @@ makeinstall_init() {
     touch $INSTALL/etc/fstab
     ln -sf /proc/self/mounts $INSTALL/etc/mtab
 
+  if [ -x $PROJECT_DIR/$PROJECT/initramfs/initramfs.sh ]; then
+    mkdir -p $INSTALL/usr/bin
+    cp $PROJECT_DIR/$PROJECT/initramfs/initramfs.sh $INSTALL/usr/bin
+  fi
+
   cp $PKG_DIR/scripts/init $INSTALL
   chmod 755 $INSTALL/init
 }
