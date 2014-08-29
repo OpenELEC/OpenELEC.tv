@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="RetroArch"
-PKG_VERSION="2ae42b8"
+PKG_VERSION="8a9f747"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
