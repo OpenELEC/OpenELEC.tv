@@ -41,9 +41,9 @@ configure_target() {
 
 make_target() {
   cd $ROOT/$PKG_BUILD
-  if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
+  if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ] || [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
     make -f Makefile.libretro HAVE_NEON=1 USE_DYNAREC=1 BUILTIN_GPU=neon
-  elif [ "$PROJECT" == "RPi" ] || [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
+  elif [ "$PROJECT" == "RPi" ]; then
     make -f Makefile.libretro USE_DYNAREC=1 BUILTIN_GPU=neon
   fi
 }
