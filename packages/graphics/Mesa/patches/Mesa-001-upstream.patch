@@ -1,0 +1,516 @@
+From 53728f60aa5ddf93579abd0d424eeac545fa57d3 Mon Sep 17 00:00:00 2001
+From: Matt Turner <mattst88@gmail.com>
+Date: Thu, 21 Aug 2014 23:02:49 -0700
+Subject: [PATCH 1/8] i965: Fix JIP/UIP calculations.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=82846
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=82929
+(cherry picked from commit d77f5603a5de26e66561ec003118bbfb1a07666b)
+---
+ src/mesa/drivers/dri/i965/brw_eu_compact.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_eu_compact.c b/src/mesa/drivers/dri/i965/brw_eu_compact.c
+index 3680c55..4f509dd 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu_compact.c
++++ b/src/mesa/drivers/dri/i965/brw_eu_compact.c
+@@ -1029,19 +1029,17 @@ update_uip_jip(struct brw_context *brw, brw_inst *insn,
+ {
+    int scale = brw->gen >= 8 ? sizeof(brw_compact_inst) : 1;
+ 
+-   int32_t jip = brw_inst_jip(brw, insn);
+-   jip -= scale *
+-      compacted_between(this_old_ip, this_old_ip + jip, compacted_counts);
+-   brw_inst_set_jip(brw, insn, jip);
++   int32_t jip = brw_inst_jip(brw, insn) / scale;
++   jip -= compacted_between(this_old_ip, this_old_ip + jip, compacted_counts);
++   brw_inst_set_jip(brw, insn, jip * scale);
+ 
+    if (brw_inst_opcode(brw, insn) == BRW_OPCODE_ENDIF ||
+        brw_inst_opcode(brw, insn) == BRW_OPCODE_WHILE)
+       return;
+ 
+-   int32_t uip = brw_inst_uip(brw, insn);
+-   uip -= scale *
+-      compacted_between(this_old_ip, this_old_ip + uip, compacted_counts);
+-   brw_inst_set_uip(brw, insn, uip);
++   int32_t uip = brw_inst_uip(brw, insn) / scale;
++   uip -= compacted_between(this_old_ip, this_old_ip + uip, compacted_counts);
++   brw_inst_set_uip(brw, insn, uip * scale);
+ }
+ 
+ void
+-- 
+1.9.3
+
+From f2a1b7d508d0daa71bd97843d67e43108405cff7 Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Sat, 16 Aug 2014 15:18:21 -0700
+Subject: [PATCH 2/8] i965: Disable try_emit_b2f_of_compare on Gen4-6.
+
+The optimization relies on CMP setting the destination to 0, which is
+equivalent to 0.0f.  However, early platforms only set the least
+significant byte, leaving the other bits undefined.  So, we must disable
+the optimization on those platforms.
+
+Oddly, Sandybridge wasn't reported as broken.  The PRM states that it
+only sets the LSB, but the internal documentation says that it follows
+the IVB behavior.  Since it wasn't reported as broken, we believe it
+really does follow the IVB behavior.
+
+v2: Allow the optimization on Sandybridge (requested by Matt).
+
++32 piglits on Ironlake.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?=79963
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Chris Forbes <chrisf@ijw.co.nz>
+Reviewed-by: Matt Turner <mattst88@gmail.com>
+(cherry picked from commit 97d03b9366bfa55b27feb92aa5afacd9c5f6f421)
+---
+ src/mesa/drivers/dri/i965/brw_vec4_visitor.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_vec4_visitor.cpp b/src/mesa/drivers/dri/i965/brw_vec4_visitor.cpp
+index eca5d0c..6e48be7 100644
+--- a/src/mesa/drivers/dri/i965/brw_vec4_visitor.cpp
++++ b/src/mesa/drivers/dri/i965/brw_vec4_visitor.cpp
+@@ -1135,6 +1135,13 @@ vec4_visitor::try_emit_mad(ir_expression *ir)
+ bool
+ vec4_visitor::try_emit_b2f_of_compare(ir_expression *ir)
+ {
++   /* This optimization relies on CMP setting the destination to 0 when
++    * false.  Early hardware only sets the least significant bit, and
++    * leaves the other bits undefined.  So we can't use it.
++    */
++   if (brw->gen < 6)
++      return false;
++
+    ir_expression *const cmp = ir->operands[0]->as_expression();
+ 
+    if (cmp == NULL)
+-- 
+1.9.3
+
+From eb9681938687a8ba5bb9ec4c5456ff7d6c6794ec Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexander.deucher@amd.com>
+Date: Thu, 21 Aug 2014 11:13:17 -0400
+Subject: [PATCH 3/8] radeonsi: add new CIK pci ids
+
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: mesa-stable@lists.freedesktop.org
+(cherry picked from commit f50b6b489534f8f362953cbe08d37233f1eab669)
+---
+ include/pci_ids/radeonsi_pci_ids.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/pci_ids/radeonsi_pci_ids.h b/include/pci_ids/radeonsi_pci_ids.h
+index 5099c74..6412f08 100644
+--- a/include/pci_ids/radeonsi_pci_ids.h
++++ b/include/pci_ids/radeonsi_pci_ids.h
+@@ -73,6 +73,8 @@ CHIPSET(0x666F, HAINAN_666F, HAINAN)
+ 
+ CHIPSET(0x6640, BONAIRE_6640, BONAIRE)
+ CHIPSET(0x6641, BONAIRE_6641, BONAIRE)
++CHIPSET(0x6646, BONAIRE_6646, BONAIRE)
++CHIPSET(0x6647, BONAIRE_6647, BONAIRE)
+ CHIPSET(0x6649, BONAIRE_6649, BONAIRE)
+ CHIPSET(0x6650, BONAIRE_6650, BONAIRE)
+ CHIPSET(0x6651, BONAIRE_6651, BONAIRE)
+@@ -132,6 +134,7 @@ CHIPSET(0x1313, KAVERI_1313, KAVERI)
+ CHIPSET(0x1315, KAVERI_1315, KAVERI)
+ CHIPSET(0x1316, KAVERI_1316, KAVERI)
+ CHIPSET(0x1317, KAVERI_1317, KAVERI)
++CHIPSET(0x1318, KAVERI_1318, KAVERI)
+ CHIPSET(0x131B, KAVERI_131B, KAVERI)
+ CHIPSET(0x131C, KAVERI_131C, KAVERI)
+ CHIPSET(0x131D, KAVERI_131D, KAVERI)
+-- 
+1.9.3
+
+From 2edc941e75c26c93d0954f036d632fde799ed7f5 Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexander.deucher@amd.com>
+Date: Thu, 21 Aug 2014 11:16:15 -0400
+Subject: [PATCH 4/8] radeonsi: add new SI pci ids
+
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: mesa-stable@lists.freedesktop.org
+(cherry picked from commit 153df688349dd6e55fa4c280ed6c8abd02c5f890)
+---
+ include/pci_ids/radeonsi_pci_ids.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/pci_ids/radeonsi_pci_ids.h b/include/pci_ids/radeonsi_pci_ids.h
+index 6412f08..571e863 100644
+--- a/include/pci_ids/radeonsi_pci_ids.h
++++ b/include/pci_ids/radeonsi_pci_ids.h
+@@ -38,6 +38,7 @@ CHIPSET(0x6828, VERDE_6828, VERDE)
+ CHIPSET(0x6829, VERDE_6829, VERDE)
+ CHIPSET(0x682A, VERDE_682A, VERDE)
+ CHIPSET(0x682B, VERDE_682B, VERDE)
++CHIPSET(0x682C, VERDE_682C, VERDE)
+ CHIPSET(0x682D, VERDE_682D, VERDE)
+ CHIPSET(0x682F, VERDE_682F, VERDE)
+ CHIPSET(0x6830, VERDE_6830, VERDE)
+@@ -54,8 +55,11 @@ CHIPSET(0x6600, OLAND_6600, OLAND)
+ CHIPSET(0x6601, OLAND_6601, OLAND)
+ CHIPSET(0x6602, OLAND_6602, OLAND)
+ CHIPSET(0x6603, OLAND_6603, OLAND)
++CHIPSET(0x6604, OLAND_6604, OLAND)
++CHIPSET(0x6605, OLAND_6605, OLAND)
+ CHIPSET(0x6606, OLAND_6606, OLAND)
+ CHIPSET(0x6607, OLAND_6607, OLAND)
++CHIPSET(0x6608, OLAND_6608, OLAND)
+ CHIPSET(0x6610, OLAND_6610, OLAND)
+ CHIPSET(0x6611, OLAND_6611, OLAND)
+ CHIPSET(0x6613, OLAND_6613, OLAND)
+-- 
+1.9.3
+
+From e4f54d8b470995b88afb0bbf247a8f0a908b0817 Mon Sep 17 00:00:00 2001
+From: Carl Worth <cworth@cworth.org>
+Date: Thu, 21 Aug 2014 09:03:02 -0700
+Subject: [PATCH 5/8] Makefile: Switch from md5sums to sha256sums
+
+We switched to these several stable releases ago, (since the MD5 algorithm has
+been broken for some time), but only now did I get around to fixing this in
+the Makefile rather than just performing this step manually.
+
+CC: "10.2 10.3" <mesa-stable@lists.freedesktop.org>
+(cherry picked from commit 46d03d37bf3a75e86f9f8ab56c6a939d04f23383)
+---
+ Makefile.am | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 4780510..d2916da 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -71,7 +71,7 @@ ARCHIVES = $(PACKAGE_NAME).tar.gz \
+ 	$(PACKAGE_NAME).tar.bz2 \
+ 	$(PACKAGE_NAME).zip
+ 
+-tarballs: md5
++tarballs: checksums
+ 	rm -f ../$(PACKAGE_DIR) $(PACKAGE_NAME).tar
+ 
+ manifest.txt: .git
+@@ -98,9 +98,9 @@ $(PACKAGE_NAME).zip: parsers ../$(PACKAGE_DIR) manifest.txt
+ 	zip -q -@ $(PACKAGE_NAME).zip < $(PACKAGE_DIR)/manifest.txt ; \
+ 	mv $(PACKAGE_NAME).zip $(PACKAGE_DIR)
+ 
+-md5: $(ARCHIVES)
+-	@-md5sum $(PACKAGE_NAME).tar.gz
+-	@-md5sum $(PACKAGE_NAME).tar.bz2
+-	@-md5sum $(PACKAGE_NAME).zip
++checksums: $(ARCHIVES)
++	@-sha256sum $(PACKAGE_NAME).tar.gz
++	@-sha256sum $(PACKAGE_NAME).tar.bz2
++	@-sha256sum $(PACKAGE_NAME).zip
+ 
+ .PHONY: tarballs md5
+-- 
+1.9.3
+
+From 627d31dc36be6a92775b038bc4a26a96df8e7191 Mon Sep 17 00:00:00 2001
+From: Carl Worth <cworth@cworth.org>
+Date: Mon, 18 Aug 2014 11:36:12 -0700
+Subject: [PATCH 6/8] glcpp: Don't use alternation in the lookahead for empty
+ pragmas.
+
+We've found that there's a buffer overrun bug in flex that's triggered by
+using alternation in a lookahead pattern.
+
+Fortunately, we don't need to match the exact {NEWLINE} expression to
+detect an empty pragma. It suffices to verify that there are no non-space
+characters before any newline character. So we can use a simple [\r\n] to
+get the desired behavior while avoiding the flex bug.
+
+Fixes the regression of piglit's 17000-consecutive-chars-identifier test,
+(which has been crashing since commit
+04e40fd337a244ee77ef9553985e9398ff0344af ).
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=82472
+Signed-off-by: Carl Worth <cworth@cworth.org>
+Reviewed-by: Kenneth Graunke <kenneth@whitecape.org>
+
+CC: <mesa-stable@lists.freedesktop.org>
+(cherry picked from commit 23163df24cf96107ee8ccb372db20f49e9d88948)
+---
+ src/glsl/glcpp/glcpp-lex.l | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/glsl/glcpp/glcpp-lex.l b/src/glsl/glcpp/glcpp-lex.l
+index 98d500e..fa9aa50 100644
+--- a/src/glsl/glcpp/glcpp-lex.l
++++ b/src/glsl/glcpp/glcpp-lex.l
+@@ -289,8 +289,14 @@ HEXADECIMAL_INTEGER	0[xX][0-9a-fA-F]+[uU]?
+ }
+ 
+ 	/* Swallow empty #pragma directives, (to avoid confusing the
+-	 * downstream compiler). */
+-<HASH>pragma{HSPACE}*/{NEWLINE} {
++	 * downstream compiler).
++	 *
++	 * Note: We use a simple regular expression for the lookahead
++	 * here. Specifically, we cannot use the complete {NEWLINE} expression
++	 * since it uses alternation and we've found that there's a flex bug
++	 * where using alternation in the lookahead portion of a pattern
++	 * triggers a buffer overrun. */
++<HASH>pragma{HSPACE}*/[\r\n] {
+ 	BEGIN INITIAL;
+ }
+ 
+-- 
+1.9.3
+
+From d2fb1da46d1bf9f5f05175a0ed30919fc0c118bd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Date: Wed, 13 Aug 2014 20:21:06 +0200
+Subject: [PATCH 7/8] st/vdpau: fix
+ vlVdpOutputSurfaceRender(Output|Bitmap)Surface
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Correctly handle that the source_surface is only optional.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=80561
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: mesa-stable@lists.freedesktop.org
+(cherry picked from commit b73c20759fe1b4a96296bed58637f5ded7c9155c)
+---
+ src/gallium/state_trackers/vdpau/device.c        | 43 +++++++++++++++++++++++-
+ src/gallium/state_trackers/vdpau/output.c        | 42 +++++++++++++++--------
+ src/gallium/state_trackers/vdpau/vdpau_private.h |  1 +
+ 3 files changed, 71 insertions(+), 15 deletions(-)
+
+diff --git a/src/gallium/state_trackers/vdpau/device.c b/src/gallium/state_trackers/vdpau/device.c
+index 9c5ec60..efc1fde 100644
+--- a/src/gallium/state_trackers/vdpau/device.c
++++ b/src/gallium/state_trackers/vdpau/device.c
+@@ -42,6 +42,8 @@ vdp_imp_device_create_x11(Display *display, int screen, VdpDevice *device,
+                           VdpGetProcAddress **get_proc_address)
+ {
+    struct pipe_screen *pscreen;
++   struct pipe_resource *res, res_tmpl;
++   struct pipe_sampler_view sv_tmpl;
+    vlVdpDevice *dev = NULL;
+    VdpStatus ret;
+ 
+@@ -79,6 +81,43 @@ vdp_imp_device_create_x11(Display *display, int screen, VdpDevice *device,
+       goto no_context;
+    }
+ 
++   memset(&res_tmpl, 0, sizeof(res_tmpl));
++
++   res_tmpl.target = PIPE_TEXTURE_2D;
++   res_tmpl.format = PIPE_FORMAT_R8G8B8A8_UNORM;
++   res_tmpl.width0 = 1;
++   res_tmpl.height0 = 1;
++   res_tmpl.depth0 = 1;
++   res_tmpl.array_size = 1;
++   res_tmpl.bind = PIPE_BIND_SAMPLER_VIEW;
++   res_tmpl.usage = PIPE_USAGE_DEFAULT;
++
++   if (!CheckSurfaceParams(pscreen, &res_tmpl)) {
++      ret = VDP_STATUS_NO_IMPLEMENTATION;
++      goto no_resource;
++   }
++
++   res = pscreen->resource_create(pscreen, &res_tmpl);
++   if (!res) {
++      ret = VDP_STATUS_RESOURCES;
++      goto no_resource;
++   }
++
++   memset(&sv_tmpl, 0, sizeof(sv_tmpl));
++   u_sampler_view_default_template(&sv_tmpl, res, res->format);
++
++   sv_tmpl.swizzle_r = PIPE_SWIZZLE_ONE;
++   sv_tmpl.swizzle_g = PIPE_SWIZZLE_ONE;
++   sv_tmpl.swizzle_b = PIPE_SWIZZLE_ONE;
++   sv_tmpl.swizzle_a = PIPE_SWIZZLE_ONE;
++
++   dev->dummy_sv = dev->context->create_sampler_view(dev->context, res, &sv_tmpl);
++   pipe_resource_reference(&res, NULL);
++   if (!dev->dummy_sv) {
++      ret = VDP_STATUS_RESOURCES;
++      goto no_resource;
++   }
++
+    *device = vlAddDataHTAB(dev);
+    if (*device == 0) {
+       ret = VDP_STATUS_ERROR;
+@@ -93,8 +132,9 @@ vdp_imp_device_create_x11(Display *display, int screen, VdpDevice *device,
+    return VDP_STATUS_OK;
+ 
+ no_handle:
++   pipe_sampler_view_reference(&dev->dummy_sv, NULL);
++no_resource:
+    dev->context->destroy(dev->context);
+-   /* Destroy vscreen */
+ no_context:
+    vl_screen_destroy(dev->vscreen);
+ no_vscreen:
+@@ -185,6 +225,7 @@ vlVdpDeviceFree(vlVdpDevice *dev)
+ {
+    pipe_mutex_destroy(dev->mutex);
+    vl_compositor_cleanup(&dev->compositor);
++   pipe_sampler_view_reference(&dev->dummy_sv, NULL);
+    dev->context->destroy(dev->context);
+    vl_screen_destroy(dev->vscreen);
+    FREE(dev);
+diff --git a/src/gallium/state_trackers/vdpau/output.c b/src/gallium/state_trackers/vdpau/output.c
+index caae50f..3248f76 100644
+--- a/src/gallium/state_trackers/vdpau/output.c
++++ b/src/gallium/state_trackers/vdpau/output.c
+@@ -624,9 +624,9 @@ vlVdpOutputSurfaceRenderOutputSurface(VdpOutputSurface destination_surface,
+                                       uint32_t flags)
+ {
+    vlVdpOutputSurface *dst_vlsurface;
+-   vlVdpOutputSurface *src_vlsurface;
+ 
+    struct pipe_context *context;
++   struct pipe_sampler_view *src_sv;
+    struct vl_compositor *compositor;
+    struct vl_compositor_state *cstate;
+ 
+@@ -639,12 +639,19 @@ vlVdpOutputSurfaceRenderOutputSurface(VdpOutputSurface destination_surface,
+    if (!dst_vlsurface)
+       return VDP_STATUS_INVALID_HANDLE;
+ 
+-   src_vlsurface = vlGetDataHTAB(source_surface);
+-   if (!src_vlsurface)
+-      return VDP_STATUS_INVALID_HANDLE;
++   if (source_surface == VDP_INVALID_HANDLE) {
++      src_sv = dst_vlsurface->device->dummy_sv;
++
++   } else {
++      vlVdpOutputSurface *src_vlsurface = vlGetDataHTAB(source_surface);
++      if (!src_vlsurface)
++         return VDP_STATUS_INVALID_HANDLE;
+ 
+-   if (dst_vlsurface->device != src_vlsurface->device)
+-      return VDP_STATUS_HANDLE_DEVICE_MISMATCH;
++      if (dst_vlsurface->device != src_vlsurface->device)
++         return VDP_STATUS_HANDLE_DEVICE_MISMATCH;
++
++      src_sv = src_vlsurface->sampler_view;
++   }
+ 
+    pipe_mutex_lock(dst_vlsurface->device->mutex);
+    vlVdpResolveDelayedRendering(dst_vlsurface->device, NULL, NULL);
+@@ -657,7 +664,7 @@ vlVdpOutputSurfaceRenderOutputSurface(VdpOutputSurface destination_surface,
+ 
+    vl_compositor_clear_layers(cstate);
+    vl_compositor_set_layer_blend(cstate, 0, blend, false);
+-   vl_compositor_set_rgba_layer(cstate, compositor, 0, src_vlsurface->sampler_view,
++   vl_compositor_set_rgba_layer(cstate, compositor, 0, src_sv,
+                                 RectToPipe(source_rect, &src_rect), NULL,
+                                 ColorsToPipe(colors, flags, vlcolors));
+    STATIC_ASSERT(VL_COMPOSITOR_ROTATE_0 == VDP_OUTPUT_SURFACE_RENDER_ROTATE_0);
+@@ -688,9 +695,9 @@ vlVdpOutputSurfaceRenderBitmapSurface(VdpOutputSurface destination_surface,
+                                       uint32_t flags)
+ {
+    vlVdpOutputSurface *dst_vlsurface;
+-   vlVdpBitmapSurface *src_vlsurface;
+ 
+    struct pipe_context *context;
++   struct pipe_sampler_view *src_sv;
+    struct vl_compositor *compositor;
+    struct vl_compositor_state *cstate;
+ 
+@@ -703,12 +710,19 @@ vlVdpOutputSurfaceRenderBitmapSurface(VdpOutputSurface destination_surface,
+    if (!dst_vlsurface)
+       return VDP_STATUS_INVALID_HANDLE;
+ 
+-   src_vlsurface = vlGetDataHTAB(source_surface);
+-   if (!src_vlsurface)
+-      return VDP_STATUS_INVALID_HANDLE;
++   if (source_surface == VDP_INVALID_HANDLE) {
++      src_sv = dst_vlsurface->device->dummy_sv;
++
++   } else {
++      vlVdpBitmapSurface *src_vlsurface = vlGetDataHTAB(source_surface);
++      if (!src_vlsurface)
++         return VDP_STATUS_INVALID_HANDLE;
+ 
+-   if (dst_vlsurface->device != src_vlsurface->device)
+-      return VDP_STATUS_HANDLE_DEVICE_MISMATCH;
++      if (dst_vlsurface->device != src_vlsurface->device)
++         return VDP_STATUS_HANDLE_DEVICE_MISMATCH;
++
++      src_sv = src_vlsurface->sampler_view;
++   }
+ 
+    context = dst_vlsurface->device->context;
+    compositor = &dst_vlsurface->device->compositor;
+@@ -721,7 +735,7 @@ vlVdpOutputSurfaceRenderBitmapSurface(VdpOutputSurface destination_surface,
+ 
+    vl_compositor_clear_layers(cstate);
+    vl_compositor_set_layer_blend(cstate, 0, blend, false);
+-   vl_compositor_set_rgba_layer(cstate, compositor, 0, src_vlsurface->sampler_view,
++   vl_compositor_set_rgba_layer(cstate, compositor, 0, src_sv,
+                                 RectToPipe(source_rect, &src_rect), NULL,
+                                 ColorsToPipe(colors, flags, vlcolors));
+    vl_compositor_set_layer_rotation(cstate, 0, flags & 3);
+diff --git a/src/gallium/state_trackers/vdpau/vdpau_private.h b/src/gallium/state_trackers/vdpau/vdpau_private.h
+index 65f8e47..d1443a0 100644
+--- a/src/gallium/state_trackers/vdpau/vdpau_private.h
++++ b/src/gallium/state_trackers/vdpau/vdpau_private.h
+@@ -348,6 +348,7 @@ typedef struct
+    struct vl_screen *vscreen;
+    struct pipe_context *context;
+    struct vl_compositor compositor;
++   struct pipe_sampler_view *dummy_sv;
+    pipe_mutex mutex;
+ 
+    struct {
+-- 
+1.9.3
+
+From 60f136eed9eb6d0622e44f6634162a702ba57c02 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Date: Wed, 13 Aug 2014 21:01:33 +0200
+Subject: [PATCH 8/8] vl/compositor: set the scissor before clearing the render
+ target
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Otherwise we clear areas that shouldn't be cleared.
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: mesa-stable@lists.freedesktop.org
+(cherry picked from commit 03a99ba9e41ea86355a4febbe0b1a114d5455b9f)
+---
+ src/gallium/auxiliary/vl/vl_compositor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/vl/vl_compositor.c b/src/gallium/auxiliary/vl/vl_compositor.c
+index 839fd27..6bd1a88 100644
+--- a/src/gallium/auxiliary/vl/vl_compositor.c
++++ b/src/gallium/auxiliary/vl/vl_compositor.c
+@@ -1060,6 +1060,7 @@ vl_compositor_render(struct vl_compositor_state *s,
+       s->scissor.maxx = dst_surface->width;
+       s->scissor.maxy = dst_surface->height;
+    }
++   c->pipe->set_scissor_states(c->pipe, 0, 1, &s->scissor);
+ 
+    gen_vertex_data(c, s, dirty_area);
+ 
+@@ -1072,7 +1073,6 @@ vl_compositor_render(struct vl_compositor_state *s,
+       dirty_area->x1 = dirty_area->y1 = MIN_DIRTY;
+    }
+ 
+-   c->pipe->set_scissor_states(c->pipe, 0, 1, &s->scissor);
+    c->pipe->set_framebuffer_state(c->pipe, &c->fb_state);
+    c->pipe->bind_vs_state(c->pipe, c->vs);
+    c->pipe->set_vertex_buffers(c->pipe, 0, 1, &c->vertex_buf);
+-- 
+1.9.3
+
