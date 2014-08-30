@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="ppsspp"
-PKG_VERSION="ffb0bcd"
+PKG_VERSION="6ee8281"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
