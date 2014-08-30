@@ -16,28 +16,30 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="pkgconf"
-PKG_VERSION="0.9.6"
+PKG_NAME="libbdplus"
+PKG_VERSION="0.1.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/pkgconf/pkgconf"
-PKG_URL="https://github.com/pkgconf/pkgconf/archive/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST="ccache:host gettext:host automake:host"
+PKG_SITE="https://www.videolan.org/developers/libbdplus.html"
+PKG_URL="ftp://ftp.videolan.org/pub/videolan/libbdplus/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_TARGET="toolchain libgcrypt libgpg-error"
 PKG_PRIORITY="optional"
-PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="pkgconf: compiler and linker configuration for development frameworks"
-PKG_LONGDESC="pkgconf provides compiler and linker configuration for development frameworks"
-
-PKG_SOURCE_DIR="${PKG_NAME}-${PKG_NAME}-${PKG_VERSION}"
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="libbdplus: A project to implement the BD+ System Specifications"
+PKG_LONGDESC="libbdplus is a research project to implement the BD+ System Specifications."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
-pre_configure_host() {
-  sh autogen.sh
-}
+PKG_CONFIGURE_OPTS_TARGET="--disable-werror \
+                           --disable-extra-warnings \
+                           --disable-optimizations \
+                           --with-gnu-ld"
 
-post_makeinstall_host() {
-  ln -sf pkgconf $ROOT/$TOOLCHAIN/bin/pkg-config
-}
+if [ "$AACS_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libaacs"
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --with-libaacs"
+else
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --without-libaacs"
+fi

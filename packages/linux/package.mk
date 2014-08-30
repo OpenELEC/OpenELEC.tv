@@ -23,7 +23,7 @@ case "$LINUX" in
     PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
-    PKG_VERSION="cuboxi-a5afa23"
+    PKG_VERSION="cuboxi-3.14-aab1674"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)

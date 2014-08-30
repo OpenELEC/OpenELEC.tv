@@ -95,11 +95,13 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --disable-libssp \
                          --disable-multilib \
                          --disable-libatomic \
+                         --disable-libitm \
                          --enable-gold \
                          --enable-ld=default \
                          --enable-plugin \
                          --enable-lto \
                          --disable-libquadmath \
+                         --disable-libgomp \
                          --enable-tls \
                          --enable-shared \
                          --disable-static \
@@ -128,8 +130,6 @@ post_make_host() {
 
   if [ ! "$DEBUG" = yes ]; then
     $TARGET_STRIP $TARGET_NAME/libgcc/libgcc_s.so*
-    $TARGET_STRIP $TARGET_NAME/libgomp/.libs/libgomp.so*
-    $TARGET_STRIP $TARGET_NAME/libitm/.libs/libitm.so*
     $TARGET_STRIP $TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so*
   fi
 }
@@ -178,7 +178,6 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib
     cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libgcc/libgcc_s.so* $INSTALL/usr/lib
-    cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libgomp/.libs/libgomp.so* $INSTALL/usr/lib
     cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so* $INSTALL/usr/lib
 }
 
