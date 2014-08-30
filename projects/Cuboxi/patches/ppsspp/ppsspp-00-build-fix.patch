@@ -33,15 +33,3 @@ diff -Naur ppsspp/libretro/Makefile ppsspp.patch/libretro/Makefile
  else ifneq (,$(findstring osx,$(platform)))
     TARGET := $(TARGET_NAME)_libretro.dylib
     LDFLAGS += -dynamiclib
-diff -Naur ppsspp/libretro/Makefile.common ppsspp.patch/libretro/Makefile.common
---- ppsspp/libretro/Makefile.common	2014-08-25 22:17:55.063714913 +0200
-+++ ppsspp.patch/libretro/Makefile.common	2014-08-26 10:03:19.258892647 +0200
-@@ -14,7 +14,7 @@
- 	-I$(EXTDIR)/xbrz \
- 	-I$(EXTDIR)/xxhash
- 
--CFILES   += $(LIBRETRODIR)/ext/glew/glew.c
-+#CFILES   += $(LIBRETRODIR)/ext/glew/glew.c
- CXXFILES += $(NATIVEDIR)/ext/rg_etc1/rg_etc1.cpp
- CXXFILES += $(EXTDIR)/snappy/snappy-c.cpp
- CFILES   += $(NATIVEDIR)/ext/stb_vorbis/stb_vorbis.c \
