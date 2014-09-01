@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="215"
+PKG_VERSION="216"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="http://www.freedesktop.org/software/systemd/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux glib libgcrypt"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -50,6 +50,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-selinux \
                            --disable-apparmor \
                            --disable-xz \
+                           --disable-lz4 \
                            --disable-pam \
                            --disable-acl \
                            --disable-smack \
@@ -60,6 +61,8 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-qrencode \
                            --disable-microhttpd \
                            --disable-gnutls \
+                           --disable-libcurl \
+                           --disable-libidn \
                            --disable-binfmt \
                            --disable-vconsole \
                            --disable-readahead \
@@ -67,6 +70,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-quotacheck \
                            --enable-tmpfiles \
                            --disable-sysusers \
+                           --disable-firstboot \
                            --disable-randomseed \
                            --disable-backlight \
                            --disable-rfkill \
@@ -82,10 +86,12 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-networkd \
                            --disable-efi \
                            --disable-multi-seat-x \
+                           --disable-terminal \
                            --disable-kdbus \
                            --disable-myhostname \
-                           --enable-gudev \
+                           --disable-gudev \
                            --disable-manpages \
+                           --disable-ldconfig \
                            --enable-split-usr \
                            --disable-tests \
                            --without-python \
@@ -114,6 +120,7 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/rpm
     rm  -f $INSTALL/usr/bin/kernel-install
     rm -rf $INSTALL/etc/xdg
+    rm -rf $INSTALL/usr/share/factory
 
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-OUI.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-acpi-vendor.hwdb
@@ -181,17 +188,20 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/systemd/system/console-getty.service
     rm -rf $INSTALL/usr/lib/systemd/system/console-shell.service
     rm -rf $INSTALL/usr/lib/systemd/system/getty@.service
+    rm -rf $INSTALL/usr/lib/systemd/system/container-getty@.service
+    rm -rf $INSTALL/usr/lib/systemd/system/serial-getty@.service
     rm -rf $INSTALL/usr/lib/systemd/system/getty.target
     rm -rf $INSTALL/usr/lib/systemd/system/multi-user.target.wants/getty.target
 
   # remove other notused or nonsense stuff (our /etc is ro)
     rm -rf $INSTALL/usr/lib/systemd/system/systemd-update-done.service
     rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/systemd-update-done.service
-    rm -rf $INSTALL/usr/lib/systemd/system/ldconfig.service
-    rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/ldconfig.service
     rm -rf $INSTALL/usr/lib/systemd/system/systemd-udev-hwdb-update.service
     rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/systemd-udev-hwdb-update.service
     rm -rf $INSTALL/usr/lib/tmpfiles.d/etc.conf
+
+  # systemd-journal-remote is optional
+    rm -rf $INSTALL/usr/lib/tmpfiles.d/systemd-remote.conf
 
   # remove rootfs fsck
     rm -rf $INSTALL/usr/lib/systemd/system/systemd-fsck-root.service

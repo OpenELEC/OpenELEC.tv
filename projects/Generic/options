@@ -159,12 +159,20 @@
 # (RAR compression support in XBMC) (yes / no)
   NONFREE_SUPPORT="yes"
 
+# build and install with BluRay support (yes / no)
+  BLURAY_SUPPORT="yes"
+
+# build and install with BD+ support
+# (BD+ decryption support in XBMC) (yes / no)
+  BDPLUS_SUPPORT="yes"
+
+# build and install with AACS support
+# (BD decryption support in XBMC) (yes / no)
+  AACS_SUPPORT="yes"
+
 # build and install with DVDCSS support
 # (DVD decryption support in XBMC) (yes / no)
   DVDCSS_SUPPORT="yes"
-
-# build and install with BluRay support (yes / no)
-  BLURAY_SUPPORT="yes"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
@@ -303,7 +311,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD,shuttleVFD"
 
 # Modules to install in initramfs for early boot
   INITRAMFS_MODULES=""
