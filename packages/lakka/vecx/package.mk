@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="vecx"
-PKG_VERSION="a2163a7"
+PKG_VERSION="f6577f9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -35,14 +35,12 @@ PKG_LONGDESC="libretro adaptation of vecx"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-configure_target() {
-  cd $ROOT/$PKG_BUILD
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_BUILD_TYPE=Libretro
+
+make_target() {
+  make -f Makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro-vecx.so $INSTALL/usr/lib/libretro/vecx_libretro.so
+  cp vecx_libretro.so $INSTALL/usr/lib/libretro/vecx_libretro.so
 }

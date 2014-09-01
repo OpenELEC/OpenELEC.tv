@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="fceu-next"
-PKG_VERSION="b242269"
+PKG_VERSION="1b3d4d7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
