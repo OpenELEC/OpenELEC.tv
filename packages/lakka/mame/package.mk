@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="94dc623"
+PKG_VERSION="d08e79c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
