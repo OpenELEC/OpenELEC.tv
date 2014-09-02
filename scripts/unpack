@@ -100,6 +100,7 @@ export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
       $SCRIPTS/extract $1 "$1*.tgz"     $BUILD
       $SCRIPTS/extract $1 "$1*.7z"      $BUILD
       $SCRIPTS/extract $1 "$1*.zip"     $BUILD
+      $SCRIPTS/extract $1 "${PKG_URL##*/}" $BUILD
     fi
   fi
 

@@ -54,13 +54,23 @@ if [ -n "$PKG_URL" ]; then
     printf "%${BUILD_INDENT}c ${boldcyan}GET${endcolor}      $1\n" ' '>&$SILENT_OUT
     export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
-    until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR; do
-      NBWGET=$(($NBWGET+1))
-      if [ "$NBWGET" -gt "10" ]; then
-        echo -e "\nCant't get $1 sources : $i\n Try later !!"
-        exit 1
-      fi
-    done
+    [ -f "$MD5SUM" -a -f "$PACKAGE" ] && MD5SUM_TOCOMP=$(<$MD5SUM)
+    [ -n "$MD5SUM_TOCOMP" ] && {
+        [ "$(md5sum -t $PACKAGE)" = "$MD5SUM_TOCOMP" ] && DL="no"
+    }
+
+    [ "$DL" = "yes" ] && {
+        until [ -f "$STAMP" ] || $WGET_CMD $i || $WGET_CMD $PACKAGE_MIRROR; do
+          NBWGET=$(($NBWGET+1))
+          if [ "$NBWGET" -gt "10" ]; then
+            echo -e "\nCant't get $1 sources : $i\n Try later !!"
+            exit 1
+          fi
+        done
+
+        echo $i > $STAMP
+        md5sum -t $PACKAGE > $MD5SUM
+    }
 
     echo $i > $STAMP
     md5sum -t $PACKAGE > $MD5SUM
