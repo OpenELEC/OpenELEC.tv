@@ -1,16 +1,16 @@
-From f4d660298675bcc0341bbfd7fd56085b88e307c6 Mon Sep 17 00:00:00 2001
+From 4cd64d73142c355a3099e7983967b5d89e286047 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 16 Apr 2014 23:08:58 +0300
-Subject: [PATCH] Enable true 1920x1080 output without upscaling on
+Subject: [PATCH 2/8] Enable true 1920x1080 output without upscaling on
  Amlogic-based devices.
 
 ---
- xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   72 ++++++++++++++++++++-------
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   48 +++++++++++++++++++++++----
  xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    3 ++
- 2 files changed, 56 insertions(+), 19 deletions(-)
+ 2 files changed, 44 insertions(+), 7 deletions(-)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index 47e09d6..6235153 100644
+index c19124c..ee17f73 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 @@ -87,9 +87,12 @@ bool CEGLNativeTypeAmlogic::CreateNativeWindow()
@@ -41,7 +41,7 @@ index 47e09d6..6235153 100644
    switch((int)(0.5 + res.fRefreshRate))
    {
      default:
-@@ -221,12 +230,11 @@ bool CEGLNativeTypeAmlogic::SetDisplayResolution(const char *resolution)
+@@ -220,12 +229,11 @@ bool CEGLNativeTypeAmlogic::SetDisplayResolution(const char *resolution)
    // switch display resolution
    aml_set_sysfs_str("/sys/class/display/mode", modestr.c_str());
  
@@ -53,78 +53,12 @@ index 47e09d6..6235153 100644
 -  }
 +
 +  RESOLUTION_INFO res;
-+  ModeToResolution(modestr, &res);
++  aml_mode_to_resolution(modestr, &res);
 +  SetFramebufferResolution(res);
  
    return true;
  }
-@@ -269,8 +277,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080p"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 60;
-@@ -278,8 +286,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080p24hz"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 24;
-@@ -287,8 +295,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080p30hz"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 30;
-@@ -296,8 +304,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080p50hz"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 50;
-@@ -305,8 +313,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080i"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 60;
-@@ -314,8 +322,8 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   }
-   else if (fromMode.Equals("1080i50hz"))
-   {
--    res->iWidth = 1280;
--    res->iHeight= 720;
-+    res->iWidth = 1920;
-+    res->iHeight= 1080;
-     res->iScreenWidth = 1920;
-     res->iScreenHeight= 1080;
-     res->fRefreshRate = 50;
-@@ -396,3 +404,29 @@ void CEGLNativeTypeAmlogic::DisableFreeScale()
+@@ -289,3 +297,29 @@ void CEGLNativeTypeAmlogic::DisableFreeScale()
      close(fd0);
    }
  }
@@ -155,10 +89,10 @@ index 47e09d6..6235153 100644
 +  }
 +}
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-index 02df101..0833571 100644
+index 87be029..69ca00a 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-@@ -54,5 +54,8 @@ protected:
+@@ -53,5 +53,8 @@ protected:
    void DisableFreeScale();
  
  private:

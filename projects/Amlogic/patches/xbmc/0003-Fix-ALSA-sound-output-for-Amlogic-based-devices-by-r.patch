@@ -1,0 +1,27 @@
+From 22fbe899d23f322d4a4c60a8715f3e46bcff9255 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Fri, 9 May 2014 00:09:58 +0300
+Subject: [PATCH 3/8] Fix ALSA sound output for Amlogic-based devices by
+ reducing the buffer size check in
+ CAESinkFactory::TrySink().
+
+---
+ xbmc/cores/AudioEngine/AESinkFactory.cpp |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/AudioEngine/AESinkFactory.cpp b/xbmc/cores/AudioEngine/AESinkFactory.cpp
+index e42d973..87d2396 100644
+--- a/xbmc/cores/AudioEngine/AESinkFactory.cpp
++++ b/xbmc/cores/AudioEngine/AESinkFactory.cpp
+@@ -134,7 +134,7 @@ IAESink *CAESinkFactory::TrySink(std::string &driver, std::string &device, AEAud
+       CLog::Log(LOGERROR, "Sink %s:%s returned invalid sample rate", driver.c_str(), device.c_str());
+     else if (format.m_channelLayout.Count() == 0)
+       CLog::Log(LOGERROR, "Sink %s:%s returned invalid channel layout", driver.c_str(), device.c_str());
+-    else if (format.m_frames < 256)
++    else if (format.m_frames < 128)
+       CLog::Log(LOGERROR, "Sink %s:%s returned invalid buffer size: %d", driver.c_str(), device.c_str(), format.m_frames);
+     else
+       return sink;
+-- 
+1.7.9.5
+

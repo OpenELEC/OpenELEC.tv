@@ -1,18 +1,50 @@
-From 3a801a511b03ffecc1c33f1350047ae28d581ee2 Mon Sep 17 00:00:00 2001
+From d1e8de7fb92ddd8f8d8fa3f76f28f4cb0908e474 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 23 Jul 2014 22:23:34 +0300
-Subject: [PATCH] Add support for AV (CVBS) video output on Amlogic
+Subject: [PATCH 5/8] Add support for AV (CVBS) video output on Amlogic
 
 Conflicts:
 
 	xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 ---
- xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   57 ++++++++++++++++++++++++---
+ xbmc/utils/AMLUtils.cpp                     |   20 ++++++++++++++-
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   37 +++++++++++++++++++++++----
  xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    1 +
- 2 files changed, 52 insertions(+), 6 deletions(-)
+ 3 files changed, 52 insertions(+), 6 deletions(-)
 
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 68692db..f9202ec 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -308,7 +308,25 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   if (StringUtils::EndsWith(fromMode, "*"))
+     fromMode.erase(fromMode.size() - 1);
+ 
+-  if (fromMode.Equals("720p"))
++  if (fromMode.Equals("480cvbs"))
++  {
++    res->iWidth = 720;
++    res->iHeight= 480;
++    res->iScreenWidth = 720;
++    res->iScreenHeight= 480;
++    res->fRefreshRate = 60;
++    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++  }
++  else if (fromMode.Equals("576cvbs"))
++  {
++    res->iWidth = 720;
++    res->iHeight= 576;
++    res->iScreenWidth = 720;
++    res->iScreenHeight= 576;
++    res->fRefreshRate = 50;
++    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++  }
++  else if (fromMode.Equals("720p"))
+   {
+     res->iWidth = 1280;
+     res->iHeight= 720;
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index 63f52d3..bdf2b19 100644
+index ee17f73..ab80343 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 @@ -159,6 +159,10 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
@@ -64,43 +96,16 @@ index 63f52d3..bdf2b19 100644
    if (!GetNativeResolution(res))
    {
 -    // punt to 720p if we get nothing
--    ModeToResolution("720p", res);
+-    aml_mode_to_resolution("720p", res);
 +    // punt to 720p or 576cvbs if we get nothing
 +    if (IsHdmiConnected())
-+      ModeToResolution("720p", res);
++      aml_mode_to_resolution("720p", res);
 +    else
-+      ModeToResolution("576cvbs", res);
++      aml_mode_to_resolution("576cvbs", res);
    }
  
    return true;
-@@ -256,7 +276,25 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   if (StringUtils::EndsWith(fromMode, "*"))
-     fromMode.erase(fromMode.size() - 1);
- 
--  if (fromMode.Equals("720p"))
-+  if (fromMode.Equals("480cvbs"))
-+  {
-+    res->iWidth = 720;
-+    res->iHeight= 480;
-+    res->iScreenWidth = 720;
-+    res->iScreenHeight= 480;
-+    res->fRefreshRate = 60;
-+    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+  }
-+  else if (fromMode.Equals("576cvbs"))
-+  {
-+    res->iWidth = 720;
-+    res->iHeight= 576;
-+    res->iScreenWidth = 720;
-+    res->iScreenHeight= 576;
-+    res->fRefreshRate = 50;
-+    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+  }
-+  else if (fromMode.Equals("720p"))
-   {
-     res->iWidth = 1280;
-     res->iHeight= 720;
-@@ -429,3 +467,10 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
+@@ -323,3 +343,10 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
      close(fd0);
    }
  }
@@ -112,10 +117,10 @@ index 63f52d3..bdf2b19 100644
 +  return hpd_state[0] == '1';
 +}
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-index 0833571..ff254d5 100644
+index 69ca00a..adb4d51 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-@@ -56,6 +56,7 @@ protected:
+@@ -55,6 +55,7 @@ protected:
  private:
    void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
    void SetFramebufferResolution(int width, int height) const;

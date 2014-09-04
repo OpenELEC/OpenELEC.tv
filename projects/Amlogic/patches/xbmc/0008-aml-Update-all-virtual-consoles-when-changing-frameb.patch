@@ -1,8 +1,8 @@
-From 7102abbc851ca6023e021802a6590df1ebf47ad9 Mon Sep 17 00:00:00 2001
+From f2d5f57e058c43de3354bd9bced06ef4642c7f3c Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Thu, 4 Sep 2014 00:28:23 +0300
-Subject: [PATCH] [aml] Update all virtual consoles when changing framebuffer
- geometry after a resolution change
+Subject: [PATCH 8/8] [aml] Update all virtual consoles when changing
+ framebuffer geometry after a resolution change
 
 That helps to resolve the issue when framebuffer size is not always correctly change according to the resolution set.
 It seems that the issue appeared after updating to the U-Boot bootloader released 2014-08-24 by Amlogic.
@@ -11,10 +11,10 @@ It seems that the issue appeared after updating to the U-Boot bootloader release
  1 file changed, 1 insertion(+)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index e4f7b2c..0c556ab 100644
+index 468a99e..f8ceb3d 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-@@ -407,6 +407,7 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
+@@ -283,6 +283,7 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
        vinfo.xres_virtual = 1920;
        vinfo.yres_virtual = 2160;
        vinfo.bits_per_pixel = 32;

@@ -1,7 +1,7 @@
-From 60361deab82d20702de02c9e35d8cb8e696f0095 Mon Sep 17 00:00:00 2001
+From 6894ebf57e0993da17dae4d313fca2b4af782f3a Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Tue, 29 Jul 2014 10:31:07 +0300
-Subject: [PATCH 3/3] [aml] Fix the issue when the video display is disabled
+Subject: [PATCH 6/8] [aml] Fix the issue when the video display is disabled
  after a resolution change
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH 3/3] [aml] Fix the issue when the video display is disabled
  2 files changed, 1 insertion(+), 57 deletions(-)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index e4d5e8d..e4f7b2c 100644
+index ab80343..468a99e 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 @@ -65,7 +65,7 @@ void CEGLNativeTypeAmlogic::Initialize()
@@ -29,10 +29,10 @@ index e4d5e8d..e4f7b2c 100644
 -  DisableFreeScale();
 -
    RESOLUTION_INFO res;
-   ModeToResolution(modestr, &res);
+   aml_mode_to_resolution(modestr, &res);
    SetFramebufferResolution(res);
-@@ -382,64 +380,11 @@ bool CEGLNativeTypeAmlogic::ModeToResolution(const char *mode, RESOLUTION_INFO *
-   return res->iWidth > 0 && res->iHeight> 0;
+@@ -258,64 +256,11 @@ bool CEGLNativeTypeAmlogic::SetDisplayResolution(const char *resolution)
+   return true;
  }
  
 -void CEGLNativeTypeAmlogic::EnableFreeScale()
@@ -97,13 +97,13 @@ index e4d5e8d..e4f7b2c 100644
  
  void CEGLNativeTypeAmlogic::SetFramebufferResolution(const RESOLUTION_INFO &res) const
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-index ff254d5..61d1013 100644
+index adb4d51..79e5733 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-@@ -50,7 +50,6 @@ public:
+@@ -49,7 +49,6 @@ public:
+ 
  protected:
    bool SetDisplayResolution(const char *resolution);
-   bool ModeToResolution(const char *mode, RESOLUTION_INFO *res) const;
 -  void EnableFreeScale();
    void DisableFreeScale();
  
