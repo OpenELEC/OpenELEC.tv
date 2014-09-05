@@ -7,20 +7,6 @@ Now we are getting into kernel < 3.4 territory...
 
 https://bugs.freedesktop.org/show_bug.cgi?id=80095
 ---
-diff --git a/configure.ac b/configure.ac
-index 94aacc9..be05211 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -310,7 +310,8 @@ AC_CHECK_DECLS([gettid, pivot_root, name_to_handle_at, setns, LO_FLAGS_PARTSCAN]
- #include <linux/loop.h>
- ]])
- 
--AC_CHECK_DECLS([IFLA_PHYS_PORT_ID,
-+AC_CHECK_DECLS([IFLA_MACVLAN_FLAGS,
-+                IFLA_PHYS_PORT_ID,
-                 IFLA_BOND_AD_INFO,
-                 IFLA_VLAN_PROTOCOL,
-                 IFLA_VXLAN_LOCAL6,
 diff --git a/src/shared/missing.h b/src/shared/missing.h
 index f129f0b..818d704 100644
 --- a/src/shared/missing.h
