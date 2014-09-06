@@ -35,11 +35,11 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
     cp -PR $BUILD/u-boot-*/u-boot.imx $RELEASE_DIR/3rdparty/bootloader
   fi
 
-	if [ -e $BUILD/u-boot-*/u-boot.img ] ;then
+  if [ -e $BUILD/u-boot-*/u-boot.img ] ;then
     cp -PR $BUILD/u-boot-*/u-boot.img $RELEASE_DIR/3rdparty/bootloader
   fi
 
-	if [ -e $BUILD/u-boot-*/u-boot.imx ] ;then
+  if [ -e $BUILD/u-boot-*/u-boot.imx ] ;then
     cp -PR $BUILD/u-boot-*/u-boot.imx $RELEASE_DIR/3rdparty/bootloader
   fi
 
