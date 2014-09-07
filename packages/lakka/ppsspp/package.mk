@@ -37,10 +37,10 @@ PKG_AUTORECONF="no"
 
 make_target() {
   cd $ROOT/$PKG_BUILD/libretro
+  strip_lto
   if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     SYSROOT_PREFIX=$SYSROOT_PREFIX make platform=imx6
   else
-    strip_lto
     make
   fi
 }
