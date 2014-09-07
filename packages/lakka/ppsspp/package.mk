@@ -40,6 +40,7 @@ make_target() {
   if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
     SYSROOT_PREFIX=$SYSROOT_PREFIX make platform=imx6
   else
+    strip_lto
     make
   fi
 }
