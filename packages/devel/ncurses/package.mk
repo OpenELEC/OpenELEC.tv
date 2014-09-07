@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ncurses"
-PKG_VERSION="5.7"
+PKG_VERSION="5.9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
@@ -73,7 +73,7 @@ PKG_CONFIGURE_OPTS_TARGET="--without-cxx \
 
 pre_configure_target() {
   # causes some segmentation fault's (dialog) when compiled with gcc's link time optimization.
-  strip_linker_plugin
+  strip_lto
 }
 
 make_target() {
