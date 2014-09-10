@@ -19,7 +19,6 @@
 ################################################################################
 
 [ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
-[ -z "$BOOT_DISK" ] && BOOT_DISK=$(df "$BOOT_ROOT" |tail -1 |awk {' print $1 '})
 [ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
 
 # mount $BOOT_ROOT r/w
@@ -38,11 +37,6 @@
   if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot.img ]; then
     echo "*** updating u-boot image: $BOOT_ROOT/u-boot.img ..."
     cp -p $SYSTEM_ROOT/usr/share/bootloader/u-boot.img $BOOT_ROOT
-  fi
-
-  if [ -f $SYSTEM_ROOT/usr/share/bootloader/SPL ]; then
-    echo "*** updating u-boot SPL Blob on: $BOOT_DISK ..."
-    dd if="$SYSTEM_ROOT/usr/share/bootloader/SPL" of="$BOOT_DISK" bs=1k seek=1 conv=fsync
   fi
 
   # prefer uEnv.txt over boot.scr
