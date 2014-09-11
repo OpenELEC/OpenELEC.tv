@@ -18,15 +18,32 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-[ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
-[ -z "$BOOT_DISK" ] && BOOT_DISK=$(df "$BOOT_ROOT" |tail -1 |awk {' print $1 '})
 [ -z "$SYSTEM_ROOT" ] && SYSTEM_ROOT=""
+[ -z "$BOOT_ROOT" ] && BOOT_ROOT="/flash"
+if [ -z "$BOOT_DISK" ]; then
+  [ -z "$BOOT_PART" ] && BOOT_PART=$(df "$BOOT_ROOT" | awk 'END {print $1}')
+  case $BOOT_PART in
+    /dev/sd[a-z][0-9]*)
+      BOOT_DISK=$(echo $BOOT_PART | sed -e "s,[0-9]*,,g")
+      ;;
+    /dev/mmcblk*)
+      BOOT_DISK=$(echo $BOOT_PART | sed -e "s,p[0-9]*,,g")
+      ;;
+  esac
+fi
+
+# we don't have mounted /etc here so just load system identification
+if [ -f $SYSTEM_ROOT/etc/profile.d/01-system-id.conf ]; then
+  . $SYSTEM_ROOT/etc/profile.d/01-system-id.conf
+else
+  SYSTEM_ID=""
+fi
 
 # mount $BOOT_ROOT r/w
   mount -o remount,rw $BOOT_ROOT
 
 # update Device Tree Blobs
-  for all_dtb in /flash/*.dtb; do
+  for all_dtb in $BOOT_ROOT/*.dtb; do
     dtb=$(basename $all_dtb)
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/$dtb ]; then
       echo "*** updating Device Tree Blob: $dtb ..."
@@ -35,18 +52,47 @@
   done
 
 # update bootloader files
-  if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot.img ]; then
-    echo "*** updating u-boot image: $BOOT_ROOT/u-boot.img ..."
-    cp -p $SYSTEM_ROOT/usr/share/bootloader/u-boot.img $BOOT_ROOT
-  fi
+  if [ "$SYSTEM_ID" = "matrix" ]; then
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_ID.imx ]; then
+      echo "*** updating u-boot image in eMMC ..."
+      # clean up u-boot parameters
+      #dd if=/dev/zero of=/dev/mmcblk0 bs=1024 seek=384 count=8
+      # access boot partition 1
+      echo 0 > /sys/block/mmcblk0boot0/force_ro
+      # write u-boot to eMMC
+      dd if=$SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_ID.imx of=/dev/mmcblk0boot0 bs=1k seek=1 conv=fsync
+      # re-enable read-only access
+      echo 1 > /sys/block/mmcblk0boot0/force_ro
+      # enable boot partion 1 to boot
+      # kernel 3.0.35
+      # echo 8 > /sys/devices/platform/sdhci-esdhc-imx.3/mmc_host/mmc0/mmc0:0001/boot_config
+      # kernel 3.14.18
+      echo 8 > /sys/devices/soc0/soc.1/2100000.aips-bus/219c000.usdhc/mmc_host/mmc2/mmc2:0001/boot_config
+    fi
+  else
+    if [ -n "$SYSTEM_ID" ]; then
+      UBOOT_IMG_SRC=u-boot-$SYSTEM_ID.img
+      SPL_SRC=SPL-$SYSTEM_ID
+    else
+      UBOOT_IMG_SRC=u-boot.img
+      SPL_SRC=SPL
+    fi
 
-  if [ -f $SYSTEM_ROOT/usr/share/bootloader/SPL ]; then
-    echo "*** updating u-boot SPL Blob on: $BOOT_DISK ..."
-    dd if="$SYSTEM_ROOT/usr/share/bootloader/SPL" of="$BOOT_DISK" bs=1k seek=1 conv=fsync
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/$UBOOT_IMG_SRC ]; then
+      echo "*** updating u-boot image: $BOOT_ROOT/u-boot.img ..."
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/$UBOOT_IMG_SRC $BOOT_ROOT/u-boot.img
+    fi
+
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/$SPL_SRC ]; then
+      echo "*** updating u-boot SPL Blob on: $BOOT_DISK ..."
+      dd if="$SYSTEM_ROOT/usr/share/bootloader/$SPL_SRC" of="$BOOT_DISK" bs=1k seek=1 conv=fsync
+    fi
   fi
 
   # prefer uEnv.txt over boot.scr
-  if [ -f $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt -a ! -f $BOOT_ROOT/uEnv.txt ]; then
+  if [ -n "$SYSTEM_ID" -a -f $SYSTEM_ROOT/usr/share/bootloader/uEnv-$SYSTEM_ID.txt -a ! -f $BOOT_ROOT/uEnv.txt ]; then
+    cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv-$SYSTEM_ID.txt $BOOT_ROOT/uEnv.txt
+  elif [ -f $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt -a ! -f $BOOT_ROOT/uEnv.txt ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt $BOOT_ROOT
   elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr -a ! -f $BOOT_ROOT/boot.scr ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/boot.scr $BOOT_ROOT
