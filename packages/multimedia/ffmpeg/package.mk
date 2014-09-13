@@ -71,11 +71,13 @@ case "$TARGET_ARCH" in
       FFMPEG_CPU=""
       FFMPEG_TABLES="--disable-hardcoded-tables"
       FFMPEG_PIC="--disable-pic"
+      FFMPEG_LTO="--disable-lto"
   ;;
   x86_64)
       FFMPEG_CPU=""
       FFMPEG_TABLES="--disable-hardcoded-tables"
       FFMPEG_PIC="--enable-pic"
+      FFMPEG_LTO="--enable-lto"
   ;;
 esac
 
@@ -97,11 +99,9 @@ pre_configure_target() {
 
   export pkg_config="$ROOT/$TOOLCHAIN/bin/pkg-config"
 
-# ffmpeg fails building with LTO support
-  strip_lto
-
-# ffmpeg fails running with GOLD support
-  strip_gold
+if [ "$TARGET_ARCH" = i386 ]; then
+  strip_lto && strip_gold
+fi
 }
 
 configure_target() {
@@ -137,6 +137,7 @@ configure_target() {
               --disable-doc \
               $FFMPEG_DEBUG \
               $FFMPEG_PIC \
+              $FFMPEG_LTO \
               --enable-optimizations \
               --disable-armv5te --disable-armv6t2 \
               --disable-extra-warnings \
