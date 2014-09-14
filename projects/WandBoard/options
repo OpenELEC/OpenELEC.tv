@@ -359,7 +359,7 @@
   CRON_SUPPORT="no"
 
 # Perf support in development builds (yes / no)
-  PERF_SUPPORT="yes"
+  PERF_SUPPORT="no"
 
 # Coreboot support (yes / no)
   COREBOOT="no"

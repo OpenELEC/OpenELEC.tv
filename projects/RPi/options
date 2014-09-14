@@ -349,7 +349,7 @@
   CRON_SUPPORT="no"
 
 # Perf support in development builds (yes / no)
-  PERF_SUPPORT="yes"
+  PERF_SUPPORT="no"
 
 # Distribution Specific source location
   DISTRO_MIRROR="http://sources.openelec.tv/mirror"
