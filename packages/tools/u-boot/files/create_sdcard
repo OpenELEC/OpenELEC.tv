@@ -234,7 +234,11 @@ echo "#########################################################"
 
 # install u-boot image, u-boot.imx if new u-boot. else SPL
   echo "installing the bootloader..."
-  if [ -e "3rdparty/bootloader/u-boot.imx" ] ;then
+  if [ -e "3rdparty/bootloader/u-boot-cuboxi.imx" ] ;then
+    dd if=3rdparty/bootloader/u-boot-cuboxi.imx of="$DISK" bs=1k seek=1 conv=fsync
+  elif [ -e "3rdparty/bootloader/SPL-cuboxi" ];then
+    dd if=3rdparty/bootloader/SPL-cuboxi of="$DISK" bs=1k seek=1 conv=fsync
+  elif [ -e "3rdparty/bootloader/u-boot.imx" ] ;then
     dd if=3rdparty/bootloader/u-boot.imx of="$DISK" bs=1k seek=1 conv=fsync
   elif [ -e "3rdparty/bootloader/SPL" ];then
     dd if=3rdparty/bootloader/SPL of="$DISK" bs=1k seek=1 conv=fsync
