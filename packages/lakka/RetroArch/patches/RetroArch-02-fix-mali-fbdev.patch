@@ -297,15 +297,3 @@ diff -Naur RetroArch/gfx/context/mali_fbdev_ctx.c RetroArch.patch/gfx/context/ma
  
  static gfx_ctx_proc_t gfx_ctx_get_proc_address(const char *symbol)
  {
-diff -Naur RetroArch/Makefile RetroArch.patch/Makefile
---- RetroArch/Makefile	2014-07-08 13:21:20.962008685 +0200
-+++ RetroArch.patch/Makefile	2014-07-08 14:11:02.207662576 +0200
-@@ -243,6 +243,8 @@
- 
-    ifeq ($(HAVE_MALI_FBDEV), 1)
-       OBJ += gfx/context/mali_fbdev_ctx.o
-+      DEFINES += $(EGL_CFLAGS)
-+      LIBS += $(EGL_LIBS)
-    endif
- 
-    ifeq ($(HAVE_X11), 1)
