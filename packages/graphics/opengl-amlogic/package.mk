@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="opengl-amlogic"
-PKG_VERSION="apiv17"
+PKG_VERSION="apiv23"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="nonfree"
