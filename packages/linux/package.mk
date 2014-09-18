@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="linux"
-PKG_VERSION="3.16.2"
+PKG_VERSION="3.16.3"
 PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_REV="1"
 PKG_ARCH="any"
