@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.3.3"
+PKG_VERSION="2.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -225,7 +225,6 @@ configure_target() {
               $FFMPEG_CPU \
               $FFMPEG_FPU \
               --enable-yasm \
-              --disable-sram \
               --disable-symver
 }
 
