@@ -145,7 +145,6 @@ make_target() {
     ( cd tools/perf
 
       # dont use some optimizations because of build problems
-        strip_lto
         LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 
       export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
