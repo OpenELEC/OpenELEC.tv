@@ -18,20 +18,24 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
+PKG_NAME="prosystem"
+PKG_VERSION="646ac1e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="Mesa RetroArch prosystem bsnes-mercury tyrquake 2048 virtualjaguar ppsspp dosbox beetle-vb beetle-wswan hatari desmume beetle-ngp beetle-pcfx mame beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine fceu-next gambatte stella vbam libretro-ffmpeg retroarch-joypad-autoconfig core-info"
-PKG_BUILD_DEPENDS=""
+PKG_SITE="https://github.com/libretro/prosystem-libretro.git"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS=""
+PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+PKG_SECTION="RetroArch"
+PKG_SHORTDESC="Port of ProSystem to libretro."
+PKG_LONGDESC="Port of ProSystem to libretro."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp prosystem_libretro.so $INSTALL/usr/lib/libretro/
+}
