@@ -1,0 +1,36 @@
+From 60a8b445efe08c20d60c58fd54a18348bf00024c Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Mon, 22 Sep 2014 18:18:09 +0200
+Subject: [PATCH] dvdplayer: adapt matroshka ssa subs to ffmpeg 2.4 api change
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp            | 1 +
+ xbmc/cores/dvdplayer/DVDCodecs/Overlay/DVDOverlayCodecSSA.cpp | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+index f8a5635..f688f95 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+@@ -327,6 +327,7 @@ CDVDOverlayCodec* CDVDFactoryCodec::CreateOverlayCodec( CDVDStreamInfo &hint )
+       break;
+ 
+     case AV_CODEC_ID_SSA:
++    case AV_CODEC_ID_ASS:
+       pCodec = OpenCodec(new CDVDOverlayCodecSSA(), hint, options);
+       if( pCodec ) return pCodec;
+ 
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Overlay/DVDOverlayCodecSSA.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Overlay/DVDOverlayCodecSSA.cpp
+index 03cda12..7cd6c2d 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Overlay/DVDOverlayCodecSSA.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Overlay/DVDOverlayCodecSSA.cpp
+@@ -45,7 +45,8 @@ CDVDOverlayCodecSSA::~CDVDOverlayCodecSSA()
+ 
+ bool CDVDOverlayCodecSSA::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
+ {
+-  if(hints.codec != AV_CODEC_ID_SSA)
++  if(hints.codec != AV_CODEC_ID_SSA &&
++     hints.codec != AV_CODEC_ID_ASS)
+     return false;
+ 
+   Dispose();
