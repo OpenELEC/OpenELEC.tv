@@ -27,7 +27,7 @@ index e423370..70898bd 100644
 +                           e->pos = last_position;
 +                           e++;
 +                        }
-                         if (url_feof(pb))
+                         if (avio_feof(pb))
                              break;
 -                        for (i = wtv->nb_index_entries - 1; i >= 0; i--) {
 -                            AVIndexEntry *e = wtv->index_entries + i;
