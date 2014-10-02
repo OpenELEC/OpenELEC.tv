@@ -36,6 +36,7 @@ PKG_CONFIGURE_OPTS_TARGET="--without-cxx \
                            --without-cxx-binding \
                            --without-ada \
                            --without-progs \
+                           --with-curses-h \
                            --with-shared \
                            --with-normal \
                            --without-debug \
