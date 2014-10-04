@@ -16,8 +16,16 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+# Notes: dont enable tearfree support in later versions, this causes stutter
+# for some people, see
+# http://openelec.tv/forum/120-news-announcements/73013-openelec-4-2-0-released?start=135#118846
+
+# Todo: at least version 2.99.916 causes hangs and stuttering XBMC Gui, this dont
+# happens with 2.99.911, so stick on this for now and figure out which version
+# breaks this.
+
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.99.916"
+PKG_VERSION="2.99.911"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="OSS"
@@ -46,10 +54,10 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-backlight \
                            --enable-sna \
                            --enable-uxa \
                            --disable-xvmc \
-                           --enable-glamor \
+                           --disable-glamor \
                            --disable-xaa \
                            --disable-dga \
-                           --enable-tear-free \
+                           --disable-tear-free \
                            --disable-rendernode \
                            --disable-create2 \
                            --disable-rotation \
