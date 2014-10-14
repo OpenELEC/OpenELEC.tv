@@ -166,6 +166,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-rpath \
                            --disable-directx \
                            --enable-sdl-dlopen \
                            --disable-atari-ldg \
+                           --disable-pulseaudio --disable-pulseaudio-shared \
                            --disable-clock_gettime"
 
 if [ "$DISPLAYSERVER" = "x11" ]; then
@@ -188,14 +189,6 @@ if [ "$OPENGL" = "Mesa" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-video-opengl"
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-video-opengl"
-fi
-
-if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
-
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-pulseaudio --enable-pulseaudio-shared"
-else
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-pulseaudio --disable-pulseaudio-shared"
 fi
 
 pre_configure_host() {
