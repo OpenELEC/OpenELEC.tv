@@ -18,7 +18,7 @@
 
 PKG_NAME="tvheadend"
 PKG_VERSION="3.9.1838"
-PKG_REV="0"
+PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.lonelycoder.com/hts/tvheadend_overview.html"
@@ -49,7 +49,7 @@ configure_target() {
             --python=$ROOT/$TOOLCHAIN/bin/python \
             --disable-uriparser \
             --enable-bundle \
-			--enable-hdhomerun_client
+	    --enable-hdhomerun_client
 }
 
 post_make_target() {
