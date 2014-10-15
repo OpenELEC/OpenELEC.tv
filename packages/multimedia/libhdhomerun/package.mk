@@ -42,3 +42,9 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/
     cp -PR libhdhomerun.so $INSTALL/usr/lib/
 }
+
+post_make_target() {
+  mkdir -p $SYSROOT_PREFIX/usr/include/libhdhomerun
+  cp hdhomerun*.h $SYSROOT_PREFIX/usr/include/libhdhomerun
+  cp libhdhomerun.so $SYSROOT_PREFIX/usr/lib
+}
