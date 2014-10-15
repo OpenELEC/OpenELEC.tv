@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="tvheadend"
-PKG_VERSION="3.9.1083"
+PKG_VERSION="3.9.1838"
 PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -48,7 +48,8 @@ configure_target() {
             --disable-avahi \
             --python=$ROOT/$TOOLCHAIN/bin/python \
             --disable-uriparser \
-            --enable-bundle
+            --enable-bundle \
+			--enable-hdhomerun_client
 }
 
 post_make_target() {
