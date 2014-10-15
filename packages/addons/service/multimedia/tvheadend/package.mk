@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="tvheadend"
-PKG_VERSION="3.9.1083"
-PKG_REV="0"
+PKG_VERSION="3.9.1838"
+PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.lonelycoder.com/hts/tvheadend_overview.html"
 #PKG_URL="https://github.com/downloads/tvheadend/tvheadend/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_URL="$DISTRO_SRC/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libressl curl"
+PKG_DEPENDS_TARGET="toolchain libressl curl libhdhomerun"
 PKG_PRIORITY="optional"
 PKG_SECTION="service/multimedia"
 PKG_SHORTDESC="tvheadend (Version: $PKG_VERSION): a TV streaming server for Linux supporting DVB-S, DVB-S2, DVB-C, DVB-T, ATSC, IPTV, and Analog video (V4L) as input sources."
@@ -48,7 +48,8 @@ configure_target() {
             --disable-avahi \
             --python=$ROOT/$TOOLCHAIN/bin/python \
             --disable-uriparser \
-            --enable-bundle
+            --enable-bundle \
+			--enable-hdhomerun_client
 }
 
 post_make_target() {
