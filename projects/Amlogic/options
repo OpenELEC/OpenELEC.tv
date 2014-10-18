@@ -92,10 +92,10 @@
   UBOOT_CONFIGFILE=""
 
 # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
-  KERNEL_UBOOT_TARGET="uImage"
+  KERNEL_UBOOT_TARGET="uImage-dtb"
 
 # Kernel extra targets to build
-  KERNEL_UBOOT_EXTRA_TARGET=""
+  KERNEL_UBOOT_EXTRA_TARGET="meson6_g18.dtd"
 
 # Additional kernel make parameters (for example to specify the u-boot loadaddress)
   KERNEL_MAKE_EXTRACMD=""
