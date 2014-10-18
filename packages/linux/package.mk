@@ -216,5 +216,7 @@ post_install() {
   mkdir -p $INSTALL/lib/firmware/
     ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
 
+  ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
+
   enable_service cpufreq-threshold.service
 }
