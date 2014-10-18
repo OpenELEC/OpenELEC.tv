@@ -46,3 +46,7 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/lib
     cp -PR usr/lib/*.so* $INSTALL/usr/lib
 }
+
+post_install() {
+  enable_service unbind-console.service
+}
