@@ -19,6 +19,10 @@ if [ "$hpd_state" != "1" ]; then # HDMI is not connected
   fbset -fb /dev/fb1 -g 720 "$display_height" 720 "$display_height" 32
 fi
 
+# Include deinterlacer into default VFM map
+echo rm default > /sys/class/vfm/map
+echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map
+
 # Boot with performance governor, then switch to ondemand
 CPU=/sys/devices/system/cpu
 for i in $CPU/cpu0/cpufreq $CPU/cpu1/cpufreq; do
