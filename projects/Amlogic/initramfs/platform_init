@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Enable framebuffer device
+echo 0 > /sys/class/graphics/fb0/blank
+
+# Set framebuffer geometry
+fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
+
 # Set framebuffer size in CVBS mode to match the resolution,
 # for splash screen to be shown correctly
 hpd_state=$(cat /sys/class/amhdmitx/amhdmitx0/hpd_state)
