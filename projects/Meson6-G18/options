@@ -242,7 +242,7 @@
   OPENGL="no"
 
 # OpenGL-ES implementation to use (no / bcm2835-driver)
-  OPENGLES="opengl-amlogic"
+  OPENGLES="opengl-meson6"
 
 # Windowmanager to use (ratpoison / fluxbox / none)
   WINDOWMANAGER="none"

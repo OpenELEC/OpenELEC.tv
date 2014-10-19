@@ -16,7 +16,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="opengl-amlogic"
+PKG_NAME="opengl-meson6"
 PKG_VERSION="apiv401"
 PKG_REV="1"
 PKG_ARCH="arm"
@@ -26,8 +26,8 @@ PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
-PKG_SHORTDESC="opengl-mali: OpenGL-ES and Mali driver for Mali 400 GPUs"
-PKG_LONGDESC="opengl-mali: OpenGL-ES and Mali driver for Mali 400 GPUs"
+PKG_SHORTDESC="opengl-meson6: OpenGL-ES libraries for Mali 400 GPUs"
+PKG_LONGDESC="opengl-meson6: OpenGL-ES libraries for Mali 400 GPUs"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
