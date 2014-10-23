@@ -1,3 +1,7 @@
+4.3.2
+  new addon settings option to enable to update driver from web with latest version
+4.3.1
+  update driver
 4.3.0
   rebuild for addon api bump
 4.1.5

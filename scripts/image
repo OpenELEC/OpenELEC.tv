@@ -30,7 +30,7 @@ $SCRIPTS/build kmod:host
 
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
-if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
+if [ "$OPENELEC_VERSION" = devel ]; then
   if ! GIT_BUILD=$(git rev-list --count HEAD 2>/dev/null)
   then
     GIT_BUILD=$(git rev-list HEAD | wc -l)
@@ -96,7 +96,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   if [ -n "$GIT_HASH" ]; then
 	echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
   fi
-  
+  echo -e "OPENELEC_ARCH=\"$PROJECT.$TARGET_ARCH\"" >> $INSTALL/etc/os-release
+  if [ "$OFFICIAL" = "yes" ]; then
+    echo -e "OPENELEC_BUILD=\"official\"" >> $INSTALL/etc/os-release
+  else
+    echo -e "OPENELEC_BUILD=\"unofficial\"" >> $INSTALL/etc/os-release
+  fi
 
   if [ "$OFFICIAL" = "yes" ]; then
     echo "official" > $INSTALL/etc/build
@@ -153,9 +158,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # LCD support
   [ ! "$LCD_DRIVER" = "none" ] && $SCRIPTS/install lcdproc
 
-# Sensors support
-  [ "$SENSOR_SUPPORT" = "yes" ] && $SCRIPTS/install lm_sensors
-
 # Installer support
   [ "$INSTALLER_SUPPORT" = "yes" ] && $SCRIPTS/install installer
 
@@ -185,7 +187,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # make target dir
   mkdir -p $TARGET_IMG
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
-    rm -rf $TARGET_IMG/$IMAGE_NAME.mach_kernel
 
 # copy kernel to target dir
   if [ "$BOOTLOADER" = "u-boot" ]; then
@@ -202,13 +203,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     KERNEL_ARCH="arm"
   fi
 
-  if [ "$BOOTLOADER" = "atv-bootloader" ]; then
-    cp -PR $BUILD/atv-bootloader-*/mach_kernel $TARGET_IMG/$IMAGE_NAME.mach_kernel
-    chmod 0644 $TARGET_IMG/$IMAGE_NAME.mach_kernel
-  else
-    cp -PR $BUILD/linux-*/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
-    chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
-  fi
+  cp -PR $BUILD/linux-*/arch/$KERNEL_ARCH/boot/$KERNEL_IMAGE $TARGET_IMG/$IMAGE_NAME.kernel
+  chmod 0644 $TARGET_IMG/$IMAGE_NAME.kernel
 
 # create squashfs file
   if [ -z "$SQUASHFS_COMPRESSION" ]; then
@@ -237,7 +233,16 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       # remove n previous created release image
         rm -rf $TARGET_IMG/$IMAGE_NAME.img.gz
         if [ -n "$BOOTLOADER" ]; then
-          BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+          if [ -d $ROOT/projects/$PROJECT/packages ]; then
+          	BOOTLOADER_DIR=`find $ROOT/projects/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
+          else
+          	BOOTLOADER_DIR=""
+          fi
+
+          if [ -z "$BOOTLOADER_DIR" -o ! -d "$BOOTLOADER_DIR" ]; then
+          	BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+          fi
+
           if [ -d "$BOOTLOADER_DIR"/files ]; then
             cp -R $BOOTLOADER_DIR/files/* $RELEASE_DIR
           fi
@@ -255,7 +260,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
 
         if [ -n "$MEDIACENTER" ] ; then
-          echo "XBMC commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
+          echo "Kodi commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
         fi
 
       mkdir -p $RELEASE_DIR/licenses
@@ -263,21 +268,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
       mkdir -p $RELEASE_DIR/target
         cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/target/SYSTEM
-
-        if [ -f $TARGET_IMG/$IMAGE_NAME.mach_kernel ]; then
-          cp $TARGET_IMG/$IMAGE_NAME.mach_kernel $RELEASE_DIR/target/MACH_KERNEL
-        else
-          cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
-        fi
+        cp $TARGET_IMG/$IMAGE_NAME.kernel $RELEASE_DIR/target/KERNEL
 
     # create md5sum's
       ( cd $RELEASE_DIR;
         md5sum -t target/SYSTEM > target/SYSTEM.md5;
-        if [ -f target/MACH_KERNEL ]; then
-          md5sum -t target/MACH_KERNEL > target/MACH_KERNEL.md5;
-        else
-          md5sum -t target/KERNEL > target/KERNEL.md5;
-        fi
+        md5sum -t target/KERNEL > target/KERNEL.md5;
       )
 
     # create target directory
@@ -290,16 +286,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       tar cf $TARGET_IMG/$IMAGE_NAME.tar -C target $IMAGE_NAME
 
     # create image files if requested
-      if [ "$1" = "mkimage" -a "$BOOTLOADER" = "atv-bootloader" ]; then
-        # variables used in image script must be passed
-        sudo env \
-          ROOT="$ROOT" \
-          BUILD="$BUILD" \
-          RELEASE_DIR="$RELEASE_DIR" \
-          TARGET_IMG="$TARGET_IMG" \
-          IMAGE_NAME="$IMAGE_NAME" \
-          $SCRIPTS/mkimage-atv
-      elif [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
+      if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
         if [ "$2" == "efi" ] ; then
           UEFI=yes
         fi

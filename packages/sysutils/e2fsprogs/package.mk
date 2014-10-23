@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="e2fsprogs"
-PKG_VERSION="1.42.11"
+PKG_VERSION="1.42.12"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -67,11 +67,6 @@ PKG_CONFIGURE_OPTS_TARGET="BUILD_CC=$HOST_CC \
 
 PKG_CONFIGURE_OPTS_INIT="$PKG_CONFIGURE_OPTS_TARGET"
 
-pre_configure_target() {
-# e2fsprogs fails to build with LTO support on gcc-4.9
-  strip_lto
-}
-
 post_makeinstall_target() {
   rm -rf $INSTALL/sbin/badblocks
   rm -rf $INSTALL/sbin/blkid
@@ -85,11 +80,6 @@ post_makeinstall_target() {
   rm -rf $INSTALL/sbin/mklost+found
 }
 
-pre_configure_init() {
-# e2fsprogs fails to build with LTO support on gcc-4.9
-  strip_lto
-}
-
 makeinstall_init() {
   mkdir -p $INSTALL/sbin
     cp e2fsck/e2fsck $INSTALL/sbin
@@ -97,4 +87,12 @@ makeinstall_init() {
     ln -sf e2fsck $INSTALL/sbin/fsck.ext3
     ln -sf e2fsck $INSTALL/sbin/fsck.ext4
     ln -sf e2fsck $INSTALL/sbin/fsck.ext4dev
+
+  if [ $INITRAMFS_PARTED_SUPPORT = "yes" ]; then
+    cp misc/mke2fs $INSTALL/sbin
+    ln -sf mke2fs $INSTALL/sbin/mkfs.ext2
+    ln -sf mke2fs $INSTALL/sbin/mkfs.ext3
+    ln -sf mke2fs $INSTALL/sbin/mkfs.ext4
+    ln -sf mke2fs $INSTALL/sbin/mkfs.ext4dev
+  fi
 }

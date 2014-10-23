@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="libxml2"
-PKG_VERSION="2.9.1"
+PKG_VERSION="2.9.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="http://xmlsoft.org"
 PKG_URL="ftp://xmlsoft.org/libxml2/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST="zlib:host Python:host"
 PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="textproc"
@@ -33,14 +32,8 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_HOST="--prefix=$ROOT/$TOOLCHAIN \
-             --disable-silent-rules \
-             --disable-ipv6 \
-             --with-python \
-             --with-zlib \
-             --without-lzma"
-
-PKG_CONFIGURE_OPTS_TARGET="--enable-static \
+PKG_CONFIGURE_OPTS_TARGET="ac_cv_header_ansidecl_h=no \
+             --enable-static \
              --enable-shared \
              --disable-silent-rules \
              --enable-ipv6 \

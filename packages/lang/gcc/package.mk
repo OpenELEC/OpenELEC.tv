@@ -23,9 +23,9 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://gcc.gnu.org/"
 PKG_URL="ftp://ftp.gnu.org/gnu/gcc/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_BOOTSTRAP="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host cloog:host ppl:host"
+PKG_DEPENDS_BOOTSTRAP="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host"
 PKG_DEPENDS_TARGET="gcc:host"
-PKG_DEPENDS_HOST="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host cloog:host ppl:host glibc"
+PKG_DEPENDS_HOST="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host glibc"
 PKG_PRIORITY="optional"
 PKG_SECTION="lang"
 PKG_SHORTDESC="gcc: The GNU Compiler Collection Version 4 (aka GNU C Compiler)"
@@ -42,9 +42,8 @@ BOOTSTRAP_CONFIGURE_OPTS="--host=$HOST_NAME \
                           --with-gmp=$ROOT/$TOOLCHAIN \
                           --with-mpfr=$ROOT/$TOOLCHAIN \
                           --with-mpc=$ROOT/$TOOLCHAIN \
-                          --with-ppl=$ROOT/$TOOLCHAIN \
-                          --disable-ppl-version-check \
-                          --with-cloog=$ROOT/$TOOLCHAIN \
+                          --without-ppl \
+                          --without-cloog \
                           --with-gnu-as \
                           --with-gnu-ld \
                           --enable-languages=c \
@@ -70,7 +69,6 @@ BOOTSTRAP_CONFIGURE_OPTS="--host=$HOST_NAME \
                           --disable-decimal-float \
                           $GCC_OPTS \
                           --disable-nls \
-                          --disable-cloog-version-check \
                           --enable-checking=release"
 
 PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
@@ -78,9 +76,8 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --with-gmp=$ROOT/$TOOLCHAIN \
                          --with-mpfr=$ROOT/$TOOLCHAIN \
                          --with-mpc=$ROOT/$TOOLCHAIN \
-                         --with-ppl=$ROOT/$TOOLCHAIN \
-                         --disable-ppl-version-check \
-                         --with-cloog=$ROOT/$TOOLCHAIN \
+                         --without-ppl \
+                         --without-cloog \
                          --enable-languages=${TOOLCHAIN_LANGUAGES} \
                          --with-gnu-as \
                          --with-gnu-ld \
@@ -91,12 +88,13 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --disable-libssp \
                          --disable-multilib \
                          --disable-libatomic \
+                         --disable-libitm \
                          --enable-gold \
                          --enable-ld=default \
                          --enable-plugin \
                          --enable-lto \
                          --disable-libquadmath \
-                         --enable-cloog-backend=isl \
+                         --disable-libgomp \
                          --enable-tls \
                          --enable-shared \
                          --disable-static \
@@ -108,7 +106,6 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --enable-clocale=gnu \
                          $GCC_OPTS \
                          --disable-nls \
-                         --disable-cloog-version-check \
                          --enable-checking=release"
 
 pre_configure_bootstrap() {
@@ -126,8 +123,6 @@ post_make_host() {
 
   if [ ! "$DEBUG" = yes ]; then
     $TARGET_STRIP $TARGET_NAME/libgcc/libgcc_s.so*
-    $TARGET_STRIP $TARGET_NAME/libgomp/.libs/libgomp.so*
-    $TARGET_STRIP $TARGET_NAME/libitm/.libs/libitm.so*
     $TARGET_STRIP $TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so*
   fi
 }
@@ -176,7 +171,6 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib
     cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libgcc/libgcc_s.so* $INSTALL/usr/lib
-    cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libgomp/.libs/libgomp.so* $INSTALL/usr/lib
     cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so* $INSTALL/usr/lib
 }
 

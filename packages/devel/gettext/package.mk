@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="gettext"
-PKG_VERSION="0.19.2"
+PKG_VERSION="0.19.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -38,6 +38,8 @@ PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared \
                          --disable-rpath \
                          --with-gnu-ld \
                          --disable-java \
+                         --disable-curses \
+                         --with-included-libxml \
                          --disable-native-java \
                          --disable-csharp \
                          --without-emacs"

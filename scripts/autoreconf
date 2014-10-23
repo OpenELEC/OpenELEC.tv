@@ -20,13 +20,19 @@
 
 . config/options $1
 
-[ ! -f "$PKG_BUILD/configure.in" -a ! -f "$PKG_BUILD/configure.ac" ] && echo "configure.in or configure.ac not found" && exit 1
+if [ ! -f "$PKG_BUILD/configure.in" \
+    -a ! -f "$PKG_BUILD/configure.ac" ] ; then
+  echo "configure.in or configure.ac not found"
+  exit 1
+fi
 
-printf "%${BUILD_INDENT}c ${boldmagenta}AUTORECONF${endcolor}   $1\n" ' '>&$SILENT_OUT
-export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
+if [ ! -f $PKG_BUILD/.autoreconf-done ] ; then
+  touch $PKG_BUILD/NEWS $PKG_BUILD/AUTHORS $PKG_BUILD/ChangeLog
+  mkdir -p $PKG_BUILD/m4
 
-touch $PKG_BUILD/NEWS $PKG_BUILD/AUTHORS $PKG_BUILD/ChangeLog
-mkdir -p $PKG_BUILD/m4
-do_autoreconf $PKG_BUILD
+  printf "%${BUILD_INDENT}c ${boldmagenta}AUTORECONF${endcolor}   $1\n" ' '>&$SILENT_OUT
+  export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
-exit 0
+  do_autoreconf $PKG_BUILD
+  touch $PKG_BUILD/.autoreconf-done
+fi

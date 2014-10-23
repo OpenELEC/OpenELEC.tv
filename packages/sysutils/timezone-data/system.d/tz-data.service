@@ -1,14 +1,17 @@
 [Unit]
 Description=Setup Timezone data
-Before=xbmc.service
-
-ConditionPathExists=/storage/.xbmc/userdata/guisettings.xml
+DefaultDependencies=no
+Before=systemd-udevd.service
+After=var.mount
 
 [Service]
 Type=oneshot
-ExecStart=/usr/lib/openelec/tzdata-setup
+Environment=TIMEZONE=UTC
+EnvironmentFile=-/storage/.cache/timezone
+ExecStartPre=/bin/mkdir -p /var/run
+ExecStart=/bin/ln -sf /usr/share/zoneinfo/${TIMEZONE} /var/run/localtime
 RemainAfterExit=yes
 StartLimitInterval=0
 
 [Install]
-WantedBy=xbmc.service
+WantedBy=sysinit.target

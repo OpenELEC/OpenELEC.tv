@@ -2,6 +2,8 @@ setup_toolchain() {
   if [ "$1" = target ]; then
     export DESTIMAGE="target"
 
+    unset CPP
+
     export CC=$TARGET_CC
     export CXX=$TARGET_CXX
     export LD=$TARGET_LD
@@ -25,6 +27,8 @@ setup_toolchain() {
 
   elif [ "$1" = host ]; then
     export DESTIMAGE="host"
+
+    unset CPP
 
     export AWK=$HOST_AWK
     export CC=$HOST_CC
@@ -51,12 +55,22 @@ setup_toolchain() {
 }
 
 kernel_path() {
-  . $ROOT/packages/linux/package.mk
+  if [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
+    . $ROOT/projects/$PROJECT/packages/linux/package.mk
+  else
+    . $ROOT/packages/linux/package.mk
+  fi
+
   echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
 }
 
 kernel_version() {
-  . $ROOT/packages/linux/package.mk
+  if [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
+    . $ROOT/projects/$PROJECT/packages/linux/package.mk
+  else
+    . $ROOT/packages/linux/package.mk
+  fi
+
   echo ${PKG_VERSION}
 }
 
@@ -68,10 +82,16 @@ get_module_dir() {
 # get package's build dir
 get_build_dir() {
   if [ ! -z $1 ] ; then
-    local _PKG_DIR=$(find $ROOT/packages -name $1)
-    if [ -d $_PKG_DIR -a -f $_PKG_DIR/package.mk ] ; then
+    local _PKG_DIR=$(find $ROOT/projects/$PROJECT/packages -name $1 2>/dev/null)
+    if [ -d "$_PKG_DIR" -a -f $_PKG_DIR/package.mk ] ; then
       . $_PKG_DIR/package.mk
+    else
+      local _PKG_DIR=$(find $ROOT/packages -name $1 2>/dev/null)
+      if [ -d "$_PKG_DIR" -a -f $_PKG_DIR/package.mk ] ; then
+        . $_PKG_DIR/package.mk
+      fi
     fi
+
     echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
   fi
 }
@@ -165,14 +185,13 @@ do_autoreconf() {
 
 strip_lto() {
   # strip out LTO optimization from *FLAGS
-  CFLAGS=`echo $CFLAGS | sed -e "s|-flto||g"`
-  CXXFLAGS=`echo $CXXFLAGS | sed -e "s|-flto||g"`
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-flto||g"`
-}
-
-strip_linker_plugin() {
-  # strip out usage from linker plugin
-  LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-linker-plugin||g"`
+  if [ -n "$GCC_OPTIM_LTO" ] ; then
+    CFLAGS=`echo $CFLAGS | sed -e "s|$GCC_OPTIM_LTO||g"`
+    CXXFLAGS=`echo $CXXFLAGS | sed -e "s|$GCC_OPTIM_LTO||g"`
+  fi
+  if [ -n "$LD_OPTIM_LTO" ] ; then
+    LDFLAGS=`echo $LDFLAGS | sed -e "s|$LD_OPTIM_LTO||g"`
+  fi
 }
 
 strip_gold() {
@@ -299,8 +318,7 @@ show_config() {
   config_message="$config_message\n\n Hardware decoder configuration:"
   config_message="$config_message\n $dashes$dashes"
 
-  config_message="$config_message\n - Broadcom CrystalHD Decoder:\t\t $CRYSTALHD"
-  config_message="$config_message\n - XBMC Player driver:\t\t\t $XBMCPLAYER_DRIVER"
+  config_message="$config_message\n - Kodi Player driver:\t\t\t $KODIPLAYER_DRIVER"
   config_message="$config_message\n - VAAPI Support:\t\t\t $VAAPI"
   config_message="$config_message\n - VDPAU Support:\t\t\t $VDPAU"
 
@@ -313,7 +331,7 @@ show_config() {
   config_message="$config_message\n - ATV Remote support:\t\t\t $ATVCLIENT_SUPPORT"
   config_message="$config_message\n - CEC Adapter support:\t\t\t $CEC_SUPPORT"
   config_message="$config_message\n - IRTrans support:\t\t\t $IRSERVER_SUPPORT"
-  config_message="$config_message\n - XBMC Joystick support:\t\t $JOYSTICK_SUPPORT"
+  config_message="$config_message\n - Kodi Joystick support:\t\t $JOYSTICK_SUPPORT"
 
   # Misc. hardware configuration
 
@@ -345,12 +363,13 @@ show_config() {
   config_message="$config_message\n - SFTP server support:\t\t\t $SFTP_SERVER"
   config_message="$config_message\n - PPTP support:\t\t\t $PPTP_SUPPORT"
   config_message="$config_message\n - OpenVPN support:\t\t\t $OPENVPN_SUPPORT"
-  config_message="$config_message\n - XBMC Airplay support:\t\t $AIRPLAY_SUPPORT"
-  config_message="$config_message\n - XBMC Airtunes support:\t\t $AIRTUNES_SUPPORT"
-  config_message="$config_message\n - XBMC AFP support:\t\t\t $AFP_SUPPORT"
-  config_message="$config_message\n - XBMC NFS support:\t\t\t $NFS_SUPPORT"
-  config_message="$config_message\n - XBMC SAMBA client support:\t\t $SAMBA_SUPPORT"
-  config_message="$config_message\n - XBMC Webserver support:\t\t $WEBSERVER"
+  config_message="$config_message\n - Kodi Airplay support:\t\t $AIRPLAY_SUPPORT"
+  config_message="$config_message\n - Kodi Airtunes support:\t\t $AIRTUNES_SUPPORT"
+  config_message="$config_message\n - Kodi AFP support:\t\t\t $AFP_SUPPORT"
+  config_message="$config_message\n - Kodi NFS support:\t\t\t $NFS_SUPPORT"
+  config_message="$config_message\n - Kodi SAMBA client support:\t\t $SAMBA_SUPPORT"
+  config_message="$config_message\n - Kodi UPNP support:\t\t\t $UPNP_SUPPORT"
+  config_message="$config_message\n - Kodi Webserver support:\t\t $WEBSERVER"
 
   # OS configuration
 
@@ -380,24 +399,24 @@ fi
   config_message="$config_message\n - NTFS Support (via Fuse):\t\t $NTFS3G"
   config_message="$config_message\n - Install HFS Tools:\t\t\t $HFSTOOLS"
 
-  # XBMC configuration
+  # Kodi configuration
 
-  config_message="$config_message\n\n XBMC configuration:"
+  config_message="$config_message\n\n Kodi configuration:"
   config_message="$config_message\n $dashes$dashes"
 
-  config_message="$config_message\n - XBMC version:\t\t\t $MEDIACENTER"
-  config_message="$config_message\n - XBMC nonfree support:\t\t $NONFREE_SUPPORT"
-  config_message="$config_message\n - XBMC DVDCSS support:\t\t\t $DVDCSS_SUPPORT"
+  config_message="$config_message\n - Kodi version:\t\t\t $MEDIACENTER"
+  config_message="$config_message\n - Kodi nonfree support:\t\t $NONFREE_SUPPORT"
+  config_message="$config_message\n - Kodi DVDCSS support:\t\t\t $DVDCSS_SUPPORT"
 
   for config_skin in $SKINS; do
     config_message="$config_message\n - Include Skin:\t\t\t $config_skin"
   done
 
   config_message="$config_message\n - Default Skin:\t\t\t $SKIN_DEFAULT"
-  config_message="$config_message\n - Include extra fonts:\t\t\t $XBMC_EXTRA_FONTS"
-  config_message="$config_message\n - Include RSXS Screensaver:\t\t $XBMC_SCR_RSXS"
-  config_message="$config_message\n - Include ProjectM Visualization:\t $XBMC_VIS_PROJECTM"
-  config_message="$config_message\n - Include Goom Visualization:\t\t $XBMC_VIS_GOOM"
+  config_message="$config_message\n - Include extra fonts:\t\t\t $KODI_EXTRA_FONTS"
+  config_message="$config_message\n - Include RSXS Screensaver:\t\t $KODI_SCR_RSXS"
+  config_message="$config_message\n - Include ProjectM Visualization:\t $KODI_VIS_PROJECTM"
+  config_message="$config_message\n - Include Goom Visualization:\t\t $KODI_VIS_GOOM"
 
   config_message="$config_message\n"
   config_message="$config_message\n $dashes$dashes$dashes"

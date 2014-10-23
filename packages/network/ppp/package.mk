@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="ppp"
-PKG_VERSION="2.4.6"
+PKG_VERSION="2.4.7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://samba.org/"
 PKG_URL="http://samba.org/ftp/ppp/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libpcap"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="ppp: contains the pppd daemon and the chat program. This is used for connecting to other machines; often for connecting to the Internet via a dial-up or PPPoE connection to an ISP."

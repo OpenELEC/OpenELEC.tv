@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="llvm"
-PKG_VERSION="3.4.2"
+PKG_VERSION="3.5.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://llvm.org/"
-PKG_URL="http://llvm.org/releases/$PKG_VERSION/${PKG_NAME}-${PKG_VERSION}.src.tar.gz"
+PKG_URL="http://llvm.org/releases/$PKG_VERSION/${PKG_NAME}-${PKG_VERSION}.src.tar.xz"
 PKG_SOURCE_DIR="${PKG_NAME}-${PKG_VERSION}.src"
 PKG_DEPENDS_HOST=""
 PKG_DEPENDS_TARGET="toolchain llvm:host"
@@ -98,11 +98,6 @@ pre_configure_host() {
     autoconf --force --verbose -I m4 -o ../configure
   )
 
-  ( cd ../projects/sample/autoconf
-    aclocal  --force --verbose -I m4
-    autoconf --force --verbose -I m4 -o ../configure
-  )
-
   # we are building hosttools inside the target builddir
     mkdir -p ../.$TARGET_NAME && cd ../.$TARGET_NAME/
     rm -rf ../.$HOST_NAME
@@ -110,14 +105,8 @@ pre_configure_host() {
 }
 
 pre_configure_target() {
-  # llvm fails to build with LTO support
-    strip_lto
-
-  # llvm 3.3+ fails to build with -Os
-  # see https://bugs.gentoo.org/show_bug.cgi?id=489708
-  # please test without this on llvm upgrade
-    export CFLAGS=`echo $CFLAGS | sed -e "s|-Os|-O2|"`
-    export CXXFLAGS=`echo $CFLAGS | sed -e "s|-Os|-O2|"`
+  export CFLAGS="$CFLAGS -fPIC"
+  export CXXFLAGS="$CXXFLAGS -fPIC"
 }
 
 makeinstall_host() {

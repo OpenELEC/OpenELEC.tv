@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="connman"
-PKG_VERSION="1.24"
+PKG_VERSION="1.26"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.connman.net"
 PKG_URL="https://www.kernel.org/pub/linux/network/connman/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain glib readline dbus iptables wpa_supplicant ntp"
+PKG_DEPENDS_TARGET="toolchain glib readline dbus iptables wpa_supplicant"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="connman: Network manager daemon"
@@ -64,6 +64,7 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --disable-selinux \
                            --enable-loopback \
                            --enable-ethernet \
+                           --disable-gadget \
                            --enable-wifi \
                            --disable-bluetooth \
                            --disable-ofono \
@@ -74,6 +75,8 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --disable-tools \
                            --enable-client \
                            --enable-datafiles \
+                           --with-dbusconfdir=/etc \
+                           --with-systemdunitdir=/usr/lib/systemd/system \
                            --disable-silent-rules"
 
 
@@ -99,6 +102,7 @@ post_makeinstall_target() {
     sed -i $INSTALL/etc/connman/main.conf \
         -e "s|^# BackgroundScanning.*|BackgroundScanning = true|g" \
         -e "s|^# FallbackNameservers.*|FallbackNameservers = 8.8.8.8,8.8.4.4|g" \
+        -e "s|^# FallbackTimeservers.*|FallbackTimeservers = 0.pool.ntp.org,1.pool.ntp.org,2.pool.ntp.org,3.pool.ntp.org|g" \
         -e "s|^# PreferredTechnologies.*|PreferredTechnologies = ethernet,wifi,cellular|g" \
         -e "s|^# TetheringTechnologies.*|TetheringTechnologies = wifi|g" \
         -e "s|^# AllowHostnameUpdates.*|AllowHostnameUpdates = false|g" \
@@ -106,16 +110,11 @@ post_makeinstall_target() {
 
   mkdir -p $INSTALL/usr/config
     cp $PKG_DIR/config/hosts.conf $INSTALL/usr/config
-
-  mkdir -p $INSTALL/usr/share/connman/
-    cp $PKG_DIR/config/settings $INSTALL/usr/share/connman/
 }
 
 post_install() {
   add_user system x 430 430 "service" "/var/run/connman" "/bin/sh"
   add_group system 430
 
-  enable_service hostname.service
-  enable_service loopback.service
   enable_service connman.service
 }

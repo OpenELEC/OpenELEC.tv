@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="boost"
-PKG_VERSION="1_55_0"
+PKG_VERSION="1_56_0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.boost.org/"
-PKG_URL="$SOURCEFORGE_SRC/boost/boost/1.55.0/${PKG_NAME}_${PKG_VERSION}.tar.bz2"
+PKG_URL="$SOURCEFORGE_SRC/boost/boost/1.56.0/${PKG_NAME}_${PKG_VERSION}.tar.bz2"
 PKG_SOURCE_DIR="${PKG_NAME}_${PKG_VERSION}"
 PKG_DEPENDS_HOST=""
 PKG_DEPENDS_TARGET="toolchain boost:host Python:host zlib bzip2"
@@ -35,7 +35,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_host() {
-  cd tools/build/v2/engine
+  cd tools/build/src/engine
     sh build.sh
 }
 
@@ -45,9 +45,6 @@ makeinstall_host() {
 }
 
 pre_configure_target() {
-# boost fails building with LTO support
-  strip_lto
-
   export CFLAGS="$CFLAGS -fPIC"
   export CXXFLAGS="$CXXFLAGS -fPIC"
   export LDFLAGS="$LDFLAGS -fPIC"
@@ -59,7 +56,7 @@ configure_target() {
                   --with-python=$ROOT/$TOOLCHAIN/bin/python \
 
   echo "using gcc : `$TARGET_CC -v 2>&1  | tail -n 1 |awk '{print $3}'` : $TARGET_CC  : <compileflags>\"$CFLAGS\" <linkflags>\"$LDFLAGS\" ;" \
-    > tools/build/v2/user-config.jam
+    > tools/build/src/user-config.jam
 }
 
 make_target() {
@@ -69,12 +66,13 @@ make_target() {
 makeinstall_target() {
   $ROOT/$TOOLCHAIN/bin/bjam -d2 --toolset=gcc link=static \
                                 --prefix=$SYSROOT_PREFIX/usr \
-                                  --layout=system \
-                                  --with-thread \
-                                  --with-iostreams \
-                                  --with-system \
-                                  --with-serialization \
-                                  --with-filesystem \
-                                  --with-regex -sICU_PATH="$SYSROOT_PREFIX/usr" \
-                                  install
+                                --ignore-site-config \
+                                --layout=system \
+                                --with-thread \
+                                --with-iostreams \
+                                --with-system \
+                                --with-serialization \
+                                --with-filesystem \
+                                --with-regex -sICU_PATH="$SYSROOT_PREFIX/usr" \
+                                install
 }

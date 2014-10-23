@@ -17,14 +17,13 @@
 ################################################################################
 
 PKG_NAME="ncurses"
-PKG_VERSION="5.7"
+PKG_VERSION="5.9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="http://www.gnu.org/software/ncurses/"
 PKG_URL="http://ftp.gnu.org/pub/gnu/ncurses/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST=""
-PKG_DEPENDS_TARGET="toolchain ncurses:host"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
 PKG_SHORTDESC="ncurses: The ncurses (new curses) library"
@@ -33,26 +32,32 @@ PKG_LONGDESC="The ncurses (new curses) library is a free software emulation of c
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_HOST="--with-shared"
-PKG_CONFIGURE_OPTS_TARGET="--without-cxx \
+PKG_CONFIGURE_OPTS_TARGET="--without-ada \
+                           --without-cxx \
                            --without-cxx-binding \
-                           --without-ada \
+                           --disable-db-install \
+                           --without-manpages \
                            --without-progs \
-                           --with-shared \
+                           --without-tests \
+                           --with-curses-h \
+                           --without-shared \
                            --with-normal \
                            --without-debug \
                            --without-profile \
                            --without-termlib \
+                           --without-ticlib \
+                           --without-gpm \
                            --without-dbmalloc \
                            --without-dmalloc \
-                           --without-gpm \
                            --disable-rpath \
                            --disable-overwrite \
-                           --enable-database \
+                           --disable-database \
+                           --with-fallbacks=linux,screen,xterm,xterm-color \
                            --disable-big-core \
                            --enable-termcap \
                            --enable-getcap \
-                           --disable-getcap-cache \
+                           --enable-getcap-cache \
+                           --enable-symlinks \
                            --disable-bsdpad \
                            --without-rcs-ids \
                            --enable-ext-funcs \
@@ -74,48 +79,11 @@ PKG_CONFIGURE_OPTS_TARGET="--without-cxx \
 
 pre_configure_target() {
   # causes some segmentation fault's (dialog) when compiled with gcc's link time optimization.
-  strip_linker_plugin
-}
-
-make_host() {
-  make -C include
-  make -C progs tic
-}
-
-makeinstall_host() {
-  cp progs/tic $ROOT/$TOOLCHAIN/bin
-  cp lib/*.so* $ROOT/$TOOLCHAIN/lib
-  make -C include install
-}
-
-make_target() {
-  make -C include
-  make -C ncurses
-}
-
-makeinstall_target() {
-  $MAKEINSTALL -C include
-  $MAKEINSTALL -C ncurses
-
-  cp misc/ncurses-config $ROOT/$TOOLCHAIN/bin
-    chmod +x $ROOT/$TOOLCHAIN/bin/ncurses-config
-    $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $ROOT/$TOOLCHAIN/bin/ncurses-config
-
-  make DESTDIR=$INSTALL -C ncurses install
+  strip_lto
 }
 
 post_makeinstall_target() {
-  mkdir -p $INSTALL/usr/share/terminfo/l
-    TERMINFO=$INSTALL/usr/share/terminfo $ROOT/$TOOLCHAIN/bin/tic -xe linux \
-      $ROOT/$PKG_BUILD/misc/terminfo.src
-
-  mkdir -p $INSTALL/usr/share/terminfo/s
-    TERMINFO=$INSTALL/usr/share/terminfo $ROOT/$TOOLCHAIN/bin/tic -xe screen \
-      $ROOT/$PKG_BUILD/misc/terminfo.src
-
-  mkdir -p $INSTALL/usr/share/terminfo/x
-    TERMINFO=$INSTALL/usr/share/terminfo $ROOT/$TOOLCHAIN/bin/tic -xe xterm \
-      $ROOT/$PKG_BUILD/misc/terminfo.src
-    TERMINFO=$INSTALL/usr/share/terminfo $ROOT/$TOOLCHAIN/bin/tic -xe xterm-color \
-      $ROOT/$PKG_BUILD/misc/terminfo.src
+  cp misc/ncurses-config $ROOT/$TOOLCHAIN/bin
+    chmod +x $ROOT/$TOOLCHAIN/bin/ncurses-config
+    $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $ROOT/$TOOLCHAIN/bin/ncurses-config
 }

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.3"
+PKG_VERSION="2.4.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -36,7 +36,7 @@ if [ "$VAAPI" = yes ]; then
 # configure GPU drivers and dependencies:
   get_graphicdrivers
 
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $LIBVA"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   FFMPEG_VAAPI="--enable-vaapi"
 else
   FFMPEG_VAAPI="--disable-vaapi"
@@ -59,13 +59,6 @@ if [ "$OPTIMIZATIONS" = size ]; then
   FFMPEG_OPTIM="--disable-small"
 else
   FFMPEG_OPTIM="--disable-small"
-fi
-
-if [ "$CRYSTALHD" = yes ]; then
-# disabled, we use XBMC's internal solution
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
-else
-  FFMPEG_CRYSTALHD="--disable-crystalhd"
 fi
 
 case "$TARGET_ARCH" in
@@ -135,8 +128,8 @@ configure_target() {
               --extra-libs="" \
               --extra-version="" \
               --build-suffix="" \
-              --enable-static \
-              --disable-shared \
+              --disable-static \
+              --enable-shared \
               --enable-gpl \
               --disable-version3 \
               --disable-nonfree \
@@ -162,7 +155,7 @@ configure_target() {
               --disable-w32threads \
               --disable-x11grab \
               --enable-network \
-              --disable-gnutls --enable-openssl --enable-nonfree \
+              --disable-gnutls --enable-libressl \
               --disable-gray \
               --enable-swscale-alpha \
               $FFMPEG_OPTIM \
@@ -170,7 +163,7 @@ configure_target() {
               --enable-fft \
               --enable-mdct \
               --enable-rdft \
-              $FFMPEG_CRYSTALHD \
+              --disable-crystalhd \
               $FFMPEG_VAAPI \
               $FFMPEG_VDPAU \
               --disable-dxva2 \
@@ -225,11 +218,9 @@ configure_target() {
               $FFMPEG_CPU \
               $FFMPEG_FPU \
               --enable-yasm \
-              --disable-sram \
               --disable-symver
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share/ffmpeg/examples
 }

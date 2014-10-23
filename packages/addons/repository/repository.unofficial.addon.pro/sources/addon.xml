@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="repository.unofficial.addon.pro"
-                name="Unofficial [COLOR FF757677]Open[/COLOR][COLOR FF8ABEE2]ELEC[/COLOR] Mediacenter OS Add-ons"
-                version="4.3.0"
+                name="Unofficial [COLOR FF757677]Open[/COLOR][COLOR FF8ABEE2]ELEC[/COLOR] (@PROJECT@/@ARCH@) Add-ons"
+                version="@PKG_VERSION@"
                 provider-name="unofficial.addon.pro">
         <extension point="xbmc.addon.repository"
                 name="Unofficial OpenELEC.tv Add-on Repository">
@@ -12,7 +12,10 @@
         <extension point="xbmc.addon.metadata">
                 <summary>Unofficial addon repository for OpenELEC</summary>
                 <description>
-[COLOR orange]Use with care. There will be NO end user support for addons in this repository[/COLOR]
+[COLOR red]=== BIG FAT WARNING ===[/COLOR]
+Use this repository at your own risk.
+If your house gets burned, it's your fault, not ours.
+We give no guarantee. We give no support.
                 </description>
                 <disclaimer>This is an unofficial addon repository. please don't ask for support in openelec forum / irc channel</disclaimer>
                 <platform>all</platform>

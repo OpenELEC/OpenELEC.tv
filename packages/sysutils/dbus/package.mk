@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="dbus"
-PKG_VERSION="1.8.6"
+PKG_VERSION="1.8.8"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://dbus.freedesktop.org"
 PKG_URL="http://dbus.freedesktop.org/releases/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST="expat:host"
 PKG_DEPENDS_TARGET="toolchain expat systemd"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
@@ -48,22 +47,11 @@ PKG_CONFIGURE_OPTS_TARGET="export ac_cv_have_abstract_sockets=yes \
                            --disable-selinux \
                            --disable-libaudit \
                            --enable-systemd \
-                           --enable-dnotify \
                            --enable-inotify \
-                           --with-xml=expat \
+                           --without-dbus-glib \
+                           --without-valgrind \
                            --without-x \
                            --with-dbus-user=dbus"
-
-PKG_CONFIGURE_OPTS_HOST="--disable-verbose-mode \
-                         --disable-asserts \
-                         --disable-checks \
-                         --disable-tests \
-                         --disable-xml-docs \
-                         --disable-doxygen-docs"
-
-post_makeinstall_host() {
-  $ROOT/$TOOLCHAIN/bin/dbus-daemon --introspect > introspect.xml
-}
 
 post_makeinstall_target() {
   rm -rf $INSTALL/etc/rc.d

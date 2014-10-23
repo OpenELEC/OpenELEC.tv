@@ -53,7 +53,7 @@ if [ -n "$PKG_ARCH" -a ! "$PKG_ARCH" = "any" ]; then
 fi
 
 if [ ! -f $PKG_DIR/package.mk ]; then
-  printf "${boldred} no package.mk file found in $PKG_DIR${endcolor}\n"
+  printf "${boldred}${PACKAGE_NAME}: no package.mk file found${endcolor}\n"
   exit 1
 fi
 
@@ -125,6 +125,12 @@ if [ "$TARGET" = target ] ; then
     mkdir -p $INSTALL/usr/share/debugconf
       cp $PKG_DIR/debug.d/*.conf $INSTALL/usr/share/debugconf
   fi
+
+  if [ -d $PKG_DIR/modprobe.d ]; then
+    mkdir -p $INSTALL/etc/modprobe.d
+    cp $PKG_DIR/modprobe.d/*.conf $INSTALL/etc/modprobe.d
+  fi
+
 fi
 
 # unset functions

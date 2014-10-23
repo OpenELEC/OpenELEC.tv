@@ -16,19 +16,14 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# binutils-2.24:
-#  - fails to build with GOLD support on ARM
-#    see https://sourceware.org/bugzilla/show_bug.cgi?id=15639
-#    ld.gold: internal error in do_read_symbols, at build.OpenELEC-RPi.arm-devel/binutils-2.24/gold/arm.cc:6734
-
 PKG_NAME="binutils"
-PKG_VERSION="2.23.2"
+PKG_VERSION="2.24"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/software/binutils/binutils.html"
 PKG_URL="http://ftp.gnu.org/gnu/binutils/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST="ccache:host bison:host flex:host linux:host gmp:host mpfr:host cloog:host ppl:host"
+PKG_DEPENDS_HOST="ccache:host bison:host flex:host linux:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
 PKG_SHORTDESC="binutils: A GNU collection of binary utilities"
@@ -40,26 +35,18 @@ PKG_AUTORECONF="no"
 PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --with-sysroot=$SYSROOT_PREFIX \
                          --with-lib-path=$SYSROOT_PREFIX/lib:$SYSROOT_PREFIX/usr/lib \
-                         --with-gmp=$ROOT/$TOOLCHAIN \
-                         --with-mpfr=$ROOT/$TOOLCHAIN \
-                         --with-ppl=$ROOT/$TOOLCHAIN \
-                         --with-cloog=$ROOT/$TOOLCHAIN \
+                         --without-ppl \
+                         --without-cloog \
                          --disable-werror \
                          --disable-multilib \
                          --disable-libada \
                          --disable-libssp \
-                         --disable-ppl-version-check \
-                         --enable-cloog-backend=isl \
                          --enable-version-specific-runtime-libs \
                          --enable-plugins \
                          --enable-gold \
                          --enable-ld=default \
                          --enable-lto \
                          --disable-nls"
-
-if [ "$TARGET_ARCH" = "x86_64" ]; then
-  PKG_CONFIGURE_OPTS_HOST="$PKG_CONFIGURE_OPTS_HOST --enable-64-bit-bfd"
-fi
 
 pre_configure_host() {
   unset CPPFLAGS
