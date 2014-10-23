@@ -73,7 +73,10 @@ post_patch() {
          $PKG_BUILD/Makefile
 
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
-  sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+
+  if [ ! "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+  fi
 
   # disable PPP support if not enabled
   if [ ! "$PPTP_SUPPORT" = yes ]; then
@@ -144,6 +147,12 @@ make_target() {
   fi
 
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
+
+  if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    LDFLAGS="" ./mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+      --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
+    mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
+  fi
 
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
     ( cd tools/perf
