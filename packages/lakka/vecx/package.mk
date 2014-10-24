@@ -35,7 +35,6 @@ PKG_LONGDESC="libretro adaptation of vecx"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-
 make_target() {
   make -f Makefile.libretro
 }

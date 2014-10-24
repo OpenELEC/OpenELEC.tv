@@ -35,10 +35,6 @@ PKG_LONGDESC="Gambatte is an open-source Game Boy Color emulator written for fun
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-#pre_configure_target() {
-#  sed -i -e "s/CC         = gcc//" Makefile
-#}
-
 make_target() {
   make -C libgambatte -f Makefile.libretro
 }

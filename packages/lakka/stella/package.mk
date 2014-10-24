@@ -35,10 +35,6 @@ PKG_LONGDESC="Stella is a multi-platform Atari 2600 VCS emulator released under 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-#pre_configure_target() {
-#  sed -i -e "s/CC         = gcc//" Makefile
-#}
-
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp stella_libretro.so $INSTALL/usr/lib/libretro/

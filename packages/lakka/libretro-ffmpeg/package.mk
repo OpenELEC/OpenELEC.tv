@@ -36,10 +36,6 @@ PKG_LONGDESC="FFmpeg is a complete, cross-platform solution to record, convert a
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-#pre_configure_target() {
-#  sed -i -e "s/CC         = gcc//" Makefile
-#}
-
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp ffmpeg_libretro.so $INSTALL/usr/lib/libretro/
