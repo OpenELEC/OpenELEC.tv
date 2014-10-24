@@ -36,9 +36,6 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
     cp -PR keytest $INSTALL/usr/bin
     cp -PR amremote_config $INSTALL/usr/bin
-
-  mkdir -p $INSTALL/etc
-    cp $PKG_DIR/config/remote.conf $INSTALL/etc
 }
 
 post_install() {
