@@ -307,8 +307,8 @@
     $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
   }
 
-  update() {
-    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+  update_file() {
+    if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
       echo "updating $1..."
       mount -o remount,rw /flash
       mv $UPDATE_DIR/$2 $3 2>/dev/null
@@ -320,11 +320,18 @@
     fi
   }
 
-  update_mtd() {
-    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+  update_partition() {
+    if [ -f "$UPDATE_DIR/$2" -a -b "$3" ]; then
       echo "updating $1..."
-      flash_eraseall "$3"
-      nandwrite -p "$3" "$UPDATE_DIR/$2"
+      case $IMAGE_KERNEL in
+        /dev/mtd*)
+          flash_eraseall "$3"
+          nandwrite -p "$3" "$UPDATE_DIR/$2"
+          ;;
+        *)
+          dd if="$UPDATE_DIR/$2" of="$3"
+          ;;
+      esac
     fi
   }
 
@@ -557,14 +564,10 @@
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
 
-      case $IMAGE_KERNEL in
-        /dev/mtd*)
-          OLD_KERNEL="0"
-          ;;
-        *)
-          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
-          ;;
-      esac
+      OLD_KERNEL="0"
+      if [ ! -b $IMAGE_KERNEL ]; then
+        OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+      fi
 
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
@@ -587,15 +590,12 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          case $IMAGE_KERNEL in
-            /dev/mtd*)
-              update_mtd "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
-              ;;
-            *)
-              update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-              ;;
-          esac
-          update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          if [ -b $IMAGE_KERNEL ]; then
+            update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+          else
+            update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+          fi
+          update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           do_reboot
