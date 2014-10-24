@@ -1,0 +1,14 @@
+--- RetroArch/driver.c	2014-10-22 13:11:31.884689969 +0200
++++ RetroArch.patch/driver.c	2014-10-24 08:45:43.820595303 +0200
+@@ -1292,9 +1292,9 @@
+    g_extern.frame_cache.pitch = 8;
+    g_extern.frame_cache.data = &dummy_pixels;
+ 
+-   if (driver.video_poke && driver.video_poke->set_texture_frame)
++   /*if (driver.video_poke && driver.video_poke->set_texture_frame)
+       driver.video_poke->set_texture_frame(driver.video_data,
+-               &dummy_pixels, false, 1, 1, 1.0f);
++               &dummy_pixels, false, 1, 1, 1.0f);*/
+ 
+ }
+ 
