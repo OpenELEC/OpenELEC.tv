@@ -1,0 +1,49 @@
+From bb2a7b8be1689bab232da9ac3f1808dcb293de62 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Wed, 16 Apr 2014 22:11:51 +0300
+Subject: [PATCH 02/16] Allow audio passthrough for Amlogic-based devices.
+
+---
+ .../AudioEngine/Engines/ActiveAE/ActiveAESink.cpp  |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+index c6272cc..33e6d55 100644
+--- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
++++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+@@ -89,6 +89,7 @@ AEDeviceType CActiveAESink::GetDeviceType(const std::string &device)
+ 
+ bool CActiveAESink::HasPassthroughDevice()
+ {
++#ifndef HAS_LIBAMCODEC
+   for (AESinkInfoList::iterator itt = m_sinkInfoList.begin(); itt != m_sinkInfoList.end(); ++itt)
+   {
+     for (AEDeviceInfoList::iterator itt2 = itt->m_deviceInfoList.begin(); itt2 != itt->m_deviceInfoList.end(); ++itt2)
+@@ -99,10 +100,14 @@ bool CActiveAESink::HasPassthroughDevice()
+     }
+   }
+   return false;
++#else
++  return true;
++#endif
+ }
+ 
+ bool CActiveAESink::SupportsFormat(const std::string &device, AEDataFormat format, int samplerate)
+ {
++#ifndef HAS_LIBAMCODEC
+   std::string dev = device;
+   std::string dri;
+   CAESinkFactory::ParseDevice(dev, dri);
+@@ -133,6 +138,9 @@ bool CActiveAESink::SupportsFormat(const std::string &device, AEDataFormat forma
+     }
+   }
+   return false;
++#else
++  return true;
++#endif
+ }
+ 
+ enum SINK_STATES
+-- 
+1.7.9.5
+
