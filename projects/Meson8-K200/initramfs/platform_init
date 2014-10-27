@@ -18,6 +18,9 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+# Force 720p display mode at startup
+echo 720p > /sys/class/display/mode
+
 # Enable framebuffer device
 echo 0 > /sys/class/graphics/fb0/blank
 
@@ -25,7 +28,7 @@ echo 0 > /sys/class/graphics/fb0/blank
 echo 0 > /sys/class/graphics/fb0/free_scale
 
 # Set framebuffer geometry
-fbset -fb /dev/fb0 -g 1920 1080 1920 2160 32
+fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
 
 # Set framebuffer size in CVBS mode to match the resolution,
 # for splash screen to be shown correctly
