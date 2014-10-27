@@ -355,7 +355,7 @@
   ADDON_SERVER_URL="https://raw.github.com"
 
 # set the addon dirs
-  ADDON_PATH="codesnake/openelec-addons/$ADDON_VERSION/$PROJECT/$TARGET_ARCH"
+  ADDON_PATH="codesnake/openelec-addons/$ADDON_VERSION/Amlogic/$TARGET_ARCH"
   ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
 
   AMREMOTE_SUPPORT="yes"
