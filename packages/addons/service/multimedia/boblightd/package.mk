@@ -18,7 +18,7 @@
 
 PKG_NAME="boblightd"
 PKG_VERSION="478"
-PKG_REV="3"
+PKG_REV="4"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://code.google.com/p/boblight"
@@ -42,7 +42,7 @@ if [ "$OPENGL_SUPPORT" = "yes" ] ; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Mesa glu"
 fi
 
-if [ ! "$OPENGL" = "Mesa" ]; then
+if [ "$OPENGL" = "no" ]; then
   EXTRAOPTS="--without-opengl"
 fi
 

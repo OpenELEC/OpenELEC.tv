@@ -27,7 +27,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.16.3"
+    PKG_VERSION="3.17.1"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -217,8 +217,8 @@ makeinstall_init() {
 }
 
 post_install() {
-  mkdir -p $INSTALL/etc/modprobe.d
-    cp $PKG_DIR/modprobe.d/*.conf $INSTALL/etc/modprobe.d
+  mkdir -p $INSTALL/lib/firmware/
+    ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
 
   enable_service cpufreq-threshold.service
 }

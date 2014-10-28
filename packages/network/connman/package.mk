@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="connman"
-PKG_VERSION="1.25"
+PKG_VERSION="1.26"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -75,6 +75,8 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --disable-tools \
                            --enable-client \
                            --enable-datafiles \
+                           --with-dbusconfdir=/etc \
+                           --with-systemdunitdir=/usr/lib/systemd/system \
                            --disable-silent-rules"
 
 

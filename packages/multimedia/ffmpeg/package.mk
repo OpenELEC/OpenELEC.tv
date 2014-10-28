@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.4.1"
+PKG_VERSION="2.4.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -128,8 +128,8 @@ configure_target() {
               --extra-libs="" \
               --extra-version="" \
               --build-suffix="" \
-              --enable-static \
-              --disable-shared \
+              --disable-static \
+              --enable-shared \
               --enable-gpl \
               --disable-version3 \
               --disable-nonfree \
@@ -222,6 +222,5 @@ configure_target() {
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share/ffmpeg/examples
 }

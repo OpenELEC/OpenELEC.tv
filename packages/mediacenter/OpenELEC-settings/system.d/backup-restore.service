@@ -1,0 +1,15 @@
+[Unit]
+Description=Restoring Backup
+DefaultDependencies=false
+After=show-version.service
+Before=local-fs-pre.target shutdown.target
+Conflicts=shutdown.target
+ConditionPathExistsGlob=|/storage/.restore/*.tar
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/openelec/backup-restore
+StandardOutput=tty
+
+[Install]
+WantedBy=local-fs-pre.target
