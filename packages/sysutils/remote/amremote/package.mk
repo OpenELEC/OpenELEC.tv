@@ -34,8 +34,7 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
-    cp -PR keytest $INSTALL/usr/bin
-    cp -PR amremote_config $INSTALL/usr/bin
+    cp amremote_config $INSTALL/usr/bin
 }
 
 post_install() {
