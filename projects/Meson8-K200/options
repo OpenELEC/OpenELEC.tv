@@ -309,8 +309,7 @@
   LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428"
 
 # Modules to install in initramfs for early boot
-#  INITRAMFS_MODULES="softcursor bitblit font fbcon"
-  INITRAMFS_NODULES=""
+  INITRAMFS_MODULES="softcursor bitblit font fbcon"
 
 # Support for partitioning and formating disks in initramfs (yes / no)
 # This adds support for parted and mkfs.ext3/4 to initramfs for OEM usage
