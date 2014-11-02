@@ -72,7 +72,7 @@ if [ "$PKG_IS_ADDON" = "yes" ] ; then
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID
   if [ ! -f $ADDON_BUILD/$PKG_ADDON_ID/addon.xml ]; then
-    cp config/addon/addon.xml $ADDON_BUILD/$PKG_ADDON_ID
+    cp config/addon/${PKG_ADDON_TYPE}.xml $ADDON_BUILD/$PKG_ADDON_ID/addon.xml
     CUST_ADDON_VERSION="$ADDON_VERSION.$PKG_REV"
     PROVIDER_NAME="openelec.tv"
     if [ ! -z "$PKG_MAINTAINER" ] ; then
