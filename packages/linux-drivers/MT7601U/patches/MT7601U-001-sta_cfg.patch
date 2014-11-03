@@ -1,0 +1,11 @@
+--- a/src/sta/sta_cfg.c	2014-09-18 18:04:41.000000000 +0400
++++ b/src/sta/sta_cfg.c	2014-09-21 04:57:21.037755895 +0400
+@@ -5763,7 +5763,7 @@
+             wrq->u.data.length = strlen(extra) + 1; /* 1: size of '\0' */
+             break;
+         case SHOW_DRVIER_VERION:
+-            snprintf(extra, size, "Driver version-%s, %s %s\n", STA_DRIVER_VERSION, __DATE__, __TIME__ );
++            //snprintf(extra, size, "Driver version-%s, %s %s\n", STA_DRIVER_VERSION, __DATE__, __TIME__ );
+             wrq->u.data.length = strlen(extra) + 1; /* 1: size of '\0' */
+             break;
+ #ifdef DOT11_N_SUPPORT
