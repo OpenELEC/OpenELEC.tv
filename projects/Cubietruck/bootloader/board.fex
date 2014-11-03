@@ -874,7 +874,7 @@ switch_used = 1
 
 [ir_para]
 ir_used = 1
-ir_rx = port:PB04<2><default><default><default>
+ir0_rx = port:PB04<2><default><default><default>
 
 [pmu_para]
 pmu_used = 1
