@@ -8,8 +8,7 @@
     <import addon="xbmc.python" version="2.1.0"/>
 @REQUIRES@
   </requires>
-  <extension point="@PKG_ADDON_TYPE@"
-             library="lib/">
+  <extension point="xbmc.python.module" library="lib/">
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary>@PKG_SHORTDESC@</summary>
