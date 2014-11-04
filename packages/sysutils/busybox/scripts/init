@@ -48,6 +48,7 @@
   SIZE_FAILED="0"
   RUN_FSCK="yes"
   RUN_FSCK_DISKS=""
+  LIVE="no"
 
   NBD_DEVS="0"
   FLASH_FREE_MIN="5"
@@ -115,6 +116,9 @@
         ;;
       nofsck)
         RUN_FSCK=no
+        ;;
+      live)
+        LIVE=yes
         ;;
       nosplash)
         SPLASH=no
@@ -451,11 +455,11 @@
   }
 
   mount_storage() {
-    progress "Mounting storage"
-
-    wakeonlan
-
-    if [ -n "$disk" ]; then
+    if [ "$LIVE" = "yes" ]; then
+      mount -t tmpfs none /storage
+    elif [ -n "$disk" ]; then
+      progress "Mounting storage"
+      wakeonlan
       if [ -n "$OVERLAY" ]; then
         OVERLAY_DIR=`cat /sys/class/net/eth0/address | tr -d :`
 
@@ -595,7 +599,7 @@
 
     mount --move /flash /sysroot/flash
 
-    if [ -n "$disk" ]; then
+    if [ -n "$disk" -o "$LIVE" = "yes" ]; then
       mount --move /storage /sysroot/storage
     fi
 
