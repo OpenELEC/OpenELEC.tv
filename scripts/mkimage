@@ -123,13 +123,18 @@ if [ "$BOOTLOADER" = "syslinux" ]; then
   # create bootloader configuration
     echo "image: creating bootloader configuration..."
     cat << EOF > "$OE_TMP"/syslinux.cfg
-PROMPT 0
+SAY Press <TAB> to edit options
+PROMPT 1
 TIMEOUT 50
 DEFAULT installer
 
 LABEL installer
   KERNEL /KERNEL
   APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
+
+LABEL live
+  KERNEL /KERNEL
+  APPEND boot=UUID=$UUID_SYSTEM live quiet tty vga=current
 EOF
 
   # install extlinux
