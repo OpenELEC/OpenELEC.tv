@@ -1,0 +1,12 @@
+diff -Naur RetroArch/libretro-sdk/file/file_path.c RetroArch.patch/libretro-sdk/file/file_path.c
+--- RetroArch/libretro-sdk/file/file_path.c	2014-11-05 14:53:08.061844355 +0100
++++ RetroArch.patch/libretro-sdk/file/file_path.c	2014-11-05 14:54:26.267597891 +0100
+@@ -117,7 +117,7 @@
+    if (strcmp(file_ext,"7z") == 0)
+       return true;
+ #endif
+-#ifdef HAVE_ZLIB
++#if 0
+    if (strcmp(file_ext,"zip") == 0)
+       return true;
+ #endif
