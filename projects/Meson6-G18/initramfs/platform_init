@@ -1,7 +1,13 @@
 #!/bin/sh
 
+# Force 720p display mode at startup
+echo 720p > /sys/class/display/mode
+
 # Enable framebuffer device
 echo 0 > /sys/class/graphics/fb0/blank
+
+# Disable framebuffer scaling
+echo 0 > /sys/class/graphics/fb0/free_scale
 
 # Set framebuffer geometry
 fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
