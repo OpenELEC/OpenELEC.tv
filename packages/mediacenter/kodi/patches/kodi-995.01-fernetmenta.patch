@@ -1,7 +1,7 @@
-From 2d20f3215d6fe7ab66a03ff198162a3babca58d5 Mon Sep 17 00:00:00 2001
+From 48428057ad993372a2ab509c5b24fd82976130db Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:34:39 +0200
-Subject: [PATCH 01/21] videoplayer: adapt lateness detection and dropping to
+Subject: [PATCH 01/23] videoplayer: adapt lateness detection and dropping to
  buffering
 
 ---
@@ -289,7 +289,7 @@ index 1f564bb..48564d1 100644
 +  int    m_codecControlFlags;
  };
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index e039c2b..cbec313 100644
+index 5a758ab..e0bb4d0 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 @@ -38,6 +38,7 @@
@@ -308,7 +308,7 @@ index e039c2b..cbec313 100644
    m_iDroppedFrames = 0;
    m_fFrameRate = 25;
    m_bCalcFrameRate = false;
-@@ -299,7 +299,6 @@ void CDVDPlayerVideo::OnStartup()
+@@ -296,7 +296,6 @@ void CDVDPlayerVideo::OnStartup()
    m_crop.x1 = m_crop.x2 = 0.0f;
    m_crop.y1 = m_crop.y2 = 0.0f;
  
@@ -316,7 +316,7 @@ index e039c2b..cbec313 100644
    m_FlipTimeStamp = m_pClock->GetAbsoluteClock();
    m_FlipTimePts   = 0.0;
  }
-@@ -321,8 +320,10 @@ void CDVDPlayerVideo::Process()
+@@ -318,8 +317,10 @@ void CDVDPlayerVideo::Process()
  
    int iDropped = 0; //frames dropped in a row
    bool bRequestDrop = false;
@@ -327,7 +327,7 @@ index e039c2b..cbec313 100644
  
    while (!m_bStop)
    {
-@@ -434,6 +435,7 @@ void CDVDPlayerVideo::Process()
+@@ -431,6 +432,7 @@ void CDVDPlayerVideo::Process()
        picture.iFlags &= ~DVP_FLAG_ALLOCATED;
        m_packets.clear();
        m_started = false;
@@ -335,7 +335,7 @@ index e039c2b..cbec313 100644
      }
      else if (pMsg->IsType(CDVDMsg::GENERAL_FLUSH)) // private message sent by (CDVDPlayerVideo::Flush())
      {
-@@ -446,6 +448,7 @@ void CDVDPlayerVideo::Process()
+@@ -443,6 +445,7 @@ void CDVDPlayerVideo::Process()
        //we need to recalculate the framerate
        //TODO: this needs to be set on a streamchange instead
        ResetFrameRateCalc();
@@ -343,7 +343,7 @@ index e039c2b..cbec313 100644
  
        m_stalled = true;
        m_started = false;
-@@ -465,6 +468,7 @@ void CDVDPlayerVideo::Process()
+@@ -462,6 +465,7 @@ void CDVDPlayerVideo::Process()
          m_iNrOfPicturesNotToSkip = 0;
        if (m_pVideoCodec)
          m_pVideoCodec->SetSpeed(m_speed);
@@ -351,7 +351,7 @@ index e039c2b..cbec313 100644
      }
      else if (pMsg->IsType(CDVDMsg::PLAYER_STARTED))
      {
-@@ -510,6 +514,28 @@ void CDVDPlayerVideo::Process()
+@@ -507,6 +511,28 @@ void CDVDPlayerVideo::Process()
          m_iNrOfPicturesNotToSkip = 1;
        }
  
@@ -380,7 +380,7 @@ index e039c2b..cbec313 100644
        if (m_messageQueue.GetDataSize() == 0
        ||  m_speed < 0)
        {
-@@ -562,15 +588,7 @@ void CDVDPlayerVideo::Process()
+@@ -559,15 +585,7 @@ void CDVDPlayerVideo::Process()
        }
  
        m_videoStats.AddSampleBytes(pPacket->iSize);
@@ -397,7 +397,7 @@ index e039c2b..cbec313 100644
        // reset the request, the following while loop may break before
        // setting the flag to a new value
        bRequestDrop = false;
-@@ -1173,45 +1191,17 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
+@@ -1170,45 +1188,17 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
                      , "CDVDPlayerVideo::OutputPicture");
    }
  
@@ -447,7 +447,7 @@ index e039c2b..cbec313 100644
  
    // set fieldsync if picture is interlaced
    EFIELDSYNC mDisplayField = FS_NONE;
-@@ -1244,7 +1234,7 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
+@@ -1241,7 +1231,7 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
    if (index < 0)
      return EOS_DROPPED;
  
@@ -456,7 +456,7 @@ index e039c2b..cbec313 100644
  
    return result;
  #else
-@@ -1546,3 +1536,124 @@ void CDVDPlayerVideo::CalcFrameRate()
+@@ -1543,3 +1533,124 @@ void CDVDPlayerVideo::CalcFrameRate()
      m_iFrameRateCount = 0;
    }
  }
@@ -643,10 +643,10 @@ index dcd0ffd..1f0e661 100644
  };
  
 
-From 1250c52a4f9cab6eb74550acd4661e84ea25d0d3 Mon Sep 17 00:00:00 2001
+From d3979dfb41485a01d35de62105b2b9544f19f113 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Sun, 2 Sep 2012 16:05:21 +0200
-Subject: [PATCH 02/21] video player: present correct pts to user for a/v sync
+Subject: [PATCH 02/23] video player: present correct pts to user for a/v sync
  (after buffering in renderer)
 
 ---
@@ -655,10 +655,10 @@ Subject: [PATCH 02/21] video player: present correct pts to user for a/v sync
  2 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index cbec313..374f4bd 100644
+index e0bb4d0..43382b5 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -1454,6 +1454,22 @@ void CDVDPlayerVideo::ResetFrameRateCalc()
+@@ -1451,6 +1451,22 @@ void CDVDPlayerVideo::ResetFrameRateCalc()
                          g_advancedSettings.m_videoFpsDetect == 0;
  }
  
@@ -695,10 +695,10 @@ index 1f0e661..a38a9c3 100644
    double GetOutputDelay(); /* returns the expected delay, from that a packet is put in queue */
    int GetDecoderFreeSpace() { return 0; }
 
-From 25eb4e4315be5c5bae049bb24000089c60ecd1f5 Mon Sep 17 00:00:00 2001
+From e766dcceb4930978a72f0119198c4bc872e988c9 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:41:31 +0200
-Subject: [PATCH 03/21] videoplayer: update frametime, it might change due to
+Subject: [PATCH 03/23] videoplayer: update frametime, it might change due to
  fps detection
 
 ---
@@ -706,10 +706,10 @@ Subject: [PATCH 03/21] videoplayer: update frametime, it might change due to
  1 file changed, 2 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 374f4bd..4a255c6 100644
+index 43382b5..ec0c0eb 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -708,6 +708,8 @@ void CDVDPlayerVideo::Process()
+@@ -705,6 +705,8 @@ void CDVDPlayerVideo::Process()
  
              int iResult = OutputPicture(&picture, pts);
  
@@ -719,10 +719,10 @@ index 374f4bd..4a255c6 100644
              {
                m_codecname = m_pVideoCodec->GetName();
 
-From 8124a37001e190e74109025a1d60be30e42d3854 Mon Sep 17 00:00:00 2001
+From 37e14f9e3bf28721741d43f7e31a46cf2d9ab0bc Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:43:06 +0200
-Subject: [PATCH 04/21] videoplayer: give streams with invalid fps a chance for
+Subject: [PATCH 04/23] videoplayer: give streams with invalid fps a chance for
  fps detection
 
 ---
@@ -730,10 +730,10 @@ Subject: [PATCH 04/21] videoplayer: give streams with invalid fps a chance for
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 4a255c6..391d802 100644
+index ec0c0eb..b2ee525 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -1498,7 +1498,7 @@ void CDVDPlayerVideo::CalcFrameRate()
+@@ -1495,7 +1495,7 @@ void CDVDPlayerVideo::CalcFrameRate()
      frameduration = m_pullupCorrection.GetMinFrameDuration();
  
    if ((frameduration==DVD_NOPTS_VALUE) ||
@@ -743,10 +743,10 @@ index 4a255c6..391d802 100644
      //reset the stored framerates if no good framerate was detected
      m_fStableFrameRate = 0.0;
 
-From 1837b6803d3c64d7e5a67a788e501ec4cd9d6611 Mon Sep 17 00:00:00 2001
+From aa89c7ec1c7108cfec60b2804f3297fa5043a480 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 28 May 2012 10:49:05 +0200
-Subject: [PATCH 05/21] dvdplayer: allow rewinding at end of stream, do a seek
+Subject: [PATCH 05/23] dvdplayer: allow rewinding at end of stream, do a seek
  after rewind
 
 ---
@@ -754,7 +754,7 @@ Subject: [PATCH 05/21] dvdplayer: allow rewinding at end of stream, do a seek
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 73181a4..90e9a30 100644
+index 63cbe66..f5f697e 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
 @@ -1793,7 +1793,7 @@ void CDVDPlayer::HandlePlaySpeed()
@@ -780,10 +780,10 @@ index 73181a4..90e9a30 100644
          // audioplayer, stops outputing audio to audiorendere, but still tries to
          // sleep an correct amount for each packet
 
-From 5ab5287cb2328a0baea889ae09a35da4778ee05f Mon Sep 17 00:00:00 2001
+From 782c60b53a253d348b68ac74e3596820e673f431 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Mon, 20 Aug 2012 16:06:39 +0200
-Subject: [PATCH 06/21] dvdplayer: observe pts counter overflow
+Subject: [PATCH 06/23] dvdplayer: observe pts counter overflow
 
 ---
  .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 197 ++++++++++++++++++++-
@@ -791,7 +791,7 @@ Subject: [PATCH 06/21] dvdplayer: observe pts counter overflow
  2 files changed, 199 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index b835fa8..3217fcd 100644
+index 81a511e..9626dae 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 @@ -18,7 +18,6 @@
@@ -1062,10 +1062,10 @@ index 48f0a69..bdc84b2 100644
  };
  
 
-From 9196a5855f87acb79020c600566ad597f1990582 Mon Sep 17 00:00:00 2001
+From f2d82a63baea6ab7324eeca1a3161318db7abbf4 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Tue, 2 Oct 2012 13:02:10 +0200
-Subject: [PATCH 07/21] dvdplayer: avoid short screen flicker caused by
+Subject: [PATCH 07/23] dvdplayer: avoid short screen flicker caused by
  unnecessary reconfigure of renderer
 
 ---
@@ -1073,10 +1073,10 @@ Subject: [PATCH 07/21] dvdplayer: avoid short screen flicker caused by
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 391d802..0fe775f 100644
+index b2ee525..aef2635 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -1055,13 +1055,16 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
+@@ -1052,13 +1052,16 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
  
  #ifdef HAS_VIDEO_PLAYBACK
    double config_framerate = m_bFpsInvalid ? 0.0 : m_fFrameRate;
@@ -1095,10 +1095,10 @@ index 391d802..0fe775f 100644
     || ( m_output.extended_format != pPicture->extended_format )
     || ( m_output.color_matrix    != pPicture->color_matrix    && pPicture->color_matrix    != 0 ) // don't reconfigure on unspecified
 
-From acb0644901944e2a9760bbd5ad9f2cbb4bcc576f Mon Sep 17 00:00:00 2001
+From 28a8600a537cdb87495baf7f7b98dbdd97e57d97 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 11 Oct 2012 12:05:50 +0200
-Subject: [PATCH 08/21] vdpau: advanced settings for auto deinterlacing
+Subject: [PATCH 08/23] vdpau: advanced settings for auto deinterlacing
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/VDPAU.cpp | 8 ++++----
@@ -1126,10 +1126,10 @@ index e5e7970..8c353af 100644
      if (deint != -1)
      {
 diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
-index ba97f5f..d75913e 100644
+index 7d04872..89069a9 100644
 --- a/xbmc/settings/AdvancedSettings.cpp
 +++ b/xbmc/settings/AdvancedSettings.cpp
-@@ -156,6 +156,8 @@ void CAdvancedSettings::Initialize()
+@@ -157,6 +157,8 @@ void CAdvancedSettings::Initialize()
    m_videoAutoScaleMaxFps = 30.0f;
    m_videoDisableBackgroundDeinterlace = false;
    m_videoCaptureUseOcclusionQuery = -1; //-1 is auto detect
@@ -1148,7 +1148,7 @@ index ba97f5f..d75913e 100644
      XMLUtils::GetBoolean(pElement,"vdpauHDdeintSkipChroma",m_videoVDPAUdeintSkipChromaHD);
  
 diff --git a/xbmc/settings/AdvancedSettings.h b/xbmc/settings/AdvancedSettings.h
-index f58142f..d35354a 100644
+index 7df586e..eccd25c 100644
 --- a/xbmc/settings/AdvancedSettings.h
 +++ b/xbmc/settings/AdvancedSettings.h
 @@ -162,6 +162,8 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
@@ -1161,10 +1161,10 @@ index f58142f..d35354a 100644
      bool m_videoVDPAUdeintSkipChromaHD;
      bool m_musicUseTimeSeeking;
 
-From e531b548282a87ef399eefc1d867f91cd8a2fab0 Mon Sep 17 00:00:00 2001
+From 3b3bdcac20a65cea8bed5de0a90cae5d8c13edf5 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Fri, 2 Nov 2012 13:20:03 +0100
-Subject: [PATCH 09/21] player: fix rewind
+Subject: [PATCH 09/23] player: fix rewind
 
 ---
  xbmc/cores/dvdplayer/DVDMessage.h       |  5 ++++-
@@ -1212,7 +1212,7 @@ index a365821..07366df 100644
  
  class CDVDMsgPlayerSeekChapter : public CDVDMsg
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 90e9a30..0e700f4 100644
+index f5f697e..7eb564a 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
 @@ -1794,11 +1794,13 @@ void CDVDPlayer::HandlePlaySpeed()
@@ -1278,7 +1278,7 @@ index 90e9a30..0e700f4 100644
 +void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate, bool sync)
  {
    double startpts;
-   if(accurate)
+   if(accurate && !m_omxplayer_mode)
 @@ -3426,19 +3430,23 @@ void CDVDPlayer::FlushBuffers(bool queued, double pts, bool accurate)
    if(startpts != DVD_NOPTS_VALUE)
      startpts -= m_offset_pts;
@@ -1342,10 +1342,10 @@ index dac00e9..9bcfc02 100644
  
    int m_errorCount;
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 0fe775f..6250d55 100644
+index aef2635..bd97d62 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -1469,7 +1469,7 @@ double CDVDPlayerVideo::GetCurrentPts()
+@@ -1466,7 +1466,7 @@ double CDVDPlayerVideo::GetCurrentPts()
  
    if( m_stalled )
      iRenderPts = DVD_NOPTS_VALUE;
@@ -1354,7 +1354,7 @@ index 0fe775f..6250d55 100644
      iRenderPts = iRenderPts - max(0.0, iSleepTime);
  
    return iRenderPts;
-@@ -1570,6 +1570,8 @@ int CDVDPlayerVideo::CalcDropRequirement(double pts)
+@@ -1567,6 +1567,8 @@ int CDVDPlayerVideo::CalcDropRequirement(double pts)
    int    iDroppedPics = -1;
    int    iBufferLevel;
  
@@ -1376,20 +1376,20 @@ index a38a9c3..4e1b3d6 100644
    unsigned int m_dropRequests;
  };
 
-From 30a6db94de2121f8c933df5e1f53a5402877916f Mon Sep 17 00:00:00 2001
+From 3a6811a6f1672382882081e4a73961d69620ee71 Mon Sep 17 00:00:00 2001
 From: xbmc <fernetmenta@online.de>
 Date: Thu, 28 Mar 2013 20:50:59 +0100
-Subject: [PATCH 10/21] fix incorrect display of fps when dr kicks in
+Subject: [PATCH 10/23] fix incorrect display of fps when dr kicks in
 
 ---
  xbmc/Application.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index b456d77..28339f5 100644
+index d5604dc..1d7990d 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -2299,10 +2299,11 @@ void CApplication::Render()
+@@ -2326,10 +2326,11 @@ void CApplication::Render()
      if (frameTime < singleFrameTime)
        Sleep(singleFrameTime - frameTime);
    }
@@ -1403,20 +1403,20 @@ index b456d77..28339f5 100644
  
    g_renderManager.UpdateResolution();
 
-From 52f5df248b827ba1102a8fb73a63ab57015c313f Mon Sep 17 00:00:00 2001
+From e3368368565f4266876bba560bfedaa5dcb978cd Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 25 Jul 2013 17:18:13 +0200
-Subject: [PATCH 11/21] ActiveAE: slightly reduce buffer size
+Subject: [PATCH 11/23] ActiveAE: slightly reduce buffer size
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-index 91da985..4b9cd11 100644
+index 0e4d8da..99538dc 100644
 --- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
 +++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAE.cpp
-@@ -32,8 +32,8 @@ using namespace ActiveAE;
+@@ -33,8 +33,8 @@ using namespace ActiveAE;
  
  #include "utils/TimeUtils.h"
  
@@ -1428,10 +1428,10 @@ index 91da985..4b9cd11 100644
  
  void CEngineStats::Reset(unsigned int sampleRate)
 
-From ad38713092703b739998f35313d5b2fdfcf6e88d Mon Sep 17 00:00:00 2001
+From 52caa1299bb91e7807d24c28cdeb26b53186ca90 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sun, 4 Aug 2013 10:11:16 +0200
-Subject: [PATCH 12/21] Revert "vdpau: comment some features that will be added
+Subject: [PATCH 12/23] Revert "vdpau: comment some features that will be added
  later"
 
 This reverts commit e00b4f65864d623ab4d2e9e5c06db138e661f1cf.
@@ -1484,10 +1484,10 @@ index 8c353af..33ec1f4 100644
          m_mixersteps = 1;
        }
 
-From e4a53b5d59db44951ff6432742049acdb039adfa Mon Sep 17 00:00:00 2001
+From 562200d01eaaf57f307a228b06360a5a3aa969fc Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 28 Jan 2014 10:05:26 +0100
-Subject: [PATCH 13/21] xbmc pr 3080
+Subject: [PATCH 13/23] xbmc pr 3080
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp | 8 ++++++++
@@ -1513,20 +1513,20 @@ index 2d955c2..245ef50 100644
     * Setting it correctly would allow CorePNG decoding. */
    avpkt.flags = AV_PKT_FLAG_KEY;
 
-From 5ac82d336d51759b84c8df2fb8c6814713ddaf25 Mon Sep 17 00:00:00 2001
+From aad64950df2c09264bff2b96de02be539b3c4be0 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Tue, 11 Feb 2014 18:15:06 +0100
-Subject: [PATCH 14/21] ActiveAE: add some debug logging
+Subject: [PATCH 14/23] ActiveAE: add some debug logging
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
-index 7acc0d0..fec0313 100644
+index 96bce12..7bd9c9b 100644
 --- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
 +++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAEStream.cpp
-@@ -264,7 +264,13 @@ unsigned int CActiveAEStream::AddData(uint8_t* const *data, unsigned int offset,
+@@ -265,7 +265,13 @@ unsigned int CActiveAEStream::AddData(uint8_t* const *data, unsigned int offset,
        }
      }
      if (!m_inMsgEvent.WaitMSec(200))
@@ -1541,10 +1541,10 @@ index 7acc0d0..fec0313 100644
    return copied;
  }
 
-From 00046bd3f234c310f09ed5a53a29bfcbf0adfab3 Mon Sep 17 00:00:00 2001
+From ec7b7635467812012195d432588068198e5afca9 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 23 Aug 2014 11:42:31 +0200
-Subject: [PATCH 15/21] dvdplayer: rename codec ctrl flags
+Subject: [PATCH 15/23] dvdplayer: rename codec ctrl flags
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h       | 14 ++++++++------
@@ -1640,10 +1640,10 @@ index 33ec1f4..300b901 100644
          m_mixersteps = 1;
        }
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 6250d55..c216ce5 100644
+index bd97d62..d30a0ad 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -526,9 +526,9 @@ void CDVDPlayerVideo::Process()
+@@ -523,9 +523,9 @@ void CDVDPlayerVideo::Process()
        }
        int codecControl = 0;
        if (iDropDirective & EOS_BUFFER_LEVEL)
@@ -1656,10 +1656,10 @@ index 6250d55..c216ce5 100644
        if (iDropDirective & EOS_DROPPED)
        {
 
-From a8459a22976d1f0a3fa41d23951580169ca0ce16 Mon Sep 17 00:00:00 2001
+From a10235c233e6033b0aa684fe4089871a703b5746 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Fri, 13 Jun 2014 14:37:16 +0200
-Subject: [PATCH 16/21] VAAPI: implement codec control flags
+Subject: [PATCH 16/23] VAAPI: implement codec control flags
 
 ---
  .../DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp         | 21 ++++++++++++++++++---
@@ -1707,10 +1707,10 @@ index 67f0e80..2984847 100644
      pDvdVideoPicture->pts = DVD_NOPTS_VALUE;
  
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-index 8b5b5b8..84b0142 100644
+index 87e66fe..732e92b 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-@@ -733,6 +733,8 @@ int CDecoder::Decode(AVCodecContext* avctx, AVFrame* pFrame)
+@@ -739,6 +739,8 @@ int CDecoder::Decode(AVCodecContext* avctx, AVFrame* pFrame)
      pic.DVDPic.color_matrix = avctx->colorspace;
      m_bufferStats.IncDecoded();
      m_vaapiOutput.m_dataPort.SendOutMessage(COutputDataProtocol::NEWFRAME, &pic, sizeof(pic));
@@ -1719,7 +1719,7 @@ index 8b5b5b8..84b0142 100644
    }
  
    int retval = 0;
-@@ -1699,8 +1701,8 @@ bool COutput::PreferPP()
+@@ -1799,8 +1801,8 @@ bool COutput::PreferPP()
  void COutput::InitCycle()
  {
    uint64_t latency;
@@ -1730,7 +1730,7 @@ index 8b5b5b8..84b0142 100644
  
    m_config.stats->SetCanSkipDeint(false);
  
-@@ -1708,7 +1710,8 @@ void COutput::InitCycle()
+@@ -1808,7 +1810,8 @@ void COutput::InitCycle()
    EINTERLACEMETHOD method = CMediaSettings::Get().GetCurrentVideoSettings().m_InterlaceMethod;
    bool interlaced = m_currentPicture.DVDPic.iFlags & DVP_FLAG_INTERLACED;
  
@@ -1740,7 +1740,7 @@ index 8b5b5b8..84b0142 100644
        (mode == VS_DEINTERLACEMODE_AUTO && interlaced)))
    {
      if((method == VS_INTERLACEMETHOD_AUTO && interlaced)
-@@ -2542,6 +2545,7 @@ bool CVppPostproc::AddPicture(CVaapiDecodedPicture &pic)
+@@ -2626,6 +2629,7 @@ bool CVppPostproc::AddPicture(CVaapiDecodedPicture &pic)
    m_decodedPics.push_front(pic);
    m_frameCount++;
    m_step = 0;
@@ -1748,7 +1748,7 @@ index 8b5b5b8..84b0142 100644
    return true;
  }
  
-@@ -2586,6 +2590,13 @@ bool CVppPostproc::Filter(CVaapiProcessedPicture &outPic)
+@@ -2670,6 +2674,13 @@ bool CVppPostproc::Filter(CVaapiProcessedPicture &outPic)
    }
    outPic.DVDPic = it->DVDPic;
  
@@ -1763,20 +1763,20 @@ index 8b5b5b8..84b0142 100644
    VAProcFilterParameterBufferDeinterlacing *filterParams;
    VABufferID pipelineBuf;
 
-From 1c09a6f01af923dd427d612085225547d52d46ec Mon Sep 17 00:00:00 2001
+From ebcd73d2e432a07f5b6a9730fb947ce3c09c3846 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Thu, 4 Sep 2014 09:25:48 +0200
-Subject: [PATCH 17/21] consider rounding errors in dropping control
+Subject: [PATCH 17/23] consider rounding errors in dropping control
 
 ---
  xbmc/cores/dvdplayer/DVDPlayerVideo.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index c216ce5..7235cb4 100644
+index d30a0ad..c2d4b31 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-@@ -1609,7 +1609,7 @@ int CDVDPlayerVideo::CalcDropRequirement(double pts)
+@@ -1606,7 +1606,7 @@ int CDVDPlayerVideo::CalcDropRequirement(double pts)
        m_droppingStats.m_dropRequests = 0;
        CLog::Log(LOGDEBUG,"CDVDPlayerVideo::CalcDropRequirement - dropped pictures, Sleeptime: %f, Bufferlevel: %d, Gain: %f", iSleepTime, iBufferLevel, iGain);
      }
@@ -1786,20 +1786,21 @@ index c216ce5..7235cb4 100644
        CDroppingStats::CGain gain;
        gain.gain = iGain;
 
-From 39d509822eb5868fd66e3b844f3869f77fc95a82 Mon Sep 17 00:00:00 2001
+
+From c71b09b5a21b5ff95527e33ba4ad921ff64a64f3 Mon Sep 17 00:00:00 2001
 From: Rainer Hochecker <fernetmenta@online.de>
 Date: Sat, 4 Oct 2014 21:25:31 +0200
-Subject: [PATCH 19/21] vaapi: lock gfx context on pre-cleanup
+Subject: [PATCH 19/23] vaapi: lock gfx context on pre-cleanup
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-index 84b0142..c89333b 100644
+index 732e92b..849e26a 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-@@ -612,6 +612,7 @@ long CDecoder::Release()
+@@ -618,6 +618,7 @@ long CDecoder::Release()
      CSingleLock lock(m_DecoderSection);
      CLog::Log(LOGNOTICE,"VAAPI::Release pre-cleanup");
  
@@ -1808,597 +1809,1032 @@ index 84b0142..c89333b 100644
      if (m_vaapiOutput.m_controlPort.SendOutMessageSync(COutputControlProtocol::PRECLEANUP,
                                                     &reply,
 
-From f1d71b41d302e72f41a77736b54f8e6ad6e19f3d Mon Sep 17 00:00:00 2001
-From: Rainer Hochecker <fernetmenta@online.de>
-Date: Tue, 7 Oct 2014 11:46:12 +0200
-Subject: [PATCH 20/21] vaapi: glIsSync, glIsTexture seem to unreliable on
- Intel
+From 7aea148f78db91c4a2e75c280972e98735791a28 Mon Sep 17 00:00:00 2001
+From: Anssi Hannula <anssi@xbmc.org>
+Date: Sun, 19 Oct 2014 21:34:47 +0300
+Subject: [PATCH 20/23] [linux] Add FDEventMonitor for monitoring file
+ descriptors
 
+Add FDEventMonitor helper thread for monitoring file descriptors for
+events (ready for read, ready for write) without the need for spawning
+a separate thread with a tight loop around poll()/select().
+
+FDEventMonitor uses an eventfd for signaling poll() instead of a
+timeout, therefore it can sleep for long times in case of no events but
+still immediately respond to e.g. shutdown.
 ---
- xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ xbmc/linux/FDEventMonitor.cpp | 248 ++++++++++++++++++++++++++++++++++++++++++
+ xbmc/linux/FDEventMonitor.h   |  89 +++++++++++++++
+ xbmc/linux/Makefile.in        |   1 +
+ 3 files changed, 338 insertions(+)
+ create mode 100644 xbmc/linux/FDEventMonitor.cpp
+ create mode 100644 xbmc/linux/FDEventMonitor.h
 
-diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-index c89333b..9c58eaa 100644
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-@@ -1962,7 +1962,7 @@ bool COutput::ProcessSyncPicture()
- #ifdef GL_ARB_sync
-     if (pic->usefence)
-     {
--      if (glIsSync(pic->fence))
-+      if (pic->fence)
-       {
-         GLint state;
-         GLsizei length;
-@@ -2115,7 +2115,7 @@ void COutput::ReleaseBufferPool(bool precleanup)
-       if (pic->usefence)
-       {
- #ifdef GL_ARB_sync
--        while (glIsSync(pic->fence))
-+        while (pic->fence)
-         {
-           GLint state;
-           GLsizei length;
-@@ -2123,6 +2123,7 @@ void COutput::ReleaseBufferPool(bool precleanup)
-           if(state == GL_SIGNALED || timeout.IsTimePast())
-           {
-             glDeleteSync(pic->fence);
-+            pic->fence = None;
-           }
-           else
-           {
-@@ -2148,7 +2149,8 @@ void COutput::ReleaseBufferPool(bool precleanup)
-     if (precleanup && pic->valid)
-       continue;
- 
--    if (glIsTexture(pic->texture))
+diff --git a/xbmc/linux/FDEventMonitor.cpp b/xbmc/linux/FDEventMonitor.cpp
+new file mode 100644
+index 0000000..4a41477
+--- /dev/null
++++ b/xbmc/linux/FDEventMonitor.cpp
+@@ -0,0 +1,248 @@
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++#include "system.h"
++#ifdef HAS_ALSA
 +
-+    if (pic->texture)
-     {
-       glDeleteTextures(1, &pic->texture);
-       glXDestroyPixmap(m_Display, pic->glPixmap);
-
-From a5e5cfeb6c00d85365ada7254a9d7a21708a137e Mon Sep 17 00:00:00 2001
-From: Rainer Hochecker <fernetmenta@online.de>
-Date: Sat, 4 Oct 2014 13:53:35 +0200
-Subject: [PATCH 21/21] vaapi: workaround intel bugs
-
----
- xbmc/cores/VideoRenderers/LinuxRendererGL.cpp  |   3 +
- xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp | 231 +++++++++++++++++--------
- xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h   |  28 ++-
- 3 files changed, 189 insertions(+), 73 deletions(-)
-
-diff --git a/xbmc/cores/VideoRenderers/LinuxRendererGL.cpp b/xbmc/cores/VideoRenderers/LinuxRendererGL.cpp
-index 7859949..9b5d0a9 100644
---- a/xbmc/cores/VideoRenderers/LinuxRendererGL.cpp
-+++ b/xbmc/cores/VideoRenderers/LinuxRendererGL.cpp
-@@ -2541,6 +2541,9 @@ bool CLinuxRendererGL::UploadVAAPITexture(int index)
-     return false;
-   }
- 
-+  if (!vaapi->CopyGlx())
-+    return false;
++#include <poll.h>
++#include <sys/eventfd.h>
++#include <errno.h>
 +
-   plane.id = vaapi->texture;
- 
-   // in stereoscopic mode sourceRect may only
-diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-index 9c58eaa..849e26a 100644
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.cpp
-@@ -417,6 +417,12 @@ bool CVideoSurfaces::HasFree()
-   return !m_freeSurfaces.empty();
- }
- 
-+int CVideoSurfaces::NumFree()
++#include "utils/log.h"
++
++#include "FDEventMonitor.h"
++
++CFDEventMonitor::CFDEventMonitor() :
++  CThread("FDEventMonitor"),
++  m_nextID(0),
++  m_wakeupfd(-1)
 +{
-+  CSingleLock lock(m_section);
-+  return m_freeSurfaces.size();
 +}
 +
- bool CVideoSurfaces::HasRefs()
- {
-   CSingleLock lock(m_section);
-@@ -740,7 +746,6 @@ int CDecoder::Decode(AVCodecContext* avctx, AVFrame* pFrame)
- 
-   int retval = 0;
-   uint16_t decoded, processed, render;
--  int vapipe;
-   bool vpp;
-   Message *msg;
-   while (m_vaapiOutput.m_controlPort.ReceiveInMessage(&msg))
-@@ -758,8 +763,7 @@ int CDecoder::Decode(AVCodecContext* avctx, AVFrame* pFrame)
-   while (!retval)
-   {
-     // first fill the buffers to keep vaapi busy
--    vapipe = vpp ? decoded + processed : decoded;
--    if (vapipe < 4 && m_videoSurfaces.HasFree())
-+    if (decoded < 2 && processed < 3 && m_videoSurfaces.HasFree())
-     {
-       retval |= VC_BUFFER;
-     }
-@@ -797,8 +801,7 @@ int CDecoder::Decode(AVCodecContext* avctx, AVFrame* pFrame)
-       msg->Release();
-     }
- 
--    vapipe = vpp ? decoded + processed : decoded;
--    if (vapipe < 4 && m_videoSurfaces.HasFree())
-+    if (decoded < 2 && processed < 3 && m_videoSurfaces.HasFree())
-     {
-       retval |= VC_BUFFER;
-     }
-@@ -1088,6 +1091,10 @@ void CDecoder::ReturnRenderPicture(CVaapiRenderPicture *renderPic)
-   m_vaapiOutput.m_dataPort.SendOutMessage(COutputDataProtocol::RETURNPIC, &renderPic, sizeof(renderPic));
- }
- 
-+void CDecoder::ReturnProcPicture(int id)
++CFDEventMonitor::~CFDEventMonitor()
 +{
-+  m_vaapiOutput.m_dataPort.SendOutMessage(COutputDataProtocol::RETURNPROCPIC, &id, sizeof(int));
-+}
- 
- //-----------------------------------------------------------------------------
- // RenderPicture
-@@ -1129,6 +1136,69 @@ void CVaapiRenderPicture::ReturnUnused()
-     vaapi->ReturnRenderPicture(this);
- }
- 
-+bool CVaapiRenderPicture::CopyGlx()
-+{
-+  CSingleLock lock(renderPicSection);
++  CSingleLock lock(m_mutex);
++  InterruptPoll();
 +
-+  if (glx.bound == true)
-+    return true;
-+
-+  if (glx.procPic.source == CVaapiProcessedPicture::SKIP_SRC ||
-+      glx.procPic.source == CVaapiProcessedPicture::VPP_SRC)
++  if (m_wakeupfd >= 0)
 +  {
-+    unsigned int colorStandard;
-+    switch(glx.procPic.DVDPic.color_matrix)
++    /* sets m_bStop */
++    StopThread(false);
++
++    /* wake up the poll() call */
++    eventfd_write(m_wakeupfd, 1);
++
++    /* Wait for the thread to stop */
 +    {
-+      case AVCOL_SPC_BT709:
-+        colorStandard = VA_SRC_BT709;
-+        break;
-+      case AVCOL_SPC_BT470BG:
-+      case AVCOL_SPC_SMPTE170M:
-+        colorStandard = VA_SRC_BT601;
-+        break;
-+      case AVCOL_SPC_SMPTE240M:
-+      case AVCOL_SPC_FCC:
-+      case AVCOL_SPC_UNSPECIFIED:
-+      case AVCOL_SPC_RGB:
-+      default:
-+        if(texWidth > 1000)
-+          colorStandard = VA_SRC_BT709;
-+        else
-+          colorStandard = VA_SRC_BT601;
++      CSingleExit exit(m_mutex);
++      StopThread(true);
 +    }
 +
-+    if (vaSyncSurface(glx.vadsp, glx.procPic.videoSurface) != VA_STATUS_SUCCESS)
-+      return false;
-+
-+    if (vaPutSurface(glx.vadsp,
-+                     glx.procPic.videoSurface,
-+                     glx.pixmap,
-+                     0,0,
-+                     texWidth, texHeight,
-+                     0,0,
-+                     texWidth, texHeight,
-+                     NULL,0,
-+                     VA_FRAME_PICTURE | colorStandard) != VA_STATUS_SUCCESS)
-+    {
-+      return false;
-+    }
-+
-+    XSync(glx.x11dsp, false);
-+    glEnable(glx.textureTarget);
-+    glBindTexture(glx.textureTarget, texture);
-+    glx.glXBindTexImageEXT(glx.x11dsp, glx.glPixmap, GLX_FRONT_LEFT_EXT, NULL);
-+    glBindTexture(glx.textureTarget, 0);
-+    glDisable(glx.textureTarget);
-+
-+    glx.bound = true;
-+
-+    vaapi->ReturnProcPicture(glx.procPic.id);
-+    glx.procPic.id = -1;
++    close(m_wakeupfd);
 +  }
++}
++
++void CFDEventMonitor::AddFD(const MonitoredFD& monitoredFD, int& id)
++{
++  CSingleLock lock(m_mutex);
++  InterruptPoll();
++
++  AddFDLocked(monitoredFD, id);
++
++  StartMonitoring();
++}
++
++void CFDEventMonitor::AddFDs(const std::vector<MonitoredFD>& monitoredFDs,
++                             std::vector<int>& ids)
++{
++  CSingleLock lock(m_mutex);
++  InterruptPoll();
++
++  for (unsigned int i = 0; i < monitoredFDs.size(); ++i)
++  {
++    int id;
++    AddFDLocked(monitoredFDs[i], id);
++    ids.push_back(id);
++  }
++
++  StartMonitoring();
++}
++
++void CFDEventMonitor::RemoveFD(int id)
++{
++  CSingleLock lock(m_mutex);
++  InterruptPoll();
++
++  if (m_monitoredFDs.erase(id) != 1)
++  {
++    CLog::Log(LOGERROR, "CFDEventMonitor::RemoveFD - Tried to remove non-existing monitoredFD %d", id);
++  }
++
++  UpdatePollDescs();
++}
++
++void CFDEventMonitor::RemoveFDs(const std::vector<int>& ids)
++{
++  CSingleLock lock(m_mutex);
++  InterruptPoll();
++
++  for (unsigned int i = 0; i < ids.size(); ++i)
++  {
++    if (m_monitoredFDs.erase(ids[i]) != 1)
++    {
++      CLog::Log(LOGERROR, "CFDEventMonitor::RemoveFDs - Tried to remove non-existing monitoredFD %d while removing %u FDs", ids[i], (unsigned)ids.size());
++    }
++  }
++
++  UpdatePollDescs();
++}
++
++void CFDEventMonitor::Process()
++{
++  eventfd_t dummy;
++
++  while (!m_bStop)
++  {
++    CSingleLock lock(m_mutex);
++    CSingleLock pollLock(m_pollMutex);
++
++    /*
++     * Leave the main mutex here to allow another thread to
++     * lock it while we are in poll().
++     * By then calling InterruptPoll() the other thread can
++     * wake up poll and wait for the processing to pause at
++     * the above lock(m_mutex).
++     */
++    lock.Leave();
++
++    int err = poll(&m_pollDescs[0], m_pollDescs.size(), -1);
++
++    if (err < 0 && errno != EINTR)
++    {
++      CLog::Log(LOGERROR, "CFDEventMonitor::Process - poll() failed, error %d, stopping monitoring", errno);
++      StopThread(false);
++    }
++
++    // Something woke us up - either there is data available or we are being
++    // paused/stopped via m_wakeupfd.
++
++    for (unsigned int i = 0; i < m_pollDescs.size(); ++i)
++    {
++      struct pollfd& pollDesc = m_pollDescs[i];
++      int id = m_monitoredFDbyPollDescs[i];
++      const MonitoredFD& monitoredFD = m_monitoredFDs[id];
++
++      if (pollDesc.revents)
++      {
++        if (monitoredFD.callback)
++        {
++          monitoredFD.callback(id, pollDesc.fd, pollDesc.revents,
++                               monitoredFD.callbackData);
++        }
++
++        if (pollDesc.revents & (POLLERR | POLLHUP | POLLNVAL))
++        {
++          CLog::Log(LOGERROR, "CFDEventMonitor::Process - polled fd %d got revents 0x%x, removing it", pollDesc.fd, pollDesc.revents);
++
++          /* Probably would be nice to inform our caller that their FD was
++           * dropped, but oh well... */
++          m_monitoredFDs.erase(id);
++          UpdatePollDescs();
++        }
++
++        pollDesc.revents = 0;
++      }
++    }
++
++    /* flush wakeup fd */
++    eventfd_read(m_wakeupfd, &dummy);
++
++  }
++}
++
++void CFDEventMonitor::AddFDLocked(const MonitoredFD& monitoredFD, int& id)
++{
++  id = m_nextID;
++
++  while (m_monitoredFDs.count(id))
++  {
++    ++id;
++  }
++  m_nextID = id + 1;
++
++  m_monitoredFDs[id] = monitoredFD;
++
++  AddPollDesc(id, monitoredFD.fd, monitoredFD.events);
++}
++
++void CFDEventMonitor::AddPollDesc(int id, int fd, short events)
++{
++  struct pollfd newPollFD;
++  newPollFD.fd = fd;
++  newPollFD.events = events;
++  newPollFD.revents = 0;
++
++  m_pollDescs.push_back(newPollFD);
++  m_monitoredFDbyPollDescs.push_back(id);
++}
++
++void CFDEventMonitor::UpdatePollDescs()
++{
++  m_monitoredFDbyPollDescs.clear();
++  m_pollDescs.clear();
++
++  for (std::map<int, MonitoredFD>::iterator it = m_monitoredFDs.begin();
++       it != m_monitoredFDs.end(); ++it)
++  {
++    AddPollDesc(it->first, it->second.fd, it->second.events);
++  }
++}
++
++void CFDEventMonitor::StartMonitoring()
++{
++  if (!IsRunning())
++  {
++    /* Start the monitoring thread */
++
++    m_wakeupfd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
++    if (m_wakeupfd < 0)
++    {
++      CLog::Log(LOGERROR, "CFDEventMonitor::StartMonitoring - Failed to create eventfd, error %d", errno);
++      return;
++    }
++
++    /* Add wakeup fd to the fd list */
++    int id;
++    AddFDLocked(MonitoredFD(m_wakeupfd, POLLIN, NULL, NULL), id);
++
++    Create(false);
++  }
++}
++
++void CFDEventMonitor::InterruptPoll()
++{
++  if (m_wakeupfd >= 0)
++  {
++    eventfd_write(m_wakeupfd, 1);
++    /* wait for the poll() result handling (if any) to end */
++    CSingleLock pollLock(m_pollMutex);
++  }
++}
++
++#endif
+diff --git a/xbmc/linux/FDEventMonitor.h b/xbmc/linux/FDEventMonitor.h
+new file mode 100644
+index 0000000..4602d12
+--- /dev/null
++++ b/xbmc/linux/FDEventMonitor.h
+@@ -0,0 +1,89 @@
++#pragma once
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++
++#include <vector>
++#include <map>
++
++#include "threads/CriticalSection.h"
++#include "threads/Thread.h"
++
++#include "utils/GlobalsHandling.h"
++
++/**
++ * Monitor a file descriptor with callback on poll() events.
++ */
++class CFDEventMonitor : private CThread
++{
++public:
++
++  typedef void (*EventCallback)(int id, int fd, short revents, void *data);
++
++  struct MonitoredFD
++  {
++    int fd; /**< File descriptor to be monitored */
++    short events; /**< Events to be monitored (see poll(2)) */
++
++    EventCallback callback; /** Callback to be called on events */
++    void *callbackData; /** data parameter for EventCallback */
++
++    MonitoredFD(int fd_, short events_, EventCallback callback_, void *callbackData_) :
++      fd(fd_), events(events_), callback(callback_), callbackData(callbackData_) {}
++    MonitoredFD() : fd(-1), events(0), callback(NULL), callbackData(NULL) {}
++  };
++
++  CFDEventMonitor();
++  ~CFDEventMonitor();
++
++  void AddFD(const MonitoredFD& monitoredFD, int& id);
++  void AddFDs(const std::vector<MonitoredFD>& monitoredFDs, std::vector<int>& ids);
++
++  void RemoveFD(int id);
++  void RemoveFDs(const std::vector<int>& ids);
++
++protected:
++  virtual void Process();
++
++private:
++  void AddFDLocked(const MonitoredFD& monitoredFD, int& id);
++
++  void AddPollDesc(int id, int fd, short events);
++  void UpdatePollDescs();
++
++  void StartMonitoring();
++  void InterruptPoll();
++
++  std::map<int, MonitoredFD> m_monitoredFDs;
++
++  /* these are kept synchronized */
++  std::vector<int> m_monitoredFDbyPollDescs;
++  std::vector<struct pollfd> m_pollDescs;
++
++  int m_nextID;
++  int m_wakeupfd;
++
++  CCriticalSection m_mutex;
++  CCriticalSection m_pollMutex;
++};
++
++XBMC_GLOBAL_REF(CFDEventMonitor, g_fdEventMonitor);
++#define g_fdEventMonitor XBMC_GLOBAL_USE(CFDEventMonitor)
+diff --git a/xbmc/linux/Makefile.in b/xbmc/linux/Makefile.in
+index c147d8f..744fd06 100644
+--- a/xbmc/linux/Makefile.in
++++ b/xbmc/linux/Makefile.in
+@@ -4,6 +4,7 @@ SRCS  = ConvUtils.cpp
+ SRCS += DBusUtil.cpp
+ SRCS += DBusMessage.cpp
+ SRCS += DBusReserve.cpp
++SRCS += FDEventMonitor.cpp
+ SRCS += LinuxResourceCounter.cpp
+ SRCS += LinuxTimezone.cpp
+ SRCS += PosixMountProvider.cpp
+
+From b465939ca69cc2e02190a815d7b3e7291e14ca87 Mon Sep 17 00:00:00 2001
+From: Anssi Hannula <anssi@xbmc.org>
+Date: Sun, 19 Oct 2014 21:36:44 +0300
+Subject: [PATCH 21/23] [AE] ALSA: Add ALSADeviceMonitor for monitoring card
+ removals/additions
+
+---
+ xbmc/cores/AudioEngine/Makefile.in                 |   1 +
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp        |   8 ++
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.h          |   9 ++
+ .../AudioEngine/Sinks/alsa/ALSADeviceMonitor.cpp   | 131 +++++++++++++++++++++
+ .../AudioEngine/Sinks/alsa/ALSADeviceMonitor.h     |  49 ++++++++
+ 5 files changed, 198 insertions(+)
+ create mode 100644 xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.cpp
+ create mode 100644 xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h
+
+diff --git a/xbmc/cores/AudioEngine/Makefile.in b/xbmc/cores/AudioEngine/Makefile.in
+index efb44cc..614ede2 100644
+--- a/xbmc/cores/AudioEngine/Makefile.in
++++ b/xbmc/cores/AudioEngine/Makefile.in
+@@ -50,6 +50,7 @@ SRCS += Sinks/osx/CoreAudioHelpers.cpp
+ SRCS += Sinks/osx/CoreAudioStream.cpp
+ else
+ SRCS += Sinks/AESinkALSA.cpp
++SRCS += Sinks/alsa/ALSADeviceMonitor.cpp
+ SRCS += Sinks/AESinkOSS.cpp
+ ifeq (@USE_PULSE@,1)
+ SRCS += Sinks/AESinkPULSE.cpp
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+index a464b4b..c2d5758 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+@@ -1066,6 +1066,10 @@ bool CAESinkALSA::OpenPCMDevice(const std::string &name, const std::string &para
+ 
+ void CAESinkALSA::EnumerateDevicesEx(AEDeviceInfoList &list, bool force)
+ {
++#if HAVE_LIBUDEV
++  m_deviceMonitor.Start();
++#endif
++
+   /* ensure that ALSA has been initialized */
+   snd_lib_error_set_handler(sndLibErrorHandler);
+   if(!snd_config || force)
+@@ -1577,4 +1581,8 @@ void CAESinkALSA::sndLibErrorHandler(const char *file, int line, const char *fun
+   va_end(arg);
+ }
+ 
++#if HAVE_LIBUDEV
++CALSADeviceMonitor CAESinkALSA::m_deviceMonitor; // ARGH
++#endif
++
+ #endif
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
+index 7e05ce6..1177f41 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
+@@ -24,6 +24,7 @@
+ 
+ #include "cores/AudioEngine/Interfaces/AESink.h"
+ #include "cores/AudioEngine/Utils/AEDeviceInfo.h"
++#include "cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h"
+ #include <stdint.h>
+ 
+ #define ALSA_PCM_NEW_HW_PARAMS_API
+@@ -31,6 +32,10 @@
+ 
+ #include "threads/CriticalSection.h"
+ 
++// ARGH... this is apparently needed to avoid FDEventMonitor
++// being destructed before CALSA*Monitor below.
++#include "linux/FDEventMonitor.h"
++
+ class CAESinkALSA : public IAESink
+ {
+ public:
+@@ -79,6 +84,10 @@ class CAESinkALSA : public IAESink
+   snd_pcm_t        *m_pcm;
+   int               m_timeout;
+ 
++#if HAVE_LIBUDEV
++  static CALSADeviceMonitor m_deviceMonitor;
++#endif
++
+   struct ALSAConfig
+   {
+     unsigned int sampleRate;
+diff --git a/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.cpp b/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.cpp
+new file mode 100644
+index 0000000..e3269ad
+--- /dev/null
++++ b/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.cpp
+@@ -0,0 +1,131 @@
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++#include "system.h"
++#if defined(HAS_ALSA) && defined(HAVE_LIBUDEV)
++
++#include <libudev.h>
++
++#include "ALSADeviceMonitor.h"
++#include "AEFactory.h"
++#include "linux/FDEventMonitor.h"
++#include "utils/log.h"
++
++CALSADeviceMonitor::CALSADeviceMonitor() :
++  m_fdMonitorId(0),
++  m_udev(NULL),
++  m_udevMonitor(NULL)
++{
++}
++
++CALSADeviceMonitor::~CALSADeviceMonitor()
++{
++  Stop();
++}
++
++void CALSADeviceMonitor::Start()
++{
++  int err;
++
++  if (!m_udev)
++  {
++    m_udev = udev_new();
++    if (!m_udev)
++    {
++      CLog::Log(LOGWARNING, "CALSADeviceMonitor::Start - Unable to open udev handle");
++      return;
++    }
++
++    m_udevMonitor = udev_monitor_new_from_netlink(m_udev, "udev");
++    if (!m_udevMonitor)
++    {
++      CLog::Log(LOGERROR, "CALSADeviceMonitor::Start - udev_monitor_new_from_netlink() failed");
++      goto err_unref_udev;
++    }
++
++    err = udev_monitor_filter_add_match_subsystem_devtype(m_udevMonitor, "sound", NULL);
++    if (err)
++    {
++      CLog::Log(LOGERROR, "CALSADeviceMonitor::Start - udev_monitor_filter_add_match_subsystem_devtype() failed");
++      goto err_unref_monitor;
++    }
++
++    err = udev_monitor_enable_receiving(m_udevMonitor);
++    if (err)
++    {
++      CLog::Log(LOGERROR, "CALSADeviceMonitor::Start - udev_monitor_enable_receiving() failed");
++      goto err_unref_monitor;
++    }
++
++    g_fdEventMonitor.AddFD(
++        CFDEventMonitor::MonitoredFD(udev_monitor_get_fd(m_udevMonitor),
++                                     POLLIN, FDEventCallback, m_udevMonitor),
++        m_fdMonitorId);
++  }
++
++  return;
++
++err_unref_monitor:
++  udev_monitor_unref(m_udevMonitor);
++  m_udevMonitor = NULL;
++err_unref_udev:
++  udev_unref(m_udev);
++  m_udev = NULL;
++}
++
++void CALSADeviceMonitor::Stop()
++{
++  if (m_udev)
++  {
++    g_fdEventMonitor.RemoveFD(m_fdMonitorId);
++
++    udev_monitor_unref(m_udevMonitor);
++    m_udevMonitor = NULL;
++    udev_unref(m_udev);
++    m_udev = NULL;
++  }
++}
++
++void CALSADeviceMonitor::FDEventCallback(int id, int fd, short revents, void *data)
++{
++  struct udev_monitor *udevMonitor = (struct udev_monitor *)data;
++  bool audioDevicesChanged = false;
++  struct udev_device *device;
++
++  while ((device = udev_monitor_receive_device(udevMonitor)) != NULL)
++  {
++    const char* action = udev_device_get_action(device);
++    const char* soundInitialized = udev_device_get_property_value(device, "SOUND_INITIALIZED");
++
++    /* cardX devices emit a "change" event when ready (i.e. all subdevices added) */
++    if (action && soundInitialized &&
++        (strcmp(action, "change") == 0 || strcmp(action, "remove") == 0))
++    {
++      audioDevicesChanged = true;
++    }
++    udev_device_unref(device);
++  }
++
++  if (audioDevicesChanged)
++  {
++    CAEFactory::DeviceChange();
++  }
++}
++
++#endif
+diff --git a/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h b/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h
+new file mode 100644
+index 0000000..f9e2f26
+--- /dev/null
++++ b/xbmc/cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h
+@@ -0,0 +1,49 @@
++#pragma once
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++#if defined(HAS_ALSA) && defined(HAVE_LIBUDEV)
++
++#include <string>
++#include <vector>
++
++#include <alsa/asoundlib.h>
++
++class CALSADeviceMonitor
++{
++public:
++  CALSADeviceMonitor();
++  ~CALSADeviceMonitor();
++
++  void Start();
++  void Stop();
++
++private:
++  static void FDEventCallback(int id, int fd, short revents, void *data);
++
++  int m_fdMonitorId;
++
++  struct udev *m_udev;
++  struct udev_monitor* m_udevMonitor;
++};
++
++#endif
++
+
+From f5555b53d7886387a624f011e7a58ec5cd247635 Mon Sep 17 00:00:00 2001
+From: Anssi Hannula <anssi@xbmc.org>
+Date: Sun, 19 Oct 2014 21:37:49 +0300
+Subject: [PATCH 22/23] [AE] ALSA: Add ALSADeviceMonitor for monitoring ELD
+ changes
+
+ELD changes can happen e.g. when the connected HDMI sink is changed.
+---
+ xbmc/cores/AudioEngine/Makefile.in                 |   1 +
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp        |   9 ++
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.h          |   2 +
+ .../AudioEngine/Sinks/alsa/ALSAHControlMonitor.cpp | 173 +++++++++++++++++++++
+ .../AudioEngine/Sinks/alsa/ALSAHControlMonitor.h   |  69 ++++++++
+ 5 files changed, 254 insertions(+)
+ create mode 100644 xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.cpp
+ create mode 100644 xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.h
+
+diff --git a/xbmc/cores/AudioEngine/Makefile.in b/xbmc/cores/AudioEngine/Makefile.in
+index 614ede2..8f13088 100644
+--- a/xbmc/cores/AudioEngine/Makefile.in
++++ b/xbmc/cores/AudioEngine/Makefile.in
+@@ -51,6 +51,7 @@ SRCS += Sinks/osx/CoreAudioStream.cpp
+ else
+ SRCS += Sinks/AESinkALSA.cpp
+ SRCS += Sinks/alsa/ALSADeviceMonitor.cpp
++SRCS += Sinks/alsa/ALSAHControlMonitor.cpp
+ SRCS += Sinks/AESinkOSS.cpp
+ ifeq (@USE_PULSE@,1)
+ SRCS += Sinks/AESinkPULSE.cpp
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+index c2d5758..f92f488 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+@@ -1083,6 +1083,8 @@ void CAESinkALSA::EnumerateDevicesEx(AEDeviceInfoList &list, bool force)
+   snd_config_t *config;
+   snd_config_copy(&config, snd_config);
+ 
++  m_controlMonitor.Clear();
++
+   /* Always enumerate the default device.
+    * Note: If "default" is a stereo device, EnumerateDevice()
+    * will automatically add "@" instead to enable surroundXX mangling.
+@@ -1160,6 +1162,8 @@ void CAESinkALSA::EnumerateDevicesEx(AEDeviceInfoList &list, bool force)
+   }
+   snd_device_name_free_hint(hints);
+ 
++  m_controlMonitor.Start();
++
+   /* set the displayname for default device */
+   if (!list.empty() && list[0].m_deviceName == "default")
+   {
+@@ -1340,6 +1344,10 @@ void CAESinkALSA::EnumerateDevice(AEDeviceInfoList &list, const std::string &dev
+           {
+             snd_hctl_load(hctl);
+             bool badHDMI = false;
++
++            /* add ELD to monitoring */
++            m_controlMonitor.Add(strHwName, SND_CTL_ELEM_IFACE_PCM, dev, "ELD");
++
+             if (!GetELD(hctl, dev, info, badHDMI))
+               CLog::Log(LOGDEBUG, "CAESinkALSA - Unable to obtain ELD information for device \"%s\" (not supported by device, or kernel older than 3.2)",
+                         device.c_str());
+@@ -1584,5 +1592,6 @@ void CAESinkALSA::sndLibErrorHandler(const char *file, int line, const char *fun
+ #if HAVE_LIBUDEV
+ CALSADeviceMonitor CAESinkALSA::m_deviceMonitor; // ARGH
+ #endif
++CALSAHControlMonitor CAESinkALSA::m_controlMonitor; // ARGH
+ 
+ #endif
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
+index 1177f41..8be8709 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.h
+@@ -25,6 +25,7 @@
+ #include "cores/AudioEngine/Interfaces/AESink.h"
+ #include "cores/AudioEngine/Utils/AEDeviceInfo.h"
+ #include "cores/AudioEngine/Sinks/alsa/ALSADeviceMonitor.h"
++#include "cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.h"
+ #include <stdint.h>
+ 
+ #define ALSA_PCM_NEW_HW_PARAMS_API
+@@ -87,6 +88,7 @@ class CAESinkALSA : public IAESink
+ #if HAVE_LIBUDEV
+   static CALSADeviceMonitor m_deviceMonitor;
+ #endif
++  static CALSAHControlMonitor m_controlMonitor;
+ 
+   struct ALSAConfig
+   {
+diff --git a/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.cpp b/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.cpp
+new file mode 100644
+index 0000000..9b595ee
+--- /dev/null
++++ b/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.cpp
+@@ -0,0 +1,173 @@
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++#include "system.h"
++#ifdef HAS_ALSA
++
++#include "ALSAHControlMonitor.h"
++
++#include "AEFactory.h"
++#include "linux/FDEventMonitor.h"
++#include "utils/log.h"
++
++CALSAHControlMonitor::CALSAHControlMonitor()
++{
++}
++
++CALSAHControlMonitor::~CALSAHControlMonitor()
++{
++  Clear();
++}
++
++bool CALSAHControlMonitor::Add(const std::string& ctlHandleName,
++                               snd_ctl_elem_iface_t interface,
++                               unsigned int device,
++                               const std::string& name)
++{
++  snd_hctl_t *hctl = GetHandle(ctlHandleName);
++
++  if (!hctl)
++  {
++    return false;
++  }
++
++  snd_ctl_elem_id_t *id;
++
++  snd_ctl_elem_id_alloca(&id);
++
++  snd_ctl_elem_id_set_interface(id, interface);
++  snd_ctl_elem_id_set_name     (id, name.c_str());
++  snd_ctl_elem_id_set_device   (id, device);
++
++  snd_hctl_elem_t *elem = snd_hctl_find_elem(hctl, id);
++
++  if (!elem)
++  {
++    PutHandle(ctlHandleName);
++    return false;
++  }
++
++  snd_hctl_elem_set_callback(elem, HCTLCallback);
 +
 +  return true;
 +}
 +
- void CVaapiRenderPicture::Sync()
- {
- #ifdef GL_ARB_sync
-@@ -1143,6 +1213,15 @@ void CVaapiRenderPicture::Sync()
-     fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-   }
- #endif
++void CALSAHControlMonitor::Clear()
++{
++  Stop();
 +
-+  if (DVDPic.format == RENDER_FMT_VAAPI && glx.bound)
++  for (std::map<std::string, CTLHandle>::iterator it = m_ctlHandles.begin();
++       it != m_ctlHandles.end(); ++it)
 +  {
-+    glEnable(glx.textureTarget);
-+    glBindTexture(glx.textureTarget, texture);
-+    glx.glXReleaseTexImageEXT(glx.x11dsp, glx.glPixmap, GLX_FRONT_LEFT_EXT);
-+    glBindTexture(glx.textureTarget, 0);
-+    glDisable(glx.textureTarget);
++    snd_hctl_close(it->second.handle);
 +  }
- }
- 
- //-----------------------------------------------------------------------------
-@@ -1274,6 +1353,11 @@ void COutput::StateMachine(int signal, Protocol *port, Message *msg)
-           pic = *((CVaapiRenderPicture**)msg->data);
-           QueueReturnPicture(pic);
-           return;
-+        case COutputDataProtocol::RETURNPROCPIC:
-+          int id;
-+          id = *((int*)msg->data);
-+          ProcessReturnProcPicture(id);
-+          return;
-         default:
-           break;
-         }
-@@ -1360,6 +1444,12 @@ void COutput::StateMachine(int signal, Protocol *port, Message *msg)
-           m_controlPort.SendInMessage(COutputControlProtocol::STATS);
-           m_extTimeout = 0;
-           return;
-+        case COutputDataProtocol::RETURNPROCPIC:
-+          int id;
-+          id = *((int*)msg->data);
-+          ProcessReturnProcPicture(id);
-+          m_extTimeout = 0;
-+          return;
-         default:
-           break;
-         }
-@@ -1488,7 +1578,7 @@ void COutput::StateMachine(int signal, Protocol *port, Message *msg)
-             m_config.stats->DecProcessed();
-             m_bufferPool.processedPics.pop_front();
-             outPic = ProcessPicture(procPic);
--            ReleaseProcessedPicture(procPic);
-+            //ReleaseProcessedPicture(procPic);
-             if (outPic)
-             {
-               m_config.stats->IncRender();
-@@ -1675,8 +1765,15 @@ void COutput::Flush()
- 
- bool COutput::HasWork()
- {
--  if ((!m_bufferPool.freeRenderPics.empty() && !m_bufferPool.processedPics.empty()) ||
--       (!m_bufferPool.decodedPics.empty() && m_bufferPool.processedPics.size() < 4))
-+  // send a pic to renderer
-+  if (!m_bufferPool.freeRenderPics.empty() && !m_bufferPool.processedPics.empty())
-+    return true;
-+
-+  bool ppWantsPic = true;
-+  if (m_pp)
-+    ppWantsPic = m_pp->WantsPic();
-+
-+  if (!m_bufferPool.decodedPics.empty() && m_bufferPool.processedPics.size() < 4 && ppWantsPic)
-     return true;
- 
-   return false;
-@@ -1689,6 +1786,9 @@ bool COutput::PreferPP()
-     if (!m_pp)
-       return true;
- 
-+    if (!m_pp->WantsPic())
-+      return false;
-+
-     if (!m_pp->DoesSync() && m_bufferPool.processedPics.size() < 4)
-       return true;
- 
-@@ -1808,53 +1908,11 @@ CVaapiRenderPicture* COutput::ProcessPicture(CVaapiProcessedPicture &pic)
-   if (pic.source == CVaapiProcessedPicture::SKIP_SRC ||
-       pic.source == CVaapiProcessedPicture::VPP_SRC)
-   {
--    unsigned int colorStandard;
--    switch(pic.DVDPic.color_matrix)
--    {
--      case AVCOL_SPC_BT709:
--        colorStandard = VA_SRC_BT709;
--        break;
--      case AVCOL_SPC_BT470BG:
--      case AVCOL_SPC_SMPTE170M:
--        colorStandard = VA_SRC_BT601;
--        break;
--      case AVCOL_SPC_SMPTE240M:
--      case AVCOL_SPC_FCC:
--      case AVCOL_SPC_UNSPECIFIED:
--      case AVCOL_SPC_RGB:
--      default:
--        if(m_config.surfaceWidth > 1000)
--          colorStandard = VA_SRC_BT709;
--        else
--          colorStandard = VA_SRC_BT601;
--    }
--
--    if (!CheckSuccess(vaSyncSurface(m_config.dpy, pic.videoSurface)))
--      return NULL;
--
--    XLockDisplay(m_Display);
--    if (!CheckSuccess(vaPutSurface(m_config.dpy,
--                                   pic.videoSurface,
--                                   retPic->pixmap,
--                                   0,0,
--                                   m_config.vidWidth, m_config.vidHeight,
--                                   0,0,
--                                   m_config.outWidth, m_config.outHeight,
--                                   NULL,0,
--                                   VA_FRAME_PICTURE | colorStandard)))
--    {
--      return NULL;
--    }
--    XUnlockDisplay(m_Display);
--
--    XSync(m_config.x11dsp, false);
--    glEnable(m_textureTarget);
--    glBindTexture(m_textureTarget, retPic->texture);
--    glXBindTexImageEXT(m_Display, retPic->glPixmap, GLX_FRONT_LEFT_EXT, NULL);
--    glBindTexture(m_textureTarget, 0);
--    glDisable(m_textureTarget);
--
-+    pic.id = m_bufferPool.procPicId++;
-+    m_bufferPool.processedPicsAway.push_back(pic);
-     retPic->DVDPic.format = RENDER_FMT_VAAPI;
-+    retPic->glx.procPic = pic;
-+    retPic->glx.bound = false;
-   }
-   else if (pic.source == CVaapiProcessedPicture::FFMPEG_SRC)
-   {
-@@ -1917,6 +1975,18 @@ void COutput::DropVppProcessedPictures()
-     else
-       ++it;
-   }
-+
-+  it = m_bufferPool.processedPicsAway.begin();
-+  while (it != m_bufferPool.processedPicsAway.end())
-+  {
-+    if (it->source == CVaapiProcessedPicture::VPP_SRC)
-+    {
-+      it = m_bufferPool.processedPicsAway.erase(it);
-+    }
-+    else
-+      ++it;
-+  }
-+
-   m_controlPort.SendInMessage(COutputControlProtocol::STATS);
- }
- 
-@@ -2014,16 +2084,22 @@ void COutput::ProcessReturnPicture(CVaapiRenderPicture *pic)
-   if (pic->avFrame)
-     av_frame_unref(pic->avFrame);
- 
--  if (pic->DVDPic.format == RENDER_FMT_VAAPI)
-+  ProcessReturnProcPicture(pic->glx.procPic.id);
-+  pic->valid = false;
++  m_ctlHandles.clear();
 +}
 +
-+void COutput::ProcessReturnProcPicture(int id)
++void CALSAHControlMonitor::Start()
 +{
-+  std::deque<CVaapiProcessedPicture>::iterator it;
-+  for (it=m_bufferPool.processedPicsAway.begin(); it!=m_bufferPool.processedPicsAway.end(); ++it)
-   {
--    glEnable(m_textureTarget);
--    glBindTexture(m_textureTarget, pic->texture);
--    glXReleaseTexImageEXT(m_Display, pic->glPixmap, GLX_FRONT_LEFT_EXT);
--    glBindTexture(m_textureTarget, 0);
--    glDisable(m_textureTarget);
-+    if (it->id == id)
++  assert(m_fdMonitorIds.size() == 0);
++
++  std::vector<struct pollfd> pollfds;
++  std::vector<CFDEventMonitor::MonitoredFD> monitoredFDs;
++
++  for (std::map<std::string, CTLHandle>::iterator it = m_ctlHandles.begin();
++       it != m_ctlHandles.end(); ++it)
++  {
++    pollfds.resize(snd_hctl_poll_descriptors_count(it->second.handle));
++    int fdcount = snd_hctl_poll_descriptors(it->second.handle, &pollfds[0], pollfds.size());
++
++    for (int j = 0; j < fdcount; ++j)
 +    {
-+      ReleaseProcessedPicture(*it);
-+      m_bufferPool.processedPicsAway.erase(it);
-+      break;
++      monitoredFDs.push_back(CFDEventMonitor::MonitoredFD(pollfds[j].fd,
++                                                          pollfds[j].events,
++                                                          FDEventCallback,
++                                                          it->second.handle));
 +    }
-   }
--
--  pic->valid = false;
- }
- 
- bool COutput::EnsureBufferPool()
-@@ -2069,32 +2145,39 @@ bool COutput::EnsureBufferPool()
-   {
-     pic = m_bufferPool.allRenderPics[i];
- 
--    pic->pixmap = XCreatePixmap(m_Display,
-+    pic->glx.pixmap = XCreatePixmap(m_Display,
-                                 m_Window,
-                                 m_config.outWidth,
-                                 m_config.outHeight,
-                                 wndattribs.depth);
--    if (!pic->pixmap)
-+    if (!pic->glx.pixmap)
-     {
-       CLog::Log(LOGERROR, "VAAPI::COutput::EnsureBufferPool - Unable to create XPixmap");
-       return false;
-     }
- 
-     // create gl pixmap
--    pic->glPixmap = glXCreatePixmap(m_Display, fbConfigs[fbConfigIndex], pic->pixmap, pixmapAttribs);
-+    pic->glx.glPixmap = glXCreatePixmap(m_Display, fbConfigs[fbConfigIndex], pic->glx.pixmap, pixmapAttribs);
- 
--    if (!pic->glPixmap)
-+    if (!pic->glx.glPixmap)
-     {
-       CLog::Log(LOGINFO, "VAAPI::COutput::EnsureBufferPool - Could not create glPixmap");
-       return false;
-     }
- 
-     glGenTextures(1, &pic->texture);
-+    pic->glx.vadsp = m_config.dpy;
-+    pic->glx.x11dsp = m_Display;
-+    pic->glx.glXBindTexImageEXT = glXBindTexImageEXT;
-+    pic->glx.glXReleaseTexImageEXT = glXReleaseTexImageEXT;
-+    pic->glx.textureTarget = m_textureTarget;
- 
-     pic->avFrame = av_frame_alloc();
-     pic->valid = false;
-   }
- 
-+  m_bufferPool.procPicId = 0;
++  }
 +
-   CLog::Log(LOGNOTICE, "VAAPI::COutput::InitBufferPool - Surfaces created");
-   return true;
- }
-@@ -2153,8 +2236,8 @@ void COutput::ReleaseBufferPool(bool precleanup)
-     if (pic->texture)
-     {
-       glDeleteTextures(1, &pic->texture);
--      glXDestroyPixmap(m_Display, pic->glPixmap);
--      XFreePixmap(m_Display, pic->pixmap);
-+      glXDestroyPixmap(m_Display, pic->glx.glPixmap);
-+      XFreePixmap(m_Display, pic->glx.pixmap);
-       pic->texture = None;
-     }
-     av_frame_free(&pic->avFrame);
-@@ -2193,7 +2276,6 @@ bool COutput::GLInit()
- 
-   glXBindTexImageEXT = (PFNGLXBINDTEXIMAGEEXTPROC)glXGetProcAddress((GLubyte *) "glXBindTexImageEXT");
-   glXReleaseTexImageEXT = (PFNGLXRELEASETEXIMAGEEXTPROC)glXGetProcAddress((GLubyte *) "glXReleaseTexImageEXT");
--
-   return true;
- }
- 
-@@ -2377,7 +2459,7 @@ bool CVppPostproc::PreInit(CVaapiConfig &config, SDiMethods *methods)
- 
-   // create surfaces
-   VASurfaceID surfaces[32];
--  int nb_surfaces = 5;
-+  int nb_surfaces = NUM_RENDER_PICS;
-   if (!CheckSuccess(vaCreateSurfaces(m_config.dpy,
-                                      VA_RT_FORMAT_YUV420,
-                                      m_config.surfaceWidth,
-@@ -2794,6 +2876,15 @@ bool CVppPostproc::DoesSync()
-   return false;
- }
- 
-+bool CVppPostproc::WantsPic()
-+{
-+  // need at least 2 for deinterlacing
-+  if (m_videoSurfaces.NumFree() > 1)
-+    return true;
-+
-+  return false;
++  g_fdEventMonitor.AddFDs(monitoredFDs, m_fdMonitorIds);
 +}
 +
- bool CVppPostproc::CheckSuccess(VAStatus status)
- {
-   if (status != VA_STATUS_SUCCESS)
-diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-index c45e97d..6b2b67a 100644
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/VAAPI.h
-@@ -144,6 +144,7 @@ struct CVaapiProcessedPicture
-   DVDVideoPicture DVDPic;
-   VASurfaceID videoSurface;
-   AVFrame *frame;
-+  int id;
-   enum
-   {
-     VPP_SRC,
-@@ -153,6 +154,19 @@ struct CVaapiProcessedPicture
-   bool crop;
- };
- 
-+struct VaapiGlx
++
++void CALSAHControlMonitor::Stop()
 +{
-+  Display *x11dsp;
-+  VADisplay vadsp;
-+  Pixmap pixmap;
-+  GLXPixmap glPixmap;
-+  GLenum textureTarget;
-+  PFNGLXBINDTEXIMAGEEXTPROC glXBindTexImageEXT;
-+  PFNGLXRELEASETEXIMAGEEXTPROC glXReleaseTexImageEXT;
-+  CVaapiProcessedPicture procPic;
-+  bool bound;
++  g_fdEventMonitor.RemoveFDs(m_fdMonitorIds);
++  m_fdMonitorIds.clear();
++}
++
++int CALSAHControlMonitor::HCTLCallback(snd_hctl_elem_t *elem, unsigned int mask)
++{
++  /*
++   * Currently we just re-enumerate on any change.
++   * Custom callbacks for handling other control monitoring may be implemented when needed.
++   */
++  if (mask & SND_CTL_EVENT_MASK_VALUE)
++  {
++    CAEFactory::DeviceChange();
++  }
++
++  return 0;
++}
++
++void CALSAHControlMonitor::FDEventCallback(int id, int fd, short revents, void *data)
++{
++  /* Run ALSA event handling when the FD has events */
++  snd_hctl_t *hctl = (snd_hctl_t *)data;
++  snd_hctl_handle_events(hctl);
++}
++
++snd_hctl_t* CALSAHControlMonitor::GetHandle(const std::string& ctlHandleName)
++{
++  if (!m_ctlHandles.count(ctlHandleName))
++  {
++    snd_hctl_t *hctl;
++
++    if (snd_hctl_open(&hctl, ctlHandleName.c_str(), 0) != 0)
++    {
++        CLog::Log(LOGWARNING, "CALSAHControlMonitor::GetHandle - snd_hctl_open() failed for \"%s\"", ctlHandleName.c_str());
++        return NULL;
++    }
++    if (snd_hctl_load(hctl) != 0)
++    {
++      CLog::Log(LOGERROR, "CALSAHControlMonitor::GetHandle - snd_hctl_load() failed for \"%s\"", ctlHandleName.c_str());
++      snd_hctl_close(hctl);
++      return NULL;
++    }
++
++    snd_hctl_nonblock(hctl, 1);
++
++    m_ctlHandles[ctlHandleName] = CTLHandle(hctl);
++  }
++
++  m_ctlHandles[ctlHandleName].useCount++;
++  return m_ctlHandles[ctlHandleName].handle;
++}
++
++void CALSAHControlMonitor::PutHandle(const std::string& ctlHandleName)
++{
++  if (--m_ctlHandles[ctlHandleName].useCount == 0)
++  {
++    snd_hctl_close(m_ctlHandles[ctlHandleName].handle);
++    m_ctlHandles.erase(ctlHandleName);
++  }
++}
++
++
++#endif
+diff --git a/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.h b/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.h
+new file mode 100644
+index 0000000..56dfd50
+--- /dev/null
++++ b/xbmc/cores/AudioEngine/Sinks/alsa/ALSAHControlMonitor.h
+@@ -0,0 +1,69 @@
++#pragma once
++/*
++ *      Copyright (C) 2014 Team Kodi
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with Kodi; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++#ifdef HAS_ALSA
++
++#include <string>
++#include <map>
++#include <vector>
++
++#include <alsa/asoundlib.h>
++
++class CALSAHControlMonitor
++{
++public:
++  CALSAHControlMonitor();
++  ~CALSAHControlMonitor();
++
++  bool Add(const std::string& ctlHandleName,
++           snd_ctl_elem_iface_t interface,
++           unsigned int device,
++           const std::string& name);
++
++  void Clear();
++
++  void Start();
++  void Stop();
++
++private:
++  static int HCTLCallback(snd_hctl_elem_t *elem, unsigned int mask);
++  static void FDEventCallback(int id, int fd, short revents, void *data);
++
++  snd_hctl_t* GetHandle(const std::string& ctlHandleName);
++  void PutHandle(const std::string& ctlHandleName);
++
++  struct CTLHandle
++  {
++    snd_hctl_t *handle;
++    int useCount;
++
++    CTLHandle(snd_hctl_t *handle_) : handle(handle_), useCount(0) {}
++    CTLHandle() : handle(NULL), useCount(0) {}
++  };
++
++  std::map<std::string, CTLHandle> m_ctlHandles;
++
++  std::vector<int> m_fdMonitorIds;
 +};
 +
- /**
-  * Ready to render textures
-  * Sent from COutput back to CDecoder
-@@ -168,6 +182,7 @@ class CVaapiRenderPicture
-     : texWidth(0), texHeight(0), texture(None), valid(false), vaapi(NULL), avFrame(NULL),
-       usefence(false), refCount(0), renderPicSection(section) { fence = None; }
-   void Sync();
-+  bool CopyGlx();
-   DVDVideoPicture DVDPic;
-   int texWidth, texHeight;
-   CRect crop;
-@@ -182,8 +197,7 @@ class CVaapiRenderPicture
-   bool usefence;
-   GLsync fence;
-   int refCount;
--  Pixmap pixmap;
--  GLXPixmap glPixmap;
-+  VaapiGlx glx;
-   CCriticalSection &renderPicSection;
- };
- 
-@@ -204,8 +218,10 @@ struct VaapiBufferPool
-   std::deque<int> freeRenderPics;
-   std::deque<int> syncRenderPics;
-   std::deque<CVaapiProcessedPicture> processedPics;
-+  std::deque<CVaapiProcessedPicture> processedPicsAway;
-   std::deque<CVaapiDecodedPicture> decodedPics;
-   CCriticalSection renderPicSec;
-+  int procPicId;
- };
- 
- class COutputControlProtocol : public Protocol
-@@ -235,6 +251,7 @@ class COutputDataProtocol : public Protocol
-   {
-     NEWFRAME = 0,
-     RETURNPIC,
-+    RETURNPROCPIC,
-   };
-   enum InSignal
-   {
-@@ -276,6 +293,7 @@ class COutput : private CThread
-   CVaapiRenderPicture* ProcessPicture(CVaapiProcessedPicture &pic);
-   void QueueReturnPicture(CVaapiRenderPicture *pic);
-   void ProcessReturnPicture(CVaapiRenderPicture *pic);
-+  void ProcessReturnProcPicture(int id);
-   bool ProcessSyncPicture();
-   void ReleaseProcessedPicture(CVaapiProcessedPicture &pic);
-   void DropVppProcessedPictures();
-@@ -332,6 +350,7 @@ class CVideoSurfaces
-   int Size();
-   bool HasFree();
-   bool HasRefs();
-+  int NumFree();
- protected:
-   std::map<VASurfaceID, int> m_state;
-   std::list<VASurfaceID> m_freeSurfaces;
-@@ -393,7 +412,7 @@ class CDecoder
-   virtual void Close();
-   virtual long Release();
-   virtual bool CanSkipDeint();
--  virtual unsigned GetAllowedReferences() { return 5; }
-+  virtual unsigned GetAllowedReferences() { return 4; }
- 
-   virtual int  Check(AVCodecContext* avctx);
-   virtual const std::string Name() { return "vaapi"; }
-@@ -410,6 +429,7 @@ class CDecoder
-   bool CheckStatus(VAStatus vdp_st, int line);
-   void FiniVAAPIOutput();
-   void ReturnRenderPicture(CVaapiRenderPicture *renderPic);
-+  void ReturnProcPicture(int id);
-   long ReleasePicReference();
-   bool CheckSuccess(VAStatus status);
- 
-@@ -458,6 +478,7 @@ class CPostproc
-   virtual void Flush() = 0;
-   virtual bool Compatible(EINTERLACEMETHOD method) = 0;
-   virtual bool DoesSync() = 0;
-+  virtual bool WantsPic() {return true;}
- protected:
-   CVaapiConfig m_config;
-   int m_step;
-@@ -497,6 +518,7 @@ class CVppPostproc : public CPostproc
-   void Flush();
-   bool Compatible(EINTERLACEMETHOD method);
-   bool DoesSync();
-+  bool WantsPic();
- protected:
-   bool CheckSuccess(VAStatus status);
-   void Dispose();
++#endif
++
+
+From 09b1724482fd9666e976c831976e30afe33537ab Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sat, 1 Nov 2014 07:47:16 +0100
+Subject: [PATCH 23/23] videorefclock: use videosync DRM on AMD systems
+
+---
+ xbmc/video/VideoReferenceClock.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/video/VideoReferenceClock.cpp b/xbmc/video/VideoReferenceClock.cpp
+index 03f8bf3..1d403bd 100644
+--- a/xbmc/video/VideoReferenceClock.cpp
++++ b/xbmc/video/VideoReferenceClock.cpp
+@@ -99,7 +99,8 @@ void CVideoReferenceClock::Process()
+ #if defined(HAVE_X11)
+   std::string gpuvendor = g_Windowing.GetRenderVendor();
+   std::transform(gpuvendor.begin(), gpuvendor.end(), gpuvendor.begin(), ::tolower);
+-  if (gpuvendor.compare(0, 5, "intel") == 0)
++  if ((gpuvendor.compare(0, 5, "intel") == 0 ||
++       gpuvendor.compare(0, 5, "x.org") == 0)) // AMD
+     m_pVideoSync = new CVideoSyncDRM();
+ #if defined(HAS_GLX)
+   else

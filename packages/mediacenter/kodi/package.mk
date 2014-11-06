@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="14-34923de"
+PKG_VERSION="14-ba267af"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -41,7 +41,7 @@ PKG_AUTORECONF="no"
 
 if [ "$DISPLAYSERVER" = "x11" ]; then
 # for libX11 support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext libdrm"
 # for libXrandr support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libXrandr"
   KODI_XORG="--enable-x11 --enable-xrandr"
@@ -67,7 +67,7 @@ fi
 
 if [ "$SDL_SUPPORT" = yes ]; then
 # for SDL support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL SDL_image"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL2"
   KODI_SDL="--enable-sdl"
 else
   KODI_SDL="--disable-sdl"
