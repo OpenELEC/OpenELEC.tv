@@ -50,12 +50,11 @@
 trap cleanup SIGINT
 
 # generate volume id for fat partition
-if [ "$UEFI" = "yes" ] ; then
+if [ "$BOOTLOADER" = "syslinux" ] ; then
   UUID_1=$(date '+%d%m')
   UUID_2=$(date '+%M%S')
   FAT_VOL_ID="${UUID_1}${UUID_2}"
   UUID_SYSTEM="${UUID_1}-${UUID_2}"
-  DISK="$TARGET_IMG/$IMAGE_NAME-efi.img"
 fi
 
 # ensure loopX not in use
@@ -71,7 +70,7 @@ fi
 # write a disklabel
   echo "image: creating partition table on $DISK..."
   losetup "$LOOP" "$DISK"
-  if [ "$UEFI" = "yes" ] ; then
+  if [ "$BOOTLOADER" = "syslinux" ] ; then
     parted -s "$LOOP" mklabel gpt
   else
     parted -s "$LOOP" mklabel msdos
@@ -81,18 +80,10 @@ fi
 # create part1
   echo "image: creating part1 on $DISK..."
   SYSTEM_PART_END=$(( $SYSTEM_SIZE * 1024 * 1024 / 512 + 2048 ))
+  parted -s "$LOOP" -a min unit s mkpart primary fat32 2048 $SYSTEM_PART_END
   if [ "$BOOTLOADER" = "syslinux" ]; then
-    if [ "$UEFI" = "yes" ] ; then
-      parted -s "$LOOP" -a min unit s mkpart primary fat32 2048 $SYSTEM_PART_END
-    else
-      parted -s "$LOOP" -a min unit s mkpart primary ext4 2048 $SYSTEM_PART_END
-    fi
-  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" ]; then
-    parted -s "$LOOP" -a min unit s mkpart primary fat32 2048 $SYSTEM_PART_END
-  fi
-  if [ "$UEFI" = "yes" ] ; then
     parted -s "$LOOP" set 1 legacy_boot on
-  else
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" ]; then
     parted -s "$LOOP" set 1 boot on
   fi
 
@@ -106,14 +97,8 @@ fi
 if [ "$BOOTLOADER" = "syslinux" ]; then
   # write mbr
     echo "image: writing mbr..."
-    if [ "$UEFI" = "yes" ] ; then
-      MBR="$ROOT/$TOOLCHAIN/share/syslinux/gptmbr.bin"
-    else
-      MBR="$ROOT/$TOOLCHAIN/share/syslinux/mbr.bin"
-    fi
-    if [ -n "$MBR" ]; then
-      dd bs=440 count=1 conv=notrunc if="$MBR" of="$LOOP"
-    fi
+    MBR="$ROOT/$TOOLCHAIN/share/syslinux/gptmbr.bin"
+    dd bs=440 count=1 conv=notrunc if="$MBR" of="$LOOP"
     sync
 fi
 
@@ -124,13 +109,7 @@ fi
   SIZELIMIT=$(( $SYSTEM_SIZE * 1024 * 1024 ))
   losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
   if [ "$BOOTLOADER" = "syslinux" ]; then
-    if [ "$UEFI" = "yes" ] ; then
-      mkfs.vfat -i "$FAT_VOL_ID" "$LOOP"
-    else
-      mke2fs -q -t ext4 -m 0 "$LOOP"
-      tune2fs -U $UUID_SYSTEM "$LOOP"
-      e2fsck -n "$LOOP"
-    fi
+    mkfs.vfat -i "$FAT_VOL_ID" "$LOOP"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" ]; then
     mkfs.vfat "$LOOP"
   fi
@@ -144,76 +123,36 @@ if [ "$BOOTLOADER" = "syslinux" ]; then
   # create bootloader configuration
     echo "image: creating bootloader configuration..."
     cat << EOF > "$OE_TMP"/syslinux.cfg
-UI vesamenu.c32
-PROMPT 0
-MENU TITLE Boot Menu
-MENU BACKGROUND splash.png
+SAY Press <TAB> to edit options
+PROMPT 1
 TIMEOUT 50
 DEFAULT installer
 
-MENU WIDTH 70
-MENU MARGIN 15
-MENU ROWS 2
-MENU HSHIFT 4
-MENU VSHIFT 13
-MENU TIMEOUTROW 10
-MENU TABMSGROW 8
-MENU CMDLINEROW 8
-MENU HELPMSGROW 13
-MENU HELPMSGENDROW 26
-MENU CLEAR
-
-MENU COLOR border       30;44   #40ffffff #00000000 std
-MENU COLOR title        1;36;44 #ff8bbfe3 #00000000 std
-MENU COLOR sel          7;37;40 #80f0f0f0 #ff606060 all
-MENU COLOR unsel        37;44   #50ffffff #00000000 std
-MENU COLOR help         37;40   #c0ffffff #a0000000 std
-MENU COLOR timeout_msg  37;40   #80ffffff #00000000 std
-MENU COLOR timeout      1;37;40 #c0ffffff #00000000 std
-MENU COLOR msg07        37;40   #90ffffff #a0000000 std
-MENU COLOR tabmsg       31;40   #ff868787 #00000000 std
-
 LABEL installer
-  MENU LABEL Run $DISTRONAME Installer
   KERNEL /KERNEL
   APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
 
 LABEL live
-  MENU LABEL Run $DISTRONAME Live
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet vga=current
+  APPEND boot=UUID=$UUID_SYSTEM live quiet tty vga=current
 EOF
 
   # install extlinux
     echo "image: installing extlinux to part1..."
-    if [ "$UEFI" = "yes" ] ; then
-      syslinux --heads=4 --sector=32 -i "$LOOP"
-    else
-      extlinux --heads=4 --sector=32 -i "$OE_TMP"
-    fi
+    syslinux --heads=4 --sector=32 -i "$LOOP"
 
   # copy files
     echo "image: copying files to part1..."
     cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/KERNEL"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
-    cp $RELEASE_DIR/splash.png "$OE_TMP"
-    cp $ROOT/$TOOLCHAIN/share/syslinux/vesamenu.c32 "$OE_TMP"
-    cp $ROOT/$TOOLCHAIN/share/syslinux/libcom32.c32 "$OE_TMP"
-    cp $ROOT/$TOOLCHAIN/share/syslinux/libutil.c32 "$OE_TMP"
-    if [ "$UEFI" = "yes" ] ; then
-      mkdir -p "$OE_TMP/EFI/BOOT"
-      cp $ROOT/$TOOLCHAIN/share/syslinux/bootx64.efi "$OE_TMP/EFI/BOOT"
-      cp $ROOT/$TOOLCHAIN/share/syslinux/ldlinux.e64 "$OE_TMP/EFI/BOOT"
-      cp $ROOT/$TOOLCHAIN/share/syslinux/bootx32.efi "$OE_TMP/EFI/BOOT"
-      cp $ROOT/$TOOLCHAIN/share/syslinux/ldlinux.e32 "$OE_TMP/EFI/BOOT"
-      cat << EOF > "$OE_TMP"/EFI/BOOT/syslinux.cfg
-DEFAULT installer
 
-LABEL installer
-  KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
-EOF
-    fi
+    mkdir -p "$OE_TMP/EFI/BOOT"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/bootx64.efi "$OE_TMP/EFI/BOOT"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/ldlinux.e64 "$OE_TMP/EFI/BOOT"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/bootx32.efi "$OE_TMP/EFI/BOOT"
+    cp $ROOT/$TOOLCHAIN/share/syslinux/ldlinux.e32 "$OE_TMP/EFI/BOOT"
+    cp "$OE_TMP"/syslinux.cfg "$OE_TMP"/EFI/BOOT/syslinux.cfg
+
 elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
   # create bootloader configuration
     echo "image: creating bootloader configuration..."
@@ -260,31 +199,31 @@ fi # bootloader
   sync
   umount "$LOOP"
 
-# create filesystem on part2
-  losetup -d "$LOOP"
-  echo "image: creating filesystem on part2..."
-  OFFSET=$(( $STORAGE_PART_START * 512 ))
-  SIZELIMIT=$(( $STORAGE_SIZE * 1024 * 1024 ))
-  losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
-  mke2fs -q -t ext4 -m 0 "$LOOP"
-  tune2fs -U $UUID_STORAGE "$LOOP"
-  e2fsck -n "$LOOP"
-  sync
+  if [ "$BOOTLOADER" != "syslinux" ] ; then
+  # create filesystem on part2
+    losetup -d "$LOOP"
+    echo "image: creating filesystem on part2..."
+    OFFSET=$(( $STORAGE_PART_START * 512 ))
+    SIZELIMIT=$(( $STORAGE_SIZE * 1024 * 1024 ))
+    losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
+    mke2fs -q -t ext4 -m 0 "$LOOP"
+    tune2fs -U $UUID_STORAGE "$LOOP"
+    e2fsck -n "$LOOP"
+    sync
 
-# mount part2
-  echo "image: mounting part2 on $OE_TMP..."
-  mount "$LOOP" "$OE_TMP"
+  # mount part2
+    echo "image: mounting part2 on $OE_TMP..."
+    mount "$LOOP" "$OE_TMP"
 
-# add resize mark
-  if [ "$UEFI" != "yes" ] ; then
+  # add resize mark
     touch "$OE_TMP/.please_resize_me"
     sync
-  fi
 
-# unmount part2
-  echo "image: unmounting part2..."
-  umount "$LOOP"
-  sync
+  # unmount part2
+    echo "image: unmounting part2..."
+    umount "$LOOP"
+    sync
+  fi
 
 # gzip
   echo "image: compressing..."
