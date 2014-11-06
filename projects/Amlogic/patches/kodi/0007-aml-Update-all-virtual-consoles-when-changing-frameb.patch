@@ -1,7 +1,7 @@
-From f2d5f57e058c43de3354bd9bced06ef4642c7f3c Mon Sep 17 00:00:00 2001
+From 93a8811c3f2c227614588802e9d2e2df7ac213e2 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Thu, 4 Sep 2014 00:28:23 +0300
-Subject: [PATCH 8/8] [aml] Update all virtual consoles when changing
+Subject: [PATCH 07/16] [aml] Update all virtual consoles when changing
  framebuffer geometry after a resolution change
 
 That helps to resolve the issue when framebuffer size is not always correctly change according to the resolution set.

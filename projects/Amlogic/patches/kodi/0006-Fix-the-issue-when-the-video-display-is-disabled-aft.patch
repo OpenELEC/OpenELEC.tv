@@ -1,8 +1,8 @@
-From 6894ebf57e0993da17dae4d313fca2b4af782f3a Mon Sep 17 00:00:00 2001
+From 1bd64eb7a9fb365770407df078bbff672427a111 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Tue, 29 Jul 2014 10:31:07 +0300
-Subject: [PATCH 6/8] [aml] Fix the issue when the video display is disabled
- after a resolution change
+Subject: [PATCH 06/16] Fix the issue when the video display is disabled after
+ a resolution change
 
 ---
  xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   57 +--------------------------
