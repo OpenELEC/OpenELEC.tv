@@ -56,7 +56,7 @@ else
 fi
 
 if [ "$OPTIMIZATIONS" = size ]; then
-  FFMPEG_OPTIM="--disable-small"
+  FFMPEG_OPTIM="--enable-small"
 else
   FFMPEG_OPTIM="--disable-small"
 fi
