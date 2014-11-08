@@ -1,0 +1,30 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2014 Alex Deryskyba (alex@codesnake.com)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+# Loading Broadcom SDIO driver on systems where the module is not present
+# will cause problems with USB Wi-Fi. S802-based boxes has either Broadcom
+# SDIO Wi-Fi module or Realtek 8188 module, so we load Broadcom driver
+# only if Realtek 8188 module is not loaded, that should be done automatically,
+# if it presents in the system
+
+lsmod | grep 8188
+if [ $? -ne 0 ]; then
+  modprobe dhd
+fi
