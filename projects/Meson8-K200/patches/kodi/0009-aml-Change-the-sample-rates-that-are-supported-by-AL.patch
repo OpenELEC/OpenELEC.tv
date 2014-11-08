@@ -1,7 +1,7 @@
 From d5d20416d648153fd8c838050522a234c61fb686 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Fri, 19 Sep 2014 01:55:12 +0300
-Subject: [PATCH 09/16] [aml] Change the sample rates that are supported by
+Subject: [PATCH 09/17] [aml] Change the sample rates that are supported by
  ALSA but unsupported by HDMI to the closest supported
  value
 

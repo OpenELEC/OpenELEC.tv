@@ -1,7 +1,7 @@
 From c9574f18d14025ac90cda8b53f419e6b0445e241 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Fri, 10 Oct 2014 23:56:59 +0300
-Subject: [PATCH 14/16] [aml] Fix periodic video stuttering during playback of
+Subject: [PATCH 14/17] [aml] Fix periodic video stuttering during playback of
  some media files and streams
 
 ---
