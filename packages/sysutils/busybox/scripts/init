@@ -321,7 +321,7 @@
   }
 
   update_partition() {
-    if [ -f "$UPDATE_DIR/$2" -a -b "$3" ]; then
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
       echo "updating $1..."
       case $IMAGE_KERNEL in
         /dev/mtd*)
@@ -564,10 +564,14 @@
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
 
-      OLD_KERNEL="0"
-      if [ ! -b $IMAGE_KERNEL ]; then
-        OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
-      fi
+      case $IMAGE_KERNEL in
+        /dev/*)
+          OLD_KERNEL="0"
+          ;;
+        *)
+          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+          ;;
+      esac
 
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
@@ -590,11 +594,14 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          if [ -b $IMAGE_KERNEL ]; then
-            update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
-          else
-            update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-          fi
+          case $IMAGE_KERNEL in
+            /dev/*)
+              update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+              ;;
+            *)
+              update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+              ;;
+          esac
           update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
