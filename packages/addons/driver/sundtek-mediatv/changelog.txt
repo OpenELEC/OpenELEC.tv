@@ -1,3 +1,9 @@
+4.3.4
+  fixed xbmc/kodi rebranding error
+  removed driver update option (can't run script from addon settings anymore)
+4.3.3
+  addon transformed to service addon
+  new addon settings option to enable to check for new driver at boot
 4.3.2
   new addon settings option to enable to update driver from web with latest version
 4.3.1

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="14-d6947be"
+PKG_VERSION="14-bd7da38"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,6 +32,9 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+# configure GPU drivers and dependencies:
+  get_graphicdrivers
 
 # for dbus support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET dbus"
@@ -154,20 +157,20 @@ else
   KODI_JOYSTICK="--disable-joystick"
 fi
 
-if [ "$OPTICAL_DRIVE_SUPPORT" = yes ]; then
+if [ "$KODI_OPTICAL_SUPPORT" = yes ]; then
   KODI_OPTICAL="--enable-optical-drive"
 else
   KODI_OPTICAL="--disable-optical-drive"
 fi
 
-if [ "$NONFREE_SUPPORT" = yes ]; then
+if [ "$KODI_NONFREE_SUPPORT" = yes ]; then
 # for non-free support
   KODI_NONFREE="--enable-non-free"
 else
   KODI_NONFREE="--disable-non-free"
 fi
 
-if [ "$DVDCSS_SUPPORT" = yes ]; then
+if [ "$KODI_DVDCSS_SUPPORT" = yes ]; then
   KODI_DVDCSS="--enable-dvdcss"
 else
   KODI_DVDCSS="--disable-dvdcss"
@@ -177,7 +180,7 @@ if [ "$FAAC_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET faac"
 fi
 
-if [ "$BLURAY_SUPPORT" = yes ]; then
+if [ "$KODI_BLURAY_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libbluray"
   KODI_BLURAY="--enable-libbluray"
 else
@@ -191,62 +194,62 @@ else
   KODI_AVAHI="--disable-avahi"
 fi
 
-if [ "$MYSQL_SUPPORT" = yes ]; then
+if [ "$KODI_MYSQL_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mysql"
   KODI_MYSQL="--enable-mysql"
 else
   KODI_MYSQL="--disable-mysql"
 fi
 
-if [ "$AIRPLAY_SUPPORT" = yes ]; then
+if [ "$KODI_AIRPLAY_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libplist"
   KODI_AIRPLAY="--enable-airplay"
 else
   KODI_AIRPLAY="--disable-airplay"
 fi
 
-if [ "$AIRTUNES_SUPPORT" = yes ]; then
+if [ "$KODI_AIRTUNES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libshairplay"
   KODI_AIRTUNES="--enable-airtunes"
 else
   KODI_AIRTUNES="--disable-airtunes"
 fi
 
-if [ "$NFS_SUPPORT" = yes ]; then
+if [ "$KODI_NFS_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libnfs"
   KODI_NFS="--enable-nfs"
 else
   KODI_NFS="--disable-nfs"
 fi
 
-if [ "$AFP_SUPPORT" = yes ]; then
+if [ "$KODI_AFP_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET afpfs-ng"
   KODI_AFP="--enable-afpclient"
 else
   KODI_AFP="--disable-afpclient"
 fi
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
+if [ "$KODI_SAMBA_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
   KODI_SAMBA="--enable-samba"
 else
   KODI_SAMBA="--disable-samba"
 fi
 
-if [ "$WEBSERVER" = yes ]; then
+if [ "$KODI_WEBSERVER_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libmicrohttpd"
   KODI_WEBSERVER="--enable-webserver"
 else
   KODI_WEBSERVER="--disable-webserver"
 fi
 
-if [ "$UPNP_SUPPORT" = yes ]; then
+if [ "$KODI_UPNP_SUPPORT" = yes ]; then
   KODI_UPNP="--enable-upnp"
 else
   KODI_UPNP="--disable-upnp"
 fi
 
-if [ "$SSHLIB_SUPPORT" = yes ]; then
+if [ "$KODI_SSHLIB_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libssh"
   KODI_SSH="--enable-ssh"
 else
@@ -274,17 +277,14 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   fi
 fi
 
-if [ "$VDPAU" = yes ]; then
+if [ "$VDPAU_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   KODI_VDPAU="--enable-vdpau"
 else
   KODI_VDPAU="--disable-vdpau"
 fi
 
-if [ "$VAAPI" = yes ]; then
-# configure GPU drivers and dependencies:
-  get_graphicdrivers
-
+if [ "$VAAPI_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   KODI_VAAPI="--enable-vaapi"
 else

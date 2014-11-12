@@ -32,11 +32,11 @@ PKG_LONGDESC="libbluray is an open-source library designed for Blu-Ray Discs pla
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-if [ "$AACS_SUPPORT" = "yes" ]; then
+if [ "$BLURAY_AACS_SUPPORT" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libaacs"
 fi
 
-if [ "$BDPLUS_SUPPORT" = "yes" ]; then
+if [ "$BLURAY_BDPLUS_SUPPORT" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libbdplus"
 fi
 

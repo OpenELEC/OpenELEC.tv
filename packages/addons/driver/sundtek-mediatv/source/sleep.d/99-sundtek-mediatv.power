@@ -25,9 +25,10 @@ oe_setup_addon driver.dvb.sundtek-mediatv
 if [ "$SUSPEND_DRIVER" = "true" ]; then
   case "$1" in
     pre)
-      killall -9 mediasrv &>/dev/null
+      systemctl stop driver.dvb.sundtek-mediatv.service
       ;;
     post)
+    	systemctl start driver.dvb.sundtek-mediatv.service
       ;;
   esac
 fi
