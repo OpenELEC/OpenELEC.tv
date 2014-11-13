@@ -94,17 +94,8 @@
 # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
   KERNEL_UBOOT_TARGET="uImage"
 
-# Kernel extra targets to build
-  KERNEL_UBOOT_EXTRA_TARGET="meson8_k200a_2G.dtd meson8_k200a_2G.dtb"
-
 # Additional kernel make parameters (for example to specify the u-boot loadaddress)
   KERNEL_MAKE_EXTRACMD=""
-
-# Build Android kernel image using mkbootimg
-  BUILD_ANDROID_BOOTIMG="yes"
-
-# Path to a file that will be passed as the --second parameter to Android mkbootimg
-  ANDROID_BOOTIMG_SECOND="arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtb"
 
 # GCC to use. values can be:
 # default:  default mainline gcc
@@ -246,9 +237,6 @@
 
 # OpenGL(X) implementation to use (no / Mesa)
   OPENGL="no"
-
-# OpenGL-ES implementation to use (no / bcm2835-driver)
-  OPENGLES="opengl-meson8"
 
 # Windowmanager to use (ratpoison / fluxbox / none)
   WINDOWMANAGER="none"

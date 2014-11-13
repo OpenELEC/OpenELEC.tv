@@ -26,5 +26,5 @@
 
 lsmod | grep 8188
 if [ $? -ne 0 ]; then
-  modprobe dhd
+#  modprobe dhd
 fi
