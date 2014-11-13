@@ -51,6 +51,10 @@ if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
 fi
 
+if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
+fi
+
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
 if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
@@ -152,7 +156,7 @@ make_target() {
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
 
   if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
-    LDFLAGS="" ./mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+    LDFLAGS="" mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
       --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
     mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
   fi
