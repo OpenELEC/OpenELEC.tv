@@ -1,5 +1,6 @@
 [Unit]
 Description=Broadcom SDIO Wi-Fi
+After=systemd-udevd.service
 
 [Service]
 Type=oneshot
