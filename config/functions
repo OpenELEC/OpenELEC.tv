@@ -261,7 +261,21 @@ dashes="==========================="
     exit 1
   fi
 
-  if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf ]; then
+  opt_files=$(ls $PROJECT_DIR/$PROJECT/options.* 2> /dev/null | wc -l)
+  if [ \( -z "$BOARD" -a "$opt_files" != "0" \) -o \( -n "$BOARD" -a ! -f "$PROJECT_DIR/$PROJECT/options.$BOARD" \) ]; then
+    check_board="$check_board\n $dashes$dashes$dashes"
+    check_board="$check_board\n ERROR: You need to specify a valid board for the $PROJECT project"
+    check_board="$check_board\n $dashes$dashes$dashes"
+    check_board="$check_board\n\n Valid boards for project: $PROJECT"
+
+    for opt_file in $PROJECT_DIR/$PROJECT/options.*; do
+      check_board="$check_board\n - $(basename $opt_file | cut -f2 -d".")"
+    done
+    echo -e $check_board
+    exit 1
+  fi
+
+  if [ ! \( -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -o -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.$BOARD.conf \) ]; then
     check_arch="$check_arch\n $dashes$dashes$dashes"
     check_arch="$check_arch\n ERROR: Architecture not found, use a valid Architecture"
     check_arch="$check_arch\n for your project or create a new config"

@@ -1,0 +1,14 @@
+diff --git a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogic/meson6_g18.dtd
+index e5b6075..d21c1c2 100755
+--- a/arch/arm/boot/dts/amlogic/meson6_g18.dtd
++++ b/arch/arm/boot/dts/amlogic/meson6_g18.dtd
+@@ -20,6 +20,9 @@ void root_func(){
+ 	interrupt-parent = <&gic>;
+ 	#address-cells = <1>;
+ 	#size-cells = <1>;
++	chosen {
++	    bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/system disk=/dev/data BOOT_IMAGE=/dev/mtd4 console=tty0 consoleblank=0 quiet";
++	};
+ 	
+ /// ***************************************************************************************
+ ///	-	CPU

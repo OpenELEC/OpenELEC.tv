@@ -269,6 +269,9 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
     KODI_CXXFLAGS="$KODI_CXXFLAGS $BCM2835_INCLUDES"
   elif [ "$KODIPLAYER_DRIVER" = libfslvpuwrap ]; then
     KODI_CODEC="--enable-codec=imxvpu"
+  elif [ "$KODIPLAYER_DRIVER" = libamplayer ]; then
+    KODI_CODEC="--enable-codec=amcodec"
+    KODI_NEON="--enable-neon"
   else
     KODI_OPENMAX="--disable-openmax"
   fi
@@ -346,6 +349,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $KODI_WEBSERVER \
                            $KODI_OPTICAL \
                            $KODI_BLURAY \
+                           $KODI_NEON \
                            --enable-texturepacker \
                            --with-ffmpeg=shared \
                            $KODI_CODEC \

@@ -1,0 +1,8 @@
+# Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
+  KERNEL_UBOOT_TARGET="uImage-dtb"
+
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="meson6_g18.dtd"
+
+# OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
+  OPENGLES="opengl-meson6"
