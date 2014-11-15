@@ -1,7 +1,7 @@
-From be0718692b0b074b4bad5b409e51550bdf17a763 Mon Sep 17 00:00:00 2001
+From 04334fc41eebd779d933db97a81cb627028b4117 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Sun, 19 Oct 2014 16:20:33 +0300
-Subject: [PATCH 13/17] Save settings only if they were modified after the
+Subject: [PATCH 13/16] Save settings only if they were modified after the
  last save
 
 This prevents from multiple saving the same settings and helps to resolve
@@ -20,7 +20,7 @@ With this fix the settings will be written at exit only once, minimizing the ris
  1 file changed, 11 insertions(+)
 
 diff --git a/xbmc/settings/Settings.cpp b/xbmc/settings/Settings.cpp
-index 5fff1a5..23da28c 100644
+index 3c981a4..0850bce 100644
 --- a/xbmc/settings/Settings.cpp
 +++ b/xbmc/settings/Settings.cpp
 @@ -207,6 +207,17 @@ bool CSettings::Save(const std::string &file)

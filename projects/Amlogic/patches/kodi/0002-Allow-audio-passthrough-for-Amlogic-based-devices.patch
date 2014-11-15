@@ -1,17 +1,17 @@
-From bb2a7b8be1689bab232da9ac3f1808dcb293de62 Mon Sep 17 00:00:00 2001
+From 9a08560e01b830cf22548225075535681906990a Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 16 Apr 2014 22:11:51 +0300
-Subject: [PATCH 02/17] Allow audio passthrough for Amlogic-based devices.
+Subject: [PATCH 02/16] Allow audio passthrough for Amlogic-based devices.
 
 ---
  .../AudioEngine/Engines/ActiveAE/ActiveAESink.cpp  |    8 ++++++++
  1 file changed, 8 insertions(+)
 
 diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
-index c6272cc..33e6d55 100644
+index b391ff3..a7565f0 100644
 --- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
 +++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
-@@ -89,6 +89,7 @@ AEDeviceType CActiveAESink::GetDeviceType(const std::string &device)
+@@ -91,6 +91,7 @@ AEDeviceType CActiveAESink::GetDeviceType(const std::string &device)
  
  bool CActiveAESink::HasPassthroughDevice()
  {
@@ -19,7 +19,7 @@ index c6272cc..33e6d55 100644
    for (AESinkInfoList::iterator itt = m_sinkInfoList.begin(); itt != m_sinkInfoList.end(); ++itt)
    {
      for (AEDeviceInfoList::iterator itt2 = itt->m_deviceInfoList.begin(); itt2 != itt->m_deviceInfoList.end(); ++itt2)
-@@ -99,10 +100,14 @@ bool CActiveAESink::HasPassthroughDevice()
+@@ -101,10 +102,14 @@ bool CActiveAESink::HasPassthroughDevice()
      }
    }
    return false;
@@ -34,7 +34,7 @@ index c6272cc..33e6d55 100644
    std::string dev = device;
    std::string dri;
    CAESinkFactory::ParseDevice(dev, dri);
-@@ -133,6 +138,9 @@ bool CActiveAESink::SupportsFormat(const std::string &device, AEDataFormat forma
+@@ -135,6 +140,9 @@ bool CActiveAESink::SupportsFormat(const std::string &device, AEDataFormat forma
      }
    }
    return false;

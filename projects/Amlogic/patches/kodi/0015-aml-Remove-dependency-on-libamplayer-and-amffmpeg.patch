@@ -1,7 +1,7 @@
-From f33fce3a39f8f79dcb7063ff4035d299b9e23b13 Mon Sep 17 00:00:00 2001
+From 54a6ecd77d4b03dec43f3a945de767b647ec7f39 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Thu, 6 Nov 2014 08:14:39 +0200
-Subject: [PATCH 15/17] [aml] Remove dependency on libamplayer and amffmpeg
+Subject: [PATCH 15/16] [aml] Remove dependency on libamplayer and amffmpeg
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp  |   79 +-------------------
@@ -161,10 +161,10 @@ index f8ff25e..c7d13ad 100644
      "hints.width(%d), hints.height(%d), hints.codec(%d), hints.codec_tag(%d), hints.pid(%d)",
      hints.width, hints.height, hints.codec, hints.codec_tag, hints.pid);
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
-index 361f79c..95ce13f 100644
+index 960aae1..57f8e40 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
-@@ -115,9 +115,6 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+@@ -108,9 +108,6 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
        // amcodec can't handle h263
        return false;
        break;

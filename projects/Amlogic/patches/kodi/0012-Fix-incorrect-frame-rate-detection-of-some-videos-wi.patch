@@ -1,7 +1,7 @@
-From 9fd076ccb429e30e9a49f634bacf032de56d15bd Mon Sep 17 00:00:00 2001
+From a1177addc7b8b12b8f854de8fe2fb651062d6aef Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Sun, 21 Sep 2014 17:20:25 +0300
-Subject: [PATCH 12/17] Fix incorrect frame rate detection of some videos with
+Subject: [PATCH 12/16] Fix incorrect frame rate detection of some videos with
  variable frame rate.
 
 Use FFMPEG's r_frame_rate, if it as valid, as a video stream frame rate, otherwise use avg_frame_rate.
@@ -37,10 +37,10 @@ index 40c16c0..98c3513 100644
    int iWidth; // width of the stream reported by the demuxer
    float fAspect; // display aspect of stream
 diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-index 81a511e..f22808a 100644
+index 4218bfc..074fd46 100644
 --- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
 +++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
-@@ -1095,34 +1095,25 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int iId)
+@@ -1100,34 +1100,25 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int iId)
  #else
          AVRational r_frame_rate = pStream->r_frame_rate;
  #endif
@@ -86,7 +86,7 @@ index 81a511e..f22808a 100644
  
          if (pStream->codec_info_nb_frames >  0
 diff --git a/xbmc/cores/dvdplayer/DVDStreamInfo.cpp b/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
-index 2e16438..ebac550 100644
+index c1dbd85..03facbe 100644
 --- a/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
 @@ -52,8 +52,6 @@ void CDVDStreamInfo::Clear()
@@ -107,7 +107,7 @@ index 2e16438..ebac550 100644
    ||  height   != right.height
    ||  width    != right.width
    ||  stills   != right.stills
-@@ -157,8 +153,6 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
+@@ -159,8 +155,6 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
    // VIDEO
    fpsscale = right.fpsscale;
    fpsrate  = right.fpsrate;
@@ -116,7 +116,7 @@ index 2e16438..ebac550 100644
    height   = right.height;
    width    = right.width;
    aspect   = right.aspect;
-@@ -216,8 +210,6 @@ void CDVDStreamInfo::Assign(const CDemuxStream& right, bool withextradata)
+@@ -220,8 +214,6 @@ void CDVDStreamInfo::Assign(const CDemuxStream& right, bool withextradata)
      const CDemuxStreamVideo *stream = static_cast<const CDemuxStreamVideo*>(&right);
      fpsscale  = stream->iFpsScale;
      fpsrate   = stream->iFpsRate;

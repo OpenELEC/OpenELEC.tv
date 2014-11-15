@@ -1,27 +1,26 @@
-From ff35460735959fae6725b784ef7b066f28ed2b83 Mon Sep 17 00:00:00 2001
+From 1ce7b89aca3e06e6ce49ad079c9e278b815bcbc0 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 23 Jul 2014 22:23:34 +0300
-Subject: [PATCH 05/17] Add support for AV (CVBS) video output on Amlogic
+Subject: [PATCH 05/16] Add support for AV (CVBS) video output on Amlogic
 
 Conflicts:
 
 	xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 ---
- xbmc/utils/AMLUtils.cpp                     |   20 ++++++++++++++-
+ xbmc/utils/AMLUtils.cpp                     |   18 +++++++++++++
  xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   37 +++++++++++++++++++++++----
  xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    1 +
- 3 files changed, 52 insertions(+), 6 deletions(-)
+ 3 files changed, 51 insertions(+), 5 deletions(-)
 
 diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
-index 68692db..f9202ec 100644
+index 9553745..9d5b165 100644
 --- a/xbmc/utils/AMLUtils.cpp
 +++ b/xbmc/utils/AMLUtils.cpp
-@@ -308,7 +308,25 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
-   if (StringUtils::EndsWith(fromMode, "*"))
-     fromMode.erase(fromMode.size() - 1);
- 
--  if (fromMode.Equals("720p"))
-+  if (fromMode.Equals("480cvbs"))
+@@ -328,6 +328,24 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+     res->fRefreshRate = 60;
+     res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+   }
++  else if (fromMode.Equals("480cvbs"))
 +  {
 +    res->iWidth = 720;
 +    res->iHeight= 480;
@@ -39,10 +38,9 @@ index 68692db..f9202ec 100644
 +    res->fRefreshRate = 50;
 +    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
 +  }
-+  else if (fromMode.Equals("720p"))
+   else if (fromMode.Equals("720p"))
    {
      res->iWidth = 1280;
-     res->iHeight= 720;
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 index ee17f73..ab80343 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
