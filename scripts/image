@@ -40,7 +40,11 @@ if [ "$OPENELEC_VERSION" = devel ]; then
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
 fi
 
-TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+if [ -z "$DEVICE" ]; then
+  TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+else
+  TARGET_VERSION="$PROJECT.$DEVICE.$TARGET_ARCH-$OPENELEC_VERSION"
+fi
 IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 # setup fakeroot
@@ -173,6 +177,11 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # copy project related files to filesystem
   if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
     cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
+  fi
+
+# copy board related files to filesystem
+  if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/* $INSTALL
   fi
 
 # run depmod
