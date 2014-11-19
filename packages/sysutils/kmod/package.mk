@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kmod"
-PKG_VERSION="18"
+PKG_VERSION="19"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -66,6 +66,9 @@ post_makeinstall_target() {
     ln -sf /usr/bin/kmod $INSTALL/sbin/rmmod
     ln -sf /usr/bin/kmod $INSTALL/sbin/modinfo
     ln -sf /usr/bin/kmod $INSTALL/sbin/modprobe
+
+  mkdir -p $INSTALL/etc
+    ln -sf /storage/.config/modprobe.d $INSTALL/etc/modprobe.d
 
 # add user modprobe.d dir
   mkdir -p $INSTALL/usr/config/modprobe.d
