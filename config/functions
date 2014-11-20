@@ -347,6 +347,11 @@ show_config() {
   config_message="$config_message\n - Bluetooth support:\t\t\t $BLUETOOTH_SUPPORT"
   config_message="$config_message\n - Hardware Sensors support:\t\t $SENSOR_SUPPORT"
   config_message="$config_message\n - LCD drivers:\t\t\t\t $LCD_DRIVER"
+  config_message="$config_message\n - Wireless support:\t\t\t $WIRELESS_SUPPORT"
+
+  for config_driver in $WIRELESS_DRIVERS; do
+    config_message="$config_message\n - Wireless driver:\t\t\t $config_driver"
+  done
 
   for config_driver in $ADDITIONAL_DRIVERS; do
     config_message="$config_message\n - Include driver:\t\t\t $config_driver"
