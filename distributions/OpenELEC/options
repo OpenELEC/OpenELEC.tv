@@ -82,7 +82,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. WIRELESS_DRIVERS="DRIVER1 DRIVER2"
-  WIRELESS_SUPPORT="no"
+  WIRELESS_SUPPORT="yes"
   if [ "$WIRELESS_SUPPORT" = "yes" ]; then
     WIRELESS_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8812AU"
     FIRMWARE="$FIRMWARE wlan-firmware"
