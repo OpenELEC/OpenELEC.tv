@@ -25,6 +25,7 @@ PKG_SITE="http://syslinux.zytor.com/"
 PKG_URL="http://www.kernel.org/pub/linux/utils/boot/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_HOST="util-linux:host"
 PKG_DEPENDS_TARGET="toolchain util-linux e2fsprogs syslinux:host"
+PKG_DEPENDS_INIT="toolchain util-linux:init e2fsprogs syslinux"
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
 PKG_SHORTDESC="syslinux: Linux bootloader collection"
@@ -34,6 +35,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 PKG_MAKE_OPTS_TARGET="CC=$CC AR=$AR RANLIB=$RANLIB installer"
+PKG_MAKE_OPTS_INIT="CC=$CC AR=$AR RANLIB=$RANLIB bios installer"
 
 # Unset all compiler FLAGS
   unset CFLAGS
@@ -51,12 +53,22 @@ pre_build_host() {
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$HOST_NAME
 }
 
+pre_build_init() {
+  mkdir -p "${PKG_BUILD}/.${TARGET_NAME}-init"
+  cp -RP ${PKG_BUILD}/* "${PKG_BUILD}/.${TARGET_NAME}-init"
+  sed -i "/^LDFLAGS. =/s/$/ -static/" "${PKG_BUILD}/.${TARGET_NAME}-init/extlinux/Makefile"
+}
+
 pre_make_target() {
   cd .$TARGET_NAME
 }
 
 pre_make_host() {
   cd .$HOST_NAME
+}
+
+pre_make_init() {
+  cd ".${TARGET_NAME}-init"
 }
 
 make_host() {
@@ -96,4 +108,14 @@ makeinstall_target() {
     cp bios/mbr/gptmbr.bin $INSTALL/usr/share/syslinux
     cp efi64/efi/syslinux.efi $INSTALL/usr/share/syslinux/bootx64.efi
     cp efi64/com32/elflink/ldlinux/ldlinux.e64  $INSTALL/usr/share/syslinux
+}
+
+makeinstall_init() {
+  mkdir -p "${INSTALL}/sbin"
+    cp bios/extlinux/extlinux "${INSTALL}/sbin/."
+
+  $STRIP "${INSTALL}/sbin/extlinux"
+
+  mkdir -p "${INSTALL}/usr/share/syslinux"
+    cp bios/mbr/mbr.bin "${INSTALL}/usr/share/syslinux/."
 }
