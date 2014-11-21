@@ -40,6 +40,7 @@ if [ "$INITRAMFS_PARTED_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET util-linux:init"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET e2fsprogs:init"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET parted:init"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET syslinux:init"
 fi
 
 post_install() {
