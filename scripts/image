@@ -232,7 +232,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # set permissions
   chmod 0644 $TARGET_IMG/$IMAGE_NAME.system
 
-  if [ "$1" = "release" -o "$1" = "mkimage" -o "$PROJECT" = "Amlogic" ]; then
+  if [ "$1" = "release" -o "$1" = "mkimage" ]; then
 
     RELEASE_DIR="target/$IMAGE_NAME"
 
@@ -319,10 +319,10 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       fi
 
     # create ZIP update and auto-install packages for Amlogic project
-      if [ "$PROJECT" = "Amlogic" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/install" ]; then
+      INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/devices/$DEVICE/install"
+      if [ -f "$INSTALL_SRC_DIR/install/update-binary" -a -f "$INSTALL_SRC_DIR/install/updater-script" ]; then
         echo "Creating Amlogic ZIP update package"
 
-        INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/devices/$DEVICE/install"
         AML_PKG_DIR="$RELEASE_DIR/ampl-pkg"
 
         # create package directory
