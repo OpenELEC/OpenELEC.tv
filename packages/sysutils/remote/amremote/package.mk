@@ -17,26 +17,26 @@
 ################################################################################
 
 PKG_NAME="amremote"
-PKG_VERSION="m6"
+PKG_VERSION="1.0"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="other"
 PKG_SITE="http://www.amlogic.com"
-PKG_URL="https://dl.dropboxusercontent.com/u/18902170/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://github.com/codesnake/amremote/releases/download/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="sysutils/remote"
-PKG_SHORTDESC="amremote - Support for Amlogic IR remotes"
-PKG_LONGDESC="amremote - Support for Amlogic IR remotes"
+PKG_SHORTDESC="amremote - IR remote configuration utility for Amlogic devices"
+PKG_LONGDESC="amremote - IR remote configuration utility for Amlogic devices"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
-    cp amremote_config $INSTALL/usr/bin
+    cp remotecfg $INSTALL/usr/bin
 }
 
 post_install() {
-  enable_service amremote.service
+  enable_service amlogic-remotecfg.service
 }
