@@ -1479,7 +1479,7 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +		bootloader:bootloader{
 +			name = "bootloader";
 +			offset = <0>;
-+			size = <0x60000>;
++			size = <0x100000>;
 +		};
 +
 +//$$ MATCH "Spi_nr-part-1_match" = <&ubootenv>
@@ -1488,7 +1488,7 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +//$$ L2 PROP_U32 = "size"
 +		ubootenv:ubootenv{
 +			name = "ubootenv";
-+      offset = <0x80000>;
++      offset = <0x100000>;
 +      size = <0x8000>;
 +    };
 +	};
