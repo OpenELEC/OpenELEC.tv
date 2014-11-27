@@ -864,7 +864,7 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +		compatible = "amlogic,mesonfb";
 +		dev_name = "mesonfb";
 +		status = "okay";
-+		reserve-memory = <0x00b00000 0x00100000>;
++		reserve-memory = <0x01000000 0x00100000>;
 +		reserve-iomap = "true";
 +	  vmode = <0>; /*0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
 +	  scale_mode = <0>; /*0:default 1:new*/
