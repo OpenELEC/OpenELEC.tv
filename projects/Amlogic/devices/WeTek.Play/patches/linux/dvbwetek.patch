@@ -9601,3 +9601,4 @@ diff -Naur c1/drivers/amlogic/dvb_tv/Makefile d1/drivers/amlogic/dvb_tv/Makefile
  
 +EXTRA_CFLAGS += -Idrivers/media/dvb-core
  EXTRA_CFLAGS += -I.
+ 
