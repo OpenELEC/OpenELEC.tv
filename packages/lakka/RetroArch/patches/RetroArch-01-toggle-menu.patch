@@ -1,0 +1,26 @@
+--- RetroArch/input/input_common.c	2014-11-28 12:29:05.344910091 +0100
++++ RetroArch.patch/input/input_common.c	2014-11-28 12:31:38.564490752 +0100
+@@ -75,6 +75,7 @@
+    return scaled_axis > g_settings.input.axis_threshold;
+ }
+ 
++static bool hack_l3, hack_r3;
+ bool input_joypad_pressed(const rarch_joypad_driver_t *drv,
+       unsigned port, const struct retro_keybind *binds, unsigned key)
+ {
+@@ -85,6 +86,15 @@
+    if (!binds[key].valid)
+       return false;
+ 
++   if (key == RETRO_DEVICE_ID_JOYPAD_L3)
++      hack_l3 = input_joypad_is_pressed(drv, port, binds, key);
++
++   if (key == RETRO_DEVICE_ID_JOYPAD_R3)
++      hack_r3 = input_joypad_is_pressed(drv, port, binds, key);
++
++   if (key == RARCH_MENU_TOGGLE && hack_r3 && hack_l3)
++      return true;
++
+    if (input_joypad_is_pressed(drv, port, binds, key))
+       return true;
+ 
