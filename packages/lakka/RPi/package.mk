@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/lakkatv/Lakka"
 PKG_URL=""
-PKG_DEPENDS_TARGET="RetroArch 2048 vecx dinothawr prboom beetle-pce handy picodrive pocketsnes nxengine fceu-next gambatte stella imame4all fba libretro-ffmpeg retroarch-joypad-autoconfig core-info"
+PKG_DEPENDS_TARGET="RetroArch 2048 vecx dinothawr prboom beetle-pce handy picodrive pocketsnes nxengine fceu-next gambatte stella fba libretro-ffmpeg retroarch-joypad-autoconfig core-info"
 PKG_BUILD_DEPENDS=""
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
@@ -35,6 +35,3 @@ PKG_LONGDESC=""
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
