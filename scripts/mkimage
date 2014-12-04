@@ -87,7 +87,7 @@ fi
     else
       parted -s "$LOOP" -a min unit s mkpart primary ext4 2048 $SYSTEM_PART_END
     fi
-  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" ]; then
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" -o -z "$BOOTLOADER" ]; then
     parted -s "$LOOP" -a min unit s mkpart primary fat32 2048 $SYSTEM_PART_END
   fi
   if [ "$UEFI" = "yes" ] ; then
@@ -131,7 +131,7 @@ fi
       tune2fs -U $UUID_SYSTEM "$LOOP"
       e2fsck -n "$LOOP"
     fi
-  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" ]; then
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" -o -z "$BOOTLOADER" ]; then
     mkfs.vfat "$LOOP"
   fi
   sync
@@ -251,6 +251,10 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     for dtb in $(ls $RELEASE_DIR/3rdparty/bootloader/*.dtb) ; do
       cp "$dtb" "$OE_TMP"
     done
+elif [ -z "$BOOTLOADER" ]; then
+    echo "image: copying files to part1..."
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/kernel.img"
+    cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
 fi # bootloader
 
 # unmount part1
