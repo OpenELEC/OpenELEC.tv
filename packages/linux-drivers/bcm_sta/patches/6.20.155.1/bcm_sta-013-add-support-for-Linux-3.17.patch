@@ -1,0 +1,30 @@
+--- bcm_sta-6.20.155.1/x86-32/src/wl/sys/wl_linux.c	2013-04-14 23:10:38.000000000 +0200
++++ bcm_sta-6.20.155.1/x86-32/src/wl/sys/wl_linux.c	2014-12-03 15:33:13.000000000 +0100
+@@ -1063,7 +1063,12 @@
+ #else
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0))
+ 	dev = alloc_netdev(sizeof(wl_if_t), intf_name, ether_setup);
++#else
++	dev = alloc_netdev(sizeof(wl_if_t), intf_name, NET_NAME_UNKNOWN, ether_setup);
++#endif
++
+ 	wlif = netdev_priv(dev);
+ 	if (!dev) {
+ #else
+--- bcm_sta-6.20.155.1/x86-64/src/wl/sys/wl_linux.c	2013-04-14 23:10:38.000000000 +0200
++++ bcm_sta-6.20.155.1/x86-64/src/wl/sys/wl_linux.c	2014-12-03 15:33:53.000000000 +0100
+@@ -1063,7 +1063,12 @@
+ #else
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0))
+ 	dev = alloc_netdev(sizeof(wl_if_t), intf_name, ether_setup);
++#else
++	dev = alloc_netdev(sizeof(wl_if_t), intf_name, NET_NAME_UNKNOWN, ether_setup);
++#endif
++
+ 	wlif = netdev_priv(dev);
+ 	if (!dev) {
+ #else
