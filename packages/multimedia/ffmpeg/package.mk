@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.4.3"
+PKG_VERSION="2.4.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -175,6 +175,7 @@ configure_target() {
               --enable-muxer=adts \
               --enable-muxer=asf \
               --enable-muxer=ipod \
+              --enable-muxer=mpegts \
               --enable-demuxers \
               --enable-parsers \
               --enable-bsfs \

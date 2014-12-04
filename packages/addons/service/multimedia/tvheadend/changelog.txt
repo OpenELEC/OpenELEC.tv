@@ -1,3 +1,17 @@
+4.3.6
+- fix tv_grab_file with --quiet (again!)
+- fix crash on imx6
+
+4.3.5
+- fix crash on imx6
+
+4.3.4
+- update to tvheadend-3.9.2182
+- fix xmltv grab issue
+
+4.3.3
+- update to tvheadend-3.9.2168
+
 4.3.2
 - update to kodi
 
