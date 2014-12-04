@@ -25,7 +25,7 @@
 
 # set variables
   OE_TMP=$(mktemp -d)
-  LOOP=$(losetup -f)
+  LOOP=$(/sbin/losetup -f)
 
   if [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     SYSTEM_SIZE=128
@@ -41,7 +41,7 @@
   cleanup() {
     echo "image: cleanup..."
     umount "$OE_TMP" &>/dev/null || :
-    losetup -d "$LOOP"
+    /sbin/losetup -d "$LOOP"
     [ -f "$OE_TMP/ldlinux.sys" ] && chattr -i "$OE_TMP/ldlinux.sys" || :
     rm -rf "$OE_TMP"
     exit
@@ -61,7 +61,7 @@ fi
 # ensure loopX not in use
   umount "$OE_TMP" &>/dev/null || :
   umount "$LOOP" &>/dev/null >/dev/null || :
-  losetup -d "$LOOP" &>/dev/null >/dev/null || :
+  /sbin/losetup -d "$LOOP" &>/dev/null >/dev/null || :
 
 # create an image
   echo "image: creating image: $DISK..."
@@ -70,7 +70,7 @@ fi
 
 # write a disklabel
   echo "image: creating partition table on $DISK..."
-  losetup "$LOOP" "$DISK"
+  /sbin/losetup "$LOOP" "$DISK"
   if [ "$UEFI" = "yes" ] ; then
     parted -s "$LOOP" mklabel gpt
   else
@@ -118,21 +118,21 @@ if [ "$BOOTLOADER" = "syslinux" ]; then
 fi
 
 # create filesystem on part1
-  losetup -d "$LOOP"
+  /sbin/losetup -d "$LOOP"
   echo "image: creating filesystem on part1..."
   OFFSET=$(( 2048 * 512 ))
   SIZELIMIT=$(( $SYSTEM_SIZE * 1024 * 1024 ))
-  losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
+  /sbin/losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
   if [ "$BOOTLOADER" = "syslinux" ]; then
     if [ "$UEFI" = "yes" ] ; then
-      mkfs.vfat -i "$FAT_VOL_ID" "$LOOP"
+      /sbin/mkfs.vfat -i "$FAT_VOL_ID" "$LOOP"
     else
-      mke2fs -q -t ext4 -m 0 "$LOOP"
-      tune2fs -U $UUID_SYSTEM "$LOOP"
-      e2fsck -n "$LOOP"
+      /sbin/mke2fs -q -t ext4 -m 0 "$LOOP"
+      /sbin/tune2fs -U $UUID_SYSTEM "$LOOP"
+      /sbin/e2fsck -n "$LOOP"
     fi
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" -o "$BOOTLOADER" = "u-boot" -o -z "$BOOTLOADER" ]; then
-    mkfs.vfat "$LOOP"
+    /sbin/mkfs.vfat "$LOOP"
   fi
   sync
 
@@ -263,14 +263,14 @@ fi # bootloader
   umount "$LOOP"
 
 # create filesystem on part2
-  losetup -d "$LOOP"
+  /sbin/losetup -d "$LOOP"
   echo "image: creating filesystem on part2..."
   OFFSET=$(( $STORAGE_PART_START * 512 ))
   SIZELIMIT=$(( $STORAGE_SIZE * 1024 * 1024 ))
-  losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
-  mke2fs -q -t ext4 -m 0 "$LOOP"
-  tune2fs -U $UUID_STORAGE "$LOOP"
-  e2fsck -n "$LOOP"
+  /sbin/losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
+  /sbin/mke2fs -q -t ext4 -m 0 "$LOOP"
+  /sbin/tune2fs -U $UUID_STORAGE "$LOOP"
+  /sbin/e2fsck -n "$LOOP"
   sync
 
 # mount part2
