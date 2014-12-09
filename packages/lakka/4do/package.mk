@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="4do"
-PKG_VERSION="700e5c2"
+PKG_VERSION="46cc2a9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
