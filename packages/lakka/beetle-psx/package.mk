@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="beetle-psx"
-PKG_VERSION="a4729a8"
+PKG_VERSION="ff3e87f"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -37,5 +37,5 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp mednafen_psx_libretro.so $INSTALL/usr/lib/libretro/
+  cp beetle_psx_libretro.so $INSTALL/usr/lib/libretro/
 }
