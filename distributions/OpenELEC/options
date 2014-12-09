@@ -72,11 +72,27 @@
 # (DVD decryption support in KODI) (yes / no)
   KODI_DVDCSS_SUPPORT="yes"
 
+# additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
+# Space separated list is supported,
+# e.g. FIRMWARE="dvb-firmware misc-firmware"
+  FIRMWARE="misc-firmware dvb-firmware"
+
+# build and install wireless support and driver (yes / no )
+# additional wireless drivers to install:
+# for a list of additinoal drivers see packages/linux-drivers
+# Space separated list is supported,
+# e.g. WIRELESS_DRIVERS="DRIVER1 DRIVER2"
+  WIRELESS_SUPPORT="yes"
+  if [ "$WIRELESS_SUPPORT" = "yes" ]; then
+    WIRELESS_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8812AU"
+    FIRMWARE="$FIRMWARE wlan-firmware"
+  fi
+
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8812AU dvbhdhomerun"
+  ADDITIONAL_DRIVERS="dvbhdhomerun"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"
@@ -199,11 +215,6 @@
 # Support for partitioning and formating disks in initramfs (yes / no)
 # This adds support for parted and mkfs.ext3/4 to initramfs for OEM usage
   INITRAMFS_PARTED_SUPPORT="no"
-
-# additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
-# Space separated list is supported,
-# e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-  FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
 
 # build with swap support (yes / no)
   SWAP_SUPPORT="no"
