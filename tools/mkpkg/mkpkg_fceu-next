@@ -35,6 +35,7 @@ echo "copying sources..."
 
 echo "cleaning sources..."
   rm -rf fceu-next-$GIT_REV/.git
+  rm -rf fceu-next-$GIT_REV/fceumm-code/.svn
   rm fceu-next-$GIT_REV/.gitignore
 
 echo "packing sources..."
