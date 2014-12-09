@@ -35,6 +35,7 @@ echo "copying sources..."
 
 echo "cleaning sources..."
   rm -rf fba-$GIT_REV/.git
+  rm -rf fba-$GIT_REV/svn-old
   rm fba-$GIT_REV/.gitignore
 
 echo "packing sources..."
