@@ -1,4 +1,4 @@
-From 1ce7b89aca3e06e6ce49ad079c9e278b815bcbc0 Mon Sep 17 00:00:00 2001
+From 436e67a7fa4969f41765990566f257ffafae9de6 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 23 Jul 2014 22:23:34 +0300
 Subject: [PATCH 05/16] Add support for AV (CVBS) video output on Amlogic

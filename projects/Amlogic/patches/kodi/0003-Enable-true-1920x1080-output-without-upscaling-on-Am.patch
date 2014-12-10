@@ -1,4 +1,4 @@
-From b83e86505114525014bbbb1780166327b795e81b Mon Sep 17 00:00:00 2001
+From ee4bbfe929ce547310358c74c83468d514a7e288 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 16 Apr 2014 23:08:58 +0300
 Subject: [PATCH 03/16] Enable true 1920x1080 output without upscaling on

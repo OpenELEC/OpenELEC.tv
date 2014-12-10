@@ -1,4 +1,4 @@
-From 54a6ecd77d4b03dec43f3a945de767b647ec7f39 Mon Sep 17 00:00:00 2001
+From ea22621b073bf1c01aeeb3bb3c24468bf11e7e38 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Thu, 6 Nov 2014 08:14:39 +0200
 Subject: [PATCH 15/16] [aml] Remove dependency on libamplayer and amffmpeg
@@ -9,10 +9,10 @@ Subject: [PATCH 15/16] [aml] Remove dependency on libamplayer and amffmpeg
  2 files changed, 3 insertions(+), 79 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-index f8ff25e..c7d13ad 100644
+index 007f3a6..8422d7d 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-@@ -49,9 +49,9 @@
+@@ -50,9 +50,9 @@
  #include <stdlib.h>
  #include <sys/ioctl.h>
  
@@ -23,7 +23,7 @@ index f8ff25e..c7d13ad 100644
  }  // extern "C"
  
  typedef struct {
-@@ -90,19 +90,11 @@ public:
+@@ -91,19 +91,11 @@ public:
    virtual int codec_set_cntl_mode(codec_para_t *pcodec, unsigned int mode)=0;
    virtual int codec_set_cntl_avthresh(codec_para_t *pcodec, unsigned int avthresh)=0;
    virtual int codec_set_cntl_syncthresh(codec_para_t *pcodec, unsigned int syncthresh)=0;
@@ -44,7 +44,7 @@ index f8ff25e..c7d13ad 100644
  
    DEFINE_METHOD1(int, codec_init,               (codec_para_t *p1))
    DEFINE_METHOD1(int, codec_close,              (codec_para_t *p1))
-@@ -120,11 +112,6 @@ class DllLibAmCodec : public DllDynamic, DllLibamCodecInterface
+@@ -121,11 +113,6 @@ class DllLibAmCodec : public DllDynamic, DllLibamCodecInterface
    DEFINE_METHOD2(int, codec_set_cntl_avthresh,  (codec_para_t *p1, unsigned int p2))
    DEFINE_METHOD2(int, codec_set_cntl_syncthresh,(codec_para_t *p1, unsigned int p2))
  
@@ -56,7 +56,7 @@ index f8ff25e..c7d13ad 100644
    BEGIN_METHOD_RESOLVE()
      RESOLVE_METHOD(codec_init)
      RESOLVE_METHOD(codec_close)
-@@ -141,11 +128,6 @@ class DllLibAmCodec : public DllDynamic, DllLibamCodecInterface
+@@ -142,11 +129,6 @@ class DllLibAmCodec : public DllDynamic, DllLibamCodecInterface
      RESOLVE_METHOD(codec_set_cntl_mode)
      RESOLVE_METHOD(codec_set_cntl_avthresh)
      RESOLVE_METHOD(codec_set_cntl_syncthresh)
@@ -68,7 +68,7 @@ index f8ff25e..c7d13ad 100644
    END_METHOD_RESOLVE()
  
  public:
-@@ -344,8 +326,6 @@ typedef struct am_private_t
+@@ -345,8 +327,6 @@ typedef struct am_private_t
    unsigned int      video_ratio64;
    unsigned int      video_rate;
    unsigned int      video_rotation_degree;
@@ -77,7 +77,7 @@ index f8ff25e..c7d13ad 100644
    int               extrasize;
    uint8_t           *extradata;
    DllLibAmCodec     *m_dll;
-@@ -438,7 +418,6 @@ static vformat_t codecid_to_vformat(enum AVCodecID id)
+@@ -439,7 +419,6 @@ static vformat_t codecid_to_vformat(enum AVCodecID id)
      case AV_CODEC_ID_H263I:
      case AV_CODEC_ID_MSMPEG4V2:
      case AV_CODEC_ID_MSMPEG4V3:
@@ -85,7 +85,7 @@ index f8ff25e..c7d13ad 100644
        format = VFORMAT_MPEG4;
        break;
      case AV_CODEC_ID_RV10:
-@@ -1220,51 +1199,6 @@ int set_header_info(am_private_t *para)
+@@ -1221,51 +1200,6 @@ int set_header_info(am_private_t *para)
        {
          return divx3_prefix(pkt);
        }
@@ -137,7 +137,7 @@ index f8ff25e..c7d13ad 100644
      } else if (para->video_format == VFORMAT_VC1) {
          if (para->video_codec_type == VIDEO_DEC_FORMAT_WMV3) {
              unsigned i, check_sum = 0, data_len = 0;
-@@ -1457,7 +1391,7 @@ bool CAMLCodec::OpenDecoder(CDVDStreamInfo &hints)
+@@ -1458,7 +1392,7 @@ bool CAMLCodec::OpenDecoder(CDVDStreamInfo &hints)
    am_private->video_pid        = hints.pid;
  
    // handle video ratio
@@ -146,7 +146,7 @@ index f8ff25e..c7d13ad 100644
    //if (!hints.forced_aspect)
    //  video_ratio = m_dll->av_d2q(hints.aspect, SHRT_MAX);
    am_private->video_ratio      = ((int32_t)video_ratio.num << 16) | video_ratio.den;
-@@ -1528,13 +1462,6 @@ bool CAMLCodec::OpenDecoder(CDVDStreamInfo &hints)
+@@ -1529,13 +1463,6 @@ bool CAMLCodec::OpenDecoder(CDVDStreamInfo &hints)
    else
      am_private->video_codec_type = codec_tag_to_vdec_type(am_private->video_codec_id);
  

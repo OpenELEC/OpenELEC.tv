@@ -1,4 +1,4 @@
-From 15168738344c3db1bf86284722aa673328e29834 Mon Sep 17 00:00:00 2001
+From e6946cdeeb07c7aaabf0665d2ccba802b8dabafd Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Thu, 4 Sep 2014 00:28:23 +0300
 Subject: [PATCH 07/16] [aml] Update all virtual consoles when changing

@@ -1,22 +1,21 @@
-From bf4aefa675684c705f4a38580df8491ea32abc07 Mon Sep 17 00:00:00 2001
+From ff1b77d929a8ff79fff1b4b9da41ac473523a02c Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Sun, 2 Nov 2014 15:54:29 +0200
 Subject: [PATCH 16/16] [aml] Add some key mappings for HDMI CEC
 
 ---
- xbmc/input/linux/LinuxInputDevices.cpp |    6 ++++++
- 1 file changed, 6 insertions(+)
+ xbmc/input/linux/LinuxInputDevices.cpp |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/xbmc/input/linux/LinuxInputDevices.cpp b/xbmc/input/linux/LinuxInputDevices.cpp
-index ee21474..88c5a1f 100644
+index 0b0f7ae..c84930f 100644
 --- a/xbmc/input/linux/LinuxInputDevices.cpp
 +++ b/xbmc/input/linux/LinuxInputDevices.cpp
-@@ -249,6 +249,12 @@ KeyMap keyMap[] = {
-   { KEY_FASTFORWARD   , XBMCK_FASTFORWARD },
+@@ -250,6 +250,11 @@ KeyMap keyMap[] = {
    { KEY_PRINT         , XBMCK_PRINT       },
    { KEY_QUESTION      , XBMCK_HELP        },
+   { KEY_BACK          , XBMCK_BACKSPACE   },
 +  { KEY_SELECT        , XBMCK_RETURN      },
-+  { KEY_BACK          , XBMCK_ESCAPE      },
 +  { KEY_RED           , XBMCK_TAB         },
 +  { KEY_GREEN         , XBMCK_z           },
 +  { KEY_YELLOW        , XBMCK_i           },

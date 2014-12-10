@@ -1,4 +1,4 @@
-From b776196aa85963cf77ae7ffafad971cf027ef6aa Mon Sep 17 00:00:00 2001
+From 8e7abac4cd92434339268123257245086ba37c21 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Tue, 29 Jul 2014 10:31:07 +0300
 Subject: [PATCH 06/16] Fix the issue when the video display is disabled after

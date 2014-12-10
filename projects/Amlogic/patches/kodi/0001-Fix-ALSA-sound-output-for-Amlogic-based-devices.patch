@@ -1,4 +1,4 @@
-From 48738d165eacfa5dd2084c0bc8418f7196192775 Mon Sep 17 00:00:00 2001
+From 95ea0f29d385bdbd926c5ad13bb6b4f93bb1e3ea Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 16 Apr 2014 22:02:01 +0300
 Subject: [PATCH 01/16] Fix ALSA sound output for Amlogic-based devices.
