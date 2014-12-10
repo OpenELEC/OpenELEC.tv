@@ -16,33 +16,27 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="bcm2835-bootloader"
-PKG_VERSION="5f1b910"
+PKG_NAME="keyutils"
+PKG_VERSION="1.5.9"
 PKG_REV="1"
-PKG_ARCH="arm"
-PKG_LICENSE="nonfree"
-PKG_SITE="http://www.broadcom.com"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain linux"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://people.redhat.com/~dhowells/keyutils/"
+PKG_URL="http://people.redhat.com/~dhowells/keyutils/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="tools"
-PKG_SHORTDESC="bcm2835-bootloader: Tool to create a bootable kernel for RaspberryPi"
-PKG_LONGDESC="bcm2835-bootloader: Tool to create a bootable kernel for RaspberryPi"
+PKG_SECTION="system"
+PKG_SHORTDESC="keyutils: Linux Key Management Utilities"
+PKG_LONGDESC="Keyutils is a set of utilities for managing the key retention facility in the kernel."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+PKG_MAKE_OPTS_TARGET="NO_ARLIB=0 NO_SOLIB=1 LIBDIR=/lib USRLIBDIR=/usr/lib"
+PKG_MAKEINSTALL_OPTS_TARGET="$PKG_MAKE_OPTS_TARGET"
 
-make_target() {
-  : # nothing to make
+post_makeinstall_target() {
+	rm -rf $INSTALL/usr
+	rmdir $INSTALL/etc/request-key.d
+	ln -sf /storage/.config/request-key.d $INSTALL/etc/request-key.d
 }
 
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/share/bootloader
-    cp -PRv LICENCE* $INSTALL/usr/share/bootloader
-    cp -PRv bootcode.bin $INSTALL/usr/share/bootloader
-    cp -PRv fixup_x.dat $INSTALL/usr/share/bootloader/fixup.dat
-    cp -PRv start_x.elf $INSTALL/usr/share/bootloader/start.elf
-
-    cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
-    cp -PRv $PKG_DIR/files/3rdparty/bootloader/config.txt $INSTALL/usr/share/bootloader
-}

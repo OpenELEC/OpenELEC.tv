@@ -16,33 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="bcm2835-bootloader"
-PKG_VERSION="5f1b910"
+PKG_NAME="iwlwifi-firmware"
+PKG_VERSION="0.0.1"
 PKG_REV="1"
-PKG_ARCH="arm"
-PKG_LICENSE="nonfree"
-PKG_SITE="http://www.broadcom.com"
+PKG_ARCH="any"
+PKG_LICENSE="Free-to-use"
+PKG_SITE="https://github.com/OpenELEC/iwlwifi-firmware"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain linux"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="tools"
-PKG_SHORTDESC="bcm2835-bootloader: Tool to create a bootable kernel for RaspberryPi"
-PKG_LONGDESC="bcm2835-bootloader: Tool to create a bootable kernel for RaspberryPi"
+PKG_SECTION="firmware"
+PKG_SHORTDESC="iwlwifi-firmware: firmwares for various Intel WLAN drivers"
+PKG_LONGDESC="iwlwifi-firmware: firmwares for various Intel WLAN drivers"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  : # nothing to make
+  : # nothing todo
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/usr/share/bootloader
-    cp -PRv LICENCE* $INSTALL/usr/share/bootloader
-    cp -PRv bootcode.bin $INSTALL/usr/share/bootloader
-    cp -PRv fixup_x.dat $INSTALL/usr/share/bootloader/fixup.dat
-    cp -PRv start_x.elf $INSTALL/usr/share/bootloader/start.elf
-
-    cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
-    cp -PRv $PKG_DIR/files/3rdparty/bootloader/config.txt $INSTALL/usr/share/bootloader
+  DESTDIR=$INSTALL ./install
 }
