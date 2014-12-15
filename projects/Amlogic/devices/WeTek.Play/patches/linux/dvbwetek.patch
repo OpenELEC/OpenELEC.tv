@@ -1,60 +1,142 @@
-diff -Naur c1/drivers/amlogic/dvb_tv/aml_dmx.c d1/drivers/amlogic/dvb_tv/aml_dmx.c
---- c1/drivers/amlogic/dvb_tv/aml_dmx.c	2014-11-22 11:59:26.952282852 +0100
-+++ d1/drivers/amlogic/dvb_tv/aml_dmx.c	2014-11-22 14:59:21.270541740 +0100
-@@ -59,7 +59,7 @@
- #define pr_error(fmt, args...) printk("DVB: " fmt, ## args)
+diff -Naur a/drivers/amlogic/dvb_tv/aml_dvb.c b/drivers/amlogic/dvb_tv/aml_dvb.c
+--- a/drivers/amlogic/dvb_tv/aml_dvb.c	2014-12-11 15:40:00.073007604 +0100
++++ b/drivers/amlogic/dvb_tv/aml_dvb.c	2014-12-11 16:07:36.316473946 +0100
+@@ -79,6 +79,10 @@
+ static int aml_tsdemux_set_skipbyte(int skipbyte);
+ static int aml_tsdemux_set_demux(int id);
  
- MODULE_PARM_DESC(debug_dmx, "\n\t\t Enable demux debug information");
--static int debug_dmx = 0;
-+static int debug_dmx = 1;
- module_param(debug_dmx, int, S_IRUGO);
- 
- MODULE_PARM_DESC(debug_irq, "\n\t\t Enable demux IRQ debug information");
-@@ -1306,7 +1306,7 @@
- 	int set_stb = 0, fec_s = 0;
- 	int s2p_id;
- 	u32 invert0 = 0, invert1 = 0, fec_s0 = 0, fec_s1 = 0;
--
-+	u32 readback = 0;
- 	record = dmx_get_record_flag(dmx);
- 
- 	switch(dmx->source) {
-@@ -1421,6 +1421,10 @@
- 			(fec_core_sel<<FEC_CORE_SEL)    |
- 			(fec_sel<<FEC_SEL)              |
- 			(fec_ctrl<<0));
++static void aml_dvb_pinctrl_put (struct aml_dvb *advb);
++static struct pinctrl * __must_check aml_dvb_pinctrl_get_select (
++					struct aml_dvb *advb, const char *name);
 +
-+		readback = DMX_READ_REG(dmx->id, FEC_INPUT_CONTROL);
-+		pr_dbg("fec_input_control %d\n", readback);
-+
- 		DMX_WRITE_REG(dmx->id, STB_OM_CTL,
- 			(0x40<<MAX_OM_DMA_COUNT)        |
- 			(0x7f<<LAST_OM_ADDR));
-diff -Naur c1/drivers/amlogic/dvb_tv/aml_dvb.c d1/drivers/amlogic/dvb_tv/aml_dvb.c
---- c1/drivers/amlogic/dvb_tv/aml_dvb.c	2014-11-22 11:59:26.936282993 +0100
-+++ d1/drivers/amlogic/dvb_tv/aml_dvb.c	2014-11-22 17:05:13.060953300 +0100
-@@ -155,7 +155,7 @@
+ static struct tsdemux_ops aml_tsdemux_ops = {
+ .reset          = aml_tsdemux_reset,
+ .set_reset_flag = aml_tsdemux_set_reset_flag,
+@@ -154,8 +158,13 @@
+ 		dmx->dmx_irq = res->start;
  	}
  #endif
++	if(id == 0)
++		dmx->source = AM_TS_SRC_TS2;
++	else if(id == 1)
++		dmx->source = AM_TS_SRC_TS0;
++	else
++		dmx->source  = -1;
  
 -	dmx->source  = -1;
-+	dmx->source  = AM_TS_SRC_TS2;
  	dmx->dump_ts_select = 0;
  	dmx->dvr_irq = -1;
  
-@@ -1229,6 +1229,9 @@
+@@ -999,14 +1008,8 @@
+ 	}
+ 
+ 	if((mode != AM_TS_SERIAL) || (ts->s2p_id != -1)){
+-		if(ts->pinctrl){
+-			devm_pinctrl_put(ts->pinctrl);
+-			ts->pinctrl = NULL;
+-		}
+ 
+-		ts->pinctrl  = devm_pinctrl_get_select(&dvb->pdev->dev, pname);
+-		if(IS_ERR_VALUE(ts->pinctrl))
+-			ts->pinctrl = NULL;
++		ts->pinctrl  = aml_dvb_pinctrl_get_select(dvb, pname);
+ 		ts->mode     = mode;
+ 		ts->control  = ctrl;
+ 
+@@ -1109,6 +1112,49 @@
+ extern int aml_regist_dmx_class(void);
+ extern int aml_unregist_dmx_class(void);
+ 
++static void aml_dvb_pinctrl_put (struct aml_dvb *advb)
++{
++	/*all dvb pinctrls share the ts[0]'s pinctrl.*/
++    if (advb->ts[0].pinctrl) {
++        devm_pinctrl_put(advb->ts[0].pinctrl);
++        advb->ts[0].pinctrl = NULL;
++    }
++}
++
++static struct pinctrl * __must_check aml_dvb_pinctrl_get_select (
++					struct aml_dvb *advb, const char *name)
++{
++	/*all dvb pinctrls share the ts[0]'s pinctrl.*/
++	struct pinctrl *p = advb->ts[0].pinctrl;
++
++	struct pinctrl_state *s;
++	int ret;
++
++	if (!p) {
++		p = devm_pinctrl_get(&advb->pdev->dev);
++		if (IS_ERR(p)) {
++			return p;
++		}
++		advb->ts[0].pinctrl = p;
++	}
++
++	s = pinctrl_lookup_state(p, name);
++	if (IS_ERR(s)) {
++		pr_error("pinctl:lookup %s fail\n", name);
++		devm_pinctrl_put(p);
++		return ERR_CAST(s);
++	}
++
++	ret = pinctrl_select_state(p, s);
++	if (ret < 0) {
++		pr_error("pinctl:select %s fail\n", name);
++		devm_pinctrl_put(p);
++		return ERR_PTR(ret);
++	}
++
++	return p;
++}
++
+ static int aml_dvb_probe(struct platform_device *pdev)
+ {
+ 	struct aml_dvb *advb;
+@@ -1158,7 +1204,7 @@
+ 					}else{
+ 						snprintf(buf, sizeof(buf), "s_ts%d", i);
+ 						advb->ts[i].mode    = AM_TS_SERIAL;
+-						advb->ts[i].pinctrl = devm_pinctrl_get_select(&pdev->dev, buf);
++						advb->ts[i].pinctrl = aml_dvb_pinctrl_get_select(advb, buf);
+ 						advb->ts[i].s2p_id  = s2p_id;
+ 
+ 						s2p_id++;
+@@ -1167,7 +1213,7 @@
+ 					pr_dbg("%s: parallel\n", buf);
+ 					snprintf(buf, sizeof(buf), "p_ts%d", i);
+ 					advb->ts[i].mode    = AM_TS_PARALLEL;
+-					advb->ts[i].pinctrl = devm_pinctrl_get_select(&pdev->dev, buf);
++					advb->ts[i].pinctrl = aml_dvb_pinctrl_get_select(advb, buf);
+ 				}else{
+ 					advb->ts[i].mode    = AM_TS_DISABLE;
+ 					advb->ts[i].pinctrl = NULL;
+@@ -1229,6 +1275,10 @@
  		if ((ret=aml_dvb_asyncfifo_init(advb, &advb->asyncfifo[i], i))<0) {
  			goto error;
  		}
 +		if(i == 0)
 +			aml_asyncfifo_hw_set_source(&advb->asyncfifo[i], AM_DMX_0);
-+
++		else if(i == 1)
++			aml_asyncfifo_hw_set_source(&advb->asyncfifo[i], AM_DMX_1);
  	}
  
  	aml_regist_dmx_class();
-diff -Naur c1/drivers/amlogic/dvb_tv/aml_dvb.h d1/drivers/amlogic/dvb_tv/aml_dvb.h
---- c1/drivers/amlogic/dvb_tv/aml_dvb.h	2014-11-22 11:59:26.936282993 +0100
-+++ d1/drivers/amlogic/dvb_tv/aml_dvb.h	2014-11-22 11:59:30.800249335 +0100
+@@ -1279,10 +1329,7 @@
+ 	}
+ 	dvb_unregister_adapter(&advb->dvb_adapter);
+ 
+-	for (i=0; i<TS_IN_COUNT; i++){
+-		if(advb->ts[i].pinctrl)
+-			devm_pinctrl_put(advb->ts[i].pinctrl);
+-	}
++	aml_dvb_pinctrl_put(advb);
+ 
+ 	switch_mod_gate_by_name("demux", 0);
+ 
+diff -Naur a/drivers/amlogic/dvb_tv/aml_dvb.h b/drivers/amlogic/dvb_tv/aml_dvb.h
+--- a/drivers/amlogic/dvb_tv/aml_dvb.h	2014-12-11 15:40:00.085007509 +0100
++++ b/drivers/amlogic/dvb_tv/aml_dvb.h	2014-12-11 15:54:32.910432233 +0100
 @@ -23,14 +23,14 @@
  #endif
  
@@ -78,10 +160,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/aml_dvb.h d1/drivers/amlogic/dvb_tv/aml_dvb
  
  #include <linux/of.h>
  #include <linux/pinctrl/consumer.h>
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c
---- c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c	2014-11-22 12:01:11.347372356 +0100
-@@ -0,0 +1,459 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c b/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c
+--- a/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c	2014-12-11 16:13:49.957618635 +0100
+@@ -0,0 +1,473 @@
 +/*****************************************************************************
 +* Tuner sample code
 +*
@@ -251,6 +333,12 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlog
 +		if(r!=AVL_DVBSx_EC_OK){
 +			return(r);
 +		}
++		// Send Reg36 ->Reg41
++		reg_start = 36;
++		r = AV2011_I2C_write(reg_start, reg+36, 6, pTuner);
++		if(r!=AVL_DVBSx_EC_OK){
++			return(r);
++		}
 +		// Time delay 1ms
 +		Time_DELAY_MS(1);
 +		// Sequence 3
@@ -261,15 +349,17 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlog
 +			return(r);
 +		}
 +
++
++#if 0
 +//rsj for test
 +		AVL_uchar buff;
 +		AV2011_I2C_Read(reg_start,&buff,pTuner);
 +		printf("reg_start is %x,buff is %x  \n",reg_start,buff);
-+
 +//rsj
-+		
++#endif
++
 +		//monsen 20081125, Wait 100 ms
-+		Time_DELAY_MS(100);
++		Time_DELAY_MS(10);
 +		//monsen 20081030, Reinitial again
 +		{
 +			// Sequence 1
@@ -309,7 +399,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlog
 +			if(r!=AVL_DVBSx_EC_OK){
 +			return(r);
 +			}
-+		Time_DELAY_MS(50);
++		Time_DELAY_MS(5);
 +		return(r);
 +	}
 +}
@@ -446,32 +536,38 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlog
 +static AVL_DVBSx_ErrorCode AV2011_I2C_write(AVL_uchar reg_start,AVL_uchar* buff,AVL_uchar len,struct AVL_Tuner * pTuner)
 +{
 +	AVL_DVBSx_ErrorCode r=0;
-+	AVL_uchar ucTemp[2];
++	AVL_uchar ucTemp[50];
 +	int i,uiTimeOut=0;
 +	AVL_DVBSx_IBSP_Delay(5);
 +
-+      for(i = 0; i < len; i ++)
++      //for(i = 0; i < len; i ++)
 +      {
-+             ucTemp[0] = reg_start+i;
++             ucTemp[0] = reg_start;
 +             r = AVL_DVBSx_II2CRepeater_GetOPStatus( pTuner->m_pAVLChip);
-+		//	 printk("%s  r is %d\n",__FUNCTION__,r);
++             //	 printk("%s  r is %d\n",__FUNCTION__,r);
 +             while( r != AVL_DVBSx_EC_OK)
 +             {
-+                if( uiTimeOut++>200) 
++                if( uiTimeOut++>100)
 +                {
 +                     break;
 +                }
 +                AVL_DVBSx_IBSP_Delay(1);
 +                r = AVL_DVBSx_II2CRepeater_GetOPStatus( pTuner->m_pAVLChip);
 +             }
-+             ucTemp[1]=*(buff+i);
-+             r = AVL_DVBSx_II2CRepeater_SendData(pTuner->m_uiSlaveAddress,ucTemp, 2, pTuner->m_pAVLChip );
++
++
++             for(i = 1; i < len+1; i ++)
++             {
++                 ucTemp[i] = *(buff+i-1);
++             }
++
++             r = AVL_DVBSx_II2CRepeater_SendData(pTuner->m_uiSlaveAddress,ucTemp, len+1, pTuner->m_pAVLChip );
 +             if(r != AVL_DVBSx_EC_OK)
 +             {
 +                 return(r);
 +             }
 +      }
-+	AVL_DVBSx_IBSP_Delay(5);
++	AVL_DVBSx_IBSP_Delay(1);
 +	return(r);
 +}
 +
@@ -541,9 +637,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.c d1/drivers/amlog
 +}
 +//#endif
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h d1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h
---- c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h	2014-11-22 12:01:11.347372356 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h b/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h
+--- a/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h	2014-12-11 16:13:49.953618665 +0100
 @@ -0,0 +1,24 @@
 +#ifndef AV2011_h_h
 +#define AV2011_h_h
@@ -569,10 +665,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/AV2011/ExtAV2011.h d1/drivers/amlog
 +}
 +#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c
---- c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c	2014-11-22 13:43:24.026390669 +0100
-@@ -0,0 +1,855 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c b/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c
+--- a/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c	2014-12-11 16:13:50.009618235 +0100
+@@ -0,0 +1,931 @@
 +/*****************************************************************
 +**
 +**  Copyright (C) 2009 Amlogic,Inc.
@@ -609,6 +705,8 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +#include "avlfrontend.h"
 +#include "LockSignal_Api.h"
 +#include <linux/kthread.h>
++#include <mach/gpio.h>
++#include <mach/gpio_data.h>
 +
 +#include <linux/amlogic/aml_gpio_consumer.h>
 +
@@ -628,18 +726,20 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +#define bs_stop_freq			2150			//The stop RF frequency, 2150MHz
 +#define Blindscan_Mode   AVL_DVBSx_BS_Slow_Mode	//The Blind scan mode.	AVL_DVBSx_BS_Fast_Mode = 0,AVL_DVBSx_BS_Slow_Mode = 1
 +
-+extern struct AVL_Tuner *avl6211pTuner;
-+extern struct AVL_DVBSx_Chip * pAVLChip_all;
-+AVL_semaphore blindscanSem;
-+static int blindstart=0;
-+struct dvb_frontend *fe_use = NULL;
-+struct aml_fe_dev *cur_dvbdev = NULL;
++extern struct AVL_Tuner *avl6211pTuner[FE_DEV_COUNT];
++extern struct AVL_DVBSx_Chip * pAVLChip_all[FE_DEV_COUNT];
++AVL_semaphore blindscanSem[FE_DEV_COUNT];
++static int blindstart[FE_DEV_COUNT] = { 0, 0};
++struct dvb_frontend *fe_use[FE_DEV_COUNT] = { NULL, NULL };
++struct aml_fe_dev *cur_dvbdev[FE_DEV_COUNT] = { NULL, NULL };
++static int reset_demods = 0; 
++
 +
 +static char *device_name = "avl6211";
 +
-+struct aml_fe_dev * avl6211_get_cur_dev(void)
++struct aml_fe_dev * avl6211_get_cur_dev(int id)
 +{
-+	return cur_dvbdev;
++	return cur_dvbdev[id];
 +}
 +
 +static int AVL6211_Reset(int reset_gpio)
@@ -652,22 +752,41 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	return 0;
 +}
 +
-+static int AVL6211_Lnb_Power_Ctrl(int lnb)
++static int AVL6211_Lnb_Power_Ctrl(int id, int lnb)
 +{
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +
-+	if(1 == lnb)
-+		r=AVL_DVBSx_IDiseqc_SetLNB1Out(1, pAVLChip_all);	//set LNB1_PIN60 1: Hight 
-+	else
-+		r=AVL_DVBSx_IDiseqc_SetLNB1Out(0, pAVLChip_all);	//set LNB1_PIN60 1: Low 	
++	if(1 == lnb) {
++		r=AVL_DVBSx_IDiseqc_SetLNB1Out(1, pAVLChip_all[id]);	//set LNB1_PIN60 1: Hight 
++/*		if(id == 0) {
++			amlogic_gpio_request(PAD_GPIOAO_8 , device_name);
++			amlogic_gpio_direction_output(PAD_GPIOAO_8, 1, device_name);
++		}else if(id == 1) {
++			amlogic_gpio_request(PAD_GPIOAO_9, device_name);
++			amlogic_gpio_direction_output(PAD_GPIOAO_9, 1, device_name);
++	
++		}*/
++	}
++	else {
++		r=AVL_DVBSx_IDiseqc_SetLNB1Out(0, pAVLChip_all[id]);	//set LNB1_PIN60 1: Low 	
++	/*	if(id == 0) {
++			amlogic_gpio_request(PAD_GPIOAO_8 , device_name);
++			amlogic_gpio_direction_output(PAD_GPIOAO_8, 0, device_name);
++		}else if(id == 1) {
++			amlogic_gpio_request(PAD_GPIOAO_9, device_name);
++			amlogic_gpio_direction_output(PAD_GPIOAO_9, 0, device_name);
++	
++		}*/
++
++	}
 +	
 +	return r;
 +}
 +
-+static int AVL6211_Tuner_Power_Ctrl(int tunerpwr)
++static int AVL6211_Tuner_Power_Ctrl(int id, int tunerpwr)
 +{
-+	if(1==tunerpwr)	AVL_DVBSx_IBase_SetGPIOVal(0, pAVLChip_all);
-+	else				AVL_DVBSx_IBase_SetGPIOVal(0, pAVLChip_all);
++	if(1==tunerpwr)	AVL_DVBSx_IBase_SetGPIOVal(0, pAVLChip_all[id]);
++	else				AVL_DVBSx_IBase_SetGPIOVal(0, pAVLChip_all[id]);
 +	return 0;
 +}
 +
@@ -683,6 +802,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int	AVL6211_Diseqc_Send_Master_Cmd(struct dvb_frontend* fe, struct dvb_diseqc_master_cmd* cmd)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uchar ucData[8];
 +	int j=100;
@@ -694,7 +816,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +		printk("%x ",cmd->msg[i]);
 +	}
 +	
-+	r=AVL_DVBSx_IDiseqc_SendModulationData(ucData, cmd->msg_len, pAVLChip_all);
++	r=AVL_DVBSx_IDiseqc_SendModulationData(ucData, cmd->msg_len, pAVLChip_all[id]);
 +	if(r != AVL_DVBSx_EC_OK)
 +	{
 +		pr_dbg("AVL_DVBSx_IDiseqc_SendModulationData failed !\n");
@@ -705,7 +827,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +		{
 +			j--;
 +			AVL_DVBSx_IBSP_Delay(1);
-+			r= AVL_DVBSx_IDiseqc_GetTxStatus(&TxStatus, pAVLChip_all);
++			r= AVL_DVBSx_IDiseqc_GetTxStatus(&TxStatus, pAVLChip_all[id]);
 +		}while((TxStatus.m_TxDone != 1)&&j);
 +		if(r ==AVL_DVBSx_EC_OK )
 +		{
@@ -726,6 +848,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int	AVL6211_Diseqc_Send_Burst(struct dvb_frontend* fe, fe_sec_mini_cmd_t minicmd)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 + 	struct AVL_DVBSx_Diseqc_TxStatus sTxStatus;
 +	AVL_uchar ucTone = 0;
@@ -737,7 +862,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +		ucTone = 0;
 +	else ;
 +
-+  	r = AVL_DVBSx_IDiseqc_SendTone(ucTone, TONE_COUNT, pAVLChip_all);
++  	r = AVL_DVBSx_IDiseqc_SendTone(ucTone, TONE_COUNT, pAVLChip_all[id]);
 +	if(AVL_DVBSx_EC_OK != r)
 +	{
 +		pr_dbg("\rSend tone %d --- Fail!\n",ucTone);
@@ -748,7 +873,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	    {
 +	    	i--;
 +			AVL_DVBSx_IBSP_Delay(1);
-+		    r =AVL_DVBSx_IDiseqc_GetTxStatus(&sTxStatus, pAVLChip_all);   //Get current status of the Diseqc transmitter data FIFO.
++		    r =AVL_DVBSx_IDiseqc_GetTxStatus(&sTxStatus, pAVLChip_all[id]);   //Get current status of the Diseqc transmitter data FIFO.
 +	    }
 +	    while((1 != sTxStatus.m_TxDone)&&i);			//Wait until operation finished.
 +	    if(AVL_DVBSx_EC_OK != r)
@@ -762,6 +887,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int	AVL6211_Set_Tone(struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uchar  uc22kOn = 0;
 +	if(SEC_TONE_ON == tone)
@@ -771,9 +899,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	else ;
 +	if(uc22kOn)
 +	{
-+		r=AVL_DVBSx_IDiseqc_StartContinuous(pAVLChip_all);
++		r=AVL_DVBSx_IDiseqc_StartContinuous(pAVLChip_all[id]);
 +	}else{
-+		r=AVL_DVBSx_IDiseqc_StopContinuous(pAVLChip_all);
++		r=AVL_DVBSx_IDiseqc_StopContinuous(pAVLChip_all[id]);
 +	}
 +	if(r!=AVL_DVBSx_EC_OK)
 +	{
@@ -786,10 +914,13 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int	AVL6211_Set_Voltage(struct dvb_frontend* fe, fe_sec_voltage_t voltage)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
 +	AVL_DVBSx_ErrorCode r=AVL_DVBSx_EC_OK;	
 +	AVL_uchar nValue = 1;
 +	if(voltage == SEC_VOLTAGE_OFF){
-+		AVL6211_Lnb_Power_Ctrl(0);//lnb power off
++		AVL6211_Lnb_Power_Ctrl(id, 0);//lnb power off
 +		return 0;
 +	}
 +
@@ -799,12 +930,12 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +		nValue = 1;
 +	else;	
 +	
-+	AVL6211_Lnb_Power_Ctrl(1);//lnb power on
++	AVL6211_Lnb_Power_Ctrl(id, 1);//lnb power on
 +
 +	if(1==nValue)
-+		r=AVL_DVBSx_IDiseqc_SetLNBOut(1, pAVLChip_all);	//set LNB0_PIN59 1: Hight 
++		r=AVL_DVBSx_IDiseqc_SetLNBOut(1, pAVLChip_all[id]);	//set LNB0_PIN59 1: Hight 
 +	else
-+		r=AVL_DVBSx_IDiseqc_SetLNBOut(0, pAVLChip_all);	//set LNB0_PIN59 1: Low 
++		r=AVL_DVBSx_IDiseqc_SetLNBOut(0, pAVLChip_all[id]);	//set LNB0_PIN59 1: Low 
 +
 +	return r;
 +}
@@ -837,6 +968,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	return;
 +}
 +
++#if 0
 +static int dvbs2_blindscan_task(struct dvbsx_blindscanpara *pbspara)//(struct dvb_frontend* fe, struct dvbsx_blindscanpara *pbspara)
 +
 +{
@@ -1033,17 +1165,21 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +		fe_use = NULL;
 +		return 0;
 +}
++#endif
 +
-+static int initflag=-1;
++static int initflag[2]= { -1, -1 };
 +
 +static int AVL6211_Read_Status(struct dvb_frontend *fe, fe_status_t * status)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
 +	unsigned char s=0;
 +//printk("Get status blindstart:%d.\n",blindstart);
-+	if(1==blindstart)
++	if(1==blindstart[id])
 +	     s=1;
 +         else
-+	   s=AVL6211_GETLockStatus();
++	   s=AVL6211_GETLockStatus(id);
 +
 +	if(s==1)
 +	{
@@ -1059,26 +1195,34 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int AVL6211_Read_Ber(struct dvb_frontend *fe, u32 * ber)
 +{
-+	if(1==blindstart)
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
++	if(1==blindstart[id])
 +		return 0;
-+	*ber=AVL6211_GETBer();
++	*ber=AVL6211_GETBer(id);
 +	return 0;
 +}
 +
 +static int AVL6211_Read_Signal_Strength(struct dvb_frontend *fe, u16 *strength)
 +{
-+	if(1==blindstart)
-+		return ;
-+	*strength=AVL_Get_Level_Percent(pAVLChip_all);
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
++	if(1==blindstart[id])
++		return 0;
++	*strength=AVL_Get_Level_Percent(pAVLChip_all[id]);
 +//	*strength=AVL6211_GETSignalLevel();
 +	return 0;
 +}
-+
 +static int AVL6211_Read_Snr(struct dvb_frontend *fe, u16 * snr)
 +{
-+	if(1==blindstart)
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
++	if(1==blindstart[id])
 +		return 0;
-+	*snr=AVL_Get_Quality_Percent(pAVLChip_all);
++	*snr=AVL_Get_Quality_Percent(pAVLChip_all[id]);
 +	//*snr=AVL6211_GETSnr();
 +	return 0;
 +}
@@ -1091,21 +1235,25 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int AVL6211_Set_Frontend(struct dvb_frontend *fe)
 +{
++	struct aml_fe *afe = fe->demodulator_priv;
++	struct aml_fe_dev *dev = afe->dtv_demod;
++	int id = dev->i2c_adap_id - 1;
++	
 +	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 +
 +	int async_ret = 0;
 +	pr_dbg("avl6211 set frontend=>frequency=%d,symbol_rate=%d\r\n",c->frequency,c->symbol_rate);
 +
-+	if(initflag!=0)
++	if(initflag[id]!=0)
 +	{
 +		pr_dbg("[%s] avl6211 init fail\n",__FUNCTION__);
 +		return 0;	
 +	}
 +//	printk("[AVL6211_Set_Frontend],blindstart is %d\n",blindstart);
 +
-+	if(1==blindstart)
++	if(1==blindstart[id])
 +		return 0;
-+	AVL_DVBSx_IBSP_WaitSemaphore(&blindscanSem);
++	AVL_DVBSx_IBSP_WaitSemaphore(&blindscanSem[id]);
 +	if((850000>c->frequency)||(c->frequency>2300000))
 +	{
 +			c->frequency =945000;
@@ -1114,7 +1262,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	struct avl6211_state *state = fe->demodulator_priv;
 +	struct AVL_DVBSx_Channel Channel;
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
-+	avl6211pTuner->m_uiFrequency_100kHz=c->frequency/100;
++	avl6211pTuner[id]->m_uiFrequency_100kHz=c->frequency/100;
 +//	avl6211pTuner->m_uiFrequency_100kHz=15000;
 +//	printk("avl6211pTuner m_uiFrequency_100kHz is %d",avl6211pTuner->m_uiFrequency_100kHz);
 +	
@@ -1127,17 +1275,17 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +	//Change the value defined by macro and go back here when we want to lock a new channel.
 +//	avl6211pTuner->m_uiFrequency_100kHz = tuner_freq*10;      
-+	avl6211pTuner->m_uiSymbolRate_Hz = c->symbol_rate;//c->symbol_rate;//30000000; //symbol rate of the channel to be locked.
++	avl6211pTuner[id]->m_uiSymbolRate_Hz = c->symbol_rate;//c->symbol_rate;//30000000; //symbol rate of the channel to be locked.
 +	//This function should be called before locking the tuner to adjust the tuner LPF based on channel symbol rate.
-+	AVL_Set_LPF(avl6211pTuner, avl6211pTuner->m_uiSymbolRate_Hz);
++	AVL_Set_LPF(id, avl6211pTuner[id], avl6211pTuner[id]->m_uiSymbolRate_Hz);
 +
-+	r=avl6211pTuner->m_pLockFunc(avl6211pTuner);
++	r=avl6211pTuner[id]->m_pLockFunc(avl6211pTuner[id]);
 +	if (AVL_DVBSx_EC_OK != r)
 +	{
 +		state->freq=c->frequency;
 +		state->mode=c->modulation ;
 +		state->symbol_rate=c->symbol_rate;
-+		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem);
++		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem[id]);
 + 		pr_dbg("Tuner test failed !\n");
 +		return (r);
 +	}
@@ -1147,7 +1295,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	async_ret = fe->ops.asyncinfo.set_frontend_asyncwait(fe, 50);
 +	if(async_ret > 0){
 +		fe->ops.asyncinfo.set_frontend_asyncpostproc(fe, async_ret);
-+		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem);
++		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem[id]);
 +		return 0;
 +	}	
 +	fe->ops.asyncinfo.set_frontend_asyncpostproc(fe, async_ret);	
@@ -1178,17 +1326,17 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	Channel.m_Flags |= (CI_FLAG_IQ_AUTO_BIT_AUTO) << CI_FLAG_IQ_AUTO_BIT;	//Enable automatic IQ swap detection
 +	Channel.m_Flags |= (CI_FLAG_DVBS2_UNDEF) << CI_FLAG_DVBS2_BIT;			//Enable automatic standard detection
 +	#endif
-+	r = AVL_DVBSx_IRx_LockChannel(&Channel, pAVLChip_all);  
++	r = AVL_DVBSx_IRx_LockChannel(&Channel, pAVLChip_all[id]);  
 +	if (AVL_DVBSx_EC_OK != r)
 +	{
 +		state->freq=c->frequency;
 +		state->mode=c->modulation ;
 +		state->symbol_rate=c->symbol_rate;	
-+		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem);
++		AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem[id]);
 +		pr_dbg("Lock channel failed !\n");
 +		return (r);
 +	}
-+	AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem);
++	AVL_DVBSx_IBSP_ReleaseSemaphore(&blindscanSem[id]);
 +	if (AVL_DVBSx_EC_OK != r)
 +	{
 +		printf("Lock channel failed !\n");
@@ -1218,7 +1366,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +			break;
 +		}
 +		
-+		lockstatus=AVL6211_GETLockStatus();
++		lockstatus=AVL6211_GETLockStatus(id);
 +		if(1==lockstatus){
 +			pr_dbg("lock success !\n");
 +			break;
@@ -1228,10 +1376,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	}
 +	fe->ops.asyncinfo.set_frontend_asyncpostproc(fe, async_ret);
 +	
-+	if(!AVL6211_GETLockStatus())
++	if(!AVL6211_GETLockStatus(id))
 +		pr_dbg("lock timeout !\n");
 +	
-+	r=AVL_DVBSx_IRx_ResetErrorStat(pAVLChip_all);
++	r=AVL_DVBSx_IRx_ResetErrorStat(pAVLChip_all[id]);
 +	if (AVL_DVBSx_EC_OK != r)
 +	{
 +		state->freq=c->frequency;
@@ -1321,9 +1469,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	fe_ops->set_voltage = AVL6211_Set_Voltage;
 +	fe_ops->enable_high_lnb_voltage = AVL6211_Enable_High_Lnb_Voltage;
 +
++#if 0
 +	fe_ops->blindscan_ops.blindscan_scan = AVL6211_Blindscan_Scan;
 +	fe_ops->blindscan_ops.blindscan_cancel = AVL6211_Blindscan_Cancel;
-+
++#endif
 +	fe_ops->asyncinfo.set_frontend_asyncenable = 1;
 +
 +	return 0;
@@ -1332,28 +1481,31 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +static int avl6211_fe_enter_mode(struct aml_fe *fe, int mode)
 +{
 +	struct aml_fe_dev *dev = fe->dtv_demod;
-+
-+	cur_dvbdev = dev;
++	int id = dev->i2c_adap_id - 1;
++	cur_dvbdev[id] = dev;
 +	pr_dbg("=========================demod init\r\n");
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	//init sema
-+	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem );
++//	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem );
 +	//reset
-+	AVL6211_Reset(dev->reset_gpio);
-+	msleep(100);
++	if(!reset_demods) {
++		AVL6211_Reset(dev->reset_gpio);
++		msleep(100);
++		reset_demods++;
++	}
 +	//init
-+	r=AVL6211_LockSignal_Init();
++	r=AVL6211_LockSignal_Init(id);
 +	//LBNON
 +//	AVL6211_Lnb_Power_Ctrl(1);
 +	//tunerpower
-+	AVL6211_Tuner_Power_Ctrl(0);	
++	AVL6211_Tuner_Power_Ctrl(id, 0);	
 +//	r=AVL_DVBSx_IDiseqc_StopContinuous(pAVLChip_all);
 +	if(AVL_DVBSx_EC_OK != r)
 +	{
 +		return r;
 +	}
-+	initflag =0;
-+	pr_dbg("0x%x(ptuner),0x%x(pavchip)=========================demod init\r\n",avl6211pTuner->m_uiSlaveAddress,pAVLChip_all->m_SlaveAddr);
++	initflag[id] =0;
++	pr_dbg("0x%x(ptuner),0x%x(pavchip)=========================demod init\r\n",avl6211pTuner[id]->m_uiSlaveAddress,pAVLChip_all[id]->m_SlaveAddr);
 +	msleep(200);
 +	
 +	return 0;
@@ -1362,30 +1514,32 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int avl6211_fe_resume(struct aml_fe_dev *dev)
 +{
-+	cur_dvbdev = dev;
++	
++	int id = dev->i2c_adap_id - 1;	
++	cur_dvbdev[id] = dev;
 +	
 +	pr_dbg("avl6211_fe_resume \n");
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	//init sema
-+	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem );
++//	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem );
 +	//reset
-+	AVL6211_Reset(dev->reset_gpio);
-+	msleep(100);
++//	AVL6211_Reset(dev->reset_gpio);
++//	msleep(100);
 +	//init
-+	r=AVL6211_LockSignal_Init();
++	r=AVL6211_LockSignal_Init(id);
 +	//LBNON
 +//	AVL6211_Lnb_Power_Ctrl(1);
 +	//tunerpower
-+	AVL6211_Tuner_Power_Ctrl(0);
++	AVL6211_Tuner_Power_Ctrl(id, 0);
 +//	r=AVL_DVBSx_IDiseqc_StopContinuous(pAVLChip_all);
 +
-+	r=AVL_DVBSx_IBase_SetGPIODir(0, pAVLChip_all);
++	r=AVL_DVBSx_IBase_SetGPIODir(0, pAVLChip_all[id]);
 +	if(AVL_DVBSx_EC_OK != r)
 +	{
 +		return r;
 +	}
-+	initflag =0;
-+	pr_dbg("0x%x(ptuner),0x%x(pavchip)=========================demod init\r\n",avl6211pTuner->m_uiSlaveAddress,pAVLChip_all->m_SlaveAddr);
++	initflag[id] =0;
++	pr_dbg("0x%x(ptuner),0x%x(pavchip)=========================demod init\r\n",avl6211pTuner[id]->m_uiSlaveAddress,pAVLChip_all[id]->m_SlaveAddr);
 +	msleep(200);
 +	return 0;
 +
@@ -1396,9 +1550,19 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +	return 0;
 +}
 +
-+static struct aml_fe_drv avl6211_dtv_demod_drv = {
++static struct aml_fe_drv avl6211_0_dtv_demod_drv = {
 +.id         = AM_DTV_DEMOD_AVL6211,
-+.name       = "Avl6211",
++.name       = "Avl6211_0",
++.capability = AM_FE_QPSK,
++.get_ops    = avl6211_fe_get_ops,
++.enter_mode = avl6211_fe_enter_mode,
++.suspend    = avl6211_fe_suspend,
++.resume     = avl6211_fe_resume
++};
++
++static struct aml_fe_drv avl6211_1_dtv_demod_drv = {
++.id         = AM_DTV_DEMOD_AVL6211,
++.name       = "Avl6211_1",
 +.capability = AM_FE_QPSK,
 +.get_ops    = avl6211_fe_get_ops,
 +.enter_mode = avl6211_fe_enter_mode,
@@ -1408,15 +1572,23 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +
 +static int __init avlfrontend_init(void)
 +{
-+	pr_dbg("register avl6211 demod driver\n");
-+	return aml_register_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_dtv_demod_drv);
++	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem[0] );
++	AVL_DVBSx_IBSP_InitSemaphore( &blindscanSem[1] );
++
++	pr_dbg("register avl6211_0 demod driver\n");
++	aml_register_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_0_dtv_demod_drv);
++
++        pr_dbg("register avl6211_1 demod driver\n");
++	return aml_register_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_1_dtv_demod_drv);
 +}
 +
 +
 +static void __exit avlfrontend_exit(void)
 +{
-+	pr_dbg("unregister avl6211 demod driver\n");
-+	return aml_unregister_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_dtv_demod_drv);	
++	pr_dbg("unregister avl6211_0 demod driver\n");
++	aml_unregister_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_0_dtv_demod_drv);	
++	pr_dbg("unregister avl6211_1 demod driver\n");
++	aml_unregister_fe_drv(AM_DEV_DTV_DEMOD, &avl6211_1_dtv_demod_drv);	
 +}
 +
 +fs_initcall(avlfrontend_init);
@@ -1428,9 +1600,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/avlfrontend.c d1/drivers/amlogic/dv
 +MODULE_LICENSE("GPL");
 +
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h d1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h b/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h	2014-12-11 16:13:50.153617135 +0100
 @@ -0,0 +1,361 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -1793,10 +1965,11 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx_globals.h d1/driv
 +#define rc_s2_modulation                                                        (patchglobalvar_addr + 0x1a)
 +#define rc_s2_coderate                                                          (patchglobalvar_addr + 0x1c)
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h d1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h	2014-11-22 12:01:11.367372177 +0100
-@@ -0,0 +1,332 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h b/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h	2014-12-11 16:13:50.033618053 +0100
+@@ -0,0 +1,333 @@
++
 +/*
 + *           Copyright 2012 Availink, Inc.
 + *
@@ -2129,9 +2302,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl_dvbsx.h d1/drivers/amlo
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h d1/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h b/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h	2014-12-11 16:13:50.149617166 +0100
 @@ -0,0 +1,46 @@
 +
 +
@@ -2179,9 +2352,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avlfrontend.h d1/drivers/am
 +
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl.h d1/drivers/amlogic/dvb_tv/avl6211/include/avl.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/avl.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/avl.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/avl.h b/drivers/amlogic/dvb_tv/avl6211/include/avl.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/avl.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/avl.h	2014-12-11 16:13:50.069617776 +0100
 @@ -0,0 +1,133 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2316,9 +2489,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/avl.h d1/drivers/amlogic/dv
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h d1/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h	2014-11-22 12:01:11.367372177 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h b/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h	2014-12-11 16:13:50.033618053 +0100
 @@ -0,0 +1,33 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2353,9 +2526,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/BlindScan_source.h d1/drive
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h d1/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h b/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h	2014-12-11 16:13:50.161617073 +0100
 @@ -0,0 +1,52 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2409,9 +2582,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/bspdatadef.h d1/drivers/aml
 +
 +#endif
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h d1/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h b/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h	2014-12-11 16:13:50.061617837 +0100
 @@ -0,0 +1,41 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2454,9 +2627,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/DiSEqC_source.h d1/drivers/
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h d1/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h b/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h	2014-12-11 16:13:50.053617900 +0100
 @@ -0,0 +1,43 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2501,9 +2674,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ExtSharpBS2S7HZ6306.h d1/dr
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBase.h d1/drivers/amlogic/dvb_tv/avl6211/include/IBase.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IBase.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IBase.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IBase.h b/drivers/amlogic/dvb_tv/avl6211/include/IBase.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IBase.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IBase.h	2014-12-11 16:13:50.041617992 +0100
 @@ -0,0 +1,257 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2762,9 +2935,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBase.h d1/drivers/amlogic/
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h d1/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h b/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h	2014-12-11 16:13:50.161617073 +0100
 @@ -0,0 +1,177 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -2943,9 +3116,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindscanAPI.h d1/drivers/
 +#endif
 +
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h d1/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h b/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h	2014-12-11 16:13:50.061617837 +0100
 @@ -0,0 +1,118 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -3065,10 +3238,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBlindScan.h d1/drivers/aml
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h d1/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h	2014-11-22 12:01:11.375372110 +0100
-@@ -0,0 +1,109 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h b/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h	2014-12-11 16:13:50.045617961 +0100
+@@ -0,0 +1,115 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
 + *
@@ -3174,13 +3347,19 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IBSP.h d1/drivers/amlogic/d
 +	/// Return ::AVL_DVBSx_EC_OK Returned by the function stub provided with the SDK. 
 +	AVL_DVBSx_ErrorCode AVL_DVBSx_IBSP_ReleaseSemaphore( AVL_psemaphore pSemaphore );
 +
++
++	extern AVL_int32 I2CWrite(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length,int iDeviceId);
++
++
++	extern AVL_int32  I2CRead(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length,int iDeviceId);
++
 +	#ifdef AVL_CPLUSPLUS
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h d1/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h b/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h	2014-12-11 16:13:50.097617561 +0100
 @@ -0,0 +1,252 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -3434,9 +3613,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IDiseqc.h d1/drivers/amlogi
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/II2C.h d1/drivers/amlogic/dvb_tv/avl6211/include/II2C.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/II2C.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/II2C.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/II2C.h b/drivers/amlogic/dvb_tv/avl6211/include/II2C.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/II2C.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/II2C.h	2014-12-11 16:13:50.125617349 +0100
 @@ -0,0 +1,132 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -3570,9 +3749,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/II2C.h d1/drivers/amlogic/d
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h d1/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h b/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h	2014-12-11 16:13:50.077617717 +0100
 @@ -0,0 +1,134 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -3708,9 +3887,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/II2CRepeater.h d1/drivers/a
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IRx.h d1/drivers/amlogic/dvb_tv/avl6211/include/IRx.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/IRx.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/IRx.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/IRx.h b/drivers/amlogic/dvb_tv/avl6211/include/IRx.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/IRx.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/IRx.h	2014-12-11 16:13:50.041617992 +0100
 @@ -0,0 +1,462 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4174,9 +4353,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/IRx.h d1/drivers/amlogic/dv
 +	#endif
 +
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h d1/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h b/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h	2014-12-11 16:13:50.061617837 +0100
 @@ -0,0 +1,64 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4242,9 +4421,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ITuner.h d1/drivers/amlogic
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h d1/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h	2014-11-22 12:01:11.375372110 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h b/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h	2014-12-11 16:13:50.141617225 +0100
 @@ -0,0 +1,61 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4289,27 +4468,27 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/LockSignal_Api.h d1/drivers
 +    };
 +
 +    void AVL_DVBSx_Error_Dispose(AVL_DVBSx_ErrorCode r);
-+    AVL_DVBSx_ErrorCode AVL6211_Initialize(struct AVL_DVBSx_Chip * pAVLChip,struct AVL_Tuner * pTuner);
-+    AVL_DVBSx_ErrorCode AVL6211_LockSignal_Init(void);
++    AVL_DVBSx_ErrorCode AVL6211_Initialize(struct AVL_DVBSx_Chip * pAVLChip,struct AVL_Tuner * pTuner,int iDeviceIndex);
++    AVL_DVBSx_ErrorCode AVL6211_LockSignal_Init(int iDeviceId);
 +   AVL_DVBSx_ErrorCode CPU_Halt(struct AVL_DVBSx_Chip * pAVLChip);
-+   void AVL_Set_LPF(struct AVL_Tuner * pTuner, AVL_uint32 m_uiSymbolRate_Hz);
++   void AVL_Set_LPF(int iDeviceId,struct AVL_Tuner * pTuner, AVL_uint32 m_uiSymbolRate_Hz);
 +	int AVL_Get_Quality_Percent(struct AVL_DVBSx_Chip * pAVLChip);	
 +	AVL_int16 AVL_Get_Level_Percent(struct AVL_DVBSx_Chip * pAVLChip);
 +   
-+	AVL_uint32 AVL6211_GETBer(void);
-+	AVL_uint32 AVL6211_GETPer(void);
-+	AVL_uint32 AVL6211_GETSnr(void);
-+	AVL_uint32 AVL6211_GETSignalLevel(void);
-+	AVL_uint32 AVL6211_GETLockStatus(void);
++	AVL_uint32 AVL6211_GETBer(int iDeviceId);
++	AVL_uint32 AVL6211_GETPer(int iDeviceId);
++	AVL_uint32 AVL6211_GETSnr(int iDeviceId);
++	AVL_uint32 AVL6211_GETSignalLevel(int iDeviceId);
++	AVL_uint32 AVL6211_GETLockStatus(int iDeviceId);
 +
 +	
 +	#ifdef AVL_CPLUSPLUS
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h d1/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h b/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h	2014-12-11 16:13:50.161617073 +0100
 @@ -0,0 +1,59 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4370,9 +4549,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/SharpBS2S7HZ6306.h d1/drive
 +}
 +	#endif
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h d1/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h
---- c1/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h	2014-11-22 12:01:11.379372076 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h b/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h
+--- a/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h	2014-12-11 16:13:50.141617225 +0100
 @@ -0,0 +1,304 @@
 +const unsigned char ucPatchData [] = 
 +{
@@ -4678,9 +4857,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/include/ucPatchData.h d1/drivers/am
 +
 +};
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/Kconfig d1/drivers/amlogic/dvb_tv/avl6211/Kconfig
---- c1/drivers/amlogic/dvb_tv/avl6211/Kconfig	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/Kconfig	2014-11-22 12:01:11.431371618 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/Kconfig b/drivers/amlogic/dvb_tv/avl6211/Kconfig
+--- a/drivers/amlogic/dvb_tv/avl6211/Kconfig	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/Kconfig	2014-12-11 16:13:50.473614685 +0100
 @@ -0,0 +1,21 @@
 +#
 +# Avl6211 driver configuration
@@ -4703,9 +4882,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/Kconfig d1/drivers/amlogic/dvb_tv/a
 +
 +endif
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/Makefile d1/drivers/amlogic/dvb_tv/avl6211/Makefile
---- c1/drivers/amlogic/dvb_tv/avl6211/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/Makefile	2014-11-22 12:35:41.897404953 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/Makefile b/drivers/amlogic/dvb_tv/avl6211/Makefile
+--- a/drivers/amlogic/dvb_tv/avl6211/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/Makefile	2014-12-11 16:13:49.913618978 +0100
 @@ -0,0 +1,17 @@
 +obj-$(CONFIG_AM_AVL6211) += avl6211_fe.o
 +
@@ -4724,9 +4903,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/Makefile d1/drivers/amlogic/dvb_tv/
 +EXTRA_CFLAGS += -Idrivers/amlogic/dvb_tv/avl6211/include
 +EXTRA_CFLAGS += -Idrivers/amlogic/dvb_tv/avl6211
 +EXTRA_CFLAGS += -Idrivers/amlogic/dvb_tv/avl6211/AV2011
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/avl.c d1/drivers/amlogic/dvb_tv/avl6211/src/avl.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/avl.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/avl.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/avl.c b/drivers/amlogic/dvb_tv/avl6211/src/avl.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/avl.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/avl.c	2014-12-11 16:13:50.325615817 +0100
 @@ -0,0 +1,162 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4890,9 +5069,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/avl.c d1/drivers/amlogic/dvb_tv
 +}
 +#endif
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c d1/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c b/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c	2014-12-11 16:13:50.473614685 +0100
 @@ -0,0 +1,32 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -4926,9 +5105,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/avl_dvbsx.c d1/drivers/amlogic/
 +	r |= AVL_DVBSx_II2C_Initialize(); // there is a internal protection to assure it will be initialized only once.
 +	return (r);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp d1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp
---- c1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp b/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp
+--- a/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp	2014-12-11 16:13:50.377615419 +0100
 @@ -0,0 +1,610 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -5063,7 +5242,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp d1/drivers
 +			&ExtSharpBS2S7HZ6306_Lock,
 +	},
 +	{
-+			0,
++			1,
 +			AVL_DVBSx_SA_0,
 +			Ref_clock_10M,
 +			AVL_DVBSx_MPM_Parallel,
@@ -5540,9 +5719,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/BlindScan_source.cpp d1/drivers
 +	return (r);
 +
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c d1/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c b/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c	2014-12-11 16:13:50.437614960 +0100
 @@ -0,0 +1,452 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -5996,9 +6175,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/DiSEqC_source.c d1/drivers/amlo
 +	return (r);
 +}
 +#endif
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c d1/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c b/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c	2014-12-11 16:13:50.393615298 +0100
 @@ -0,0 +1,319 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -6319,9 +6498,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/ExtSharpBS2S7HZ6306.c d1/driver
 +	}
 +	return AVL_DVBSx_EC_OK;
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBase.c d1/drivers/amlogic/dvb_tv/avl6211/src/IBase.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IBase.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IBase.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IBase.c b/drivers/amlogic/dvb_tv/avl6211/src/IBase.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IBase.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IBase.c	2014-12-11 16:13:50.457614809 +0100
 @@ -0,0 +1,335 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -6658,10 +6837,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBase.c d1/drivers/amlogic/dvb_
 +
 +	return(r);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c d1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c	2014-11-22 12:01:11.403371866 +0100
-@@ -0,0 +1,233 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c b/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c	2014-12-11 16:13:50.289616089 +0100
+@@ -0,0 +1,237 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
 + *
@@ -6798,7 +6977,11 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c d1/drivers/amlo
 +
 +		r |= AVL_DVBSx_IBase_SetFunctionalMode(pAVLChip,AVL_DVBSx_FunctMode_Demod);
 +	}
-+	if( r != AVL_DVBSx_EC_OK)
++	if( r != AVL_DVBSx_EC_OK
++#if defined(CONFIG_MACH_MESON6_G18_TH7)
++	 || pbsInfo->m_uiResultCode > 0
++#endif
++	 )
 +		return AVL_DVBSx_EC_GeneralFail;
 +
 +	if(100 == pbsInfo->m_uiProgress)
@@ -6895,9 +7078,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindscanAPI.c d1/drivers/amlo
 +	return pBSsetting->m_uiScan_Progress_Per;
 +}
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c d1/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c b/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c	2014-12-11 16:13:50.457614809 +0100
 @@ -0,0 +1,163 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -7062,9 +7245,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBlindScan.c d1/drivers/amlogic
 +	return(r);
 +}
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c b/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c	2014-12-11 16:13:50.473614685 +0100
 @@ -0,0 +1,234 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -7126,8 +7309,8 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +
 +const AVL_uint16 pll_array_size = sizeof(pll_conf)/sizeof(struct AVL_DVBSx_PllConf);
 +
-+static AVL_int32 I2CWrite(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length);
-+static AVL_int32  I2CRead(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length);
++AVL_int32 I2CWrite(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length, int iDeviceID);
++AVL_int32  I2CRead(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length, int iDeviceID);
 +
 +AVL_DVBSx_ErrorCode AVL_DVBSx_IBSP_Initialize(void)
 +{
@@ -7153,7 +7336,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +	I2CSlaveAddr=pAVLChip->m_SlaveAddr;
 +	data = pucBuff;
 +	length = *puiSize;
-+	if(I2CRead(I2CSlaveAddr,data, length)==0)
++	if(I2CRead(I2CSlaveAddr,data, length,pAVLChip->m_uiBusId)==0)
 +		return AVL_DVBSx_EC_I2CFail;
 +	//printk("data is %x,%x\n",data[0],data[1]);
 +	return(AVL_DVBSx_EC_OK);
@@ -7166,7 +7349,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +	I2CSlaveAddr=pAVLChip->m_SlaveAddr;
 +	data = pucBuff;
 +	length = *puiSize;
-+	if(I2CWrite(I2CSlaveAddr,data, length)==0)
++	if(I2CWrite(I2CSlaveAddr,data, length,pAVLChip->m_uiBusId)==0)
 +		return AVL_DVBSx_EC_I2CFail;
 +	return(AVL_DVBSx_EC_OK);
 +}
@@ -7191,10 +7374,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +}
 +
 +
-+extern struct aml_fe_dev * avl6211_get_cur_dev(void);
++extern struct aml_fe_dev * avl6211_get_cur_dev(int iDeviceId);
 +
 +
-+static AVL_int32 I2CWrite(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length)
++ AVL_int32 I2CWrite(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length,int iDeviceId)
 + {
 +//	printk("\n[I2CWrite] enter I2CSlaveAddr is %x,length is %d,data is %x, %x,%x\n",I2CSlaveAddr,length,data[0],data[1],data[2]);
 +//	printk("I2CSlaveAddr is %d\n",I2CSlaveAddr);
@@ -7242,7 +7425,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +	cfg->tuner_addr=0;
 +	cfg->i2c_id=0;
 +	cfg->reset_pin=0;*/
-+	struct aml_fe_dev *dev = avl6211_get_cur_dev();
++	struct aml_fe_dev *dev = avl6211_get_cur_dev(iDeviceId);
 +	/*i2c_handle = i2c_get_adapter(i2c_id,i2c_handle);
 +	if (!i2c_handle) {
 +		printk("cannot get i2c adaptor\n");
@@ -7260,7 +7443,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +      return 1;
 + }
 + 
-+static AVL_int32  I2CRead(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length)
++ AVL_int32  I2CRead(AVL_uchar I2CSlaveAddr, AVL_uchar *data, AVL_int32 length,int iDeviceId)
 + {
 +     /* I2C read, please port this function*/
 +	//	printk("I2CSlaveAddr is %d,length is %d\n",I2CSlaveAddr,length);
@@ -7282,7 +7465,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +		 msg[0].buf = data;
 +
 +
-+		struct aml_fe_dev *dev = avl6211_get_cur_dev();
++		struct aml_fe_dev *dev = avl6211_get_cur_dev(iDeviceId);
 +	//	printk("\n[I2CRead] get i2c_adapter");
 +	/*	i2c_handle = i2c_get_adapter(i2c_id);
 +		if (!i2c_handle) {
@@ -7300,9 +7483,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IBSP.c d1/drivers/amlogic/dvb_t
 +        return 1;
 + }
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c d1/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c b/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c	2014-12-11 16:13:50.393615298 +0100
 @@ -0,0 +1,478 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -7782,10 +7965,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IDiseqc.c d1/drivers/amlogic/dv
 +	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(pAVLChip->m_semDiseqc));
 +	return(r);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c	2014-11-22 12:01:11.403371866 +0100
-@@ -0,0 +1,257 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/II2C.c b/drivers/amlogic/dvb_tv/avl6211/src/II2C.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/II2C.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/II2C.c	2014-12-11 16:13:50.289616089 +0100
+@@ -0,0 +1,258 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
 + *
@@ -7804,7 +7987,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +#include "IBSP.h"
 +
 +/// @cond
-+AVL_semaphore gI2CSem;
++AVL_semaphore gI2CSem[2];
 +/// @endcond
 +
 +AVL_DVBSx_ErrorCode AVL_DVBSx_II2C_Initialize(void)
@@ -7814,7 +7997,8 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +	if( 0 == gI2CSem_inited )
 +	{
 +		gI2CSem_inited = 1;
-+		r = AVL_DVBSx_IBSP_InitSemaphore(&gI2CSem);
++		r = AVL_DVBSx_IBSP_InitSemaphore(&(gI2CSem[0]));
++		r = AVL_DVBSx_IBSP_InitSemaphore(&(gI2CSem[1]));
 +	}
 +	return r;
 +}
@@ -7826,7 +8010,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +	AVL_uint16 ui1, ui2;
 +	AVL_uint16 iSize;
 +
-+	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem));
++	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +	if( AVL_DVBSx_EC_OK == r )
 +	{
 +		ChunkAddr(uiOffset, pucBuffTemp);
@@ -7864,7 +8048,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +			}
 +		}
 +	}
-+	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem)); 
++	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +	return(r);
 +}
 +
@@ -7874,7 +8058,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +	AVL_uchar pucBuffTemp[3];
 +	AVL_uint16 ui1, ui2;
 +	AVL_uint16 iSize;
-+	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem));
++	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +	if( AVL_DVBSx_EC_OK == r )
 +	{
 +		if( uiSize & 1 )
@@ -7906,7 +8090,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +			pucBuff[uiSize-1] = pucBuffTemp[0];
 +		}
 +	}
-+	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem)); 
++	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +	return(r);
 +}
 +
@@ -7923,7 +8107,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +	}
 +
 +	uiSize -= 3;			//actual data size
-+	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem));
++	r = AVL_DVBSx_IBSP_WaitSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +	if( AVL_DVBSx_EC_OK == r )
 +	{
 +		//dump address
@@ -7988,7 +8172,7 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +			r |= AVL_DVBSx_IBSP_I2CWrite(pAVLChip, pucBuffTemp, &ui1);
 +		}
 +	}
-+	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem)); 
++	r |= AVL_DVBSx_IBSP_ReleaseSemaphore(&(gI2CSem[pAVLChip->m_uiBusId]));
 +
 +	return(r);
 +}
@@ -8043,9 +8227,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2C.c d1/drivers/amlogic/dvb_t
 +	r = AVL_DVBSx_II2C_Write(pAVLChip, pBuff, 7);
 +	return(r);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c d1/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c	2014-11-22 12:01:11.391371970 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c b/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c	2014-12-11 16:13:50.213616675 +0100
 @@ -0,0 +1,187 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -8234,9 +8418,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/II2CRepeater.c d1/drivers/amlog
 +	return(AVL_DVBSx_II2CRepeater_SendOP(pBuff, (AVL_uchar)(cmdSize+3), pAVLChip));
 +}
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IRx.c d1/drivers/amlogic/dvb_tv/avl6211/src/IRx.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/IRx.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/IRx.c	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/IRx.c b/drivers/amlogic/dvb_tv/avl6211/src/IRx.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/IRx.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/IRx.c	2014-12-11 16:13:50.429615023 +0100
 @@ -0,0 +1,584 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -8822,9 +9006,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/IRx.c d1/drivers/amlogic/dvb_tv
 +
 +	return(r);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c d1/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c	2014-11-22 12:01:11.399371901 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c b/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c	2014-12-11 16:13:50.245616432 +0100
 @@ -0,0 +1,27 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -8853,10 +9037,10 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/ITuner.c d1/drivers/amlogic/dvb
 +	pTuner->m_uiLPF_100kHz = (AVL_uint16)lpf;
 +	return(AVL_DVBSx_EC_OK);
 +}
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c
---- c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c	2014-11-22 12:01:11.399371901 +0100
-@@ -0,0 +1,693 @@
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c b/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c
+--- a/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c	2014-12-11 16:13:50.289616089 +0100
+@@ -0,0 +1,704 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
 + *
@@ -9016,13 +9200,17 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +			440,
 +			InputSymbolRate,
 +			AVL_DVBSx_RA_Invert,
++			#if defined(CONFIG_AVLINK_SPECTRUM_INVERT)
++			AVL_DVBSx_Spectrum_Invert,
++			#else
 +			AVL_DVBSx_Spectrum_Normal,
++			#endif
 +			&AVL_DVBSx_ExtAV2011_Initialize,
 +			&AVL_DVBSx_ExtAV2011_GetLockStatus,
 +			&AVL_DVBSx_ExtAV2011_Lock,
 +	},
 +	{
-+			0,
++			1,
 +			AVL_DVBSx_SA_0,
 +			Ref_clock_27M,
 +			AVL_DVBSx_MPM_Parallel,
@@ -9035,7 +9223,11 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +			440,
 +			InputSymbolRate,
 +			AVL_DVBSx_RA_Invert,
++			#if defined(CONFIG_AVLINK_SPECTRUM_INVERT)
++			AVL_DVBSx_Spectrum_Invert,
++			#else
 +			AVL_DVBSx_Spectrum_Normal,
++			#endif
 +			&AVL_DVBSx_ExtAV2011_Initialize,
 +			&AVL_DVBSx_ExtAV2011_GetLockStatus,
 +			&AVL_DVBSx_ExtAV2011_Lock,
@@ -9224,9 +9416,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +	return (r);
 +}
 +
-+void AVL_Set_LPF(struct AVL_Tuner * pTuner, AVL_uint32 m_uiSymbolRate_Hz)
++void AVL_Set_LPF(int iDeviceId ,struct AVL_Tuner * pTuner, AVL_uint32 m_uiSymbolRate_Hz)
 +{	
-+	struct AVL_Demod_Tuner_Configuration_t *pDemodTunerConfig = &g_DemodTuner_Config[g_nDemodTunerArrayIndex];
++	struct AVL_Demod_Tuner_Configuration_t *pDemodTunerConfig = &g_DemodTuner_Config[iDeviceId];
 +
 +	if (pDemodTunerConfig->m_LPF_Config_flag == InputSymbolRate)
 +	{
@@ -9244,12 +9436,12 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+AVL_DVBSx_ErrorCode AVL6211_Initialize(struct AVL_DVBSx_Chip * pAVLChip,struct AVL_Tuner * pTuner)
++AVL_DVBSx_ErrorCode AVL6211_Initialize(struct AVL_DVBSx_Chip * pAVLChip,struct AVL_Tuner * pTuner,int iDeviceIndex)
 +{
 +    struct AVL_DVBSx_Diseqc_Para sDiseqcPara;
 +	struct AVL_DVBSx_MpegInfo sMpegMode;
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
-+	struct AVL_Demod_Tuner_Configuration_t *pDemodTunerConfig = &g_DemodTuner_Config[g_nDemodTunerArrayIndex];
++	struct AVL_Demod_Tuner_Configuration_t *pDemodTunerConfig = &g_DemodTuner_Config[iDeviceIndex];
 +	struct AVL_DVBSx_VerInfo VerInfo;
 +	//AVL_uint32 uiTemp;
 +	AVL_uint32 uiDeviceID=0;
@@ -9266,7 +9458,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +#endif
 +
 +	pAVLChip->m_uiBusId=pDemodTunerConfig->m_ChannelId;
-+
++	//pAVLChip->m_uiDeviceId = iDeviceIndex;
++	printk(" (AVL6211_Initialize), iDeviceIndex = %d ,pAVLChip->m_uiBusId = %d \n",iDeviceIndex,pAVLChip->m_uiBusId);
++	
 +    // This function should be called after bsp initialized to initialize the chip object.
 +    r = Init_AVL_DVBSx_ChipObject(pAVLChip, pDemodTunerConfig->m_uiDemodAddress);	
 +	if( AVL_DVBSx_EC_OK != r ) 
@@ -9326,7 +9520,6 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +		printf("Demod Initialization failed !\n");
 +		return (r);
 +	}
-+	
 +	//This function should be called after demod initialized to set RF AGC polar.
 +	//User does not need to setup this for Sharp tuner since it is the default value. But for other tuners, user may need to do it here.
 +    r |= AVL_DVBSx_IRx_SetRFAGCPola(pDemodTunerConfig->m_TunerRFAGC, pAVLChip);
@@ -9402,21 +9595,23 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+struct AVL_Tuner *avl6211pTuner;
-+struct AVL_DVBSx_Chip * pAVLChip_all;
++struct AVL_Tuner *avl6211pTuner[FE_DEV_COUNT];
++struct AVL_DVBSx_Chip * pAVLChip_all[FE_DEV_COUNT];
 +
 +
 +
-+AVL_DVBSx_ErrorCode AVL6211_LockSignal_Init(void)
++AVL_DVBSx_ErrorCode AVL6211_LockSignal_Init(int iFeId)
 +{
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iFeId;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	struct AVL_Tuner * pTuner = &g_stTuner[HandIndex];
-+	avl6211pTuner=pTuner;
++	avl6211pTuner[iFeId]=pTuner;
++//	printk(" johnnyDebug,(AVL6211_LockSignal_Init,start), iFeId = %d pAVLChip_all[iFeId]->m_uiDeviceId = %d,\n",iFeId);
 +    //This function do all the initialization work.It should be called only once at the beginning.It needn't be recalled when we want to lock a new channel.
-+	r = AVL6211_Initialize(pAVLChip,pTuner);
-+	pAVLChip_all=pAVLChip;
++	r = AVL6211_Initialize(pAVLChip,pTuner,iFeId);
++	pAVLChip_all[iFeId]=pAVLChip;
++	printk(" (AVL6211_LockSignal_Init,end), iFeId = %d ,pAVLChip_all[iFeId]->m_uiDeviceId = %d\n",iFeId,pAVLChip_all[iFeId]->m_uiBusId);
 +	if(AVL_DVBSx_EC_OK != r)
 +	{
 +		printf("Initialization failed !\n");
@@ -9428,9 +9623,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +
 +
 +
-+AVL_uint32 AVL6211_GETLockStatus(void)
++AVL_uint32 AVL6211_GETLockStatus(int iDeviceId)
 +{
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iDeviceId;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uint16 uiLockStatus;
@@ -9444,9 +9639,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+AVL_uint32 AVL6211_GETBer(void)
++AVL_uint32 AVL6211_GETBer(int iDeviceId)
 +{
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iDeviceId;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uint32 uiBER;
@@ -9465,9 +9660,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+AVL_uint32 AVL6211_GETPer(void)
++AVL_uint32 AVL6211_GETPer(int iDeviceId)
 +{
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iDeviceId;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uint32 uiPER;
@@ -9487,9 +9682,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+AVL_uint32 AVL6211_GETSnr(void)
++AVL_uint32 AVL6211_GETSnr(int iDeviceId)
 +{
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iDeviceId;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
 +	AVL_uint32 uiSNR;
@@ -9508,9 +9703,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +}
 +
 +
-+AVL_uint32 AVL6211_GETSignalLevel(void)
++AVL_uint32 AVL6211_GETSignalLevel(int iDeviceId)
 +{
-+	AVL_uchar HandIndex = 0;
++	AVL_uchar HandIndex = iDeviceId;
 +	AVL_uint16 i;
 +	struct AVL_DVBSx_Chip * pAVLChip = &g_stAvlDVBSxChip[HandIndex];
 +	AVL_DVBSx_ErrorCode r = AVL_DVBSx_EC_OK;
@@ -9550,9 +9745,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/LockSignal_Api.c d1/drivers/aml
 +
 +
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp d1/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp
---- c1/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ d1/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp	2014-11-22 12:01:11.403371866 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp b/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp
+--- a/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp	2014-12-11 16:13:50.429615023 +0100
 @@ -0,0 +1,31 @@
 +/*
 + *           Copyright 2012 Availink, Inc.
@@ -9585,9 +9780,9 @@ diff -Naur c1/drivers/amlogic/dvb_tv/avl6211/src/SignalLevel.cpp d1/drivers/amlo
 +
 +
 +
-diff -Naur c1/drivers/amlogic/dvb_tv/Makefile d1/drivers/amlogic/dvb_tv/Makefile
---- c1/drivers/amlogic/dvb_tv/Makefile	2014-11-22 11:59:26.936282993 +0100
-+++ d1/drivers/amlogic/dvb_tv/Makefile	2014-11-22 11:59:30.812249179 +0100
+diff -Naur a/drivers/amlogic/dvb_tv/Makefile b/drivers/amlogic/dvb_tv/Makefile
+--- a/drivers/amlogic/dvb_tv/Makefile	2014-12-11 15:40:00.089007476 +0100
++++ b/drivers/amlogic/dvb_tv/Makefile	2014-12-11 15:56:35.209504705 +0100
 @@ -12,10 +12,7 @@
  
  obj-$(CONFIG_AM_M6_DEMOD) += amldemod/
@@ -9601,4 +9796,3 @@ diff -Naur c1/drivers/amlogic/dvb_tv/Makefile d1/drivers/amlogic/dvb_tv/Makefile
  
 +EXTRA_CFLAGS += -Idrivers/media/dvb-core
  EXTRA_CFLAGS += -I.
- 

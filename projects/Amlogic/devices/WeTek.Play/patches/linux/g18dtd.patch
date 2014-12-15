@@ -1,6 +1,6 @@
-diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g18.dtd linux-amlogic-3.10.33-9eb2bde/arch/arm/boot/dts/amlogic/meson6_g18.dtd
---- linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-11-08 14:50:10.000000000 +0300
-+++ linux-amlogic-3.10.33-9eb2bde/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-11-15 12:37:49.739036400 +0300
+diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogic/meson6_g18.dtd
+--- a/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-12-11 15:25:42.771688733 +0100
++++ b/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-12-11 15:30:01.493678109 +0100
 @@ -1,761 +1,751 @@
 -/*
 - * Amlogic-MX SKT Device Tree Source
@@ -1556,7 +1556,7 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
  			partition = <&nand_partitions>;
  			rb_detect = <1>;
  		};
-@@ -856,547 +823,547 @@
+@@ -856,547 +823,578 @@
  				offset=<0x0 0x4a800000>;
  				size=<0x0 0x20000000>;
  			};
@@ -2578,9 +2578,8 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +//$$ L2 PROP_U32 8 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 12 = "amlogic,pins"
 +		dvb_p_ts2_pins: dvb_p_ts2_pins {
-+		amlogic,setmask = <3 0xfc0>;
-+			amlogic,clrmask = <0 0xf
-+								5 0xff00>;
++			amlogic,setmask = <3 0xfff>;
++			amlogic,clrmask = <0 0xf 5 0xff00>;
 +			amlogic,pins = "GPIOB_0","GPIOB_1","GPIOB_2","GPIOB_3","GPIOB_4","GPIOB_5","GPIOB_6","GPIOB_7","GPIOB_8","GPIOB_9","GPIOB_10","GPIOB_11";
 +		};
 +
@@ -2589,10 +2588,29 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +//$$ L2 PROP_U32 6 = "amlogic,clrmask"
 +//$$ L2 PROP_STR 5 = "amlogic,pins"
 +		dvb_s_ts2_pins: dvb_s_ts2_pins {
-+			amlogic,setmask = <3 0xfc0>;
-+			amlogic,clrmask = <0 0xf
-+								5 0xff00>;
++			amlogic,setmask = <3 0xfff>;
++			amlogic,clrmask = <0 0xf 5 0xff00>;
 +			amlogic,pins = "GPIOB_0","GPIOB_1","GPIOB_2","GPIOB_3","GPIOB_4","GPIOB_5","GPIOB_6","GPIOB_7","GPIOB_8","GPIOB_9","GPIOB_10","GPIOB_11";
++		};
++
++//$$ MATCH "dvb_p_ts0_pins_match" = "&dvb_p_ts0_pins"
++//$$ L2 PROP_U32 2 = "amlogic,setmask"
++//$$ L2 PROP_U32 8 = "amlogic,clrmask"
++//$$ L2 PROP_STR 12 = "amlogic,pins"
++		dvb_p_ts0_pins: dvb_p_ts0_pins {
++			amlogic,setmask = <3 0xfff>;
++			amlogic,clrmask = <0 0x40 6 0xf80000>;
++			amlogic,pins = "GPIOA_0","GPIOA_1","GPIOA_2","GPIOA_3","GPIOA_4","GPIOA_5","GPIOA_6","GPIOA_7","GPIOA_8","GPIOA_9","GPIOA_10","GPIOA_11";
++		};
++
++//$$ MATCH "dvb_s_ts0_pins_match" = "&dvb_s_ts0_pins"
++//$$ L2 PROP_U32 2 = "amlogic,setmask"
++//$$ L2 PROP_U32 6 = "amlogic,clrmask"
++//$$ L2 PROP_STR 5 = "amlogic,pins"
++		dvb_s_ts0_pins: dvb_s_ts0_pins {
++			amlogic,setmask = <3 0xfff>;
++			amlogic,clrmask = <0 0x40 6 0xF80000>;
++			amlogic,pins = "GPIOA_0","GPIOA_1","GPIOA_2","GPIOA_3","GPIOA_4","GPIOA_5","GPIOA_6","GPIOA_7","GPIOA_8","GPIOA_9","GPIOA_10","GPIOA_11";
 +		};
 +	};
 +/// ***************************************************************************************
@@ -2612,9 +2630,15 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +		ts2 = "parallel";
 +		ts2_control = <0>;
 +		ts2_invert = <0>;
-+		pinctrl-names = "p_ts2", "s_ts2";
-+		pinctrl-0 = <&dvb_p_ts2_pins>;
-+		pinctrl-1 = <&dvb_s_ts2_pins>;
++		ts0 = "parallel";
++		ts0_control = <0>;
++		ts0_invert = <0>;
++		pinctrl-names = "p_ts0", "s_ts0","p_ts2", "s_ts2";
++		pinctrl-0 = <&dvb_p_ts0_pins>;
++		pinctrl-1 = <&dvb_s_ts0_pins>;
++		pinctrl-2 = <&dvb_p_ts2_pins>;
++		pinctrl-3 = <&dvb_s_ts2_pins>;
++
 +	};
 +
 +//$$ DEVICE="dvbfe"
@@ -2630,7 +2654,7 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +//$$ L2 PROP_CHOICE "dvb_fe_pins_match" = "pinctrl-0"
 +	dvbfe{
 +		compatible = "amlogic,dvbfe";
-+		dtv_demod0 = "Avl6211";
++		dtv_demod0 = "Avl6211_0";
 +		dtv_demod0_i2c_adap_id = <1>;
 +		dtv_demod0_i2c_addr = <0xC0>;
 +		dtv_demod0_reset_value = <0>;
@@ -2638,7 +2662,14 @@ diff -Nru linux-amlogic-3.10.33-9eb2bde.orig/arch/arm/boot/dts/amlogic/meson6_g1
 +		fe0_dtv_demod = <0>;
 +		fe0_ts = <2>;
 +		fe0_dev = <0>;
-+
++		dtv_demod1 = "Avl6211_1";
++		dtv_demod1_i2c_adap_id = <2>;
++		dtv_demod1_i2c_addr = <0xC0>;
++		dtv_demod1_reset_value = <0>;
++		dtv_demod1_reset_gpio = "GPIOD_8";
++		fe1_dtv_demod = <1>;
++		fe1_ts = <0>;
++		fe1_dev = <1>;
 +	};
 +}; /* end of / */
 +
