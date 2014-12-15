@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="14-f4576be"
+PKG_VERSION="14-88f9fb0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -269,9 +269,8 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
     KODI_CXXFLAGS="$KODI_CXXFLAGS $BCM2835_INCLUDES"
   elif [ "$KODIPLAYER_DRIVER" = libfslvpuwrap ]; then
     KODI_CODEC="--enable-codec=imxvpu"
-  elif [ "$KODIPLAYER_DRIVER" = libamplayer ]; then
+  elif [ "$KODIPLAYER_DRIVER" = libamcodec ]; then
     KODI_CODEC="--enable-codec=amcodec"
-    KODI_NEON="--enable-neon"
   else
     KODI_OPENMAX="--disable-openmax"
   fi
@@ -349,7 +348,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $KODI_WEBSERVER \
                            $KODI_OPTICAL \
                            $KODI_BLURAY \
-                           $KODI_NEON \
                            --enable-texturepacker \
                            --with-ffmpeg=shared \
                            $KODI_CODEC \
@@ -402,6 +400,7 @@ make_target() {
 
 # setup default skin inside the sources
   sed -i -e "s|skin.confluence|$SKIN_DIR|g" $ROOT/$PKG_BUILD/xbmc/settings/Settings.h
+  sed -i -e "s|skin.confluence|$SKIN_DIR|g" $ROOT/$PKG_BUILD/system/settings/settings.xml
 
   make externals
   make kodi.bin

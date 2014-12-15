@@ -16,32 +16,35 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="kodi-pvr-addons"
-PKG_VERSION="9f63d1b"
+PKG_NAME="libamcodec"
+PKG_VERSION="75f23da"
 PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/opdenkamp/xbmc-pvr-addons"
+PKG_ARCH="arm"
+PKG_LICENSE="other"
+PKG_SITE="http://openlinux.amlogic.com"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain curl kodi"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="mediacenter"
-PKG_SHORTDESC="Various PVR addons for Kodi"
-PKG_LONGDESC="This addons allows Kodi PVR to connect to various TV/PVR backends and tuners."
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="libamcodec: Interface library for Amlogic media codecs"
+PKG_LONGDESC="libamplayer: Interface library for Amlogic media codecs"
+
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
 
-if [ "$KODI_MYSQL_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mysql"
-  PVRADDONS_MYSQL="--enable-mysql"
-else
-  PVRADDONS_MYSQL="--disable-mysql"
-fi
+make_target() {
+  make -C amavutils CC="$CC" PREFIX="$SYSROOT_PREFIX/usr"
+  mkdir -p $SYSROOT_PREFIX/usr/lib
+  cp -PR amavutils/*.so $SYSROOT_PREFIX/usr/lib
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-addons-with-dependencies $PVRADDONS_MYSQL"
+  make -C amadec CC="$CC" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="$TARGET_PREFIX" install
+  make -C amcodec CC="$CC" HEADERS_DIR="$SYSROOT_PREFIX/usr/include/amcodec" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="$TARGET_PREFIX" install
+}
 
-post_makeinstall_target() {
-  if [ "$DEBUG" != yes ]; then
-    $STRIP $INSTALL/usr/lib/kodi/addons/pvr.*/*.pvr
-  fi
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib
+  cp -PR amavutils/*.so $INSTALL/usr/lib
+
+  make -C amadec PREFIX="$INSTALL/usr" install
+  make -C amcodec HEADERS_DIR="$INSTALL/usr/include/amcodec" PREFIX="$INSTALL/usr" install
 }
