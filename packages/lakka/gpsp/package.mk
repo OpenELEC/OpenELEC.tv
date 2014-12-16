@@ -35,6 +35,15 @@ PKG_LONGDESC="gameplaySP is a Gameboy Advance emulator for Playstation Portable"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  if [ "$ARCH" == "arm" ]; then
+    sed -i -e "s/CC = gcc//" Makefile
+    make platform=armv
+  else
+    make
+  fi  
+}
+
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp gpsp_libretro.so $INSTALL/usr/lib/libretro/
