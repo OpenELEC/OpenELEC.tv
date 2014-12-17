@@ -1,0 +1,9 @@
+[Unit]
+Description=SoC fan monitor service
+ConditionPathExists=/var/run/system-id-matrix
+
+[Service]
+ExecStart=/usr/bin/soc-fan-monitor
+
+[Install]
+WantedBy=multi-user.target

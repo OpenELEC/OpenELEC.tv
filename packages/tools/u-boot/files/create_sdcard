@@ -47,6 +47,31 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# select target system
+UBOOT_TARGET=""
+PS3='Selected choice: '
+echo "Select target system:"
+options=("SolidRun CuBox-i" "TBS Matrix" "Quit")
+select opt in "${options[@]}"; do
+  case $opt in
+    "SolidRun CuBox-i")
+      UBOOT_TARGET=cuboxi
+      break
+      ;;
+    "TBS Matrix")
+      UBOOT_TARGET=matrix
+      break
+      ;;
+    "Quit")
+      break
+      ;;
+    *)
+      echo invalid option
+      ;;
+  esac
+done
+echo "SD card will be created for $opt system"
+
 DISK="$1"
 case $DISK in
   "/dev/mmcblk"*)
@@ -233,22 +258,43 @@ echo "#########################################################"
   MOUNTPOINT=/tmp/openelec_install
 
 # install u-boot image, u-boot.imx if new u-boot. else SPL
-  echo "installing the bootloader..."
-  if [ -e "3rdparty/bootloader/u-boot.imx" ] ;then
-    dd if=3rdparty/bootloader/u-boot.imx of="$DISK" bs=1k seek=1 conv=fsync
-  elif [ -e "3rdparty/bootloader/SPL" ];then
-    dd if=3rdparty/bootloader/SPL of="$DISK" bs=1k seek=1 conv=fsync
-  else
-     echo "ERROR: no bootloader image found!! please execute in archive folder"
+  # create bootloader configuration
+  echo "creating bootloader configuration..."
+  if [ -f "3rdparty/bootloader/uEnv-$UBOOT_TARGET.txt" ]; then
+    cp 3rdparty/bootloader/uEnv-$UBOOT_TARGET.txt "$MOUNTPOINT/uEnv.txt"
+  elif [ -f "3rdparty/bootloader/uEnv.txt" ]; then
+    cp 3rdparty/bootloader/uEnv.txt "$MOUNTPOINT/uEnv.txt"
+  elif [ -f "3rdparty/bootloader/boot.scr" ]; then
+    cp 3rdparty/bootloader/boot.scr "$MOUNTPOINT"
   fi
 
-# copy files
+  echo "installing u-boot bootloader..."
+  if [ "3rdparty/bootloader/SPL-$UBOOT_TARGET" ]; then
+    dd if="3rdparty/bootloader/SPL-$UBOOT_TARGET" of="$DISK" bs=512 seek=2 conv=notrunc
+  elif [ "3rdparty/bootloader/u-boot-$UBOOT_TARGET.imx" ]; then
+    dd if="3rdparty/bootloader/u-boot-$UBOOT_TARGET.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+  elif [ "3rdparty/bootloader/SPL" ]; then
+    dd if="3rdparty/bootloader/SPL" of="$DISK" bs=512 seek=2 conv=notrunc
+  elif [ "3rdparty/bootloader/u-boot.imx" ]; then
+    dd if="3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+  fi
+
   echo "copying files to $MOUNTPOINT..."
-  cp target/KERNEL $MOUNTPOINT
-  cp target/SYSTEM $MOUNTPOINT
-  cp 3rdparty/bootloader/* $MOUNTPOINT
-  cp openelec.ico $MOUNTPOINT
-  cp README.md $MOUNTPOINT
+  cp openelec.ico "$MOUNTPOINT"
+  cp README.md "$MOUNTPOINT"
+
+  cp target/KERNEL "$MOUNTPOINT"
+  cp target/SYSTEM "$MOUNTPOINT"
+
+  if [ -f "3rdparty/bootloader/u-boot-$UBOOT_TARGET.img" ]; then
+    cp 3rdparty/bootloader/u-boot-$UBOOT_TARGET.img "$MOUNTPOINT/u-boot.img"
+  elif [ -f "3rdparty/bootloader/u-boot.img" ]; then
+    cp 3rdparty/bootloader/u-boot.img "$MOUNTPOINT/u-boot.img"
+  fi
+
+  for dtb in $(ls 3rdparty/bootloader/*.dtb) ; do
+    cp "$dtb" "$MOUNTPOINT"
+  done
 
 # sync disk
   echo "syncing disk..."
@@ -268,3 +314,4 @@ echo "#########################################################"
   fi
 
 echo "...installation finished"
+

@@ -1,0 +1,12 @@
+[Unit]
+Description=Status LED
+After=kodi.service
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/sh -c "/usr/bin/status-led on"
+ExecStop=-/bin/sh -c "/usr/bin/status-led heartbeat"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=kodi.target

@@ -18,17 +18,47 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-if [ -z "$UBOOT_CONFIGFILE" ]; then
-  UBOOT_CONFIGFILE="boot.scr"
+  if [ "$SYSTEM_ID" != "matrix" ]; then
+    echo "Only for TBS Matrix system"
+    exit 0
+  fi
+
+fan_on() {
+  echo 1 > /sys/class/leds/fan/brightness
+}
+
+fan_off() {
+  echo 0 > /sys/class/leds/fan/brightness
+}
+
+soc_temp() {
+  local temp=$(cat /sys/devices/virtual/thermal/thermal_zone0/temp)
+  temp="$(( $temp / 1000 ))"
+  echo "$temp"
+}
+
+if [ -n "$1" -a "$1" = "on" ]; then
+  echo "Turning fan on"
+  fan_on
+elif [ -n "$1" -a "$1" = "off" ]; then
+  echo "Turning fan off"
+  fan_off
+elif [ -n "$1" -a "$1" = "log" ]; then
+  if [ -n "$2" ]; then
+    interval=$2
+  else
+    interval=60
+  fi
+
+  while true; do
+    echo "CPU temp: $(soc_temp) C"
+
+    sleep $interval
+  done
+else
+  echo "Unknown argument - must be on, off or log [interval]."
 fi
 
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp $BUILD/linux-*/arch/arm/boot/dts/*.dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-
+echo "CPU temp: $(soc_temp) C"

@@ -41,7 +41,7 @@
     UBOOT_VERSION="imx6-cuboxi"
 
   # Configuration for u-boot
-    UBOOT_CONFIG="mx6_cubox-i_config"
+    UBOOT_CONFIG="mx6_cubox-i_config matrix"
 
   # Target Configfile for u-boot
     UBOOT_CONFIGFILE=""
@@ -52,6 +52,7 @@
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET="imx6q-cubox-i.dtb imx6dl-cubox-i.dtb"
     KERNEL_UBOOT_EXTRA_TARGET="$KERNEL_UBOOT_EXTRA_TARGET imx6q-hummingboard.dtb imx6dl-hummingboard.dtb"
+    KERNEL_UBOOT_EXTRA_TARGET="$KERNEL_UBOOT_EXTRA_TARGET imx6q-tbs2910.dtb"
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=""
@@ -148,3 +149,9 @@
 
   # build and install 'FishBMC' Visualization (yes / no)
     KODI_VIS_FISHBMC="no"
+
+  # PROJECT related packages
+    PROJECT_PACKAGES_SUPPORT="yes"
+
+  # MfgTool2 for TBS Matrix support
+    MFGTOOL2_TBS_MATRIX_SUPPORT="yes"

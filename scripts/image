@@ -84,7 +84,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   if [ -n "$GIT_HASH" ]; then
     echo "$GIT_HASH" >> $INSTALL/etc/gitrev
   fi
-  
+
 # create /etc/os-release
   echo -e "NAME=\"$DISTRONAME\"" > $INSTALL/etc/os-release
   echo -e "VERSION=\"$OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
@@ -94,7 +94,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   echo -e "HOME_URL=\"http://www.openelec.tv\"" >> $INSTALL/etc/os-release
   echo -e "BUG_REPORT_URL=\"https://github.com/OpenELEC/OpenELEC.tv\"" >> $INSTALL/etc/os-release
   if [ -n "$GIT_HASH" ]; then
-	echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
+    echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
   fi
   echo -e "OPENELEC_ARCH=\"$PROJECT.$TARGET_ARCH\"" >> $INSTALL/etc/os-release
   if [ "$OFFICIAL" = "yes" ]; then
@@ -165,6 +165,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   [ "$TESTING" = "yes" ] && $SCRIPTS/install testing
   [ "$DEVTOOLS" = "yes" ] && $SCRIPTS/install debug
 
+# PROJECT related packages support
+  [ "$PROJECT_PACKAGES_SUPPORT" = "yes" ] && $SCRIPTS/install project-$PROJECT
+
 # OEM packages
   [ "$OEM_SUPPORT" = "yes" ] && $SCRIPTS/install oem
 
@@ -234,13 +237,13 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         rm -rf $TARGET_IMG/$IMAGE_NAME.img.gz
         if [ -n "$BOOTLOADER" ]; then
           if [ -d $ROOT/projects/$PROJECT/packages ]; then
-          	BOOTLOADER_DIR=`find $ROOT/projects/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
+            BOOTLOADER_DIR=`find $ROOT/projects/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
           else
-          	BOOTLOADER_DIR=""
+            BOOTLOADER_DIR=""
           fi
 
           if [ -z "$BOOTLOADER_DIR" -o ! -d "$BOOTLOADER_DIR" ]; then
-          	BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+            BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
           fi
 
           if [ -d "$BOOTLOADER_DIR"/files ]; then
@@ -252,6 +255,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           elif [ -f "$BOOTLOADER_DIR"/release ]; then
             . $BOOTLOADER_DIR/release
           fi
+        fi
+
+      # MfgTool2 for TBS Matrix support
+        if [ "$MFGTOOL2_TBS_MATRIX_SUPPORT" = "yes" ]; then
+          mkdir $RELEASE_DIR/MfgTool2-TBS-Matrix
+          cp -PR $BUILD/mfgtool2-tbs-matrix-*/mfgtool2-tbs-matrix-*/* $RELEASE_DIR/MfgTool2-TBS-Matrix
         fi
 
         cp $ROOT/README* $RELEASE_DIR
@@ -290,8 +299,17 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         if [ "$2" == "efi" ] ; then
           UEFI=yes
         fi
-        echo "mkimage: boo. now root access (sudo) is required..."
-        echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us :)"
+        # default target for image
+        if [ "$PROJECT" = "imx6" ]; then
+          UBOOT_TARGET="cuboxi"
+        else
+          UBOOT_TARGET="undef"
+        fi
+
+        echo ""
+        echo "mkimage: now root access (sudo) is required..."
+        echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us"
+        echo ""
         # variables used in image script must be passed
         sudo env \
           PATH="$PATH" \
@@ -304,7 +322,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           UUID_SYSTEM="$(uuidgen)" \
           UUID_STORAGE="$(uuidgen)" \
           UEFI="$UEFI" \
-          $SCRIPTS/mkimage
+          $SCRIPTS/mkimage $UBOOT_TARGET
       fi
 
     # cleanup release dir

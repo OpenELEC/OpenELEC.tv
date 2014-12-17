@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
@@ -18,17 +16,20 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
-
-if [ -z "$UBOOT_CONFIGFILE" ]; then
-  UBOOT_CONFIGFILE="boot.scr"
+PKG_NAME="project-imx6"
+PKG_VERSION="1.0"
+PKG_REV="1"
+PKG_ARCH="arm"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.openelec.tv/"
+PKG_URL=""
+PKG_DEPENDS_TARGET="status-led soc-fan"
+if [ "$MFGTOOL2_TBS_MATRIX_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mfgtool2-tbs-matrix"
 fi
-
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp $BUILD/linux-*/arch/arm/boot/dts/*.dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-
+PKG_PRIORITY="optional"
+PKG_SECTION="virtual"
+PKG_SHORTDESC="project-imx6: Metapackage"
+PKG_LONGDESC="project-imx6: Metapackage for various imx6 specific packages"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"

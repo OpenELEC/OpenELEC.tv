@@ -1,0 +1,2 @@
+mmcargs=setenv bootargs 'progress debugging console=ttymxc0,115200 boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24,bpp=16 dmfc=3'
+uenvcmd=if test -n $ethaddr; then true; else setenv ethaddr 1E:ED:19:27:1A:B2; fi

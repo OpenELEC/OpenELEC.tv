@@ -18,17 +18,21 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
+. /etc/profile
 
-if [ -z "$UBOOT_CONFIGFILE" ]; then
-  UBOOT_CONFIGFILE="boot.scr"
-fi
-
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp $BUILD/linux-*/arch/arm/boot/dts/*.dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-
+  case "$1" in
+    "on")
+      if [ "$SYSTEM_ID" = "matrix" ]; then
+        echo default-on > /sys/class/leds/red/trigger
+      elif [ "$SYSTEM_ID" = "cuboxi" ]; then
+        echo default-on > /sys/class/leds/imx6\:red\:front/trigger
+      fi
+      ;;
+    "heartbeat")
+      if [ "$SYSTEM_ID" = "matrix" ]; then
+        echo heartbeat > /sys/class/leds/red/trigger
+      elif [ "$SYSTEM_ID" = "cuboxi" ]; then
+        echo heartbeat > /sys/class/leds/imx6\:red\:front/trigger
+      fi
+      ;;
+  esac

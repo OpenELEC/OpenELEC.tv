@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
@@ -18,17 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
+PKG_NAME="mfgtool2-tbs-matrix"
+PKG_VERSION="1.0"
+PKG_REV="1"
+PKG_ARCH="arm"
+PKG_LICENSE="GPL"
+PKG_SITE="http://sourceforge.net/projects/matrixtv/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.zip"
+PKG_SOURCE_DIR="$PKG_NAME"
+PKG_DEPENDS_TARGET=""
+PKG_PRIORITY="optional"
+PKG_SECTION="tools"
+PKG_SHORTDESC="MfgTool2 flash tool"
+PKG_LONGDESC="Freescales manufacturing tool for flashing image to TBS Matrix system"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-if [ -z "$UBOOT_CONFIGFILE" ]; then
-  UBOOT_CONFIGFILE="boot.scr"
-fi
+make_target() {
+  : # nothing to make
+}
 
-mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp $BUILD/linux-*/arch/arm/boot/dts/*.dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || : # ignore
-
+makeinstall_target() {
+  : # install from image script
+}
