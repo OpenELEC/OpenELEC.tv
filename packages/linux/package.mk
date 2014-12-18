@@ -27,7 +27,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.17.6"
+    PKG_VERSION="3.17.7"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -195,7 +195,7 @@ makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" -a -f "arch/arm/boot/dts/*.dtb" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
-      cp $dtb $INSTALL/usr/share/bootloader
+      cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
     done
   fi
 

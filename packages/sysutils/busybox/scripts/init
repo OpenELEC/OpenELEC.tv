@@ -63,6 +63,10 @@
     ./platform_init
   fi
 
+  # clear screen and hide cursor
+  clear
+  echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
   # parse command line arguments
   for arg in $(cat /proc/cmdline); do
     case $arg in
