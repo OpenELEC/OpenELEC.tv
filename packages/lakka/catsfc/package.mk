@@ -35,6 +35,10 @@ PKG_LONGDESC="Super Nintendo/Super Famicom emulator."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  make USE_BLARGG_APU=0 HAVE_GRIFFIN=1
+}
+
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp catsfc_libretro.so $INSTALL/usr/lib/libretro/
