@@ -29,7 +29,7 @@ fi
 [ ! -d "$SOURCES/$1" -o ! -d "$3" ] && exit 1
 
 for i in $PKG_URL; do
-  FILE="`basename $i`"
+  FILE=$(url_toname $i)
 
   case $FILE in
   $2)

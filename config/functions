@@ -100,6 +100,16 @@ tolower(){
   echo "$@" | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz
 }
 
+url_toname() {
+    if [ "${1##*|}" == "$1" ]; then
+        # return "basename $1" if there is no pipe char
+        echo ${1##*/}
+    else
+        # return the name after pipe char otherwise
+        echo ${1##*|}
+    fi
+}
+
 require_eglibc() {
   if [ "$TARGET_LIBC" != eglibc ]; then
     echo "$1 requires eglibc, aborting."
