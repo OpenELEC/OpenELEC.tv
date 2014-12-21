@@ -67,7 +67,7 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +	#address-cells = <1>;
 +	#size-cells = <1>;
 +       chosen {
-+           bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 console=tty0 BOOT_IMAGE=kernel.img console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1200000 quiet";
++           bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 BOOT_IMAGE=kernel.img console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1200000 systemd.show_status=auto";
 +       };
 +
 +/// ***************************************************************************************
