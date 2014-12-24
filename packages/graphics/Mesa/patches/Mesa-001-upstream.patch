@@ -1,0 +1,24 @@
+From eb3441214e993b0e219f02177eef29529b49594f Mon Sep 17 00:00:00 2001
+From: Ben Widawsky <benjamin.widawsky@intel.com>
+Date: Tue, 23 Dec 2014 11:47:14 -0800
+Subject: [PATCH] i965/hsw: Limit max WM threads to physical limit
+
+---
+ src/mesa/drivers/dri/i965/brw_device_info.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_device_info.c b/src/mesa/drivers/dri/i965/brw_device_info.c
+index 65942c2..82e4024 100644
+--- a/src/mesa/drivers/dri/i965/brw_device_info.c
++++ b/src/mesa/drivers/dri/i965/brw_device_info.c
+@@ -156,7 +156,7 @@ static const struct brw_device_info brw_device_info_hsw_gt1 = {
+    GEN7_FEATURES, .is_haswell = true, .gt = 1,
+    .max_vs_threads = 70,
+    .max_gs_threads = 70,
+-   .max_wm_threads = 102,
++   .max_wm_threads = 70,
+    .urb = {
+       .size = 128,
+       .min_vs_entries = 32,
+-- 
+2.2.1
