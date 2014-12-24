@@ -1,0 +1,24 @@
+From 79cc0c15bd67f5bc329d33718c1fb45362d8602c Mon Sep 17 00:00:00 2001
+From: Ben Widawsky <ben@bwidawsk.net>
+Date: Tue, 23 Dec 2014 11:35:10 -0800
+Subject: [PATCH] limit PS to max physical threads
+
+---
+ src/i965_device_info.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index 50bb78d..b4db94d 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -434,7 +434,7 @@ static const struct intel_device_info hsw_gt1_device_info = {
+     .gt = 1,
+ 
+     .urb_size = 4096,
+-    .max_wm_threads = 102,
++    .max_wm_threads = 70,
+ 
+     .is_haswell = 1,
+ };
+-- 
+2.2.1
