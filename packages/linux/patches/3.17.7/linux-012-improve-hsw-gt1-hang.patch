@@ -1,0 +1,66 @@
+From 06ca5f69871464eb098c6fbbbd744799c1eba951 Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Wed, 24 Dec 2014 14:34:46 +0100
+Subject: [PATCH] DRM: Port http://patchwork.freedesktop.org/patch/39363/ to
+ 3.17 by Ben Widawsky <ben@bwidawsk.net>
+
+---
+ drivers/gpu/drm/i915/i915_drv.h | 2 ++
+ drivers/gpu/drm/i915/i915_reg.h | 7 +++++++
+ drivers/gpu/drm/i915/intel_pm.c | 9 +++++++++
+ 3 files changed, 18 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index 3524306..0f8488b 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -2011,6 +2011,8 @@ struct drm_i915_cmd_table {
+ #define IS_HSW_ULT(dev)		(IS_HASWELL(dev) && \
+ 				 ((dev)->pdev->device & 0xFF00) == 0x0A00)
+ #define IS_ULT(dev)		(IS_HSW_ULT(dev) || IS_BDW_ULT(dev))
++#define IS_HSW_GT1(dev)         (IS_HASWELL(dev) && \
++                                ((dev)->pdev->device & 0x00F0) == 0x0)
+ #define IS_HSW_GT3(dev)		(IS_HASWELL(dev) && \
+ 				 ((dev)->pdev->device & 0x00F0) == 0x0020)
+ /* ULX machines are also considered ULT. */
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index df02a15..86fc6ee 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -1110,6 +1110,13 @@ enum punit_power_well {
+ #define RING_DMA_FADD_UDW(base)	((base)+0x60) /* gen8+ */
+ #define RING_INSTPM(base)	((base)+0xc0)
+ #define RING_MI_MODE(base)	((base)+0x9c)
++#define RING_WAIT_FOR_RC6_EXIT(base)	((base)+0xcc)
++#define   RING_RC6_SEL_WRITE_ADDR_MASK		(0x7 << 4)
++#define   RING_RC6_SEL_WRITE_ADDR_MULTICAST	(0x0 << 4)
++#define   RING_RC6_SEL_WRITE_ADDR_UPPER_LEFT	(0x4 << 4)
++#define   RING_RC6_SEL_WRITE_ADDR_UPPER_RIGHT	(0x5 << 4)
++#define   RING_RC6_SEL_WRITE_ADDR_LOWER_LEFT	(0x6 << 4)
++#define   RING_RC6_SEL_WRITE_ADDR_LOWER_RIGHT	(0x7 << 4)
+ #define INSTPS		0x02070 /* 965+ only */
+ #define INSTDONE1	0x0207c /* 965+ only */
+ #define ACTHD_I965	0x02074
+diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
+index 1924b56..d225b38 100644
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -3704,6 +3704,15 @@ static void gen6_enable_rps(struct drm_device *dev)
+ 			DRM_ERROR("Couldn't fix incorrect rc6 voltage\n");
+ 	}
+ 
++	/* HSW GT1: "This field must be always [be] programmed to “100” , this
++	 * is required to address know [sic] HW issue." */
++	if (IS_HSW_GT1(dev)) {
++		for_each_ring(ring, dev_priv, i) {
++			I915_WRITE(RING_WAIT_FOR_RC6_EXIT(ring->mmio_base),
++				   _MASKED_FIELD(RING_RC6_SEL_WRITE_ADDR_MASK,
++						 RING_RC6_SEL_WRITE_ADDR_UPPER_LEFT));
++		}
++	}
+ 	gen6_gt_force_wake_put(dev_priv, FORCEWAKE_ALL);
+ }
+ 
+-- 
+1.9.1
+
