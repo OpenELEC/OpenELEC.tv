@@ -1,0 +1,21 @@
+From 372aab5291dc65789f596cb849925c1f535741d5 Mon Sep 17 00:00:00 2001
+From: Ben Widawsky <benjamin.widawsky@intel.com>
+Date: Thu, 18 Dec 2014 15:24:48 -0800
+Subject: workaround flush
+
+
+diff --git a/src/mesa/drivers/dri/i965/gen7_vs_state.c b/src/mesa/drivers/dri/i965/gen7_vs_state.c
+index 404dd20..de1853a 100644
+--- a/src/mesa/drivers/dri/i965/gen7_vs_state.c
++++ b/src/mesa/drivers/dri/i965/gen7_vs_state.c
+@@ -71,7 +71,7 @@ upload_vs_state(struct brw_context *brw)
+    const int max_threads_shift = brw->is_haswell ?
+       HSW_VS_MAX_THREADS_SHIFT : GEN6_VS_MAX_THREADS_SHIFT;
+ 
+-   if (!brw->is_haswell && !brw->is_baytrail)
++   if (!brw->is_baytrail)
+       gen7_emit_vs_workaround_flush(brw);
+ 
+    if (brw->vs.prog_data->base.base.use_alt_mode)
+-- 
+cgit v0.10.2
