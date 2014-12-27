@@ -39,13 +39,13 @@ if [ "$SAMBA_SUPPORT" = yes ]; then
 fi
 
 if [ "$PROJECT" == "RPi" ]; then
-  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
-  export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
-  export LDFLAGS="$LDFLAGS -lGLESv2"
-elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ] ; then
-  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-mali"
-elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
-  export PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 gpu-viv-bin-mx6q"
+  CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
+elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
+  CFLAGS="$CFLAGS -DLINUX -DEGL_API_FB"
+fi
+
+if [ "$OPENGLES_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
 fi
 
 configure_target() {
@@ -54,7 +54,7 @@ configure_target() {
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-fbo --enable-lakka --enable-freetype --enable-glui
   elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ] ; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype --enable-glui
-  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
+  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-vivante_fbdev --enable-lakka --enable-freetype --enable-glui
   else
     ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype --enable-glui

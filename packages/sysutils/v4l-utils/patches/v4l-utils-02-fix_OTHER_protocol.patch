@@ -1,13 +1,12 @@
-diff --git a/utils/keytable/keytable.c b/utils/keytable/keytable.c
-index 8bcd5c4..e8e67da 100644
---- a/utils/keytable/keytable.c
-+++ b/utils/keytable/keytable.c
-@@ -471,6 +471,8 @@ static error_t parse_opt(int k, char *arg, struct argp_state *state)
- 				ch_proto |= LIRC;
- 			else if (!strcasecmp(p,"rc-5-sz"))
+diff -Naur v4l-utils-1.6.0/utils/keytable/keytable.c v4l-utils-1.6.0.patch/utils/keytable/keytable.c
+--- v4l-utils-1.6.0/utils/keytable/keytable.c	2014-08-22 16:59:47.000000000 +0200
++++ v4l-utils-1.6.0.patch/utils/keytable/keytable.c	2014-11-08 18:10:31.497084484 +0100
+@@ -487,6 +487,8 @@
  				ch_proto |= RC_5_SZ;
+ 			else if (!strcasecmp(p,"xmp"))
+ 				ch_proto |= XMP;
 +			else if (!strcasecmp(p,"other"))
 +				ch_proto |= OTHER;
+ 			else if (!strcasecmp(p,"all"))
+ 				ch_proto |= ~0;
  			else
- 				goto err_inval;
- 			p = strtok(NULL, ",;");

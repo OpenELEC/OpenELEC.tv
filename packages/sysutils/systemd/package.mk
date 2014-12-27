@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="216"
+PKG_VERSION="217"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -40,6 +40,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-gtk-doc-pdf \
                            --disable-python-devel \
                            --disable-dbus \
+                           --disable-utmp \
                            --disable-compat-libs \
                            --disable-coverage \
                            --enable-kmod \
@@ -65,7 +66,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-libidn \
                            --disable-binfmt \
                            --disable-vconsole \
-                           --disable-readahead \
                            --disable-bootchart \
                            --disable-quotacheck \
                            --enable-tmpfiles \
@@ -85,12 +85,12 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-resolved \
                            --disable-networkd \
                            --disable-efi \
-                           --disable-multi-seat-x \
                            --disable-terminal \
                            --disable-kdbus \
                            --disable-myhostname \
                            --disable-gudev \
                            --disable-manpages \
+                           --disable-hibernate \
                            --disable-ldconfig \
                            --enable-split-usr \
                            --disable-tests \
@@ -124,10 +124,6 @@ post_makeinstall_target() {
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-OUI.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-acpi-vendor.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-bluetooth-vendor-product.hwdb
-   rm -f $INSTALL/usr/lib/udev/hwdb.d/20-pci-classes.hwdb
-   rm -f $INSTALL/usr/lib/udev/hwdb.d/20-pci-vendor-model.hwdb
-   rm -f $INSTALL/usr/lib/udev/hwdb.d/20-usb-classes.hwdb
-   rm -f $INSTALL/usr/lib/udev/hwdb.d/20-usb-vendor-model.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-net-ifname.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-sdio-classes.hwdb
    rm -f $INSTALL/usr/lib/udev/hwdb.d/20-sdio-vendor-model.hwdb
@@ -162,12 +158,6 @@ post_makeinstall_target() {
 
   # remove debug-shell.service, we install our own
     rm -rf $INSTALL/usr/lib/systemd/system/debug-shell.service
-
-  # remove systemd-update-utmp. pointless
-    rm -rf $INSTALL/usr/lib/systemd/systemd-update-utmp
-    rm -rf $INSTALL/usr/lib/systemd/system/systemd-update-utmp-runlevel.service
-    rm -rf $INSTALL/usr/lib/systemd/system/systemd-update-utmp.service
-    rm -rf $INSTALL/usr/lib/systemd/system/sysinit.target.wants/systemd-update-utmp.service
 
   # remove systemd-ask-password. pointless
     rm -rf $INSTALL/usr/lib/systemd/system/systemd-ask-password-wall.service
@@ -215,6 +205,10 @@ post_makeinstall_target() {
       ln -sf /storage/.config/sysctl.d $INSTALL/etc/sysctl.d
     rm -rf $INSTALL/etc/tmpfiles.d
       ln -sf /storage/.config/tmpfiles.d $INSTALL/etc/tmpfiles.d
+    rm -rf $INSTALL/etc/udev/hwdb.d
+      ln -sf /storage/.config/hwdb.d $INSTALL/etc/udev/hwdb.d
+    rm -rf $INSTALL/etc/udev/rules.d
+      ln -sf /storage/.config/udev.rules.d $INSTALL/etc/udev/rules.d
 }
 
 post_install() {

@@ -26,12 +26,16 @@ case "$LINUX" in
     PKG_VERSION="8e81319"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
+  amlogic)
+    PKG_VERSION="amlogic-3.10-b992de0"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   imx6)
-    PKG_VERSION="cuboxi-3.14-e85332f"
+    PKG_VERSION="cuboxi-3.14-dc5edb8"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.16.3"
+    PKG_VERSION="3.17.7"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -40,7 +44,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
 PKG_DEPENDS_HOST="ccache:host"
-PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb"
+PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb keyutils"
 PKG_DEPENDS_INIT="toolchain"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
@@ -78,6 +82,9 @@ post_patch() {
 
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
   sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+
+  # set default hostname based on $DISTRONAME
+    sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
 
   # disable PPP support if not enabled
   if [ ! "$PPTP_SUPPORT" = yes ]; then
@@ -141,13 +148,13 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
-
   if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
     for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
       LDFLAGS="" make $extra_target
     done
   fi
+
+  LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
 
   if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
     ( cd tools/perf
@@ -181,7 +188,7 @@ makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" -a ! "$LINUX" = "linux-sun7i" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
-      cp $dtb $INSTALL/usr/share/bootloader
+      cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
     done
   fi
 
@@ -221,8 +228,8 @@ makeinstall_init() {
 }
 
 post_install() {
-  mkdir -p $INSTALL/etc/modprobe.d
-    cp $PKG_DIR/modprobe.d/*.conf $INSTALL/etc/modprobe.d
+  mkdir -p $INSTALL/lib/firmware/
+    ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
 
   enable_service cpufreq-threshold.service
 }

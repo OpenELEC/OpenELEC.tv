@@ -1,6 +1,14 @@
 # set default language for buildsystem
   export LC_ALL=C
 
+# determines DISTRO, if not forced by user
+# default is OpenELEC
+if [ -z "$DISTRO" ]; then
+  DISTRO="OpenELEC"
+else
+  DISTRO="$DISTRO"
+fi
+
 # determines PROJECT, if not forced by user
 # default is Generic
 if [ -z "$PROJECT" ]; then
@@ -18,11 +26,22 @@ else
 fi
 
 ROOT=`pwd`
+DISTRO_DIR="$ROOT/distributions"
 PROJECT_DIR="$ROOT/projects"
 LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/packages/linux/package.mk"
 
 # include versioning
   . config/version
+
+# read distro versioning if available
+ if [ -f "$DISTRO_DIR/$DISTRO/version" ]; then
+   . $DISTRO_DIR/$DISTRO/version
+ fi
+
+# read distro options if available
+ if [ -f "$DISTRO_DIR/$DISTRO/options" ]; then
+   . $DISTRO_DIR/$DISTRO/options
+ fi
 
 # read project options if available
  if [ -f "$PROJECT_DIR/$PROJECT/options" ]; then
@@ -46,7 +65,9 @@ LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/package
 # Concurrency make level (-j option)
 #  Try value 1 (default) to 4 on single CPU computer, or more on
 #  multi-processor computer (like hyperthreading SMP CPU)
-  CONCURRENCY_MAKE_LEVEL=`cat /proc/cpuinfo | grep -c '^processor[[:cntrl:]]*:'`
+  if test -z "${CONCURRENCY_MAKE_LEVEL}"; then
+    CONCURRENCY_MAKE_LEVEL=`cat /proc/cpuinfo | grep -c '^processor[[:cntrl:]]*:'`
+  fi
 
 # cache size for ccache
 # Set the maximum size of the files stored in the cache. You can specify a
@@ -69,6 +90,11 @@ LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/package
   fi
   if [ -f "$HOME/.openelec/$PROJECT/options" ]; then
     . $HOME/.openelec/$PROJECT/options
+  fi
+
+# read distro options from $HOME if available
+  if [ -f "$HOME/.openelec/options.$DISTRO" ]; then
+    . $HOME/.openelec/options.$DISTRO
   fi
 
 . config/graphic

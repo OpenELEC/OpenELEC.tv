@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.lirc.org"
 PKG_URL="$SOURCEFORGE_SRC/lirc/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain libftdi libusb-compat"
+PKG_DEPENDS_TARGET="toolchain libftdi libusb-compat libirman"
 PKG_PRIORITY="optional"
 PKG_SECTION="sysutils/remote"
 PKG_SHORTDESC="lirc: Linux Infrared Remote Control"
@@ -35,6 +35,7 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_path_LIBUSB_CONFIG= /
                            ac_cv_func_forkpty=no \
                            ac_cv_lib_util_forkpty=no \
+                           --localstatedir=/ \
                            --enable-sandboxed \
                            --with-gnu-ld \
                            --without-x \

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.99.916"
+PKG_VERSION="2.99.910"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="OSS"
@@ -46,10 +46,10 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-backlight \
                            --enable-sna \
                            --enable-uxa \
                            --disable-xvmc \
-                           --enable-glamor \
+                           --disable-glamor \
                            --disable-xaa \
                            --disable-dga \
-                           --enable-tear-free \
+                           --disable-tear-free \
                            --disable-rendernode \
                            --disable-create2 \
                            --disable-rotation \

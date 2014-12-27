@@ -44,7 +44,7 @@ make_target() {
 
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
-  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "Cuboxi" ]; then
+  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
     make platform=imx6
   else
     make WITH_DYNAREC=$DYNAREC

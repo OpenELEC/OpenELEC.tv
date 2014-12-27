@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2013 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import shutil
 import xmlpp
 from xml.dom import minidom
 
-__sundtek_userspace__ = '/storage/.xbmc/userdata/addon_data/driver.dvb.sundtek-mediatv/'
+__sundtek_userspace__ = '/storage/.kodi/userdata/addon_data/driver.dvb.sundtek-mediatv/'
 
 ######################################################################################################
 # backup setting.xml file only if backup doesn't exist

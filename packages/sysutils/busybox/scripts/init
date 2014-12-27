@@ -58,6 +58,11 @@
   # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
+  # run platform_init script if exists
+  if [ -f "./platform_init" ]; then
+    ./platform_init
+  fi
+
   # clear screen and hide cursor
   clear
   echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
@@ -598,6 +603,18 @@
     if [ -n "$disk" ]; then
       mount --move /storage /sysroot/storage
     fi
+
+    if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
+      echo ""
+      echo "NEVER TOUCH boot= in extlinux.conf / cmdline.txt"
+      echo "if you dont know what you are doing"
+      echo ""
+      echo "your installation is now broken"
+      echo ""
+      echo "normal boot in 60s..."
+      usleep 60000000
+    fi
+
 
     [ -f "/sysroot/usr/lib/systemd/systemd" ] || error "final_check" "Could not find system."
   }

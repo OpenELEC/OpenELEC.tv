@@ -59,13 +59,13 @@ if [ ! -f "$TIMESHIFT_SETTINGS_FILE" ]; then
 fi
 
 if [ "$DEBUG" = "yes" ]; then
-  TVHEADEND_ARG="-C -s -u root -g video -c $ADDON_HOME"
+  TVHEADEND_ARG="-B -C -s -u root -g video -c $ADDON_HOME"
 else
-  TVHEADEND_ARG="-C -u root -g video -c $ADDON_HOME"
+  TVHEADEND_ARG="-B -C -u root -g video -c $ADDON_HOME"
 fi
 
 # start userspace DVB driver/addon
-for driver_dvb in $(find /storage/.xbmc/addons/driver.dvb.*/bin/userspace-driver.sh -type f 2>/dev/null); do
+for driver_dvb in $(find /storage/.kodi/addons/driver.dvb.*/bin/userspace-driver.sh -type f 2>/dev/null); do
   driver_dvb_name=$(echo $driver_dvb | awk 'BEGIN {FS="/"} {printf("%s", $5)}')
   logger -t Tvheadend "### Loading userspace DVB driver: $driver_dvb_name ###"
   # use ". " because of variable export

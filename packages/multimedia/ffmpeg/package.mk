@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.4.1"
+PKG_VERSION="2.4.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -32,17 +32,17 @@ PKG_LONGDESC="FFmpeg is a complete, cross-platform solution to record, convert a
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$VAAPI" = yes ]; then
 # configure GPU drivers and dependencies:
   get_graphicdrivers
 
+if [ "$VAAPI_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
   FFMPEG_VAAPI="--enable-vaapi"
 else
   FFMPEG_VAAPI="--disable-vaapi"
 fi
 
-if [ "$VDPAU" = yes ]; then
+if [ "$VDPAU_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   FFMPEG_VDPAU="--enable-vdpau"
 else
@@ -53,12 +53,6 @@ if [ "$DEBUG" = yes ]; then
   FFMPEG_DEBUG="--enable-debug --disable-stripping"
 else
   FFMPEG_DEBUG="--disable-debug --enable-stripping"
-fi
-
-if [ "$OPTIMIZATIONS" = size ]; then
-  FFMPEG_OPTIM="--disable-small"
-else
-  FFMPEG_OPTIM="--disable-small"
 fi
 
 case "$TARGET_ARCH" in
@@ -158,7 +152,7 @@ configure_target() {
               --disable-gnutls --enable-libressl \
               --disable-gray \
               --enable-swscale-alpha \
-              $FFMPEG_OPTIM \
+              --disable-small \
               --enable-dct \
               --enable-fft \
               --enable-mdct \
@@ -181,6 +175,7 @@ configure_target() {
               --enable-muxer=adts \
               --enable-muxer=asf \
               --enable-muxer=ipod \
+              --enable-muxer=mpegts \
               --enable-demuxers \
               --enable-parsers \
               --enable-bsfs \
@@ -222,6 +217,5 @@ configure_target() {
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share/ffmpeg/examples
 }

@@ -17,12 +17,11 @@
 ################################################################################
 
 PKG_NAME="tvheadend"
-PKG_VERSION="3.9.1083"
-PKG_REV="0"
+PKG_VERSION="3.9.2182"
+PKG_REV="6"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.lonelycoder.com/hts/tvheadend_overview.html"
-#PKG_URL="https://github.com/downloads/tvheadend/tvheadend/${PKG_NAME}-${PKG_VERSION}.tar.gz"
+PKG_SITE="http://www.tvheadend.org"
 PKG_URL="$DISTRO_SRC/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain libressl curl"
 PKG_PRIORITY="optional"
@@ -36,6 +35,11 @@ PKG_AUTORECONF="no"
 pre_build_target() {
   mkdir -p $PKG_BUILD/.$TARGET_NAME
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$TARGET_NAME
+  export CROSS_COMPILE=$TARGET_PREFIX
+  # meh imx6..
+  if [ "$TARGET_ARCH" == "arm" ] ; then
+    export CFLAGS="$CFLAGS -mno-unaligned-access"
+  fi
 }
 
 configure_target() {
@@ -43,12 +47,17 @@ configure_target() {
             --arch=$TARGET_ARCH \
             --cpu=$TARGET_CPU \
             --cc=$TARGET_CC \
-            --enable-timeshift \
-            --disable-libav \
+            --enable-hdhomerun_client \
+            --enable-hdhomerun_static \
             --disable-avahi \
-            --python=$ROOT/$TOOLCHAIN/bin/python \
+            --disable-libav \
+            --enable-inotify \
+            --enable-epoll \
             --disable-uriparser \
-            --enable-bundle
+            --enable-tvhcsa \
+            --enable-bundle \
+            --disable-dbus_1 \
+            --python=$ROOT/$TOOLCHAIN/bin/python
 }
 
 post_make_target() {

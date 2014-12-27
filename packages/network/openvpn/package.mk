@@ -18,7 +18,7 @@
 ################################################################################
 
 PKG_NAME="openvpn"
-PKG_VERSION="2.3.4"
+PKG_VERSION="2.3.5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -41,7 +41,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_have_decl_TUNSETPERSIST=no \
                            --enable-management \
                            --disable-socks \
                            --disable-http-proxy \
-                           --disable-fragment \
+                           --enable-fragment \
                            --disable-multihome \
                            --disable-port-share \
                            --disable-debug"

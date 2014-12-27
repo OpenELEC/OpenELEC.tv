@@ -96,7 +96,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   if [ -n "$GIT_HASH" ]; then
 	echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
   fi
-  
+  echo -e "OPENELEC_ARCH=\"$PROJECT.$TARGET_ARCH\"" >> $INSTALL/etc/os-release
+  if [ "$OFFICIAL" = "yes" ]; then
+    echo -e "OPENELEC_BUILD=\"official\"" >> $INSTALL/etc/os-release
+  else
+    echo -e "OPENELEC_BUILD=\"unofficial\"" >> $INSTALL/etc/os-release
+  fi
 
   if [ "$OFFICIAL" = "yes" ]; then
     echo "official" > $INSTALL/etc/build
@@ -255,7 +260,7 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
 
         if [ -n "$MEDIACENTER" ] ; then
-          echo "XBMC commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
+          echo "Kodi commit: `scripts/git_version $MEDIACENTER`" >> $RELEASE_DIR/RELEASE
         fi
 
       mkdir -p $RELEASE_DIR/licenses
@@ -285,6 +290,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         if [ "$2" == "efi" ] ; then
           UEFI=yes
         fi
+        echo "mkimage: boo. now root access (sudo) is required..."
+        echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us :)"
         # variables used in image script must be passed
         sudo env \
           PATH="$PATH" \
