@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="fba"
-PKG_VERSION="aaf3e5a"
+PKG_VERSION="e9581fe"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
@@ -36,7 +36,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -C svn-current/trunk/ -f makefile.libretro
+  make -C svn-current/trunk/ -f makefile.libretro DEBUG=1
 }
 
 makeinstall_target() {
