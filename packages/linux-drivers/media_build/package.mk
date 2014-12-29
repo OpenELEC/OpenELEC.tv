@@ -19,13 +19,16 @@
 ################################################################################
 
 PKG_NAME="media_build"
-PKG_VERSION="66f4030"
-MEDIA_BUILD_VERSION="2014-09-26-214635f"
+PKG_VERSION="37d2961"
+# latest !!! DANGER !!!
+MEDIA_BUILD_VERSION="LATEST"
+# normal - stable and working
+# MEDIA_BUILD_VERSION="2014-12-01-e8bd888"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://git.linuxtv.org/media_build.git"
-PKG_URL="$DISTRO_SRC/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_URL="http://mycvh.de/openelec/media_build-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET=""
 PKG_BUILD_DEPENDS_TARGET="toolchain linux"
 PKG_PRIORITY="optional"
@@ -46,7 +49,8 @@ make_target() {
 
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ download
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ untar
-  make VER=$KERNEL_VER SRCDIR=$(kernel_path) allyesconfig
+  make VER=$KERNEL_VER SRCDIR=$(kernel_path) stagingconfig
+#  make VER=$KERNEL_VER SRCDIR=$(kernel_path) allyesconfig
   make VER=$KERNEL_VER SRCDIR=$(kernel_path)
 }
 
