@@ -1,0 +1,13 @@
+diff --git a/v4l/Makefile b/v4l/Makefile
+index 962d76a..c546de2 100644
+--- a/v4l/Makefile
++++ b/v4l/Makefile
+@@ -50,7 +50,7 @@ endif	# TOPDIR
+ default:: prepare firmware
+ 	@echo Kernel build directory is $(OUTDIR)
+ 	$(MAKE) -C $(OUTDIR) SUBDIRS=$(PWD) $(MYCFLAGS) modules
+-	./scripts/rmmod.pl check
++#	./scripts/rmmod.pl check
+ #	$(MAKE) checkpatch
+ 
+ mismatch:: prepare firmware
