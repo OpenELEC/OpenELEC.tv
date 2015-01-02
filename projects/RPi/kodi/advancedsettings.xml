@@ -3,11 +3,7 @@
   <showexitbutton>false</showexitbutton>
 
   <fanartres>720</fanartres>
-  <imageres>540</imageres>
-
-  <video>
-    <busydialogdelayms>750</busydialogdelayms>
-  </video>
+  <imageres>720</imageres>
 
   <samba>
     <clienttimeout>30</clienttimeout>
