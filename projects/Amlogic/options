@@ -80,7 +80,7 @@
   GOLD_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
-  BOOTLOADER=""
+  BOOTLOADER="u-boot"
 
 # u-boot version to use (default)
   UBOOT_VERSION=""

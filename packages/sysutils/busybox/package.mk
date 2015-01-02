@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="busybox"
-PKG_VERSION="1.22.1"
+PKG_VERSION="1.23.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -123,6 +123,9 @@ configure_target() {
     CFLAGS=`echo $CFLAGS | sed -e "s|-Ofast|-Os|"`
     CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-Os|"`
 
+    # busybox fails to build with GOLD support enabled with binutils-2.25
+    strip_gold
+
     LDFLAGS="$LDFLAGS -fwhole-program"
 
     make oldconfig
@@ -138,6 +141,9 @@ configure_init() {
     # optimize for size
     CFLAGS=`echo $CFLAGS | sed -e "s|-Ofast|-Os|"`
     CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-Os|"`
+
+    # busybox fails to build with GOLD support enabled with binutils-2.25
+    strip_gold
 
     LDFLAGS="$LDFLAGS -fwhole-program"
 
