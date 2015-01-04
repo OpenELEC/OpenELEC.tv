@@ -42,3 +42,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-shared \
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="93b54bdf46d5e6d2354b7034395fe329c222a966790de34520702bb9642f1c06"

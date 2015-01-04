@@ -38,3 +38,5 @@ post_install() {
   mkfontdir $INSTALL/usr/share/fonts/Type1
   mkfontscale $INSTALL/usr/share/fonts/Type1
 }
+
+PKG_SHA256="caebf42aec7be7f3bd40e0f232d6f34881b853dc84acfcdf7458358701fbe34a"

@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_HOST="gl_cv_func_gettimeofday_clobber=no --target=$TARGET_NAM
 post_makeinstall_host() {
   make prefix=$SYSROOT_PREFIX/usr install
 }
+
+PKG_SHA256="42500c1fddd90bcb161e6b58de931d769929c495c124112d67428a23543db90c"

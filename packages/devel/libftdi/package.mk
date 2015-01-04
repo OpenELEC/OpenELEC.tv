@@ -48,3 +48,5 @@ pre_configure_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="3176d5b5986438f33f5208e690a8bfe90941be501cc0a72118ce3d338d4b838e"

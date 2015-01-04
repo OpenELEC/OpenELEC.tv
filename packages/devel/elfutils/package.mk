@@ -59,3 +59,5 @@ makeinstall_target() {
     cp libelf/libelf.a $SYSROOT_PREFIX/usr/lib
     cp libdw/libdw.a $SYSROOT_PREFIX/usr/lib
 }
+
+PKG_SHA256="fffaad1ba0c4ac5c8cee56dc195746e1f1e7197ba3eba7052ad5a3635ac1242e"

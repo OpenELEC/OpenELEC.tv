@@ -73,3 +73,5 @@ addon() {
   cp -Pa $PKG_BUILD/opt/lib $ADDON_BUILD/$PKG_ADDON_ID/
   cp $PKG_BUILD/version.used $ADDON_BUILD/$PKG_ADDON_ID/
 }
+
+PKG_SHA256=

@@ -39,3 +39,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --enable-raw-api \
                            --disable-purify-safety \
                            --with-gnu-ld"
+
+PKG_SHA256="97feeeadca5e21870fa4433bc953d1b3af3f698d5df8a428f68b73cd60aef6eb"

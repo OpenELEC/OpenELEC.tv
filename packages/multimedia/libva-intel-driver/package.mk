@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules --with-drivers-path=/usr/lib/va"
+
+PKG_SHA256="d0b448193ab34b622cd14e4db8ca29991a4038b4eb459a8fbbcbd7db843da3dc"

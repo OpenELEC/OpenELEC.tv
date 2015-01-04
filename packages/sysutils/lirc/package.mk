@@ -65,3 +65,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/udev
     cp $PKG_DIR/scripts/lircd_wakeup_enable $INSTALL/usr/lib/udev
 }
+
+PKG_SHA256="6323afae6ad498d4369675f77ec3dbb680fe661bea586aa296e67f2e2daba4ff"

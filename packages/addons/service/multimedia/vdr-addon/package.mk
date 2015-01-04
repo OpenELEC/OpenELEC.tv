@@ -109,3 +109,5 @@ addon() {
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/epgfixer
   cp -PR $VDR_PLUGIN_EPGFIXER_DIR/epgfixer/*.conf $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/epgfixer
 }
+
+PKG_SHA256=

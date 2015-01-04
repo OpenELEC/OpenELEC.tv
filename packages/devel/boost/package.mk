@@ -76,3 +76,5 @@ makeinstall_target() {
                                 --with-regex -sICU_PATH="$SYSROOT_PREFIX/usr" \
                                 install
 }
+
+PKG_SHA256="910c8c022a33ccec7f088bd65d4f14b466588dda94ba2124e78b8c57db264967"

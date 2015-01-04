@@ -106,3 +106,5 @@ makeinstall_target() {
     cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $INSTALL/usr/share/bootloader
   fi 
 }
+
+PKG_SHA256="f076248a66d63807e91844a7e6d2de28c91d3a941fcb53bbe725542acb772d34"

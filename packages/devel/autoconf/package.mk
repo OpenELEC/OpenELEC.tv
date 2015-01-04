@@ -40,3 +40,5 @@ PKG_CONFIGURE_OPTS_HOST="EMACS=no \
 post_makeinstall_host() {
   make prefix=$SYSROOT_PREFIX/usr install
 }
+
+PKG_SHA256="64ebcec9f8ac5b2487125a86a7760d2591ac9e1d3dbd59489633f9de62a57684"

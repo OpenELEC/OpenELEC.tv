@@ -31,3 +31,5 @@ PKG_LONGDESC="Setxkbmap sets the keyboard using the X Keyboard Extension."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="3d305c9d1f38224169b2e501ef0665cc3ab52d4dbc2b9a60c9dbb047f77ddec6"

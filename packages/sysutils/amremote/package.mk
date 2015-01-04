@@ -41,3 +41,5 @@ makeinstall_target() {
 post_install() {
   enable_service amlogic-remotecfg.service
 }
+
+PKG_SHA256="21763fa87887303bcb481cfc0fddd8db36ebb44736cd49d568d0d9cea11abe43"

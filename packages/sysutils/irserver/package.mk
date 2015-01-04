@@ -56,3 +56,5 @@ makeinstall_target() {
     cp remotes/irtrans.rem $INSTALL/usr/share/irtrans/remotes
     cp remotes/mediacenter.rem $INSTALL/usr/share/irtrans/remotes
 }
+
+PKG_SHA256="f35a66a8271a00d890dd1079734ddad34aa283af9327f35ebe0cabbf19103dff"

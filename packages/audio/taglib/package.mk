@@ -46,3 +46,5 @@ post_makeinstall_target() {
   $SED "s:\([':\" ]\)-I/usr:\\1-I$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib_c.pc
   $SED "s:\([':\" ]\)-L/usr:\\1-L$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib_c.pc
 }
+
+PKG_SHA256="66d33481703c90236a0a9d1c38fd81b584ca7109ded049225f5463dcaffc209a"

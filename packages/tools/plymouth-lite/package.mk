@@ -63,3 +63,5 @@ makeinstall_init() {
       cp $PKG_DIR/splash/splash-*.png $INSTALL/splash
     fi
 }
+
+PKG_SHA256="fa7b581bdd38c5751668243ff9d2ebaee7c45753358cbb310fb50cfcd3a8081b"

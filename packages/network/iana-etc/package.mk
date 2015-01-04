@@ -41,3 +41,5 @@ makeinstall_target() {
     cp protocols $INSTALL/etc
     cp services $INSTALL/etc
 }
+
+PKG_SHA256="b9a6874fb20012836efef75452ef2acae624022d680feeb1994d73facba3f20d"

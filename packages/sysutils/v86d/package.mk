@@ -39,3 +39,5 @@ pre_configure_init() {
   cd $ROOT/$PKG_BUILD
     rm -rf .$TARGET_NAME-init
 }
+
+PKG_SHA256="634964ae18ef68c8493add2ce150e3b4502badeb0d9194b4bd81241d25e6735c"

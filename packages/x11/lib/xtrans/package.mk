@@ -38,3 +38,5 @@ post_makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
     cp xtrans.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
 }
+
+PKG_SHA256="adbd3b36932ce4c062cd10f57d78a156ba98d618bdb6f50664da327502bc8301"

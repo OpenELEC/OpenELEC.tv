@@ -45,3 +45,5 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_have_decl_TUNSETPERSIST=no \
                            --disable-multihome \
                            --disable-port-share \
                            --disable-debug"
+
+PKG_SHA256="7ac286f09ed4981358ce01907993dc29f69b34d3652de2b70ca9b8b2a056b684"

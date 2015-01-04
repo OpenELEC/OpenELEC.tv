@@ -43,3 +43,5 @@ if [ "$BLURAY_AACS_SUPPORT" = "yes" ]; then
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --without-libaacs"
 fi
+
+PKG_SHA256="deb5e64984e625e40e1e0e1b6b1f9c041e7c77101b4b39df0d76ab8a4ec426cf"

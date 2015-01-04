@@ -58,3 +58,5 @@ pre_configure_target() {
   export CFLAGS_FOR_BUILD="$HOST_CFLAGS"
   export LDFLAGS_FOR_BUILD="$HOST_LDFLAGS"
 }
+
+PKG_SHA256="2aa027e837231d2eeea90f3a4afe19948a6eb4c8b2bec0241eba7dbc8106bd16"

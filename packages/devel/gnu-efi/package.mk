@@ -59,3 +59,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/share/gnu-efi/apps/$EFI_ARCH
     cp apps/*.efi $INSTALL/usr/share/gnu-efi/apps/$EFI_ARCH
 }
+
+PKG_SHA256="3c0d450d5829204ca05dcb3b2aae772e52c379b7c7e09146759c6315606f934e"

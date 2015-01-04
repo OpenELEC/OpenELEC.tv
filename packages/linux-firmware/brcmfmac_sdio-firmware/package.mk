@@ -32,3 +32,5 @@ PKG_LONGDESC="Firmware for Broadcom Bluetooth devices and brcm-patchram-plus tha
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+
+PKG_SHA256="3b84712cc56a0c073558718b7c8fdc0cc3c457e7bc804139e9df9b0e3c3d8247"

@@ -67,3 +67,5 @@ post_install() {
 
   enable_service lcdd.service
 }
+
+PKG_SHA256="de2b5a9456ac458c6d2bbce3c8cb217feae0cf5a6a815a78fd5f9f57e2c0ad38"

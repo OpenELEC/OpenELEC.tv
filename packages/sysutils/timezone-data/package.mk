@@ -55,3 +55,5 @@ post_makeinstall_target() {
 post_install() {
   enable_service tz-data.service
 }
+
+PKG_SHA256="9affefd504a771e840a4fb8feb51286dda68137bb580bf8b4f7e2f2b4b01bdab"

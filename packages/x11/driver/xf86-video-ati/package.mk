@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-glamor --with-xorg-module-dir=$XORG_PATH_MODULES"
+
+PKG_SHA256="ec3e6f06b6cf9a40c72aafa3448aae8b034c80b37410ca9442d5cf6806e07936"

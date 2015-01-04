@@ -54,3 +54,5 @@ fi
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="2657008cfc08aadbaca065bd9f8964b8a2c0abd03e73da5b5f09c1216be31234"

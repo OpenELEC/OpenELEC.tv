@@ -46,3 +46,5 @@ makeinstall_init() {
     ln -sf fsck.fat $INSTALL/sbin/fsck.msdos
     ln -sf fsck.fat $INSTALL/sbin/fsck.vfat
 }
+
+PKG_SHA256="85768eac8bd28d3bab62efb6f6d793c65b3fb81b9b38a5fe0b73e12f5ed158a8"

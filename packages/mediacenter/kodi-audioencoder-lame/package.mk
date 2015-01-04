@@ -40,3 +40,5 @@ configure_target() {
         -DLAME_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
         ..
 }
+
+PKG_SHA256="3d88849dcb53f7aef9dc38f8ce246306fe7e901db143c5959a263180d004a729"

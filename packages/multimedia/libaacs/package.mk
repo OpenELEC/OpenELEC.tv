@@ -49,3 +49,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/config/aacs
     cp -P KEYDB.cfg $INSTALL/usr/config/aacs
 }
+
+PKG_SHA256="ecc49a22ae2a645cfb5b8e732b51fe0e2684e6488a68debc5edd6e07edadb2b0"

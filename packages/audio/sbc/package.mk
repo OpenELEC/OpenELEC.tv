@@ -34,3 +34,5 @@ PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
          --disable-tools --disable-tester"
+
+PKG_SHA256="f45b815d83c9028851f85e944aaa3cedfb966315091ca9ac250c49b36c4efa1c"

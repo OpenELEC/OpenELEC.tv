@@ -37,3 +37,5 @@ configure_target() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         ..
 }
+
+PKG_SHA256="c1255419650e6dee30f3b73757b1625c7de5a9cfcf61c0313040ba625635790b"

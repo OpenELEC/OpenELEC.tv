@@ -31,3 +31,5 @@ PKG_LONGDESC="This library provides weak aliases for pthread functions not provi
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="3031f466cf0b06de6b3ccbf2019d15c4fcf75229b7d226a711bc1885b3a82cde"

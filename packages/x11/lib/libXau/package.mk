@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared --enable-xthreads"
 pre_configure_target() {
   CFLAGS="$CFLAGS -fPIC -DPIC"
 }
+
+PKG_SHA256="fdd477320aeb5cdd67272838722d6b7d544887dfe7de46e1e7cc0c27c2bea4f2"

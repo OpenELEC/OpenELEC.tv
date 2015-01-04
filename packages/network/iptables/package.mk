@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--with-kernel=$(kernel_path)"
+
+PKG_SHA256="52004c68021da9a599feed27f65defcfb22128f7da2c0531c0f75de0f479d3e0"

@@ -164,3 +164,5 @@ post_install () {
     enable_service swap.service
   fi
 }
+
+PKG_SHA256="e0457f715b73f4a349e1acb08cb410bf0edc9a74a3f75c357070f31f70e33cd6"

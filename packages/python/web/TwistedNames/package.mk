@@ -52,3 +52,5 @@ post_makeinstall_target() {
   find $INSTALL/usr/lib -name "*.py" -exec rm -rf "{}" ";"
   rm -rf $INSTALL/usr/lib/python*/site-packages/twisted/names/test
 }
+
+PKG_SHA256="738f3e4fa56d2ebeddf0f3774419fbe3de9067424eb928ce234bc178a146d496"

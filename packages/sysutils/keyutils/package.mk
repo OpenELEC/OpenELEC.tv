@@ -40,3 +40,5 @@ post_makeinstall_target() {
 	ln -sf /storage/.config/request-key.d $INSTALL/etc/request-key.d
 }
 
+
+PKG_SHA256="4da2c5552c688b65ab14d4fd40fbdf720c8b396d8ece643e040cf6e707e083ae"

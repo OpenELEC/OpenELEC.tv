@@ -46,3 +46,5 @@ makeinstall_target() {
     cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
     cp -PRv $PKG_DIR/files/3rdparty/bootloader/config.txt $INSTALL/usr/share/bootloader
 }
+
+PKG_SHA256="c3d490b363f103fac1bde748b84a4a56136a5cfeb555a064bcc3742e1537f2a1"

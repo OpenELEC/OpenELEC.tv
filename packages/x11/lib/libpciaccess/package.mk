@@ -37,3 +37,5 @@ CFLAGS="$CFLAGS -D_LARGEFILE64_SOURCE"
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_header_asm_mtrr_h=set \
                            --with-pciids-path=/usr/share \
                            --with-zlib "
+
+PKG_SHA256="abab8c2b050afb89bc29280e9c6b50ec5867174960d88bfb81a01036ec20de19"

@@ -34,3 +34,5 @@ PKG_AUTORECONF="yes"
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--without-xmlto"
+
+PKG_SHA256="462116ab44e41d8121bfde947321950370b285a5316612b8fce8334d50751b1e"

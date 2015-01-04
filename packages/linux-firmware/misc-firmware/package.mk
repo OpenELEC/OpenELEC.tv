@@ -39,3 +39,5 @@ make_target() {
 makeinstall_target() {
   DESTDIR=$INSTALL ./install
 }
+
+PKG_SHA256="7acb394b0652780be8d6083e130a04689f200c2ed9f87c05cebef7f8737b9fa1"

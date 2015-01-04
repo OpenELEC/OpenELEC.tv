@@ -35,3 +35,5 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--enable-gzip-small-encodings \
                            --enable-gzip-large-encodings \
                            --with-fontrootdir=/usr/share/fonts"
+
+PKG_SHA256="ced6312988a45d23812c2ac708b4595f63fd7a49c4dcd9f66bdcd50d1057d539"

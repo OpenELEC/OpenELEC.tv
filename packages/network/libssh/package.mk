@@ -59,3 +59,5 @@ makeinstall_target() {
     cp ../include/libssh/sftp.h $SYSROOT_PREFIX/usr/include/libssh
     cp ../include/libssh/ssh2.h $SYSROOT_PREFIX/usr/include/libssh
 }
+
+PKG_SHA256="2bb5d7c595059f990a8915c190169257328ffa828ced0c05b09bbe186092cacb"

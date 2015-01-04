@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared --with-gnu-ld --with
 pre_configure_target() {
   CFLAGS="$CFLAGS -fPIC -DPIC"
 }
+
+PKG_SHA256="756edc7c383254eef8b4e1b733c3bf1dc061b523c9f9833ac7058378b8349d0b"

@@ -38,3 +38,5 @@ PKG_MAKEINSTALL_OPTS_TARGET="CC=$TARGET_CC STRIP=$STRIP PREFIX=/usr WARNERROR=no
 pre_make_target() {
   export LDFLAGS="$LDFLAGS -ludev -lkmod"
 }
+
+PKG_SHA256="1e70af228b1d4d3244786de2e6eaa44f0d967ccff002ec4209f9badba8ce941f"

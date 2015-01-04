@@ -48,3 +48,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/etc/init.d
   rm -rf $INSTALL/etc/udev
 }
+
+PKG_SHA256="0beb83eaf2c5e50730fc553406ef124d77bc02c64854631bdfc86bfd6437391c"

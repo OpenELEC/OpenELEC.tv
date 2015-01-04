@@ -97,3 +97,5 @@ makeinstall_target() {
     cp efi64/efi/syslinux.efi $INSTALL/usr/share/syslinux/bootx64.efi
     cp efi64/com32/elflink/ldlinux/ldlinux.e64  $INSTALL/usr/share/syslinux
 }
+
+PKG_SHA256="26d3986d2bea109d5dc0e4f8c4822a459276cf021125e8c9f23c3cca5d8c850e"

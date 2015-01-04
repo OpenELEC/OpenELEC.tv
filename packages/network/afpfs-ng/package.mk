@@ -43,3 +43,5 @@ makeinstall_target() {
   $MAKEINSTALL -C include
   make -C lib DESTDIR=$INSTALL install
 }
+
+PKG_SHA256="688560de1cde57ab8d9e0ef7dc6436dbf0267fe8884f9014e50ff92b297b01a8"

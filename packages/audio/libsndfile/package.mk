@@ -48,3 +48,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="59016dbd326abe7e2366ded5c344c853829bebfd1702ef26a07ef662d6aa4882"

@@ -42,3 +42,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
                            --without-xsltproc \
                            --without-asciidoc \
                            --with-gnu-ld"
+
+PKG_SHA256="2cffc2686618dc1803725636cd92b36342c512dc60a7a35cba34bf7192a42244"

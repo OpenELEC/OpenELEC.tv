@@ -42,3 +42,5 @@ configure_target() {
         -DVORBISENC_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
         ..
 }
+
+PKG_SHA256="d1a6bbc216ea26ec151adb6d8000fc62b1de17f07cfa0bdf1e280b3f61ea1061"

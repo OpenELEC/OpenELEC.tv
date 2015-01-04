@@ -251,3 +251,5 @@ makeinstall_init() {
   cp $PKG_DIR/scripts/init $INSTALL
   chmod 755 $INSTALL/init
 }
+
+PKG_SHA256="483ab594dd962ddbb332fd24e36ffdd6e36ac2182fbff055c56e1ca49fda09e4"

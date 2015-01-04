@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-malloc0returnsnull --without-xmlto"
+
+PKG_SHA256="b518d4d332231f313371fdefac59e3776f4f0823bcb23cf7c7305bfb57b16e35"

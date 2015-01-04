@@ -42,3 +42,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/
     cp -PR libhdhomerun.so $INSTALL/usr/lib/
 }
+
+PKG_SHA256="b01fb5df86b769e958359719f7312eabdb8e642a1c2cb78d454b28cf87c3330d"

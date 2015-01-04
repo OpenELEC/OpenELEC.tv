@@ -62,3 +62,5 @@ makeinstall_target() {
     mkdir -p $INSTALL/usr/bin
       cp -PR .$TARGET_NAME/userhdhomerun $INSTALL/usr/bin
 }
+
+PKG_SHA256="1af817b85b163f3c6c3a9a07410f54875e74513c197709638b4922165e894f54"

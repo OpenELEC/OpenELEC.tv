@@ -55,3 +55,5 @@ makeinstall_target() {
   find $ROOT/$PKG_BUILD/v4l/ -name \*.ko -exec strip --strip-debug {} \;
   find $ROOT/$PKG_BUILD/v4l/ -name \*.ko -exec cp {} $INSTALL/lib/modules/$KERNEL_VER/updates/media_build \;
 }
+
+PKG_SHA256="eb54d3001a9c4bc39c5139f5425eb1bdd6d5b472c061e485a98a99ce7553bd78"

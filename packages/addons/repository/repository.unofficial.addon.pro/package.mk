@@ -54,3 +54,5 @@ addon() {
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID
   cp -R $PKG_BUILD/* $ADDON_BUILD/$PKG_ADDON_ID
 }
+
+PKG_SHA256=

@@ -73,3 +73,5 @@ addon() {
   cp -P $PKG_BUILD/.$TARGET_NAME/build.linux/tvheadend $ADDON_BUILD/$PKG_ADDON_ID/bin
   cp -P $PKG_BUILD/.$TARGET_NAME/capmt_ca.so $ADDON_BUILD/$PKG_ADDON_ID/bin
 }
+
+PKG_SHA256="bcf612a9bc75f7c4362dd339d66377b0b382fdf662135015d16123beff742ca9"

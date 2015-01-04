@@ -87,3 +87,5 @@ post_makeinstall_target() {
     chmod +x $ROOT/$TOOLCHAIN/bin/ncurses-config
     $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $ROOT/$TOOLCHAIN/bin/ncurses-config
 }
+
+PKG_SHA256="9046298fb440324c9d4135ecea7879ffed8546dd1b58e59430ea07a4633f563b"

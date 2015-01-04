@@ -73,3 +73,5 @@ post_makeinstall_target() {
 # add user modprobe.d dir
   mkdir -p $INSTALL/usr/config/modprobe.d
 }
+
+PKG_SHA256="3e7fee6eeff5435848b2dcc852bc8959066478d687d232284d67300c071e7b14"

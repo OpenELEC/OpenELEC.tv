@@ -52,3 +52,4 @@ EOF
 
   chmod +x $HOST_CXX
 }
+PKG_SHA256="b46b5d4b4fd0c0e4e2e9df069d41ded071b73053535ff115e55259e3fcadf3fd"

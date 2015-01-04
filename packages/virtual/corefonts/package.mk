@@ -31,3 +31,5 @@ PKG_LONGDESC="corefonts is a Metapackage for installing fonts"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static --with-sysroot=$SYSROOT_PREFIX"
+
+PKG_SHA256="4db78af5cdb2641dfb1136fe3531960a477c9e3e3b6ba19a2754d046af3f456d"

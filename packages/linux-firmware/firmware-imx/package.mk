@@ -41,3 +41,5 @@ makeinstall_target() {
     cp -P firmware/vpu/vpu_fw_imx6d.bin $INSTALL/lib/firmware/vpu
     cp -P firmware/vpu/vpu_fw_imx6q.bin $INSTALL/lib/firmware/vpu
 }
+
+PKG_SHA256="9f092a3cb73fb960dfb3b519d76b46ca2c2df83db0eb0323f43ed17980e4391e"

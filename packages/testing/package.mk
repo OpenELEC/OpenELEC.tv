@@ -31,3 +31,5 @@ PKG_LONGDESC="testing: Metapackage for various packages to test while developing
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

@@ -45,3 +45,5 @@ post_install() {
   mkfontdir $INSTALL/usr/share/fonts/liberation
   mkfontscale $INSTALL/usr/share/fonts/liberation
 }
+
+PKG_SHA256="7890278a6cd17873c57d9cd785c2d230d9abdea837e96516019c5885dd271504"

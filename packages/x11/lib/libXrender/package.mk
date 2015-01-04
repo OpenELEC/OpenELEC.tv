@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared --enable-malloc0retu
 pre_configure_target() {
   export CFLAGS="$CFLAGS -fPIC"
 }
+
+PKG_SHA256="1d14b02f0060aec5d90dfdcf16a996f17002e515292906ed26e3dcbba0f4fc62"

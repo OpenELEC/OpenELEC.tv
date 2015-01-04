@@ -44,3 +44,5 @@ PKG_CONFIGURE_OPTS_HOST="--disable-debug \
                          --with-gnu-ld \
                          --without-libiconv-prefix \
                          --without-libintl-prefix"
+
+PKG_SHA256="768ffab457b90a20a6d895c39749adb547c1b7cb5c108e84b151a838a23ccf31"

@@ -31,3 +31,5 @@ PKG_LONGDESC="VDPAU is the Video Decode and Presentation API for UNIX. It provid
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="a040fe3682db4cb6076179185a68559a62b908cd01f0aee086838eaf2923c8e3"

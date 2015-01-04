@@ -40,3 +40,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/keymaps
     cp -PR bkeymaps/* $INSTALL/usr/lib/keymaps
 }
+
+PKG_SHA256="59d41ddb0c7a92d8ac155a82ed2875b7880c8957ea4308afa633c8b81e5b8887"

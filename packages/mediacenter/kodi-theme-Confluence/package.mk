@@ -53,3 +53,5 @@ makeinstall_target() {
 # Rebrand
   sed -e "s,@DISTRONAME@,$DISTRONAME,g" -i $INSTALL/usr/share/kodi/addons/skin.confluence/720p/IncludesHomeMenuItems.xml
 }
+
+PKG_SHA256="27c0d649394f809930d5b1792a3fc192b68c42ab6514ffa3542df8b73135b407"

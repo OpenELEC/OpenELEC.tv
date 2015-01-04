@@ -91,3 +91,5 @@ post_install() {
   enable_service fbset.service
   enable_service unbind-console.service
 }
+
+PKG_SHA256="c97f91224f7ada5580210c8f20a3382ddca6d98a7757dfba35ff9f1d431c01ae"

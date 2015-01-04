@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--without-cython"
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="0effdedcb3de128c4930d8c03a3854c74c426c16728b8ab5f0a5b6bdc0b644be"

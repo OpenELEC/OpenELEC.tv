@@ -48,3 +48,5 @@ makeinstall_target() {
     $STRIP $INSTALL/usr/bin/unzip
 }
 
+
+PKG_SHA256="036d96991646d0449ed0aa952e4fbe21b476ce994abc276e49d30e686708bd37"

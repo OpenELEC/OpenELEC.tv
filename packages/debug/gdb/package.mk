@@ -58,3 +58,5 @@ PKG_CONFIGURE_OPTS_TARGET="bash_cv_have_mbstate_t=set \
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/gdb/python
 }
+
+PKG_SHA256="497722b58386f4428c3474281eb3ef1c872404998b6ace907edb3bba1fabdc35"

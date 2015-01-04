@@ -52,3 +52,5 @@ post_makeinstall_target() {
   find $INSTALL/usr/lib -name "*.py" -exec rm -rf "{}" ";"
   rm -rf $INSTALL/usr/lib/python*/site-packages/twisted/conch/test
 }
+
+PKG_SHA256="a3bd009928b8388928b24fbbb29e1dae6ea092f3a378001f426c6f6302f25504"

@@ -55,3 +55,5 @@ makeinstall_init() {
     cp ../.$TARGET_NAME/parted/parted $INSTALL/sbin
     cp ../.$TARGET_NAME/partprobe/partprobe $INSTALL/sbin
 }
+
+PKG_SHA256="858b589c22297cacdf437f3baff6f04b333087521ab274f7ab677cb8c6bb78e4"

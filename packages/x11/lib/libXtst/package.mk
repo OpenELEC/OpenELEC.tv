@@ -33,3 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared --with-gnu-ld --without-xmlto"
+
+PKG_SHA256="ef0a7ffd577e5f1a25b1663b375679529663a1880151beaa73e9186c8309f6d9"

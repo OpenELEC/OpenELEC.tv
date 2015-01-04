@@ -35,3 +35,5 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
                            --with-xorg-module-dir=$XORG_PATH_MODULES \
                            --with-gnu-ld"
+
+PKG_SHA256="0ce30328adfeac90a6f4b508d992fb834d8e50b484b29d3d58cf6683fa8502f9"

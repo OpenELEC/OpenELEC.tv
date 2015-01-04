@@ -31,3 +31,5 @@ PKG_LONGDESC="libmodplug renders mod music files as raw audio data, for playing 
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="77462d12ee99476c8645cb5511363e3906b88b33a6b54362b4dbc0f39aa2daad"

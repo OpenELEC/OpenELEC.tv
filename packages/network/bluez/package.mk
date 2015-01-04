@@ -78,3 +78,5 @@ post_install() {
   enable_service bluetooth.service
   enable_service obex.service
 }
+
+PKG_SHA256="5ca62f3f45e2638a0f7a81658d6c8813ee01487436ae8e53e9fe395e23d1fd30"

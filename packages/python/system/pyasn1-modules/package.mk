@@ -47,3 +47,5 @@ makeinstall_target() {
 post_makeinstall_target() {
   find $INSTALL/usr/lib -name "*.py" -exec rm -rf "{}" ";"
 }
+
+PKG_SHA256="4600d0acb9ecef20e9aa0d08922a0a11c541dc6841893cb5bb01063dfe103eca"

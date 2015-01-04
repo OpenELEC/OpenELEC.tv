@@ -41,3 +41,5 @@ post_makeinstall_target() {
   sed -e "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" -i src/gpg-error-config
   cp src/gpg-error-config $ROOT/$TOOLCHAIN/bin
 }
+
+PKG_SHA256="cafc9ed6a87c53a35175d5a1220a96ca386696eef2fa059cc0306211f246e55f"

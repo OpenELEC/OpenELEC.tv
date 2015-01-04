@@ -73,3 +73,5 @@ addon() {
     cp -R $PKG_DIR/config/boblight.X11.sample $ADDON_BUILD/$PKG_ADDON_ID/config
   fi
 }
+
+PKG_SHA256="78b82c9b133ce20c3d24aba96abe4a8302ec8dc640460b3b7302aa1d368c543a"

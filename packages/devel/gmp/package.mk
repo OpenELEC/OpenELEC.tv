@@ -39,3 +39,5 @@ pre_configure_host() {
   export CFLAGS="$CFLAGS -fPIC -DPIC"
   export CPPFLAGS="$CPPFLAGS -fexceptions"
 }
+
+PKG_SHA256="9156d32edac6955bc53b0218f5f3763facb890b73a835d5e1b901dcf8eb8b764"

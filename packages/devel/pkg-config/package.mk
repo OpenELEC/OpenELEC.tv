@@ -40,3 +40,5 @@ post_makeinstall_host() {
   mkdir -p $SYSROOT_PREFIX/usr/share/aclocal
     cp ../pkg.m4 $SYSROOT_PREFIX/usr/share/aclocal
 }
+
+PKG_SHA256="6b6eb31c6ec4421174578652c7e141fdaae2dabad1021f420d8713206ac1f845"

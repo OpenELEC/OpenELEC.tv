@@ -45,3 +45,5 @@ makeinstall_target() {
 addon() {
   : # nothing to do here
 }
+
+PKG_SHA256=

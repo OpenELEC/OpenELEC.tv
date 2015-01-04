@@ -51,3 +51,5 @@ post_makeinstall_target() {
   rm -rf $SYSROOT_PREFIX/usr/bin/cxxtools-config
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="7418829c693f38fb8e709ddef371890ec8a8e757b2f92c9512361e928d2d8c89"

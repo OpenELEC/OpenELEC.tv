@@ -48,3 +48,5 @@ makeinstall_target() {
 make_init() {
   : # we reuse make_target()
 }
+
+PKG_SHA256="a46bec392661a02d9683355baf4442d494e2bcde0ffb094aacc1e57ddc03b3d4"

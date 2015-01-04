@@ -56,3 +56,5 @@ post_make_target() {
   # dont build parallel
     MAKEFLAGS=-j1
 }
+
+PKG_SHA256="24346b4158e4af3bd9f2e194bb23eb473c75fb7377011523353196b19b9a23ff"

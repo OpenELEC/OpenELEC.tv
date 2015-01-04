@@ -52,3 +52,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/lib/firmware/
   cp $ROOT/$PKG_BUILD/*.fw $INSTALL/lib/firmware/
 }
+
+PKG_SHA256="c34e068073f76698ad0044e5128e8c4e1cb9889a328c8e4824761de618b01dd1"

@@ -64,3 +64,5 @@ makeinstall_host() {
   cp -v ../include/libiberty.h $SYSROOT_PREFIX/usr/include
   make install
 }
+
+PKG_SHA256="cccf377168b41a52a76f46df18feb8f7285654b3c1bd69fc8265cb0fc6902f2d"

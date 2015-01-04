@@ -35,3 +35,5 @@ PKG_AUTORECONF="no"
 
 PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared HELP2MAN=/bin/true"
 
+
+PKG_SHA256="159d4e20c201f929e3562536d3ae6b5e605403fa4bb4e72ef197a4e162c3fedf"

@@ -60,3 +60,5 @@ post_install() {
   enable_service backup-restore.service
   enable_service factory-reset.service
 }
+
+PKG_SHA256="1967c6195a48a262722738a44d49a7bc2767b923c87e4efc99150e28dc64f648"

@@ -65,3 +65,5 @@ post_makeinstall_target() {
 post_install() {
   add_group audio 63
 }
+
+PKG_SHA256="3c074b85dde1b30e78ef4995579765833e5b693fbbd8f834c335e080cb734a6d"

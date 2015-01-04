@@ -186,3 +186,5 @@ makeinstall_init() {
   mkdir -p $INSTALL/lib
     cp -P $ROOT/$PKG_BUILD/.$HOST_NAME/$TARGET_NAME/libgcc/libgcc_s.so* $INSTALL/lib
 }
+
+PKG_SHA256="2020c98295856aa13fda0f2f3a4794490757fc24bcca918d52cc8b4917b972dd"

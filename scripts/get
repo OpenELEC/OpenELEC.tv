@@ -20,7 +20,13 @@
 
 . config/options $1
 
-if [ -z "$1" ]; then
+if [ "$1" = "--update-checksums" ]; then
+  export UPDATE_CHECKSUMS=true
+fi
+if [ -z "$1" ] || [ "$1" = "--update-checksums" ]; then
+  if [ "$1" = "--update-checksums" ]; then
+    export UPDATE_CHECKSUMS=true
+  fi
   for i in `find packages/ -type f -name package.mk`; do
     GET_PKG=`grep ^PKG_NAME= $i | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
     $SCRIPTS/get $GET_PKG
@@ -61,6 +67,23 @@ if [ -n "$PKG_URL" ]; then
         exit 1
       fi
     done
+
+    if [ "$UPDATE_CHECKSUMS" = true ]; then
+      sum="$(sha256sum $PACKAGE | awk '{print $1}')"
+      tmp=$(mktemp)
+      awk -F= '
+        BEGIN{
+          OFS="="
+        }
+        $1 == "PKG_SHA256"{
+          $2="\"'"$sum"'\""
+        }
+        {print}' "$PKG_DIR/package.mk" > $tmp
+      mv $tmp "$PKG_DIR/package.mk"
+    elif ! sha256sum --strict --status --check <<< "$PKG_SHA256 $PACKAGE"; then
+      echo "Package integrity check failed."
+      exit 1
+    fi
 
     echo $i > $STAMP
     md5sum -t $PACKAGE > $MD5SUM

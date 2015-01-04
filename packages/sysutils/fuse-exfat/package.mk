@@ -45,3 +45,5 @@ makeinstall_target() {
     cp fuse/mount.exfat-fuse $INSTALL/usr/bin
     ln -sf mount.exfat-fuse $INSTALL/usr/bin/mount.exfat
 }
+
+PKG_SHA256="198c520e417e955dc5c08687c278e63eefa56719da4452aa4a605be0327f953e"

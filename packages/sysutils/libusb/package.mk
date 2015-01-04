@@ -38,3 +38,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-shared \
             --disable-debug-log \
             --enable-udev \
             --disable-examples-build"
+
+PKG_SHA256="6c502c816002f90d4f76050a6429c3a7e0d84204222cbff2dce95dd773ba6840"

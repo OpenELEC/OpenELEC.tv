@@ -40,3 +40,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
   cp -P $PKG_DIR/scripts/xorg-launch $INSTALL/usr/bin
 }
+
+PKG_SHA256="a7f8809a1810212506893ac5c62d8d17fee7a980fb10d59d1bef36f694767be5"

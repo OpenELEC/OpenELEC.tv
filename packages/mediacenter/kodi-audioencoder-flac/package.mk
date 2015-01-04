@@ -41,3 +41,5 @@ configure_target() {
         -DOGG_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
         ..
 }
+
+PKG_SHA256="fb2f4aefc8be330d13e29b3dc78a970c902f372f247c838048a15ff05641cfc1"

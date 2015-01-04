@@ -42,3 +42,5 @@ export LIBS="$LIBS -lz"
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/nano
 }
+
+PKG_SHA256="01773e7d9bf94f0b1e64fa083d5fb047bd1a23e796e0e4f8590a79b4925934d6"

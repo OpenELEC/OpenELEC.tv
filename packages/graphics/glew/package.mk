@@ -52,3 +52,5 @@ makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/include
     cp -PR include/GL $SYSROOT_PREFIX/usr/include
 }
+
+PKG_SHA256="99c41320b63f6860869b5fb9af9a1854b15582796c64ee3dfd7096dc0c89f307"

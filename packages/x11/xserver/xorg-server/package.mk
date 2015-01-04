@@ -173,3 +173,5 @@ post_makeinstall_target() {
 post_install() {
   enable_service xorg.service
 }
+
+PKG_SHA256="5e0f443238af1078b48f6eea98a382861b59187da221c2cf714d31c1d560b0fb"

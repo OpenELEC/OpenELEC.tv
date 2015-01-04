@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --with-libuuid \
                            --without-xmlto \
                            --without-fop"
+
+PKG_SHA256="0baca8c9f5d934450a70896c4ad38d06475521255ca63b717a6510fdb6e287bd"

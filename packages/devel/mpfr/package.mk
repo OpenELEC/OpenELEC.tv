@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --prefix=$ROOT/$TOOLCHAIN \
                          --with-gmp-lib=$ROOT/$TOOLCHAIN/lib \
                          --with-gmp-include=$ROOT/$TOOLCHAIN/include"
+
+PKG_SHA256="399d0f47ef6608cc01d29ed1b99c7faff36d9994c45f36f41ba250147100453b"

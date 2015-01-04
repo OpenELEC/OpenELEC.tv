@@ -47,3 +47,5 @@ pre_configure_target() {
   export NCURSES_CONFIG="$ROOT/$TOOLCHAIN/bin/ncurses-config"
 }
 
+
+PKG_SHA256="ccf07eedf147ac901aff1d984ab63ddd6986b615ddf67435f270d5462ea4ca81"

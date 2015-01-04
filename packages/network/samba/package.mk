@@ -191,3 +191,5 @@ post_install() {
     enable_service smbd.service
   fi
 }
+
+PKG_SHA256="11d0bd04b734731970259efc6692b8e749ff671a9b56d8cc5fa98c192ab234a7"

@@ -35,3 +35,5 @@ PKG_AUTORECONF="yes"
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share
 }
+
+PKG_SHA256="df4de29c0512883202d41fc1efc86f534f092b5128969fdece20587cbbf8a7b9"

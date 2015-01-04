@@ -118,3 +118,5 @@ post_install() {
 
   enable_service connman.service
 }
+
+PKG_SHA256="13997824c076af150c68d6d79e48277216e8192278a5c6615cfd4905d65600f5"

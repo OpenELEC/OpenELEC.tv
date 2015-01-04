@@ -56,3 +56,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-werror \
                            --disable-doxygen-ps \
                            --disable-doxygen-pdf \
                            --with-gnu-ld"
+
+PKG_SHA256="8ca410c8a4a1e2e8344014a67e2c908182cff3e04ece4e3b9ef196cf6bca5cd0"
