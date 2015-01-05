@@ -48,6 +48,11 @@ if [ "$OPENGLES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
 fi
 
+pre_configure_target() {
+  # workaround for https://github.com/libretro/RetroArch/issues/1078
+  strip_lto
+}
+
 configure_target() {
   cd $ROOT/$PKG_BUILD
   if [ "$PROJECT" == "RPi" ]; then
