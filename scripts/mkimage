@@ -233,9 +233,15 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     fi
 
     echo "image: installing u-boot bootloader..."
+<<<<<<< HEAD
     if [ -e "$RELEASE_DIR/3rdparty/bootloader/SPL" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/SPL" of="$DISK" bs=512 seek=2 conv=notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
+=======
+    if [ -f "$RELEASE_DIR/3rdparty/bootloader/SPL" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/SPL" of="$DISK" bs=512 seek=2 conv=notrunc
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
+>>>>>>> upstream/master
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
       dd if=$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8 conv=notrunc

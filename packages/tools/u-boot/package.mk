@@ -33,6 +33,8 @@ elif [ "$UBOOT_VERSION" = "imx6-wandboard" ]; then
   PKG_VERSION="2014.04-rc3"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+else
+  exit 0
 fi
 PKG_REV="1"
 PKG_ARCH="arm"

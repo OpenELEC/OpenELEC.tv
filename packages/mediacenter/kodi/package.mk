@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="14-8fb5660"
+PKG_VERSION="14-ad747d9"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -422,6 +422,7 @@ post_makeinstall_target() {
 
   mkdir -p $INSTALL/usr/lib/kodi
     cp $PKG_DIR/scripts/kodi-config $INSTALL/usr/lib/kodi
+    cp $PKG_DIR/scripts/kodi.sh $INSTALL/usr/lib/kodi
     cp $PKG_DIR/scripts/kodi-hacks $INSTALL/usr/lib/kodi
     cp $PKG_DIR/scripts/kodi-sources $INSTALL/usr/lib/kodi
 # TODO: remove this later:
