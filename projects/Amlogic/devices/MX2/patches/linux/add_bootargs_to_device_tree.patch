@@ -7,7 +7,7 @@ index e5b6075..d21c1c2 100755
  	#address-cells = <1>;
  	#size-cells = <1>;
 +	chosen {
-+	    bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/system disk=/dev/data BOOT_IMAGE=/dev/mtd4 console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1200000 quiet";
++	    bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/system disk=/dev/data BOOT_IMAGE=/dev/mtd4 console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1500000 quiet";
 +	};
  	
  /// ***************************************************************************************
