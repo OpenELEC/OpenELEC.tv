@@ -35,6 +35,10 @@ PKG_LONGDESC="This is yet another Megadrive / Genesis / Sega CD / Mega CD / 32X 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_configure_target() {
+  strip_gold
+}
+
 configure_host() {
   :
 }
