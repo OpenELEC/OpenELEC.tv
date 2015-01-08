@@ -1,6 +1,5 @@
-diff -Naur Imaging-1.1.7/setup.py Imaging-1.1.7.patch/setup.py
---- Imaging-1.1.7/setup.py	2011-04-17 09:31:07.000000000 +0200
-+++ Imaging-1.1.7.patch/setup.py	2011-04-17 09:54:20.880047886 +0200
+--- a/setup.py
++++ b/setup.py
 @@ -337,21 +337,6 @@
              else:
                  TCL_ROOT = None
