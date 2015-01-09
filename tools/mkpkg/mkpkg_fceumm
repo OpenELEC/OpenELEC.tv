@@ -20,26 +20,26 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d fceu-next.git ]; then
-    git clone https://github.com/libretro/fceu-next.git -b master fceu-next.git
+  if [ ! -d fceumm.git ]; then
+    git clone https://github.com/libretro/libretro-fceumm.git -b master fceumm.git
   fi
 
-  cd fceu-next.git
+  cd fceumm.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf fceu-next-$GIT_REV
-  cp -R fceu-next.git fceu-next-$GIT_REV
+  rm -rf fceumm-$GIT_REV
+  cp -R fceumm.git fceumm-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf fceu-next-$GIT_REV/.git
-  rm -rf fceu-next-$GIT_REV/fceumm-code/.svn
-  rm fceu-next-$GIT_REV/.gitignore
+  rm -rf fceumm-$GIT_REV/.git
+  rm -rf fceumm-$GIT_REV/fceumm-code/.svn
+  rm fceumm-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf fceu-next-$GIT_REV.tar.xz fceu-next-$GIT_REV
+  tar cvJf fceumm-$GIT_REV.tar.xz fceumm-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf fceu-next-$GIT_REV
+  rm -rf fceumm-$GIT_REV

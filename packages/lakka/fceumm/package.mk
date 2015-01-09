@@ -18,12 +18,12 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="fceu-next"
-PKG_VERSION="1b3d4d7"
+PKG_NAME="fceumm"
+PKG_VERSION="f065650"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/libretro/fceu-next"
+PKG_SITE="https://github.com/libretro/libretro-fceumm"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
@@ -36,10 +36,10 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -C fceumm-code -f Makefile.libretro
+  make -f Makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp fceumm-code/fceumm_libretro.so $INSTALL/usr/lib/libretro/
+  cp fceumm_libretro.so $INSTALL/usr/lib/libretro/
 }
