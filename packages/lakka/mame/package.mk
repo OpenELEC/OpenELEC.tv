@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="d08e79c"
+PKG_VERSION="4ad8667"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -36,7 +36,16 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -C 0152 -f Makefile.libretro
+  sed -i -e "s/\tCC_AS = gcc/\tCC_AS = \$\(CC\)/" Makefile.libretro
+  sed -i -e "s/\tCC = g++//" Makefile.libretro
+  sed -i -e "s/\tNATIVECC = g++/\tNATIVECC = \$\(CXX\)/" Makefile.libretro
+  #sed -i -e "s/\tAR = @ar//" Makefile.libretro
+  sed -i -e "s/\tLD = g++//" Makefile.libretro
+  sed -i -e "s/\tNATIVELD = g++/\tNATIVELD = \$\(CXX\)/" Makefile.libretro
+  #sed -i -e "s/-Wl,--version-script=src\/osd\/retro\/link.T//" Makefile.libretro
+  #sed -i -e "s/-Wl,--no-undefined//" Makefile.libretro
+  #sed -i -e "s/-Wl,--warn-common//" Makefile.libretro
+  make -f Makefile.libretro
 }
 
 makeinstall_target() {

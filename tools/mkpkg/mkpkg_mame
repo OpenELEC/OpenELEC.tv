@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d mame.git ]; then
-    git clone https://github.com/libretro/mame-libretro.git -b master mame.git
+    git clone https://github.com/libretro/mame.git -b master mame.git
   fi
 
   cd mame.git
