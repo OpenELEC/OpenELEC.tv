@@ -20,25 +20,25 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d RetroArch.git ]; then
-    git clone https://github.com/libretro/RetroArch.git -b master RetroArch.git
+  if [ ! -d retroarch.git ]; then
+    git clone https://github.com/libretro/retroarch.git -b master retroarch.git
   fi
 
-  cd RetroArch.git
+  cd retroarch.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf RetroArch-$GIT_REV
-  cp -R RetroArch.git RetroArch-$GIT_REV
+  rm -rf retroarch-$GIT_REV
+  cp -R retroarch.git retroarch-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf RetroArch-$GIT_REV/.git
-  rm RetroArch-$GIT_REV/.gitignore
+  rm -rf retroarch-$GIT_REV/.git
+  rm retroarch-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf RetroArch-$GIT_REV.tar.xz RetroArch-$GIT_REV
+  tar cvJf retroarch-$GIT_REV.tar.xz retroarch-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf RetroArch-$GIT_REV
+  rm -rf retroarch-$GIT_REV

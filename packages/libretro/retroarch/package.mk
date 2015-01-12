@@ -18,8 +18,8 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RetroArch"
-PKG_VERSION="a53d50b"
+PKG_NAME="retroarch"
+PKG_VERSION="7283ce1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
