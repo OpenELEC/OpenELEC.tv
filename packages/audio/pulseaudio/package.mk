@@ -117,3 +117,5 @@ post_makeinstall_target() {
 post_install() {
   enable_service pulseaudio.service
 }
+
+PKG_SHA256="99c13a8b1249ddbd724f195579df79484e9af6418cecf6a15f003a7f36caf939"

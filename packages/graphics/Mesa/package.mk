@@ -103,3 +103,5 @@ post_makeinstall_target() {
     ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
     mv $INSTALL/usr/lib/libGL.so.1.2.0 $INSTALL/usr/lib/libGL_mesa.so.1
 }
+
+PKG_SHA256="98a7dff3a1a6708c79789de8b9a05d8042e867067f70e8f30387c15026233219"

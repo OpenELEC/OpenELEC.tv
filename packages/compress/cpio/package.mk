@@ -31,3 +31,5 @@ PKG_LONGDESC="This is GNU cpio, a program to manage archives of files. As of ver
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256="601b1d774cd6e4cd39416203c91ec59dbd65dd27d79d75e1a9b89497ea643978"

@@ -55,3 +55,5 @@ makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/include/sys
     cp libcap/include/sys/capability.h $SYSROOT_PREFIX/usr/include/sys
 }
+
+PKG_SHA256="cee4568f78dc851d726fc93f25f4ed91cc223b1fe8259daa4a77158d174e6c65"

@@ -57,3 +57,5 @@ post_install() {
 
   enable_service installer.service
 }
+
+PKG_SHA256=

@@ -40,3 +40,5 @@ post_configure_host() {
 # $PATH. The following addition will correct this:
   echo '#define YYENABLE_NLS 1' >> lib/config.h
 }
+
+PKG_SHA256="a2c3e8528bdb50567d6fa26deeb493dc5ccd7e277b865251608a9e43ac928f3c"

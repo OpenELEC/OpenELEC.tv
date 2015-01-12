@@ -57,3 +57,5 @@ makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/include/attr
     cp include/*.h $SYSROOT_PREFIX/usr/include/attr
 }
+
+PKG_SHA256="25772f653ac5b2e3ceeb89df50e4688891e21f723c460636548971652af0a859"

@@ -71,3 +71,5 @@ post_install() {
 
   enable_service sshd.service
 }
+
+PKG_SHA256="b2f8394eae858dabbdef7dac10b99aec00c95462753e80342e530bbb6f725507"

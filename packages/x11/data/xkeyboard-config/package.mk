@@ -48,3 +48,5 @@ pre_build_target() {
     intltoolize --force
   )
 }
+
+PKG_SHA256="7d58064d86bb0155a3acc4ca35097dab4dfef334cdd0555fb5965ebca1fca18b"

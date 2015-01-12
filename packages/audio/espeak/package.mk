@@ -51,3 +51,5 @@ makeinstall_target() {
        AUDIO="" \
        DESTDIR=$INSTALL install
 }
+
+PKG_SHA256="bf9a17673adffcc28ff7ea18764f06136547e97bbd9edf2ec612f09b207f0659"

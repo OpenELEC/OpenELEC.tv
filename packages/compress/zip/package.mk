@@ -48,3 +48,5 @@ makeinstall_target() {
     cp zip $INSTALL/usr/bin
     $STRIP $INSTALL/usr/bin/zip
 }
+
+PKG_SHA256="f0e8bb1f9b7eb0b01285495a2699df3a4b766784c1765a8f1aeedf63c0806369"

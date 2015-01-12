@@ -164,3 +164,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/smtpd.py
   rm -rf $INSTALL/usr/bin/python*-config
 }
+
+PKG_SHA256="61d36be58e9e9c733c49d7b76858d5c08e2c63a84f2066b29d35d3521057c985"

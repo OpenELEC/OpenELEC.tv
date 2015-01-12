@@ -53,3 +53,5 @@ post_makeinstall_target() {
 post_install() {
   enable_service udevil-mount@.service
 }
+
+PKG_SHA256="446bbbd810d8379599f5aff3b94a19a617d7c84775b7f34a03c21f58835c3b76"

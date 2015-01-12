@@ -225,3 +225,5 @@ post_install() {
 
   enable_service cpufreq-threshold.service
 }
+
+PKG_SHA256="a3c8e6aee912bfd2e69abf9df5a06058434a8771bcaa1784b5980bf1b5298e1c"

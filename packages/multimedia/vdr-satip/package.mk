@@ -50,3 +50,5 @@ make_target() {
 makeinstall_target() {
   : # installation not needed, done by create-addon script
 }
+
+PKG_SHA256="6e795c8e254e698ec86e2d7b8440d7401e9c612e472432b4af067a7729713b0a"

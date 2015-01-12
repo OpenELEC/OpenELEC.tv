@@ -74,3 +74,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="86370f139405fdfe03334fd618171a74e50f589f17ccbe5933361ed1f58359ec"

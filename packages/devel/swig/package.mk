@@ -58,3 +58,5 @@ PKG_CONFIGURE_OPTS_HOST="--with-pcre-prefix=$ROOT/$TOOLCHAIN \
                          --without-r \
                          --without-go \
                          --without-d"
+
+PKG_SHA256="65e13f22a60cecd7279c59882ff8ebe1ffe34078e85c602821a541817a4317f7"

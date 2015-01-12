@@ -45,3 +45,5 @@ post_makeinstall_target() {
     $STRIP $INSTALL/usr/lib/kodi/addons/pvr.*/*.pvr
   fi
 }
+
+PKG_SHA256="41a4b458620ede1a5c542328c3fd799242dd872db97beb1feaa0e1396058ec59"

@@ -45,3 +45,5 @@ pre_build_host() {
   mkdir -p $PKG_BUILD/.$HOST_NAME
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$HOST_NAME
 }
+
+PKG_SHA256="831df043236df8e9a7667b9e3bb37e1fcb1220a0f163b6de2626774b9590d057"

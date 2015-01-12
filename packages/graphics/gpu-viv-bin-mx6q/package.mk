@@ -83,3 +83,5 @@ makeinstall_target() {
 post_install() {
   enable_service unbind-console.service
 }
+
+PKG_SHA256="2eab46674460550236e97c92f78525521cede1cb5910100bab3831ea0b7ece2e"

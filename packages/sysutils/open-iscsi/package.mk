@@ -52,3 +52,5 @@ makeinstall_init() {
   mkdir -p $INSTALL/sbin
     cp -P $ROOT/$PKG_BUILD/usr/iscsistart $INSTALL/sbin
 }
+
+PKG_SHA256="0d3ed170cd258813a47b40bb54e070e23e256d38d55c7cff21a3e0c0e3e1ba36"

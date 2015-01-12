@@ -45,3 +45,5 @@ makeinstall_host() {
   mkdir -p $ROOT/$TOOLCHAIN/bin
     cp squashfs-tools/mksquashfs $ROOT/$TOOLCHAIN/bin
 }
+
+PKG_SHA256="0d605512437b1eb800b4736791559295ee5f60177e102e4d4ccd0ee241a5f3f6"

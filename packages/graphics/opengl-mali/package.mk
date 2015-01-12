@@ -53,3 +53,5 @@ makeinstall_target() {
     ln -sf libGLESv2.so.2.0 $INSTALL/usr/lib/libGLESv2.so
 }
 
+
+PKG_SHA256="4832c8b56fa2b844ff5ead96185a83e08731767062ed711b86fd70543211a9db"

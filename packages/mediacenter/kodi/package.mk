@@ -516,3 +516,5 @@ post_install() {
 # TODO: remove this later
   enable_service kodi-rebrand.service
 }
+
+PKG_SHA256="a167153fe070473ef383f6bffdd5238094b9a2b86e175d903001d4480a732ac6"

@@ -59,3 +59,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/udev
     cp $PKG_DIR/scripts/soundconfig $INSTALL/usr/lib/udev
 }
+
+PKG_SHA256="f3ff4c89b0125a7797b1b13cd094cc92276e655458274967386e812d03642acc"

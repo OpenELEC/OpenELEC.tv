@@ -54,3 +54,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share
 }
+
+PKG_SHA256="9bc09b0ea4e31b4cc6318ba6ada5bae5deadcfad3d9c0ad9466d8586cdc728f4"

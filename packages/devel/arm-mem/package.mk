@@ -55,3 +55,5 @@ makeinstall_init() {
     echo "/lib/libarmmem.so" >> $INSTALL/etc/ld.so.preload
 }
 
+
+PKG_SHA256="161955e0d3c5150b3bb46828774adb649fcb43d1f386e608e829701590510141"

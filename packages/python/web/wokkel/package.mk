@@ -48,3 +48,5 @@ post_makeinstall_target() {
   find $INSTALL/usr/lib -name "*.py" -exec rm -rf "{}" ";"
   rm -rf $INSTALL/usr/lib/python*/site-packages/wokkel/test
 }
+
+PKG_SHA256="eab42623705705f5ea1787fa95d5153e8f6e0fbff88a220e22a53c486abb5e81"

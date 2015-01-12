@@ -31,3 +31,5 @@ PKG_LONGDESC="a crosscompiling toolchain to compile all packages"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

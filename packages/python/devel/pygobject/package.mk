@@ -41,3 +41,4 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share/pygobject
 }
+PKG_SHA256="e4bfe017fa845940184c82a4d8949db3414cb29dfc84815fb763697dc85bdcee"

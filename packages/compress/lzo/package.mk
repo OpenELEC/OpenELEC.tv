@@ -35,3 +35,5 @@ PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_HOST="--disable-shared --enable-static"
 PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static"
+
+PKG_SHA256="ac1b3e4dee46febe9fd28737eb7f5692d3232ef1a01da10444394c3d47536614"

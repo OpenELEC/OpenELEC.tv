@@ -36,3 +36,5 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --enable-static --disable-shared \
                          --with-gmp=$ROOT/$TOOLCHAIN \
                          --with-mpfr=$ROOT/$TOOLCHAIN"
+
+PKG_SHA256="b561f54d8a479cee3bc891ee52735f18ff86712ba30f036f8b8537bae380c488"

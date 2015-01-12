@@ -85,3 +85,5 @@ makeinstall_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/sbin
 }
+
+PKG_SHA256="cc1675d6c5141f6b4dc7288fb9c5cd0ff9bd6201aba3199da46fc82b2a514731"

@@ -59,3 +59,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/sbin/pppoe-discovery
   rm -rf $INSTALL/usr/sbin/pppstats
 }
+
+PKG_SHA256="02e0a3dd3e4799e33103f70ec7df75348c8540966ee7c948e4ed8a42bbccfb30"

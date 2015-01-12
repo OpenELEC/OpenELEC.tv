@@ -58,3 +58,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-udev \
                            --disable-install-test-programs \
                            --disable-cairo-tests \
                            --disable-manpages"
+
+PKG_SHA256="b155fae6b9c9a3b02ef8b77f58c7c219194c996a4018dc55ba66c03996a365dd"

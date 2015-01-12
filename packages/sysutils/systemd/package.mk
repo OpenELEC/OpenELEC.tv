@@ -265,3 +265,5 @@ post_install() {
   enable_service userconfig.service
   enable_service hwdb.service
 }
+
+PKG_SHA256="a031e6fbcdc7077b37338bae8074d9428ee2fa98033beb4923a62871890f7498"

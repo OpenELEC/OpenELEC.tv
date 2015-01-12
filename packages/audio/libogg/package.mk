@@ -31,3 +31,5 @@ PKG_LONGDESC="Libogg contains necessary functionality to create, decode, and wor
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="4e343f07aa5a1de8e0fa1107042d472186b3470d846b20b115b964eba5bae554"

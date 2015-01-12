@@ -40,3 +40,5 @@ pre_configure_target() {
 
   export CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -I$ROOT/$PKG_BUILD/mount -I$ROOT/$PKG_BUILD/nfs"
 }
+
+PKG_SHA256="b1a098ce4c3eff930dbd6e85007181c309b4e7c2575bcc9daaee0310d6662dbf"

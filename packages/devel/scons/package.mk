@@ -39,3 +39,5 @@ make_host() {
 makeinstall_host() {
   python setup.py install --prefix=$ROOT/$TOOLCHAIN
 }
+
+PKG_SHA256="f7fcd11a7af7ec13d587a2f7cf14a92e3223eea64bf078454a9856ec0ab465b9"

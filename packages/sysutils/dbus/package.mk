@@ -66,3 +66,5 @@ post_install() {
   echo "chmod 4750 $INSTALL/usr/lib/dbus/dbus-daemon-launch-helper" >> $FAKEROOT_SCRIPT
   echo "chown 0:81 $INSTALL/usr/lib/dbus/dbus-daemon-launch-helper" >> $FAKEROOT_SCRIPT
 }
+
+PKG_SHA256="c91428f28d2925ba32d34ffc824bfcf4d40d5e1e67befc4bcf2202f0a862501e"

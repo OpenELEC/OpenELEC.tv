@@ -41,3 +41,5 @@ makeinstall_host() {
 # remove problematic m4 file
   rm -rf $SYSROOT_PREFIX/usr/share/aclocal/ax_prog_cc_for_build.m4
 }
+
+PKG_SHA256="4c931727d485cc3538cbbb8f6454b7167abd9c0221b18adac5c9896f42dc9129"

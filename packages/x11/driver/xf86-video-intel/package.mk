@@ -64,3 +64,5 @@ pre_configure_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/polkit-1
 }
+
+PKG_SHA256="203d46064449da0e23a111418dfb189422ba96ea08707167c8dee463e2d745b1"

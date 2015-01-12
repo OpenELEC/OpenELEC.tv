@@ -55,3 +55,5 @@ post_makeinstall_target() {
       cp test/vainfo/.libs/vainfo $INSTALL/usr/bin
   fi
 }
+
+PKG_SHA256="4a0e6d263fa5c7a7b590246c0609fde003d11e76c52be5125c0d75f98d05291d"

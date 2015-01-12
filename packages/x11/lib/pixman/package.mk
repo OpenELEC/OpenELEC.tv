@@ -59,3 +59,5 @@ post_makeinstall_target() {
   cp -rf $SYSROOT_PREFIX/usr/include/pixman-1 \
      $SYSROOT_PREFIX/usr/include/pixman
 }
+
+PKG_SHA256="201fc0d7d6bc0017496f2bd27b3ca14224aea0df6b624c5ee2dc0307a4ff14a4"

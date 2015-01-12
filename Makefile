@@ -17,6 +17,9 @@ image-efi:
 noobs:
 	./scripts/image noobs
 
+checksums:
+	./scripts/get --update-checksums
+
 clean:
 	rm -rf $(BUILD_DIRS)/* $(BUILD_DIRS)/.stamps
 

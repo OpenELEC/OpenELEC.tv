@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
 pre_configure_target() {
   export CFLAGS="$CFLAGS -fPIC -DPIC"
 }
+
+PKG_SHA256="a9a4efed3359b2e80161bb66b65038fac145137fa134e71335264cbc23b02f62"

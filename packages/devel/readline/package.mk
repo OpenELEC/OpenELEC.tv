@@ -40,3 +40,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-shared \
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/readline
 }
+
+PKG_SHA256="79a696070a058c233c72dd6ac697021cc64abd5ed51e59db867d66d196a89381"

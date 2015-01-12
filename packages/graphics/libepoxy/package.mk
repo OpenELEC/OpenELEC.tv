@@ -37,3 +37,5 @@ PKG_LONGDESC="Epoxy is a library for handling OpenGL function pointer management
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
+
+PKG_SHA256="06cd2471174691306487791ae1d652e2e353e37fcdab4b525aea570b9fdeceaa"

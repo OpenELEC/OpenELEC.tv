@@ -35,3 +35,5 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--enable-dri2 \
                            --disable-documentation \
                            --with-module-dir=/usr/lib/vdpau"
+
+PKG_SHA256="e32957140835a545a01a3972db1143e01174db3d9c0017e51f6a3bf8b09c0e6e"

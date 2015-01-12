@@ -41,3 +41,5 @@ PKG_CONFIGURE_OPTS_HOST="--disable-shared --enable-static \
                          --disable-scripts \
                          --disable-nls"
 
+
+PKG_SHA256="e8851dc749df2340dac6c9297cb2653eff684e73c3dedf690930119502edd616"

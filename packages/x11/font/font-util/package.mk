@@ -38,3 +38,5 @@ PKG_CONFIGURE_OPTS_TARGET="--with-mapdir=/usr/share/fonts/util"
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
 }
+
+PKG_SHA256="dfa9e55625a4e0250f32fabab1fd5c8ffcd2d1ff2720d6fcf0f74bc8a5929195"

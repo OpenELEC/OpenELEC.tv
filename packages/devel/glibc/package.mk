@@ -170,3 +170,5 @@ makeinstall_init() {
       ln -sf ld.so $INSTALL/lib/ld-linux.so.3
     fi
 }
+
+PKG_SHA256="f84b6d42aecc288d593c397b0a3d02260a33ee686bce0c634eb9b32798f36ba5"

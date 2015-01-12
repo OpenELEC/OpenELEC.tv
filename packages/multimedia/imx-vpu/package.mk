@@ -40,3 +40,5 @@ makeinstall_target() {
   make DIRS="vpu" PLATFORM=IMX6Q DEST_DIR=$SYSROOT_PREFIX install
   make DIRS="vpu" PLATFORM=IMX6Q DEST_DIR=$INSTALL install
 }
+
+PKG_SHA256="a24455f0076cb7bb9d450cbcec4bf4fb6e6093f30d9d82442316b69df56a0209"

@@ -38,3 +38,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
                            --disable-gssapi \
                            --with-gnu-ld"
 
+
+PKG_SHA256="62f9de7c2c8686c568757730e1fef66502a0e00d6cacf33546d0267984e002db"

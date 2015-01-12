@@ -36,3 +36,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-shared \
                            --disable-ipv6 \
                            --without-xmlto"
+
+PKG_SHA256="8f7032f2c1c64352b5423f6b48a8ebdc339cc63064af34d66a6c9aa79759e202"

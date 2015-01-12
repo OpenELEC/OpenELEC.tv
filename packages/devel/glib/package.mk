@@ -68,3 +68,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/glib-2.0
   rm -rf $INSTALL/usr/share
 }
+
+PKG_SHA256="0d27f195966ecb1995dcce0754129fd66ebe820c7cd29200d264b02af1aa28b5"

@@ -51,3 +51,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/etc
     cp $PKG_DIR/config/ratpoisonrc $INSTALL/etc
 }
+
+PKG_SHA256="b9b181dd2aa08508cb3c3d40aa670ef179f7d11bb439e6d7ea05ea3d1a82956c"

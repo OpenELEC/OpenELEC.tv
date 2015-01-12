@@ -40,3 +40,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-warmstarts \
 post_install() {
   enable_service rpcbind.service
 }
+
+PKG_SHA256="13dbc8c796dbe0ce8df873007bea0490c8460b56202d918c9eb6fa0358a08f29"

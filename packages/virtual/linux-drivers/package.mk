@@ -31,3 +31,5 @@ PKG_LONGDESC="linux-drivers is a Meta package to install additional drivers"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

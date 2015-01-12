@@ -47,3 +47,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/usr/config
     cp -PR $PKG_DIR/config/* $INSTALL/usr/config
 }
+
+PKG_SHA256="d3d6eb1f0204fb11f3d318bfca35d5f73cc077f88fac7665a47856a16496be7d"

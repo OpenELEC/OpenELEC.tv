@@ -56,3 +56,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/sbin/update-pciids
   rm -rf $INSTALL/usr/share
 }
+
+PKG_SHA256="413395d4bdc66fdedd6c993ed9083d1dd73812bf2a679d320f73de35c7801301"

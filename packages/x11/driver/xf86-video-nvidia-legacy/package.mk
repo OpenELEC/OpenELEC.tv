@@ -79,3 +79,5 @@ makeinstall_target() {
     cp libvdpau_nvidia.so* $INSTALL/usr/lib/vdpau/libvdpau_nvidia.so.1
     ln -sf libvdpau_nvidia.so.1 $INSTALL/usr/lib/vdpau/libvdpau_nvidia.so
 }
+
+PKG_SHA256="d5034900173cb7195f52bd6add5bf574dfcd8868bd75c0e1793592c03b97f425"

@@ -49,3 +49,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-music-cmd \
                            --disable-smpegtest \
                            --with-gnu-ld \
                            --with-sdl-prefix=$SYSROOT_PREFIX/usr"
+
+PKG_SHA256="1644308279a975799049e4826af2cfc787cad2abb11aa14562e402521f86992a"

@@ -103,3 +103,5 @@ post_makeinstall_target() {
   sed -e "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" -i $SYSROOT_PREFIX/usr/bin/curl-config
   mv $SYSROOT_PREFIX/usr/bin/curl-config $ROOT/$TOOLCHAIN/bin
 }
+
+PKG_SHA256="b222566e7087cd9701b301dd6634b360ae118cc1cbc7697e534dc451102ea4e0"

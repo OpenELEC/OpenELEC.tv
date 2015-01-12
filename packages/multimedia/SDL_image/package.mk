@@ -68,3 +68,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-bmp \
                            --enable-xpm \
                            --enable-xv \
                            --with-sdl-prefix=$SYSROOT_PREFIX/usr"
+
+PKG_SHA256="0b90722984561004de84847744d566809dbb9daf732a9e503b91a1b5a84e5699"

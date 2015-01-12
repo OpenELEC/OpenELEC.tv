@@ -42,3 +42,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/etc/ssl
   ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/ssl/cert.pem
 }
+
+PKG_SHA256="fb5ada41a75b31c8dd9ff013daca57b253047ad14e43f65d8b41879b7b8e3c17"

@@ -41,3 +41,5 @@ post_makeinstall_target() {
 
   mv $SYSROOT_PREFIX/usr/bin/libusb-config $ROOT/$TOOLCHAIN/bin
 }
+
+PKG_SHA256="ed5bdd160c7b01ef767fb931a81b454f46226d1e2cf58502ced758d3e5a9fdc4"

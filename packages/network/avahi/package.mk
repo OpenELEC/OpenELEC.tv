@@ -111,3 +111,5 @@ post_install() {
   enable_service avahi-defaults.service
   enable_service avahi-daemon.service
 }
+
+PKG_SHA256="8372719b24e2dd75de6f59bb1315e600db4fd092805bd1201ed0cb651a2dab48"

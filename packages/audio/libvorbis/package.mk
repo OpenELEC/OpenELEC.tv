@@ -34,3 +34,5 @@ PKG_AUTORECONF="yes"
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--with-ogg=$SYSROOT_PREFIX/usr --disable-oggtest --disable-docs --disable-examples"
+
+PKG_SHA256="2f05497d29195dc23ee952a24ee3973a74e6277569c4c2eca0ec5968e541f372"

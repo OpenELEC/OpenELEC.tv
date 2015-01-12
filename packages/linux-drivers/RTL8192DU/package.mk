@@ -49,3 +49,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
     cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
 }
+
+PKG_SHA256="f51f87f2a186078945aa3acf62d60793b6d81295a2e233fabff03f3a717da20e"

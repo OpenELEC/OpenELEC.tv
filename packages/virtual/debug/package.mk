@@ -39,3 +39,5 @@ if [ "$VDPAU_SUPPORT" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET vdpauinfo"
 fi
 
+
+PKG_SHA256=

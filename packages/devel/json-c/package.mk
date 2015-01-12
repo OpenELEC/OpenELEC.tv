@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_realloc_0_nonnull=yes \
                            ac_cv_func_malloc_0_nonnull=yes \
                            --enable-static --disable-shared \
                            --disable-oldname-compat"
+
+PKG_SHA256="3250f387424713369f7fa19871125b50f47ca62b3d41c28a582fd9422d63ca4b"

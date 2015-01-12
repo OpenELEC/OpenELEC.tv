@@ -52,3 +52,5 @@ get_graphicdrivers
   for drv in $XORG_DRIVERS; do
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-video-$drv"
   done
+
+PKG_SHA256=

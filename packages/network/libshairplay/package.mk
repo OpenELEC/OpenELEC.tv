@@ -36,3 +36,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/etc/shairplay
     cp -P ../airport.key $INSTALL/etc/shairplay
 }
+
+PKG_SHA256="1b3ec7672495caecaf6f5b22947a282027bb255c7d5c8bf5fba8410baae51d27"

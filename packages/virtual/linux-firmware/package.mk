@@ -31,3 +31,5 @@ PKG_LONGDESC="linux-firmware is a meta-package to install various free firmware 
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

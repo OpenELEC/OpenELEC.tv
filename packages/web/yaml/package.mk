@@ -31,3 +31,5 @@ PKG_LONGDESC="yaml is the next generation YAML parser and emitter."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="7bf81554ae5ab2d9b6977da398ea789722e0db75b86bffdaeb4e66d961de6a37"

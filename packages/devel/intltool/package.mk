@@ -36,3 +36,5 @@ post_makeinstall_host() {
   mkdir -p  $SYSROOT_PREFIX/usr/share/aclocal
     cp ../intltool.m4 $SYSROOT_PREFIX/usr/share/aclocal
 }
+
+PKG_SHA256="67f25c5c6fb71d095793a7f895b245e65e829e8bde68c6c8b4c912144ff34406"

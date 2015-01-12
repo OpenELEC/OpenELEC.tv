@@ -31,3 +31,5 @@ PKG_LONGDESC="ALSA (Advanced Linux Sound Architecture) is the next generation Li
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

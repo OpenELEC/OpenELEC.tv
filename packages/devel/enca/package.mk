@@ -59,3 +59,5 @@ post_makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
     cp enca.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
 }
+
+PKG_SHA256="7c1d785901b19ab78780cd4c87454e69864d45dc99da5164a2c654d5e87be741"

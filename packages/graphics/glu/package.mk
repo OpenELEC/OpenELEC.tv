@@ -36,3 +36,5 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
             --disable-debug \
             --disable-osmesa \
             --with-gnu-ld"
+
+PKG_SHA256="3d19cca9b26ec4048dd22e3d294acd43e080a3205a29ff47765bd514571ea8f9"

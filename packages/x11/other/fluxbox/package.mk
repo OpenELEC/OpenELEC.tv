@@ -65,3 +65,5 @@ post_makeinstall_target() {
   cp $PKG_DIR/config/init $INSTALL/usr/share/fluxbox/
   cp $PKG_DIR/config/keys $INSTALL/usr/share/fluxbox/
 }
+
+PKG_SHA256="99d6880f8552fd2a8ff4cdfc7aa7aff58f0ae04a962ccac412dd26cd88455b97"

@@ -37,3 +37,5 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME --disable-silent-rules"
 post_makeinstall_host() {
   make prefix=$SYSROOT_PREFIX/usr install
 }
+
+PKG_SHA256="a9b4f04b8b69cac2e832a38a718943aa976dbdad0097211f8b3448afdacf0669"

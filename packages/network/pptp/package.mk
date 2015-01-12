@@ -45,3 +45,4 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/sbin
     cp -P pptp $INSTALL/usr/sbin
 }
+PKG_SHA256="e39c42d933242a8a6dd8600a0fa7f0a5ec8f066d10c4149d8e81a5c68fe4bbda"

@@ -48,3 +48,5 @@ makeinstall_target() {
   make -C amadec PREFIX="$INSTALL/usr" install
   make -C amcodec HEADERS_DIR="$INSTALL/usr/include/amcodec" PREFIX="$INSTALL/usr" install
 }
+
+PKG_SHA256="22080b09237a66de69e168e7b088c123ae88518c3bcaf60e09f7923bab1d2f53"

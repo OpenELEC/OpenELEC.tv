@@ -60,3 +60,5 @@ fi
 
 # dont use some optimizations because of build problems
   export LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
+
+PKG_SHA256="9819e782898fc041faa2f7d4576505ce7b5c5d93fa0f33e4ca4b73f6ef8de4ce"

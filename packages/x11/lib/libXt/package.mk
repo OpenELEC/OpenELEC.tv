@@ -43,3 +43,5 @@ pre_make_target() {
                LDFLAGS="$HOST_LDFLAGS" \
                makestrs
 }
+
+PKG_SHA256="843a97a988f5654872682a4120486d987d853a71651515472f55519ffae2dd57"

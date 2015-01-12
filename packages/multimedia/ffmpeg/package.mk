@@ -219,3 +219,5 @@ configure_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/ffmpeg/examples
 }
+
+PKG_SHA256="0b4785d397b08aa83a1ee63b00395e3242c407e00b66712d786dc916eeadf0be"

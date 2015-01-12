@@ -31,3 +31,5 @@ PKG_LONGDESC="OEM: Metapackage for various OEM packages"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+PKG_SHA256=

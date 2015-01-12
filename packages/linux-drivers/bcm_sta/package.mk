@@ -51,3 +51,5 @@ makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/bcm_sta
     cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
 }
+
+PKG_SHA256="6fa2466bcfc547f1d7b66ef98fa752ba49f38d7c36da73f96fce4495245bd046"

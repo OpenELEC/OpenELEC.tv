@@ -43,3 +43,5 @@ PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared \
                          --disable-native-java \
                          --disable-csharp \
                          --without-emacs"
+
+PKG_SHA256="8ac9f1ed1a5f8c4e656a2f37f5ba6b9ee04c4df79a575e876b0b6946aa417f3f"

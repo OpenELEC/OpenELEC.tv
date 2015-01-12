@@ -43,3 +43,5 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
                            --with-gnu-ld \
                            --without-xmlto"
 
+
+PKG_SHA256="3a3c52c4adf9352b2160f07ff0596af17ab14f91d6509564e606678a1261c25f"

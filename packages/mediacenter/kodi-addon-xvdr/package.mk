@@ -46,3 +46,5 @@ post_makeinstall_target() {
     $STRIP $INSTALL/usr/share/kodi/addons/pvr.vdr.xvdr/XBMC_VDR_xvdr.pvr
   fi
 }
+
+PKG_SHA256="944f3a2b19bd80b09e70e9d293475058f9de7f964a84f3bf58482ca3cd07e995"

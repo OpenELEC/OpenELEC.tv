@@ -96,3 +96,5 @@ makeinstall_init() {
     ln -sf mke2fs $INSTALL/sbin/mkfs.ext4dev
   fi
 }
+
+PKG_SHA256="e17846d91a0edd89fa59b064bde8f8e5cec5851e35f587bcccb4014dbd63186c"

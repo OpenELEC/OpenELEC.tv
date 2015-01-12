@@ -37,3 +37,5 @@ pre_configure_host() {
   cd $ROOT/$PKG_BUILD
     rm -rf .$HOST_NAME
 }
+
+PKG_SHA256="ece26b5ef565f94d19a72756d05965e424d2e5ca55f88b949852da70dd62f0e0"

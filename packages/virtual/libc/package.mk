@@ -40,3 +40,5 @@ if [ "$KODIPLAYER_DRIVER" = "bcm2835-driver" ]; then
   PKG_DEPENDS_INIT="$PKG_DEPENDS_INIT arm-mem:init"
 fi
 
+
+PKG_SHA256=

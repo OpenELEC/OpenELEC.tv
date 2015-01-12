@@ -111,3 +111,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/mysql
   rm -rf $INSTALL/usr/sql-bench
 }
+
+PKG_SHA256="05ebe21305408b24407d14b77607a3e5ffa3c300e03f1359d3066f301989dcb5"

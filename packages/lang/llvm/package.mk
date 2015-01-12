@@ -121,3 +121,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/libLTO.so
   rm -rf $INSTALL/usr/lib/libprofile_rt.so
 }
+
+PKG_SHA256="28e199f368ef0a4666708f31c7991ad3bcc3a578342b0306526dd35f07595c03"

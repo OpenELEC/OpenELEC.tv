@@ -47,3 +47,5 @@ post_makeinstall_target() {
 post_install() {
   enable_service eventlircd.service
 }
+
+PKG_SHA256="d2674f5667955ba3e1f1393c2cc088ea4b742259f2eae7dffd95321806d191d8"

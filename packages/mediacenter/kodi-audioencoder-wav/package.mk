@@ -39,3 +39,5 @@ configure_target() {
         -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
         ..
 }
+
+PKG_SHA256="0537e6d1d68464ab48ffc028eb5cfffbd38e7fc4b6916aa0dbdaf0551c288a65"

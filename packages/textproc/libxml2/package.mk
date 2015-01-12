@@ -51,3 +51,5 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/lib/xml2Conf.sh
 }
+
+PKG_SHA256="5178c30b151d044aefb1b08bf54c3003a0ac55c59c866763997529d60770d5bc"

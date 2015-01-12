@@ -31,3 +31,5 @@ PKG_LONGDESC="Ethtool is used for querying settings of an ethernet device and ch
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_SHA256="813ffe59fddd2db423c578448b10e33e2e2d4cc2ba780f1f0c603642b20342f6"

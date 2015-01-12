@@ -48,3 +48,5 @@ post_install() {
     find . | cpio -H newc -ov -R 0:0 > $ROOT/$BUILD/image/initramfs.cpio
   cd -
 }
+
+PKG_SHA256=

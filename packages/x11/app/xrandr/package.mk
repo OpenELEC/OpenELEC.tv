@@ -35,3 +35,4 @@ PKG_AUTORECONF="yes"
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/xkeystone
 }
+PKG_SHA256="7154ac3486b86923692f2d6cdb2991a2ee72bc32af2c4379a6f1c068f204be1b"

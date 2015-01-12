@@ -38,3 +38,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/etc/X11
     cp $PKG_DIR/config/*.conf $INSTALL/etc/X11
 }
+
+PKG_SHA256="85be42d6db6aea629041c58fa1e0d4aeb49e3b55f357205dffa14cd0604d20a9"

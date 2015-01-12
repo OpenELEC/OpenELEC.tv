@@ -42,3 +42,5 @@ EOF
 
   chmod -v 755 $ROOT/$TOOLCHAIN/bin/lex
 }
+
+PKG_SHA256="add2b55f3bc38cb512b48fad7d72f43b11ef244487ff25fc00aabec1e32b617f"

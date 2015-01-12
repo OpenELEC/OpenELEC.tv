@@ -37,3 +37,5 @@ export CC=$LOCAL_CC
 post_makeinstall_host() {
   ln -sf make $ROOT/$TOOLCHAIN/bin/gmake
 }
+
+PKG_SHA256="e60686c7afede62cc8c86ad3012cf081ea4887daf9d223ce7115703b2bb2dbdb"

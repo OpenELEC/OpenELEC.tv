@@ -51,3 +51,5 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/sbin
     ln -sf /bin/ntfs-3g $INSTALL/sbin/mount.ntfs
 }
+
+PKG_SHA256="4c3099400cb14b231a3c9d718b3a8d152d38555059341ce5fc6d02292a4a5b56"
