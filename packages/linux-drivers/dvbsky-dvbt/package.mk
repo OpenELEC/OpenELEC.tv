@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="dvbsky-dvbt"
-PKG_VERSION="141225"
+PKG_VERSION="150114"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="GPL"
