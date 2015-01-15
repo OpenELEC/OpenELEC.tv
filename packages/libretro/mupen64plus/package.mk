@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mupen64plus"
-PKG_VERSION="34efb10"
+PKG_VERSION="845ec4f"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -35,6 +35,11 @@ PKG_LONGDESC="Libretro GL only. Libretro port of Mupen64 Plus."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_configure_target() {
+  strip_gold
+  strip_lto
+}
+
 make_target() {
   DYNAREC=$ARCH
 
@@ -44,6 +49,9 @@ make_target() {
 
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
+  elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
+    CFLAGS="$CFLAGS -DGL_BGRA_EXT=0x80E1" # Fix build for platforms where GL_BGRA_EXT is not defined
+    make platform=imx6
   elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
     make platform=imx6
   else
