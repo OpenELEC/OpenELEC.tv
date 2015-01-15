@@ -23,7 +23,7 @@ diff -Naur a/drivers/amlogic/Makefile b/drivers/amlogic/Makefile
  
 diff -Naur a/drivers/amlogic/wetek/avl6211.c b/drivers/amlogic/wetek/avl6211.c
 --- a/drivers/amlogic/wetek/avl6211.c	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/amlogic/wetek/avl6211.c	2015-01-12 21:03:42.000000000 +0100
++++ b/drivers/amlogic/wetek/avl6211.c	2015-01-14 16:08:49.000000000 +0100
 @@ -0,0 +1,1970 @@
 +/*
 + * Driver for the Availink AVL6211+AV2011 DVB-S/S2 demod+tuner
@@ -1369,12 +1369,12 @@ diff -Naur a/drivers/amlogic/wetek/avl6211.c b/drivers/amlogic/wetek/avl6211.c
 +	*ber = 0;
 +	
 +	if (state->locked == 1) {		
-+		ret = avl6211_i2c_read32(state, rc_dvbs_ber_addr, &r_ber);
++		ret = avl6211_i2c_read32(state, rp_uint_BER_addr, &r_ber);
 +		if (ret)
 +			goto err;
 +			
-+		if (r_ber != 0xffffffff)			
-+			*ber = r_ber;		
++		if (r_ber > 0)			
++			*ber = r_ber / 1000000000;			
 +	}
 +	
 +	return 0;
@@ -1396,7 +1396,7 @@ diff -Naur a/drivers/amlogic/wetek/avl6211.c b/drivers/amlogic/wetek/avl6211.c
 +		if (ret)
 +			goto err;
 +		if (r_snr > 0 && r_snr <= 10000)
-+			*snr = ((r_snr / 100) * 0xffff) / 100;
++			*snr = (r_snr * 0xffff) / 0x8B6;
 +		
 +	}
 +	
@@ -2159,8 +2159,8 @@ diff -Naur a/drivers/amlogic/wetek/avl6211.h b/drivers/amlogic/wetek/avl6211.h
 \ No newline at end of file
 diff -Naur a/drivers/amlogic/wetek/avl6211_reg.h b/drivers/amlogic/wetek/avl6211_reg.h
 --- a/drivers/amlogic/wetek/avl6211_reg.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/amlogic/wetek/avl6211_reg.h	2015-01-11 16:03:55.000000000 +0100
-@@ -0,0 +1,104 @@
++++ b/drivers/amlogic/wetek/avl6211_reg.h	2015-01-14 16:01:45.000000000 +0100
+@@ -0,0 +1,106 @@
 +/*
 + * Driver for the Availink AVL6211+AV2011 DVB-S/S2 demod+tuner
 + *
@@ -2205,6 +2205,7 @@ diff -Naur a/drivers/amlogic/wetek/avl6211_reg.h b/drivers/amlogic/wetek/avl6211
 +#define rc_mpeg_bus_tri_enb                         0x006C0028
 +
 +
++#define raptor_status_addr						   (0x00000860 + 0x0)
 +#define rx_state_addr                              (0x00000690 + 0x0)
 +#define rx_cmd_addr                                (0x00000400 + 0x0)
 +#define i2cm_cmd_addr                              (0x00000404 + 0x0)
@@ -2217,6 +2218,7 @@ diff -Naur a/drivers/amlogic/wetek/avl6211_reg.h b/drivers/amlogic/wetek/avl6211
 +
 +#define rs_cust_chip_id_addr                        0x006C0030
 +
++#define	rp_uint_BER_addr                           (raptor_status_addr + 0x0)
 +#define	rc_rfagc_pol_addr                          (rx_config_addr + 0x0)
 +#define	rc_equalizer_addr                          (rx_config_addr + 0x8)
 +#define	rs_code_rate_addr                          (rx_state_addr + 0x8)
@@ -2268,8 +2270,8 @@ diff -Naur a/drivers/amlogic/wetek/avl6211_reg.h b/drivers/amlogic/wetek/avl6211
 \ No newline at end of file
 diff -Naur a/drivers/amlogic/wetek/cxd2837.c b/drivers/amlogic/wetek/cxd2837.c
 --- a/drivers/amlogic/wetek/cxd2837.c	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/amlogic/wetek/cxd2837.c	2015-01-13 00:31:19.000000000 +0100
-@@ -0,0 +1,1578 @@
++++ b/drivers/amlogic/wetek/cxd2837.c	2015-01-13 01:11:54.000000000 +0100
+@@ -0,0 +1,1580 @@
 +/*
 + * Sony CXD2837 DVB-T/T2/C demodulator driver
 + *
@@ -3766,7 +3768,9 @@ diff -Naur a/drivers/amlogic/wetek/cxd2837.c b/drivers/amlogic/wetek/cxd2837.c
 +static struct dvb_frontend_ops cxd_2837_ops = {
 +	.delsys = { SYS_DVBC_ANNEX_A, SYS_DVBT, SYS_DVBT2 },
 +	.info = {
-+		.name = "CXD2837 DVB-C DVB-T/T2",		
++		.name = "CXD2837 DVB-C DVB-T/T2",
++		.frequency_min = 47000000,	/* DVB-T: 47125000 */
++		.frequency_max = 865000000,	/* DVB-C: 862000000 */
 +		.caps = 	FE_CAN_FEC_1_2 |
 +					FE_CAN_FEC_2_3 |
 +					FE_CAN_FEC_3_4 |
