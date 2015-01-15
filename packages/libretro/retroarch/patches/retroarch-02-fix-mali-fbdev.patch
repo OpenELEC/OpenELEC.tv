@@ -1,6 +1,6 @@
-diff -Naur RetroArch/gfx/context/mali_fbdev_ctx.c RetroArch.patch/gfx/context/mali_fbdev_ctx.c
---- RetroArch/gfx/context/mali_fbdev_ctx.c	2015-01-04 16:21:38.919736023 +0100
-+++ RetroArch.patch/gfx/context/mali_fbdev_ctx.c	2015-01-04 16:38:58.799908764 +0100
+diff -Naur RetroArch/gfx/drivers_context/mali_fbdev_ctx.c RetroArch.patch/gfx/drivers_context/mali_fbdev_ctx.c
+--- RetroArch/gfx/drivers_context/mali_fbdev_ctx.c	2015-01-04 16:21:38.919736023 +0100
++++ RetroArch.patch/gfx/drivers_context/mali_fbdev_ctx.c	2015-01-04 16:38:58.799908764 +0100
 @@ -29,7 +28,7 @@
  #include <fcntl.h>
  #include <unistd.h>
