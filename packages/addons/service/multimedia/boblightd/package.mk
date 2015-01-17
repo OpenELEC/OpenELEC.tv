@@ -18,7 +18,7 @@
 
 PKG_NAME="boblightd"
 PKG_VERSION="478"
-PKG_REV="4"
+PKG_REV="5"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://code.google.com/p/boblight"
@@ -63,6 +63,7 @@ addon() {
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
   cp -P $PKG_BUILD/.$TARGET_NAME/src/boblightd $ADDON_BUILD/$PKG_ADDON_ID/bin
   cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-constant $ADDON_BUILD/$PKG_ADDON_ID/bin
+  cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-aml $ADDON_BUILD/$PKG_ADDON_ID/bin
   if [ "$DISPLAYSERVER" = "x11" ] ; then
     cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-X11 $ADDON_BUILD/$PKG_ADDON_ID/bin
   fi

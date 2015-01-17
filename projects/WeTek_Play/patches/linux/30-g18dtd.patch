@@ -1,6 +1,6 @@
 diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogic/meson6_g18.dtd
---- a/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-12-11 15:25:42.771688733 +0100
-+++ b/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2014-12-11 15:30:01.493678109 +0100
+--- a/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2015-01-12 21:28:39.000000000 +0100
++++ b/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2015-01-12 21:25:40.000000000 +0100
 @@ -1,761 +1,751 @@
 -/*
 - * Amlogic-MX SKT Device Tree Source
@@ -67,7 +67,7 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +	#address-cells = <1>;
 +	#size-cells = <1>;
 +       chosen {
-+           bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 BOOT_IMAGE=kernel.img console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1500000 systemd.show_status=auto";
++           bootargs = "root=/dev/ram0 rdinit=/init boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 BOOT_IMAGE=kernel.img console=tty0 consoleblank=0 scaling_governor=hotplug scaling_min_freq=200000 scaling_max_freq=1512000 systemd.show_status=auto";
 +       };
 +
 +/// ***************************************************************************************
@@ -1236,7 +1236,7 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +                1080000             1220000     1220000
 +                1200000             1240000     1240000
 +                1320000             1320000     1320000
-+                1500000             1320000     1320000
++                1512000             1320000     1320000
 +            >;
 +	};
 +    };
@@ -1556,7 +1556,7 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
  			partition = <&nand_partitions>;
  			rb_detect = <1>;
  		};
-@@ -856,547 +823,578 @@
+@@ -856,547 +823,595 @@
  				offset=<0x0 0x4a800000>;
  				size=<0x0 0x20000000>;
  			};
@@ -2223,6 +2223,15 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +	};
 +
 +
++/// **************************************************************************************
++/// -   Smartcard
++	smartcard{
++		compatible = "amlogic,smartcard";
++		smc_reset_level = <1>;
++		smc_reset = "GPIOX_31";
++		pinctrl-names = "default";
++		pinctrl-0 = <&smc_pins>;
++	};
 +	
 +
 +
@@ -2246,6 +2255,14 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +		dev_name = "pinmux";
 +		#pinmux-cells=<2>;    
 +    
++		smc_pins:smc_pins{
++		amlogic,setmask = <4 0x003c0000>;
++		amlogic,clrmask = <4 0x000003c0
++						   4 0x03c00000
++						   8 0x3f000000>;				
++		amlogic,pins = "GPIOX_17","GPIOX_18","GPIOX_19","GPIOX_20";
++		};
++		
 +//$$ MATCH "uart_ao_pin_match" = "&ao_uart_pins"
 +//$$ L2 PROP_U32 2 = "amlogic,setmask"
 +//$$ L2 PROP_STR 2 = "amlogic,pins"
@@ -2673,3 +2690,26 @@ diff -Naur a/arch/arm/boot/dts/amlogic/meson6_g18.dtd b/arch/arm/boot/dts/amlogi
 +	};
 +}; /* end of / */
 +
+--- a/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2015-01-12 00:19:11.729405484 +0100
++++ b/arch/arm/boot/dts/amlogic/meson6_g18.dtd	2015-01-12 00:23:29.396031497 +0100
+@@ -1396,5 +1396,20 @@
+ 		fe1_ts = <0>;
+ 		fe1_dev = <1>;
+ 	};
++
++/// ***************************************************************************************
++///	-	DISP&MM-A/V Amvideocap
++//$$ MODULE = "DISP&MM-Amvideocap"
++//$$ DEVICE="amvideocap"
++//$$ L2 PROP_STR = "status"
++//$$ L3 PROP_U32 4 ="reg"
++ amvideocap{
++ compatible = "amlogic,amvideocap";
++ dev_name = "amvideocap.0";
++ status = "okay";
++ reserve-memory = <0x00a00000>; // 1920 * 1088 * 4 = 8,355,840
++ reserve-iomap = "true";
++ };
++
+ }; /* end of / */
+ 

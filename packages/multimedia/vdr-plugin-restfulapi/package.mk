@@ -16,27 +16,32 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="vdr-plugin-xvdr"
-PKG_VERSION="b300fc3"
-PKG_REV="1"
+PKG_NAME="vdr-plugin-restfulapi"
+PKG_VERSION="20150115225816unstable"
+PKG_REV="0yavdr0~trusty"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/pipelka/vdr-plugin-xvdr"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain vdr"
+PKG_SITE="https://launchpad.net/~yavdr"
+PKG_URL="https://launchpad.net/~yavdr/+archive/ubuntu/unstable-vdr/+files/${PKG_NAME}_${PKG_VERSION}-${PKG_REV}.tar.gz"
+PKG_SOURCE_DIR="${PKG_NAME}_${PKG_VERSION}"
+PKG_DEPENDS_TARGET="toolchain vdr cxxtools vdr-wirbelscan"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="TV"
-PKG_LONGDESC="TV"
+PKG_SHORTDESC="vdr-plugin-restfulapi: the restful API for the VDR/"
+PKG_LONGDESC="vdr-plugin-restfulapi allows to access many internals of the VDR via a restful API"
 
 PKG_IS_ADDON="no"
-
 PKG_AUTORECONF="no"
 
 pre_configure_target() {
-  export CFLAGS="$CFLAGS -fPIC"
-  export CXXFLAGS="$CXXFLAGS -fPIC"
-  export LDFLAGS="$LDFLAGS -fPIC"
+  export CFLAGS="$CFLAGS -fPIC -L$SYSROOT_PREFIX/usr/lib -L$SYSROOT_PREFIX/lib"
+  export CXXFLAGS="$CXXFLAGS -fPIC -L$SYSROOT_PREFIX/usr/lib -L$SYSROOT_PREFIX/lib"
+  export LDFLAGS="$LDFLAGS -fPIC -L$SYSROOT_PREFIX/usr/lib -L$SYSROOT_PREFIX/lib"
+}
+
+pre_make_target() {
+  # dont build parallel
+  MAKEFLAGS=-j1
 }
 
 make_target() {
