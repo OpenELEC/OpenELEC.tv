@@ -6,3 +6,6 @@
 
 # OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
   OPENGLES="opengl-meson6"
+
+# kernel image name
+  KERNEL_NAME="kernel.img"
