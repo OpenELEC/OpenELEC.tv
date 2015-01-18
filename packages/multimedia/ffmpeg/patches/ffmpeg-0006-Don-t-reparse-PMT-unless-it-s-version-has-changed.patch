@@ -1,17 +1,17 @@
-From 354837b4c939246753039ce70c60cbd9fb1e01d0 Mon Sep 17 00:00:00 2001
+From 95622753b40eb0dfc0cb8564ab568316b0ca32cd Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@ecce.se>
 Date: Sun, 18 Sep 2011 19:17:23 +0200
-Subject: [PATCH 07/17] Don't reparse PMT unless it's version has changed
+Subject: [PATCH 06/13] Don't reparse PMT unless it's version has changed
 
 ---
  libavformat/mpegts.c | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
-index 4160c80..c946449 100644
+index 9f85aed..25007a6 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c
-@@ -87,6 +87,7 @@ struct MpegTSFilter {
+@@ -88,6 +88,7 @@ struct MpegTSFilter {
      int es_id;
      int last_cc; /* last cc code (-1 if first packet) */
      int64_t last_pcr;
@@ -19,7 +19,7 @@ index 4160c80..c946449 100644
      enum MpegTSFilterType type;
      union {
          MpegTSPESFilter pes_filter;
-@@ -439,6 +440,7 @@ static MpegTSFilter *mpegts_open_filter(MpegTSContext *ts, unsigned int pid,
+@@ -450,6 +451,7 @@ static MpegTSFilter *mpegts_open_filter(MpegTSContext *ts, unsigned int pid,
      filter->es_id   = -1;
      filter->last_cc = -1;
      filter->last_pcr= -1;
@@ -27,7 +27,7 @@ index 4160c80..c946449 100644
  
      return filter;
  }
-@@ -1908,6 +1910,10 @@ static void pat_cb(MpegTSFilter *filter, const uint8_t *section, int section_len
+@@ -1972,6 +1974,10 @@ static void pat_cb(MpegTSFilter *filter, const uint8_t *section, int section_len
          return;
      if (!h->current)
          return;

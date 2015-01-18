@@ -1,7 +1,7 @@
-From f7ef5230815955d6db8037cbca363c23c1ebce5b Mon Sep 17 00:00:00 2001
+From 6ea3ec0ea77982d2d223cf32ae093ec9c4ce1577 Mon Sep 17 00:00:00 2001
 From: Cory Fields <theuni-nospam-@xbmc.org>
 Date: Mon, 28 Jun 2010 02:10:50 -0400
-Subject: [PATCH 05/17] added: Ticket #7187, TV Teletext support for DVB EBU
+Subject: [PATCH 04/13] added: Ticket #7187, TV Teletext support for DVB EBU
  Teletext streams
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH 05/17] added: Ticket #7187, TV Teletext support for DVB EBU
  2 files changed, 6 insertions(+)
 
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index fb1c9ca..45bfba3 100644
+index dabae1b..dd6ef3f 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -523,6 +523,10 @@ enum AVCodecID {
+@@ -520,6 +520,10 @@ enum AVCodecID {
      AV_CODEC_ID_PJS        = MKBETAG('P','h','J','S'),
      AV_CODEC_ID_ASS        = MKBETAG('A','S','S',' '),  ///< ASS as defined in Matroska
  
@@ -25,10 +25,10 @@ index fb1c9ca..45bfba3 100644
      AV_CODEC_ID_FIRST_UNKNOWN = 0x18000,           ///< A dummy ID pointing at the start of various fake codecs.
      AV_CODEC_ID_TTF = 0x18000,
 diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
-index 8808269..4d73e6d 100644
+index 97da0a3..5dd28f1 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c
-@@ -717,6 +717,8 @@ static const StreamType DESC_types[] = {
+@@ -729,6 +729,8 @@ static const StreamType DESC_types[] = {
      { 0x7b, AVMEDIA_TYPE_AUDIO,    AV_CODEC_ID_DTS          },
      { 0x56, AVMEDIA_TYPE_SUBTITLE, AV_CODEC_ID_DVB_TELETEXT },
      { 0x59, AVMEDIA_TYPE_SUBTITLE, AV_CODEC_ID_DVB_SUBTITLE }, /* subtitling descriptor */

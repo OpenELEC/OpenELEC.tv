@@ -1,7 +1,7 @@
 From c874d974baefc35d6300938997131efd1a4da48b Mon Sep 17 00:00:00 2001
 From: Cory Fields <theuni-nospam-@xbmc.org>
 Date: Fri, 9 Jul 2010 16:43:31 -0400
-Subject: [PATCH 08/17] Read PID timestamps as well as PCR timestamps to find
+Subject: [PATCH 07/13] Read PID timestamps as well as PCR timestamps to find
  location in mpegts stream
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 08/17] Read PID timestamps as well as PCR timestamps to find
  1 file changed, 46 insertions(+), 2 deletions(-)
 
 diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
-index c946449..772df83 100644
+index 25007a6..d5a8a45 100644
 --- a/libavformat/mpegts.c
 +++ b/libavformat/mpegts.c
-@@ -2388,6 +2388,44 @@ static void seek_back(AVFormatContext *s, AVIOContext *pb, int64_t pos) {
+@@ -2459,6 +2459,44 @@ static void seek_back(AVFormatContext *s, AVIOContext *pb, int64_t pos) {
          av_log(s, pb->seekable ? AV_LOG_ERROR : AV_LOG_INFO, "Unable to seek back to the start\n");
  }
  
@@ -57,7 +57,7 @@ index c946449..772df83 100644
  static int mpegts_read_header(AVFormatContext *s)
  {
      MpegTSContext *ts = s->priv_data;
-@@ -2587,6 +2625,7 @@ static av_unused int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
+@@ -2658,6 +2696,7 @@ static av_unused int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
      uint8_t buf[TS_PACKET_SIZE];
      int pcr_l, pcr_pid =
          ((PESContext *)s->streams[stream_index]->priv_data)->pcr_pid;
@@ -65,7 +65,7 @@ index c946449..772df83 100644
      int pos47 = ts->pos47_full % ts->raw_packet_size;
      pos =
          ((*ppos + ts->raw_packet_size - 1 - pos47) / ts->raw_packet_size) *
-@@ -2608,6 +2647,11 @@ static av_unused int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
+@@ -2679,6 +2718,11 @@ static av_unused int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
              *ppos = pos;
              return timestamp;
          }
@@ -77,7 +77,7 @@ index c946449..772df83 100644
          pos += ts->raw_packet_size;
      }
  
-@@ -2707,7 +2751,7 @@ AVInputFormat ff_mpegts_demuxer = {
+@@ -2778,7 +2822,7 @@ AVInputFormat ff_mpegts_demuxer = {
      .read_header    = mpegts_read_header,
      .read_packet    = mpegts_read_packet,
      .read_close     = mpegts_read_close,
@@ -86,7 +86,7 @@ index c946449..772df83 100644
      .flags          = AVFMT_SHOW_IDS | AVFMT_TS_DISCONT,
      .priv_class     = &mpegts_class,
  };
-@@ -2719,7 +2763,7 @@ AVInputFormat ff_mpegtsraw_demuxer = {
+@@ -2790,7 +2834,7 @@ AVInputFormat ff_mpegtsraw_demuxer = {
      .read_header    = mpegts_read_header,
      .read_packet    = mpegts_raw_read_packet,
      .read_close     = mpegts_read_close,

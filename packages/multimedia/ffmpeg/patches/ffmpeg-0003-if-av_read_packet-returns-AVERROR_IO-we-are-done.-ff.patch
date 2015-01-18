@@ -1,7 +1,7 @@
-From 6fee17a0a63bf20b7835832e2d01ee7857b821b1 Mon Sep 17 00:00:00 2001
+From a8c76271c1731cdc403758ea5de0d503f9f655b2 Mon Sep 17 00:00:00 2001
 From: Cory Fields <theuni-nospam-@xbmc.org>
 Date: Mon, 28 Jun 2010 01:55:31 -0400
-Subject: [PATCH 04/17] if av_read_packet returns AVERROR_IO, we are done.
+Subject: [PATCH 03/13] if av_read_packet returns AVERROR_IO, we are done.
  ffmpeg's codecs might or might not handle returning any completed demuxed
  packets correctly
 
@@ -10,10 +10,10 @@ Subject: [PATCH 04/17] if av_read_packet returns AVERROR_IO, we are done.
  1 file changed, 2 insertions(+)
 
 diff --git a/libavformat/utils.c b/libavformat/utils.c
-index e899e4d..d75c168 100644
+index 5da110d..5683b7f 100644
 --- a/libavformat/utils.c
 +++ b/libavformat/utils.c
-@@ -1271,6 +1271,8 @@ static int read_frame_internal(AVFormatContext *s, AVPacket *pkt)
+@@ -1307,6 +1307,8 @@ static int read_frame_internal(AVFormatContext *s, AVPacket *pkt)
          if (ret < 0) {
              if (ret == AVERROR(EAGAIN))
                  return ret;

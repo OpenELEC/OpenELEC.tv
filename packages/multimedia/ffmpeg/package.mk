@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.4.4"
+PKG_VERSION="2.5.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -137,6 +137,7 @@ configure_target() {
               --disable-ffprobe \
               --disable-ffplay \
               --disable-ffserver \
+              --disable-sdl \
               --enable-ffmpeg \
               --enable-avdevice \
               --enable-avcodec \

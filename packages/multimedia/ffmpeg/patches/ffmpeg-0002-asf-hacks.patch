@@ -1,7 +1,7 @@
-From 870b1a68c4fdb6a31b0dc29ece7aa429659fb52d Mon Sep 17 00:00:00 2001
+From 550208c073ed55bf25d65c0ed80042dc8f823a4f Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@ecce.se>
 Date: Mon, 12 Sep 2011 21:37:17 +0200
-Subject: [PATCH 03/17] asf hacks
+Subject: [PATCH 02/13] asf hacks
 
 ---
  libavformat/asfdec.c | 11 +++++++++++

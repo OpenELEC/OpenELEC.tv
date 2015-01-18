@@ -1,17 +1,17 @@
-From 24ad8f579e523eeec50fbedca28820c3619449c7 Mon Sep 17 00:00:00 2001
+From f4e156c041b8203ccd14d63930e933febfc45042 Mon Sep 17 00:00:00 2001
 From: Joakim Plate <elupus@ecce.se>
 Date: Sat, 22 Oct 2011 19:01:38 +0200
-Subject: [PATCH 09/17] Get stream durations using read_timestamp
+Subject: [PATCH 08/13] Get stream durations using read_timestamp
 
 ---
  libavformat/utils.c | 39 +++++++++++++++++++++++++++++++++++++++
  1 file changed, 39 insertions(+)
 
 diff --git a/libavformat/utils.c b/libavformat/utils.c
-index d75c168..9f74313 100644
+index 5683b7f..4502e22 100644
 --- a/libavformat/utils.c
 +++ b/libavformat/utils.c
-@@ -2312,6 +2312,41 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
+@@ -2359,6 +2359,41 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
  #define DURATION_MAX_READ_SIZE 250000LL
  #define DURATION_MAX_RETRY 4
  
@@ -53,7 +53,7 @@ index d75c168..9f74313 100644
  /* only usable for MPEG-PS streams */
  static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
  {
-@@ -2462,6 +2497,10 @@ static void estimate_timings(AVFormatContext *ic, int64_t old_offset)
+@@ -2509,6 +2544,10 @@ static void estimate_timings(AVFormatContext *ic, int64_t old_offset)
           * the components */
          fill_all_stream_timings(ic);
          ic->duration_estimation_method = AVFMT_DURATION_FROM_STREAM;
