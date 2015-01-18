@@ -56,7 +56,7 @@ for i in $BUILD/$1-*; do
       done
       # trigger unpack / full rebuild on any patch / script / etc.. change
       # TODO: rewwork $PKG_DIR/scripts -> $PKG_DIR/filesystem/....
-      for file in $PKG_DIR/{patches,patches.upstream,scripts}/* ; do
+      for file in $PKG_DIR/{patches,scripts}/* $PROJECT_DIR/$PROJECT/patches/$PKG_NAME/*.patch; do
         if [ -f "$file" -a "$file" -nt "$i/.openelec-unpack" ]; then
           CLEAN_SOURCE=yes
           break
@@ -143,7 +143,11 @@ for i in $PKG_DIR/patches/$PKG_NAME-*.patch \
 
   if [ -f "$i" ]; then
     printf "%${BUILD_INDENT}c ${boldgreen}APPLY PATCH${endcolor} ${boldwhite}${PATCH_DESC}${endcolor}   $i\n" ' '>&$SILENT_OUT
-    cat $i | patch -d `echo "$PKG_BUILD" | cut -f1 -d\ ` -p1 >&$VERBOSE_OUT
+    if [ -n "$(grep -E '^GIT binary patch$' $i)" ]; then
+      cat $i | git apply --directory=`echo "$PKG_BUILD" | cut -f1 -d\ ` -p1 --verbose --whitespace=nowarn >&$VERBOSE_OUT
+    else
+      cat $i | patch -d `echo "$PKG_BUILD" | cut -f1 -d\ ` -p1 >&$VERBOSE_OUT
+    fi
   fi
 done
 

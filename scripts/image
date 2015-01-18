@@ -171,6 +171,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 # copy project related files to filesystem
   if [ -d "$PROJECT_DIR/$PROJECT/filesystem" ]; then
     cp -PR $PROJECT_DIR/$PROJECT/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $PROJECT_DIR/$PROJECT/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
   fi
 
 # run depmod
@@ -333,6 +339,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           -e "s%@DESCRIPTION@%$DESCRIPTION%g" \
           -i $RELEASE_DIR/os.json
 
+      sed -e "s%@DISTRONAME@%$DISTRONAME%g" \
+          -i $RELEASE_DIR/partitions.json
+
     # create System dir
       mkdir -p $RELEASE_DIR/System
 
@@ -366,12 +375,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
       mkdir -p $RELEASE_DIR/Storage
 
     # remove an previous created release tarball
-      rm -rf $RELEASE_DIR/System.tar.xz
-      rm -rf $RELEASE_DIR/Storage.tar.xz
+      rm -rf $RELEASE_DIR/${DISTRONAME}System.tar.xz
+      rm -rf $RELEASE_DIR/${DISTRONAME}Storage.tar.xz
 
     # create filesystem tarballs
-      tar cJf $RELEASE_DIR/System.tar.xz -C $RELEASE_DIR/System/ .
-      tar cJf $RELEASE_DIR/Storage.tar.xz -C $RELEASE_DIR/Storage/ .
+      tar cJf $RELEASE_DIR/${DISTRONAME}System.tar.xz -C $RELEASE_DIR/System/ .
+      tar cJf $RELEASE_DIR/${DISTRONAME}Storage.tar.xz -C $RELEASE_DIR/Storage/ .
 
     # remove an filesystem dirs
       rm -rf $RELEASE_DIR/System
