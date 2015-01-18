@@ -172,7 +172,7 @@ MENU COLOR tabmsg       31;40   #ff868787 #00000000 std
 LABEL installer
   MENU LABEL Run $DISTRONAME Installer
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM installer quiet vga=current vt.global_cursor_default=0 loglevel=2
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current vt.global_cursor_default=0 loglevel=2
 
 LABEL live
   MENU LABEL Run $DISTRONAME Live
@@ -190,7 +190,7 @@ EOF
 
   # copy files
     echo "image: copying files to part1..."
-    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/KERNEL"
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/$KERNEL_NAME"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
     cp $RELEASE_DIR/splash.png "$OE_TMP"
     cp $ROOT/$TOOLCHAIN/share/syslinux/vesamenu.c32 "$OE_TMP"
@@ -205,7 +205,7 @@ DEFAULT installer
 
 LABEL installer
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM installer quiet vga=current vt.global_cursor_default=0 loglevel=2
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current vt.global_cursor_default=0 loglevel=2
 EOF
     fi
 elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
@@ -217,7 +217,7 @@ EOF
 
   # copy files
     echo "image: copying files to part1..."
-    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/kernel.img"
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/$KERNEL_NAME"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
     cp $RELEASE_DIR/3rdparty/bootloader/bootcode.bin "$OE_TMP"
     cp $RELEASE_DIR/3rdparty/bootloader/fixup.dat "$OE_TMP"
@@ -242,16 +242,20 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     fi
 
     echo "image: copying files to part1..."
-    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/KERNEL"
+    cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/$KERNEL_NAME"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
-    cp $RELEASE_DIR/3rdparty/bootloader/u-boot.img "$OE_TMP"
+    if [ -f $RELEASE_DIR/3rdparty/bootloader/u-boot.img ] ; then
+      cp $RELEASE_DIR/3rdparty/bootloader/u-boot.img "$OE_TMP"
+    fi
 
     if [ -f "$RELEASE_DIR/3rdparty/bootloader/script.bin" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/script.bin "$OE_TMP"
     fi
 
-    for dtb in $(ls $RELEASE_DIR/3rdparty/bootloader/*.dtb) ; do
-      cp "$dtb" "$OE_TMP"
+    for dtb in $RELEASE_DIR/3rdparty/bootloader/*.dtb ; do
+      if [ -f $dtb ] ; then
+        cp "$dtb" "$OE_TMP"
+      fi
     done
 fi # bootloader
 
