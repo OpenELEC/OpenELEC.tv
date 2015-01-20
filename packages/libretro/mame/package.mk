@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="db97c05"
+PKG_VERSION="b2e10eb"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -29,8 +29,8 @@ PKG_DEPENDS=""
 PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="RetroArch"
-PKG_SHORTDESC="Mainline MAME (0.152) for libretro (with libco) . WIP. Expect bugs"
-PKG_LONGDESC="Mainline MAME (0.152) for libretro (with libco) . WIP. Expect bugs"
+PKG_SHORTDESC="MAME - Multiple Arcade Machine Emulator"
+PKG_LONGDESC="MAME - Multiple Arcade Machine Emulator"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
@@ -46,6 +46,7 @@ make_target() {
   #sed -i -e "s/-Wl,--version-script=src\/osd\/retro\/link.T//" Makefile.libretro
   #sed -i -e "s/-Wl,--no-undefined//" Makefile.libretro
   #sed -i -e "s/-Wl,--warn-common//" Makefile.libretro
+  sed -i -e "s/CONLYFLAGS = -fpermissive//" Makefile.libretro
   make -f Makefile.libretro
 }
 
