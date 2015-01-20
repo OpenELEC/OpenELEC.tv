@@ -45,9 +45,7 @@ ADDON_PLUGIN_DIR="$ADDON_DIR/plugin"
 chmod a+x $ADDON_DIR/bin/*
 
 ADDON_CACHE_DIR="$ADDON_HOME/cache"
-if [ ! -f "$ADDON_CACHE_DIR" ]; then
-  mkdir -p $ADDON_CACHE_DIR
-fi
+mkdir -p $ADDON_CACHE_DIR
 
 VDR_ARG="-g /tmp --no-kbd"
 if [ "$DEBUG" = "yes" ]; then
@@ -133,9 +131,20 @@ if [ "$ENABLE_XMLTV2VDR" == "true" ] ; then
     cp $source /var/lib/epgsources
   done
 fi
+
 if [ "$ENABLE_RESTFULAPI" == "true" ] ; then
-  VDR_ARG="$VDR_ARG -P 'restfulapi --ip $RESTFULAPI_IP --port $RESTFULAPI_PORT'"
+  RESTFULAPI_ARGS="--ip $RESTFULAPI_IP --port $RESTFULAPI_PORT"
+  if [ ! -z "$RESTFULAPI_EPGIMAGES" ]; then
+    mkdir -p "$RESTFULAPI_EPGIMAGES"
+    RESTFULAPI_ARGS="$RESTFULAPI_ARGS --epgimages=\"$RESTFULAPI_EPGIMAGES\""
+  fi
+  if [ ! -z "$RESTFULAPI_CHANNELLOGOS" ]; then
+    mkdir -p "$RESTFULAPI_CHANNELLOGOS"
+    RESTFULAPI_ARGS="$RESTFULAPI_ARGS --channellogos=\"$RESTFULAPI_CHANNELLOGOS\""
+  fi
+  VDR_ARG="$VDR_ARG -P 'restfulapi $RESTFULAPI_ARGS'"
 fi
+
 # vnsi/xvdr last
 VDR_ARG="$VDR_ARG -P $PVR_PLUGIN"
 
