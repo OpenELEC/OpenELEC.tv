@@ -32,7 +32,6 @@ cd ..
 echo "copying sources..."
 rm -rf mupen64plus-$GIT_REV
 cp -R mupen64plus.git mupen64plus-$GIT_REV
-rm -rf mupen64plus.git
 
 echo "cleaning sources..."
 rm -rf mupen64plus-$GIT_REV/.git
@@ -40,6 +39,3 @@ rm mupen64plus-$GIT_REV/.gitignore
 
 echo "packing sources..."
 tar cvJf mupen64plus-$GIT_REV.tar.xz mupen64plus-$GIT_REV
-
-echo "remove temporary sourcedir..."
-rm -rf mupen64plus-$GIT_REV
