@@ -937,6 +937,12 @@ pmu_shutdown_chgcur2 = 1200
 pmu_suspendpwroff_vol = 3500
 pmu_batdeten = 1
 
+[gpio_para]
+gpio_used = 1
+gpio_num = 2
+gpio_pin_1 = port:PH20<1><default><default><1>
+gpio_pin_2 = port:PH10<0><default><default><0>
+
 [recovery_key]
 key_min = 4
 key_max = 6
