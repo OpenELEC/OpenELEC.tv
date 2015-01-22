@@ -36,7 +36,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -C svn-current/trunk/ -f makefile.libretro DEBUG=1
+  make -C svn-current/trunk/ -f makefile.libretro
 }
 
 makeinstall_target() {
