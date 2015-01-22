@@ -2,7 +2,7 @@
   KERNEL_UBOOT_TARGET="uImage-dtb"
 
 # Kernel extra targets to build
-  KERNEL_UBOOT_EXTRA_TARGET="meson6_g18.dtd"
+  KERNEL_UBOOT_EXTRA_TARGET="wetek_play.dtd"
 
 # OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
   OPENGLES="opengl-meson6"
