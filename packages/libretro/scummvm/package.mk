@@ -22,20 +22,17 @@ PKG_NAME="scummvm"
 PKG_VERSION="c464a1a"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/scummvm"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RetroArch"
+PKG_SECTION="libretro"
 PKG_SHORTDESC="ScummVM with libretro backend."
 PKG_LONGDESC="ScummVM is a program which allows you to run certain classic graphical point-and-click adventure games, provided you already have their data files."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-export CXXFLAGS="$CXXFLAGS -DHAVE_POSIX_MEMALIGN=1"
 
 configure_target() {
   :
@@ -43,6 +40,7 @@ configure_target() {
 
 make_target() {
   cd $ROOT/$PKG_BUILD
+  CXXFLAGS="$CXXFLAGS -DHAVE_POSIX_MEMALIGN=1"
   make -C backends/platform/libretro/build/
 }
 

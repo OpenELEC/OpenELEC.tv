@@ -22,28 +22,31 @@ PKG_NAME="ppsspp"
 PKG_VERSION="5ccd9cc"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/ppsspp-libretro"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RetroArch"
+PKG_SECTION="libretro"
 PKG_SHORTDESC="Libretro port of PPSSPP"
 PKG_LONGDESC="A fast and portable PSP emulator"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_configure_target() {
+  strip_lto
+}
+
 make_target() {
   cd $ROOT/$PKG_BUILD/libretro
-  strip_lto
   if [ "$ARCH" == "arm" ]; then
     SYSROOT_PREFIX=$SYSROOT_PREFIX make platform=imx6
   else
     make
   fi
 }
+
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp ../libretro/ppsspp_libretro.so $INSTALL/usr/lib/libretro/

@@ -25,10 +25,9 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/libretro-super"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS=""
-PKG_BUILD_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="RetroArch"
+PKG_SECTION="libretro"
 PKG_SHORTDESC="Info files for libretro cores"
 PKG_LONGDESC="Super repo for other libretro projects. Fetches, builds and installs."
 
@@ -36,10 +35,6 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  :
-}
-
-configure-target() {
   :
 }
 
