@@ -1,0 +1,44 @@
+diff -Naur u-boot-imx6/include/configs/mx6_cubox-i.h u-boot-imx6.patch/include/configs/mx6_cubox-i.h
+--- u-boot-imx6/include/configs/mx6_cubox-i.h	2015-01-23 22:29:04.698498859 +0100
++++ u-boot-imx6.patch/include/configs/mx6_cubox-i.h	2015-01-23 23:06:20.722239710 +0100
+@@ -59,7 +59,7 @@
+ #define CONFIG_CMD_SETEXPR
+ #define CONFIG_CMD_MEMTEST
+ 
+-#define CONFIG_BOOTDELAY		3
++#define CONFIG_BOOTDELAY		0
+ 
+ #define CONFIG_SYS_MEMTEST_START	0x10000000
+ #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 500 * SZ_1M)
+@@ -129,8 +129,8 @@
+ #undef CONFIG_SPLASH_SCREEN_ALIGN
+ #define CONFIG_BMP_16BPP
+ #undef CONFIG_CMD_BMP
+-#define CONFIG_VIDEO_LOGO
+-#define CONFIG_VIDEO_BMP_LOGO
++#undef CONFIG_VIDEO_LOGO
++#undef CONFIG_VIDEO_BMP_LOGO
+ #define CONFIG_CONSOLE_MUX
+ #endif
+ 
+@@ -152,6 +152,12 @@
+ #define CONFIG_PREBOOT "usb start"
+ #endif
+ 
++/* Silent */
++#define CONFIG_SILENT_CONSOLE 
++#define CONFIG_SYS_DEVICE_NULLDEV
++#define CONFIG_SILENT_CONSOLE_UPDATE_ON_SET
++#define CONFIG_SILENT_U_BOOT_ONLY
++
+ #define CONFIG_SYS_CONSOLE_IS_IN_ENV
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+@@ -159,6 +165,7 @@
+         "script=boot.scr\0" \
+         "bootfile=auto\0" \
+         "bootenv=uEnv.txt\0" \
++        "silent=1\0" \
+         "boot_prefixes=/ /boot/\0" \
+         "console=ttymxc0\0" \
+         "stdin=serial,usbkbd\0" \
