@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="0bbed0e"
+PKG_VERSION="f6d0a80"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -34,36 +34,45 @@ PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$SAMBA_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-fi
-
-if [ "$PROJECT" == "RPi" ]; then
-  CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
-elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
-  CFLAGS="$CFLAGS -DLINUX -DEGL_API_FB"
-fi
-
 if [ "$OPENGLES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
 fi
 
-pre_configure_target() {
-  # workaround for https://github.com/libretro/RetroArch/issues/1078
-  strip_lto
-}
+if [ "$SAMBA_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
+fi
 
-configure_target() {
+if [ "$OPENGLES" == "no" ]; then
+  RETROARCH_GL="--enable-kms"
+elif [ "$OPENGLES" == "bcm2835-driver" ]; then
+  RETROARCH_GL="--enable-gles --disable-kms"
+  CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads \
+                  -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
+elif [ "$OPENGLES" == "sunxi-mali" ]; then
+  RETROARCH_GL="--enable-gles --disable-kms --enable-mali_fbdev"
+elif [ "$OPENGLES" == "gpu-viv-bin-mx6q" ]; then
+  RETROARCH_GL="--enable-gles --disable-kms --enable-vivante_fbdev"
+  CFLAGS="$CFLAGS -DLINUX -DEGL_API_FB"
+fi
+
+if [[ "$TARGET_FPU" =~ "neon" ]]; then
+  RETROARCH_NEON="--enable-neon"
+fi
+
+TARGET_CONFIGURE_OPTS=""
+PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
+                           --disable-ffmpeg \
+                           --disable-sdl \
+                           --disable-x11 \
+                           --disable-xvideo \
+                           $RETROARCH_GL \
+                           $RETROARCH_NEON \
+                           --enable-fbo \
+                           --enable-freetype"
+
+pre_configure_target() {
+  strip_lto # workaround for https://github.com/libretro/RetroArch/issues/1078
   cd $ROOT/$PKG_BUILD
-  if [ "$PROJECT" == "RPi" ]; then
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-fbo --enable-lakka --enable-freetype --enable-glui
-  elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ] ; then
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-mali_fbdev --enable-lakka --enable-freetype --enable-glui
-  elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-gles --disable-kms --enable-neon --enable-fbo --enable-vivante_fbdev --enable-lakka --enable-freetype --enable-glui
-  else
-    ./configure --disable-vg --disable-ffmpeg --disable-sdl --disable-x11 --disable-xvideo --enable-lakka --enable-freetype --enable-glui
-  fi
 }
 
 makeinstall_target() {
