@@ -1,7 +1,8 @@
 [Unit]
 Description=Wait on network
 After=connman.service
-Before=kodi-autostart.service kodi.service
+Before=xorg.service fbset.service
+
 ConditionPathExists=/storage/.cache/openelec/network_wait
 
 [Service]

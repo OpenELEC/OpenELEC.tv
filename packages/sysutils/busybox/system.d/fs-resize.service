@@ -1,10 +1,16 @@
 [Unit]
 Description=FS Resize
-DefaultDependencies=no
+DefaultDependencies=false
+After=show-version.service
+Before=local-fs-pre.target shutdown.target
+Conflicts=shutdown.target
+
+ConditionPathExists=|/storage/.please_resize_me
 
 [Service]
-Type=idle
+Type=oneshot
 ExecStart=/usr/lib/openelec/fs-resize
-StandardInput=tty-force
-StandardOutput=inherit
-StandardError=inherit
+StandardOutput=tty
+
+[Install]
+WantedBy=local-fs-pre.target

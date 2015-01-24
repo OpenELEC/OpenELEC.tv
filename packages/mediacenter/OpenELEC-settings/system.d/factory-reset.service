@@ -1,10 +1,17 @@
 [Unit]
 Description=Factory reset
-DefaultDependencies=no
+DefaultDependencies=false
+After=show-version.service
+Before=local-fs-pre.target shutdown.target
+Conflicts=shutdown.target
+
+ConditionPathExists=|/storage/.cache/reset_oe
+ConditionPathExists=|/storage/.cache/reset_xbmc
 
 [Service]
-Type=idle
+Type=oneshot
 ExecStart=/usr/lib/openelec/factory-reset
-StandardInput=tty-force
-StandardOutput=inherit
-StandardError=inherit
+StandardOutput=tty
+
+[Install]
+WantedBy=local-fs-pre.target
