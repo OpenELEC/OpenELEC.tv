@@ -33,6 +33,10 @@ elif [ "$UBOOT_VERSION" = "imx6-wandboard" ]; then
   PKG_VERSION="2014.04-rc3"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+elif [ "$UBOOT_VERSION" = "odroidc" ]; then
+  PKG_VERSION="e7d4447"
+  PKG_SITE="http://odroid.com/dokuwiki/doku.php?id=en:c1_building_u-boot"
+  PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 else
   exit 0
 fi
@@ -101,6 +105,10 @@ makeinstall_target() {
 
   if [ -f "./u-boot.img" ]; then
     cp ./u-boot.img $INSTALL/usr/share/bootloader
+  fi
+
+  if [ -f "./u-boot.bin" ]; then
+    cp ./u-boot.bin $INSTALL/usr/share/bootloader
   fi
 
   if [ -f "./SPL" ]; then

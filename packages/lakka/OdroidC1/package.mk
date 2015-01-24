@@ -18,36 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="pcsx_rearmed"
-PKG_VERSION="13bb560"
+PKG_NAME="imx6"
+PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPLv2"
-PKG_SITE="https://github.com/libretro/pcsx_rearmed"
-PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/lakkatv/Lakka"
+PKG_URL=""
+PKG_DEPENDS_TARGET="retroarch gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x-next dinothawr prboom beetle-pce handy picodrive nxengine fceumm gambatte stella fba libretro-ffmpeg retroarch-joypad-autoconfig core-info"
 PKG_PRIORITY="optional"
-PKG_SECTION="libretro"
-PKG_SHORTDESC="ARM optimized PCSX fork"
-PKG_LONGDESC="PCSX ReARMed is yet another PCSX fork based on the PCSX-Reloaded project, which itself contains code from PCSX, PCSX-df and PCSX-Revolution."
+PKG_SECTION="virtual"
+PKG_SHORTDESC="Lakka metapackage for Cuboxi and Hummingboard"
+PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-configure_target() {
-  :
-}
-
-make_target() {
-  cd $ROOT/$PKG_BUILD
-  if [ "$PROJECT" == "OdroidC1" ] || [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ] || [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
-    make -f Makefile.libretro HAVE_NEON=1 USE_DYNAREC=1 BUILTIN_GPU=neon
-  elif [ "$PROJECT" == "RPi" ]; then
-    make -f Makefile.libretro USE_DYNAREC=1 BUILTIN_GPU=neon
-  fi
-}
-
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp pcsx_rearmed_libretro.so $INSTALL/usr/lib/libretro/
-}
