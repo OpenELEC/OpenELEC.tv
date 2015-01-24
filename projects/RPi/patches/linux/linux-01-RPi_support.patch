@@ -1,7 +1,7 @@
 From 902ab5f10e718ac886446fc79574bf2ff2459abd Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 12 May 2013 12:24:19 +0100
-Subject: [PATCH 01/76] Main bcm2708 linux port
+Subject: [PATCH 01/78] Main bcm2708 linux port
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -5120,7 +5120,7 @@ index 09ebe57..582ce64 100644
 From bc08fa921ef396693c279990ffc7f1be305292bf Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 8 Oct 2014 18:50:05 +0100
-Subject: [PATCH 02/76] Add bcm2708_gpio driver
+Subject: [PATCH 02/78] Add bcm2708_gpio driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -5682,7 +5682,7 @@ index 0000000..fb69624
 From eff92148ee1b5a1ff07e5817179fefb4a0562b17 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 7 May 2013 22:20:24 +0100
-Subject: [PATCH 03/76] Add quick config.
+Subject: [PATCH 03/78] Add quick config.
 
 This is designed for quick compiling when developing.
 No modules are needed and it includes all Pi specific drivers
@@ -5898,7 +5898,7 @@ index 0000000..e5efe75
 From 5526529e626408f649d60f3ec4693f93b6407ed7 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:46:17 +0100
-Subject: [PATCH 04/76] Add dwc_otg driver
+Subject: [PATCH 04/78] Add dwc_otg driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -63011,7 +63011,7 @@ index 0000000..cdc9963
 From 7c7ba78f95fcea4bfced5afff52c97d41eea5b62 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:54:32 +0100
-Subject: [PATCH 05/76] bcm2708 watchdog driver
+Subject: [PATCH 05/78] bcm2708 watchdog driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -63442,7 +63442,7 @@ index 0000000..8a27d68
 From 6c0d0b4b2384f95482b19b05eb5e7cad96b81bca Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 1 May 2013 19:55:09 +0100
-Subject: [PATCH 06/76] bcm2708 framebuffer driver
+Subject: [PATCH 06/78] bcm2708 framebuffer driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -66551,7 +66551,7 @@ index 3c14e43..7626beb 100644
 From 14a1cf6175d4e0736a9de0f275557514ef32dcaf Mon Sep 17 00:00:00 2001
 From: Harm Hanemaaijer <fgenfb@yahoo.com>
 Date: Thu, 20 Jun 2013 20:21:39 +0200
-Subject: [PATCH 07/76] Speed up console framebuffer imageblit function
+Subject: [PATCH 07/78] Speed up console framebuffer imageblit function
 
 Especially on platforms with a slower CPU but a relatively high
 framebuffer fill bandwidth, like current ARM devices, the existing
@@ -66763,7 +66763,7 @@ index a2bb276..436494f 100644
 From 2e0c1cd9a4c707a8d678ad2c590aa0f099eb6da5 Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 13:32:11 +0300
-Subject: [PATCH 08/76] fbdev: add FBIOCOPYAREA ioctl
+Subject: [PATCH 08/78] fbdev: add FBIOCOPYAREA ioctl
 
 Based on the patch authored by Ali Gholami Rudi at
     https://lkml.org/lkml/2009/7/13/153
@@ -66859,7 +66859,7 @@ index fb795c3..fa72af0 100644
 From 213ec9d3b772e7ea710738a53c8dd30201c71417 Mon Sep 17 00:00:00 2001
 From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
 Date: Mon, 17 Jun 2013 16:00:25 +0300
-Subject: [PATCH 09/76] bcm2708_fb: DMA acceleration for fb_copyarea
+Subject: [PATCH 09/78] bcm2708_fb: DMA acceleration for fb_copyarea
 
 Based on http://www.raspberrypi.org/phpBB3/viewtopic.php?p=62425#p62425
 Also used Simon's dmaer_master module as a reference for tweaking DMA
@@ -67346,7 +67346,7 @@ index ac04125..9d7ecda 100644
 From 43d9811fd811f4b59bcd5c199f61ed4201005722 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 2 Jul 2013 23:42:01 +0100
-Subject: [PATCH 10/76] bcm2708 vchiq driver
+Subject: [PATCH 10/78] bcm2708 vchiq driver
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -80298,7 +80298,7 @@ index 0000000..b6bfa21
 From 913b82a0fb3b5a292f027f3fcd80c79586b871f5 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 12 May 2014 15:12:02 +0100
-Subject: [PATCH 11/76] vchiq: Avoid high load when blocked and unkillable
+Subject: [PATCH 11/78] vchiq: Avoid high load when blocked and unkillable
 
 vchiq: Include SIGSTOP and SIGCONT in list of signals not-masked by vchiq to allow gdb to work
 ---
@@ -80463,7 +80463,7 @@ index c2eefef..05e7979 100644
 From c29d3b8b106d7dd4c1f01c315ab5bf21468fc046 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:31:47 +0100
-Subject: [PATCH 12/76] cma: Add vc_cma driver to enable use of CMA
+Subject: [PATCH 12/78] cma: Add vc_cma driver to enable use of CMA
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -81755,7 +81755,7 @@ index 0000000..5325832
 From 4489d2212bd91b2c891a300c6d5231560bb1ac34 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 26 Mar 2012 22:15:50 +0100
-Subject: [PATCH 13/76] bcm2708: alsa sound driver
+Subject: [PATCH 13/78] bcm2708: alsa sound driver
 
     Signed-off-by: popcornmix <popcornmix@gmail.com>
 
@@ -84521,7 +84521,7 @@ index 0000000..af3e6eb
 From 8c9d231b5abbce7a782052d1f2e1e8b80f096b88 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:51:55 +0100
-Subject: [PATCH 14/76] Add hwrng (hardware random number generator) driver
+Subject: [PATCH 14/78] Add hwrng (hardware random number generator) driver
 
 ---
  drivers/char/hw_random/Kconfig       |  11 ++++
@@ -84690,7 +84690,7 @@ index 0000000..340f004
 From 4de5c39fa372f6b8e0575d7489d65da39c7988c6 Mon Sep 17 00:00:00 2001
 From: Aron Szabo <aron@aron.ws>
 Date: Sat, 16 Jun 2012 12:15:55 +0200
-Subject: [PATCH 15/76] lirc: added support for RaspberryPi GPIO
+Subject: [PATCH 15/78] lirc: added support for RaspberryPi GPIO
 
 lirc_rpi: Use read_current_timer to determine transmitter delay. Thanks to jjmz and others
 See: https://github.com/raspberrypi/linux/issues/525
@@ -85441,7 +85441,7 @@ index 0000000..887c36b
 From a5312198c0161d6d4c63b46d57a540bbc8d9d252 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:49:20 +0100
-Subject: [PATCH 16/76] Add cpufreq driver
+Subject: [PATCH 16/78] Add cpufreq driver
 
 ---
  arch/arm/Kconfig                  |   1 +
@@ -85728,7 +85728,7 @@ index 0000000..447ca09
 From ea455618690499004afcfc687972711ddcf8b7e3 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 19:24:24 +0000
-Subject: [PATCH 17/76] Added hwmon/thermal driver for reporting core
+Subject: [PATCH 17/78] Added hwmon/thermal driver for reporting core
  temperature. Thanks Dorian
 
 ---
@@ -86253,7 +86253,7 @@ index 0000000..85fceb5
 From ff227891dbe0d68dc129ec25044504fc7ccbc562 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 26 Mar 2013 17:26:38 +0000
-Subject: [PATCH 18/76] Allow mac address to be set in smsc95xx
+Subject: [PATCH 18/78] Allow mac address to be set in smsc95xx
 
 Signed-off-by: popcornmix <popcornmix@gmail.com>
 ---
@@ -86347,7 +86347,7 @@ index d07bf4c..5ae60ab 100644
 From 6c948916e1db353ca8eda81e4cfeb88e710fbd42 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 4 Nov 2013 18:56:10 +0000
-Subject: [PATCH 19/76] Add Chris Boot's i2c and spi drivers.
+Subject: [PATCH 19/78] Add Chris Boot's i2c and spi drivers.
 
 i2c-bcm2708: fixed baudrate
 
@@ -87696,7 +87696,7 @@ index 0000000..b04a57d
 From bd166f02c19b0adb56ffffffff159a458f62e50f Mon Sep 17 00:00:00 2001
 From: cbeytas <cbeytas@shaw.ca>
 Date: Mon, 24 Jun 2013 00:05:40 -0400
-Subject: [PATCH 20/76] Perform I2C combined transactions when possible
+Subject: [PATCH 20/78] Perform I2C combined transactions when possible
 
 Perform I2C combined transactions whenever possible, within the
 restrictions of the Broadcomm Serial Controller.
@@ -87771,7 +87771,7 @@ index f266f10..8750634 100644
 From e1ac2431db53086c50001b9f40c5ecfc4293fc98 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 8 May 2013 11:46:50 +0100
-Subject: [PATCH 21/76] enabling the realtime clock 1-wire chip DS1307 and
+Subject: [PATCH 21/78] enabling the realtime clock 1-wire chip DS1307 and
  1-wire on GPIO4 (as a module)
 
 1-wire: Add support for configuring pin for w1-gpio kernel module
@@ -88046,7 +88046,7 @@ index 2820924..fd0550f 100644
 From b066e09163caa141635d7b86d9dbd902d71c6d09 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 12 Apr 2013 23:58:47 +0100
-Subject: [PATCH 23/76] config: add missing options from 3.6.y kernel
+Subject: [PATCH 23/78] config: add missing options from 3.6.y kernel
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 650 ++++++++++++++++++++++++++++++++++++--
@@ -88975,7 +88975,7 @@ index 6d2eae1..c200be9 100644
 From 3df04c3bf190f0b483f95a288caeb6ec3852108e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 18 Dec 2013 22:16:19 +0000
-Subject: [PATCH 24/76] config: Enable CONFIG_MEMCG, but leave it disabled (due
+Subject: [PATCH 24/78] config: Enable CONFIG_MEMCG, but leave it disabled (due
  to memory cost). Enable with cgroup_enable=memory.
 
 ---
@@ -89046,7 +89046,7 @@ index 48914e1..a08d374 100644
 From df71198bcadc8f74372472d7c1e8f71ec0dcbb68 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 3 Jul 2013 00:46:42 +0100
-Subject: [PATCH 25/76] Add FIQ patch to dwc_otg driver. Enable with
+Subject: [PATCH 25/78] Add FIQ patch to dwc_otg driver. Enable with
  dwc_otg.fiq_fix_enable=1. Should give about 10% more ARM performance. Thanks
  to Gordon and Costas
 
@@ -92345,7 +92345,7 @@ index 1b1f83c..c8590b5 100644
 From da7b56d64c677e21e5176daf26408e8bfb740011 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Wed, 19 Mar 2014 12:58:23 +0000
-Subject: [PATCH 26/76] dwc_otg: fiq_fsm: Base commit for driver rewrite
+Subject: [PATCH 26/78] dwc_otg: fiq_fsm: Base commit for driver rewrite
 
 This commit removes the previous FIQ fixes entirely and adds fiq_fsm.
 
@@ -97244,7 +97244,7 @@ index 5d310df..4b32941 100644
 From e3b2a19aae7183eb7db66bcffaead4627d869250 Mon Sep 17 00:00:00 2001
 From: Vincent Sanders <vincent.sanders@collabora.co.uk>
 Date: Wed, 30 Jan 2013 12:45:18 +0000
-Subject: [PATCH 27/76] bcm2835: add v4l2 camera device
+Subject: [PATCH 27/78] bcm2835: add v4l2 camera device
 
 - Supports raw YUV capture, preview, JPEG and H264.
 - Uses videobuf2 for data transfer, using dma_buf.
@@ -103230,7 +103230,7 @@ index 0000000..9d1d11e
 From d6bd17f9bbb5d1b0f20f403351f99c14de391e50 Mon Sep 17 00:00:00 2001
 From: Dave Stevenson <dsteve@broadcom.com>
 Date: Mon, 9 Dec 2013 10:58:01 +0000
-Subject: [PATCH 28/76] V4L2: Fixes from 6by9
+Subject: [PATCH 28/78] V4L2: Fixes from 6by9
 
 V4L2: Fix EV values. Add manual shutter speed control
 
@@ -105645,7 +105645,7 @@ index a06fb44..76f249e 100644
 From f70bf7c2c80ffb0dcfd845ef8a6ddeae1dca494b Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:22:53 +0100
-Subject: [PATCH 29/76] dmaengine: Add support for BCM2708
+Subject: [PATCH 29/78] dmaengine: Add support for BCM2708
 
 Add support for DMA controller of BCM2708 as used in the Raspberry Pi.
 Currently it only supports cyclic DMA.
@@ -106774,7 +106774,7 @@ index 0000000..6766799
 From 96f4de49d613d3cadd11d570c5ad7d3fb25dfba2 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:33:38 +0100
-Subject: [PATCH 30/76] ASoC: Add support for BCM2708
+Subject: [PATCH 30/78] ASoC: Add support for BCM2708
 
 This driver adds support for digital audio (I2S)
 for the BCM2708 SoC that is used by the
@@ -107909,7 +107909,7 @@ index 0000000..94fed6a
 From 74820e3bd1bb4a2ce396dab04190b2318759b39b Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 14:59:51 +0100
-Subject: [PATCH 31/76] ASoC: Add support for PCM5102A codec
+Subject: [PATCH 31/78] ASoC: Add support for PCM5102A codec
 
 Some definitions to support the PCM5102A codec
 by Texas Instruments.
@@ -108037,7 +108037,7 @@ index 0000000..126f1e9
 From 868612fc207c272b67a894bab0281b3b9558fae0 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:04:54 +0100
-Subject: [PATCH 32/76] BCM2708: Add I2S support to board file
+Subject: [PATCH 32/78] BCM2708: Add I2S support to board file
 
 Adds the required initializations for I2S
 to the board file of mach-bcm2708.
@@ -108095,7 +108095,7 @@ index a740344..dca28ad 100644
 From 2c4398af1a1f24bcccee837a200e277a8c3e23db Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:19:08 +0100
-Subject: [PATCH 33/76] ASoC: Add support for HifiBerry DAC
+Subject: [PATCH 33/78] ASoC: Add support for HifiBerry DAC
 
 This adds a machine driver for the HifiBerry DAC.
 It is a sound card that can
@@ -108247,7 +108247,7 @@ index 0000000..4b70b45
 From 31f0e24ec324d48329ac50d0adf0ccf9bcf546f3 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 22 Nov 2013 19:21:34 +0100
-Subject: [PATCH 34/76] BCM2708: Add HifiBerry DAC to board file
+Subject: [PATCH 34/78] BCM2708: Add HifiBerry DAC to board file
 
 This adds the initalization of the HifiBerry DAC
 to the mach-bcm2708 board file.
@@ -108298,7 +108298,7 @@ index dca28ad..50d4991 100644
 From ece0d271217d4046a7782a77b02ef0546e6fd8c1 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Mon, 2 Dec 2013 20:28:22 +0100
-Subject: [PATCH 35/76] BCM2708: Add I2S and DMA support to default config
+Subject: [PATCH 35/78] BCM2708: Add I2S and DMA support to default config
 
 This commit adds several modules that are needed for
 I2S support for the Raspberry Pi to the defconfig.
@@ -108336,7 +108336,7 @@ index 1dc68ce..312cf9a 100644
 From f090d27be933b107fc42eb3cc0135835e60d6592 Mon Sep 17 00:00:00 2001
 From: Florian Meier <florian.meier@koalo.de>
 Date: Fri, 6 Dec 2013 20:50:28 +0100
-Subject: [PATCH 36/76] ASoC: BCM2708: Add support for RPi-DAC
+Subject: [PATCH 36/78] ASoC: BCM2708: Add support for RPi-DAC
 
 This adds a machine driver for the RPi-DAC.
 
@@ -108647,7 +108647,7 @@ index 0000000..b4eaa44
 From b5b2b5e93d52b1926c48898bb2c581a62b5c3198 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Wed, 15 Jan 2014 21:41:23 +0100
-Subject: [PATCH 37/76] ASoC: wm8804: Implement MCLK configuration options, add
+Subject: [PATCH 37/78] ASoC: wm8804: Implement MCLK configuration options, add
  32bit support WM8804 can run with PLL frequencies of 256xfs and 128xfs for
  most sample rates. At 192kHz only 128xfs is supported. The existing driver
  selects 128xfs automatically for some lower samples rates. By using an
@@ -108690,7 +108690,7 @@ index 0ea01df..4724553 100644
 From b7917612d03df1a7172a547496231d1561bf8569 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Wed, 15 Jan 2014 21:42:08 +0100
-Subject: [PATCH 38/76] ASoC: BCM:Add support for HiFiBerry Digi. Driver is
+Subject: [PATCH 38/78] ASoC: BCM:Add support for HiFiBerry Digi. Driver is
  based on the patched WM8804 driver.
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -108896,7 +108896,7 @@ index 0000000..e4f769d
 From 4f9d3dc3a6301ceede7cd6c79aa1ad095f650b04 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:26:08 +0100
-Subject: [PATCH 39/76] BCM2708: Added support for HiFiBerry Digi board Board
+Subject: [PATCH 39/78] BCM2708: Added support for HiFiBerry Digi board Board
  initalization by I2C
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -108946,7 +108946,7 @@ index 100c223..a57cb85 100644
 From 4a9d416ee41973acc8fe4c36df41df623bdc4c52 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:27:28 +0100
-Subject: [PATCH 40/76] BCM2708: Added HiFiBerry Digi configuration option It
+Subject: [PATCH 40/78] BCM2708: Added HiFiBerry Digi configuration option It
  will be compiled as a module by default. This also includes the WM8804
  driver.
 
@@ -108971,7 +108971,7 @@ index 05b3823..5e3628a 100644
 From cbad8f4a561f65a2cc5b33631044075f0a861d71 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Thu, 16 Jan 2014 07:36:35 +0100
-Subject: [PATCH 41/76] ASoC: wm8804: Set idle_bias_off to false Idle bias has
+Subject: [PATCH 41/78] ASoC: wm8804: Set idle_bias_off to false Idle bias has
  been change to remove warning on driver startup
 
 Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
@@ -108996,7 +108996,7 @@ index 4724553..5d4140e 100644
 From 595dd18c08acbe5af114201c72544d57858fd00a Mon Sep 17 00:00:00 2001
 From: Gordon Garrity <gordon@iqaudio.com>
 Date: Sat, 8 Mar 2014 16:56:57 +0000
-Subject: [PATCH 42/76] Add IQaudIO Sound Card support for Raspberry Pi
+Subject: [PATCH 42/78] Add IQaudIO Sound Card support for Raspberry Pi
 
 ---
  arch/arm/configs/bcmrpi_defconfig |   1 +
@@ -109209,7 +109209,7 @@ index 0000000..8d0e2ae
 From 0ec8dfe2d0c9b64d62e1b3b857749db604ca5319 Mon Sep 17 00:00:00 2001
 From: Howard Mitchell <hm@hmbedded.co.uk>
 Date: Wed, 30 Jul 2014 21:43:37 +0100
-Subject: [PATCH 43/76] soc-core: Fix volsw_range funcs so
+Subject: [PATCH 43/78] soc-core: Fix volsw_range funcs so
  SOC_DOUBLE_R_RANGE_TLV works.
 
 This is so that the correct range of values as specified
@@ -109286,7 +109286,7 @@ index a3e0a0d..ca4aa5a 100644
 From 4c402038b4f2e17e6e0609ecc4d961a735d94e43 Mon Sep 17 00:00:00 2001
 From: Howard Mitchell <hm@hmbedded.co.uk>
 Date: Fri, 28 Mar 2014 16:40:31 +0000
-Subject: [PATCH 44/76] pcm512x: Use a range macro for Volume and rename to
+Subject: [PATCH 44/78] pcm512x: Use a range macro for Volume and rename to
  PCM.
 
 This allows limiting the output gain to avoid clipping in the
@@ -109314,7 +109314,7 @@ index 0c8aefa..8252e6d 100644
 From e200eaa158bf79d0906e758d443091cb22d3140c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 18 Jun 2014 13:42:01 +0100
-Subject: [PATCH 45/76] vmstat: Workaround for issue where dirty page count
+Subject: [PATCH 45/78] vmstat: Workaround for issue where dirty page count
  goes negative
 
 See:
@@ -109344,7 +109344,7 @@ index 82e7db7..f87d16d 100644
 From d1259da20166acd154c7d400e2488633b4548c8b Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 20 Jun 2014 16:03:12 +0100
-Subject: [PATCH 46/76] dwc_otg: Fix various issues with root port and
+Subject: [PATCH 46/78] dwc_otg: Fix various issues with root port and
  transaction errors
 
 Process the host port interrupts correctly (and don't trample them).
@@ -109417,7 +109417,7 @@ index d3e2035..6182d3e 100644
 From 12aa749b2bc959e4f6535c0db41e50bbe310bdcc Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Fri, 20 Jun 2014 17:23:20 +0100
-Subject: [PATCH 47/76] fiq_fsm: Implement hack for Split Interrupt
+Subject: [PATCH 47/78] fiq_fsm: Implement hack for Split Interrupt
  transactions
 
 Hubs aren't too picky about which endpoint we send Control type split
@@ -109506,7 +109506,7 @@ index ebc3553..c39ef31 100644
 From e0ac6112209b11360860c9cf43543fddbcd843b6 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 6 Jul 2014 12:07:25 +0200
-Subject: [PATCH 48/76] spi-bcm2708: Prepare for Common Clock Framework
+Subject: [PATCH 48/78] spi-bcm2708: Prepare for Common Clock Framework
  migration
 
 As part of migrating to use the Common Clock Framework, replace clk_enable()
@@ -109554,7 +109554,7 @@ index b04a57d..349d21f 100644
 From 5733bd304c27830853fb0f7521dd1e9c3f7c38e5 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 6 Jul 2014 12:09:30 +0200
-Subject: [PATCH 49/76] BCM2708: Migrate to the Common Clock Framework
+Subject: [PATCH 49/78] BCM2708: Migrate to the Common Clock Framework
 
 As part of moving towards using Device Tree, the Common Clock Framework
 has to be used instead of the BCM2708 clock implementation.
@@ -109827,7 +109827,7 @@ index 5f9d725..0000000
 From 46a4b8205331808088f7815050684f4d6cb31e35 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Wed, 9 Jul 2014 14:46:08 +0200
-Subject: [PATCH 50/76] BCM2708: Add core Device Tree support
+Subject: [PATCH 50/78] BCM2708: Add core Device Tree support
 
 Add the bare minimum needed to boot BCM2708 from a Device Tree.
 
@@ -109995,7 +109995,7 @@ index ef12cb8..747e27a 100644
 From 0ab4eaa0d9f5b71a1876e4f1133af44d5e0659af Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Wed, 9 Jul 2014 14:47:48 +0200
-Subject: [PATCH 51/76] BCM2708: armctrl: Add IRQ Device Tree support
+Subject: [PATCH 51/78] BCM2708: armctrl: Add IRQ Device Tree support
 
 Add Device Tree IRQ support for BCM2708.
 Usage is the same as for irq-bcm2835.
@@ -110162,7 +110162,7 @@ index d4c5333..42f5e1c 100644
 From 44ebe95b3434c3d861cf7d8a8fbdb5a14e62a233 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Thu, 10 Jul 2014 13:59:47 +0200
-Subject: [PATCH 52/76] pinctrl: add bcm2708 driver
+Subject: [PATCH 52/78] pinctrl: add bcm2708 driver
 
 This driver is a verbatim copy of the pinctrl-bcm2835 driver, except for:
 * changed 2835 to 2708
@@ -111019,7 +111019,7 @@ index 0000000..b0995fd
 From cb66c254f5ea4a068148cd905e4abf589eab420b Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:12:58 +0200
-Subject: [PATCH 53/76] spi: bcm2708: add device tree support
+Subject: [PATCH 53/78] spi: bcm2708: add device tree support
 
 Add DT support to driver and add to .dtsi file.
 Setup pins and spidev in .dts file.
@@ -111141,7 +111141,7 @@ index 349d21f..041b5e2 100644
 From 11595f8ca7d15db6f0e2854e527e247c80cfb900 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:13:44 +0200
-Subject: [PATCH 54/76] BCM2708: don't register SPI controller when using DT
+Subject: [PATCH 54/78] BCM2708: don't register SPI controller when using DT
 
 The device for the SPI controller is in the Device Tree.
 Only register the device when not using DT.
@@ -111215,7 +111215,7 @@ index 747e27a..0434cbf 100644
 From a913832ca5008360ceaf5d480543e9b6180f56e7 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Sun, 27 Jul 2014 20:14:05 +0200
-Subject: [PATCH 55/76] spi: bcm2835: make driver available on ARCH_BCM2708
+Subject: [PATCH 55/78] spi: bcm2835: make driver available on ARCH_BCM2708
 
 Make this driver available on ARCH_BCM2708
 
@@ -111241,7 +111241,7 @@ index 6a7943c..6600723 100644
 From 2a96bb1098dc547371af967e0a77a3c035681513 Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:04:49 +0200
-Subject: [PATCH 56/76] i2c: bcm2708: add device tree support
+Subject: [PATCH 56/78] i2c: bcm2708: add device tree support
 
 Add DT support to driver and add to .dtsi file.
 Setup pins in .dts file.
@@ -111409,7 +111409,7 @@ index 8750634..728cb69 100644
 From 5932cd4d797f4c929190afdf677965f2ce06665d Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:05:18 +0200
-Subject: [PATCH 57/76] bcm2708: don't register i2c controllers when using DT
+Subject: [PATCH 57/78] bcm2708: don't register i2c controllers when using DT
 
 The devices for the i2c controllers are in the Device Tree.
 Only register devices when not using DT.
@@ -111454,7 +111454,7 @@ index 0434cbf..902f8c7 100644
 From e88ebf69f8f7bf0587b3f85f297ad40b281cbdab Mon Sep 17 00:00:00 2001
 From: notro <notro@tronnes.org>
 Date: Tue, 29 Jul 2014 11:05:39 +0200
-Subject: [PATCH 58/76] i2c: bcm2835: make driver available on ARCH_BCM2708
+Subject: [PATCH 58/78] i2c: bcm2835: make driver available on ARCH_BCM2708
 
 Make this driver available on ARCH_BCM2708
 
@@ -111480,7 +111480,7 @@ index d8f8e2a..5f62d88 100644
 From 12ee75138da3897a7fb9b5252c08653d5b3fc897 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 14 Jul 2014 22:02:09 +0100
-Subject: [PATCH 59/76] hid: Reduce default mouse polling interval to 60Hz
+Subject: [PATCH 59/78] hid: Reduce default mouse polling interval to 60Hz
 
 Reduces overhead when using X
 ---
@@ -111519,7 +111519,7 @@ index ddd547a..520d3cd 100644
 From 0e6ac52bd2ff0280bc9003f1d0043e2d2181bc24 Mon Sep 17 00:00:00 2001
 From: P33M <P33M@github.com>
 Date: Thu, 24 Jul 2014 21:24:03 +0100
-Subject: [PATCH 60/76] usb: core: make overcurrent messages more prominent
+Subject: [PATCH 60/78] usb: core: make overcurrent messages more prominent
 
 Hub overcurrent messages are more serious than "debug". Increase loglevel.
 ---
@@ -111543,7 +111543,7 @@ index 674c262..b1ac9e0 100644
 From 2f6ba571e6c9966303e1a8c42e52798958ba1d4d Mon Sep 17 00:00:00 2001
 From: Tim Gover <tgover@broadcom.com>
 Date: Tue, 22 Jul 2014 15:41:04 +0100
-Subject: [PATCH 61/76] vcsm: VideoCore shared memory service for BCM2835
+Subject: [PATCH 61/78] vcsm: VideoCore shared memory service for BCM2835
 
 Add experimental support for the VideoCore shared memory service.
 This allows user processes to allocate memory from VideoCore's
@@ -115879,7 +115879,7 @@ index 0000000..da1c523
 From 18df98569225b62214f111359b3a7872c01adef8 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 7 Aug 2014 02:03:50 +0100
-Subject: [PATCH 62/76] Revert "ARM: dma: Use dma_pfn_offset for dma address
+Subject: [PATCH 62/78] Revert "ARM: dma: Use dma_pfn_offset for dma address
  translation"
 
 This reverts commit 6ce0d20016925d031f1e24d64302e4c976d7cec6.
@@ -115934,7 +115934,7 @@ index c45b61a..0af6bd0 100644
 From 8722c953c202910212a515a418df1b2d43428313 Mon Sep 17 00:00:00 2001
 From: gellert <gellert@raspberrypi.org>
 Date: Fri, 15 Aug 2014 16:35:06 +0100
-Subject: [PATCH 63/76] MMC: added alternative MMC driver
+Subject: [PATCH 63/78] MMC: added alternative MMC driver
 
 ---
  arch/arm/configs/bcmrpi_defconfig |    2 +
@@ -117634,7 +117634,7 @@ index 0000000..123ff94
 From 8a0edaa156944c1fbf6a21f9b4d5a0a66c8d6b23 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Mon, 4 Aug 2014 10:06:56 +0200
-Subject: [PATCH 64/76] Added support for HiFiBerry DAC+
+Subject: [PATCH 64/78] Added support for HiFiBerry DAC+
 
 The driver is based on the HiFiBerry DAC driver. However HiFiBerry DAC+ uses
 a different codec chip (PCM5122), therefore a new driver is necessary.
@@ -117861,7 +117861,7 @@ index 0000000..c63387b
 From 0a09ef6473ac8756bbf6042ac5dc3201f76e4a27 Mon Sep 17 00:00:00 2001
 From: Daniel Matuschek <info@crazy-audio.com>
 Date: Mon, 4 Aug 2014 11:09:58 +0200
-Subject: [PATCH 65/76] Added driver for HiFiBerry Amp amplifier add-on board
+Subject: [PATCH 65/78] Added driver for HiFiBerry Amp amplifier add-on board
 
 The driver contains a low-level hardware driver for the TAS5713 and the
 drivers for the Raspberry Pi I2S subsystem.
@@ -118708,7 +118708,7 @@ index 0000000..8f019e0
 From 10c8bd7a81440cdc84084b5cec7c782cb7f43c10 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Mon, 13 Oct 2014 11:47:53 +0100
-Subject: [PATCH 66/76] Improve __copy_to_user and __copy_from_user performance
+Subject: [PATCH 66/78] Improve __copy_to_user and __copy_from_user performance
 
 Provide a __copy_from_user that uses memcpy. On BCM2708, use
 optimised memcpy/memmove/memcmp/memset implementations.
@@ -120234,7 +120234,7 @@ index 3e58d71..0622891 100644
 From c14827ecdaa36607f6110f9ce8df96e698672191 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Mon, 1 Sep 2014 16:35:56 +0100
-Subject: [PATCH 67/76] bcm2708: Allow option card devices to be configured via
+Subject: [PATCH 67/78] bcm2708: Allow option card devices to be configured via
  DT
 
 If the kernel is built with Device Tree support, and if a DT blob
@@ -120693,7 +120693,7 @@ index 2685fe4..e2c61d1 100644
 From 4f7d7eb7be6f52b26441ec243d65d5fa37288100 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Wed, 12 Nov 2014 17:07:02 +0000
-Subject: [PATCH 68/76] Adding Device Tree support for some RPi audio cards
+Subject: [PATCH 68/78] Adding Device Tree support for some RPi audio cards
 
 ---
  arch/arm/boot/dts/Makefile                      |  2 +
@@ -121321,7 +121321,7 @@ index 126f1e9..7c6598e 100644
 From fb4aed1c963b0001fdd94146e774889dbc20c7c8 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Fri, 5 Dec 2014 17:26:26 +0000
-Subject: [PATCH 69/76] fdt: Add support for the CONFIG_CMDLINE_EXTEND option
+Subject: [PATCH 69/78] fdt: Add support for the CONFIG_CMDLINE_EXTEND option
 
 ---
  drivers/of/fdt.c | 29 ++++++++++++++++++++++++-----
@@ -121379,7 +121379,7 @@ index 2e2b6d0..badc6a3 100644
 From 3724c39c11d9859b39c6343e559b163260dc023c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 25 Nov 2014 13:39:03 +0000
-Subject: [PATCH 70/76] config: Enable device tree
+Subject: [PATCH 70/78] config: Enable device tree
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 1 +
@@ -121401,7 +121401,7 @@ index d1fabab..6e5d8b6 100644
 From a66ae5a1b822cd655b0be923afabe70b9b3dcd83 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Thu, 11 Dec 2014 15:17:28 +0000
-Subject: [PATCH 71/76] bcm2708: Remove the prohibition on mixing SPIDEV and DT
+Subject: [PATCH 71/78] bcm2708: Remove the prohibition on mixing SPIDEV and DT
 
 ---
  arch/arm/mach-bcm2708/Kconfig   | 2 +-
@@ -121441,7 +121441,7 @@ index c6d4ff6..199d8a5 100644
 From 240dc6f5b6f8636ab2820a1ebccfa8aaacdf2c68 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 12 Dec 2014 11:24:48 +0000
-Subject: [PATCH 72/76] config: Add CONFIG_R8188EU and CONFIG_R8723AU
+Subject: [PATCH 72/78] config: Add CONFIG_R8188EU and CONFIG_R8723AU
 
 ---
  arch/arm/configs/bcmrpi_defconfig | 3 ++-
@@ -121472,7 +121472,7 @@ index 6e5d8b6..58ad7dc 100644
 From da40eea599c98a31f47622e5068e727b0ec48c7b Mon Sep 17 00:00:00 2001
 From: gellert <gellert@raspberrypi.org>
 Date: Mon, 15 Dec 2014 17:44:18 +0000
-Subject: [PATCH 73/76] DMA: fix cyclic LITE length overflow bug
+Subject: [PATCH 73/78] DMA: fix cyclic LITE length overflow bug
 
 ---
  drivers/dma/bcm2708-dmaengine.c | 17 ++++++++++++++---
@@ -121524,7 +121524,7 @@ index 27ee1c1..e525190 100644
 From 83e20a8f51a63aa5ac11ae6353181f1e8ef8e1c1 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Tue, 16 Dec 2014 10:23:48 +0000
-Subject: [PATCH 74/76] DT: Add overrides to enable i2c0, i2c1, spi and i2s
+Subject: [PATCH 74/78] DT: Add overrides to enable i2c0, i2c1, spi and i2s
 
 ---
  arch/arm/boot/dts/bcm2708-rpi-b-plus.dts | 10 ++++++++++
@@ -121568,10 +121568,326 @@ index d8c6d15..167b22b 100644
 +	};
 +};
 
+From 734ddc7eb8e749c5de20e5879c22941df93a9c2d Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 18 Dec 2014 16:48:32 +0000
+Subject: [PATCH 75/78] lirc-rpi: Add device tree support, and a suitable
+ overlay
+
+The overlay supports DT parameters that match the old module
+parameters, except that gpio_in_pull should be set using the
+strings "up", "down" or "off".
+---
+ arch/arm/boot/dts/lirc-rpi-overlay.dts |  57 +++++++++++++
+ arch/arm/mach-bcm2708/bcm2708_gpio.c   |  12 +++
+ drivers/staging/media/lirc/lirc_rpi.c  | 143 ++++++++++++++++++++++++++-------
+ 3 files changed, 185 insertions(+), 27 deletions(-)
+ create mode 100644 arch/arm/boot/dts/lirc-rpi-overlay.dts
+
+diff --git a/arch/arm/boot/dts/lirc-rpi-overlay.dts b/arch/arm/boot/dts/lirc-rpi-overlay.dts
+new file mode 100644
+index 0000000..7d5d82b
+--- /dev/null
++++ b/arch/arm/boot/dts/lirc-rpi-overlay.dts
+@@ -0,0 +1,57 @@
++// Definitions for lirc-rpi module
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target-path = "/";
++		__overlay__ {
++			lirc_rpi: lirc_rpi {
++				compatible = "rpi,lirc-rpi";
++				pinctrl-names = "default";
++				pinctrl-0 = <&lirc_pins>;
++				status = "okay";
++
++				// Override autodetection of IR receiver circuit
++				// (0 = active high, 1 = active low, -1 = no override )
++				rpi,sense = <0xffffffff>;
++
++				// Software carrier
++				// (0 = off, 1 = on)
++				rpi,softcarrier = <1>;
++
++				// Invert output
++				// (0 = off, 1 = on)
++				rpi,invert = <0>;
++
++				// Enable debugging messages
++				// (0 = off, 1 = on)
++				rpi,debug = <0>;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&gpio>;
++		__overlay__ {
++			lirc_pins: lirc_pins {
++				brcm,pins = <17 18>;
++				brcm,function = <1 0>; // out in
++				brcm,pull = <0 1>; // off down
++			};
++		};
++	};
++
++	__overrides__ {
++		gpio_out_pin =  <&lirc_pins>,"brcm,pins:0";
++		gpio_in_pin =   <&lirc_pins>,"brcm,pins:4";
++		gpio_in_pull =  <&lirc_pins>,"brcm,pull:4";
++
++		sense =         <&lirc_rpi>,"rpi,sense:0";
++		softcarrier =   <&lirc_rpi>,"rpi,softcarrier:0";
++		invert =        <&lirc_rpi>,"rpi,invert:0";
++		debug =         <&lirc_rpi>,"rpi,debug:0";
++	};
++};
+diff --git a/arch/arm/mach-bcm2708/bcm2708_gpio.c b/arch/arm/mach-bcm2708/bcm2708_gpio.c
+index 86cafa7..2c52835 100644
+--- a/arch/arm/mach-bcm2708/bcm2708_gpio.c
++++ b/arch/arm/mach-bcm2708/bcm2708_gpio.c
+@@ -90,6 +90,16 @@ static int bcm2708_set_function(struct gpio_chip *gc, unsigned offset,
+ 	return 0;
+ }
+ 
++static int bcm2708_gpio_request(struct gpio_chip *chip, unsigned offset)
++{
++	return pinctrl_request_gpio(chip->base + offset);
++}
++
++static void bcm2708_gpio_free(struct gpio_chip *chip, unsigned offset)
++{
++	pinctrl_free_gpio(chip->base + offset);
++}
++
+ static int bcm2708_gpio_dir_in(struct gpio_chip *gc, unsigned offset)
+ {
+ 	return bcm2708_set_function(gc, offset, GPIO_FSEL_INPUT);
+@@ -345,6 +355,8 @@ static int bcm2708_gpio_probe(struct platform_device *dev)
+ 	ucb->gc.ngpio = BCM2708_NR_GPIOS;
+ 	ucb->gc.owner = THIS_MODULE;
+ 
++	ucb->gc.request = bcm2708_gpio_request;
++	ucb->gc.free = bcm2708_gpio_free;
+ 	ucb->gc.direction_input = bcm2708_gpio_dir_in;
+ 	ucb->gc.direction_output = bcm2708_gpio_dir_out;
+ 	ucb->gc.get = bcm2708_gpio_get;
+diff --git a/drivers/staging/media/lirc/lirc_rpi.c b/drivers/staging/media/lirc/lirc_rpi.c
+index 887c36b..b7d82ad 100644
+--- a/drivers/staging/media/lirc/lirc_rpi.c
++++ b/drivers/staging/media/lirc/lirc_rpi.c
+@@ -40,6 +40,7 @@
+ #include <media/lirc_dev.h>
+ #include <mach/gpio.h>
+ #include <linux/gpio.h>
++#include <linux/of_platform.h>
+ 
+ #include <linux/platform_data/bcm2708.h>
+ 
+@@ -299,32 +300,108 @@ static int is_right_chip(struct gpio_chip *chip, void *data)
+ 	return 0;
+ }
+ 
++static inline int read_bool_property(const struct device_node *np,
++				     const char *propname,
++				     bool *out_value)
++{
++	u32 value = 0;
++	int err = of_property_read_u32(np, propname, &value);
++	if (err == 0)
++		*out_value = (value != 0);
++	return err;
++}
++
++static void read_pin_settings(struct device_node *node)
++{
++	u32 pin;
++	int index;
++
++	for (index = 0;
++	     of_property_read_u32_index(
++		     node,
++		     "brcm,pins",
++		     index,
++		     &pin) == 0;
++	     index++) {
++		u32 function;
++		int err;
++		err = of_property_read_u32_index(
++			node,
++			"brcm,function",
++			index,
++			&function);
++		if (err == 0) {
++			if (function == 1) /* Output */
++				gpio_out_pin = pin;
++			else if (function == 0) /* Input */
++				gpio_in_pin = pin;
++		}
++	}
++}
++
+ static int init_port(void)
+ {
+ 	int i, nlow, nhigh, ret, irq;
++	struct device_node *node;
+ 
+ 	gpiochip = gpiochip_find("bcm2708_gpio", is_right_chip);
+ 
+ 	if (!gpiochip)
+ 		return -ENODEV;
+ 
+-	if (gpio_request(gpio_out_pin, LIRC_DRIVER_NAME " ir/out")) {
+-		printk(KERN_ALERT LIRC_DRIVER_NAME
+-		       ": cant claim gpio pin %d\n", gpio_out_pin);
+-		ret = -ENODEV;
+-		goto exit_init_port;
++	node = lirc_rpi_dev->dev.of_node;
++
++	if (node) {
++		struct device_node *pins_node;
++
++		pins_node = of_parse_phandle(node, "pinctrl-0", 0);
++		if (!pins_node) {
++			printk(KERN_ERR LIRC_DRIVER_NAME
++			       ": pinctrl settings not found!\n");
++			ret = -EINVAL;
++			goto exit_init_port;
++		}
++
++		read_pin_settings(pins_node);
++
++		of_property_read_u32(node, "rpi,sense", &sense);
++
++		read_bool_property(node, "rpi,softcarrier", &softcarrier);
++
++		read_bool_property(node, "rpi,invert", &invert);
++
++		read_bool_property(node, "rpi,debug", &debug);
++
+ 	}
++	else
++	{
++		if (gpio_in_pin >= BCM2708_NR_GPIOS ||
++		    gpio_out_pin >= BCM2708_NR_GPIOS) {
++			ret = -EINVAL;
++			printk(KERN_ERR LIRC_DRIVER_NAME
++			       ": invalid GPIO pin(s) specified!\n");
++			goto exit_init_port;
++		}
+ 
+-	if (gpio_request(gpio_in_pin, LIRC_DRIVER_NAME " ir/in")) {
+-		printk(KERN_ALERT LIRC_DRIVER_NAME
+-		       ": cant claim gpio pin %d\n", gpio_in_pin);
+-		ret = -ENODEV;
+-		goto exit_gpio_free_out_pin;
++		if (gpio_request(gpio_out_pin, LIRC_DRIVER_NAME " ir/out")) {
++			printk(KERN_ALERT LIRC_DRIVER_NAME
++			       ": cant claim gpio pin %d\n", gpio_out_pin);
++			ret = -ENODEV;
++			goto exit_init_port;
++		}
++
++		if (gpio_request(gpio_in_pin, LIRC_DRIVER_NAME " ir/in")) {
++			printk(KERN_ALERT LIRC_DRIVER_NAME
++			       ": cant claim gpio pin %d\n", gpio_in_pin);
++			ret = -ENODEV;
++			goto exit_gpio_free_out_pin;
++		}
++
++		bcm2708_gpio_setpull(gpiochip, gpio_in_pin, gpio_in_pull);
++		gpiochip->direction_input(gpiochip, gpio_in_pin);
++		gpiochip->direction_output(gpiochip, gpio_out_pin, 1);
+ 	}
+ 
+-	bcm2708_gpio_setpull(gpiochip, gpio_in_pin, gpio_in_pull);
+-	gpiochip->direction_input(gpiochip, gpio_in_pin);
+-	gpiochip->direction_output(gpiochip, gpio_out_pin, 1);
+ 	gpiochip->set(gpiochip, gpio_out_pin, invert);
+ 
+ 	irq = gpiochip->to_irq(gpiochip, gpio_in_pin);
+@@ -546,15 +623,23 @@ static struct lirc_driver driver = {
+ 	.owner		= THIS_MODULE,
+ };
+ 
++static const struct of_device_id lirc_rpi_of_match[] = {
++	{ .compatible = "rpi,lirc-rpi", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, lirc_rpi_of_match);
++
+ static struct platform_driver lirc_rpi_driver = {
+ 	.driver = {
+ 		.name   = LIRC_DRIVER_NAME,
+ 		.owner  = THIS_MODULE,
++		.of_match_table = of_match_ptr(lirc_rpi_of_match),
+ 	},
+ };
+ 
+ static int __init lirc_rpi_init(void)
+ {
++	struct device_node *node;
+ 	int result;
+ 
+ 	/* Init read buffer. */
+@@ -569,15 +654,26 @@ static int __init lirc_rpi_init(void)
+ 		goto exit_buffer_free;
+ 	}
+ 
+-	lirc_rpi_dev = platform_device_alloc(LIRC_DRIVER_NAME, 0);
+-	if (!lirc_rpi_dev) {
+-		result = -ENOMEM;
+-		goto exit_driver_unregister;
++	node = of_find_compatible_node(NULL, NULL,
++				       lirc_rpi_of_match[0].compatible);
++
++	if (node) {
++		/* DT-enabled */
++		lirc_rpi_dev = of_find_device_by_node(node);
++		WARN_ON(lirc_rpi_dev->dev.of_node != node);
++		of_node_put(node);
+ 	}
++	else {
++		lirc_rpi_dev = platform_device_alloc(LIRC_DRIVER_NAME, 0);
++		if (!lirc_rpi_dev) {
++			result = -ENOMEM;
++			goto exit_driver_unregister;
++		}
+ 
+-	result = platform_device_add(lirc_rpi_dev);
+-	if (result)
+-		goto exit_device_put;
++		result = platform_device_add(lirc_rpi_dev);
++		if (result)
++			goto exit_device_put;
++	}
+ 
+ 	return 0;
+ 
+@@ -608,13 +704,6 @@ static int __init lirc_rpi_init_module(void)
+ 	if (result)
+ 		return result;
+ 
+-	if (gpio_in_pin >= BCM2708_NR_GPIOS || gpio_out_pin >= BCM2708_NR_GPIOS) {
+-		result = -EINVAL;
+-		printk(KERN_ERR LIRC_DRIVER_NAME
+-		       ": invalid GPIO pin(s) specified!\n");
+-		goto exit_rpi;
+-	}
+-
+ 	result = init_port();
+ 	if (result < 0)
+ 		goto exit_rpi;
+
 From bcdba133f20add0f1709b0dc63377b43f72042f2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 20 Dec 2014 19:07:31 +0000
-Subject: [PATCH 76/76] config: switch on powersave governor (will switch to
+Subject: [PATCH 76/78] config: switch on powersave governor (will switch to
  ondemand on boot)
 
 ---
@@ -121599,7 +121915,7 @@ index 58ad7dc..b32c814 100644
 From 5f1c1ee8aca1f9c69b0e65bcd21065552d271013 Mon Sep 17 00:00:00 2001
 From: jeanleflambeur <catalin.vasile@gmail.com>
 Date: Sat, 20 Dec 2014 12:20:39 +0100
-Subject: [PATCH] Update i2c-bcm2708.c
+Subject: [PATCH 77/78] Update i2c-bcm2708.c
 
 ---
  drivers/i2c/busses/i2c-bcm2708.c | 5 +++--
@@ -121623,3 +121939,70 @@ index 728cb69..526129b 100644
  	ret = wait_for_completion_timeout(&bi->done,
  			msecs_to_jiffies(I2C_TIMEOUT_MS));
  	if (ret == 0) {
+
+From a2a6c3e259254f3687bde843f4caff011611cf7e Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Fri, 16 Jan 2015 20:43:50 +0000
+Subject: [PATCH 78/78] gpio: Updates from 3.18 branch
+
+---
+ arch/arm/mach-bcm2708/bcm2708_gpio.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/arch/arm/mach-bcm2708/bcm2708_gpio.c b/arch/arm/mach-bcm2708/bcm2708_gpio.c
+index 2c52835..68f6ffd 100644
+--- a/arch/arm/mach-bcm2708/bcm2708_gpio.c
++++ b/arch/arm/mach-bcm2708/bcm2708_gpio.c
+@@ -21,6 +21,7 @@
+ #include <linux/gpio.h>
+ #include <linux/platform_device.h>
+ #include <mach/platform.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ #include <linux/platform_data/bcm2708.h>
+ 
+@@ -90,16 +91,6 @@ static int bcm2708_set_function(struct gpio_chip *gc, unsigned offset,
+ 	return 0;
+ }
+ 
+-static int bcm2708_gpio_request(struct gpio_chip *chip, unsigned offset)
+-{
+-	return pinctrl_request_gpio(chip->base + offset);
+-}
+-
+-static void bcm2708_gpio_free(struct gpio_chip *chip, unsigned offset)
+-{
+-	pinctrl_free_gpio(chip->base + offset);
+-}
+-
+ static int bcm2708_gpio_dir_in(struct gpio_chip *gc, unsigned offset)
+ {
+ 	return bcm2708_set_function(gc, offset, GPIO_FSEL_INPUT);
+@@ -295,8 +286,8 @@ static irqreturn_t bcm2708_gpio_interrupt(int irq, void *dev_id)
+ 		for_each_set_bit(i, &edsr, 32) {
+ 			gpio = i + bank * 32;
+ 			generic_handle_irq(gpio_to_irq(gpio));
++			writel(1<<i,__io_address(GPIO_BASE) + GPIOEDS(bank));
+ 		}
+-		writel(0xffffffff, __io_address(GPIO_BASE) + GPIOEDS(bank));
+ 	}
+ 	return IRQ_HANDLED;
+ }
+@@ -355,8 +346,6 @@ static int bcm2708_gpio_probe(struct platform_device *dev)
+ 	ucb->gc.ngpio = BCM2708_NR_GPIOS;
+ 	ucb->gc.owner = THIS_MODULE;
+ 
+-	ucb->gc.request = bcm2708_gpio_request;
+-	ucb->gc.free = bcm2708_gpio_free;
+ 	ucb->gc.direction_input = bcm2708_gpio_dir_in;
+ 	ucb->gc.direction_output = bcm2708_gpio_dir_out;
+ 	ucb->gc.get = bcm2708_gpio_get;
+@@ -381,7 +370,7 @@ static int bcm2708_gpio_remove(struct platform_device *dev)
+ 
+ 	printk(KERN_ERR DRIVER_NAME ": bcm2708_gpio_remove %p\n", dev);
+ 
+-	err = gpiochip_remove(&ucb->gc);
++	gpiochip_remove(&ucb->gc);
+ 
+ 	platform_set_drvdata(dev, NULL);
+ 	kfree(ucb);
