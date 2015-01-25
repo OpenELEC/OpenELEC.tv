@@ -26,6 +26,11 @@ if [ "$UBOOT_VERSION" = "sunxi" ]; then
   cp -PR $BUILD/u-boot-*/u-boot-sunxi-with-spl.bin $RELEASE_DIR/3rdparty/bootloader
   $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/board.fex $RELEASE_DIR/3rdparty/bootloader/script.bin
 fi
+
+if [ "$UBOOT_VERSION" = "odroidc" ]; then
+  cp -PR $BUILD/u-boot-*/sd_fuse/* $RELEASE_DIR/3rdparty/bootloader
+fi
+
 if [ -z "$UBOOT_CONFIGFILE" ]; then
   UBOOT_CONFIGFILE="boot.scr"
 fi
@@ -54,5 +59,9 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
   done
 
   if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
-    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $RELEASE_DIR/3rdparty/bootloader 
+    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $RELEASE_DIR/3rdparty/bootloader
+  fi
+
+  if [ -f "$PROJECT_DIR/$PROJECT/bootloader/boot.ini" ]; then
+    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/boot.ini $RELEASE_DIR/3rdparty/bootloader
   fi

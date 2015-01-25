@@ -44,7 +44,7 @@
     UBOOT_CONFIG="odroidc_config"
 
   # Target Configfile for u-boot
-    UBOOT_CONFIGFILE="odroidc_config"
+    UBOOT_CONFIGFILE="boot.ini"
 
   # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
     KERNEL_UBOOT_TARGET="uImage"

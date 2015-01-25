@@ -230,6 +230,8 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/uEnv.txt "$OE_TMP"
     elif [ -f "$RELEASE_DIR/3rdparty/bootloader/boot.scr" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/boot.scr "$OE_TMP"
+    elif [ -f "$RELEADE_DIR/3rdparty/bootloader/boot.ini" ]; then
+      cp $RELEASE_DIR/3rdparty/bootloader/boot.ini "$OE_TMP"
     fi
 
     echo "image: installing u-boot bootloader..."
@@ -239,6 +241,8 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
       dd if=$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8 conv=notrunc
+    elif [ -e "$RELEASE_DIR/3rdparty/bootloader/sd_fusing.sh" ]
+      $RELEASE_DIR/3rdparty/bootloader/sd_fusing.sh $DISK
     fi
 
     echo "image: copying files to part1..."
