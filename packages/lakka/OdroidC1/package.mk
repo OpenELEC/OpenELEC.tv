@@ -18,7 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="imx6"
+PKG_NAME="OdroidC1"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
@@ -28,7 +28,7 @@ PKG_URL=""
 PKG_DEPENDS_TARGET="retroarch gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x-next dinothawr prboom beetle-pce handy picodrive nxengine fceumm gambatte stella fba libretro-ffmpeg retroarch-joypad-autoconfig core-info"
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Cuboxi and Hummingboard"
+PKG_SHORTDESC="Lakka metapackage for OdroidC1"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
