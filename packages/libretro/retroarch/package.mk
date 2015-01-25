@@ -53,6 +53,8 @@ elif [ "$OPENGLES" == "sunxi-mali" ]; then
 elif [ "$OPENGLES" == "gpu-viv-bin-mx6q" ]; then
   RETROARCH_GL="--enable-gles --disable-kms --enable-vivante_fbdev"
   CFLAGS="$CFLAGS -DLINUX -DEGL_API_FB"
+elif [ "$OPENGLES" == "opengles-mali" ]; then
+  RETROARCH_GL="--enable-gles --disable-kms --enable-mali_fbdev"
 fi
 
 if [[ "$TARGET_FPU" =~ "neon" ]]; then
