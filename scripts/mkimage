@@ -242,9 +242,9 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
       dd if=$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8 conv=notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/bl1.bin.hardkernel" ]; then
-      dd if="$RELEASE_DIR/3rdparty/bootloader/bl1.bin.hardkernel" of="$DISK" bs=1 count=442
-      dd if="$RELEASE_DIR/3rdparty/bootloader/bl1.bin.hardkernel" of="$DISK" bs=512 skip=1 seek=1
-      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.bin" of=$DISK bs=512 seek=64
+      dd if="$RELEASE_DIR/3rdparty/bootloader/bl1.bin.hardkernel" of="$DISK" bs=1 count=442 conv=notrunc
+      dd if="$RELEASE_DIR/3rdparty/bootloader/bl1.bin.hardkernel" of="$DISK" bs=512 skip=1 seek=1 conv=notrunc
+      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.bin" of=$DISK bs=512 seek=64 conv=notrunc
     fi
 
     echo "image: copying files to part1..."
