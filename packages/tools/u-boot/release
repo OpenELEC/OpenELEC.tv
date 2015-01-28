@@ -24,8 +24,14 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
 
 if [ "$UBOOT_VERSION" = "sunxi" ]; then
   cp -PR $BUILD/u-boot-*/u-boot-sunxi-with-spl.bin $RELEASE_DIR/3rdparty/bootloader
-  $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/board.fex $RELEASE_DIR/3rdparty/bootloader/script.bin
+  if [ "$PROJECT" == "a20" ]; then
+    $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/cubieboard2.fex $RELEASE_DIR/3rdparty/bootloader/cubieboard2.bin
+    $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/cubietruck.fex  $RELEASE_DIR/3rdparty/bootloader/cubietruck.bin
+  else
+    $ROOT/$TOOLCHAIN/bin/fexc $PROJECT_DIR/$PROJECT/bootloader/board.fex  $RELEASE_DIR/3rdparty/bootloader/script.bin
+  fi
 fi
+
 if [ -z "$UBOOT_CONFIGFILE" ]; then
   UBOOT_CONFIGFILE="boot.scr"
 fi
@@ -55,4 +61,8 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
 
   if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
     cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $RELEASE_DIR/3rdparty/bootloader 
+  fi
+
+  if [ "$UBOOT_VERSION" = "sunxi" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv.* $RELEASE_DIR/3rdparty/bootloader
   fi

@@ -257,6 +257,10 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
         cp "$dtb" "$OE_TMP"
       fi
     done
+
+    if [ "$PROJECT" == "a20" ]; then
+      cp $RELEASE_DIR/3rdparty/bootloader/* "$OE_TMP"
+    fi
 fi # bootloader
 
 # unmount part1

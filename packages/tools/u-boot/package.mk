@@ -116,4 +116,9 @@ makeinstall_target() {
   if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
     cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $INSTALL/usr/share/bootloader
   fi 
+
+  if [ "$UBOOT_VERSION" = "sunxi" ]; then
+    #cp -RP $PROJECT_DIR/$PROJECT/bootloader/*.bin $INSTALL/usr/share/bootloader
+    cp -RP $PROJECT_DIR/$PROJECT/bootloader/uEnv.* $INSTALL/usr/share/bootloader
+  fi
 }
