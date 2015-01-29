@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="crazycat"
-PKG_VERSION="5fd9102"
+PKG_VERSION="91b04ea"
 PKG_REV="1"
 PKG_ARCH="i386 x86_64"
 PKG_LICENSE="GPL"
@@ -41,6 +41,4 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/updates/tbs
   find $ROOT/$PKG_BUILD/ -name \*.ko -exec cp {} $INSTALL/lib/modules/$(get_module_dir)/updates/tbs \;
-  mkdir -p $INSTALL/lib/firmware/
-  cp $ROOT/$PKG_BUILD/v4l/firmware/* -R $INSTALL/lib/firmware/
 }
