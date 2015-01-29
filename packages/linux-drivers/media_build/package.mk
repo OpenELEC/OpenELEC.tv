@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="media_build"
-PKG_VERSION="37d2961"
+PKG_VERSION="61ac3b2"
 # latest !!! DANGER !!!
 MEDIA_BUILD_VERSION="LATEST"
 # normal - stable and working
