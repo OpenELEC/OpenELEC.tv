@@ -18,7 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Cubietruck"
+PKG_NAME="a20"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
@@ -28,7 +28,7 @@ PKG_URL=""
 PKG_DEPENDS_TARGET="retroarch gpsp 2048 pcsx_rearmed snes9x-next vecx dinothawr prboom beetle-pce handy picodrive pocketsnes nxengine fceumm gambatte stella fba libretro-ffmpeg retroarch-joypad-autoconfig core-info"
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Cubietruck"
+PKG_SHORTDESC="Lakka metapackage for Cubieboard2 and Cubietruck"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"

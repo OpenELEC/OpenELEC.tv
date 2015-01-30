@@ -48,7 +48,7 @@ make_target() {
 
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
-  elif [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
+  elif [ "$PROJECT" == "a20" ] || [ "$PROJECT" == "Bananapi" ]; then
     CFLAGS="$CFLAGS -DGL_BGRA_EXT=0x80E1" # Fix build for platforms where GL_BGRA_EXT is not defined
     make platform=imx6
   elif [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ]; then

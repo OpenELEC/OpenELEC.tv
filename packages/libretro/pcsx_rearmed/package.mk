@@ -40,9 +40,9 @@ configure_target() {
 
 make_target() {
   cd $ROOT/$PKG_BUILD
-  if [ "$PROJECT" == "WandBoard" ] || [ "$PROJECT" == "imx6" ] || [ "$PROJECT" == "Cubieboard2" ] || [ "$PROJECT" == "Cubietruck" ] || [ "$PROJECT" == "Bananapi" ]; then
+  if [[ "$TARGET_FPU" =~ "neon" ]]; then
     make -f Makefile.libretro HAVE_NEON=1 USE_DYNAREC=1 BUILTIN_GPU=neon
-  elif [ "$PROJECT" == "RPi" ]; then
+  else
     make -f Makefile.libretro USE_DYNAREC=1 BUILTIN_GPU=neon
   fi
 }

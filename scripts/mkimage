@@ -258,7 +258,7 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       fi
     done
 
-    if [ "$PROJECT" == "a20" ]; then
+    if [ -f "$RELEASE_DIR/3rdparty/bootloader/cubieboard2.bin" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/* "$OE_TMP"
     fi
 fi # bootloader
