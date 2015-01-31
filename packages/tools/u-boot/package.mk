@@ -124,4 +124,8 @@ makeinstall_target() {
   if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
     cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $INSTALL/usr/share/bootloader
   fi 
+
+  if [ -f "$PROJECT_DIR/$PROJECT/bootloader/boot.ini" ]; then
+    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/boot.ini $INSTALL/usr/share/bootloader
+  fi
 }
