@@ -230,7 +230,7 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/uEnv.txt "$OE_TMP"
     elif [ -f "$RELEASE_DIR/3rdparty/bootloader/boot.scr" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/boot.scr "$OE_TMP"
-    elif [ -f "$RELEADE_DIR/3rdparty/bootloader/boot.ini" ]; then
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/boot.ini" ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/boot.ini "$OE_TMP"
     fi
 
