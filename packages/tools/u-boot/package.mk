@@ -47,7 +47,7 @@ PKG_DEPENDS_TARGET="toolchain"
 if [ "$UBOOT_VERSION" = "sunxi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host"
 elif [ "$UBOOT_VERSION" = "odroidc" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lzop:host linaro-arm-toolchain:host"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET linaro-arm-toolchain:host"
 fi
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
