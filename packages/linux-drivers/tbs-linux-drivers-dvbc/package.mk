@@ -49,6 +49,4 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/updates/tbs
   find $ROOT/$PKG_BUILD/linux-tbs-drivers/ -name \*.ko -exec cp {} $INSTALL/lib/modules/$(get_module_dir)/updates/tbs \;
-  mkdir -p $INSTALL/lib/firmware/
-  cp $ROOT/$PKG_BUILD/*.fw $INSTALL/lib/firmware/
 }
