@@ -19,18 +19,18 @@
 ################################################################################
 
 PKG_NAME="ljalves"
-PKG_VERSION="28012015"
+PKG_VERSION="2015-01-30"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://git.linuxtv.org/media_build.git"
+PKG_SITE="https://github.com/ljalves/linux_media"
 PKG_URL="http://mycvh.de/openelec/ljalves-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET=""
 PKG_BUILD_DEPENDS_TARGET="toolchain linux"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
-PKG_SHORTDESC="Build system to use the latest experimental drivers/patches without needing to replace the entire Kernel"
-PKG_LONGDESC="Build system to use the latest experimental drivers/patches without needing to replace the entire Kernel"
+PKG_SHORTDESC="Open Source TBS drivers from Luis Alves"
+PKG_LONGDESC="Open Source TBS drivers from Luis Alves"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
@@ -51,8 +51,4 @@ makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$KERNEL_VER/updates/media_build
   find $ROOT/$PKG_BUILD/media_build/v4l/ -name \*.ko -exec strip --strip-debug {} \;
   find $ROOT/$PKG_BUILD/media_build/v4l/ -name \*.ko -exec cp {} $INSTALL/lib/modules/$KERNEL_VER/updates/media_build \;
-
-  # copy tbs fw till *tbs*.fw is added to OE dvb-firmware package
-  mkdir -p $INSTALL/lib/firmware/
-  cp $ROOT/$PKG_BUILD/fw/*.fw $INSTALL/lib/firmware/
 }
