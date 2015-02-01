@@ -46,6 +46,8 @@ PKG_LICENSE="GPL"
 PKG_DEPENDS_TARGET="toolchain"
 if [ "$UBOOT_VERSION" = "sunxi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host"
+elif [ "$UBOOT_VERSION" = "odroidc" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lzop:host linaro-arm-toolchain:host"
 fi
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
@@ -68,13 +70,22 @@ pre_configure_target() {
 
   unset LDFLAGS
 
+  if [ "$UBOOT_VERSION" = "odroidc" ]; then
+    unset LDFLAGS CFLAGS CPPFLAGS
+  fi
+
 # dont use some optimizations because of problems
   MAKEFLAGS=-j1
 }
 
 make_target() {
-  make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
-  make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  if [ "$UBOOT_VERSION" = "odroidc" ]; then
+    make CROSS_COMPILE="arm-none-eabi-" $UBOOT_CONFIG
+    make CROSS_COMPILE="arm-none-eabi-" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  else
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  fi
 }
 
 makeinstall_target() {
