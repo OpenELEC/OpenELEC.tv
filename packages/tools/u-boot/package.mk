@@ -33,6 +33,10 @@ elif [ "$UBOOT_VERSION" = "imx6-wandboard" ]; then
   PKG_VERSION="2014.04-rc3"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+elif [ "$UBOOT_VERSION" = "odroidc" ]; then
+  PKG_VERSION="e7d4447"
+  PKG_SITE="http://odroid.com/dokuwiki/doku.php?id=en:c1_building_u-boot"
+  PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 else
   exit 0
 fi
@@ -42,6 +46,8 @@ PKG_LICENSE="GPL"
 PKG_DEPENDS_TARGET="toolchain"
 if [ "$UBOOT_VERSION" = "sunxi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host"
+elif [ "$UBOOT_VERSION" = "odroidc" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET linaro-arm-toolchain:host"
 fi
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
@@ -64,13 +70,22 @@ pre_configure_target() {
 
   unset LDFLAGS
 
+  if [ "$UBOOT_VERSION" = "odroidc" ]; then
+    unset LDFLAGS CFLAGS CPPFLAGS
+  fi
+
 # dont use some optimizations because of problems
   MAKEFLAGS=-j1
 }
 
 make_target() {
-  make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
-  make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  if [ "$UBOOT_VERSION" = "odroidc" ]; then
+    make CROSS_COMPILE="arm-none-eabi-" $UBOOT_CONFIG
+    make CROSS_COMPILE="arm-none-eabi-" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  else
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+  fi
 }
 
 makeinstall_target() {
@@ -103,6 +118,10 @@ makeinstall_target() {
     cp ./u-boot.img $INSTALL/usr/share/bootloader
   fi
 
+  if [ -f "./u-boot.bin" ]; then
+    cp ./u-boot.bin $INSTALL/usr/share/bootloader
+  fi
+
   if [ -f "./SPL" ]; then
     cp ./SPL $INSTALL/usr/share/bootloader
   fi
@@ -120,5 +139,9 @@ makeinstall_target() {
   if [ "$UBOOT_VERSION" = "sunxi" ]; then
     #cp -RP $PROJECT_DIR/$PROJECT/bootloader/*.bin $INSTALL/usr/share/bootloader
     cp -RP $PROJECT_DIR/$PROJECT/bootloader/uEnv.* $INSTALL/usr/share/bootloader
+  fi
+
+  if [ -f "$PROJECT_DIR/$PROJECT/bootloader/boot.ini" ]; then
+    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/boot.ini $INSTALL/usr/share/bootloader
   fi
 }

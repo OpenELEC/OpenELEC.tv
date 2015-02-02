@@ -241,6 +241,10 @@ echo "#########################################################"
     dd if=3rdparty/bootloader/SPL of="$DISK" bs=1k seek=1 conv=fsync
   elif [ -e "3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ];then
     dd if=3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8
+  elif [ -e "3rdparty/bootloader/bl1.bin.hardkernel" ];then
+    dd if=3rdparty/bootloader/bl1.bin.hardkernel of="$DISK" bs=1 count=442
+    dd if=3rdparty/bootloader/bl1.bin.hardkernel of="$DISK" bs=512 skip=1 seek=1
+    dd if=3rdparty/bootloader/u-boot.bin of=$DISK bs=512 seek=64
   else
      echo "ERROR: no bootloader image found!! please execute in archive folder"
   fi

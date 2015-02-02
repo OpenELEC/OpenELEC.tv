@@ -18,6 +18,10 @@
 
 PKG_NAME="linux"
 case "$LINUX" in
+  linux-odroidc-3.10.y)
+    PKG_VERSION="b33daad"
+    PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   linux-sun7i)
     PKG_VERSION="6ce48b3"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"

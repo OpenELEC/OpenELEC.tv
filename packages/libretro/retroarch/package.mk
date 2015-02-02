@@ -48,7 +48,7 @@ elif [ "$OPENGLES" == "bcm2835-driver" ]; then
   RETROARCH_GL="--enable-gles --disable-kms"
   CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads \
                   -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
-elif [ "$OPENGLES" == "sunxi-mali" ]; then
+elif [ "$OPENGLES" == "sunxi-mali" ] || [ "$OPENGLES" == "odroidc1-mali" ]; then
   RETROARCH_GL="--enable-gles --disable-kms --enable-mali_fbdev"
 elif [ "$OPENGLES" == "gpu-viv-bin-mx6q" ]; then
   RETROARCH_GL="--enable-gles --disable-kms --enable-vivante_fbdev"
