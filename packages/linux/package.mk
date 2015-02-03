@@ -31,7 +31,7 @@ case "$LINUX" in
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   amlogic)
-    PKG_VERSION="amlogic-3.10-24e850b-oe"
+    PKG_VERSION="amlogic-3.10-84deff2"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
@@ -39,7 +39,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.18.3"
+    PKG_VERSION="3.18.5"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -149,6 +149,7 @@ make_target() {
   rm -f $INSTALL/lib/modules/*/source
 
   ( cd $ROOT
+    rm -rf $ROOT/$BUILD/initramfs
     $SCRIPTS/install initramfs
   )
 
@@ -193,6 +194,16 @@ makeinstall_target() {
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
+    done
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    mkdir -p $INSTALL/usr/share/bootloader/overlays
+    touch $INSTALL/usr/share/bootloader/overlays/README.TXT
+    for dtb in arch/arm/boot/dts/*.dtb; do
+      if `echo "$dtb" | grep ".*/bcm2[^/]*$" >/dev/null`; then
+        cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
+      else
+        cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
+      fi
     done
   fi
 
