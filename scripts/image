@@ -184,6 +184,9 @@ fi
   [ "$TESTING" = "yes" ] && $SCRIPTS/install testing
   [ "$DEVTOOLS" = "yes" ] && $SCRIPTS/install debug
 
+# Hardware random number generator daemon
+  [ "$HW_RNG" = "yes" ] && $SCRIPTS/install rng-tools
+
 # OEM packages
   [ "$OEM_SUPPORT" = "yes" ] && $SCRIPTS/install oem
 

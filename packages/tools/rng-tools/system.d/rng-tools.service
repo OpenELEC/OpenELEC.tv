@@ -1,0 +1,9 @@
+[Unit]
+Description=RNG-Tools service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/rngd
+
+[Install]
+WantedBy=basic.target
