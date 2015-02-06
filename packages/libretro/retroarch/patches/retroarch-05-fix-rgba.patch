@@ -1,0 +1,26 @@
+diff -Naur retroarch/menu/drivers_display/lakka.c retroarch.patch/menu/drivers_display/lakka.c
+--- retroarch/menu/drivers_display/lakka.c	2015-02-06 23:55:07.052391369 +0100
++++ retroarch.patch/menu/drivers_display/lakka.c	2015-02-06 23:56:30.998328580 +0100
+@@ -641,8 +641,11 @@
+    GLuint texture = 0;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+-   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ti.width, ti.height, 0,
+-         GL_RGBA, GL_UNSIGNED_BYTE, ti.pixels);
++   glTexImage2D(GL_TEXTURE_2D, 0, driver.gfx_use_rgba ?
++            GL_RGBA : RARCH_GL_INTERNAL_FORMAT32,
++            ti.width, ti.height, 0,
++            driver.gfx_use_rgba ? GL_RGBA : RARCH_GL_TEXTURE_TYPE32,
++            RARCH_GL_FORMAT32, ti.pixels);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+@@ -921,8 +924,6 @@
+    lakka_fbo_reset(lakka);
+ #endif
+ 
+-   driver.gfx_use_rgba = true;
+-
+    fill_pathname_join(mediapath, g_settings.assets_directory,
+          "lakka", sizeof(mediapath));
+    fill_pathname_join(themepath, mediapath, THEME, sizeof(themepath));
