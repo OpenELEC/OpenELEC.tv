@@ -30,7 +30,9 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
     cp -PR $INSTALL/usr/share/bootloader/*.dtb $RELEASE_DIR/3rdparty/bootloader/
   fi
 
-  if [ -f $INSTALL/usr/share/bootloader/overlays/* ]; then
-    mkdir -p $RELEASE_DIR/3rdparty/bootloader/overlays
-    cp -PR $INSTALL/usr/share/bootloader/overlays/* $RELEASE_DIR/3rdparty/bootloader/overlays
-  fi
+  for file in $INSTALL/usr/share/bootloader/overlays/* ; do
+    if [ -f $file ]; then
+      mkdir -p $RELEASE_DIR/3rdparty/bootloader/overlays
+      cp -PR $file $RELEASE_DIR/3rdparty/bootloader/overlays
+    fi
+  done
