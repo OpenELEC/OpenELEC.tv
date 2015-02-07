@@ -1,9 +1,8 @@
 [Unit]
-Description=RNG-Tools service
+Description=Hardware RNG Encryption Gatherer Daemon
 
 [Service]
-Type=oneshot
-ExecStart=/usr/sbin/rngd
+ExecStart=/usr/sbin/rngd -f
 
 [Install]
 WantedBy=basic.target
