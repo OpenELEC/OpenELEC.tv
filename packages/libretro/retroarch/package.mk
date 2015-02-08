@@ -75,12 +75,20 @@ pre_configure_target() {
   cd $ROOT/$PKG_BUILD
 }
 
+make_target() {
+  make
+  make -C gfx/video_filters compiler=$CC
+}
+
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
   mkdir -p $INSTALL/etc
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/retroarch.cfg $INSTALL/etc
+  mkdir -p $INSTALL/usr/share/video_filters
+    cp $ROOT/$PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
+    cp $ROOT/$PKG_BUILD/gfx/video_filters/*.filt $INSTALL/usr/share/video_filters
   
   # General configuration
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
@@ -102,6 +110,7 @@ makeinstall_target() {
   sed -i -e "s/# video_threaded = false/video_threaded = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_font_path =/video_font_path =\/usr\/share\/retroarch\/lakka\/monochrome\/font.ttf/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# video_font_size = 48/video_font_size = 32/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_filter_dir =/video_filter_dir =\/usr\/share\/video_filters/" $INSTALL/etc/retroarch.cfg
 
   # Audio
   sed -i -e "s/# audio_driver =/audio_driver = \"alsathread\"/" $INSTALL/etc/retroarch.cfg
