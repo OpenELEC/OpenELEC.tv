@@ -77,7 +77,8 @@ pre_configure_target() {
 
 make_target() {
   make
-  make -C gfx/video_filters compiler=$CC
+  make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
+  make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
 
 makeinstall_target() {
@@ -89,6 +90,9 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/share/video_filters
     cp $ROOT/$PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
     cp $ROOT/$PKG_BUILD/gfx/video_filters/*.filt $INSTALL/usr/share/video_filters
+  mkdir -p $INSTALL/usr/share/audio_filters
+    cp $ROOT/$PKG_BUILD/audio/audio_filters/*.so $INSTALL/usr/share/audio_filters
+    cp $ROOT/$PKG_BUILD/audio/audio_filters/*.dsp $INSTALL/usr/share/audio_filters
   
   # General configuration
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
@@ -114,6 +118,7 @@ makeinstall_target() {
 
   # Audio
   sed -i -e "s/# audio_driver =/audio_driver = \"alsathread\"/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# audio_filter_dir =/audio_filter_dir =\/usr\/share\/audio_filters/" $INSTALL/etc/retroarch.cfg
   
   # Input
   sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
