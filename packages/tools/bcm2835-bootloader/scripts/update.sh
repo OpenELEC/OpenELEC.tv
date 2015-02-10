@@ -30,7 +30,7 @@
   cp -p $SYSTEM_ROOT/usr/share/bootloader/fixup.dat $BOOT_ROOT
   cp -p $SYSTEM_ROOT/usr/share/bootloader/start.elf $BOOT_ROOT
 
-  for dtb in $SYSTEM_ROOT/usr/share/bootloader/* ; do
+  for dtb in $SYSTEM_ROOT/usr/share/bootloader/*.dtb ; do
     if [ -f $dtb ]; then
       cp -p $dtb $BOOT_ROOT
     fi

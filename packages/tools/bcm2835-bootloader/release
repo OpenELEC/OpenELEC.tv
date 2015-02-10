@@ -26,13 +26,15 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
   cp -PR $BUILD/bcm2835-bootloader-*/fixup_x.dat $RELEASE_DIR/3rdparty/bootloader/fixup.dat
   cp -PR $BUILD/bcm2835-bootloader-*/start_x.elf $RELEASE_DIR/3rdparty/bootloader/start.elf
 
-  if [ -f $INSTALL/usr/share/bootloader/*.dtb ]; then
-    cp -PR $INSTALL/usr/share/bootloader/*.dtb $RELEASE_DIR/3rdparty/bootloader/
-  fi
+  for dtb in $INSTALL/usr/share/bootloader/*.dtb ; do
+    if [ -f $dtb ]; then
+      cp -PR $dtb $RELEASE_DIR/3rdparty/bootloader
+    fi
+  done
 
-  for file in $INSTALL/usr/share/bootloader/overlays/* ; do
-    if [ -f $file ]; then
+  for overlays in $INSTALL/usr/share/bootloader/overlays/* ; do
+    if [ -f $overlays ]; then
       mkdir -p $RELEASE_DIR/3rdparty/bootloader/overlays
-      cp -PR $file $RELEASE_DIR/3rdparty/bootloader/overlays
+      cp -PR $overlays $RELEASE_DIR/3rdparty/bootloader/overlays
     fi
   done
