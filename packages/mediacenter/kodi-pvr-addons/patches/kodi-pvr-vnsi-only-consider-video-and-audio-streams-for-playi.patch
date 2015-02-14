@@ -1,0 +1,62 @@
+From e1d5c141246792d1a7eedffd6562139ee7374936 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sun, 21 Dec 2014 12:19:17 +0100
+Subject: [PATCH] vnsi: only consider video and audio streams for playing time
+
+---
+ addons/pvr.vdr.vnsi/addon/addon.xml.in |  2 +-
+ addons/pvr.vdr.vnsi/src/VNSIDemux.cpp  | 18 +++++++++++++-----
+ 2 files changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/addons/pvr.vdr.vnsi/addon/addon.xml.in b/addons/pvr.vdr.vnsi/addon/addon.xml.in
+index 6daac51..cd0d8eb 100644
+--- a/addons/pvr.vdr.vnsi/addon/addon.xml.in
++++ b/addons/pvr.vdr.vnsi/addon/addon.xml.in
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <addon
+   id="pvr.vdr.vnsi"
+-  version="1.9.22"
++  version="1.9.23"
+   name="VDR VNSI Client"
+   provider-name="FernetMenta, Team XBMC">
+   <requires>
+diff --git a/addons/pvr.vdr.vnsi/src/VNSIDemux.cpp b/addons/pvr.vdr.vnsi/src/VNSIDemux.cpp
+index be45a76..055283a 100644
+--- a/addons/pvr.vdr.vnsi/src/VNSIDemux.cpp
++++ b/addons/pvr.vdr.vnsi/src/VNSIDemux.cpp
+@@ -109,7 +109,8 @@ DemuxPacket* cVNSIDemux::Read()
+   else if (resp->getOpCodeID() == VNSI_STREAM_MUXPKT)
+   {
+     // figure out the stream id for this packet
+-    int iStreamId = m_streams.GetStreamId(resp->getStreamID());
++    int pid = resp->getStreamID();
++    int iStreamId = m_streams.GetStreamId(pid);
+ 
+     // stream found ?
+     if(iStreamId != -1 && resp->getMuxSerial() == m_MuxPacketSerial)
+@@ -122,10 +123,17 @@ DemuxPacket* cVNSIDemux::Read()
+       p->iStreamId  = iStreamId;
+       delete resp;
+ 
+-      if (p->dts != DVD_NOPTS_VALUE)
+-        m_CurrentDTS = p->dts;
+-      else if (p->pts != DVD_NOPTS_VALUE)
+-        m_CurrentDTS = p->pts;
++      XbmcPvrStream *stream = m_streams.GetStreamById(pid);
++      xbmc_codec_type_t type = XBMC_CODEC_TYPE_UNKNOWN;
++      if (stream != NULL)
++        type = stream->iCodecType;
++      if (type == XBMC_CODEC_TYPE_VIDEO || type == XBMC_CODEC_TYPE_AUDIO)
++      {
++        if (p->dts != DVD_NOPTS_VALUE)
++          m_CurrentDTS = p->dts;
++        else if (p->pts != DVD_NOPTS_VALUE)
++          m_CurrentDTS = p->pts;
++      }
+       return p;
+     }
+     else if (iStreamId != -1 && resp->getMuxSerial() != m_MuxPacketSerial)
+-- 
+2.1.0
+
