@@ -1,0 +1,3208 @@
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/atomic.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/atomic.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/atomic.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/atomic.h	2015-02-13 20:27:03.345165000 +0000
+@@ -45,6 +45,33 @@
+ typedef volatile unsigned atomic_t;
+ #endif
+ 
++#if defined __arm__ && (!defined __thumb__ || defined __thumb2__)
++/* The __ARM_ARCH define is provided by gcc 4.8.  Construct it otherwise.  */
++#ifndef __ARM_ARCH
++#ifdef __ARM_ARCH_2__
++#define __ARM_ARCH 2
++#elif defined (__ARM_ARCH_3__) || defined (__ARM_ARCH_3M__)
++#define __ARM_ARCH 3
++#elif defined (__ARM_ARCH_4__) || defined (__ARM_ARCH_4T__)
++#define __ARM_ARCH 4
++#elif defined (__ARM_ARCH_5__) || defined (__ARM_ARCH_5E__) \
++        || defined(__ARM_ARCH_5T__) || defined(__ARM_ARCH_5TE__) \
++        || defined(__ARM_ARCH_5TEJ__)
++#define __ARM_ARCH 5
++#elif defined (__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) \
++        || defined (__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) \
++        || defined (__ARM_ARCH_6K__) || defined(__ARM_ARCH_6T2__)
++#define __ARM_ARCH 6
++#elif defined (__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) \
++        || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) \
++        || defined(__ARM_ARCH_7EM__)
++#define __ARM_ARCH 7
++#else
++#warning could not detect ARM architecture
++#define __ARM_ARCH 8
++#endif
++#endif
++#endif
+ 
+ /**
+  * Atomically incremente a reference count variable.
+@@ -118,7 +145,20 @@
+   /* The value for __val is in '__oldval' */
+   __val = __oldval;
+ 
+-#elif defined __arm__ && !defined __thumb__
++#elif (defined __ARM_ARCH && __ARM_ARCH >= 6)
++  int inc = 1;
++  __asm__ volatile (
++    "1:"
++    "ldrex   %0, [%1]\n"
++    "add     %0, %0,  %2\n"
++    "strex   r1, %0, [%1]\n"
++    "cmp     r1, #0\n"
++    "bne     1b\n"
++    : "=&r" (__val)
++    : "r"(valp), "r"(inc)
++    : "r1");
++
++#elif (defined __ARM_ARCH && __ARM_ARCH < 6)
+   int tmp1, tmp2;
+   int inc = 1;
+   __asm__ volatile (
+@@ -221,7 +261,20 @@
+   /* The value for __val is in '__oldval' */
+   __val = __oldval;
+ 
+-#elif defined __arm__ && !defined __thumb__
++#elif (defined __ARM_ARCH && __ARM_ARCH >= 6)
++  int dec = 1;
++  __asm__ volatile (
++    "1:"
++    "ldrex   %0, [%1]\n"
++    "sub     %0, %0,  %2\n"
++    "strex   r1, %0, [%1]\n"
++    "cmp     r1, #0\n"
++    "bne     1b\n"
++    : "=&r" (__val)
++    : "r"(valp), "r"(dec)
++    : "r1");
++
++#elif (defined __ARM_ARCH && __ARM_ARCH < 6)
+   int tmp1, tmp2;
+   int inc = -1;
+   __asm__ volatile (
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythcontrol.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythcontrol.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythcontrol.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythcontrol.h	2015-02-13 20:27:03.345165000 +0000
+@@ -199,6 +199,16 @@
+     }
+ 
+     /**
++     * @brief Query information on a single item from recordings
++     * @param recordedid
++     * @return ProgramPtr
++     */
++    ProgramPtr GetRecorded(uint32_t recordedid)
++    {
++      return m_wsapi.GetRecorded(recordedid);
++    }
++
++    /**
+      * @brief Update watched status for a recorded
+      * @param chanid
+      * @param recstartts
+@@ -206,6 +216,9 @@
+      */
+     bool UpdateRecordedWatchedStatus(const Program& program, bool watched)
+     {
++      WSServiceVersion_t wsv = m_wsapi.CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000)
++        return m_wsapi.UpdateRecordedWatchedStatus(program.recording.recordedId, watched);
+       return m_wsapi.UpdateRecordedWatchedStatus(program.channel.chanId, program.recording.startTs, watched);
+     }
+ 
+@@ -219,6 +232,8 @@
+     bool DeleteRecording(const Program& program, bool forceDelete = false, bool allowRerecord = false)
+     {
+       WSServiceVersion_t wsv = m_wsapi.CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000)
++        return m_wsapi.DeleteRecording(program.recording.recordedId, forceDelete, allowRerecord);
+       if (wsv.ranking >= 0x00020001)
+         return m_wsapi.DeleteRecording(program.channel.chanId, program.recording.startTs, forceDelete, allowRerecord);
+       return m_monitor.DeleteRecording(program, forceDelete, allowRerecord);
+@@ -227,6 +242,8 @@
+     bool UndeleteRecording(const Program& program)
+     {
+       WSServiceVersion_t wsv = m_wsapi.CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000)
++        return m_wsapi.UnDeleteRecording(program.recording.recordedId);
+       if (wsv.ranking >= 0x00020001)
+         return m_wsapi.UnDeleteRecording(program.channel.chanId, program.recording.startTs);
+       return m_monitor.UndeleteRecording(program);
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythlivetvplayback.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythlivetvplayback.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythlivetvplayback.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythlivetvplayback.cpp	2015-02-13 20:27:03.345165000 +0000
+@@ -404,29 +404,42 @@
+       }
+       break;
+     case EVENT_UPDATE_FILE_SIZE:
+-      if (msg.subject.size() >= 4)
++      if (msg.subject.size() >= 3)
+       {
+         PLATFORM::CLockObject lock(*m_mutex); // Lock chain
+         if (m_chain.lastSequence > 0)
+         {
+           int64_t newsize;
+-          uint32_t chanid;
+-          time_t startts;
+-          if (str2uint32(msg.subject[1].c_str(), &chanid) == 0
+-                  && str2time(msg.subject[2].c_str(), &startts) == 0
+-                  && m_chain.chained[m_chain.lastSequence -1].second->channel.chanId == chanid
+-                  && m_chain.chained[m_chain.lastSequence -1].second->recording.startTs == startts
+-                  && str2int64(msg.subject[3].c_str(), &newsize) == 0
+-                  && m_chain.chained[m_chain.lastSequence - 1].first->fileSize < newsize)
++          // Message contains chanid + starttime as recorded key
++          if (msg.subject.size() >= 4)
+           {
+-            // Update transfer file size
+-            m_chain.chained[m_chain.lastSequence - 1].first->fileSize = newsize;
+-            // Is wait the filling before switching ?
+-            if (m_chain.switchOnCreate && SwitchChainLast())
+-              m_chain.switchOnCreate = false;
+-            DBG(MYTH_DBG_DEBUG, "%s: liveTV (%s): chain last (%u) filesize %" PRIi64 "\n", __FUNCTION__,
+-                    m_chain.UID.c_str(), m_chain.lastSequence, newsize);
++            uint32_t chanid;
++            time_t startts;
++            if (str2uint32(msg.subject[1].c_str(), &chanid)
++                    || str2time(msg.subject[2].c_str(), &startts)
++                    || m_chain.chained[m_chain.lastSequence -1].second->channel.chanId != chanid
++                    || m_chain.chained[m_chain.lastSequence -1].second->recording.startTs != startts
++                    || str2int64(msg.subject[3].c_str(), &newsize)
++                    || m_chain.chained[m_chain.lastSequence - 1].first->fileSize >= newsize)
++              break;
+           }
++          // Message contains recordedid as key
++          else
++          {
++            uint32_t recordedid;
++            if (str2uint32(msg.subject[1].c_str(), &recordedid)
++                    || m_chain.chained[m_chain.lastSequence -1].second->recording.recordedId != recordedid
++                    || str2int64(msg.subject[2].c_str(), &newsize)
++                    || m_chain.chained[m_chain.lastSequence - 1].first->fileSize >= newsize)
++              break;
++          }
++          // Update transfer file size
++          m_chain.chained[m_chain.lastSequence - 1].first->fileSize = newsize;
++          // Is wait the filling before switching ?
++          if (m_chain.switchOnCreate && SwitchChainLast())
++            m_chain.switchOnCreate = false;
++          DBG(MYTH_DBG_DEBUG, "%s: liveTV (%s): chain last (%u) filesize %" PRIi64 "\n", __FUNCTION__,
++                  m_chain.UID.c_str(), m_chain.lastSequence, newsize);
+         }
+       }
+       break;
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythrecordingplayback.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythrecordingplayback.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythrecordingplayback.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythrecordingplayback.cpp	2015-02-13 20:27:03.345165000 +0000
+@@ -191,24 +191,35 @@
+   switch (msg.event)
+   {
+     case EVENT_UPDATE_FILE_SIZE:
+-      if (msg.subject.size() >= 4 && recording && transfer)
++      if (msg.subject.size() >= 3 && recording && transfer)
+       {
+-        uint32_t chanid;
+-        time_t startts;
+-        if (str2uint32(msg.subject[1].c_str(), &chanid) || str2time(msg.subject[2].c_str(), &startts))
+-          break;
+-        if (recording->channel.chanId == chanid && recording->recording.startTs == startts)
++        int64_t newsize;
++        // Message contains chanid + starttime as recorded key
++        if (msg.subject.size() >= 4)
+         {
+-          int64_t newsize;
+-          if (0 == str2int64(msg.subject[3].c_str(), &newsize))
+-          {
+-            // The file grows. Allow reading ahead
+-            m_readAhead = true;
+-            recording->fileSize = transfer->fileSize = newsize;
+-            DBG(MYTH_DBG_DEBUG, "%s: (%d) %s %" PRIi64 "\n", __FUNCTION__,
+-                    msg.event, recording->fileName.c_str(), newsize);
+-          }
++          uint32_t chanid;
++          time_t startts;
++          if (str2uint32(msg.subject[1].c_str(), &chanid)
++                  || str2time(msg.subject[2].c_str(), &startts)
++                  || recording->channel.chanId != chanid
++                  || recording->recording.startTs != startts
++                  || str2int64(msg.subject[3].c_str(), &newsize))
++            break;
+         }
++        // Message contains recordedid as key
++        else
++        {
++          uint32_t recordedid;
++          if (str2uint32(msg.subject[1].c_str(), &recordedid)
++                  || recording->recording.recordedId != recordedid
++                  || str2int64(msg.subject[2].c_str(), &newsize))
++            break;
++        }
++        // The file grows. Allow reading ahead
++        m_readAhead = true;
++        recording->fileSize = transfer->fileSize = newsize;
++        DBG(MYTH_DBG_DEBUG, "%s: (%d) %s %" PRIi64 "\n", __FUNCTION__,
++                msg.event, recording->fileName.c_str(), newsize);
+       }
+       break;
+     //case EVENT_HANDLER_STATUS:
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythtypes.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythtypes.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythtypes.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythtypes.h	2015-02-13 20:27:03.349164000 +0000
+@@ -30,6 +30,10 @@
+ #include <vector>
+ #include <map>
+ 
++/**
++ * @namespace Myth
++ * @brief This is the main namespace that encloses all public classes
++ */
+ namespace Myth
+ {
+   uint32_t StringToId(const std::string& str);
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythwsapi.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythwsapi.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythwsapi.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythwsapi.cpp	2015-02-13 20:27:03.349164000 +0000
+@@ -25,16 +25,14 @@
+ #include "private/mythsocket.h"
+ #include "private/mythwsrequest.h"
+ #include "private/mythwsresponse.h"
+-#include "private/janssonptr.h"
+ #include "private/mythjsonparser.h"
+ #include "private/mythjsonbinder.h"
+ #include "private/platform/threads/mutex.h"
+ #include "private/platform/util/util.h"
+ #include "private/uriparser.h"
+ 
+-#include <jansson.h>
+-
+ #define BOOLSTR(a)  ((a) ? "true" : "false")
++#define FETCHSIZE   100
+ 
+ using namespace Myth;
+ 
+@@ -116,20 +114,18 @@
+   if (resp.IsSuccessful())
+   {
+     // Parse content response
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (root.isValid() && json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (json.IsValid() && root.IsObject())
+     {
+-      const json_t *field = json_object_get(root.get(), "String");
+-      if (field != NULL)
++      const MythJSON::Node& field = root.GetObjectValue("String");
++      if (field.IsString())
+       {
+-        const char *val = json_string_value(field);
+-        if (val != NULL)
++        const std::string& val = field.GetStringValue();
++        if (sscanf(val.c_str(), "%d.%d", &(wsv.major), &(wsv.minor)) == 2)
+         {
+-          if (sscanf(val, "%d.%d", &(wsv.major), &(wsv.minor)) == 2)
+-          {
+-            wsv.ranking = ((wsv.major & 0xFFFF) << 16) | (wsv.minor & 0xFFFF);
+-            return true;
+-          }
++          wsv.ranking = ((wsv.major & 0xFFFF) << 16) | (wsv.minor & 0xFFFF);
++          return true;
+         }
+       }
+     }
+@@ -154,19 +150,17 @@
+     return false;
+   }
+   // Parse content response
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (root.isValid() && json_is_object(root.get()))
+-  {
+-    const json_t *field = json_object_get(root.get(), "String");
+-    if (field != NULL)
+-    {
+-      const char *val = json_string_value(field);
+-      if (val != NULL)
+-      {
+-        m_serverHostName = val;
+-        m_namedCache[val] = m_server;
+-        return true;
+-      }
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (json.IsValid() && root.IsObject())
++  {
++    const MythJSON::Node& field = root.GetObjectValue("String");
++    if (field.IsString())
++    {
++      const std::string& val = field.GetStringValue();
++      m_serverHostName = val;
++      m_namedCache[val] = m_server;
++      return true;
+     }
+   }
+   return false;
+@@ -194,13 +188,14 @@
+     return false;
+   }
+   // Parse content response
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (root.isValid() && json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (json.IsValid() && root.IsObject())
+   {
+-    const json_t *con = json_object_get(root.get(), "ConnectionInfo");
+-    if (con != NULL)
++    const MythJSON::Node& con = root.GetObjectValue("ConnectionInfo");
++    if (con.IsObject())
+     {
+-      const json_t *ver = json_object_get(con, "Version");
++      const MythJSON::Node& ver = con.GetObjectValue("Version");
+       MythJSON::BindObject(ver, &m_version, MythDTO::getVersionBindArray(wsv.ranking));
+       if (m_version.protocol)
+         return true;
+@@ -288,8 +283,9 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+@@ -297,20 +293,19 @@
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+   // Object: SettingList
+-  const json_t *slist = json_object_get(root.get(), "SettingList");
++  const MythJSON::Node& slist = root.GetObjectValue("SettingList");
+   // Object: Settings
+-  json_t *sts = json_object_get(slist, "Settings");
+-  if (json_is_object(sts))
++  const MythJSON::Node& sts = slist.GetObjectValue("Settings");
++  if (sts.IsObject())
+   {
+-    void *it = json_object_iter(sts);
+-    if (it != NULL)
++    if (sts.Size())
+     {
+-      const json_t *val = json_object_iter_value(it);
+-      if (val != NULL)
++      const MythJSON::Node& val = sts.GetObjectValue(static_cast<size_t>(0));
++      if (val.IsString())
+       {
+         ret.reset(new Setting());  // Using default constructor
+-        ret->key = json_object_iter_key(it);
+-        ret->value = json_string_value(val);
++        ret->key = sts.GetObjectKey(0);
++        ret->value = val.GetStringValue();
+       }
+     }
+   }
+@@ -340,8 +335,9 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+@@ -349,23 +345,22 @@
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+   // Object: SettingList
+-  const json_t *slist = json_object_get(root.get(), "SettingList");
++  const MythJSON::Node& slist = root.GetObjectValue("SettingList");
+   // Object: Settings
+-  json_t *sts = json_object_get(slist, "Settings");
+-  if (json_is_object(sts))
++  const MythJSON::Node& sts = slist.GetObjectValue("Settings");
++  if (sts.IsObject())
+   {
+-    void *it = json_object_iter(sts);
+-    while (it)
++    size_t s = sts.Size();
++    for (size_t i = 0; i < s; ++i)
+     {
+-      const json_t *val = json_object_iter_value(it);
+-      if (val != NULL)
++      const MythJSON::Node& val = sts.GetObjectValue(i);
++      if (val.IsString())
+       {
+         SettingPtr setting(new Setting());  // Using default constructor
+-        setting->key = json_object_iter_key(it);
+-        setting->value = json_string_value(val);
++        setting->key = sts.GetObjectKey(i);
++        setting->value = val.GetStringValue();
+         ret->insert(SettingMap::value_type(setting->key, setting));
+       }
+-      it = json_object_iter_next(sts, it);
+     }
+   }
+   return ret;
+@@ -397,16 +392,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -434,8 +430,9 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+@@ -443,13 +440,14 @@
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+   // Object: CaptureCardList
+-  const json_t *clist = json_object_get(root.get(), "CaptureCardList");
++  const MythJSON::Node& clist = root.GetObjectValue("CaptureCardList");
+   // Object: CaptureCards[]
+-  const json_t *cards = json_object_get(clist, "CaptureCards");
++  const MythJSON::Node& cards = clist.GetObjectValue("CaptureCards");
+   // Iterates over the sequence elements.
+-  for (size_t ci = 0; ci < json_array_size(cards); ++ci)
++  size_t cs = cards.Size();
++  for (size_t ci = 0; ci < cs; ++ci)
+   {
+-    const json_t *card = json_array_get(cards, ci);
++    const MythJSON::Node& card = cards.GetArrayElement(ci);
+     CaptureCardPtr captureCard(new CaptureCard());  // Using default constructor
+     // Bind the new captureCard
+     MythJSON::BindObject(card, captureCard.get(), bindcard);
+@@ -480,8 +478,9 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+@@ -489,13 +488,14 @@
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+   // Object: VideoSourceList
+-  const json_t *slist = json_object_get(root.get(), "VideoSourceList");
++  const MythJSON::Node& slist = root.GetObjectValue("VideoSourceList");
+   // Object: VideoSources[]
+-  const json_t *vsrcs = json_object_get(slist, "VideoSources");
++  const MythJSON::Node& vsrcs = slist.GetObjectValue("VideoSources");
+   // Iterates over the sequence elements.
+-  for (size_t vi = 0; vi < json_array_size(vsrcs); ++vi)
++  size_t vs = vsrcs.Size();
++  for (size_t vi = 0; vi < vs; ++vi)
+   {
+-    const json_t *vsrc = json_array_get(vsrcs, vi);
++    const MythJSON::Node& vsrc = vsrcs.GetArrayElement(vi);
+     VideoSourcePtr videoSource(new VideoSource());  // Using default constructor
+     // Bind the new videoSource
+     MythJSON::BindObject(vsrc, videoSource.get(), bindvsrc);
+@@ -508,7 +508,7 @@
+ {
+   ChannelListPtr ret(new ChannelList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -537,8 +537,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -546,7 +547,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ChannelInfoList
+-    const json_t *clist = json_object_get(root.get(), "ChannelInfoList");
++    const MythJSON::Node& clist = root.GetObjectValue("ChannelInfoList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(clist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -557,12 +558,13 @@
+     }
+     count = 0;
+     // Object: ChannelInfos[]
+-    const json_t *chans = json_object_get(clist, "ChannelInfos");
++    const MythJSON::Node& chans = clist.GetObjectValue("ChannelInfos");
+     // Iterates over the sequence elements.
+-    for (size_t ci = 0; ci < json_array_size(chans); ++ci)
++    size_t cs = chans.Size();
++    for (size_t ci = 0; ci < cs; ++ci)
+     {
+       ++count;
+-      const json_t *chan = json_array_get(chans, ci);
++      const MythJSON::Node& chan = chans.GetArrayElement(ci);
+       ChannelPtr channel(new Channel());  // Using default constructor
+       // Bind the new channel
+       MythJSON::BindObject(chan, channel.get(), bindchan);
+@@ -581,7 +583,7 @@
+ {
+   ChannelListPtr ret(new ChannelList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -612,8 +614,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -621,7 +624,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ChannelInfoList
+-    const json_t *clist = json_object_get(root.get(), "ChannelInfoList");
++    const MythJSON::Node& clist = root.GetObjectValue("ChannelInfoList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(clist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -632,12 +635,13 @@
+     }
+     count = 0;
+     // Object: ChannelInfos[]
+-    const json_t *chans = json_object_get(clist, "ChannelInfos");
++    const MythJSON::Node& chans = clist.GetObjectValue("ChannelInfos");
+     // Iterates over the sequence elements.
+-    for (size_t ci = 0; ci < json_array_size(chans); ++ci)
++    size_t cs = chans.Size();
++    for (size_t ci = 0; ci < cs; ++ci)
+     {
+       ++count;
+-      const json_t *chan = json_array_get(chans, ci);
++      const MythJSON::Node& chan = chans.GetArrayElement(ci);
+       ChannelPtr channel(new Channel());  // Using default constructor
+       // Bind the new channel
+       MythJSON::BindObject(chan, channel.get(), bindchan);
+@@ -687,8 +691,9 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+@@ -696,7 +701,7 @@
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+   // Object: ProgramGuide
+-  const json_t *glist = json_object_get(root.get(), "ProgramGuide");
++  const MythJSON::Node& glist = root.GetObjectValue("ProgramGuide");
+   ItemList list = ItemList(); // Using default constructor
+   MythJSON::BindObject(glist, &list, bindlist);
+   // List has ProtoVer. Check it or sound alarm
+@@ -706,20 +711,22 @@
+     return ret;
+   }
+   // Object: Channels[]
+-  const json_t *chans = json_object_get(glist, "Channels");
++  const MythJSON::Node& chans = glist.GetObjectValue("Channels");
+   // Iterates over the sequence elements.
+-  for (size_t ci = 0; ci < json_array_size(chans); ++ci)
++  size_t cs = chans.Size();
++  for (size_t ci = 0; ci < cs; ++ci)
+   {
+-    const json_t *chan = json_array_get(chans, ci);
++    const MythJSON::Node& chan = chans.GetArrayElement(ci);
+     Channel channel;
+     MythJSON::BindObject(chan, &channel, bindchan);
+     // Object: Programs[]
+-    const json_t *progs = json_object_get(chan, "Programs");
++    const MythJSON::Node& progs = chan.GetObjectValue("Programs");
+     // Iterates over the sequence elements.
+-    for (size_t pi = 0; pi < json_array_size(progs); ++pi)
++    size_t ps = progs.Size();
++    for (size_t pi = 0; pi < ps; ++pi)
+     {
+       ++count;
+-      const json_t *prog = json_array_get(progs, pi);
++      const MythJSON::Node& prog = progs.GetArrayElement(pi);
+       ProgramPtr program(new Program());  // Using default constructor
+       // Bind the new program
+       MythJSON::BindObject(prog, program.get(), bindprog);
+@@ -740,7 +747,7 @@
+ {
+   ProgramListPtr ret(new ProgramList);
+   char buf[32];
+-  uint32_t req_index = 0, req_count = 100, count = 0, total = 0;
++  uint32_t req_index = 0, req_count = FETCHSIZE, count = 0, total = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -775,8 +782,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -784,7 +792,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ProgramList
+-    const json_t *plist = json_object_get(root.get(), "ProgramList");
++    const MythJSON::Node& plist = root.GetObjectValue("ProgramList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(plist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -795,26 +803,28 @@
+     }
+     count = 0;
+     // Object: Programs[]
+-    const json_t *progs = json_object_get(plist, "Programs");
++    const MythJSON::Node& progs = plist.GetObjectValue("Programs");
+     // Iterates over the sequence elements.
+-    for (size_t pi = 0; pi < json_array_size(progs); ++pi)
++    size_t ps = progs.Size();
++    for (size_t pi = 0; pi < ps; ++pi)
+     {
+       ++count;
+-      const json_t *prog = json_array_get(progs, pi);
++      const MythJSON::Node& prog = progs.GetArrayElement(pi);
+       ProgramPtr program(new Program());  // Using default constructor
+       // Bind the new program
+       MythJSON::BindObject(prog, program.get(), bindprog);
+       // Bind channel of program
+-      const json_t *chan = json_object_get(prog, "Channel");
++      const MythJSON::Node& chan = prog.GetObjectValue("Channel");
+       MythJSON::BindObject(chan, &(program->channel), bindchan);
+       // Bind recording of program
+-      const json_t *reco = json_object_get(prog, "Recording");
++      const MythJSON::Node& reco = prog.GetObjectValue("Recording");
+       MythJSON::BindObject(reco, &(program->recording), bindreco);
+       // Bind artwork list of program
+-      const json_t *arts = json_object_get(json_object_get(prog, "Artwork"), "ArtworkInfos");
+-      for (size_t pa = 0; pa < json_array_size(arts); ++pa)
++      const MythJSON::Node& arts = prog.GetObjectValue("Artwork").GetObjectValue("ArtworkInfos");
++      size_t as = arts.Size();
++      for (size_t pa = 0; pa < as; ++pa)
+       {
+-        const json_t *artw = json_array_get(arts, pa);
++        const MythJSON::Node& artw = arts.GetArrayElement(pa);
+         Artwork artwork = Artwork();  // Using default constructor
+         MythJSON::BindObject(artw, &artwork, bindartw);
+         program->artwork.push_back(artwork);
+@@ -855,29 +865,89 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
++    return ret;
++  }
++  DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
++
++  const MythJSON::Node& prog = root.GetObjectValue("Program");
++  ProgramPtr program(new Program());  // Using default constructor
++  // Bind the new program
++  MythJSON::BindObject(prog, program.get(), bindprog);
++  // Bind channel of program
++  const MythJSON::Node& chan = prog.GetObjectValue("Channel");
++  MythJSON::BindObject(chan, &(program->channel), bindchan);
++  // Bind recording of program
++  const MythJSON::Node& reco = prog.GetObjectValue("Recording");
++  MythJSON::BindObject(reco, &(program->recording), bindreco);
++  // Bind artwork list of program
++  const MythJSON::Node& arts = prog.GetObjectValue("Artwork").GetObjectValue("ArtworkInfos");
++  size_t as = arts.Size();
++  for (size_t pa = 0; pa < as; ++pa)
++  {
++    const MythJSON::Node& artw = arts.GetArrayElement(pa);
++    Artwork artwork = Artwork();  // Using default constructor
++    MythJSON::BindObject(artw, &artwork, bindartw);
++    program->artwork.push_back(artwork);
++  }
++  // Return valid program
++  if (program->recording.startTs != INVALID_TIME)
++    ret = program;
++  return ret;
++}
++
++ProgramPtr WSAPI::GetRecorded6_0(uint32_t recordedid)
++{
++  ProgramPtr ret;
++  char buf[32];
++  unsigned proto = (unsigned)m_version.protocol;
++
++  // Get bindings for protocol version
++  const bindings_t *bindprog = MythDTO::getProgramBindArray(proto);
++  const bindings_t *bindchan = MythDTO::getChannelBindArray(proto);
++  const bindings_t *bindreco = MythDTO::getRecordingBindArray(proto);
++  const bindings_t *bindartw = MythDTO::getArtworkBindArray(proto);
++
++  WSRequest req = WSRequest(m_server, m_port);
++  req.RequestAccept(CT_JSON);
++  req.RequestService("/Dvr/GetRecorded");
++  uint32str(recordedid, buf);
++  req.SetContentParam("RecordedId", buf);
++  WSResponse resp(req);
++  if (!resp.IsSuccessful())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
++    return ret;
++  }
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *prog = json_object_get(root.get(), "Program");
++  const MythJSON::Node& prog = root.GetObjectValue("Program");
+   ProgramPtr program(new Program());  // Using default constructor
+   // Bind the new program
+   MythJSON::BindObject(prog, program.get(), bindprog);
+   // Bind channel of program
+-  const json_t *chan = json_object_get(prog, "Channel");
++  const MythJSON::Node& chan = prog.GetObjectValue("Channel");
+   MythJSON::BindObject(chan, &(program->channel), bindchan);
+   // Bind recording of program
+-  const json_t *reco = json_object_get(prog, "Recording");
++  const MythJSON::Node& reco = prog.GetObjectValue("Recording");
+   MythJSON::BindObject(reco, &(program->recording), bindreco);
+   // Bind artwork list of program
+-  const json_t *arts = json_object_get(json_object_get(prog, "Artwork"), "ArtworkInfos");
+-  for (size_t pa = 0; pa < json_array_size(arts); ++pa)
++  const MythJSON::Node& arts = prog.GetObjectValue("Artwork").GetObjectValue("ArtworkInfos");
++  size_t as = arts.Size();
++  for (size_t pa = 0; pa < as; ++pa)
+   {
+-    const json_t *artw = json_array_get(arts, pa);
++    const MythJSON::Node& artw = arts.GetArrayElement(pa);
+     Artwork artwork = Artwork();  // Using default constructor
+     MythJSON::BindObject(artw, &artwork, bindartw);
+     program->artwork.push_back(artwork);
+@@ -908,16 +978,50 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
++    return false;
++  }
++  DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
++
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
++    return false;
++  return true;
++}
++
++bool WSAPI::DeleteRecording6_0(uint32_t recordedid, bool forceDelete, bool allowRerecord)
++{
++  char buf[32];
++
++  // Initialize request header
++  WSRequest req = WSRequest(m_server, m_port);
++  req.RequestAccept(CT_JSON);
++  req.RequestService("/Dvr/DeleteRecording", HRM_POST);
++  uint32str(recordedid, buf);
++  req.SetContentParam("RecordedId", buf);
++  req.SetContentParam("ForceDelete", BOOLSTR(forceDelete));
++  req.SetContentParam("AllowRerecord", BOOLSTR(allowRerecord));
++  WSResponse resp(req);
++  if (!resp.IsSuccessful())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
++    return false;
++  }
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -940,16 +1044,48 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
++    return false;
++  }
++  DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
++
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
++    return false;
++  return true;
++}
++
++bool WSAPI::UnDeleteRecording6_0(uint32_t recordedid)
++{
++  char buf[32];
++
++  // Initialize request header
++  WSRequest req = WSRequest(m_server, m_port);
++  req.RequestAccept(CT_JSON);
++  req.RequestService("/Dvr/UnDeleteRecording", HRM_POST);
++  uint32str(recordedid, buf);
++  req.SetContentParam("RecordedId", buf);
++  WSResponse resp(req);
++  if (!resp.IsSuccessful())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
++    return false;
++  }
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -973,16 +1109,49 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
++    return false;
++  return true;
++}
++
++bool WSAPI::UpdateRecordedWatchedStatus6_0(uint32_t recordedid, bool watched)
++{
++  char buf[32];
++
++  // Initialize request header
++  WSRequest req = WSRequest(m_server, m_port);
++  req.RequestAccept(CT_JSON);
++  req.RequestService("/Dvr/UpdateRecordedWatchedStatus", HRM_POST);
++  uint32str(recordedid, buf);
++  req.SetContentParam("RecordedId", buf);
++  req.SetContentParam("Watched", BOOLSTR(watched));
++  WSResponse resp(req);
++  if (!resp.IsSuccessful())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
++    return false;
++  }
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
++  {
++    DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
++    return false;
++  }
++  DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
++
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -1000,7 +1169,7 @@
+ {
+   RecordScheduleListPtr ret(new RecordScheduleList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -1027,8 +1196,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -1036,9 +1206,9 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: RecRuleList
+-    const json_t *clist = json_object_get(root.get(), "RecRuleList");
++    const MythJSON::Node& rlist = root.GetObjectValue("RecRuleList");
+     ItemList list = ItemList(); // Using default constructor
+-    MythJSON::BindObject(clist, &list, bindlist);
++    MythJSON::BindObject(rlist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+     if (list.protoVer != proto)
+     {
+@@ -1047,12 +1217,13 @@
+     }
+     count = 0;
+     // Object: RecRules[]
+-    const json_t *recs = json_object_get(clist, "RecRules");
++    const MythJSON::Node& recs = rlist.GetObjectValue("RecRules");
+     // Iterates over the sequence elements.
+-    for (size_t ci = 0; ci < json_array_size(recs); ++ci)
++    size_t rs = recs.Size();
++    for (size_t ri = 0; ri < rs; ++ri)
+     {
+       ++count;
+-      const json_t *rec = json_array_get(recs, ci);
++      const MythJSON::Node& rec = recs.GetArrayElement(ri);
+       RecordSchedulePtr record(new RecordSchedule()); // Using default constructor
+       // Bind the new record
+       MythJSON::BindObject(rec, record.get(), bindrec);
+@@ -1087,15 +1258,16 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *rec = json_object_get(root.get(), "RecRule");
++  const MythJSON::Node& rec = root.GetObjectValue("RecRule");
+   RecordSchedulePtr record(new RecordSchedule()); // Using default constructor
+   // Bind the new record
+   MythJSON::BindObject(rec, record.get(), bindrec);
+@@ -1196,16 +1368,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "int");
+-  if (!field || str2uint32(json_string_value(field), &recordid))
++  const MythJSON::Node& field = root.GetObjectValue("int");
++  if (!field.IsString() || str2uint32(field.GetStringValue().c_str(), &recordid))
+     return false;
+   record.recordId = recordid;
+   return true;
+@@ -1286,16 +1459,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "uint");
+-  if (!field || str2uint32(json_string_value(field), &recordid))
++  const MythJSON::Node& field = root.GetObjectValue("uint");
++  if (!field.IsString() || str2uint32(field.GetStringValue().c_str(), &recordid))
+     return false;
+   record.recordId = recordid;
+   return true;
+@@ -1377,16 +1551,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -1409,16 +1584,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -1441,16 +1617,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -1473,16 +1650,17 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return false;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return false;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *field = json_object_get(root.get(), "bool");
+-  if (!field || strcmp(json_string_value(field), "true"))
++  const MythJSON::Node& field = root.GetObjectValue("bool");
++  if (!field.IsString() || strcmp(field.GetStringValue().c_str(), "true"))
+     return false;
+   return true;
+ }
+@@ -1505,7 +1683,7 @@
+ {
+   ProgramListPtr ret(new ProgramList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -1535,8 +1713,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -1544,7 +1723,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ProgramList
+-    const json_t *plist = json_object_get(root.get(), "ProgramList");
++    const MythJSON::Node& plist = root.GetObjectValue("ProgramList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(plist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -1555,20 +1734,21 @@
+     }
+     count = 0;
+     // Object: Programs[]
+-    const json_t *progs = json_object_get(plist, "Programs");
++    const MythJSON::Node& progs = plist.GetObjectValue("Programs");
+     // Iterates over the sequence elements.
+-    for (size_t pi = 0; pi < json_array_size(progs); ++pi)
++    size_t ps = progs.Size();
++    for (size_t pi = 0; pi < ps; ++pi)
+     {
+       ++count;
+-      const json_t *prog = json_array_get(progs, pi);
++      const MythJSON::Node& prog = progs.GetArrayElement(pi);
+       ProgramPtr program(new Program());  // Using default constructor
+       // Bind the new program
+       MythJSON::BindObject(prog, program.get(), bindprog);
+       // Bind channel of program
+-      const json_t *chan = json_object_get(prog, "Channel");
++      const MythJSON::Node& chan = prog.GetObjectValue("Channel");
+       MythJSON::BindObject(chan, &(program->channel), bindchan);
+       // Bind recording of program
+-      const json_t *reco = json_object_get(prog, "Recording");
++      const MythJSON::Node& reco = prog.GetObjectValue("Recording");
+       MythJSON::BindObject(reco, &(program->recording), bindreco);
+       ret->push_back(program);
+     }
+@@ -1584,7 +1764,7 @@
+ {
+   ProgramListPtr ret(new ProgramList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -1613,8 +1793,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -1622,7 +1803,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ProgramList
+-    const json_t *plist = json_object_get(root.get(), "ProgramList");
++    const MythJSON::Node& plist = root.GetObjectValue("ProgramList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(plist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -1633,20 +1814,21 @@
+     }
+     count = 0;
+     // Object: Programs[]
+-    const json_t *progs = json_object_get(plist, "Programs");
++    const MythJSON::Node& progs = plist.GetObjectValue("Programs");
+     // Iterates over the sequence elements.
+-    for (size_t pi = 0; pi < json_array_size(progs); ++pi)
++    size_t ps = progs.Size();
++    for (size_t pi = 0; pi < ps; ++pi)
+     {
+       ++count;
+-      const json_t *prog = json_array_get(progs, pi);
++      const MythJSON::Node& prog = progs.GetArrayElement(pi);
+       ProgramPtr program(new Program());  // Using default constructor
+       // Bind the new program
+       MythJSON::BindObject(prog, program.get(), bindprog);
+       // Bind channel of program
+-      const json_t *chan = json_object_get(prog, "Channel");
++      const MythJSON::Node& chan = prog.GetObjectValue("Channel");
+       MythJSON::BindObject(chan, &(program->channel), bindchan);
+       // Bind recording of program
+-      const json_t *reco = json_object_get(prog, "Recording");
++      const MythJSON::Node& reco = prog.GetObjectValue("Recording");
+       MythJSON::BindObject(reco, &(program->recording), bindreco);
+       ret->push_back(program);
+     }
+@@ -1662,7 +1844,7 @@
+ {
+   ProgramListPtr ret(new ProgramList);
+   char buf[32];
+-  int32_t req_index = 0, req_count = 100, count = 0;
++  int32_t req_index = 0, req_count = FETCHSIZE, count = 0;
+   unsigned proto = (unsigned)m_version.protocol;
+ 
+   // Get bindings for protocol version
+@@ -1691,8 +1873,9 @@
+       DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+       break;
+     }
+-    JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-    if (!root.isValid() || !json_is_object(root.get()))
++    const MythJSON::Document json(resp);
++    const MythJSON::Node& root = json.GetRoot();
++    if (!json.IsValid() || !root.IsObject())
+     {
+       DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+       break;
+@@ -1700,7 +1883,7 @@
+     DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+     // Object: ProgramList
+-    const json_t *plist = json_object_get(root.get(), "ProgramList");
++    const MythJSON::Node& plist = root.GetObjectValue("ProgramList");
+     ItemList list = ItemList(); // Using default constructor
+     MythJSON::BindObject(plist, &list, bindlist);
+     // List has ProtoVer. Check it or sound alarm
+@@ -1711,20 +1894,21 @@
+     }
+     count = 0;
+     // Object: Programs[]
+-    const json_t *progs = json_object_get(plist, "Programs");
++    const MythJSON::Node& progs = plist.GetObjectValue("Programs");
+     // Iterates over the sequence elements.
+-    for (size_t pi = 0; pi < json_array_size(progs); ++pi)
++    size_t ps = progs.Size();
++    for (size_t pi = 0; pi < ps; ++pi)
+     {
+       ++count;
+-      const json_t *prog = json_array_get(progs, pi);
++      const MythJSON::Node& prog = progs.GetArrayElement(pi);
+       ProgramPtr program(new Program());  // Using default constructor
+       // Bind the new program
+       MythJSON::BindObject(prog, program.get(), bindprog);
+       // Bind channel of program
+-      const json_t *chan = json_object_get(prog, "Channel");
++      const MythJSON::Node& chan = prog.GetObjectValue("Channel");
+       MythJSON::BindObject(chan, &(program->channel), bindchan);
+       // Bind recording of program
+-      const json_t *reco = json_object_get(prog, "Recording");
++      const MythJSON::Node& reco = prog.GetObjectValue("Recording");
+       MythJSON::BindObject(reco, &(program->recording), bindreco);
+       ret->push_back(program);
+     }
+@@ -1879,20 +2063,22 @@
+     DBG(MYTH_DBG_ERROR, "%s: invalid response\n", __FUNCTION__);
+     return ret;
+   }
+-  JanssonPtr root = MythJSON::ParseResponseJSON(resp);
+-  if (!root.isValid() || !json_is_object(root.get()))
++  const MythJSON::Document json(resp);
++  const MythJSON::Node& root = json.GetRoot();
++  if (!json.IsValid() || !root.IsObject())
+   {
+     DBG(MYTH_DBG_ERROR, "%s: unexpected content\n", __FUNCTION__);
+     return ret;
+   }
+   DBG(MYTH_DBG_DEBUG, "%s: content parsed\n", __FUNCTION__);
+ 
+-  const json_t *list = json_object_get(root.get(), "ArtworkInfoList");
++  const MythJSON::Node& list = root.GetObjectValue("ArtworkInfoList");
+   // Bind artwork list
+-  const json_t *arts = json_object_get(list, "ArtworkInfos");
+-  for (size_t pa = 0; pa < json_array_size(arts); ++pa)
++  const MythJSON::Node& arts = list.GetObjectValue("ArtworkInfos");
++  size_t as = arts.Size();
++  for (size_t pa = 0; pa < as; ++pa)
+   {
+-    const json_t *artw = json_array_get(arts, pa);
++    const MythJSON::Node& artw = arts.GetArrayElement(pa);
+     ArtworkPtr artwork(new Artwork());  // Using default constructor
+     MythJSON::BindObject(artw, artwork.get(), bindartw);
+     ret->push_back(artwork);
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythwsapi.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythwsapi.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/mythwsapi.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/mythwsapi.h	2015-02-13 20:27:03.349164000 +0000
+@@ -169,6 +169,16 @@
+     }
+ 
+     /**
++     * @brief GET Dvr/GetRecorded
++     */
++    ProgramPtr GetRecorded(uint32_t recordedid)
++    {
++      WSServiceVersion_t wsv = CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000) return GetRecorded6_0(recordedid);
++      return ProgramPtr();
++    }
++
++    /**
+      * @brief POST Dvr/UpdateRecordedWatchedStatus
+      */
+     bool UpdateRecordedWatchedStatus(uint32_t chanid, time_t recstartts, bool watched)
+@@ -179,6 +189,16 @@
+     }
+ 
+     /**
++     * @brief POST Dvr/UpdateRecordedWatchedStatus
++     */
++    bool UpdateRecordedWatchedStatus(uint32_t recordedid, bool watched)
++    {
++      WSServiceVersion_t wsv = CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000) return UpdateRecordedWatchedStatus6_0(recordedid, watched);
++      return false;
++    }
++
++    /**
+      * @brief POST Dvr/DeleteRecording
+      */
+     bool DeleteRecording(uint32_t chanid, time_t recstartts, bool forceDelete = false, bool allowRerecord = false)
+@@ -189,6 +209,16 @@
+     }
+ 
+     /**
++     * @brief POST Dvr/DeleteRecording
++     */
++    bool DeleteRecording(uint32_t recordedid, bool forceDelete = false, bool allowRerecord = false)
++    {
++      WSServiceVersion_t wsv = CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000) return DeleteRecording6_0(recordedid, forceDelete, allowRerecord);
++      return false;
++    }
++
++    /**
+      * @brief POST Dvr/UnDeleteRecording
+      */
+     bool UnDeleteRecording(uint32_t chanid, time_t recstartts)
+@@ -199,6 +229,16 @@
+     }
+ 
+     /**
++     * @brief POST Dvr/UnDeleteRecording
++     */
++    bool UnDeleteRecording(uint32_t recordedid)
++    {
++      WSServiceVersion_t wsv = CheckService(WS_Dvr);
++      if (wsv.ranking >= 0x00060000) return UnDeleteRecording6_0(recordedid);
++      return false;
++    }
++
++    /**
+      * @brief GET Dvr/GetRecordScheduleList
+      */
+     RecordScheduleListPtr GetRecordScheduleList()
+@@ -384,9 +424,13 @@
+ 
+     ProgramListPtr GetRecordedList1_5(unsigned n, bool descending);
+     ProgramPtr GetRecorded1_5(uint32_t chanid, time_t recstartts);
++    ProgramPtr GetRecorded6_0(uint32_t recordedid);
+     bool DeleteRecording2_1(uint32_t chanid, time_t recstartts, bool forceDelete, bool allowRerecord);
++    bool DeleteRecording6_0(uint32_t recordedid, bool forceDelete, bool allowRerecord);
+     bool UnDeleteRecording2_1(uint32_t chanid, time_t recstartts);
++    bool UnDeleteRecording6_0(uint32_t recordedid);
+     bool UpdateRecordedWatchedStatus4_5(uint32_t chanid, time_t recstartts, bool watched);
++    bool UpdateRecordedWatchedStatus6_0(uint32_t recordedid, bool watched);
+ 
+     RecordScheduleListPtr GetRecordScheduleList1_5();
+     RecordSchedulePtr GetRecordSchedule1_5(uint32_t recordid);
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/janssonptr.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/janssonptr.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/janssonptr.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/janssonptr.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1,132 +0,0 @@
+-/*
+- *      Copyright (C) 2014 Jean-Luc Barriere
+- *
+- *  This Program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License as published by
+- *  the Free Software Foundation; either version 2, or (at your option)
+- *  any later version.
+- *
+- *  This Program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program; see the file COPYING.  If not, write to
+- *  the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+- *  MA 02110-1301 USA
+- *  http://www.gnu.org/copyleft/gpl.html
+- *
+- */
+-
+-#ifndef JANSSONPTR_H
+-#define	JANSSONPTR_H
+-
+-#include "../atomic.h"
+-
+-#include <jansson.h>
+-#include <cstddef>  // for NULL
+-
+-class JanssonPtr
+-{
+-public:
+-
+-  JanssonPtr() : p(NULL), c(NULL) { }
+-
+-  explicit JanssonPtr(json_t *s) : p(s), c(NULL)
+-  {
+-    if (p != NULL)
+-      c = new atomic_t(1);
+-  }
+-
+-  JanssonPtr(const JanssonPtr& s) : p(s.p), c(s.c)
+-  {
+-    if (c != NULL)
+-      atomic_increment(c);
+-  }
+-
+-  JanssonPtr& operator=(const JanssonPtr& s)
+-  {
+-    if (this != &s)
+-    {
+-      reset();
+-      p = s.p;
+-      c = s.c;
+-      if (c != NULL)
+-        atomic_increment(c);
+-    }
+-    return *this;
+-  }
+-
+-  ~JanssonPtr()
+-  {
+-    reset();
+-  }
+-
+-  bool isValid()
+-  {
+-    return p != NULL;
+-  }
+-
+-  void reset()
+-  {
+-    if (c != NULL)
+-    {
+-      if (*c == 1)
+-        json_decref(p);
+-      if (!atomic_decrement(c))
+-        delete c;
+-    }
+-    c = NULL;
+-    p = NULL;
+-  }
+-
+-  void reset(json_t *s)
+-  {
+-    if (p != s)
+-    {
+-      reset();
+-      if (s != NULL)
+-      {
+-        p = s;
+-        c = new atomic_t(1);
+-      }
+-    }
+-  }
+-
+-  json_t *get() const
+-  {
+-    return (c != NULL) ? p : NULL;
+-  }
+-
+-  unsigned use_count() const
+-  {
+-    return (unsigned) (c != NULL ? *c : 0);
+-  }
+-
+-  json_t *operator->() const
+-  {
+-    return get();
+-  }
+-
+-  json_t& operator*() const
+-  {
+-    return *get();
+-  }
+-
+-  operator bool() const
+-  {
+-    return p != NULL;
+-  }
+-
+-  bool operator!() const
+-  {
+-    return p == NULL;
+-  }
+-
+-protected:
+-  json_t *p;
+-  atomic_t *c;
+-};
+-
+-#endif	/* JANSSONPTR_H */
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythdto/mythdto.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythdto/mythdto.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythdto/mythdto.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythdto/mythdto.h	2015-02-13 20:27:03.349164000 +0000
+@@ -71,7 +71,7 @@
+ 
+ /**
+  * @namespace MythDTO
+- * @brief DTO Helper
++ * @brief This namespace contains all DTO definitions
+  */
+ namespace MythDTO
+ {
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonbinder.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonbinder.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonbinder.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonbinder.cpp	2015-02-13 20:27:03.349164000 +0000
+@@ -28,9 +28,8 @@
+ #include <cstdio>
+ #include <errno.h>
+ 
+-void MythJSON::BindObject(const json_t *json, void *obj, const bindings_t *bl)
++void MythJSON::BindObject(const Node& node, void *obj, const bindings_t *bl)
+ {
+-  const char *value;
+   int i, err;
+ 
+   if (bl == NULL)
+@@ -38,84 +37,83 @@
+ 
+   for (i = 0; i < bl->attr_count; ++i)
+   {
+-    // jansson
+-    json_t *field = json_object_get(json, bl->attr_bind[i].field);
+-    if (field == NULL)
++    const Node& field = node.GetObjectValue(bl->attr_bind[i].field);
++    if (field.IsNull())
+       continue;
+-    value = json_string_value(field);
+-    if (value != NULL)
++    if (field.IsString())
+     {
++      std::string value(field.GetStringValue());
+       err = 0;
+       switch (bl->attr_bind[i].type)
+       {
+         case IS_STRING:
+-          bl->attr_bind[i].set(obj, value);
++          bl->attr_bind[i].set(obj, value.c_str());
+           break;
+         case IS_INT8:
+         {
+           int8_t num = 0;
+-          err = str2int8(value, &num);
++          err = str2int8(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_INT16:
+         {
+           int16_t num = 0;
+-          err = str2int16(value, &num);
++          err = str2int16(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_INT32:
+         {
+           int32_t num = 0;
+-          err = str2int32(value, &num);
++          err = str2int32(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_INT64:
+         {
+           int64_t num = 0;
+-          err = str2int64(value, &num);
++          err = str2int64(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_UINT8:
+         {
+           uint8_t num = 0;
+-          err = str2uint8(value, &num);
++          err = str2uint8(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_UINT16:
+         {
+           uint16_t num = 0;
+-          err = str2uint16(value, &num);
++          err = str2uint16(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_UINT32:
+         {
+           uint32_t num = 0;
+-          err = str2uint32(value, &num);
++          err = str2uint32(value.c_str(), &num);
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_DOUBLE:
+         {
+-          double num = atof(value);
++          double num = atof(value.c_str());
+           bl->attr_bind[i].set(obj, &num);
+           break;
+         }
+         case IS_BOOLEAN:
+         {
+-          bool b = (strcmp(value, "true") == 0 ? true : false);
++          bool b = (strcmp(value.c_str(), "true") == 0 ? true : false);
+           bl->attr_bind[i].set(obj, &b);
+           break;
+         }
+         case IS_TIME:
+         {
+           time_t time = 0;
+-          err = str2time(value, &time);
++          err = str2time(value.c_str(), &time);
+           bl->attr_bind[i].set(obj, &time);
+           break;
+         }
+@@ -123,9 +121,9 @@
+           break;
+       }
+       if (err)
+-        Myth::DBG(MYTH_DBG_ERROR, "%s: failed (%d) field \"%s\" type %d: %s\n", __FUNCTION__, err, bl->attr_bind[i].field, bl->attr_bind[i].type, value);
++        Myth::DBG(MYTH_DBG_ERROR, "%s: failed (%d) field \"%s\" type %d: %s\n", __FUNCTION__, err, bl->attr_bind[i].field, bl->attr_bind[i].type, value.c_str());
+     }
+     else
+-      Myth::DBG(MYTH_DBG_WARN, "%s: no value for field \"%s\" type %d\n", __FUNCTION__, bl->attr_bind[i].field, bl->attr_bind[i].type);
++      Myth::DBG(MYTH_DBG_WARN, "%s: invalid value for field \"%s\" type %d\n", __FUNCTION__, bl->attr_bind[i].field, bl->attr_bind[i].type);
+   }
+ }
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonbinder.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonbinder.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonbinder.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonbinder.h	2015-02-13 20:27:03.349164000 +0000
+@@ -23,12 +23,11 @@
+ #define	MYTHJSONBINDER_H
+ 
+ #include "mythdto/mythdto.h"
+-
+-#include <jansson.h>
++#include "mythjsonparser.h"
+ 
+ namespace MythJSON
+ {
+-  void BindObject(const json_t *json, void *obj, const bindings_t *bl);
++  void BindObject(const Node& node, void *obj, const bindings_t *bl);
+ }
+ 
+ #endif	/* MYTHJSONBINDER_H */
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonparser.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonparser.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonparser.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonparser.cpp	2015-02-13 20:27:03.349164000 +0000
+@@ -24,26 +24,182 @@
+ 
+ using namespace Myth;
+ 
+-JanssonPtr MythJSON::ParseResponseJSON(Myth::WSResponse& resp)
++///////////////////////////////////////////////////////////////////////////////
++////
++//// Node
++////
++
++MythJSON::Node::Node()
++: m_value(sajson::TYPE_NULL, 0, 0)
++{
++}
++
++MythJSON::Node::Node(const sajson::value& value)
++: m_value(value)
++{
++}
++
++bool MythJSON::Node::IsNull() const
++{
++  return (m_value.get_type() == sajson::TYPE_NULL);
++}
++
++bool MythJSON::Node::IsObject() const
++{
++  return (m_value.get_type() == sajson::TYPE_OBJECT);
++}
++
++bool MythJSON::Node::IsArray() const
++{
++  return (m_value.get_type() == sajson::TYPE_ARRAY);
++}
++
++bool MythJSON::Node::IsString() const
++{
++  return (m_value.get_type() == sajson::TYPE_STRING);
++}
++
++bool MythJSON::Node::IsDouble() const
++{
++  return (m_value.get_type() == sajson::TYPE_DOUBLE);
++}
++
++bool MythJSON::Node::IsInt() const
++{
++  return (m_value.get_type() == sajson::TYPE_INTEGER);
++}
++
++bool MythJSON::Node::IsTrue() const
++{
++  return (m_value.get_type() == sajson::TYPE_TRUE);
++}
++
++bool MythJSON::Node::IsFalse() const
++{
++  return (m_value.get_type() == sajson::TYPE_FALSE);
++}
++
++std::string MythJSON::Node::GetStringValue() const
++{
++  if (m_value.get_type() == sajson::TYPE_STRING)
++    return m_value.as_string();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return std::string();
++}
++
++size_t MythJSON::Node::GetStringSize() const
++{
++  if (m_value.get_type() == sajson::TYPE_STRING)
++    return m_value.get_string_length();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return 0;
++}
++
++double MythJSON::Node::GetDoubleValue() const
++{
++  if (m_value.get_type() == sajson::TYPE_DOUBLE)
++    return m_value.get_double_value();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return 0.0;
++}
++
++int64_t MythJSON::Node::GetBigIntValue() const
++{
++  if (m_value.get_type() == sajson::TYPE_DOUBLE || m_value.get_type() == sajson::TYPE_INTEGER)
++    return (int64_t) m_value.get_number_value();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return 0;
++}
++
++int32_t MythJSON::Node::GetIntValue() const
++{
++  if (m_value.get_type() == sajson::TYPE_INTEGER)
++    return (int32_t) m_value.get_integer_value();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return 0;
++}
++
++size_t MythJSON::Node::Size() const
++{
++  if (m_value.get_type() == sajson::TYPE_ARRAY || m_value.get_type() == sajson::TYPE_OBJECT)
++    return m_value.get_length();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return 0;
++}
++
++MythJSON::Node MythJSON::Node::GetArrayElement(size_t index) const
++{
++  if (m_value.get_type() == sajson::TYPE_ARRAY)
++    return Node(m_value.get_array_element(index));
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return Node();
++}
++
++std::string MythJSON::Node::GetObjectKey(size_t index) const
++{
++  if (m_value.get_type() == sajson::TYPE_OBJECT)
++    return m_value.get_object_key(index).as_string();
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return std::string();
++}
++
++MythJSON::Node MythJSON::Node::GetObjectValue(size_t index) const
++{
++  if (m_value.get_type() == sajson::TYPE_OBJECT)
++    return Node(m_value.get_object_value(index));
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return Node();
++}
++
++MythJSON::Node MythJSON::Node::GetObjectValue(const char *key) const
++{
++  if (m_value.get_type() == sajson::TYPE_OBJECT)
++  {
++    size_t idx = m_value.find_object_key(sajson::literal(key));
++    if (idx < m_value.get_length())
++      return Node(m_value.get_object_value(idx));
++    return Node();
++  }
++  DBG(MYTH_DBG_ERROR, "%s: bad type (%d)\n", __FUNCTION__, (int) m_value.get_type());
++  return Node();
++}
++
++///////////////////////////////////////////////////////////////////////////////
++////
++//// Document
++////
++
++MythJSON::Document::Document(Myth::WSResponse& resp)
++: m_isValid(false)
++, m_document(NULL)
+ {
+   // Read content response
+-  JanssonPtr root;
+   size_t r, content_length = resp.GetContentLength();
+   char *content = new char[content_length + 1];
+   if ((r = resp.ReadContent(content, content_length)) == content_length)
+   {
+-    json_error_t error;
+     content[content_length] = '\0';
+-    DBG(MYTH_DBG_PROTO,"%s: %s\n", __FUNCTION__, content);
++    DBG(MYTH_DBG_PROTO, "%s: %s\n", __FUNCTION__, content);
+     // Parse JSON content
+-    root.reset(json_loads(content, 0, &error));
+-    if (!root.isValid())
+-      DBG(MYTH_DBG_ERROR, "%s: failed to parse: %d: %s\n", __FUNCTION__, error.line, error.text);
++    m_document = new sajson::document(sajson::parse(sajson::string(content, content_length)));
++    if (!m_document)
++      DBG(MYTH_DBG_ERROR, "%s: memory allocation failed\n", __FUNCTION__);
++    else if (!m_document->is_valid())
++      DBG(MYTH_DBG_ERROR, "%s: failed to parse: %d: %s\n", __FUNCTION__, (int)m_document->get_error_line(), m_document->get_error_message().c_str());
++    else
++      m_isValid = true;
+   }
+   else
+   {
+     DBG(MYTH_DBG_ERROR, "%s: read error\n", __FUNCTION__);
+   }
+   delete[] content;
+-  return root;
+ }
++
++MythJSON::Node MythJSON::Document::GetRoot() const
++{
++  if (m_document)
++    return Node(m_document->get_root());
++  return Node();
++}
++
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonparser.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonparser.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/mythjsonparser.h	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/mythjsonparser.h	2015-02-13 20:27:03.349164000 +0000
+@@ -22,12 +22,71 @@
+ #ifndef MYTHJSONPARSER_H
+ #define	MYTHJSONPARSER_H
+ 
+-#include "janssonptr.h"
+ #include "mythwsresponse.h"
++#include "sajson.h"
++#include "platform/os.h"
++#include "platform/util/util.h"
+ 
++#include <string>
++
++/**
++ * @namespace MythJSON
++ * @brief This namespace contains all operations to handle JSON content
++ */
+ namespace MythJSON
+ {
+-  JanssonPtr ParseResponseJSON(Myth::WSResponse& resp);
++  class Node
++  {
++  public:
++    Node();
++    Node(const sajson::value& value);
++    ~Node() { }
++
++    bool IsNull() const;
++    bool IsObject() const;
++    bool IsArray() const;
++    bool IsString() const;
++    bool IsDouble() const;
++    bool IsInt() const;
++    bool IsTrue() const;
++    bool IsFalse() const;
++
++    std::string GetStringValue() const;
++    size_t GetStringSize() const;
++    double GetDoubleValue() const;
++    int64_t GetBigIntValue() const;
++    int32_t GetIntValue() const;
++
++    size_t Size() const;
++    Node GetArrayElement(size_t index) const;
++    std::string GetObjectKey(size_t index) const;
++    Node GetObjectValue(size_t index) const;
++    Node GetObjectValue(const char *key) const;
++
++  private:
++    sajson::value m_value;
++  };
++
++  class Document
++  {
++  public:
++    Document(Myth::WSResponse& resp);
++    ~Document()
++    {
++      SAFE_DELETE(m_document);
++    }
++
++    bool IsValid() const
++    {
++      return m_isValid;
++    }
++
++    Node GetRoot() const;
++
++  private:
++    bool m_isValid;
++    sajson::document *m_document;
++  };
+ }
+ 
+ #endif	/* MYTHJSONPARSER_H */
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/sajson.h kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/sajson.h
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/private/sajson.h	1970-01-01 01:00:00.000000000 +0100
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/private/sajson.h	2015-02-13 20:27:03.349164000 +0000
+@@ -0,0 +1,1131 @@
++/*
++ * Copyright (c) 2012, 2013, 2014 Chad Austin
++ *
++ * Permission is hereby granted, free of charge, to any person
++ * obtaining a copy of this software and associated documentation
++ * files (the "Software"), to deal in the Software without
++ * restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ */
++
++#pragma once
++
++#include <assert.h>
++#include <stddef.h>
++#include <string.h>
++#include <math.h>
++#include <limits.h>
++#include <ostream>
++#include <algorithm>
++#include <cstdio>
++#include <limits>
++
++#include <string> // for error messages.  kill someday?
++
++#if defined(__GNUC__) || defined(__clang__)
++#define SAJSON_LIKELY(x) __builtin_expect(!!(x), 1)
++#define SAJSON_UNLIKELY(x) __builtin_expect(!!(x), 0)
++#else
++#define SAJSON_LIKELY(x) x
++#define SAJSON_UNLIKELY(x) x
++#endif
++
++namespace sajson {
++    enum type {
++        TYPE_INTEGER = 0,
++        TYPE_DOUBLE = 1,
++        TYPE_NULL = 2,
++        TYPE_FALSE = 3,
++        TYPE_TRUE = 4,
++        TYPE_STRING = 5,
++        TYPE_ARRAY = 6,
++        TYPE_OBJECT = 7,
++    };
++
++    inline std::ostream& operator<<(std::ostream& os, type t) {
++        switch (t) {
++            case TYPE_INTEGER: return os << "<integer>";
++            case TYPE_DOUBLE:  return os << "<double>";
++            case TYPE_NULL:    return os << "<null>";
++            case TYPE_FALSE:   return os << "<false>";
++            case TYPE_TRUE:    return os << "<true>";
++            case TYPE_STRING:  return os << "<string>";
++            case TYPE_ARRAY:   return os << "<array>";
++            case TYPE_OBJECT:  return os << "<object>";
++            default:           return os << "<unknown type";
++        }
++    }
++
++    static const size_t TYPE_BITS = 3;
++    static const size_t TYPE_SHIFT = sizeof(size_t) * 8 - TYPE_BITS;
++    static const size_t TYPE_MASK = (1 << TYPE_BITS) - 1;
++    static const size_t VALUE_MASK = size_t(-1) >> TYPE_BITS;
++
++    static const size_t ROOT_MARKER = size_t(-1) & VALUE_MASK;
++
++    inline type get_element_type(size_t s) {
++        return static_cast<type>((s >> TYPE_SHIFT) & TYPE_MASK);
++    }
++
++    inline size_t get_element_value(size_t s) {
++        return s & VALUE_MASK;
++    }
++
++    inline size_t make_element(type t, size_t value) {
++        //assert(value & VALUE_MASK == 0);
++        //value &= VALUE_MASK;
++        return value | (static_cast<size_t>(t) << TYPE_SHIFT);
++    }
++
++    class string {
++    public:
++        string(const char* text, size_t length)
++            : text(text)
++            , _length(length)
++        {}
++
++        const char* data() const {
++            return text;
++        }
++
++        size_t length() const {
++            return _length;
++        }
++
++        std::string as_string() const {
++            return std::string(text, text + _length);
++        }
++
++    private:
++        const char* const text;
++        const size_t _length;
++
++        string(); /*=delete*/
++    };
++
++    class literal : public string {
++    public:
++        explicit literal(const char* text)
++            : string(text, strlen(text))
++        {}
++    };
++
++    struct object_key_record
++    {
++        size_t key_start;
++        size_t key_end;
++        size_t value;
++    };
++
++    struct object_key_comparator
++    {
++        object_key_comparator(const char* object_data)
++            : data(object_data)
++        {
++        }
++
++        bool operator()(const object_key_record& lhs, const string& rhs) const {
++            const size_t lhs_length = lhs.key_end - lhs.key_start;
++            const size_t rhs_length = rhs.length();
++            if (lhs_length < rhs_length) {
++                return true;
++            } else if (lhs_length > rhs_length) {
++                return false;
++            }
++            return memcmp(data + lhs.key_start, rhs.data(), lhs_length) < 0;
++        }
++
++        bool operator()(const string& lhs, const object_key_record& rhs) const {
++            return !(*this)(rhs, lhs);
++        }
++
++        bool operator()(const object_key_record& lhs, const
++                object_key_record& rhs)
++        {
++            const size_t lhs_length = lhs.key_end - lhs.key_start;
++            const size_t rhs_length = rhs.key_end - rhs.key_start;
++            if (lhs_length < rhs_length) {
++                return true;
++            } else if (lhs_length > rhs_length) {
++                return false;
++            }
++            return memcmp(data + lhs.key_start, data + rhs.key_start,
++                    lhs_length) < 0;
++        }
++
++        const char* data;
++    };
++
++    class refcount {
++    public:
++        refcount()
++            : pn(new size_t(1))
++        {}
++
++        refcount(const refcount& rc)
++            : pn(rc.pn)
++        {
++            ++*pn;
++        }
++
++        ~refcount() {
++            if (--*pn == 0) {
++                delete pn;
++            }
++        }
++
++        size_t count() const {
++            return *pn;
++        }
++
++    private:
++        size_t* pn;
++
++        refcount& operator=(const refcount&);
++    };
++
++    class mutable_string_view {
++    public:
++        mutable_string_view()
++            : length(0)
++            , data(0)
++        {}
++
++        mutable_string_view(const literal& s)
++            : length(s.length())
++        {
++            data = new char[length];
++            memcpy(data, s.data(), length);
++        }
++
++        mutable_string_view(const string& s)
++            : length(s.length())
++        {
++            data = new char[length];
++            memcpy(data, s.data(), length);
++        }
++
++        ~mutable_string_view() {
++            if (uses.count() == 1) {
++                delete[] data;
++            }
++        }
++
++        size_t get_length() const {
++            return length;
++        }
++
++        char* get_data() const {
++            return data;
++        }
++        
++    private:
++        refcount uses;
++        size_t length;
++        char* data;
++    };
++
++    union integer_storage {
++        int i;
++        size_t u;
++    };
++    // TODO: reinstate with c++03 implementation
++    //static_assert(sizeof(integer_storage) == sizeof(size_t), "integer_storage must have same size as one structure slot");
++
++    union double_storage {
++        enum {
++            word_length = sizeof(double) / sizeof(size_t)
++        };
++
++#if defined(_M_IX86) || defined(__i386__) || defined(_X86_)
++        static double load(const size_t* location) {
++            return *reinterpret_cast<const double*>(location);
++        }
++        static void store(size_t* location, double value) {
++            *reinterpret_cast<double*>(location) = value;
++        }
++#else
++        static double load(const size_t* location) {
++            double_storage s;
++            for (unsigned i = 0; i < double_storage::word_length; ++i) {
++                s.u[i] = location[i];
++            }
++            return s.d;
++        }
++
++        static void store(size_t* location, double value) {
++            double_storage ns;
++            ns.d = value;
++
++            for (int i = 0; i < ns.word_length; ++i) {
++                location[i] = ns.u[i];
++            }
++        }
++
++        double d;
++        size_t u[word_length];
++#endif
++    };
++    // TODO: reinstate with c++03 implementation
++    //static_assert(sizeof(double_storage) == sizeof(double), "double_storage should have same size as double");
++
++    class value {
++    public:
++        explicit value(type value_type, const size_t* payload, const char* text)
++            : value_type(value_type)
++            , payload(payload)
++            , text(text)
++        {}
++
++        type get_type() const {
++            return value_type;
++        }
++
++        // valid iff get_type() is TYPE_ARRAY or TYPE_OBJECT
++        size_t get_length() const {
++            assert_type_2(TYPE_ARRAY, TYPE_OBJECT);
++            return payload[0];
++        }
++
++        // valid iff get_type() is TYPE_ARRAY
++        value get_array_element(size_t index) const {
++            assert_type(TYPE_ARRAY);
++            size_t element = payload[1 + index];
++            return value(get_element_type(element), payload + get_element_value(element), text);
++        }
++
++        // valid iff get_type() is TYPE_OBJECT
++        string get_object_key(size_t index) const {
++            assert_type(TYPE_OBJECT);
++            const size_t* s = payload + 1 + index * 3;
++            return string(text + s[0], s[1] - s[0]);
++        }
++
++        // valid iff get_type() is TYPE_OBJECT
++        value get_object_value(size_t index) const {
++            assert_type(TYPE_OBJECT);
++            size_t element = payload[3 + index * 3];
++            return value(get_element_type(element), payload + get_element_value(element), text);
++        }
++
++
++        // valid iff get_type() is TYPE_OBJECT
++        // return get_length() if there is no such key
++        size_t find_object_key(const string& key) const {
++            assert_type(TYPE_OBJECT);
++            const object_key_record* start = reinterpret_cast<const object_key_record*>(payload + 1);
++            const object_key_record* end = start + get_length();
++            const object_key_record* i = std::lower_bound(start, end, key, object_key_comparator(text));
++            return (i != end
++                    && (i->key_end - i->key_start) == key.length()
++                    && memcmp(key.data(), text + i->key_start, key.length()) == 0)? i - start : get_length();
++        }
++
++        // valid iff get_type() is TYPE_INTEGER
++        int get_integer_value() const {
++            assert_type(TYPE_INTEGER);
++            integer_storage s;
++            s.u = payload[0];
++            return s.i;
++        }
++
++        // valid iff get_type() is TYPE_DOUBLE
++        double get_double_value() const {
++            assert_type(TYPE_DOUBLE);
++            return double_storage::load(payload);
++        }
++
++        // valid iff get_type() is TYPE_INTEGER or TYPE_DOUBLE
++        double get_number_value() const {
++            assert_type_2(TYPE_INTEGER, TYPE_DOUBLE);
++            if (get_type() == TYPE_INTEGER) {
++                return get_integer_value();
++            } else {
++                return get_double_value();
++            }
++        }
++
++        // valid iff get_type() is TYPE_STRING
++        size_t get_string_length() const {
++            assert_type(TYPE_STRING);
++            return payload[1] - payload[0];
++        }
++
++        // valid iff get_type() is TYPE_STRING
++        std::string as_string() const {
++            assert_type(TYPE_STRING);
++            return std::string(text + payload[0], text + payload[1]);
++        }
++
++    private:
++        void assert_type(type expected) const {
++            assert(expected == get_type());
++        }
++
++        void assert_type_2(type e1, type e2) const {
++            assert(e1 == get_type() || e2 == get_type());
++        }
++
++        const type value_type;
++        const size_t* const payload;
++        const char* const text;
++
++    };
++
++    class document {
++    public:
++        explicit document(mutable_string_view& input, const size_t* structure, type root_type, const size_t* root, size_t error_line, size_t error_column, const std::string& error_message)
++            : input(input)
++            , structure(structure)
++            , root_type(root_type)
++            , root(root)
++            , error_line(error_line)
++            , error_column(error_column)
++            , error_message(error_message)
++        {}
++
++        document(const document& rhs)
++            : uses(rhs.uses)
++            , input(rhs.input)
++            , structure(rhs.structure)
++            , root_type(rhs.root_type)
++            , root(rhs.root)
++            , error_line(rhs.error_line)
++            , error_column(rhs.error_column)
++            , error_message(rhs.error_message)
++        {}
++
++        ~document() {
++          if (uses.count() == 1) {
++            delete[] structure;
++          }
++        }
++
++        bool is_valid() const {
++            return !!structure;
++        }
++
++        value get_root() const {
++            return value(root_type, root, input.get_data());
++        }
++
++        size_t get_error_line() const {
++            return error_line;
++        }
++
++        size_t get_error_column() const {
++            return error_column;
++        }
++
++        std::string get_error_message() const {
++            return error_message;
++        }
++
++    private:
++        refcount uses;
++        mutable_string_view input;
++        const size_t* structure;
++        const type root_type;
++        const size_t* const root;
++        const size_t error_line;
++        const size_t error_column;
++        const std::string error_message;
++
++        document& operator=(const document&);
++    };
++
++    class parser {
++    public:
++        parser(const mutable_string_view& msv, size_t* structure)
++            : input(msv)
++            , input_end(input.get_data() + input.get_length())
++            , structure(structure)
++            , p(input.get_data())
++            , temp(structure)
++            , root_type(TYPE_NULL)
++            , out(structure + input.get_length())
++            , error_line(0)
++            , error_column(0)
++        {}
++
++        document get_document() {
++            if (parse()) {
++                return document(input, structure, root_type, out, 0, 0, std::string());
++            } else {
++                delete[] structure;
++                return document(input, 0, TYPE_NULL, 0, error_line, error_column, error_message);
++            }
++        }
++
++    private:
++        struct error_result {
++            operator bool() const {
++                return false;
++            }
++        };
++
++        struct parse_result {
++            parse_result(error_result)
++                : success(false)
++            {}
++
++            parse_result(type t)
++                : success(true)
++                , value_type(t)
++            {}
++
++            bool operator!() const {
++                return !success;
++            }
++
++            bool success;
++            type value_type;
++        };
++
++        bool at_eof() {
++            return p == input_end;
++        }
++
++        char peek_structure() {
++            for (;;) {
++                if (p == input_end) {
++                    // 0 is never legal as a structural character in json text so treat it as eof
++                    return 0;
++                }
++                switch (*p) {
++                    case 0x20:
++                    case 0x09:
++                    case 0x0A:
++                    case 0x0D:
++                        ++p;
++                        continue;
++                    default:
++                        return *p;
++                }
++            }                
++        }
++
++        error_result error(const char* message) {
++            error_line = 1;
++            error_column = 1;
++            error_message = message;
++            return error_result();
++        }
++
++        bool parse() {
++            char c = peek_structure();
++            if (c == 0) {
++                return error("no root element");
++            }
++
++            type current_structure_type;
++            if (c == '[') {
++                current_structure_type = TYPE_ARRAY;
++            } else if (c == '{') {
++                current_structure_type = TYPE_OBJECT;
++            } else {
++                return error("document root must be object or array");
++            }
++            ++p;
++
++            size_t* current_base = temp;
++            *temp++ = make_element(current_structure_type, ROOT_MARKER);
++
++            parse_result result = error_result();
++            
++            for (;;) {
++                char closing_bracket = (current_structure_type == TYPE_OBJECT ? '}' : ']');
++
++                c = peek_structure();
++                if (temp > current_base + 1) {
++                    if (c != closing_bracket) {
++                        if (c == ',') {
++                            ++p;
++                            c = peek_structure();
++                        } else {
++                            return error("expected ,");
++                        }
++                    }
++                }
++
++                if (current_structure_type == TYPE_OBJECT && c != '}') {
++                    if (c != '"') {
++                        return error("object key must be quoted");
++                    }
++                    result = parse_string(temp);
++                    if (peek_structure() != ':') {
++                        return error("expected :");
++                    }
++                    ++p;
++                    temp += 2;
++                }
++
++                switch (peek_structure()) {
++                    type next_type;
++                    parse_result (parser::*structure_installer)(size_t* base);
++
++                    case 0:
++                        return error("unexpected end of input");
++                    case 'n':
++                        result = parse_null();
++                        break;
++                    case 'f':
++                        result = parse_false();
++                        break;
++                    case 't':
++                        result = parse_true();
++                        break;
++                    case '0':
++                    case '1':
++                    case '2':
++                    case '3':
++                    case '4':
++                    case '5':
++                    case '6':
++                    case '7':
++                    case '8':
++                    case '9':
++                    case '-':
++                        result = parse_number();
++                        break;
++                    case '"':
++                        result = parse_string();
++                        break;
++
++                    case '[':
++                        next_type = TYPE_ARRAY;
++                        goto push;
++                    case '{':
++                        next_type = TYPE_OBJECT;
++                        goto push;
++                    push: {
++                        ++p;
++                        size_t* previous_base = current_base;
++                        current_base = temp;
++                        *temp++ = make_element(current_structure_type, previous_base - structure);
++                        current_structure_type = next_type;
++                        continue;
++                    }
++
++                    case ']':
++                        if (current_structure_type == TYPE_ARRAY) {
++                            structure_installer = &parser::install_array;
++                            goto pop;
++                        } else {
++                            return error("expected }");
++                        }
++                    case '}':
++                        if (current_structure_type == TYPE_OBJECT) {
++                            structure_installer = &parser::install_object;
++                            goto pop;
++                        } else {
++                            return error("expected ]");
++                        }
++                    pop: {
++                        ++p;
++                        size_t element = *current_base;
++                        result = (this->*structure_installer)(current_base + 1);
++                        size_t parent = get_element_value(element);
++                        if (parent == ROOT_MARKER) {
++                            root_type = result.value_type;
++                            goto done;
++                        }
++                        temp = current_base;
++                        current_base = structure + parent;
++                        current_structure_type = get_element_type(element);
++                        break;
++                    }
++                    default:
++                        return error("cannot parse unknown value");
++                }
++
++                if (!result) {
++                    return result.success;
++                }
++
++                *temp++ = make_element(result.value_type, out - current_base - 1);
++            }
++
++        done:
++            if (0 == peek_structure()) {
++                return true;
++            } else {
++                return error("expected end of input");
++            }
++        }
++
++        bool has_remaining_characters(ptrdiff_t remaining) {
++            return input_end - p >= remaining;
++        }
++
++        parse_result parse_null() {
++            if (SAJSON_UNLIKELY(!has_remaining_characters(4))) {
++                return error("unexpected end of input");
++            }
++            char p1 = p[1];
++            char p2 = p[2];
++            char p3 = p[3];
++            if (SAJSON_UNLIKELY(p1 != 'u' || p2 != 'l' || p3 != 'l')) {
++                return error("expected 'null'");
++            }
++            p += 4;
++            return TYPE_NULL;
++        }
++
++        parse_result parse_false() {
++            if (SAJSON_UNLIKELY(!has_remaining_characters(5))) {
++                return error("unexpected end of input");
++            }
++            char p1 = p[1];
++            char p2 = p[2];
++            char p3 = p[3];
++            char p4 = p[4];
++            if (SAJSON_UNLIKELY(p1 != 'a' || p2 != 'l' || p3 != 's' || p4 != 'e')) {
++                return error("expected 'false'");
++            }
++            p += 5;
++            return TYPE_FALSE;
++        }
++
++        parse_result parse_true() {
++            if (SAJSON_UNLIKELY(!has_remaining_characters(4))) {
++                return error("unexpected end of input");
++            }
++            char p1 = p[1];
++            char p2 = p[2];
++            char p3 = p[3];
++            if (SAJSON_UNLIKELY(p1 != 'r' || p2 != 'u' || p3 != 'e')) {
++                return error("expected 'true'");
++            }
++            p += 4;
++            return TYPE_TRUE;
++        }
++        
++        static double pow10(int exponent) {
++            if (exponent > 308) {
++                return std::numeric_limits<double>::infinity();
++            } else if (exponent < -323) {
++                return 0.0;
++            }
++            static const double constants[] = {
++                1e-323,1e-322,1e-321,1e-320,1e-319,1e-318,1e-317,1e-316,1e-315,1e-314,
++                1e-313,1e-312,1e-311,1e-310,1e-309,1e-308,1e-307,1e-306,1e-305,1e-304,
++                1e-303,1e-302,1e-301,1e-300,1e-299,1e-298,1e-297,1e-296,1e-295,1e-294,
++                1e-293,1e-292,1e-291,1e-290,1e-289,1e-288,1e-287,1e-286,1e-285,1e-284,
++                1e-283,1e-282,1e-281,1e-280,1e-279,1e-278,1e-277,1e-276,1e-275,1e-274,
++                1e-273,1e-272,1e-271,1e-270,1e-269,1e-268,1e-267,1e-266,1e-265,1e-264,
++                1e-263,1e-262,1e-261,1e-260,1e-259,1e-258,1e-257,1e-256,1e-255,1e-254,
++                1e-253,1e-252,1e-251,1e-250,1e-249,1e-248,1e-247,1e-246,1e-245,1e-244,
++                1e-243,1e-242,1e-241,1e-240,1e-239,1e-238,1e-237,1e-236,1e-235,1e-234,
++                1e-233,1e-232,1e-231,1e-230,1e-229,1e-228,1e-227,1e-226,1e-225,1e-224,
++                1e-223,1e-222,1e-221,1e-220,1e-219,1e-218,1e-217,1e-216,1e-215,1e-214,
++                1e-213,1e-212,1e-211,1e-210,1e-209,1e-208,1e-207,1e-206,1e-205,1e-204,
++                1e-203,1e-202,1e-201,1e-200,1e-199,1e-198,1e-197,1e-196,1e-195,1e-194,
++                1e-193,1e-192,1e-191,1e-190,1e-189,1e-188,1e-187,1e-186,1e-185,1e-184,
++                1e-183,1e-182,1e-181,1e-180,1e-179,1e-178,1e-177,1e-176,1e-175,1e-174,
++                1e-173,1e-172,1e-171,1e-170,1e-169,1e-168,1e-167,1e-166,1e-165,1e-164,
++                1e-163,1e-162,1e-161,1e-160,1e-159,1e-158,1e-157,1e-156,1e-155,1e-154,
++                1e-153,1e-152,1e-151,1e-150,1e-149,1e-148,1e-147,1e-146,1e-145,1e-144,
++                1e-143,1e-142,1e-141,1e-140,1e-139,1e-138,1e-137,1e-136,1e-135,1e-134,
++                1e-133,1e-132,1e-131,1e-130,1e-129,1e-128,1e-127,1e-126,1e-125,1e-124,
++                1e-123,1e-122,1e-121,1e-120,1e-119,1e-118,1e-117,1e-116,1e-115,1e-114,
++                1e-113,1e-112,1e-111,1e-110,1e-109,1e-108,1e-107,1e-106,1e-105,1e-104,
++                1e-103,1e-102,1e-101,1e-100,1e-99,1e-98,1e-97,1e-96,1e-95,1e-94,1e-93,
++                1e-92,1e-91,1e-90,1e-89,1e-88,1e-87,1e-86,1e-85,1e-84,1e-83,1e-82,1e-81,
++                1e-80,1e-79,1e-78,1e-77,1e-76,1e-75,1e-74,1e-73,1e-72,1e-71,1e-70,1e-69,
++                1e-68,1e-67,1e-66,1e-65,1e-64,1e-63,1e-62,1e-61,1e-60,1e-59,1e-58,1e-57,
++                1e-56,1e-55,1e-54,1e-53,1e-52,1e-51,1e-50,1e-49,1e-48,1e-47,1e-46,1e-45,
++                1e-44,1e-43,1e-42,1e-41,1e-40,1e-39,1e-38,1e-37,1e-36,1e-35,1e-34,1e-33,
++                1e-32,1e-31,1e-30,1e-29,1e-28,1e-27,1e-26,1e-25,1e-24,1e-23,1e-22,1e-21,
++                1e-20,1e-19,1e-18,1e-17,1e-16,1e-15,1e-14,1e-13,1e-12,1e-11,1e-10,1e-9,
++                1e-8,1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,
++                1e8,1e9,1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,1e20,1e21,
++                1e22,1e23,1e24,1e25,1e26,1e27,1e28,1e29,1e30,1e31,1e32,1e33,1e34,1e35,
++                1e36,1e37,1e38,1e39,1e40,1e41,1e42,1e43,1e44,1e45,1e46,1e47,1e48,1e49,
++                1e50,1e51,1e52,1e53,1e54,1e55,1e56,1e57,1e58,1e59,1e60,1e61,1e62,1e63,
++                1e64,1e65,1e66,1e67,1e68,1e69,1e70,1e71,1e72,1e73,1e74,1e75,1e76,1e77,
++                1e78,1e79,1e80,1e81,1e82,1e83,1e84,1e85,1e86,1e87,1e88,1e89,1e90,1e91,
++                1e92,1e93,1e94,1e95,1e96,1e97,1e98,1e99,1e100,1e101,1e102,1e103,1e104,
++                1e105,1e106,1e107,1e108,1e109,1e110,1e111,1e112,1e113,1e114,1e115,1e116,
++                1e117,1e118,1e119,1e120,1e121,1e122,1e123,1e124,1e125,1e126,1e127,1e128,
++                1e129,1e130,1e131,1e132,1e133,1e134,1e135,1e136,1e137,1e138,1e139,1e140,
++                1e141,1e142,1e143,1e144,1e145,1e146,1e147,1e148,1e149,1e150,1e151,1e152,
++                1e153,1e154,1e155,1e156,1e157,1e158,1e159,1e160,1e161,1e162,1e163,1e164,
++                1e165,1e166,1e167,1e168,1e169,1e170,1e171,1e172,1e173,1e174,1e175,1e176,
++                1e177,1e178,1e179,1e180,1e181,1e182,1e183,1e184,1e185,1e186,1e187,1e188,
++                1e189,1e190,1e191,1e192,1e193,1e194,1e195,1e196,1e197,1e198,1e199,1e200,
++                1e201,1e202,1e203,1e204,1e205,1e206,1e207,1e208,1e209,1e210,1e211,1e212,
++                1e213,1e214,1e215,1e216,1e217,1e218,1e219,1e220,1e221,1e222,1e223,1e224,
++                1e225,1e226,1e227,1e228,1e229,1e230,1e231,1e232,1e233,1e234,1e235,1e236,
++                1e237,1e238,1e239,1e240,1e241,1e242,1e243,1e244,1e245,1e246,1e247,1e248,
++                1e249,1e250,1e251,1e252,1e253,1e254,1e255,1e256,1e257,1e258,1e259,1e260,
++                1e261,1e262,1e263,1e264,1e265,1e266,1e267,1e268,1e269,1e270,1e271,1e272,
++                1e273,1e274,1e275,1e276,1e277,1e278,1e279,1e280,1e281,1e282,1e283,1e284,
++                1e285,1e286,1e287,1e288,1e289,1e290,1e291,1e292,1e293,1e294,1e295,1e296,
++                1e297,1e298,1e299,1e300,1e301,1e302,1e303,1e304,1e305,1e306,1e307,1e308
++            };
++            return constants[exponent + 323];
++        }
++
++        parse_result parse_number() {
++            bool negative = false;
++            if ('-' == *p) {
++                ++p;
++                negative = true;
++
++                if (at_eof()) {
++                    return error("unexpected end of input");
++                }
++            }
++
++            bool try_double = false;
++
++            int i = 0;
++            double d = 0.0; // gcc complains that d might be used uninitialized which isn't true. appease the warning anyway.
++            for (;;) {
++                char c = *p;
++                if (c < '0' || c > '9') {
++                    break;
++                }
++                
++                ++p;
++                if (at_eof()) {
++                    return error("unexpected end of input");
++                }
++
++                char digit = c - '0';
++
++                if (SAJSON_UNLIKELY(!try_double && i > INT_MAX / 10 - 9)) {
++                    // TODO: could split this into two loops
++                    try_double = true;
++                    d = i;
++                }
++                if (SAJSON_UNLIKELY(try_double)) {
++                    d = 10.0 * d + digit;
++                } else {
++                    i = 10 * i + digit;
++                }
++            }
++
++            int exponent = 0;
++
++            if ('.' == *p) {
++                if (!try_double) {
++                    try_double = true;
++                    d = i;
++                }
++                ++p;
++                if (at_eof()) {
++                    return error("unexpected end of input");
++                }
++                for (;;) {
++                    char c = *p;
++                    if (c < '0' || c > '9') {
++                        break;
++                    }
++
++                    ++p;
++                    if (at_eof()) {
++                        return error("unexpected end of input");
++                    }
++                    d = d * 10 + (c - '0');
++                    --exponent;
++                }
++            }
++
++            char e = *p;
++            if ('e' == e || 'E' == e) {
++                if (!try_double) {
++                    try_double = true;
++                    d = i;
++                }
++                ++p;
++                if (at_eof()) {
++                    return error("unexpected end of input");
++                }
++
++                bool negativeExponent = false;
++                if ('-' == *p) {
++                    ++p;
++                    negativeExponent = true;
++                    if (at_eof()) {
++                        return error("unexpected end of input");
++                    }
++                } else if ('+' == *p) {
++                    ++p;
++                    if (at_eof()) {
++                        return error("unexpected end of input");
++                    }
++                }
++
++                int exp = 0;
++                for (;;) {
++                    char c = *p;
++                    if (c < '0' || c > '9') {
++                        break;
++                    }
++
++                    ++p;
++                    if (at_eof()) {
++                        return error("unexpected end of input");
++                    }
++
++                    exp = 10 * exp + (c - '0');
++                }
++                exponent += (negativeExponent ? -exp : exp);
++            }
++
++            if (exponent) {
++                assert(try_double);
++                d *= pow10(exponent);
++            }
++
++            if (negative) {
++                if (try_double) {
++                    d = -d;
++                } else {
++                    i = -i;
++                }
++            }
++            if (try_double) {
++                out -= double_storage::word_length;
++                double_storage::store(out, d);
++                return TYPE_DOUBLE;
++            } else {
++                integer_storage is;
++                is.i = i;
++
++                *--out = is.u;
++                return TYPE_INTEGER;
++            }
++        }
++
++        parse_result install_array(size_t* array_base) {
++            const size_t length = temp - array_base;
++            size_t* const new_base = out - length - 1;
++            while (temp > array_base) {
++                // I think this addition is legal because the tag bits are at the top?
++                *(--out) = *(--temp) + (array_base - new_base);
++            }
++            *(--out) = length;
++
++            return TYPE_ARRAY;
++        }
++
++        parse_result install_object(size_t* object_base) {
++            const size_t length = (temp - object_base) / 3;
++            object_key_record* oir = reinterpret_cast<object_key_record*>(object_base);
++            std::sort(
++                oir,
++                oir + length,
++                object_key_comparator(input.get_data()));
++
++            size_t* const new_base = out - length * 3 - 1;
++            size_t i = length;
++            while (i--) {
++                // I think this addition is legal because the tag bits are at the top?
++                *(--out) = *(--temp) + (object_base - new_base);
++                *(--out) = *(--temp);
++                *(--out) = *(--temp);
++            }
++            *(--out) = length;
++
++            return TYPE_OBJECT;
++        }
++
++        parse_result parse_string(size_t* tag = 0) {
++            if (!tag) {
++                out -= 2;
++                tag = out;
++            }
++
++            ++p; // "
++            size_t start = p - input.get_data();
++            for (;;) {
++                if (SAJSON_UNLIKELY(p >= input_end)) {
++                    return error("unexpected end of input");
++                }
++
++                if (SAJSON_UNLIKELY(*p == 0)) {
++                    return error("illegal unprintable codepoint in string");
++                }
++            
++                switch (*p) {
++                    case '"':
++                        tag[0] = start;
++                        tag[1] = p - input.get_data();
++                        ++p;
++                        return TYPE_STRING;
++                        
++                    case '\\':
++                        return parse_string_slow(tag, start);
++
++                    default:
++                        ++p;
++                        break;
++                }
++            }
++        }
++
++        parse_result read_hex(unsigned& u) {
++            unsigned v = 0;
++            int i = 4;
++            while (i--) {
++                unsigned char c = *p++;
++                if (c >= '0' && c <= '9') {
++                    c -= '0';
++                } else if (c >= 'a' && c <= 'f') {
++                    c = c - 'a' + 10;
++                } else if (c >= 'A' && c <= 'F') {
++                    c = c - 'A' + 10;
++                } else {
++                    return error("invalid character in unicode escape");
++                }
++                v = (v << 4) + c;
++            }
++
++            u = v;
++            return TYPE_NULL; // ???
++        }
++
++        void write_utf8(unsigned codepoint, char*& end) {
++            if (codepoint < 0x80) {
++                *end++ = codepoint;
++            } else if (codepoint < 0x800) {
++                *end++ = 0xC0 | (codepoint >> 6);
++                *end++ = 0x80 | (codepoint & 0x3F);
++            } else if (codepoint < 0x10000) {
++                *end++ = 0xE0 | (codepoint >> 12);
++                *end++ = 0x80 | ((codepoint >> 6) & 0x3F);
++                *end++ = 0x80 | (codepoint & 0x3F);
++            } else {
++                assert(codepoint < 0x200000);
++                *end++ = 0xF0 | (codepoint >> 18);
++                *end++ = 0x80 | ((codepoint >> 12) & 0x3F);
++                *end++ = 0x80 | ((codepoint >> 6) & 0x3F);
++                *end++ = 0x80 | (codepoint & 0x3F);
++            }
++        }
++
++        parse_result parse_string_slow(size_t* tag, size_t start) {
++            char* end = p;
++            
++            for (;;) {
++                if (SAJSON_UNLIKELY(p >= input_end)) {
++                    return error("unexpected end of input");
++                }
++
++                if (SAJSON_UNLIKELY(*p == 0)) {
++                    return error("illegal unprintable codepoint in string");
++                }
++            
++                switch (*p) {
++                    case '"':
++                        tag[0] = start;
++                        tag[1] = end - input.get_data();
++                        ++p;
++                        return TYPE_STRING;
++
++                    case '\\':
++                        ++p;
++                        if (SAJSON_UNLIKELY(p >= input_end)) {
++                            return error("unexpected end of input");
++                        }
++
++                        char replacement;
++                        switch (*p) {
++                            case '"': replacement = '"'; goto replace;
++                            case '\\': replacement = '\\'; goto replace;
++                            case '/': replacement = '/'; goto replace; 
++                            case 'b': replacement = '\b'; goto replace;
++                            case 'f': replacement = '\f'; goto replace;
++                            case 'n': replacement = '\n'; goto replace;
++                            case 'r': replacement = '\r'; goto replace;
++                            case 't': replacement = '\t'; goto replace;
++                            replace:
++                                *end++ = replacement;
++                                ++p;
++                                break;
++                            case 'u': {
++                                ++p;
++                                if (SAJSON_UNLIKELY(!has_remaining_characters(4))) {
++                                    return error("unexpected end of input");
++                                }
++                                unsigned u = 0; // gcc's complaining that this could be used uninitialized. wrong.
++                                parse_result result = read_hex(u);
++                                if (!result) {
++                                    return result;
++                                }
++                                if (u >= 0xD800 && u <= 0xDBFF) {
++                                    if (SAJSON_UNLIKELY(!has_remaining_characters(6))) {
++                                        return error("unexpected end of input during UTF-16 surrogate pair");
++                                    }
++                                    char p0 = p[0];
++                                    char p1 = p[1];
++                                    if (p0 != '\\' || p1 != 'u') {
++                                        return error("expected \\u");
++                                    }
++                                    p += 2;
++                                    unsigned v = 0; // gcc's complaining that this could be used uninitialized. wrong.
++                                    result = read_hex(v);
++                                    if (!result) {
++                                        return result;
++                                    }
++
++                                    if (v < 0xDC00 || v > 0xDFFF) {
++                                        return error("invalid UTF-16 trail surrogate");
++                                    }
++                                    u = 0x10000 + (((u - 0xD800) << 10) | (v - 0xDC00));
++                                }
++                                write_utf8(u, end);
++                                break;
++                            }
++                            default:
++                                return error("unknown escape");
++                        }
++                        break;
++                        
++                    default:
++                        *end++ = *p++;
++                        break;
++                }
++            }
++        }
++
++        mutable_string_view input;
++        char* const input_end;
++        size_t* const structure;
++
++        char* p;
++        size_t* temp;
++        type root_type;
++        size_t* out;
++        size_t error_line;
++        size_t error_column;
++        std::string error_message;
++    };
++
++    template<typename StringType>
++    document parse(const StringType& string) {
++        mutable_string_view ms(string);
++
++        size_t length = string.length();
++        size_t* structure = new size_t[length];
++
++        return parser(ms, structure).get_document();
++    }
++}
+diff -Naur kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/proto/mythprotobase.cpp kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/proto/mythprotobase.cpp
+--- kodi-pvr-addons-a0a437e/lib/cppmyth/cppmyth/src/proto/mythprotobase.cpp	2015-01-26 00:13:22.000000000 +0000
++++ kodi-pvr-addons-a0a437e.patch/lib/cppmyth/cppmyth/src/proto/mythprotobase.cpp	2015-02-13 20:27:03.349164000 +0000
+@@ -34,7 +34,7 @@
+ typedef struct
+ {
+   unsigned version;
+-  char token[14]; // up to 13 chars used in v74 + the terminating NULL character
++  char token[15]; // up to 14 chars used in v84 + the terminating NULL character
+ } myth_protomap_t;
+ 
+ static myth_protomap_t protomap[] = {
+@@ -46,6 +46,8 @@
+   {81, "MultiRecDos"},
+   {82, "IdIdO"},
+   {83, "BreakingGlass"},
++  {84, "CanaryCoalmine"},
++  {85, "BluePool"},
+   {0, ""}
+ };
+ 
