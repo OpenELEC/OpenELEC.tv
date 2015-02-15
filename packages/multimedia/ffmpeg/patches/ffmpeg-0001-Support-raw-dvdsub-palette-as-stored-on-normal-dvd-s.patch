@@ -39,7 +39,7 @@ index 39604f3..a711e16 100644
  static int decode_run_2bit(GetBitContext *gb, int *color)
  {
      unsigned int v, t;
-@@ -697,6 +715,12 @@ static av_cold int dvdsub_init(AVCodecContext *avctx)
+@@ -700,6 +718,12 @@ static av_cold int dvdsub_init(AVCodecContext *avctx)
          parse_ifo_palette(ctx, ctx->ifo_str);
      if (ctx->palette_str)
          parse_palette(ctx, ctx->palette_str);
