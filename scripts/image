@@ -310,32 +310,66 @@ fi
           KERNEL_NAME="KERNEL"
         fi
 
-        UBOOT_SYSTEM=""
-        if [ "$PROJECT" == "imx6" ]; then
-          if [ -n "$SYSTEM" ]; then
-            UBOOT_SYSTEM="$SYSTEM"
+        # default target for image
+        if [ "$PROJECT" = "imx6" ]; then
+          if [ -z "$IMAGES" ]; then
+            UBOOT_IMAGES=$IMAGES_SYSTEMS_NEEDED
           else
-            UBOOT_SYSTEM="cuboxi"
+	    for IMAGE_ASKED in $IMAGES; do
+	      SYSTEM_NEED_IMAGE=false
+	      for IMAGE_SYSTEM_NEEDED in $IMAGES_SYSTEMS_NEEDED; do
+		if [ $IMAGE_SYSTEM_NEEDED = $IMAGE_ASKED ]; then
+                  SYSTEM_NEED_IMAGE=true
+		fi
+              done
+              if [ $SYSTEM_NEED_IMAGE == true ]; then
+                UBOOT_IMAGES+=( $SYSTEM_ASKED )
+              else
+                echo "mkimage: '$SYSTEM_ASKED' is not a valid DEVICE name for build image."
+              fi
+            done
           fi
+        else
+          UBOOT_IMAGES=( "undef" )
         fi
 
-        echo "mkimage: boo. now root access (sudo) is required..."
-        echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us :)"
-        # variables used in image script must be passed
-        sudo env \
-          PATH="$PATH:/sbin" \
-          ROOT="$ROOT" \
-          TOOLCHAIN="$TOOLCHAIN" \
-          TARGET_IMG="$TARGET_IMG" \
-          IMAGE_NAME="$IMAGE_NAME" \
-          BOOTLOADER="$BOOTLOADER" \
-          KERNEL_NAME="$KERNEL_NAME" \
-          RELEASE_DIR="$RELEASE_DIR" \
-          UUID_SYSTEM="$(uuidgen)" \
-          UUID_STORAGE="$(uuidgen)" \
-          UBOOT_SYSTEM="$UBOOT_SYSTEM" \
-          EXTRA_CMDLINE="$EXTRA_CMDLINE" \
-          $SCRIPTS/mkimage
+	if [ ${#UBOOT_IMAGES[*]} = 0 ]; then
+          echo "mkimage: no device asked => no image generated."
+        else
+          echo "mkimage: create image for device(s) '${UBOOT_IMAGES}' with project '${PROJECT}'"
+	fi
+
+        for UBOOT_IMAGE in ${UBOOT_IMAGES[*]};
+        do
+          echo "mkimage: boo. now root access (sudo) is required..."
+          echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us :)"
+
+#          IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
+#IMAGE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
+          if [ "$UBOOT_IMAGE" = "undef" ]; then
+            IMAGE_OUT_NAME="$IMAGE_NAME"
+          else
+            IMAGE_OUT_NAME="$DISTRONAME-$PROJECT-$UBOOT_IMAGE.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
+          fi
+
+          # variables used in image script must be passed
+          sudo env \
+            PATH="$PATH:/sbin" \
+            ROOT="$ROOT" \
+            TOOLCHAIN="$TOOLCHAIN" \
+            TARGET_IMG="$TARGET_IMG" \
+            IMAGE_NAME="$IMAGE_NAME" \
+            IMAGE_OUT_NAME="$IMAGE_OUT_NAME" \
+            BOOTLOADER="$BOOTLOADER" \
+            KERNEL_NAME="$KERNEL_NAME" \
+            RELEASE_DIR="$RELEASE_DIR" \
+            UUID_SYSTEM="$(uuidgen)" \
+            UUID_STORAGE="$(uuidgen)" \
+            UBOOT_SYSTEM="$UBOOT_SYSTEM" \
+            EXTRA_CMDLINE="$EXTRA_CMDLINE" \
+            $SCRIPTS/mkimage
+
+       done 
       fi
 
     # create WeTek Play (Amlogic) ZIP update and auto-install packages if requested

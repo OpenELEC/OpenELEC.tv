@@ -31,7 +31,7 @@
   STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
 
   DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 4 ))
-  DISK="$TARGET_IMG/$IMAGE_NAME.img"
+  DISK="$TARGET_IMG/$IMAGE_OUT_NAME.img"
 
 # functions
   cleanup() {

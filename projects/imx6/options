@@ -64,6 +64,12 @@
   # default:  default mainline kernel
     LINUX="imx6"
 
+################################################################################
+# 
+################################################################################
+
+  # Define the list of available devices management
+    IMAGES_SYSTEMS_NEEDED="cuboxi udoo"
 
 ################################################################################
 # setup build defaults
