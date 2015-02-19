@@ -31,7 +31,7 @@ case "$LINUX" in
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   amlogic)
-    PKG_VERSION="amlogic-3.10-84deff2"
+    PKG_VERSION="amlogic-3.10-24553c6"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
@@ -39,7 +39,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
-    PKG_VERSION="3.18.5"
+    PKG_VERSION="3.19"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -58,10 +58,6 @@ PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
-fi
 
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
@@ -160,33 +156,6 @@ make_target() {
   fi
 
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    ( cd tools/perf
-
-      # dont use some optimizations because of build problems
-        strip_lto
-        LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
-
-      export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/lib -L$SYSROOT_PREFIX/usr/lib"
-
-      make CROSS_COMPILE="$TARGET_PREFIX" \
-           ARCH="$TARGET_ARCH" \
-           V=1 \
-           DEBUG=false \
-           NLS=false \
-           NO_GTK2=true \
-           NO_LIBELF=false \
-           NO_LIBPERL=true \
-           NO_LIBPYTHON=false \
-           PYTHON=$SYSROOT_PREFIX/usr/bin/python \
-           WERROR=0 \
-           NO_SLANG=1 \
-           EXTRA_CFLAGS="$CFLAGS"
-    )
-  fi
 }
 
 makeinstall_target() {
@@ -205,15 +174,6 @@ makeinstall_target() {
         cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
       fi
     done
-  fi
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    mkdir -p $INSTALL/usr/bin
-      cp -P tools/perf/perf $INSTALL/usr/bin/
-
-    mkdir -p $INSTALL/usr/libexec/perf-core/scripts/python/
-      cp -P tools/perf/perf-archive $INSTALL/usr/libexec/perf-core/
-      cp -rP tools/perf/scripts/python/* $INSTALL/usr/libexec/perf-core/scripts/python/
   fi
 }
 
