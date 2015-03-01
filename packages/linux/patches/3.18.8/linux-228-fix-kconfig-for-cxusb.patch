@@ -1,0 +1,11 @@
+diff -urN linux-old/drivers/media/usb/dvb-usb/Kconfig linux-3.18.8/drivers/media/usb/dvb-usb/Kconfig
+--- linux-old/drivers/media/usb/dvb-usb/Kconfig	2015-02-27 03:49:36.000000000 +0200
++++ linux-3.18.8/drivers/media/usb/dvb-usb/Kconfig	2015-03-01 17:43:54.529848953 +0200
+@@ -118,6 +118,7 @@
+ 	select DVB_ATBM8830 if MEDIA_SUBDRV_AUTOSELECT
+ 	select DVB_LGS8GXX if MEDIA_SUBDRV_AUTOSELECT
+ 	select DVB_SI2168 if MEDIA_SUBDRV_AUTOSELECT
++	select DVB_SP2 if MEDIA_SUBDRV_AUTOSELECT
+ 	select MEDIA_TUNER_SIMPLE if MEDIA_SUBDRV_AUTOSELECT
+ 	select MEDIA_TUNER_XC2028 if MEDIA_SUBDRV_AUTOSELECT
+ 	select MEDIA_TUNER_MXL5005S if MEDIA_SUBDRV_AUTOSELECT
