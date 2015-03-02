@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="14-085163e"
+PKG_VERSION="15.0-alpha2-c317874"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmodplug libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg kodi:host"
-PKG_DEPENDS_HOST="toolchain"
+PKG_URL="http://saraev.ca/openelec/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass enca curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmodplug libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg"
+PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="kodi: Kodi Mediacenter"
@@ -38,9 +38,6 @@ PKG_AUTORECONF="no"
 
 # for dbus support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET dbus"
-
-# needed for hosttools (Texturepacker)
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET lzo:host SDL:host SDL_image:host"
 
 if [ "$DISPLAYSERVER" = "x11" ]; then
 # for libX11 support
@@ -66,14 +63,6 @@ if [ "$OPENGLES_SUPPORT" = yes ]; then
   KODI_OPENGLES="--enable-gles"
 else
   KODI_OPENGLES="--disable-gles"
-fi
-
-if [ "$SDL_SUPPORT" = yes ]; then
-# for SDL support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL2"
-  KODI_SDL="--enable-sdl"
-else
-  KODI_SDL="--disable-sdl"
 fi
 
 if [ "$ALSA_SUPPORT" = yes ]; then
@@ -144,6 +133,7 @@ fi
 
 if [ "$JOYSTICK_SUPPORT" = yes ]; then
 # for Joystick support
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL2"
   KODI_JOYSTICK="--enable-joystick"
 else
   KODI_JOYSTICK="--disable-joystick"
@@ -293,7 +283,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            --disable-optimizations \
                            $KODI_OPENGL \
                            $KODI_OPENGLES \
-                           $KODI_SDL \
                            $KODI_OPENMAX \
                            $KODI_VDPAU \
                            $KODI_VAAPI \
@@ -346,10 +335,13 @@ pre_configure_host() {
 
 make_host() {
   make -C tools/depends/native/JsonSchemaBuilder
+  make -C tools/depends/native/TexturePacker
 }
 
 makeinstall_host() {
   cp -PR tools/depends/native/JsonSchemaBuilder/native/JsonSchemaBuilder $ROOT/$TOOLCHAIN/bin
+  rm -f $ROOT/$TOOLCHAIN/bin/TexturePacker
+  cp -PR tools/depends/native/TexturePacker/native/TexturePacker $ROOT/$TOOLCHAIN/bin
 }
 
 pre_build_target() {
@@ -393,9 +385,6 @@ make_target() {
   if [ "$DISPLAYSERVER" = "x11" ]; then
     make kodi-xrandr
   fi
-
-  make -C tools/TexturePacker
-  cp -PR tools/TexturePacker/TexturePacker $ROOT/$TOOLCHAIN/bin
 }
 
 post_makeinstall_target() {

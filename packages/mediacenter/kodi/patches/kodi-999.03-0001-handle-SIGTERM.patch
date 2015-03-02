@@ -1,7 +1,7 @@
-From eabb811c7f82695cb566b0aadf5d86cb7448368a Mon Sep 17 00:00:00 2001
+From 74c9c7a68ea51221db9d068971ce83fa9dd102cb Mon Sep 17 00:00:00 2001
 From: Stefan Saraev <stefan@saraev.ca>
-Date: Thu, 5 Jun 2014 18:50:04 +0300
-Subject: [PATCH] handle SIGTERM
+Date: Mon, 15 Dec 2014 21:28:54 +0200
+Subject: [PATCH 6/6] handle SIGTERM
 
 In some situations, due to deadlocks or crashes, xbmc fails to exit properly in
 CApplication::Stop(), so  g_powerManager.Reboot() / g_powerManager.Powerdown() never gets
@@ -27,14 +27,14 @@ is requested externaly (ssh, 3rdparty script).
  xbmc/ApplicationMessenger.cpp |  6 ++++--
  xbmc/XBApplicationEx.cpp      |  1 +
  xbmc/XBApplicationEx.h        |  1 +
- xbmc/main/main.cpp            | 15 +++++++++++++++
- 6 files changed, 30 insertions(+), 4 deletions(-)
+ xbmc/main/main.cpp            | 16 ++++++++++++++++
+ 6 files changed, 31 insertions(+), 4 deletions(-)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 875ca39..9572b62 100644
+index b829d15..381ff9a 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -3477,12 +3477,19 @@ bool CApplication::Cleanup()
+@@ -2775,12 +2775,19 @@ bool CApplication::Cleanup()
    }
  }
  
@@ -55,7 +55,7 @@ index 875ca39..9572b62 100644
      CAnnouncementManager::Get().Announce(System, "xbmc", "OnQuit", vExitCode);
  
      SaveFileState(true);
-@@ -3506,7 +3513,6 @@ void CApplication::Stop(int exitCode)
+@@ -2804,7 +2811,6 @@ void CApplication::Stop(int exitCode)
  
      m_bStop = true;
      m_AppFocused = false;
@@ -64,10 +64,10 @@ index 875ca39..9572b62 100644
  
      // cancel any jobs from the jobmanager
 diff --git a/xbmc/Application.h b/xbmc/Application.h
-index 0a332ff..a4d6b58 100644
+index 543a890..8fa9ba3 100644
 --- a/xbmc/Application.h
 +++ b/xbmc/Application.h
-@@ -153,6 +153,7 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
+@@ -156,6 +156,7 @@ public:
    bool StartPVRManager();
    void StopPVRManager();
    bool IsCurrentThread() const;
@@ -76,7 +76,7 @@ index 0a332ff..a4d6b58 100644
    void RestartApp();
    void UnloadSkin(bool forReload = false);
 diff --git a/xbmc/ApplicationMessenger.cpp b/xbmc/ApplicationMessenger.cpp
-index 2f4d651..0467893 100644
+index d698b02..bd08db3c 100644
 --- a/xbmc/ApplicationMessenger.cpp
 +++ b/xbmc/ApplicationMessenger.cpp
 @@ -261,13 +261,14 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
@@ -128,7 +128,7 @@ diff --git a/xbmc/XBApplicationEx.h b/xbmc/XBApplicationEx.h
 index c46cba1..ed3f35f 100644
 --- a/xbmc/XBApplicationEx.h
 +++ b/xbmc/XBApplicationEx.h
-@@ -40,6 +40,7 @@ class CXBApplicationEx : public IWindowManagerCallback
+@@ -40,6 +40,7 @@ public:
    // Variables for timing
    bool m_bStop;
    int  m_ExitCode;
@@ -137,10 +137,10 @@ index c46cba1..ed3f35f 100644
    bool m_renderGUI;
  
 diff --git a/xbmc/main/main.cpp b/xbmc/main/main.cpp
-index ec86426..ad8fe6e 100644
+index 87fe2fd..f4da559 100644
 --- a/xbmc/main/main.cpp
 +++ b/xbmc/main/main.cpp
-@@ -40,9 +40,24 @@
+@@ -41,9 +41,25 @@
  #include "input/linux/LIRC.h"
  #endif
  #include "XbmcContext.h"
@@ -148,10 +148,11 @@ index ec86426..ad8fe6e 100644
 +
 +void xbmc_term_handler(int signum)
 +{
-+  CLog::Log(LOGINFO, "Received SIGTERM...");
-+  if (!g_application.m_ExitCodeSet)
++  if (!g_application.m_ExitCodeSet) {
++    CLog::Log(LOGINFO, "Received SIGTERM...");
 +    g_application.SetExitCode(EXITCODE_RESTARTAPP);
-+  g_application.Stop(EXITCODE_RESTARTAPP);
++    g_application.Stop(EXITCODE_RESTARTAPP);
++  }
 +}
  
  int main(int argc, char* argv[])
@@ -165,3 +166,6 @@ index ec86426..ad8fe6e 100644
    // set up some xbmc specific relationships
    XBMC::Context context;
  
+-- 
+2.1.4
+

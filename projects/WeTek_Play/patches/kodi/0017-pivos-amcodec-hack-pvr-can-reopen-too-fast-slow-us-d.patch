@@ -1,19 +1,19 @@
-From 5ea60323c4d6648943e774946010251e0f560a8d Mon Sep 17 00:00:00 2001
+From 16e20952d4b0593e03691005fcb6b1d7d3300132 Mon Sep 17 00:00:00 2001
 From: davilla <davilla@4pi.com>
 Date: Wed, 3 Sep 2014 22:14:01 -0400
 Subject: [PATCH 17/17] pivos: [amcodec-hack] pvr can reopen too fast, slow us
  down a little
 
 ---
- xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp |    4 ++++
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-index 0410bfa..66ec4f7 100644
+index 74804de..b5282fc 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-@@ -1632,6 +1632,10 @@ void CAMLCodec::CloseDecoder()
-   aml_set_sysfs_int("/sys/class/tsync/enable", 1);
+@@ -1666,6 +1666,10 @@ void CAMLCodec::CloseDecoder()
+   SysfsUtils::SetInt("/sys/class/tsync/enable", 1);
  
    ShowMainVideo(false);
 +
@@ -24,5 +24,5 @@ index 0410bfa..66ec4f7 100644
  
  void CAMLCodec::Reset()
 -- 
-1.7.10.4
+2.1.4
 
