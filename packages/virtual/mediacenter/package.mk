@@ -42,11 +42,12 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET simplejson"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
 
-# Kodi audio encoder addons
+# audio encoder addons
   if [ "$KODI_OPTICAL_SUPPORT" = "yes" ]; then
-    for audioencoder in $KODI_AUDIOENCODER_ADDONS; do
-      PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-audioencoder-$audioencoder"
-    done
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.flac"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.lame"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.vorbis"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.wav"
   fi
 
 # various PVR clients

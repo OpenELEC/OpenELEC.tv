@@ -16,18 +16,18 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="kodi-audioencoder-flac"
-PKG_VERSION="62c2cc8"
+PKG_NAME="audioencoder.flac"
+PKG_VERSION="84acb14"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="http://saraev.ca/openelec/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain flac kodi"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="kodi-audioencoder-flac: A audioencoder addon for Kodi"
-PKG_LONGDESC="kodi-audioencoder-flac is a audioencoder addon for Kodi"
+PKG_SHORTDESC="audioencoder.flac: A audioencoder addon for Kodi"
+PKG_LONGDESC="audioencoder.flac is a audioencoder addon for Kodi"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
