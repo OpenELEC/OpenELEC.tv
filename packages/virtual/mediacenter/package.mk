@@ -42,15 +42,30 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET simplejson"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
 
-# Kodi audio encoder addons
+# audio encoder addons
   if [ "$KODI_OPTICAL_SUPPORT" = "yes" ]; then
-    for audioencoder in $KODI_AUDIOENCODER_ADDONS; do
-      PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-audioencoder-$audioencoder"
-    done
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.flac"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.lame"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.vorbis"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.wav"
   fi
 
 # various PVR clients
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-pvr-addons"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.argustv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.demo"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.dvblink"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.dvbviewer"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.filmon"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.hts"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.iptvsimple"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.mediaportal.tvserver"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.mythtv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.nextpvr"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.njoy"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.pctv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.vdr.vnsi"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.vuplus"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.wmc"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-addon-xvdr"
 
 # other packages

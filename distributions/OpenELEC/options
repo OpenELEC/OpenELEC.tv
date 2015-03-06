@@ -96,11 +96,6 @@
 # build xbmc with optical drive support (yes / no)
   KODI_OPTICAL_SUPPORT="yes"
 
-# KODI Audio encoders for usage with optical drive support
-# Space separated list is supported,
-# e.g. KODI_AUDIOENCODER_ADDONS="ENCODER1 ENCODER2"
-  KODI_AUDIOENCODER_ADDONS="flac lame vorbis wav"
-
 # build with AirPlay support (stream videos from iDevices to KODI) (yes / no)
   KODI_AIRPLAY_SUPPORT="yes"
 
