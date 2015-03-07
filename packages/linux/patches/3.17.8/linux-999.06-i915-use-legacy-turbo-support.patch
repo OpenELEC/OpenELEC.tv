@@ -1,0 +1,30 @@
+From 934dbafc2ad02168b09ad38446a336af9b0359dc Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Sat, 7 Mar 2015 08:58:52 +0100
+Subject: [PATCH] linux: i915 - use legacy turbo support
+
+---
+ drivers/gpu/drm/i915/i915_irq.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
+index 5d387a8..b2fc5cf 100644
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -4652,12 +4652,7 @@ void intel_irq_init(struct drm_device *dev)
+ 	INIT_WORK(&dev_priv->rps.work, gen6_pm_rps_work);
+ 	INIT_WORK(&dev_priv->l3_parity.error_work, ivybridge_parity_work);
+ 
+-	/* Let's track the enabled rps events */
+-	if (IS_VALLEYVIEW(dev))
+-		/* WaGsvRC0ResidenncyMethod:VLV */
+-		dev_priv->pm_rps_events = GEN6_PM_RP_UP_EI_EXPIRED;
+-	else
+-		dev_priv->pm_rps_events = GEN6_PM_RPS_EVENTS;
++	dev_priv->pm_rps_events = GEN6_PM_RPS_EVENTS;
+ 
+ 	setup_timer(&dev_priv->gpu_error.hangcheck_timer,
+ 		    i915_hangcheck_elapsed,
+-- 
+1.9.1
+
