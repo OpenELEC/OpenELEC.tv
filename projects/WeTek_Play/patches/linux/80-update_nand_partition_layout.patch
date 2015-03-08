@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/amlogic/wetek_play.dtd b/arch/arm/boot/dts/amlogic/wetek_play.dtd
-index ce4f2e8..0b61d0c 100755
+index ce4f2e8..10433be 100755
 --- a/arch/arm/boot/dts/amlogic/wetek_play.dtd
 +++ b/arch/arm/boot/dts/amlogic/wetek_play.dtd
 @@ -790,7 +790,7 @@ void root_func(){
@@ -25,13 +25,13 @@ index ce4f2e8..0b61d0c 100755
 -			};
 -			boot{
 -				offset=<0x0 0x8800000>;
-+				offset=<0xffffffff 0xffffffff>;
++				offset=<0x0 0x5800000>;
  				size=<0x0 0x800000>;
  			};
  			system{
 -				offset=<0x0 0xa800000>;
 -				size=<0x0 0x40000000>;
-+				offset=<0xffffffff 0xffffffff>;
++				offset=<0x0 0x7000000>;
 +				size=<0x0 0x10000000>;
  			};
  			cache{
@@ -40,7 +40,7 @@ index ce4f2e8..0b61d0c 100755
 -			};
 -			backup{
 -				offset=<0x0 0x6a800000>;
-+				offset=<0xffffffff 0xffffffff>;
++				offset=<0x0 0x17000000>;
  				size=<0x0 0x10000000>;
  			};
  			userdata{
