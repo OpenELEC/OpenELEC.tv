@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d fba.git ]; then
-    git clone https://github.com/libretro/fba-libretro.git -b master fba.git
+    git clone https://github.com/libretro/libretro-fba -b master fba.git
   fi
 
   cd fba.git
@@ -35,7 +35,6 @@ echo "copying sources..."
 
 echo "cleaning sources..."
   rm -rf fba-$GIT_REV/.git
-  rm -rf fba-$GIT_REV/svn-old
   rm fba-$GIT_REV/.gitignore
 
 echo "packing sources..."

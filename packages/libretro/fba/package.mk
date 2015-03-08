@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="fba"
-PKG_VERSION="e9581fe"
+PKG_VERSION="156f1f5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
@@ -35,10 +35,10 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -C svn-current/trunk/ -f makefile.libretro
+  make -f makefile.libretro
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp svn-current/trunk/fb_alpha_libretro.so $INSTALL/usr/lib/libretro/
+  cp fb_alpha_libretro.so $INSTALL/usr/lib/libretro/
 }
