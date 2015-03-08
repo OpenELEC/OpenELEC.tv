@@ -102,7 +102,7 @@ makeinstall_target() {
   sed -i -e "s/# savestate_directory =/savestate_directory =\/storage\/savestates/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# system_directory =/system_directory =\/storage\/system/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# screenshot_directory =/screenshot_directory =\/storage\/screenshots/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# video_shader_dir =/video_shader_dir =\/storage\/shaders/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# video_shader_dir =/video_shader_dir =\/usr\/share\/common-shaders/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# assets_directory =/assets_directory =\/usr\/share\/retroarch/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"lakka\"/" $INSTALL/etc/retroarch.cfg

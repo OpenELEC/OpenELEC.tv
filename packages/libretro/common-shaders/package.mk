@@ -18,19 +18,27 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="OdroidC1"
-PKG_VERSION=""
+PKG_NAME="common-shaders"
+PKG_VERSION="f252d6a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch lutro gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x-next dinothawr prboom beetle-pce handy picodrive nxengine nestopia gambatte stella fba libretro-ffmpeg retroarch-joypad-autoconfig core-info common-shaders"
+PKG_SITE="https://github.com/libretro/common-shaders"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for OdroidC1"
-PKG_LONGDESC=""
+PKG_SECTION="libretro"
+PKG_SHORTDESC="Common GSLS shaders for RetroArch"
+PKG_LONGDESC="Common GSLS shaders for RetroArch"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  :
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/share/common-shaders
+  cp -r * $INSTALL/usr/share/common-shaders
+}
