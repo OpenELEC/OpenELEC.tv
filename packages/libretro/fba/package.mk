@@ -35,7 +35,11 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -f makefile.libretro
+  if [ "$ARCH" == "arm" ]; then
+    make -f makefile.libretro profile=performance
+  else
+    make -f makefile.libretro profile=accuracy
+  fi
 }
 
 makeinstall_target() {
