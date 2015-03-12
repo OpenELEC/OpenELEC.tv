@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="lutro"
-PKG_VERSION="3273904"
+PKG_VERSION="ff99b7d"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
@@ -33,6 +33,10 @@ PKG_LONGDESC="An experimental lua game framework for libretro inspired by LÖVE"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+make_target() {
+  make WANT_JIT=1 HOST_CC="$HOST_CC" CROSS="$TARGET_PREFIX"
+}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
