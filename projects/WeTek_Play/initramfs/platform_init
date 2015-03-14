@@ -30,6 +30,9 @@ echo 0 > /sys/class/graphics/fb0/free_scale
 # Set framebuffer geometry
 fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
 
+# disable kernel cec feature, we use libcec now
+echo 0 > /sys/class/amhdmitx/amhdmitx0/cec_config
+
 # Include deinterlacer into default VFM map
 echo rm default > /sys/class/vfm/map
 echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map

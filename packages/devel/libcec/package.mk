@@ -51,12 +51,17 @@ else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-rpi"
 fi
 
+if [ "$KODIPLAYER_DRIVER" = "libamcodec" ]; then
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-amlogic"
+else
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-amlogic"
+fi
+
 if [ "$KODIPLAYER_DRIVER" = "libfslvpuwrap" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-imx6"
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-imx6"
 fi
-
 
 # dont use some optimizations because of build problems
   export LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
