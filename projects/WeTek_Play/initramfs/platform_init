@@ -30,6 +30,9 @@ echo 0 > /sys/class/graphics/fb0/free_scale
 # Set framebuffer geometry
 fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
 
+# disable kernel cec feature, we use libcec now
+echo 0 > /sys/class/amhdmitx/amhdmitx0/cec_config
+
 # Set framebuffer size in CVBS mode to match the resolution,
 # for splash screen to be shown correctly
 hpd_state=$(cat /sys/class/amhdmitx/amhdmitx0/hpd_state)
