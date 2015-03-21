@@ -88,7 +88,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (no / Mesa)
+  # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
@@ -117,7 +117,7 @@
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-    FIRMWARE="misc-firmware wlan-firmware dvb-firmware brcmfmac_sdio-firmware"
+    FIRMWARE="misc-firmware wlan-firmware iwlwifi-firmware dvb-firmware brcmfmac_sdio-firmware"
 
   # build and install ATV IR remote support (yes / no)
     ATVCLIENT_SUPPORT="no"
