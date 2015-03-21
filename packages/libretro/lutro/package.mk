@@ -35,7 +35,11 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make WANT_JIT=1 HOST_CC="$HOST_CC" CROSS="$TARGET_PREFIX"
+  PTR_SIZE="-m32"
+  if [ "$ARCH" == "x86_64" ]; then
+    PTR_SIZE="-m64"
+  fi  
+  make WANT_JIT=1 HOST_CC="$HOST_CC" PTR_SIZE="$PTR_SIZE" CROSS="$TARGET_PREFIX"
 }
 
 makeinstall_target() {
