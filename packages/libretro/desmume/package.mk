@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="desmume"
-PKG_VERSION="1dd58e4"
+PKG_VERSION="d1f0de5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
@@ -35,10 +35,14 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make -f Makefile.libretro
+  if [ "$ARCH" == "arm" ]; then
+    make -C desmume -f Makefile.libretro platform=armv # DESMUME_JIT_ARM=1
+  else
+    make -C desmume -f Makefile.libretro
+  fi
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp desmume_libretro.so $INSTALL/usr/lib/libretro/
+  cp desmume/desmume_libretro.so $INSTALL/usr/lib/libretro/
 }

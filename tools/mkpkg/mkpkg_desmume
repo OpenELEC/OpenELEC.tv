@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d desmume.git ]; then
-    git clone https://github.com/libretro/desmume-libretro.git -b master desmume.git
+    git clone https://github.com/libretro/desmume.git -b master desmume.git
   fi
 
   cd desmume.git
