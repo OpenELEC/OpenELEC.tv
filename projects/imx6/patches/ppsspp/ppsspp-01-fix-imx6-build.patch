@@ -1,0 +1,11 @@
+diff -Naur ppsspp.git/native/gfx_es2/gpu_features.h ppsspp.patch/native/gfx_es2/gpu_features.h
+--- ppsspp.git/native/gfx_es2/gpu_features.h	2015-03-22 20:42:48.296320714 +0100
++++ ppsspp.patch/native/gfx_es2/gpu_features.h	2015-03-24 22:51:37.682102559 +0100
+@@ -72,7 +72,6 @@
+ 
+ 	// EGL
+ 	bool EGL_NV_system_time;
+-	bool EGL_NV_coverage_sample;
+ 
+ 	// Convenience (in case we need to know which, but can treat them mostly the same.)
+ 	bool ANY_shader_framebuffer_fetch;
