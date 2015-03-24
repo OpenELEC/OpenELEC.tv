@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="pocketsnes"
-PKG_VERSION="fccecaa"
+PKG_VERSION="ac83fb2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"

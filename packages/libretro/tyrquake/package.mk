@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="tyrquake"
-PKG_VERSION="d202bf5"
+PKG_VERSION="a08c03f"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
@@ -33,10 +33,6 @@ PKG_LONGDESC="Libretro port of Tyrquake (Quake 1 engine)"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-make_target() {
-  make -f Makefile.libretro
-}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
