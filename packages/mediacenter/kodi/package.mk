@@ -43,6 +43,11 @@ if [ "$DISPLAYSERVER" = "x11" ]; then
 # for libX11 support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext libdrm libXrandr"
   KODI_XORG="--enable-x11"
+elif [ "$DISPLAYSERVER" = "wayland" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET wayland"
+  KODI_CFLAGS="-DMESA_EGL_NO_X11_HEADERS"
+  KODI_CXXFLAGS="-DMESA_EGL_NO_X11_HEADERS -fpermissive"
+  KODI_XORG="--enable-wayland --disable-x11"
 else
   KODI_XORG="--disable-x11"
 fi
@@ -92,7 +97,7 @@ else
   KODI_CEC="--disable-libcec"
 fi
 
-if [ "$JOYSTICK_SUPPORT" = yes ]; then
+if [ "$JOYSTICK_SUPPORT" = yes -a "$DISPLAYSERVER" = "x11" ]; then
 # for Joystick support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET SDL2"
   KODI_JOYSTICK="--enable-joystick"
@@ -209,7 +214,7 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   fi
 fi
 
-if [ "$VDPAU_SUPPORT" = yes ]; then
+if [ "$VDPAU_SUPPORT" = yes -a "$DISPLAYSERVER" = "x11" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   KODI_VDPAU="--enable-vdpau"
 else

@@ -6,6 +6,7 @@ Wants=network-online.target
 
 [Service]
 Environment=DISPLAY=:0.0
+Environment=WAYLAND_DISPLAY=wayland-0
 Environment=SDL_MOUSE_RELATIVE=0
 Environment=HOME=/storage
 EnvironmentFile=-/run/openelec/kodi.conf
