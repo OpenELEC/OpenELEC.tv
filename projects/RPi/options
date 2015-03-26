@@ -59,6 +59,8 @@
   # default:  default mainline kernel
     LINUX="default"
 
+  # NOOBS supported hex versions
+    NOOBS_HEX="2,3,4,5,6,7,8,9,d,e,f,10,11,12,14,19"
 
 ################################################################################
 # setup build defaults
@@ -87,7 +89,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (no / Mesa)
+  # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
@@ -102,9 +104,9 @@
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
-  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
+  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
   # Space separated list is supported,
-  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
+  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
     GRAPHIC_DRIVERS=""
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)

@@ -2,8 +2,8 @@
 
 # OpenELEC - Open Embedded Linux Entertainment Center
 
-OpenELEC runs [XBMC](http://xbmc.org), an award-winning free and open source (GPL) software media 
-player and entertainment hub for digital media. For more info see http://xbmc.org .
+OpenELEC runs [Kodi](http://kodi.tv), an award-winning free and open source (GPL) software media 
+player and entertainment hub for digital media. For more info see http://kodi.tv .
 The base system has been designed and built from the ground up to be as 
 efficient as possible – consuming only tiny disk and memory footprints and
 providing cutting edge hardware support to deliver a set-top box experience.
@@ -15,10 +15,6 @@ providing cutting edge hardware support to deliver a set-top box experience.
 **Installation**
 
 * Please read the instructions in our wiki (http://wiki.openelec.tv/index.php?title=Installation) on how to install.
-
-**Known issues**
-
-* Testing snapshot
 
 **License**
 
@@ -44,16 +40,15 @@ providing cutting edge hardware support to deliver a set-top box experience.
 
 **Features**
 
-* System size ~ 90 - 130MB
+* System size ~ 90 - 170MB
 * Minimal hardware requirements
 * Ultra fast boot
-* Optimized builds for platforms such as ION, Intel, Fusion
-* Simple configuration via XBMC itself
+* Simple configuration via Kodi itself
 * Plug and Play external storage
 
 **Software**
 
-* XBMC HTPC software – View/Manage all your media.
+* Kodi HTPC software – View/Manage all your media.
 * Samba server – File transfer from any PC client
 * SSH server – Remote console access for debugging
 * IR/Bluetooth Remote Control
@@ -68,13 +63,12 @@ providing cutting edge hardware support to deliver a set-top box experience.
   All data transfered to the machine will go here, the rest of the system is
   read-only with the exception of /var (containing runtime configuration data).
 * Manual update/downgrade procedure is as follows:
-  Extract the snapshot and navigate to the 'target' directory.
-  Copy KERNEL and SYSTEM along with KERNEL.md5 and SYSTEM.md5 to the 'Update' network share (or /storage/.update) on
+  Copy the snapshot (.tar) to the 'Update' network share (or /storage/.update) on
   your openelec machine. Your system will automatically upgrade during the 
   next reboot.
 * Automatic mounting of filesystems is supported. Devices such as USB Flash 
   sticks can be plugged into a running machine and will be mounted to /media,
-  showing up in xbmc’s GUI.
+  showing up in Kodi’s GUI.
 * Comments and questions are more than welcome, help is even better and patches 
   are absolutely perfect!!
 

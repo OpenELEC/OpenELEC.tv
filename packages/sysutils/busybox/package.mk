@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="busybox"
-PKG_VERSION="1.23.1"
+PKG_VERSION="1.23.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -213,6 +213,9 @@ post_install() {
   add_user root "$ROOT_PWD" 0 0 "Root User" "/storage" "/bin/sh"
   add_group root 0
   add_group users 100
+
+  add_user nobody x 65534 65534 "Nobody" "/" "/bin/sh"
+  add_group nogroup 65534
 
   enable_service debug-shell.service
   enable_service shell.service

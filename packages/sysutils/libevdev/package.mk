@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libevdev"
-PKG_VERSION="1.2.2"
+PKG_VERSION="1.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,7 +32,7 @@ PKG_LONGDESC="libevdev is a wrapper library for evdev devices. it moves the comm
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static"
+PKG_CONFIGURE_OPTS_TARGET="--enable-shared --disable-static"
 
 pre_configure_target() {
   export CFLAGS="$CFLAGS -fPIC -DPIC"

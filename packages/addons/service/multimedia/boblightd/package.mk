@@ -31,6 +31,7 @@ PKG_LONGDESC="Boblight's main purpose is to create light effects from an externa
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.service"
+PKG_ADDON_PROVIDES=""
 
 PKG_AUTORECONF="yes"
 
@@ -39,7 +40,7 @@ if [ "$DISPLAYSERVER" = "x11" ] ; then
 fi
 
 if [ "$OPENGL_SUPPORT" = "yes" ] ; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Mesa glu"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mesa glu"
 fi
 
 if [ "$OPENGL" = "no" ]; then
