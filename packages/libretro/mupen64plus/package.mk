@@ -53,7 +53,8 @@ make_target() {
     make platform=rpi2
   elif [[ "$TARGET_FPU" =~ "neon" ]]; then
     CFLAGS="$CFLAGS -DGL_BGRA_EXT=0x80E1" # Fix build for platforms where GL_BGRA_EXT is not defined
-    make platform=imx6
+    CFLAGS="$CFLAGS -U__ARM_NEON__"
+    make platform=rpi2
   else
     make WITH_DYNAREC=$DYNAREC
   fi
