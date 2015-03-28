@@ -1,0 +1,12 @@
+diff -Naur retroarch.git/menu/menu_entries.c retroarch.patch/menu/menu_entries.c
+--- retroarch.git/menu/menu_entries.c	2015-03-25 18:23:48.254217179 +0100
++++ retroarch.patch/menu/menu_entries.c	2015-03-25 18:44:52.231622865 +0100
+@@ -213,7 +213,7 @@
+ 
+    menu_list_clear(list);
+ 
+-   menu_entries_push_cores_list(list, info, settings->core_assets_directory, true);
++   menu_entries_push_cores_list(list, info, settings->menu_content_directory, true);
+ 
+    menu_list_populate_generic(list, path, label, menu_type);
+ 

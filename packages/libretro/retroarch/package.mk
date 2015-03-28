@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="f6d0a80"
+PKG_VERSION="be01cae"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -76,7 +76,7 @@ pre_configure_target() {
 }
 
 make_target() {
-  make
+  make V=1
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
@@ -97,7 +97,6 @@ makeinstall_target() {
   # General configuration
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/usr\/lib\/libretro\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# content_directory =/content_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savefile_directory =/savefile_directory =\/storage\/savefiles/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savestate_directory =/savestate_directory =\/storage\/savestates/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# system_directory =/system_directory =\/storage\/system/" $INSTALL/etc/retroarch.cfg
@@ -105,7 +104,7 @@ makeinstall_target() {
   sed -i -e "s/# video_shader_dir =/video_shader_dir =\/usr\/share\/common-shaders/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# assets_directory =/assets_directory =\/usr\/share\/retroarch/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"lakka\"/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"xmb\"/" $INSTALL/etc/retroarch.cfg
   
   # Video
   sed -i -e "s/# video_fullscreen = false/video_fullscreen = true/" $INSTALL/etc/retroarch.cfg
