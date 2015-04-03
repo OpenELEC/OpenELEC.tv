@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.5.4"
+PKG_VERSION="2.6"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -60,11 +60,6 @@ case "$TARGET_ARCH" in
       FFMPEG_CPU=""
       FFMPEG_TABLES="--enable-hardcoded-tables"
       FFMPEG_PIC="--enable-pic"
-  ;;
-  i?86)
-      FFMPEG_CPU=""
-      FFMPEG_TABLES="--disable-hardcoded-tables"
-      FFMPEG_PIC="--disable-pic"
   ;;
   x86_64)
       FFMPEG_CPU=""
