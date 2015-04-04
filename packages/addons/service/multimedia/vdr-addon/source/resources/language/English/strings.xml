@@ -17,8 +17,6 @@
 	<string id="1038">Enable plugin: live</string>
 	<string id="1039">- listen on ip</string>
 	<string id="1040">- listen on port</string>
-	<string id="1042">Enable plugin: control</string>
-	<string id="1043">- listen on port</string>
 	<string id="1044">Enable plugin: epgsearch</string>
 	<string id="1045">Enable plugin: xmltv2vdr</string>
 	<string id="1046">Enable plugin: extended EPG</string>
@@ -27,13 +25,10 @@
 	<string id="1049">Enable plugin: epgfixer</string>
 	<string id="1051">VDR Configuration</string>
 	<string id="1052">VDR Video Dir</string>
-	<string id="1053">PVR plugin</string>
         <string id="1056">Enable external recdmd</string>
         <string id="1057">External recdmd path</string>
         <string id="1058">- number of devices</string>
-	<string id="1070">Enable plugin: restfulapi</string>
+	<string id="1070">restfulapi plugin options</string>
 	<string id="1071">- listen on ip</string>
 	<string id="1072">- listen on port</string>
-	<string id="1073">- Path to the epgimages</string>
-	<string id="1074">- Path to the channellogos</string>
 </strings>
