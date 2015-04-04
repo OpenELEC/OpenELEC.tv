@@ -11,6 +11,12 @@ release:
 image:
 	./scripts/image mkimage
 
+kernel:
+	#./scripts/build libc
+	#./scripts/build gcc
+	#./scripts/build linux
+	./scripts/image release
+
 image-efi:
 	./scripts/image mkimage efi
 
