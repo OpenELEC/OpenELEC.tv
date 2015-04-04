@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="http://www.freedesktop.org/software/systemd/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt libmicrohttpd"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -66,7 +66,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-elfutils \
                            --disable-libcryptsetup \
                            --disable-qrencode \
-                           --disable-microhttpd \
+                           --enable-microhttpd \
                            --disable-gnutls \
                            --disable-libcurl \
                            --disable-libidn \
@@ -172,6 +172,14 @@ post_makeinstall_target() {
   # remove networkd
   rm -rf $INSTALL/usr/lib/systemd/network
 
+  # remove systemd-journal-remote
+  rm -rf $INSTALL/usr/lib/systemd/systemd-journal-remote
+  rm -rf $INSTALL/usr/lib/tmpfiles.d/systemd-remote.conf
+  rm -rf $INSTALL/etc/systemd/journal-remote.conf
+
+  # tune systemd-journal-gatewayd.service
+  sed -e "s,^.*PrivateNetwork=yes,,g" -i $INSTALL/usr/lib/systemd/system/systemd-journal-gatewayd.service
+
   # tune journald.conf
   sed -e "s,^.*Compress=.*$,Compress=no,g" -i $INSTALL/etc/systemd/journald.conf
   sed -e "s,^.*SplitMode=.*$,SplitMode=none,g" -i $INSTALL/etc/systemd/journald.conf
@@ -218,6 +226,9 @@ post_makeinstall_target() {
 post_install() {
   add_group systemd-journal 190
 
+  add_group systemd-journal-gateway 191
+  add_user systemd-journal-gateway x 191 191 "systemd-journal-gateway" "/" "/bin/sh"
+
   add_group systemd-network 193
   add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
@@ -238,4 +249,5 @@ post_install() {
   enable_service debugconfig.service
   enable_service userconfig.service
   enable_service hwdb.service
+  enable_service systemd-journal-gatewayd.socket 
 }
