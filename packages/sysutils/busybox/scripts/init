@@ -49,7 +49,6 @@
   RUN_FSCK="yes"
   RUN_FSCK_DISKS=""
 
-  NBD_DEVS="0"
   FLASH_FREE_MIN="5"
 
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
@@ -83,7 +82,7 @@
       boot=*)
         boot="${arg#*=}"
         case $boot in
-          ISCSI=*|NBD=*|NFS=*)
+          ISCSI=*|NFS=*)
             UPDATE_DISABLED=yes
             FLASH_NETBOOT=yes
             ;;
@@ -95,7 +94,7 @@
       disk=*)
         disk="${arg#*=}"
         case $disk in
-          ISCSI=*|NBD=*|NFS=*)
+          ISCSI=*|NFS=*)
             STORAGE_NETBOOT=yes
             ;;
           /dev/*|LABEL=*|UUID=*)
@@ -267,20 +266,6 @@
     mount_common "$ISCSI_DEV" "$2" "$3" "$4"
   }
 
-  mount_nbd() {
-  # Mount NBD device
-    NBD_SERVER="${1%%:*}"
-    NBD_PORT="${1#*:}"
-    NBD_DEV="/dev/nbd$NBD_DEVS"
-
-    nbd-client $NBD_SERVER $NBD_PORT $NBD_DEV >&$SILENT_OUT 2>&1 || \
-      error "nbd-client" "Could not connect to NBD server $1"
-
-    mount_common "$NBD_DEV" "$2" "$3" "$4"
-
-    NBD_DEVS=$(( ${NBD_DEVS} + 1 ))
-  }
-
   mount_nfs() {
     # Mount NFS export
     NFS_EXPORT="${1%%,*}"
@@ -304,9 +289,6 @@
         ;;
       ISCSI=*)
         MOUNT_CMD="mount_iscsi"
-        ;;
-      NBD=*)
-        MOUNT_CMD="mount_nbd"
         ;;
       NFS=*)
         MOUNT_CMD="mount_nfs"
