@@ -55,6 +55,8 @@
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
   SYSTEM_TORAM_LIMIT=1024000
 
+  LIVE="no"
+
   # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
 
@@ -128,6 +130,9 @@
         ;;
       noram)
         SYSTEM_TORAM=no
+        ;;
+      live)
+        LIVE=yes
         ;;
       overlay)
         OVERLAY=yes
@@ -512,6 +517,12 @@
   mount_storage() {
     progress "Mounting storage"
 
+    if [ "$LIVE" = "yes" ]; then
+      # mount tmpfs and exit early. disk=xx is not allowed in live mode
+      mount -t tmpfs none /storage
+      return
+    fi
+
     wakeonlan
 
     if [ -n "$disk" ]; then
@@ -532,6 +543,9 @@
         fi
       fi
       mount_part "$disk" "/storage" "rw,noatime"
+    else
+      # /storage should always be writable
+      mount -t tmpfs none /storage
     fi
   }
 
@@ -664,10 +678,7 @@
     fi
 
     mount --move /flash /sysroot/flash
-
-    if [ -n "$disk" ]; then
-      mount --move /storage /sysroot/storage
-    fi
+    mount --move /storage /sysroot/storage
 
     if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
       echo ""

@@ -279,7 +279,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
         cp $ROOT/README* $RELEASE_DIR
         cp $ROOT/CHANGELOG* $RELEASE_DIR
-        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR
         echo "$TARGET_VERSION" > $RELEASE_DIR/RELEASE
 
         if [ -n "$MEDIACENTER" ] ; then
@@ -310,9 +309,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
     # create image files if requested
       if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
-        if [ "$2" == "efi" ] ; then
-          UEFI=yes
-        fi
         # projects can set KERNEL_NAME (kernel.img)
         if [ -z "$KERNEL_NAME" ] ; then
           KERNEL_NAME="KERNEL"
@@ -331,7 +327,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
           RELEASE_DIR="$RELEASE_DIR" \
           UUID_SYSTEM="$(uuidgen)" \
           UUID_STORAGE="$(uuidgen)" \
-          UEFI="$UEFI" \
           $SCRIPTS/mkimage
       fi
 
@@ -458,7 +453,6 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
         )
 
       # copy additional files
-        cp -R $CONFIG/release/openelec.ico $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System
         mkdir -p $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/licenses
           cp $ROOT/licenses/* $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/licenses
 
