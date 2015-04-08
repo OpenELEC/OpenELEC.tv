@@ -1,0 +1,16 @@
+--- mysql-5.1.72/sql/sql_lex.h	2013-11-03 12:10:05.779245202 +0100
++++ mysql-5.1.72/sql/sql_lex.patched.h	2013-11-03 12:06:26.387234521 +0100
+@@ -47,11 +47,7 @@
+ #else
+ #include "lex_symbol.h"
+ #if MYSQL_LEX
+-#  if YACC_HEXT_HH
+-#    include "sql_yacc.hh"
+-#  else
+-#    include "sql_yacc.h"
+-#  endif
++#include "sql_yacc.h"
+ #define LEX_YYSTYPE YYSTYPE *
+ #else
+ #define LEX_YYSTYPE void *
+-
