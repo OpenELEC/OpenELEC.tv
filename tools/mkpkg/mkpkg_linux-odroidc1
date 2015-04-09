@@ -20,7 +20,7 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d linux-sunxi.git ]; then
+  if [ ! -d linux-odroidc.git ]; then
     git clone git://github.com/hardkernel/linux.git -b odroidc-3.10.y linux-odroidc.git
   fi
 
