@@ -1,0 +1,296 @@
+From dceab971ed71caa55fe4a50af9d68ff0cf170ae8 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 24 Jan 2015 17:33:30 +0000
+Subject: [PATCH 1/4] renderer: Allow gui updates to be skipped when playing
+ video
+
+---
+ xbmc/Application.cpp             | 57 +++++++++++++++++++++++++++-------------
+ xbmc/Application.h               |  1 +
+ xbmc/guilib/GUIWindowManager.cpp |  2 --
+ xbmc/guilib/GUIWindowManager.h   |  3 ++-
+ 4 files changed, 42 insertions(+), 21 deletions(-)
+
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index a18524d..d96ca72 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -328,6 +328,7 @@ CApplication::CApplication(void)
+   m_currentStackPosition = 0;
+   m_lastFrameTime = 0;
+   m_lastRenderTime = 0;
++  m_skipGuiRender = false;
+   m_bTestMode = false;
+ 
+   m_muted = false;
+@@ -1948,31 +1949,39 @@ void CApplication::Render()
+   if(!g_Windowing.BeginRender())
+     return;
+ 
+-  CDirtyRegionList dirtyRegions = g_windowManager.GetDirty();
+-  if(g_graphicsContext.GetStereoMode())
++  CDirtyRegionList dirtyRegions;
++
++  // render gui layer
++  if (!m_skipGuiRender)
+   {
+-    g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
+-    if(RenderNoPresent())
+-      hasRendered = true;
++    dirtyRegions = g_windowManager.GetDirty();
++    if (g_graphicsContext.GetStereoMode())
++    {
++      g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
++      if (RenderNoPresent())
++        hasRendered = true;
+ 
+-    if(g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_MONO)
++      if (g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_MONO)
++      {
++        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_RIGHT);
++        if (RenderNoPresent())
++          hasRendered = true;
++      }
++      g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
++    }
++    else
+     {
+-      g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_RIGHT);
+-      if(RenderNoPresent())
++      if (RenderNoPresent())
+         hasRendered = true;
+     }
+-    g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+-  }
+-  else
+-  {
+-    if(RenderNoPresent())
+-      hasRendered = true;
++    // execute post rendering actions (finalize window closing)
++    g_windowManager.AfterRender();
+   }
+ 
+-  g_Windowing.EndRender();
++  // render video layer
++  g_windowManager.RenderEx();
+ 
+-  // execute post rendering actions (finalize window closing)
+-  g_windowManager.AfterRender();
++  g_Windowing.EndRender();
+ 
+   // reset our info cache - we do this at the end of Render so that it is
+   // fresh for the next process(), or after a windowclose animation (where process()
+@@ -2471,8 +2480,20 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
+   }
+   if (processGUI && m_renderGUI)
+   {
++    m_skipGuiRender = false;
++    int fps = 0;
++    if (g_graphicsContext.IsFullScreenVideo() && !m_pPlayer->IsPausedPlayback())
++      fps = CSettings::Get().GetInt("videoplayer.limitguiupdate");
++    unsigned int now = XbmcThreads::SystemClockMillis();
++    unsigned int frameTime = now - m_lastRenderTime;
++    if (fps > 0 && frameTime * fps < 1000)
++      m_skipGuiRender = true;
++
+     if (!m_bStop)
+-      g_windowManager.Process(CTimeUtils::GetFrameTime());
++    {
++      if (!m_skipGuiRender)
++        g_windowManager.Process(CTimeUtils::GetFrameTime());
++    }
+     g_windowManager.FrameMove();
+   }
+ }
+diff --git a/xbmc/Application.h b/xbmc/Application.h
+index ec5dfac..b4da8f2 100644
+--- a/xbmc/Application.h
++++ b/xbmc/Application.h
+@@ -463,6 +463,7 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
+   bool m_bPresentFrame;
+   unsigned int m_lastFrameTime;
+   unsigned int m_lastRenderTime;
++  bool m_skipGuiRender;
+ 
+   bool m_bStandalone;
+   bool m_bEnableLegacyRes;
+diff --git a/xbmc/guilib/GUIWindowManager.cpp b/xbmc/guilib/GUIWindowManager.cpp
+index 1ae90ae..e795c75 100644
+--- a/xbmc/guilib/GUIWindowManager.cpp
++++ b/xbmc/guilib/GUIWindowManager.cpp
+@@ -986,8 +986,6 @@ bool CGUIWindowManager::Render()
+       CGUITexture::DrawQuad(*i, 0x4c00ff00);
+   }
+ 
+-  RenderEx();
+-
+   return hasRendered;
+ }
+ 
+diff --git a/xbmc/guilib/GUIWindowManager.h b/xbmc/guilib/GUIWindowManager.h
+index 09a7b9c..b492534 100644
+--- a/xbmc/guilib/GUIWindowManager.h
++++ b/xbmc/guilib/GUIWindowManager.h
+@@ -94,6 +94,8 @@ class CGUIWindowManager
+    */
+   bool Render();
+ 
++  void RenderEx() const;
++
+   /*! \brief Do any post render activities.
+    */
+   void AfterRender();
+@@ -169,7 +171,6 @@ class CGUIWindowManager
+ #endif
+ private:
+   void RenderPass() const;
+-  void RenderEx() const;
+ 
+   void LoadNotOnDemandWindows();
+   void UnloadNotOnDemandWindows();
+
+From 316d5712011955d95184ac3b63d8d5e20cb9dcdc Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Tue, 7 Apr 2015 18:50:40 +0200
+Subject: [PATCH 2/4] Lang: Add ressources strings for Gui Limits
+
+---
+ .../language/English/strings.po   | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/language/English/strings.po b/language/English/strings.po
+index 8c9d3f9..e7244d1 100644
+--- a/language/English/strings.po
++++ b/language/English/strings.po
+@@ -16532,3 +16532,27 @@ msgstr ""
+ msgctxt "#38012"
+ msgid "Show "All Items" entry in directory (for example All Albums or All Seasons)"
+ msgstr ""
++
++#. Label of a setting to limit the number of fps used for updating the GUI while playing videos. This is useful for slow systems that have problems rendering GUI and video at the same time in full speed.
++#: system/settings/settings.xml
++msgctxt "#38013"
++msgid "Limit GUI updates during playback"
++msgstr ""
++
++#. Description for the setting Video -> Acceleration -> Limit GUI updates when playing video with label #38013
++#: system/settings/settings.xml
++msgctxt "#38014"
++msgid "Limits the speed (fps) used to update the GUI while playing videos. This can reduce CPU load and fix playback issues while the GUI is shown."
++msgstr ""
++
++#. Label of a settings value to indicate the "disabled" state of an otherwise limiting setting (like fps limit, bandwidth limit, ...)
++#: system/settings/settings.xml
++msgctxt "#38015"
++msgid "Unlimited"
++msgstr ""
++
++#. Used to format framerate values. %d will be replaced with the according number/integer, like "24 fps", "50 fps"
++#: system/settings/settings.xml
++msgctxt "#38016"
++msgid "%d fps"
++msgstr ""
+
+From 5a98f4cb74ffeb45cbb1ffdc8fa87c223c50cfcc Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Tue, 7 Apr 2015 18:53:44 +0200
+Subject: [PATCH 3/4] IMX: Add special settings file with render reduction
+
+---
+ system/settings/imx6.xml   | 36 ++++++++++++++++++++++++++++++++++++
+ xbmc/settings/Settings.cpp |  3 +++
+ 2 files changed, 39 insertions(+)
+ create mode 100644 system/settings/imx6.xml
+
+diff --git a/system/settings/imx6.xml b/system/settings/imx6.xml
+new file mode 100644
+index 0000000..d8b17c3
+--- /dev/null
++++ b/system/settings/imx6.xml
+@@ -0,0 +1,36 @@
++<?xml version="1.0" encoding="utf-8" ?>
++<settings>
++  <section id="system">
++    <category id="videoscreen">
++      <group id="1">
++        <setting id="videoscreen.fakefullscreen">
++          <visible>false</visible>
++        </setting>
++      </group>
++      <group id="3">
++        <setting id="videoscreen.vsync">
++          <default>3</default> <!-- VSYNC_DRIVER -->
++        </setting>
++      </group>
++    </category>
++  </section>
++  <section id="videos">
++    <category id="videoacceleration">
++      <group id="3">
++        <setting id="videoplayer.limitguiupdate" type="integer" label="38013" help="38014">
++          <level>2</level>
++          <default>10</default>
++          <constraints>
++            <minimum label="38015">0</minimum> <!-- Unlimited -->
++            <step>5</step>
++            <maximum>25</maximum>
++          </constraints>
++          <control type="spinner" format="string">
++            <formatlabel>38016</formatlabel>
++          </control>
++          <control type="edit" format="integer" />
++        </setting>
++      </group>
++    </category>
++  </section>
++</settings>
+diff --git a/xbmc/settings/Settings.cpp b/xbmc/settings/Settings.cpp
+index 39e974f..139817f 100644
+--- a/xbmc/settings/Settings.cpp
++++ b/xbmc/settings/Settings.cpp
+@@ -459,6 +459,9 @@ bool CSettings::InitializeDefinitions()
+ #elif defined(TARGET_FREEBSD)
+   if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") && !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
+     CLog::Log(LOGFATAL, "Unable to load freebsd-specific settings definitions");
++#elif defined(HAS_IMXVPU)
++  if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
++    CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
+ #elif defined(TARGET_LINUX)
+   if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
+     CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
+
+From 2965a3b5c732fa71c3a43eb37270bf69bd8ad241 Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Tue, 7 Apr 2015 18:58:31 +0200
+Subject: [PATCH 4/4] RPB: Adjust settings to also use new limitgui setting
+
+---
+ system/settings/rbp.xml | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/system/settings/rbp.xml b/system/settings/rbp.xml
+index bd3e2ad..cb83297 100644
+--- a/system/settings/rbp.xml
++++ b/system/settings/rbp.xml
+@@ -15,6 +15,21 @@
+           <control type="toggle" />
+         </setting>
+       </group>
++      <group id="3">
++        <setting id="videoplayer.limitguiupdate" type="integer" label="38013" help="38014">
++          <level>2</level>
++          <default>10</default>
++          <constraints>
++            <minimum label="38015">0</minimum> <!-- Unlimited -->
++            <step>5</step>
++            <maximum>25</maximum>
++          </constraints>
++          <control type="spinner" format="string">
++            <formatlabel>38016</formatlabel>
++          </control>
++          <control type="edit" format="integer" />
++        </setting>
++      </group>
+     </category>
+     <category id="myvideos">
+       <group id="1">
