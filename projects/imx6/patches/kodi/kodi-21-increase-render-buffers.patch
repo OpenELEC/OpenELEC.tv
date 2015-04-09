@@ -1,0 +1,25 @@
+From ad599e5e9fbe96aef44e3c1b35be9696475287a4 Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Thu, 9 Apr 2015 23:08:01 +0200
+Subject: [PATCH] IMX: Change Rendersize to match render size
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+index 2917208..2efe092 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+@@ -38,7 +38,7 @@
+ #define IMX_VDI_MAX_WIDTH 968
+ #define FRAME_ALIGN 16
+ #define MEDIAINFO 1
+-#define RENDER_QUEUE_SIZE 3
++#define RENDER_QUEUE_SIZE 6
+ #define _4CC(c1,c2,c3,c4) (((uint32_t)(c4)<<24)|((uint32_t)(c3)<<16)|((uint32_t)(c2)<<8)|(uint32_t)(c1))
+ #define Align(ptr,align)  (((unsigned int)ptr + (align) - 1)/(align)*(align))
+ #define Align2(ptr,align)  (((unsigned int)ptr)/(align)*(align))
+-- 
+1.9.1
+
