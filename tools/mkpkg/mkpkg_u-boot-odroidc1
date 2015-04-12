@@ -20,18 +20,18 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d u-boot-aml.git ]; then
-    git clone https://github.com/hardkernel/u-boot.git -b odroidc-v2011.03 u-boot-hardkernel.git
+  if [ ! -d u-boot-odroidc1.git ]; then
+    git clone https://github.com/hardkernel/u-boot.git -b odroidc-v2011.03 u-boot-odroidc1.git
   fi
 
-  cd u-boot-hardkernel.git
+  cd u-boot-odroidc1.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
   rm -rf u-boot-$GIT_REV
-  cp -R u-boot-hardkernel.git u-boot-$GIT_REV
+  cp -R u-boot-odroidc1.git u-boot-$GIT_REV
 
 echo "cleaning sources..."
   rm -rf u-boot-$GIT_REV/.git
