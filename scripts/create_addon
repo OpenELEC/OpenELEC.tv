@@ -110,12 +110,16 @@ if [ "$PKG_IS_ADDON" = "yes" ] ; then
        -i $ADDON_BUILD/$PKG_ADDON_ID/addon.xml
 
   if [ "$2" != "-test" ] ; then
+    ADDON_INSTALL_DIR="$TARGET/$ADDONS/$ADDON_VERSION/$PROJECT/$TARGET_ARCH/$PKG_ADDON_ID"
+    if [ -f $ADDON_INSTALL_DIR/$PKG_ADDON_ID-$ADDON_VERSION.$PKG_REV.zip ] ; then
+      echo "*** WARNING: $PKG_ADDON_ID-$ADDON_VERSION.$PKG_REV.zip already exists. not overwriting it ***"
+      exit 0
+    fi
     cd $ADDON_BUILD
     echo "*** compressing Addon $PKG_ADDON_ID ... ***"
     zip -rq $PKG_ADDON_ID-$ADDON_VERSION.$PKG_REV.zip $PKG_ADDON_ID;
     cd - &>/dev/null
 
-    ADDON_INSTALL_DIR="$TARGET/$ADDONS/$ADDON_VERSION/$PROJECT/$TARGET_ARCH/$PKG_ADDON_ID"
     mkdir -p $ADDON_INSTALL_DIR
     cp $ADDON_BUILD/$PKG_ADDON_ID-$ADDON_VERSION.$PKG_REV.zip $ADDON_INSTALL_DIR
     if [ -f $PKG_DIR/changelog.txt ]; then
