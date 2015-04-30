@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://pypi.python.org/pypi/simplejson"
 PKG_URL="http://pypi.python.org/packages/source/s/simplejson/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain Python distutilscross:host"
+PKG_DEPENDS_TARGET="toolchain Python setuptools:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="python/system"
 PKG_SHORTDESC="simplejson: a simple, fast, complete, correct and extensible JSON <http://json.org> encoder and decoder for Python 2.5+."
@@ -37,7 +37,7 @@ pre_make_target() {
 }
 
 make_target() {
-  python setup.py build --cross-compile
+  python setup.py build
 }
 
 makeinstall_target() {

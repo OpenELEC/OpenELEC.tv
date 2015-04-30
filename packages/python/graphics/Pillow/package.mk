@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.pythonware.com/products/pil/"
 PKG_URL="https://pypi.python.org/packages/source/P/Pillow/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain Python distutilscross:host zlib freetype libjpeg-turbo"
+PKG_DEPENDS_TARGET="toolchain Python setuptools:host zlib freetype libjpeg-turbo"
 PKG_PRIORITY="optional"
 PKG_SECTION="python"
 PKG_SHORTDESC="pil: Imaging handling/processing for Python"
@@ -35,10 +35,11 @@ PKG_AUTORECONF="no"
 pre_make_target() {
   export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
   export LDSHARED="$CC -shared"
+  export CPPFLAGS="$TARGET_CPPFLAGS -I${SYSROOT_PREFIX}/usr/include/python2.7"
 }
 
 make_target() {
-  python setup.py build --cross-compile
+  python setup.py build
 }
 
 makeinstall_target() {
