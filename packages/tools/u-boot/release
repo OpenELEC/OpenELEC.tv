@@ -32,7 +32,7 @@ if [ "$UBOOT_VERSION" = "sunxi" ]; then
   fi
 fi
 
-if [ "$UBOOT_VERSION" = "odroidc" ]; then
+if [[ "$UBOOT_VERSION" = "odroid"* ]]; then
   cp -PR $BUILD/u-boot-*/sd_fuse/* $RELEASE_DIR/3rdparty/bootloader
 fi
 
@@ -57,6 +57,10 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
 
   if [ -e $BUILD/u-boot-*/u-boot.imx ] ;then
     cp -PR $BUILD/u-boot-*/u-boot.imx $RELEASE_DIR/3rdparty/bootloader
+  fi
+
+  if [ -e $BUILD/u-boot-*/u-boot.bin ] ;then
+    cp -PR $BUILD/u-boot-*/u-boot.bin $RELEASE_DIR/3rdparty/bootloader
   fi
 
   for dtb in $BUILD/linux-*/arch/arm/boot/dts/*.dtb; do
