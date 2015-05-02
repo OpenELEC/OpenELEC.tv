@@ -110,7 +110,8 @@ disable_overscan=1
 disable_splash=1
 
 ################################################################################
-# Fix HDMI sound on some TVs
+# If you don't get sound on a TV connected by HDMI to your Raspberry Pi
+# try with this setting uncommented.
 # https://github.com/libretro/Lakka/issues/200
 ################################################################################
-hdmi_drive=2
+# hdmi_drive=2
