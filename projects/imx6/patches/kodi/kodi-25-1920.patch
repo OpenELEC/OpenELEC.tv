@@ -1,0 +1,29 @@
+From 92a1cedbf000df4045a490c21aab7b9dd2c8b70b Mon Sep 17 00:00:00 2001
+From: fritsch <peter.fruehberger@gmail.com>
+Date: Fri, 10 Apr 2015 22:13:42 +0200
+Subject: [PATCH] IMX: Don't try to open width > 1920 hw is not capable to do
+ so
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+index dee1ad4..10a5623 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+@@ -437,6 +437,11 @@ bool CDVDVideoCodecIMX::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
+     CLog::Log(LOGNOTICE, "iMX VPU : software decoding requested.\n");
+     return false;
+   }
++  else if (hints.width > 1920)
++  {
++    CLog::Log(LOGNOTICE, "iMX VPU : software decoding forced - video dimensions out of spec: %d %d.", hints.width, hints.height);
++    return false;
++  }
+ 
+   g_IMXContext.RequireConfiguration();
+ 
+-- 
+1.9.1
+
