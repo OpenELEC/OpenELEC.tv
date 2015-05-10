@@ -1,0 +1,253 @@
+commit 8b1e9fe4c2a58ff3435cf77861929eb4d1e54e24
+Author: kszaq <kszaquitto@gmail.com>
+Date:   Mon Mar 9 16:19:51 2015 +0100
+
+    [aml] Refactor aml_mode_to_resolution to support SD resolutions and framerate automation
+
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 9553745..5240a49 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -328,113 +328,120 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+     res->fRefreshRate = 60;
+     res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+   }
+-  else if (fromMode.Equals("720p"))
++  else if (StringUtils::StartsWith(fromMode, "480"))
+   {
+-    res->iWidth = 1280;
+-    res->iHeight= 720;
+-    res->iScreenWidth = 1280;
+-    res->iScreenHeight= 720;
++    res->iWidth = 720;
++    res->iHeight = 480;
++    res->iScreenWidth = 720;
++    res->iScreenHeight = 480;
+     res->fRefreshRate = 60;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++
++    if (StringUtils::StartsWith(fromMode, "480p"))
++    {
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++    }
++    else
++    {
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++    }
+   }
+-  else if (fromMode.Equals("720p50hz"))
++  else if (StringUtils::StartsWith(fromMode, "576"))
++  {
++    res->iWidth = 720;
++    res->iHeight = 576;
++    res->iScreenWidth = 720;
++    res->iScreenHeight = 576;
++    res->fRefreshRate = 50;
++
++    if (StringUtils::StartsWith(fromMode, "576p"))
++    {
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++    }
++    else
++    {
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++    }
++  }
++  else if (StringUtils::StartsWith(fromMode, "720"))
+   {
+     res->iWidth = 1280;
+     res->iHeight= 720;
+     res->iScreenWidth = 1280;
+     res->iScreenHeight= 720;
+-    res->fRefreshRate = 50;
+     res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++
++    if (fromMode.Equals("720p50hz"))
++    {
++      res->fRefreshRate = 50;
++    }
++    else
++    {
++      res->fRefreshRate = 60;
++    }
+   }
+-  else if (fromMode.Equals("1080p"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 1920;
+-    res->iScreenHeight= 1080;
+-    res->fRefreshRate = 60;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("1080p24hz"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 1920;
+-    res->iScreenHeight= 1080;
+-    res->fRefreshRate = 24;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("1080p30hz"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 1920;
+-    res->iScreenHeight= 1080;
+-    res->fRefreshRate = 30;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("1080p50hz"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 1920;
+-    res->iScreenHeight= 1080;
+-    res->fRefreshRate = 50;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("1080i"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 1920;
+-    res->iScreenHeight= 1080;
+-    res->fRefreshRate = 60;
+-    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
+-  }
+-  else if (fromMode.Equals("1080i50hz"))
++  else if (StringUtils::StartsWith(fromMode, "1080"))
+   {
+     res->iWidth = 1920;
+     res->iHeight= 1080;
+     res->iScreenWidth = 1920;
+     res->iScreenHeight= 1080;
+-    res->fRefreshRate = 50;
+-    res->dwFlags = D3DPRESENTFLAG_INTERLACED;
+-  }
+-  else if (fromMode.Equals("4k2ksmpte"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 4096;
+-    res->iScreenHeight= 2160;
+-    res->fRefreshRate = 24;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("4k2k24hz"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 3840;
+-    res->iScreenHeight= 2160;
+-    res->fRefreshRate = 24;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
+-  }
+-  else if (fromMode.Equals("4k2k25hz"))
+-  {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
+-    res->iScreenWidth = 3840;
+-    res->iScreenHeight= 2160;
+-    res->fRefreshRate = 25;
+-    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++
++    if (StringUtils::StartsWith(fromMode, "1080i"))
++    {
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++    }
++    else
++    {
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++    }
++
++    if (StringUtils::EndsWith(fromMode, "24hz") || StringUtils::EndsWith(fromMode, "23hz"))
++    {
++      res->fRefreshRate = 24;
++    }
++    else if (StringUtils::EndsWith(fromMode, "30hz") || StringUtils::EndsWith(fromMode, "29hz"))
++    {
++      res->fRefreshRate = 30;
++    }
++    else if (StringUtils::EndsWith(fromMode, "50hz"))
++    {
++      res->fRefreshRate = 50;
++    }
++    else
++    {
++      res->fRefreshRate = 60;
++    }
+   }
+-  else if (fromMode.Equals("4k2k30hz"))
++  else if (StringUtils::StartsWith(fromMode, "4k2k"))
+   {
+     res->iWidth = 1920;
+     res->iHeight= 1080;
+-    res->iScreenWidth = 3840;
+-    res->iScreenHeight= 2160;
+-    res->fRefreshRate = 30;
+     res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++
++    if (fromMode.Equals("4k2ksmpte"))
++    {
++      res->iScreenWidth = 4096;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 24;
++    }
++    else if (fromMode.Equals("4k2k24hz") || fromMode.Equals("4k2k23hz"))
++    {
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 24;
++    }
++    else if (fromMode.Equals("4k2k25hz"))
++    {
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 25;
++    }
++    else if (fromMode.Equals("4k2k30hz") || fromMode.Equals("4k2k29hz"))
++    {
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 30;
++    }
+   }
+   else
+   {
+@@ -451,4 +458,3 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+ 
+   return res->iWidth > 0 && res->iHeight> 0;
+ }
+-
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 7064836..26022f2 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -141,6 +141,12 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+       switch(res.iScreenWidth)
+       {
+         default:
++        case 720:
++          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution("480i");
++          else
++            SetDisplayResolution("480p");
++          break;
+         case 1280:
+           SetDisplayResolution("720p");
+           break;
+@@ -156,6 +162,12 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+       switch(res.iScreenWidth)
+       {
+         default:
++        case 720:
++          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution("576i");
++          else
++            SetDisplayResolution("576p");
++          break;
+         case 1280:
+           SetDisplayResolution("720p50hz");
+           break;

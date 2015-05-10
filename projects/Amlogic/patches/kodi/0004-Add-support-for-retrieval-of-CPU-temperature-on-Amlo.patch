@@ -1,0 +1,45 @@
+diff -Nru kodi-14-085163e.orig/xbmc/utils/CPUInfo.cpp kodi-14-085163e/xbmc/utils/CPUInfo.cpp
+--- kodi-14-085163e.orig/xbmc/utils/CPUInfo.cpp	2015-02-23 21:05:11.000000000 +0300
++++ kodi-14-085163e/xbmc/utils/CPUInfo.cpp	2015-03-04 12:04:58.093425791 +0300
+@@ -18,6 +18,7 @@
+  *
+  */
+ 
++#include "system.h"
+ #include "CPUInfo.h"
+ #include "Temperature.h"
+ #include <string>
+@@ -95,6 +96,10 @@
+ #include "settings/AdvancedSettings.h"
+ #include "utils/StringUtils.h"
+ 
++#ifdef HAS_LIBAMCODEC
++#include "utils/AMLUtils.h"
++#endif
++
+ using namespace std;
+ 
+ // In milliseconds
+@@ -253,7 +258,9 @@
+   }
+ #else
+   m_fProcStat = fopen("/proc/stat", "r");
+-  m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THM0/temperature", "r");
++  m_fProcTemperature = fopen("/sys/class/thermal/thermal_zone1/temp", "r");  // On Amlogic
++  if (m_fProcTemperature == NULL)
++    m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THM0/temperature", "r");
+   if (m_fProcTemperature == NULL)
+     m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THRM/temperature", "r");
+   if (m_fProcTemperature == NULL)
+@@ -607,7 +614,10 @@
+     if (!ret)
+     {
+       ret = fscanf(m_fProcTemperature, "%d", &value);
+-      value = value / 1000;
++#ifndef HAS_LIBAMCODEC
++      if (!aml_present())
++        value = value / 1000;
++#endif
+       scale = 'c';
+       ret++;
+     }

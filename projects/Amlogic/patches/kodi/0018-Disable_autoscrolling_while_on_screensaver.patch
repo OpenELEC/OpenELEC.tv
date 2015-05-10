@@ -1,0 +1,115 @@
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index e91b82b..471cedc 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -5874,3 +5874,10 @@ void CApplication::CloseNetworkShares()
+   CSFTPSessionManager::DisconnectAllSessions();
+ #endif
+ }
++
++bool CApplication::ScreenSaverDisablesAutoScrolling()
++{
++  return IsInScreenSaver() && m_screenSaver &&
++    (m_screenSaver->ID() == "screensaver.xbmc.builtin.black" ||
++     m_screenSaver->ID() == "screensaver.xbmc.builtin.dim");
++}
+diff --git a/xbmc/Application.h b/xbmc/Application.h
+index 0a332ff..fb271cf 100644
+--- a/xbmc/Application.h
++++ b/xbmc/Application.h
+@@ -380,6 +380,8 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
+ 
+   void SetLoggingIn(bool loggingIn) { m_loggingIn = loggingIn; }
+ 
++  bool ScreenSaverDisablesAutoScrolling();
++
+ protected:
+   virtual bool OnSettingsSaving() const;
+ 
+diff --git a/xbmc/guilib/GUIFadeLabelControl.cpp b/xbmc/guilib/GUIFadeLabelControl.cpp
+index 844f960..70a7efe 100644
+--- a/xbmc/guilib/GUIFadeLabelControl.cpp
++++ b/xbmc/guilib/GUIFadeLabelControl.cpp
+@@ -20,6 +20,8 @@
+ 
+ #include "GUIFadeLabelControl.h"
+ 
++#include "Application.h"
++
+ using namespace std;
+ 
+ CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange)
+@@ -102,7 +104,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
+     m_lastLabel = m_currentLabel;
+   }
+ 
+-  if (m_infoLabels.size() > 1 || !m_shortText)
++  if ((m_infoLabels.size() > 1 || !m_shortText) && !g_application.ScreenSaverDisablesAutoScrolling())
+   { // have scrolling text
+     MarkDirtyRegion();
+ 
+diff --git a/xbmc/guilib/GUIFont.cpp b/xbmc/guilib/GUIFont.cpp
+index a7ee668..4f52804 100644
+--- a/xbmc/guilib/GUIFont.cpp
++++ b/xbmc/guilib/GUIFont.cpp
+@@ -22,6 +22,7 @@
+ #include "GUIFontTTF.h"
+ #include "GraphicContext.h"
+ 
++#include "Application.h"
+ #include "threads/SingleLock.h"
+ #include "utils/TimeUtils.h"
+ #include "utils/MathUtils.h"
+@@ -121,6 +122,9 @@ bool CGUIFont::UpdateScrollInfo(const vecText &text, CScrollInfo &scrollInfo)
+   //   pixelPos is the amount in pixels to move the string by.
+   //   characterPos is the amount in characters to rotate the string by.
+   //
++  if (g_application.ScreenSaverDisablesAutoScrolling())
++    return false;
++
+   if (scrollInfo.waitTime)
+   {
+     scrollInfo.waitTime--;
+diff --git a/xbmc/guilib/GUILabel.cpp b/xbmc/guilib/GUILabel.cpp
+index 5ca8f4a..8be713f 100644
+--- a/xbmc/guilib/GUILabel.cpp
++++ b/xbmc/guilib/GUILabel.cpp
+@@ -21,6 +21,8 @@
+ #include "GUILabel.h"
+ #include <limits>
+ 
++#include "Application.h"
++
+ CGUILabel::CGUILabel(float posX, float posY, float width, float height, const CLabelInfo& labelInfo, CGUILabel::OVER_FLOW overflow)
+     : m_label(labelInfo)
+     , m_textLayout(labelInfo.font, overflow == OVER_FLOW_WRAP, height)
+@@ -104,7 +106,7 @@ void CGUILabel::Render()
+   color_t color = GetColor();
+   bool renderSolid = (m_color == COLOR_DISABLED);
+   bool overFlows = (m_renderRect.Width() + 0.5f < m_textLayout.GetTextWidth()); // 0.5f to deal with floating point rounding issues
+-  if (overFlows && m_scrolling && !renderSolid)
++  if (overFlows && m_scrolling && !renderSolid && !g_application.ScreenSaverDisablesAutoScrolling())
+     m_textLayout.RenderScrolling(m_renderRect.x1, m_renderRect.y1, m_label.angle, color, m_label.shadowColor, 0, m_renderRect.Width(), m_scrollInfo);
+   else
+   {
+diff --git a/xbmc/guilib/GUITextBox.cpp b/xbmc/guilib/GUITextBox.cpp
+index b7ef051..da1dfb9 100644
+--- a/xbmc/guilib/GUITextBox.cpp
++++ b/xbmc/guilib/GUITextBox.cpp
+@@ -23,6 +23,7 @@
+ #include "utils/XBMCTinyXML.h"
+ #include "utils/MathUtils.h"
+ #include "utils/StringUtils.h"
++#include "Application.h"
+ 
+ using namespace std;
+ 
+@@ -132,7 +133,7 @@ void CGUITextBox::Process(unsigned int currentTime, CDirtyRegionList &dirtyregio
+   // update our auto-scrolling as necessary
+   if (m_autoScrollTime && m_lines.size() > m_itemsPerPage)
+   {
+-    if (!m_autoScrollCondition || m_autoScrollCondition->Get())
++    if ((!m_autoScrollCondition || m_autoScrollCondition->Get()) && !g_application.ScreenSaverDisablesAutoScrolling())
+     {
+       if (m_lastRenderTime)
+         m_autoScrollDelayTime += currentTime - m_lastRenderTime;

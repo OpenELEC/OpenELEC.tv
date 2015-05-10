@@ -1,0 +1,29 @@
+diff -Nru kodi-14-7cc53a9.orig/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp kodi-14-7cc53a9/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+--- kodi-14-7cc53a9.orig/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp	2015-05-10 16:20:52.164652783 +0300
++++ kodi-14-7cc53a9/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp	2015-05-10 17:07:25.749956240 +0300
+@@ -538,6 +538,25 @@
+   {
+     aml_set_audio_passthrough(m_passthrough);
+     device = "default";
++
++    int aml_digital_codec;
++    switch(format.m_dataFormat)
++    {
++      case AE_FMT_DTSHD:
++        aml_digital_codec = 5;
++        break;
++
++      case AE_FMT_TRUEHD:
++        aml_digital_codec = 7;
++        break;
++
++      default:
++        if (inconfig.channels > 2)
++          aml_digital_codec = 6;
++        else
++          aml_digital_codec = 0;
++    }
++    aml_set_sysfs_int("/sys/class/audiodsp/digital_codec", aml_digital_codec);
+   }
+ #endif
+ 

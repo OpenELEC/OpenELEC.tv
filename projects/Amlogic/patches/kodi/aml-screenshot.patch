@@ -1,0 +1,247 @@
+From 874627dbf19a29db6f4c48e6758e2bf2037135c4 Mon Sep 17 00:00:00 2001
+From: Memphiz <memphis@machzwo.de>
+Date: Mon, 26 Jan 2015 22:43:28 +0100
+Subject: [PATCH 1/2] [AML/Screenshot] - add screenshot implementation for aml
+ platforms - based on the amvideocap driver (needs amlogic kernel with
+ amvideocap support)
+
+---
+ xbmc/utils/Makefile.in       |  4 ++
+ xbmc/utils/Screenshot.cpp    |  9 +++++
+ xbmc/utils/ScreenshotAML.cpp | 95 ++++++++++++++++++++++++++++++++++++++++++++
+ xbmc/utils/ScreenshotAML.h   | 30 ++++++++++++++
+ 4 files changed, 138 insertions(+)
+ create mode 100644 xbmc/utils/ScreenshotAML.cpp
+ create mode 100644 xbmc/utils/ScreenshotAML.h
+
+diff --git a/xbmc/utils/Makefile.in b/xbmc/utils/Makefile.in
+index 2d89fcd..c5f229b 100644
+--- a/xbmc/utils/Makefile.in
++++ b/xbmc/utils/Makefile.in
+@@ -85,6 +85,10 @@ ifeq (@USE_OPENGLES@,1)
+ SRCS += AMLUtils.cpp
+ endif
+ 
++ifeq (@USE_LIBAMCODEC@,1)
++SRCS += ScreenshotAML.cpp
++endif
++
+ LIB   = utils.a
+ 
+ include @abs_top_srcdir@/Makefile.include
+diff --git a/xbmc/utils/Screenshot.cpp b/xbmc/utils/Screenshot.cpp
+index db73d4a..2494101 100644
+--- a/xbmc/utils/Screenshot.cpp
++++ b/xbmc/utils/Screenshot.cpp
+@@ -47,6 +47,10 @@
+ #include "settings/Settings.h"
+ #include "settings/windows/GUIControlSettings.h"
+ 
++#if defined(HAS_LIBAMCODEC)
++#include "utils/ScreenshotAML.h"
++#endif
++
+ using namespace std;
+ using namespace XFILE;
+ 
+@@ -162,6 +166,11 @@ bool CScreenshotSurface::capture()
+   }
+ 
+   delete [] surface;
++  
++#if defined(HAS_LIBAMCODEC)
++  // Captures the current visible videobuffer and blend it into m_buffer (captured overlay)
++  CScreenshotAML::CaptureVideoFrame(m_buffer, m_width, m_height);
++#endif
+ 
+ #else
+   //nothing to take a screenshot from
+diff --git a/xbmc/utils/ScreenshotAML.cpp b/xbmc/utils/ScreenshotAML.cpp
+new file mode 100644
+index 0000000..3e73437
+--- /dev/null
++++ b/xbmc/utils/ScreenshotAML.cpp
+@@ -0,0 +1,95 @@
++/*
++ *      Copyright (C) 2015 Team Kodi
++ *      http://kodi.tv
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++#if defined(HAS_LIBAMCODEC)
++#include "utils/ScreenshotAML.h"
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++
++#include <sys/ioctl.h>
++
++// taken from linux/amlogic/amports/amvideocap.h - needs to be synced - no changes expected though
++#define AMVIDEOCAP_IOC_MAGIC  'V'
++#define AMVIDEOCAP_IOW_SET_WANTFRAME_WIDTH      _IOW(AMVIDEOCAP_IOC_MAGIC, 0x02, int)
++#define AMVIDEOCAP_IOW_SET_WANTFRAME_HEIGHT     _IOW(AMVIDEOCAP_IOC_MAGIC, 0x03, int)
++#define AMVIDEOCAP_IOW_SET_CANCEL_CAPTURE       _IOW(AMVIDEOCAP_IOC_MAGIC, 0x33, int)
++
++// capture format already defaults to GE2D_FORMAT_S24_RGB - no need to pull in all the ge2d headers :)
++
++#define CAPTURE_DEVICEPATH "/dev/amvideocap0"
++
++//the buffer format is BGRA (4 byte)
++void CScreenshotAML::CaptureVideoFrame(unsigned char *buffer, int iWidth, int iHeight, bool bBlendToBuffer)
++{
++  int captureFd = open(CAPTURE_DEVICEPATH, O_RDWR, 0);
++  if (captureFd >= 0)
++  {
++    int buffSize = iWidth * iHeight * 3;
++    int readSize = 0;
++    // videobuffer should be rgb according to docu - but it is bgr ...
++    unsigned char *videoBuffer = new unsigned char[buffSize];
++
++    if (videoBuffer != NULL)
++    {
++      // configure destination
++      ioctl(captureFd, AMVIDEOCAP_IOW_SET_WANTFRAME_WIDTH, iWidth);
++      ioctl(captureFd, AMVIDEOCAP_IOW_SET_WANTFRAME_HEIGHT, iHeight);
++      readSize = pread(captureFd, videoBuffer, buffSize, 0);
++    }
++
++    close(captureFd);
++
++    if (readSize == buffSize)
++    {
++      unsigned char *videoPtr = videoBuffer;
++
++      if (!bBlendToBuffer)
++      {
++        memset(buffer, 0xff, buffSize);
++      }
++
++      for (int processedBytes = 0; processedBytes < buffSize; processedBytes += 3, buffer+=4)
++      {
++        float alpha = buffer[3] / (float)255;
++
++        if (bBlendToBuffer)
++        {
++          //B
++          buffer[0] = alpha * (float)buffer[0] + (1 - alpha) * (float)videoPtr[0];
++          //G
++          buffer[1] = alpha * (float)buffer[1] + (1 - alpha) * (float)videoPtr[1];
++          //R
++          buffer[2] = alpha * (float)buffer[2] + (1 - alpha) * (float)videoPtr[2];
++          //A
++          buffer[3] = 0xff;// we are solid now
++        }
++        else
++        {
++          memcpy(buffer, videoPtr, 3);
++        }
++        videoPtr += 3;
++      }
++    }
++    delete [] videoBuffer;
++  }
++}
++#endif //defined(HAS_LIBAMCODEC)
+diff --git a/xbmc/utils/ScreenshotAML.h b/xbmc/utils/ScreenshotAML.h
+new file mode 100644
+index 0000000..b2caedc
+--- /dev/null
++++ b/xbmc/utils/ScreenshotAML.h
+@@ -0,0 +1,30 @@
++#pragma once
++/*
++ *      Copyright (C) 2015 Team Kodi
++ *      http://kodi.tv
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#if defined(HAS_LIBAMCODEC)
++class CScreenshotAML
++{
++  public:
++    // Captures the current visible video framebuffer and blends it into
++    // the passed overlay. The buffer format is BGRA (4 byte)
++    static void CaptureVideoFrame(unsigned char *buffer, int iWidth, int iHeight, bool bBlendToBuffer = true);
++};
++#endif//HAS_LIBAMCODEC
+
+From e9dda93eba76091351ad16032ca20078d4ddc096 Mon Sep 17 00:00:00 2001
+From: Memphiz <memphis@machzwo.de>
+Date: Tue, 27 Jan 2015 00:05:36 +0100
+Subject: [PATCH 2/2] [AML/videobookmark] - use the CScreenshotAML class for
+ generating video bookmarks on amlogic
+
+---
+ xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp b/xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp
+index c77955c..00139c8 100644
+--- a/xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp
++++ b/xbmc/video/dialogs/GUIDialogVideoBookmarks.cpp
+@@ -25,7 +25,10 @@
+ #ifdef HAS_VIDEO_PLAYBACK
+ #include "cores/VideoRenderers/RenderManager.h"
+ #include "cores/VideoRenderers/RenderCapture.h"
+-#endif
++#if defined(HAS_LIBAMCODEC)
++#include "utils/ScreenshotAML.h"
++#endif//HAS_LIBAMCODEC
++#endif//HAS_VIDEO_PLAYBACK
+ #include "pictures/Picture.h"
+ #include "dialogs/GUIDialogContextMenu.h"
+ #include "view/ViewState.h"
+@@ -339,8 +342,13 @@ bool CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
+     {
+       g_renderManager.Capture(thumbnail, width, height, CAPTUREFLAG_IMMEDIATELY);
+ 
++#if !defined(HAS_LIBAMCODEC)
+       if (thumbnail->GetUserState() == CAPTURESTATE_DONE)
+       {
++#else//HAS_LIBAMCODEC
++      {
++        CScreenshotAML::CaptureVideoFrame(thumbnail->GetPixels(), width, height, false);
++#endif
+         Crc32 crc;
+         crc.ComputeFromLowerCase(g_application.CurrentFile());
+         bookmark.thumbNailImage = StringUtils::Format("%08x_%i.jpg", (unsigned __int32) crc, (int)bookmark.timeInSeconds);
+@@ -349,8 +357,10 @@ bool CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
+                                             bookmark.thumbNailImage))
+           bookmark.thumbNailImage.clear();
+       }
++#if !defined(HAS_LIBAMCODEC)
+       else
+         CLog::Log(LOGERROR,"CGUIDialogVideoBookmarks: failed to create thumbnail");
++#endif
+ 
+       g_renderManager.ReleaseRenderCapture(thumbnail);
+     }

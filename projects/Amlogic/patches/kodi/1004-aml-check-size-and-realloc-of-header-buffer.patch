@@ -1,0 +1,49 @@
+From 6fa574bc22e6dda918307fd92cfb6e8cfd242faa Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sun, 8 Feb 2015 10:50:51 +0100
+Subject: [PATCH] FIX: [aml] check size (and realloc) of header buffer
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 0b0738b..33b5405 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -921,9 +921,17 @@ static int divx3_write_header(am_private_t *para, am_packet_t *pkt)
+ 
+ static int h264_add_header(unsigned char *buf, int size, am_packet_t *pkt)
+ {
+-  memcpy(pkt->hdr->data, buf, size);
+-  pkt->hdr->size = size;
+-  return PLAYER_SUCCESS;
++    if (size > HDR_BUF_SIZE)
++    {
++        free(pkt->hdr->data);
++        pkt->hdr->data = (char *)malloc(size);
++        if (!pkt->hdr->data)
++            return PLAYER_NOMEM;
++    }
++
++    memcpy(pkt->hdr->data, buf, size);
++    pkt->hdr->size = size;
++    return PLAYER_SUCCESS;
+ }
+ 
+ static int h264_write_header(am_private_t *para, am_packet_t *pkt)
+@@ -949,6 +957,14 @@ static int h264_write_header(am_private_t *para, am_packet_t *pkt)
+ 
+ static int hevc_add_header(unsigned char *buf, int size,  am_packet_t *pkt)
+ {
++    if (size > HDR_BUF_SIZE)
++    {
++        free(pkt->hdr->data);
++        pkt->hdr->data = (char *)malloc(size);
++        if (!pkt->hdr->data)
++            return PLAYER_NOMEM;
++    }
++
+     memcpy(pkt->hdr->data, buf, size);
+     pkt->hdr->size = size;
+     return PLAYER_SUCCESS;

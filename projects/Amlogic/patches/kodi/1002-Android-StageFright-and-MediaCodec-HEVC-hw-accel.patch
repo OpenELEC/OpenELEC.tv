@@ -1,0 +1,563 @@
+From a2067c91f21f7758ad94a73228c765d97036b9a9 Mon Sep 17 00:00:00 2001
+From: John Stebbins <jstebbins@jetheaddev.com>
+Date: Tue, 25 Nov 2014 11:26:55 -0800
+Subject: [PATCH 1/4] BitstreamConverter: add hevc annex-b conversion
+
+---
+ xbmc/utils/BitstreamConverter.cpp | 287 ++++++++++++++++++++++++++++++++++----
+ xbmc/utils/BitstreamConverter.h   |   5 +-
+ 2 files changed, 262 insertions(+), 30 deletions(-)
+
+diff --git a/xbmc/utils/BitstreamConverter.cpp b/xbmc/utils/BitstreamConverter.cpp
+index 11d0673..89493e7 100644
+--- a/xbmc/utils/BitstreamConverter.cpp
++++ b/xbmc/utils/BitstreamConverter.cpp
+@@ -28,20 +28,48 @@
+ #include "BitstreamConverter.h"
+ 
+ enum {
+-    NAL_SLICE=1,
+-    NAL_DPA,
+-    NAL_DPB,
+-    NAL_DPC,
+-    NAL_IDR_SLICE,
+-    NAL_SEI,
+-    NAL_SPS,
+-    NAL_PPS,
+-    NAL_AUD,
+-    NAL_END_SEQUENCE,
+-    NAL_END_STREAM,
+-    NAL_FILLER_DATA,
+-    NAL_SPS_EXT,
+-    NAL_AUXILIARY_SLICE=19
++    AVC_NAL_SLICE=1,
++    AVC_NAL_DPA,
++    AVC_NAL_DPB,
++    AVC_NAL_DPC,
++    AVC_NAL_IDR_SLICE,
++    AVC_NAL_SEI,
++    AVC_NAL_SPS,
++    AVC_NAL_PPS,
++    AVC_NAL_AUD,
++    AVC_NAL_END_SEQUENCE,
++    AVC_NAL_END_STREAM,
++    AVC_NAL_FILLER_DATA,
++    AVC_NAL_SPS_EXT,
++    AVC_NAL_AUXILIARY_SLICE=19
++};
++
++enum {
++    HEVC_NAL_TRAIL_N    = 0,
++    HEVC_NAL_TRAIL_R    = 1,
++    HEVC_NAL_TSA_N      = 2,
++    HEVC_NAL_TSA_R      = 3,
++    HEVC_NAL_STSA_N     = 4,
++    HEVC_NAL_STSA_R     = 5,
++    HEVC_NAL_RADL_N     = 6,
++    HEVC_NAL_RADL_R     = 7,
++    HEVC_NAL_RASL_N     = 8,
++    HEVC_NAL_RASL_R     = 9,
++    HEVC_NAL_BLA_W_LP   = 16,
++    HEVC_NAL_BLA_W_RADL = 17,
++    HEVC_NAL_BLA_N_LP   = 18,
++    HEVC_NAL_IDR_W_RADL = 19,
++    HEVC_NAL_IDR_N_LP   = 20,
++    HEVC_NAL_CRA_NUT    = 21,
++    HEVC_NAL_VPS        = 32,
++    HEVC_NAL_SPS        = 33,
++    HEVC_NAL_PPS        = 34,
++    HEVC_NAL_AUD        = 35,
++    HEVC_NAL_EOS_NUT    = 36,
++    HEVC_NAL_EOB_NUT    = 37,
++    HEVC_NAL_FD_NUT     = 38,
++    HEVC_NAL_SEI_PREFIX = 39,
++    HEVC_NAL_SEI_SUFFIX = 40
+ };
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////
+@@ -252,20 +280,20 @@ bool CBitstreamParser::FindIdrSlice(const uint8_t *buf, int buf_size)
+       default:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found nal_type(%d)", state & 0x1f);
+         break;
+-      case NAL_SLICE:
++      case AVC_NAL_SLICE:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found NAL_SLICE");
+         break;
+-      case NAL_IDR_SLICE:
++      case AVC_NAL_IDR_SLICE:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found NAL_IDR_SLICE");
+         rtn = true;
+         break;
+-      case NAL_SEI:
++      case AVC_NAL_SEI:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found NAL_SEI");
+         break;
+-      case NAL_SPS:
++      case AVC_NAL_SPS:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found NAL_SPS");
+         break;
+-      case NAL_PPS:
++      case AVC_NAL_PPS:
+         CLog::Log(LOGDEBUG, "FindIdrSlice: found NAL_PPS");
+         break;
+     }
+@@ -319,7 +347,7 @@ bool CBitstreamConverter::Open(enum AVCodecID codec, uint8_t *in_extradata, int
+           m_extrasize = in_extrasize;
+           m_extradata = (uint8_t*)av_malloc(in_extrasize);
+           memcpy(m_extradata, in_extradata, in_extrasize);
+-          m_convert_bitstream = BitstreamConvertInit(m_extradata, m_extrasize);
++          m_convert_bitstream = BitstreamConvertInitAVC(m_extradata, m_extrasize);
+           return true;
+         }
+       }
+@@ -382,6 +410,62 @@ bool CBitstreamConverter::Open(enum AVCodecID codec, uint8_t *in_extradata, int
+       }
+       return false;
+       break;
++    case AV_CODEC_ID_HEVC:
++      if (in_extrasize < 23 || in_extradata == NULL)
++      {
++        CLog::Log(LOGERROR, "CBitstreamConverter::Open hvcC data too small or missing");
++        return false;
++      }
++      // valid hvcC data (bitstream) always starts with the value 1 (version)
++      if(m_to_annexb)
++      {
++        if ( in_extradata[0] == 1 )
++        {
++          CLog::Log(LOGINFO, "CBitstreamConverter::Open bitstream to annexb init");
++          m_extrasize = in_extrasize;
++          m_extradata = (uint8_t*)av_malloc(in_extrasize);
++          memcpy(m_extradata, in_extradata, in_extrasize);
++          m_convert_bitstream = BitstreamConvertInitHEVC(m_extradata, m_extrasize);
++          return true;
++        }
++      }
++      else
++      {
++        // valid hvcC atom data always starts with the value 1 (version)
++        if ( in_extradata[0] != 1 )
++        {
++          if ( (in_extradata[0] == 0 && in_extradata[1] == 0 && in_extradata[2] == 0 && in_extradata[3] == 1) ||
++               (in_extradata[0] == 0 && in_extradata[1] == 0 && in_extradata[2] == 1) )
++          {
++            CLog::Log(LOGINFO, "CBitstreamConverter::Open annexb to bitstream init");
++            // TODO: convert annexb to bitstream format
++            return false;
++          }
++          else
++          {
++            CLog::Log(LOGNOTICE, "CBitstreamConverter::Open invalid hvcC atom data");
++            return false;
++          }
++        }
++        else
++        {
++          if ((in_extradata[4] & 0x3) == 2)
++          {
++            CLog::Log(LOGINFO, "CBitstreamConverter::Open annexb to bitstream init 3 byte to 4 byte nal");
++            // video content is from so silly encoder that think 3 byte NAL sizes
++            // are valid, setup to convert 3 byte NAL sizes to 4 byte.
++            in_extradata[4] |= 0x03;
++            m_convert_3byteTo4byteNALSize = true;
++          }
++        }
++        // valid hvcC atom
++        m_extradata = (uint8_t*)av_malloc(in_extrasize);
++        memcpy(m_extradata, in_extradata, in_extrasize);
++        m_extrasize = in_extrasize;
++        return true;
++      }
++      return false;
++      break;
+     default:
+       return false;
+       break;
+@@ -423,7 +507,8 @@ bool CBitstreamConverter::Convert(uint8_t *pData, int iSize)
+ 
+   if (pData)
+   {
+-    if (m_codec == AV_CODEC_ID_H264)
++    if (m_codec == AV_CODEC_ID_H264 ||
++        m_codec == AV_CODEC_ID_HEVC)
+     {
+       if (m_to_annexb)
+       {
+@@ -502,7 +587,7 @@ bool CBitstreamConverter::Convert(uint8_t *pData, int iSize)
+           while (nal_start < end)
+           {
+             nal_size = BS_RB24(nal_start);
+-            avio_wb16(pb, nal_size);
++            avio_wb32(pb, nal_size);
+             nal_start += 3;
+             avio_write(pb, nal_start, nal_size);
+             nal_start += nal_size;
+@@ -550,7 +635,7 @@ int CBitstreamConverter::GetExtraSize() const
+     return m_extrasize;
+ }
+ 
+-bool CBitstreamConverter::BitstreamConvertInit(void *in_extradata, int in_extrasize)
++bool CBitstreamConverter::BitstreamConvertInitAVC(void *in_extradata, int in_extrasize)
+ {
+   // based on h264_mp4toannexb_bsf.c (ffmpeg)
+   // which is Copyright (c) 2007 Benoit Fouet <benoit.fouet@free.fr>
+@@ -632,6 +717,129 @@ bool CBitstreamConverter::BitstreamConvertInit(void *in_extradata, int in_extras
+   return true;
+ }
+ 
++bool CBitstreamConverter::BitstreamConvertInitHEVC(void *in_extradata, int in_extrasize)
++{
++  m_sps_pps_size = 0;
++  m_sps_pps_context.sps_pps_data = NULL;
++
++  // nothing to filter
++  if (!in_extradata || in_extrasize < 23)
++    return false;
++
++  uint16_t unit_nb, unit_size;
++  uint32_t total_size = 0;
++  uint8_t *out = NULL, array_nb, nal_type, sps_seen = 0, pps_seen = 0;
++  const uint8_t *extradata = (uint8_t*)in_extradata + 21;
++  static const uint8_t nalu_header[4] = {0, 0, 0, 1};
++
++  // retrieve length coded size
++  m_sps_pps_context.length_size = (*extradata++ & 0x3) + 1;
++
++  array_nb = *extradata++;
++  while (array_nb--)
++  {
++    nal_type = *extradata++ & 0x3f;
++    unit_nb  = extradata[0] << 8 | extradata[1];
++    extradata += 2;
++
++    if (nal_type == HEVC_NAL_SPS && unit_nb)
++    {
++        sps_seen = 1;
++    }
++    else if (nal_type == HEVC_NAL_PPS && unit_nb)
++    {
++        pps_seen = 1;
++    }
++    while (unit_nb--)
++    {
++      void *tmp;
++
++      unit_size = extradata[0] << 8 | extradata[1];
++      extradata += 2;
++      if (nal_type != HEVC_NAL_SPS &&
++          nal_type != HEVC_NAL_PPS &&
++          nal_type != HEVC_NAL_VPS)
++      {
++        extradata += unit_size;
++        continue;
++      }
++      total_size += unit_size + 4;
++
++      if (total_size > INT_MAX - FF_INPUT_BUFFER_PADDING_SIZE ||
++        (extradata + unit_size) > ((uint8_t*)in_extradata + in_extrasize))
++      {
++        av_free(out);
++        return false;
++      }
++      tmp = av_realloc(out, total_size + FF_INPUT_BUFFER_PADDING_SIZE);
++      if (!tmp)
++      {
++        av_free(out);
++        return false;
++      }
++      out = (uint8_t*)tmp;
++      memcpy(out + total_size - unit_size - 4, nalu_header, 4);
++      memcpy(out + total_size - unit_size, extradata, unit_size);
++      extradata += unit_size;
++    }
++  }
++
++  if (out)
++    memset(out + total_size, 0, FF_INPUT_BUFFER_PADDING_SIZE);
++
++  if (!sps_seen)
++      CLog::Log(LOGDEBUG, "SPS NALU missing or invalid. The resulting stream may not play");
++  if (!pps_seen)
++      CLog::Log(LOGDEBUG, "PPS NALU missing or invalid. The resulting stream may not play");
++
++  m_sps_pps_context.sps_pps_data = out;
++  m_sps_pps_context.size = total_size;
++  m_sps_pps_context.first_idr = 1;
++  m_sps_pps_context.idr_sps_pps_seen = 0;
++
++  return true;
++}
++
++bool CBitstreamConverter::IsIDR(uint8_t unit_type)
++{
++  switch (m_codec)
++  {
++    case AV_CODEC_ID_H264:
++      return unit_type == AVC_NAL_IDR_SLICE;
++    case AV_CODEC_ID_HEVC:
++      return unit_type == HEVC_NAL_IDR_W_RADL ||
++             unit_type == HEVC_NAL_IDR_N_LP;
++    default:
++      return false;
++  }
++}
++
++bool CBitstreamConverter::IsSlice(uint8_t unit_type)
++{
++  switch (m_codec)
++  {
++    case AV_CODEC_ID_H264:
++      return unit_type == AVC_NAL_SLICE;
++    case AV_CODEC_ID_HEVC:
++      return unit_type == HEVC_NAL_TRAIL_R ||
++             unit_type == HEVC_NAL_TRAIL_N ||
++             unit_type == HEVC_NAL_TSA_N ||
++             unit_type == HEVC_NAL_TSA_R ||
++             unit_type == HEVC_NAL_STSA_N ||
++             unit_type == HEVC_NAL_STSA_R ||
++             unit_type == HEVC_NAL_BLA_W_LP ||
++             unit_type == HEVC_NAL_BLA_W_RADL ||
++             unit_type == HEVC_NAL_BLA_N_LP ||
++             unit_type == HEVC_NAL_CRA_NUT ||
++             unit_type == HEVC_NAL_RADL_N ||
++             unit_type == HEVC_NAL_RADL_R ||
++             unit_type == HEVC_NAL_RASL_N ||
++             unit_type == HEVC_NAL_RASL_R;
++    default:
++      return false;
++  }
++}
++
+ bool CBitstreamConverter::BitstreamConvert(uint8_t* pData, int iSize, uint8_t **poutbuf, int *poutbuf_size)
+ {
+   // based on h264_mp4toannexb_bsf.c (ffmpeg)
+@@ -641,11 +849,25 @@ bool CBitstreamConverter::BitstreamConvert(uint8_t* pData, int iSize, uint8_t **
+   int i;
+   uint8_t *buf = pData;
+   uint32_t buf_size = iSize;
+-  uint8_t  unit_type;
++  uint8_t  unit_type, nal_sps, nal_pps;
+   int32_t  nal_size;
+   uint32_t cumul_size = 0;
+   const uint8_t *buf_end = buf + buf_size;
+ 
++  switch (m_codec)
++  {
++    case AV_CODEC_ID_H264:
++      nal_sps = AVC_NAL_SPS;
++      nal_pps = AVC_NAL_PPS;
++      break;
++    case AV_CODEC_ID_HEVC:
++      nal_sps = HEVC_NAL_SPS;
++      nal_pps = HEVC_NAL_PPS;
++      break;
++    default:
++      return false;
++  }
++
+   do
+   {
+     if (buf + m_sps_pps_context.length_size > buf_end)
+@@ -655,17 +877,24 @@ bool CBitstreamConverter::BitstreamConvert(uint8_t* pData, int iSize, uint8_t **
+       nal_size = (nal_size << 8) | buf[i];
+ 
+     buf += m_sps_pps_context.length_size;
+-    unit_type = *buf & 0x1f;
++    if (m_codec == AV_CODEC_ID_H264)
++    {
++        unit_type = *buf & 0x1f;
++    }
++    else
++    {
++        unit_type = (*buf >> 1) & 0x3f;
++    }
+ 
+-    if (buf + nal_size > buf_end || nal_size < 0)
++    if (buf + nal_size > buf_end || nal_size <= 0)
+       goto fail;
+ 
+     // Don't add sps/pps if the unit already contain them
+-    if (m_sps_pps_context.first_idr && (unit_type == 7 || unit_type == 8))
++    if (m_sps_pps_context.first_idr && (unit_type == nal_sps || unit_type == nal_pps))
+       m_sps_pps_context.idr_sps_pps_seen = 1;
+ 
+       // prepend only to the first access unit of an IDR picture, if no sps/pps already present
+-    if (m_sps_pps_context.first_idr && unit_type == 5 && !m_sps_pps_context.idr_sps_pps_seen)
++    if (m_sps_pps_context.first_idr && IsIDR(unit_type) && !m_sps_pps_context.idr_sps_pps_seen)
+     {
+       BitstreamAllocAndCopy(poutbuf, poutbuf_size,
+         m_sps_pps_context.sps_pps_data, m_sps_pps_context.size, buf, nal_size);
+@@ -674,7 +903,7 @@ bool CBitstreamConverter::BitstreamConvert(uint8_t* pData, int iSize, uint8_t **
+     else
+     {
+       BitstreamAllocAndCopy(poutbuf, poutbuf_size, NULL, 0, buf, nal_size);
+-      if (!m_sps_pps_context.first_idr && unit_type == 1)
++      if (!m_sps_pps_context.first_idr && IsSlice(unit_type))
+       {
+           m_sps_pps_context.first_idr = 1;
+           m_sps_pps_context.idr_sps_pps_seen = 0;
+diff --git a/xbmc/utils/BitstreamConverter.h b/xbmc/utils/BitstreamConverter.h
+index 9ab5ac3..639b3bf 100644
+--- a/xbmc/utils/BitstreamConverter.h
++++ b/xbmc/utils/BitstreamConverter.h
+@@ -177,7 +177,10 @@ class CBitstreamConverter
+   static const int  avc_parse_nal_units_buf(const uint8_t *buf_in, uint8_t **buf, int *size);
+   const int         isom_write_avcc(AVIOContext *pb, const uint8_t *data, int len);
+   // bitstream to bytestream (Annex B) conversion support.
+-  bool              BitstreamConvertInit(void *in_extradata, int in_extrasize);
++  bool              IsIDR(uint8_t unit_type);
++  bool              IsSlice(uint8_t unit_type);
++  bool              BitstreamConvertInitAVC(void *in_extradata, int in_extrasize);
++  bool              BitstreamConvertInitHEVC(void *in_extradata, int in_extrasize);
+   bool              BitstreamConvert(uint8_t* pData, int iSize, uint8_t **poutbuf, int *poutbuf_size);
+   static void       BitstreamAllocAndCopy(uint8_t **poutbuf, int *poutbuf_size,
+                       const uint8_t *sps_pps, uint32_t sps_pps_size, const uint8_t *in, uint32_t in_size);
+
+From 41aa80f1d745132b544742fcd3d2ace4a0f687fc Mon Sep 17 00:00:00 2001
+From: John Stebbins <jstebbins@jetheaddev.com>
+Date: Tue, 25 Nov 2014 11:28:11 -0800
+Subject: [PATCH 2/4] StageFright: add hw accel hevc playback
+
+---
+ .../dvdplayer/DVDCodecs/Video/DVDVideoCodecStageFright.cpp   | 12 ++++++++++++
+ .../DVDCodecs/Video/libstagefrightICS/StageFrightVideo.cpp   |  5 +++++
+ xbmc/settings/AdvancedSettings.cpp                           |  2 ++
+ xbmc/settings/AdvancedSettings.h                             |  1 +
+ 4 files changed, 20 insertions(+)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecStageFright.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecStageFright.cpp
+index b05ef56..4bd4609 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecStageFright.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecStageFright.cpp
+@@ -85,6 +85,18 @@ bool CDVDVideoCodecStageFright::Open(CDVDStreamInfo &hints, CDVDCodecOptions &op
+         m_convert_bitstream = m_converter->Open(hints.codec, (uint8_t *)hints.extradata, hints.extrasize, true);
+ 
+         break;
++      case AV_CODEC_ID_HEVC:
++        m_pFormatName = "stf-h265";
++        if (hints.extrasize < 22 || hints.extradata == NULL)
++        {
++          CLog::Log(LOGNOTICE,
++              "%s::%s - hvcC data too small or missing", CLASSNAME, __func__);
++          return false;
++        }
++        m_converter     = new CBitstreamConverter();
++        m_convert_bitstream = m_converter->Open(hints.codec, (uint8_t *)hints.extradata, hints.extrasize, true);
++
++        break;
+       case CODEC_ID_MPEG2VIDEO:
+         m_pFormatName = "stf-mpeg2";
+         break;
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/libstagefrightICS/StageFrightVideo.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/libstagefrightICS/StageFrightVideo.cpp
+index 0f2cab0..019bc7a 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/libstagefrightICS/StageFrightVideo.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/libstagefrightICS/StageFrightVideo.cpp
+@@ -415,6 +415,11 @@ bool CStageFrightVideo::Open(CDVDStreamInfo &hints)
+   const char* mimetype;
+   switch (hints.codec)
+   {
++  case AV_CODEC_ID_HEVC:
++    if (p->m_g_advancedSettings->m_stagefrightConfig.useHEVCcodec == 0)
++      return false;
++    mimetype = "video/hevc";
++    break;
+   case CODEC_ID_H264:
+     if (p->m_g_advancedSettings->m_stagefrightConfig.useAVCcodec == 0)
+       return false;
+diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
+index 478d725..ed0fa8d 100644
+--- a/xbmc/settings/AdvancedSettings.cpp
++++ b/xbmc/settings/AdvancedSettings.cpp
+@@ -169,6 +169,7 @@ void CAdvancedSettings::Initialize()
+   m_videoFpsDetect = 1;
+   m_videoBusyDialogDelay_ms = 500;
+   m_stagefrightConfig.useAVCcodec = -1;
++  m_stagefrightConfig.useHEVCcodec = -1;
+   m_stagefrightConfig.useVC1codec = -1;
+   m_stagefrightConfig.useVPXcodec = -1;
+   m_stagefrightConfig.useMP4codec = -1;
+@@ -601,6 +602,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
+     if (pStagefrightElem)
+     {
+       XMLUtils::GetInt(pStagefrightElem,"useavccodec",m_stagefrightConfig.useAVCcodec, -1, 1);
++      XMLUtils::GetInt(pStagefrightElem,"usehevccodec",m_stagefrightConfig.useHEVCcodec, -1, 1);
+       XMLUtils::GetInt(pStagefrightElem,"usevc1codec",m_stagefrightConfig.useVC1codec, -1, 1);
+       XMLUtils::GetInt(pStagefrightElem,"usevpxcodec",m_stagefrightConfig.useVPXcodec, -1, 1);
+       XMLUtils::GetInt(pStagefrightElem,"usemp4codec",m_stagefrightConfig.useMP4codec, -1, 1);
+diff --git a/xbmc/settings/AdvancedSettings.h b/xbmc/settings/AdvancedSettings.h
+index ca995e3..d17ceea 100644
+--- a/xbmc/settings/AdvancedSettings.h
++++ b/xbmc/settings/AdvancedSettings.h
+@@ -100,6 +100,7 @@ struct RefreshVideoLatency
+ struct StagefrightConfig
+ {
+   int useAVCcodec;
++  int useHEVCcodec;
+   int useVC1codec;
+   int useVPXcodec;
+   int useMP4codec;
+
+From acf468e6e5cb1f08a67b1217106efaecbb9bb9a7 Mon Sep 17 00:00:00 2001
+From: John Stebbins <jstebbins@jetheaddev.com>
+Date: Tue, 25 Nov 2014 11:28:45 -0800
+Subject: [PATCH 3/4] MediaCodec: add hw accel hevc playback
+
+---
+ .../DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp    | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp
+index 764188a..40a36f6 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.cpp
+@@ -364,6 +364,21 @@ bool CDVDVideoCodecAndroidMediaCodec::Open(CDVDStreamInfo &hints, CDVDCodecOptio
+         }
+       }
+       break;
++    case AV_CODEC_ID_HEVC:
++      m_mime = "video/hevc";
++      m_formatname = "amc-h265";
++      // check for hevc-hvcC and convert to h265-annex-b
++      if (m_hints.extradata && *(uint8_t*)m_hints.extradata == 1)
++      {
++        m_bitstream = new CBitstreamConverter;
++        if (!m_bitstream->Open(m_hints.codec, (uint8_t*)m_hints.extradata, m_hints.extrasize, true))
++        {
++          CLog::Log(LOGERROR, "CDVDVideoCodecAndroidMediaCodec::Open CBitstreamConverter Open failed");
++          SAFE_DELETE(m_bitstream);
++          return false;
++        }
++      }
++      break;
+     case AV_CODEC_ID_VC1:
+     case AV_CODEC_ID_WMV3:
+       m_mime = "video/wvc1";
+
+From 0af12f550e091049c334622010680be0143e4927 Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sat, 18 Oct 2014 12:46:36 +0200
+Subject: [PATCH 4/4] FIX: hevc bitstream tweak from aml
+
+---
+ xbmc/utils/BitstreamConverter.cpp | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/utils/BitstreamConverter.cpp b/xbmc/utils/BitstreamConverter.cpp
+index 89493e7..9de126d 100644
+--- a/xbmc/utils/BitstreamConverter.cpp
++++ b/xbmc/utils/BitstreamConverter.cpp
+@@ -419,7 +419,13 @@ bool CBitstreamConverter::Open(enum AVCodecID codec, uint8_t *in_extradata, int
+       // valid hvcC data (bitstream) always starts with the value 1 (version)
+       if(m_to_annexb)
+       {
+-        if ( in_extradata[0] == 1 )
++        // TODO: from Amlogic
++        /* It seems the extradata is encoded as hvcC format.
++         * Temporarily, we support configurationVersion==0 until 14496-15 3rd
++         * is finalized. When finalized, configurationVersion will be 1 and we
++         * can recognize hvcC by checking if extradata[0]==1 or not. */
++
++        if (in_extradata[0] || in_extradata[1] || in_extradata[2] > 1)
+         {
+           CLog::Log(LOGINFO, "CBitstreamConverter::Open bitstream to annexb init");
+           m_extrasize = in_extrasize;
