@@ -1,0 +1,33 @@
+From 6e416cead06faeea0121574d5bd71ecc228b7b73 Mon Sep 17 00:00:00 2001
+From: Jin Hong <jinh@codeaurora.org>
+Date: Tue, 1 May 2012 09:13:30 -0700
+Subject: [PATCH] arm: show present cpu instead of online cpu in /proc/cpuinfo
+
+Some userspace applications use /proc/cpuinfo to determine how many CPUs
+the system has. CPU hotplug can offline a CPU at runtime and causing the
+offline CPU not present in /proc/cpuinfo if we only show online cpu in
+/proc/cpuinfo.
+
+CRs-Fixed: 354430
+Change-Id: I22a15d2d141c713dcd4abaa8bb74ecad6508900f
+Signed-off-by: Jin Hong <jinh@codeaurora.org>
+---
+ arch/arm/kernel/setup.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
+index 71c4e4b..e15a01a 100644
+--- a/arch/arm/kernel/setup.c
++++ b/arch/arm/kernel/setup.c
+@@ -909,7 +909,7 @@ static int c_show(struct seq_file *m, void *v)
+ 		   cpu_name, read_cpuid_id() & 15, elf_platform);
+ 
+ #if defined(CONFIG_SMP)
+-	for_each_online_cpu(i) {
++	for_each_present_cpu(i) {
+ 		/*
+ 		 * glibc reads /proc/cpuinfo to determine the number of
+ 		 * online processors, looking for lines beginning with
+-- 
+1.9.1
+
