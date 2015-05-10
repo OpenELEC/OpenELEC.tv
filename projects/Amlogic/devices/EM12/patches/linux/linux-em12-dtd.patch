@@ -1,0 +1,27 @@
+diff -Nru linux-amlogic-3.10-84deff2.orig/arch/arm/boot/dts/amlogic/meson8b_m201_1G.dtd linux-amlogic-3.10-84deff2/arch/arm/boot/dts/amlogic/meson8b_m201_1G.dtd
+--- linux-amlogic-3.10-84deff2.orig/arch/arm/boot/dts/amlogic/meson8b_m201_1G.dtd	2015-01-30 01:33:32.000000000 +0300
++++ linux-amlogic-3.10-84deff2/arch/arm/boot/dts/amlogic/meson8b_m201_1G.dtd	2015-01-31 23:01:54.000000000 +0300
+@@ -87,7 +87,7 @@
+ 
+         cma_0:region@0 {
+            region_name = "cma_0";
+-           reg = <0 0x01200000>;
++           reg = <0 0x02a00000>;
+            linux,contiguous-region;
+         };
+ 	};
+@@ -131,12 +131,12 @@
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-		reserve-memory = <0x00800000 0x00100000>;
++		reserve-memory = <0x01800000 0x00100000>;
+ 		reserve-iomap = "true";
+ 	        vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+ 		4k2k_fb = <0>;
+-	        display_size_default = <1280 720 1280 1440 32>;  // osd0:8M, osd1:1m  1280*720*4*3 = 11,059,200
++	        display_size_default = <1920 1080 1920 3240 32>;  // 1920*1080*4*3 = 0x17BB000
+ 	};
+ 
+ //$$ DEVICE="deinterlace"
