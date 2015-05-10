@@ -19,8 +19,8 @@
 PKG_NAME="linux"
 case "$LINUX" in
   amlogic)
-    PKG_VERSION="amlogic-3.10-a9cef51"
-    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_VERSION="amlogic-5f3c177"
+    PKG_URL="http://amlinux.ru/source/$PKG_NAME-$PKG_VERSION.tar.gz"
     ;;
   imx6)
     PKG_VERSION="cuboxi-3.14-ea83bda"
@@ -47,16 +47,26 @@ PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
+fi
+
+if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
+fi
+
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
-if [ "$BOOTLOADER" = "u-boot" ]; then
+if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
   KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
 else
   KERNEL_IMAGE="bzImage"
 fi
 
 post_patch() {
-  if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+  if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+    KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
+  elif [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
     KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
   else
     KERNEL_CFG_FILE=$PKG_DIR/config/$PKG_NAME.$TARGET_ARCH.conf
@@ -69,7 +79,10 @@ post_patch() {
          $PKG_BUILD/Makefile
 
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
-  sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+
+  if [ ! "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+  fi
 
   # set default hostname based on $DISTRONAME
     sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
@@ -137,17 +150,54 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
+  if [ -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
     for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
       LDFLAGS="" make $extra_target
     done
   fi
 
+  if [ "$MULTI_DTBS" = "yes" ]; then
+    mkdir -p out
+    $ROOT/projects/$PROJECT/dtbTool -o out/dt.img -p scripts/dtc/ arch/arm/boot/dts/amlogic/
+  fi
+
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
+  if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    LDFLAGS="" mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+      --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
+    mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
+  fi
+
+  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
+    ( cd tools/perf
+
+      # dont use some optimizations because of build problems
+        strip_lto
+        LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
+
+      export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
+      export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
+      export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/lib -L$SYSROOT_PREFIX/usr/lib"
+
+      make CROSS_COMPILE="$TARGET_PREFIX" \
+           ARCH="$TARGET_ARCH" \
+           V=1 \
+           DEBUG=false \
+           NLS=false \
+           NO_GTK2=true \
+           NO_LIBELF=false \
+           NO_LIBPERL=true \
+           NO_LIBPYTHON=false \
+           PYTHON=$SYSROOT_PREFIX/usr/bin/python \
+           WERROR=0 \
+           NO_SLANG=1 \
+           EXTRA_CFLAGS="$CFLAGS"
+    )
+  fi
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a -f "arch/arm/boot/dts/*.dtb" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
@@ -162,6 +212,15 @@ makeinstall_target() {
         cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
       fi
     done
+  fi
+
+  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
+    mkdir -p $INSTALL/usr/bin
+      cp -P tools/perf/perf $INSTALL/usr/bin/
+
+    mkdir -p $INSTALL/usr/libexec/perf-core/scripts/python/
+      cp -P tools/perf/perf-archive $INSTALL/usr/libexec/perf-core/
+      cp -rP tools/perf/scripts/python/* $INSTALL/usr/libexec/perf-core/scripts/python/
   fi
 }
 
