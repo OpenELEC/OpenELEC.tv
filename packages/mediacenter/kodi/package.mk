@@ -157,9 +157,9 @@ fi
 
 if [ "$AFP_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET afpfs-ng"
-  XBMC_AFP="--enable-afpclient"
+  KODI_AFP="--enable-afpclient"
 else
-  XBMC_AFP="--disable-afpclient"
+  KODI_AFP="--disable-afpclient"
 fi
 
 if [ "$KODI_SAMBA_SUPPORT" = yes ]; then
@@ -265,7 +265,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            --enable-rtmp \
                            $KODI_SAMBA \
                            $KODI_NFS \
-                           $XBMC_AFP \
+                           $KODI_AFP \
                            --disable-libcap \
                            $KODI_DVDCSS \
                            --disable-mid \
