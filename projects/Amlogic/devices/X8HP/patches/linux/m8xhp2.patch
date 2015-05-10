@@ -1,0 +1,71 @@
+--- a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd	2015-03-31 12:11:00.000000000 +0300
++++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd	2015-04-23 14:45:24.447152521 +0300
+@@ -314,7 +314,7 @@
+ //$$ L2 PROP_STR = "status"
+     rtc{
+ 		compatible = "amlogic,aml_rtc";
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ /// ***************************************************************************************
+@@ -477,7 +477,7 @@
+             gpio_dat3 = "CARD_4";
+             jtag_pin = "CARD_0";
+             gpio_cd = "CARD_6";
+-            gpio_ro = "GPIOZ_0";
++            gpio_ro = "GPIOY_15";
+             irq_in = <3>;
+             irq_out = <5>;
+             card_type = <5>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
+@@ -495,7 +495,6 @@
+ //$$ L3 PROP_U32 = "max_req_size"
+ //$$ L2 PROP_STR = "gpio_dat3"
+ //$$ L2 PROP_U32 = "card_type"
+-
+ //        emmc{
+ //            status = "ok";
+ //            port = <2>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
+@@ -904,7 +876,7 @@
+ 			port-config = <0>; /** 0: default */
+ 			port-dma = <0>; /** 0: default, 1: single, 2: incr, 3: incr4, 4: incr8, 5: incr16, 6: disable*/
+ 			port-id-mode = <0>; /** 0: hardware, 1: sw_host, 2: sw_slave*/
+-			gpio-vbus-power = "GPIOZ_1";
++			gpio-vbus-power = "GPIOY_14";
+ 			gpio-work-mask	= <1>; /**0: work on pulldown,1:work on pullup*/
+ 			status = "okay";
+ 		};
+@@ -1824,11 +1810,13 @@
+ //$$ L2 PROP_U32 4 = "amlogic,clrmask"
+ //$$ L2 PROP_STR 8 = "amlogic,pins"
+         audio_pins:audio_pin{
+-            amlogic,setmask=<3 0x78000000      /*bt pcm*/
++            amlogic,setmask=<
++	    		1 0x20
++	    		3 0x78000000      /*bt pcm*/
+                              10 0x78000000>;  /*external audio codec*/
+             amlogic,clrmask=<4 0x3c000         /*bt pcm*/
+                              5 0x1000>;        /*bt pcm*/
+-            amlogic,pins = "GPIOX_4","GPIOX_5","GPIOX_6","GPIOX_7",        /*bt pcm*/
++            amlogic,pins = "GPIOY_5","GPIOX_4","GPIOX_5","GPIOX_6","GPIOX_7",        /*bt pcm*/
+                            "GPIOAO_8","GPIOAO_9","GPIOAO_10","GPIOAO_11";  /*external audio codec*/
+         };
+ 
+@@ -1857,7 +1845,7 @@
+ //$$ L2 PROP_U32 8 = "amlogic,clrmask"
+ //$$ L2 PROP_STR 12 = "amlogic,pins"
+ 		dvb_p_ts0_pins: dvb_p_ts0_pins {
+-			amlogic,setmask = <3 0x3F>;
++			amlogic,setmask = <3 0x1F>;
+ 			amlogic,clrmask = <1 0xCCE41
+ 								4 0x2000000
+ 								7 0x20000000
+@@ -1895,7 +1895,7 @@
+ /// ***************************************************************************************
+ ///	-	Ethernet
+         ethmac: ethernet@0xc9410000{
+-                compatible = "amlogic,meson8m2-rmii-dwmac", "snps,dwmac";
++                compatible = "amlogic,meson8m2-rgmii-dwmac", "snps,dwmac";
+                 reg = <0xc9410000 0x10000
+                        0xc1108108 0x4>;
+                 interrupts = <0 8 1>;
