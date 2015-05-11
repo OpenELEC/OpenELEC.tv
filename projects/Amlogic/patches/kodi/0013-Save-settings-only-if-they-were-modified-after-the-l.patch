@@ -1,7 +1,7 @@
-From b7a98ad30de94ec17e816d391efe0da05ec24dc6 Mon Sep 17 00:00:00 2001
+From ada3250ecc3cb73b805027ac6761ca5576f748c3 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Sun, 19 Oct 2014 16:20:33 +0300
-Subject: [PATCH 12/26] Save settings only if they were modified after the
+Subject: [PATCH 13/17] Save settings only if they were modified after the
  last save
 
 This prevents from multiple saving the same settings and helps to resolve

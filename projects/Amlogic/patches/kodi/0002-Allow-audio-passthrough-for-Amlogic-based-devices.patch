@@ -1,7 +1,7 @@
-From db6d2940b837120b15677d407aa0f2645395021c Mon Sep 17 00:00:00 2001
+From 7cdd0f41588b9ddf4778f643fc77cbcbf7ca54a5 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 16 Apr 2014 22:11:51 +0300
-Subject: [PATCH 02/26] Allow audio passthrough for Amlogic-based devices.
+Subject: [PATCH 02/17] Allow audio passthrough for Amlogic-based devices.
 
 ---
  xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp |    8 ++++++++
