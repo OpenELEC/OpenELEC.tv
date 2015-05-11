@@ -204,7 +204,7 @@
   NFS_SUPPORT="yes"
 
 # build with afpfs-ng support (mounting AFP shares with Kodi) (yes / no)
-  AFP_SUPPORT="yes"
+  KODI_AFP_SUPPORT="yes"
 
 # build and install Samba Client support (yes / no)
   SAMBA_SUPPORT="yes"
