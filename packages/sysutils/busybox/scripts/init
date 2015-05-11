@@ -55,11 +55,6 @@
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
   SYSTEM_TORAM_LIMIT=1024000
 
-  LIVE="no"
-
-  # hide kernel log messages on console
-  echo '1 4 1 7' > /proc/sys/kernel/printk
-
   # run platform_init script if exists
   if [ -f "./platform_init" ]; then
     ./platform_init
@@ -130,9 +125,6 @@
         ;;
       noram)
         SYSTEM_TORAM=no
-        ;;
-      live)
-        LIVE=yes
         ;;
       overlay)
         OVERLAY=yes
@@ -291,10 +283,6 @@
     mount_common "$NFS_EXPORT" "$2" "$3,nolock,soft,timeo=3,retrans=2,rsize=32768,wsize=32768,$NFS_OPTIONS" "nfs"
   }
 
-  mount_ubifs() {
-    mount_common "$1" "$2" "$3" "ubifs"
-  }
-
   mount_part() {
     # Mount a local or network filesystem
     # $1:[TYPE=]target, $2:mountpoint, $3:mount options, [$4:fs type]
@@ -302,11 +290,6 @@
 
     MOUNT_TARGET="${1#*=}"
     case $1 in
-      /dev/ubi*)
-        MOUNT_CMD="mount_ubifs"
-        MOUNT_TARGET="$1"
-        RUN_FSCK="no"
-        ;;
       LABEL=*|UUID=*|/*)
         MOUNT_CMD="mount_common"
         MOUNT_TARGET="$1"
@@ -327,7 +310,7 @@
     $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
   }
 
-  update() {
+  update_file() {
     if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
       echo "updating $1..."
       mount -o remount,rw /flash
@@ -337,6 +320,21 @@
         mount -o remount,ro /flash
       fi
       sync
+    fi
+  }
+
+  update_partition() {
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+      echo "updating $1..."
+      case $IMAGE_KERNEL in
+        /dev/mtd*)
+          flash_eraseall "$3"
+          nandwrite -p "$3" "$UPDATE_DIR/$2"
+          ;;
+        *)
+          dd if="$UPDATE_DIR/$2" of="$3"
+          ;;
+      esac
     fi
   }
 
@@ -364,6 +362,12 @@
       insmod "$MODULE_DIR/$module.ko" || \
         progress "... Failed to load kernel module $module, skipping"
     done
+  }
+
+  init_console() {
+    # clear screen and hide cursor
+    clear
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
   }
 
   load_splash() {
@@ -417,59 +421,28 @@
     /bin/busybox reboot
   }
 
-  force_fsck() {
-    echo "Filesystem corruption has been detected"
-    echo "To prevent an automatic repair attempt continuing"
-    echo "press any key or power off your system within the next 120 seconds"
-    echo ""
-    read -t120 -n1
-    # The exit status is 0 if input is available
-    # The exit status is greater than 128 if the timeout is exceeded
-    if [ "$?" -ne "0" -o "$?" -gt "128" ] ; then
-      echo "repairing filesystem.."
-      echo ""
-      /sbin/fsck -T -M -y $RUN_FSCK_DISKS
-      FSCK_RET="$?"
-      if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
-        # fubar
-        echo "Forced fsck failed. Your system is broken beyond repair"
-        echo "Please re-install OpenELEC"
-        echo ""
-        echo "Press enter to shutdown now"
-        echo ""
-        read fubar
-        poweroff
-      fi
-      do_reboot
-    else
-      echo "shutting down..."
-      sleep 5
-      sync
-      poweroff
-    fi
-  }
-
   check_disks() {
     if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
       progress "Checking disk(s): $RUN_FSCK_DISKS"
-        /sbin/fsck -T -M -p -a $RUN_FSCK_DISKS > /dev/null 2>&1
+        /sbin/fsck -T -M -y $RUN_FSCK_DISKS > /dev/null 2>&1
         FSCK_RET="$?"
 
-        # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
-        if [ "$(( $FSCK_RET & 4 ))" = 4 ] ; then
-          # errors left
-          force_fsck
-        elif [ "$(( $FSCK_RET & 2 ))" = 2 ] ; then
-          # reboot needed
-          echo "filesystem repaired, reboot needed..."
-          do_reboot
-        elif [ "$(( $FSCK_RET & 1 ))" = 1 ] ; then
-          # filesystem errors corrected
-          progress "filesystem errors corrected , continuing..."
-        elif [ "$(( $FSCK_RET & 0 ))" = 0 ] ; then
-          # no errors found
-          progress "no filesystem errors found, continuing..."
-        fi
+        case "$FSCK_RET" in
+          0) # no errors found
+            progress "no filesystem errors found, continuing..."
+            ;;
+          1) # filesystem errors corrected
+            progress "filesystem errors corrected , continuing..."
+            ;;
+          2) # reboot needed
+            echo "filesystem repaired, reboot needed..."
+            do_reboot
+            ;;
+          4) # errors left
+            error "could not repair filesystem, dropping to debug shell, try to run 'fsck' manually"
+            do_reboot
+            ;;
+        esac
     fi
   }
 
@@ -505,12 +478,6 @@
   mount_storage() {
     progress "Mounting storage"
 
-    if [ "$LIVE" = "yes" ]; then
-      # mount tmpfs and exit early. disk=xx is not allowed in live mode
-      mount -t tmpfs none /storage
-      return
-    fi
-
     wakeonlan
 
     if [ -n "$disk" ]; then
@@ -531,9 +498,6 @@
         fi
       fi
       mount_part "$disk" "/storage" "rw,noatime"
-    else
-      # /storage should always be writable
-      mount -t tmpfs none /storage
     fi
   }
 
@@ -597,7 +561,16 @@
       # get sizes
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
-      OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+
+      case $IMAGE_KERNEL in
+        /dev/*)
+          OLD_KERNEL="0"
+          ;;
+        *)
+          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+          ;;
+      esac
+
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
       NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
@@ -619,8 +592,15 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-          update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          case $IMAGE_KERNEL in
+            /dev/*)
+              update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+              ;;
+            *)
+              update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+              ;;
+          esac
+          update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           do_reboot
@@ -650,7 +630,10 @@
     fi
 
     mount --move /flash /sysroot/flash
-    mount --move /storage /sysroot/storage
+
+    if [ -n "$disk" ]; then
+      mount --move /storage /sysroot/storage
+    fi
 
     if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
       echo ""
@@ -674,6 +657,7 @@
   # main boot sequence
   for BOOT_STEP in \
       load_modules \
+      init_console \
       check_disks \
       mount_flash \
       load_splash \
@@ -686,20 +670,25 @@
 
   BOOT_STEP=final
 
-  # log if booting from usb / removable storage
+  # no suspend when booted from nonpersistent storage
   STORAGE=$(cat /proc/mounts | grep " /sysroot/storage " | awk '{print $1}' | awk -F '/' '{print $3}')
-  FLASH=$(cat /proc/mounts | grep " /sysroot/flash " | awk '{print $1}' | awk -F '/' '{print $3}')
-  for i in $STORAGE $FLASH ; do
-    if [ -n "$i" ] ; then
-      removable="/sys/class/block/*/$i/../removable"
-      if [ -e $removable ] ; then
-        if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
-          echo "### BIG FAT WARNING" > /dev/kmsg
-          echo "### $i is removable. suspend/resume may not work" > /dev/kmsg
-        fi
+  if [ -n "$STORAGE" ] ; then
+    removable="/sys/class/block/*/$STORAGE/../removable"
+    if [ -e $removable ] ; then
+      if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
+        SUSPEND_DISABLED=yes
       fi
     fi
-  done
+  fi
+  FLASH=$(cat /proc/mounts | grep " /sysroot/flash " | awk '{print $1}' | awk -F '/' '{print $3}')
+  if [ -n "$FLASH" ] ; then
+    removable="/sys/class/block/*/$FLASH/../removable"
+    if [ -e $removable ] ; then
+      if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
+        SUSPEND_DISABLED=yes
+      fi
+    fi
+  fi
   # move some special filesystems
   /bin/busybox mount --move /dev /sysroot/dev
   /bin/busybox mount --move /proc /sysroot/proc
@@ -713,9 +702,17 @@
   if [ "$STORAGE_NETBOOT" = "yes" ] ; then
     echo "" > /sysroot/dev/.storage_netboot
   fi
+  # no suspend when booted from nonpersistent storage
+  if [ "$SUSPEND_DISABLED" = "yes" ] ; then
+    echo "" > /sysroot/dev/.suspend_disabled
+  fi
 
   if [ -f /sysroot/storage/.please_resize_me ] ; then
     INIT_UNIT="--unit=fs-resize.target"
+  fi
+
+  if [ -f /sysroot/storage/.cache/reset_xbmc ] ; then
+    INIT_UNIT="--unit=factory-reset.target"
   fi
 
   BACKUP_FILE=`ls -1 /sysroot/storage/.restore/??????????????.tar 2>/dev/null | head -n 1`
@@ -723,9 +720,6 @@
     INIT_UNIT="--unit=backup-restore.target"
   fi
 
-  if [ -f /sysroot/storage/.cache/reset_oe -o -f /sysroot/storage/.cache/reset_xbmc ] ; then
-    INIT_UNIT="--unit=factory-reset.target"
-  fi
   # switch to new sysroot and start real init
   exec /bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
 
