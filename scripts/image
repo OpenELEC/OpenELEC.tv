@@ -40,7 +40,11 @@ if [ "$OPENELEC_VERSION" = devel ]; then
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
 fi
 
-TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+if [ -z "$DEVICE" ]; then
+  TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+else
+  TARGET_VERSION="$PROJECT.$TARGET_ARCH-$DEVICE-$OPENELEC_VERSION"
+fi
 IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 if [ -n "$IMAGE_SUFFIX" ]; then
   IMAGE_NAME="$IMAGE_NAME-$IMAGE_SUFFIX"
@@ -131,7 +135,9 @@ fi
   $SCRIPTS/install linux
   $SCRIPTS/install linux-drivers
   $SCRIPTS/install linux-firmware
-  $SCRIPTS/install $BOOTLOADER
+  if [ -n "$BOOTLOADER" ]; then
+    $SCRIPTS/install $BOOTLOADER
+  fi
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
@@ -182,6 +188,12 @@ fi
     done
   fi
 
+# copy board related files to filesystem
+  if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/* $INSTALL
+  fi
+
+
 # run depmod
   MODVER=$(basename $(ls -d $INSTALL/lib/modules/*))
   find $INSTALL/lib/modules/$MODVER/ -name *.ko | \
@@ -198,7 +210,7 @@ fi
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
 
 # copy kernel to target dir
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+     if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
     KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     KERNEL_IMAGE="zImage"
@@ -322,11 +334,11 @@ fi
           $SCRIPTS/mkimage
       fi
 
-    # create WeTek Play (Amlogic) ZIP update and auto-install packages if requested
-      if [ "$1" = "amlpkg" ]; then
+    # create ZIP update and auto-install packages for Amlogic project
+      INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/devices/$DEVICE/install"
+      if [ -f "$INSTALL_SRC_DIR/update-binary" -a -f "$INSTALL_SRC_DIR/updater-script" ]; then
         echo "Creating Amlogic ZIP update package"
 
-        INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/install"
         AML_PKG_DIR="$RELEASE_DIR/ampl-pkg"
 
         # create package directory
@@ -364,7 +376,7 @@ fi
           pushd sign > /dev/null
           echo --update_package=/sdcard/$IMAGE_NAME-update.zip > factory_update_param.aml
           cp $INSTALL_SRC_DIR/files/recovery.img .
-          cp $INSTALL_SRC_DIR/files/aml_autoscript .
+          # cp $INSTALL_SRC_DIR/files/aml_autoscript .
           zip -q $TARGET_IMG/$IMAGE_NAME.zip *
           popd > /dev/null
         fi
