@@ -16,20 +16,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="hdparm"
-PKG_VERSION="9.45"
+PKG_NAME="platform"
+PKG_VERSION="1.0.6"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="BSD"
-PKG_SITE="http://sourceforge.net/projects/hdparm/"
-PKG_URL="$SOURCEFORGE_SRC/$PKG_NAME/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.kodi.tv"
+PKG_URL="http://mirrors.xbmc.org/build-deps/sources/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="tools"
-PKG_SHORTDESC="hdparm: Get/set hard disk parameters"
-PKG_LONGDESC="Shell utility to access/tune ioctl features of the Linux IDE driver and IDE drives."
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="platform:"
+PKG_LONGDESC="platform:"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_TARGET="binprefix=/usr sbindir=/usr/bin"
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+        -DCMAKE_INSTALL_LIBDIR_NOARCH=/usr/lib \
+        -DCMAKE_INSTALL_PREFIX_TOOLCHAIN=$SYSROOT_PREFIX/usr \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        -DBUILD_SHARED_LIBS=0 \
+        ..
+}
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr
+}
