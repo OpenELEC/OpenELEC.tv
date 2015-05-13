@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mupen64plus"
-PKG_VERSION="e0b091c"
+PKG_VERSION="0ac5fed"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
@@ -48,13 +48,10 @@ make_target() {
 
   if [ "$PROJECT" == "RPi" ]; then
     make platform=rpi
-  elif [ "$PROJECT" == "RPi2" ]; then
-    CFLAGS="$CFLAGS -U__ARM_NEON__"
-    make platform=rpi2
   elif [[ "$TARGET_FPU" =~ "neon" ]]; then
     CFLAGS="$CFLAGS -DGL_BGRA_EXT=0x80E1" # Fix build for platforms where GL_BGRA_EXT is not defined
     CFLAGS="$CFLAGS -U__ARM_NEON__"
-    make platform=rpi2
+    make platform=lakka
   else
     make WITH_DYNAREC=$DYNAREC
   fi
