@@ -1,0 +1,56 @@
+From 6cc3129cd26e08fd4bdaeb211fe3246ced04703a Mon Sep 17 00:00:00 2001
+From: smallint <tahoma@gmx.de>
+Date: Mon, 11 May 2015 20:00:57 +0000
+Subject: [PATCH] [imx] RGB -> BGR for RenderCapture
+
+---
+ xbmc/cores/VideoRenderers/RenderCapture.cpp               | 2 +-
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp | 5 ++++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/cores/VideoRenderers/RenderCapture.cpp b/xbmc/cores/VideoRenderers/RenderCapture.cpp
+index c4fe419..603b68d 100644
+--- a/xbmc/cores/VideoRenderers/RenderCapture.cpp
++++ b/xbmc/cores/VideoRenderers/RenderCapture.cpp
+@@ -65,7 +65,7 @@ CRenderCaptureIMX::~CRenderCaptureIMX()
+ 
+ int CRenderCaptureIMX::GetCaptureFormat()
+ {
+-    return CAPTUREFORMAT_RGBA;
++    return CAPTUREFORMAT_BGRA;
+ }
+ 
+ void CRenderCaptureIMX::BeginRender()
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+index 41f1d6a..c17d7b7 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+@@ -1873,6 +1873,8 @@ void CIMXContext::PrepareTask(IPUTask &ipu, CIMXBuffer *source_p, CIMXBuffer *so
+ 
+ bool CIMXContext::DoTask(IPUTask &ipu, int targetPage)
+ {
++  bool swapColors = false;
++
+   // Clear page if cropping changes
+   CRectInt dstRect(ipu.task.output.crop.pos.x, ipu.task.output.crop.pos.y,
+                    ipu.task.output.crop.pos.x + ipu.task.output.crop.w,
+@@ -1918,6 +1920,7 @@ bool CIMXContext::DoTask(IPUTask &ipu, int targetPage)
+         CLog::Log(LOGERROR, "iMX : Error allocating capture buffer\n");
+     }
+     ipu.task.output.paddr = m_bufferCapture->buf_paddr;
++    swapColors = true;
+   }
+ 
+   if ((ipu.task.input.crop.w <= 0) || (ipu.task.input.crop.h <= 0)
+@@ -2027,7 +2030,7 @@ bool CIMXContext::DoTask(IPUTask &ipu, int targetPage)
+       dst.width = ipu.task.output.width;
+       dst.height = ipu.task.output.height;
+       dst.rot = G2D_ROTATION_0;
+-      dst.format = G2D_RGBA8888;
++      dst.format = swapColors ? G2D_BGRA8888 : G2D_RGBA8888;
+       /*printf("dst planes :%x -%x -%x \n",dst.planes[0], dst.planes[1], dst.planes[2] );
+       printf("dst left %d right %d top %d bottom %d stride %d w : %d h %d rot : %d format %d\n",
+            dst.left, dst.right, dst.top, dst.bottom, dst.stride, dst.width, dst.height, dst.rot, dst.format);*/
+-- 
+1.9.1
+

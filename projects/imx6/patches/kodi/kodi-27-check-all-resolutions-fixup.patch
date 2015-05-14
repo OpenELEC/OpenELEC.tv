@@ -1,0 +1,30 @@
+From 2a4a8fecbee1e7d7c9e3fd600389fb07dae7a277 Mon Sep 17 00:00:00 2001
+From: fritsch <Peter.Fruehberger@gmail.com>
+Date: Thu, 7 May 2015 22:06:42 +0200
+Subject: [PATCH] IMX: Fix path to edid on default imx kernel
+
+---
+ xbmc/windowing/egl/EGLNativeTypeIMX.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/windowing/egl/EGLNativeTypeIMX.cpp b/xbmc/windowing/egl/EGLNativeTypeIMX.cpp
+index 4a384f8..8fce775 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeIMX.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeIMX.cpp
+@@ -337,11 +337,11 @@ float CEGLNativeTypeIMX::GetMonitorSAR()
+   size_t n;
+   int done = 0;
+ 
+-  // kernels <= 3.18 use ./soc0/soc.0
++  // kernels <= 3.18 use ./soc0/soc.1 in official imx kernel
+   // kernels  > 3.18 use ./soc0/soc
+   f_edid = fopen("/sys/devices/soc0/soc/20e0000.hdmi_video/edid", "r");
+   if(!f_edid)
+-    f_edid = fopen("/sys/devices/soc0/soc.0/20e0000.hdmi_video/edid", "r");
++    f_edid = fopen("/sys/devices/soc0/soc.1/20e0000.hdmi_video/edid", "r");
+ 
+   if(!f_edid)
+     return 0;
+-- 
+1.9.1
+
