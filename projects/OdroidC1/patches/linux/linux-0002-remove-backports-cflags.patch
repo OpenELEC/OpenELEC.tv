@@ -1,0 +1,43 @@
+From 282a8b2c675d5857ca428777f873e37607aeb9ad Mon Sep 17 00:00:00 2001
+From: Kevin Mihelich <kevin@archlinuxarm.org>
+Date: Thu, 19 Mar 2015 18:31:00 -0600
+Subject: [PATCH 2/2] remove backports cflags
+
+---
+ backports/Makefile | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/backports/Makefile b/backports/Makefile
+index 5636a22..740fcf9 100644
+--- a/backports/Makefile
++++ b/backports/Makefile
+@@ -14,8 +14,7 @@ NOSTDINC_FLAGS := \
+ 	-DCONFIG_BACKPORT_VERSION=\"$(BACKPORTS_VERSION)\" \
+ 	-DCONFIG_BACKPORT_KERNEL_VERSION=\"$(BACKPORTED_KERNEL_VERSION)\" \
+ 	-DCONFIG_BACKPORT_KERNEL_NAME=\"$(BACKPORTED_KERNEL_NAME)\" \
+-	$(BACKPORTS_GIT_TRACKER_DEF) \
+-	$(CFLAGS)
++	$(BACKPORTS_GIT_TRACKER_DEF)
+ 
+ export backport_srctree = $(M)
+ else
+@@ -26,8 +25,7 @@ NOSTDINC_FLAGS := \
+ 	-I$(BACKPORT_DIR)/backport-include/uapi \
+ 	-I$(BACKPORT_DIR)/include/ \
+ 	-I$(BACKPORT_DIR)/include/uapi \
+-	-include $(BACKPORT_DIR)/backport-include/backport/backport.h \
+-	$(CFLAGS)
++	-include $(BACKPORT_DIR)/backport-include/backport/backport.h
+ endif
+ 
+ 
+@@ -54,4 +52,4 @@ obj-$(CONFIG_BACKPORT_IEEE802154) += drivers/net/ieee802154/
+ 
+ obj-$(CONFIG_BACKPORT_USB_WDM) += drivers/usb/class/
+ obj-$(CONFIG_BACKPORT_USB_USBNET) += drivers/net/usb/
+-obj-y += drivers/realtek/
+\ No newline at end of file
++obj-y += drivers/realtek/
+-- 
+2.3.2
+
