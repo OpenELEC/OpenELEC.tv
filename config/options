@@ -79,9 +79,10 @@ LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/package
 # forcing install of all packages (yes/no)
   FORCE_INSTALL="no"
 
-# install devtools on development builds
+# install devtools, serial console on development builds
   if [ "$OPENELEC_VERSION" = "devel" ]; then
     DEVTOOLS=yes
+    SERIAL_CONSOLE=yes
   fi
 
 # read options from $HOME if available
