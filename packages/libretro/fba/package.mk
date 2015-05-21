@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="fba"
-PKG_VERSION="156f1f5"
+PKG_VERSION="67c2eb7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
@@ -44,5 +44,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp fb_alpha_libretro.so $INSTALL/usr/lib/libretro/
+  cp fba_libretro.so $INSTALL/usr/lib/libretro/
 }
