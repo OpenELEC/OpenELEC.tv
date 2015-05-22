@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="219"
+PKG_VERSION="221"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -35,6 +35,8 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            ac_cv_have_decl_IFLA_BOND_AD_INFO=no \
                            ac_cv_have_decl_IFLA_BRPORT_UNICAST_FLOOD=no \
+                           ac_cv_path_MOUNT_PATH="/bin/mount"
+                           ac_cv_path_UMOUNT_PATH="/bin/umount"
                            KMOD=/usr/bin/kmod \
                            --disable-nls \
                            --disable-gtk-doc \
@@ -70,6 +72,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-gnutls \
                            --disable-libcurl \
                            --disable-libidn \
+                           --disable-libiptc \
                            --disable-binfmt \
                            --disable-vconsole \
                            --disable-bootchart \
@@ -92,6 +95,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-resolved \
                            --disable-networkd \
                            --disable-efi \
+                           --disable-gnuefi \
                            --disable-terminal \
                            --disable-kdbus \
                            --disable-myhostname \
@@ -171,6 +175,9 @@ post_makeinstall_target() {
 
   # remove networkd
   rm -rf $INSTALL/usr/lib/systemd/network
+
+  # remove unneeded tmpfiles
+  rm -rf $INSTALL/usr/lib/tmpfiles.d/home.conf
 
   # tune journald.conf
   sed -e "s,^.*Compress=.*$,Compress=no,g" -i $INSTALL/etc/systemd/journald.conf
