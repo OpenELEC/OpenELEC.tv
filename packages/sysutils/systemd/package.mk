@@ -139,15 +139,17 @@ post_makeinstall_target() {
   # remove debug-shell.service, we install our own
   rm -rf $INSTALL/usr/lib/systemd/system/debug-shell.service
 
-  # remove getty units, we dont want a console
-  rm -rf $INSTALL/usr/lib/systemd/system/autovt@.service
-  rm -rf $INSTALL/usr/lib/systemd/system/console-getty.service
-  rm -rf $INSTALL/usr/lib/systemd/system/console-shell.service
-  rm -rf $INSTALL/usr/lib/systemd/system/container-getty@.service
-  rm -rf $INSTALL/usr/lib/systemd/system/getty.target
-  rm -rf $INSTALL/usr/lib/systemd/system/getty@.service
-  rm -rf $INSTALL/usr/lib/systemd/system/serial-getty@.service
-  rm -rf $INSTALL/usr/lib/systemd/system/*.target.wants/getty.target
+  if [ "$SERIAL_CONSOLE" != yes ] ; then
+	# remove getty units, we dont want a console
+	rm -rf $INSTALL/usr/lib/systemd/system/autovt@.service
+	rm -rf $INSTALL/usr/lib/systemd/system/console-getty.service
+	rm -rf $INSTALL/usr/lib/systemd/system/console-shell.service
+	rm -rf $INSTALL/usr/lib/systemd/system/container-getty@.service
+	rm -rf $INSTALL/usr/lib/systemd/system/getty.target
+	rm -rf $INSTALL/usr/lib/systemd/system/getty@.service
+	rm -rf $INSTALL/usr/lib/systemd/system/serial-getty@.service
+	rm -rf $INSTALL/usr/lib/systemd/system/*.target.wants/getty.target
+  fi
 
   # remove other notused or nonsense stuff (our /etc is ro)
   rm -rf $INSTALL/usr/lib/systemd/systemd-update-done
@@ -238,4 +240,7 @@ post_install() {
   enable_service debugconfig.service
   enable_service userconfig.service
   enable_service hwdb.service
+  if [ "$SERIAL_CONSOLE" = yes ] ; then
+    enable_service console-getty.service
+  fi
 }

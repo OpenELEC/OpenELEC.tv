@@ -51,7 +51,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --disable-nsenter \
                            --disable-setpriv \
                            --disable-eject \
-                           --disable-agetty \
                            --disable-cramfs \
                            --disable-bfs \
                            --disable-minix \
@@ -103,6 +102,9 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-gtk-doc \
                            --without-utempter \
                            --without-python \
                            --without-systemdsystemunitdir"
+if [ "$SERIAL_CONSOLE" != yes ]; then
+  PKG_CONFIGURE_OPTS_TARGET+=" --disable-agetty"
+fi
 
 PKG_CONFIGURE_OPTS_HOST="$PKG_CONFIGURE_OPTS_TARGET \
                          --enable-static \
@@ -139,6 +141,11 @@ post_makeinstall_target() {
         sed -e "s,@SWAPFILESIZE@,$SWAPFILESIZE,g" \
             -e "s,@SWAP_ENABLED_DEFAULT@,$SWAP_ENABLED_DEFAULT,g" \
             > $INSTALL/etc/swap.conf
+  fi
+
+  if [ "$SERIAL_CONSOLE" = yes ]; then
+    mkdir -p $INSTALL/sbin
+      cp agetty $INSTALL/sbin
   fi
 }
 
