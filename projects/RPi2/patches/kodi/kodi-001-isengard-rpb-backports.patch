@@ -198,14 +198,14 @@ diff --git a/xbmc/filesystem/FileDirectoryFactory.cpp b/xbmc/filesystem/FileDire
 index 3a5ba4e..f1f6f79 100644
 --- a/xbmc/filesystem/FileDirectoryFactory.cpp
 +++ b/xbmc/filesystem/FileDirectoryFactory.cpp
-@@ -41,6 +41,7 @@
+@@ -39,6 +39,7 @@
+ #include "playlists/PlayListFactory.h"
  #include "Directory.h"
  #include "File.h"
- #include "ZipManager.h"
 +#include "settings/Settings.h"
- #include "settings/AdvancedSettings.h"
  #include "FileItem.h"
  #include "utils/StringUtils.h"
+ #include "URL.h"
 @@ -115,6 +116,8 @@ IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem,
      return NULL;
    }
@@ -1911,10 +1911,10 @@ diff --git a/xbmc/guilib/GraphicContext.cpp b/xbmc/guilib/GraphicContext.cpp
 index 78da123..f9f0e7e 100644
 --- a/xbmc/guilib/GraphicContext.cpp
 +++ b/xbmc/guilib/GraphicContext.cpp
-@@ -35,6 +35,7 @@
- #include "utils/JobManager.h"
+@@ -32,6 +32,7 @@
+ #include "input/InputManager.h"
+ #include "GUIWindowManager.h"
  #include "video/VideoReferenceClock.h"
- #include "cores/IPlayer.h"
 +#include <float.h>
  
  using namespace std;
