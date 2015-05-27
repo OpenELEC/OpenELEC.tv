@@ -43,15 +43,15 @@ if [ "$SAMBA_SUPPORT" = yes ]; then
 fi
 
 if [ "$OPENGLES" == "no" ]; then
-  RETROARCH_GL="--enable-kms"
+  RETROARCH_GL="--enable-x11"
 elif [ "$OPENGLES" == "bcm2835-driver" ]; then
-  RETROARCH_GL="--enable-gles --disable-kms"
+  RETROARCH_GL="--enable-gles --disable-x11"
   CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads \
                   -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
 elif [ "$OPENGLES" == "sunxi-mali" ] || [ "$OPENGLES" == "odroidc1-mali" ] || [ "$OPENGLES" == "odroidxu3-mali" ] || [ "$OPENGLES" == "opengl-meson6" ]; then
-  RETROARCH_GL="--enable-gles --disable-kms --enable-mali_fbdev"
+  RETROARCH_GL="--enable-gles --disable-x11 --enable-mali_fbdev"
 elif [ "$OPENGLES" == "gpu-viv-bin-mx6q" ]; then
-  RETROARCH_GL="--enable-gles --disable-kms --enable-vivante_fbdev"
+  RETROARCH_GL="--enable-gles --disable-x11 --enable-vivante_fbdev"
   CFLAGS="$CFLAGS -DLINUX -DEGL_API_FB"
 fi
 
@@ -63,7 +63,7 @@ TARGET_CONFIGURE_OPTS=""
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --disable-ffmpeg \
                            --disable-sdl \
-                           --disable-x11 \
+                           --disable-kms \
                            --disable-xvideo \
                            $RETROARCH_GL \
                            $RETROARCH_NEON \
