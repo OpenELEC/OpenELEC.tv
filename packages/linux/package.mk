@@ -41,7 +41,9 @@ case "$LINUX" in
     ;;
   *)
     PKG_VERSION="4.0.4"
-    PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_BASE_VERSION="${PKG_VERSION%%.*}.0"
+    PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_BASE_VERSION.tar.xz \
+             http://www.kernel.org/pub/linux/kernel/v4.x/patch-$PKG_VERSION.xz"
     ;;
 esac
 
@@ -55,6 +57,19 @@ if [ "$BOOTLOADER" = "u-boot" ]; then
 else
   KERNEL_IMAGE="bzImage"
 fi
+
+case "$LINUX" in
+  amlogic)
+    ;;
+  imx6)
+    ;;
+  *)
+    unpack() {
+      $SCRIPTS/extract $PKG_NAME $PKG_NAME-$PKG_BASE_VERSION.tar.xz $BUILD
+      xzcat $ROOT/$SOURCES/$PKG_NAME/patch-$PKG_VERSION.xz | patch -p1 -F1 -s -d $ROOT/$BUILD/$PKG_NAME-$PKG_BASE_VERSION
+      mv $ROOT/$BUILD/$PKG_NAME-$PKG_BASE_VERSION $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+    }
+esac
 
 post_patch() {
   if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
