@@ -25,7 +25,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib freetype retroarch-assets"
+PKG_DEPENDS_TARGET="toolchain alsa-lib freetype retroarch-assets core-info retroarch-joypad-autoconfig common-shaders"
 PKG_PRIORITY="optional"
 PKG_SECTION="libretro"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -36,6 +36,8 @@ PKG_AUTORECONF="no"
 
 if [ "$OPENGLES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
+else
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL"
 fi
 
 if [ "$SAMBA_SUPPORT" = yes ]; then
