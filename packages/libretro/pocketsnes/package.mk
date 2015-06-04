@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="pocketsnes"
-PKG_VERSION="ac83fb2"
+PKG_VERSION="79f6be5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
@@ -33,10 +33,6 @@ PKG_LONGDESC="An ARM-based SNES emulator for libretro"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-pre_configure_target() {
-  sed -i -e "s/CC         = gcc//" Makefile
-}
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
