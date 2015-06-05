@@ -1,3 +1,5 @@
+4.3.5
+  update driver for new devices support
 4.3.4
   fixed xbmc/kodi rebranding error
   some fixes
