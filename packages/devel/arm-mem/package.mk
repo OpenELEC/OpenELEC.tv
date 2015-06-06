@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="arm-mem"
-PKG_VERSION="2e6f275"
+PKG_VERSION="4418bb4"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="GPL"
@@ -33,7 +33,17 @@ PKG_LONGDESC="arm-mem is a ARM-accelerated versions of selected functions from s
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_TARGET="libarmmem.so"
+if [  "$TARGET_CPU" = "arm1176jzf-s" ]; then
+  ARMMEM_SO=libarmmem.so
+elif [  "$TARGET_CPU" = "cortex-a7" ]; then
+  ARMMEM_SO=libarmmem-a7.so
+fi
+
+PKG_MAKE_OPTS_TARGET="$ARMMEM_SO"
+
+pre_make_target() {
+  export CROSS_COMPILE=$TARGET_PREFIX
+}
 
 make_init() {
   : # reuse make_target()
@@ -41,17 +51,17 @@ make_init() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/lib
-    cp -P libarmmem.so $INSTALL/lib
+    cp -P $ARMMEM_SO $INSTALL/lib
 
   mkdir -p $INSTALL/etc
-    echo "/lib/libarmmem.so" >> $INSTALL/etc/ld.so.preload
+    echo "/lib/$ARMMEM_SO" >> $INSTALL/etc/ld.so.preload
 }
 
 makeinstall_init() {
   mkdir -p $INSTALL/lib
-    cp -P libarmmem.so $INSTALL/lib
+    cp -P $ARMMEM_SO $INSTALL/lib
 
   mkdir -p $INSTALL/etc
-    echo "/lib/libarmmem.so" >> $INSTALL/etc/ld.so.preload
+    echo "/lib/$ARMMEM_SO" >> $INSTALL/etc/ld.so.preload
 }
 

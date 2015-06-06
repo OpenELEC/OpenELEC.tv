@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="sqlite"
-PKG_VERSION="autoconf-3080900"
+PKG_VERSION="autoconf-3081002"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="PublicDomain"
@@ -63,6 +63,10 @@ PKG_AUTORECONF="yes"
 # mmap_size pragma.
   CFLAGS="$CFLAGS -DSQLITE_TEMP_STORE=3 -DSQLITE_DEFAULT_MMAP_SIZE=268435456"
 
+pre_make_target() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-shared \
