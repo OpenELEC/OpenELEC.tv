@@ -1,0 +1,10 @@
+[Unit]
+Description=Broadcom SDIO Wi-Fi
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/brcm_wifi_init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target
