@@ -1,0 +1,5876 @@
+diff -Nru linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/aml_top.dtd linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/aml_top.dtd
+--- linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/aml_top.dtd	2015-04-29 12:36:09.000000000 +0300
++++ linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/aml_top.dtd	2015-05-13 10:18:46.000000000 +0300
+@@ -336,6 +336,8 @@
+ sub_file /drivers/amlogic/input/new_remote/aml.dtd
+ #device remote
+ sub_file /drivers/amlogic/input/remote/aml.dtd
++# VFD Driver
++sub_file /drivers/amlogic/input/vfd/aml.dtd
+ 
+ /// ***************************************************************************************
+ ///	-	Spi
+diff -Nru linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd
+--- linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd	2015-04-29 12:36:09.000000000 +0300
++++ linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd	2015-05-13 10:18:46.000000000 +0300
+@@ -300,6 +300,18 @@
+ 	};
+ 
+ /// ***************************************************************************************
++///	-	VFD
++//$$ MODULE="VFD"
++    m1-vfd {
++	compatible = "amlogic,m1-vfd";
++	dev_name = "m1-vfd.0";
++	status = "okay";
++	vfd_stb_pin = "GPIOH_3";
++	vfd_clk_pin = "GPIOH_6";
++	vfd_data_pin = "GPIOH_5";
++    };
++
++/// ***************************************************************************************
+ ///	-	UART
+ //$$ MODULE="UART"
+ //$$ DEVICE="uart_ao"
+diff -Nru linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd
+--- linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd	2015-04-29 12:36:09.000000000 +0300
++++ linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd	2015-05-13 10:18:46.000000000 +0300
+@@ -1899,15 +1899,21 @@
+ 	};
+ /// ***************************************************************************************
+ ///	-	Ethernet
+-        ethmac: ethernet@0xc9410000{
+-                compatible = "amlogic,meson8m2-rmii-dwmac", "snps,dwmac";
+-                reg = <0xc9410000 0x10000
+-                       0xc1108108 0x4>;
+-                interrupts = <0 8 1>;
+-                interrupt-names = "macirq";
+-                clocks = "clk81";
+-                clock-names = "stmmaceth";
+-        };
++//$$ MODULE="Ethernet"
++//$$ DEVICE="meson-eth"
++//$$ L2 PROP_STR = "status"
++    meson-eth{
++		compatible = "amlogic,meson-eth";
++		dev_name = "meson-eth";
++		status = "okay";
++		ethbaseaddr = <0xfe0c0000>;
++		interruptnum = <40>;
++                phy_interface = <1>;
++                new_maclogic = <1>;
++                reset_pin_enable = <0>;
++                reset_pin = "GPIOH_4";
++                reset_delay = <100>;
++	};
+ 
+ /// ***************************************************************************************
+ ///	-	DVB
+diff -Nru linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+--- linux-amlogic-5f3c177/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd	2015-04-29 12:36:09.000000000 +0300
++++ linux-amlogic-bbdd524/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd	2015-05-13 10:18:46.000000000 +0300
+@@ -1891,15 +1891,21 @@
+ 	};
+ /// ***************************************************************************************
+ ///	-	Ethernet
+-        ethmac: ethernet@0xc9410000{
+-                compatible = "amlogic,meson8m2-rmii-dwmac", "snps,dwmac";
+-                reg = <0xc9410000 0x10000
+-                       0xc1108108 0x4>;
+-                interrupts = <0 8 1>;
+-                interrupt-names = "macirq";
+-                clocks = "clk81";
+-                clock-names = "stmmaceth";
+-        };
++//$$ MODULE="Ethernet"
++//$$ DEVICE="meson-eth"
++//$$ L2 PROP_STR = "status"
++    meson-eth{
++		compatible = "amlogic,meson-eth";
++		dev_name = "meson-eth";
++		status = "okay";
++		ethbaseaddr = <0xfe0c0000>;
++		interruptnum = <40>;
++                phy_interface = <1>;
++                new_maclogic = <1>;
++                reset_pin_enable = <0>;
++                reset_pin = "GPIOH_4";
++                reset_delay = <100>;
++	};
+ 
+ /// ***************************************************************************************
+ ///	-	DVB
+diff -Nru linux-amlogic-5f3c177/arch/arm/configs/meson8_defconfig linux-amlogic-bbdd524/arch/arm/configs/meson8_defconfig
+--- linux-amlogic-5f3c177/arch/arm/configs/meson8_defconfig	2015-04-29 12:36:09.000000000 +0300
++++ linux-amlogic-bbdd524/arch/arm/configs/meson8_defconfig	2015-05-13 10:18:46.000000000 +0300
+@@ -215,16 +215,6 @@
+ CONFIG_AML_NEXT_GEN_NAND=y
+ CONFIG_AML_NAND_KEY=y
+ # CONFIG_AM_NAND is not set
+-#new maclogic
+-CONFIG_NET_VENDOR_STMICRO=y
+-CONFIG_STMMAC_ETH=y
+-CONFIG_STMMAC_PLATFORM=y
+-CONFIG_DWMAC_MESON=y
+-CONFIG_STMMAC_DEBUG_FS=y
+-CONFIG_STMMAC_DA=y
+-CONFIG_NET_VENDOR_WIZNET=y
+-CONFIG_AM_PHY=y
+-#new maclogic
+ CONFIG_AM_ETHERNET=y
+ CONFIG_AML_PHY=y
+ CONFIG_AML_LAN8720=y
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_mdio.c linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_mdio.c
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_mdio.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_mdio.c	2015-05-13 10:18:45.000000000 +0300
+@@ -7,57 +7,39 @@
+ #define MII_BUSY 0x00000001
+ #define MII_WRITE 0x00000002
+ 
+-extern int aml1220_read(int add, uint8_t *val);
+-extern int aml1220_write(int32_t add, uint8_t val);
+-
+ static int mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ {
+-	int data;
+-	struct net_device *ndev;
+-	struct am_net_private *priv;
+-	unsigned int mii_address;
+-	unsigned int mii_data;
+-	unsigned regValue;
+-#ifdef CONFIG_AML1220
+-	int data1;
+-	uint8_t data_lo;
+-	uint8_t data_hi;
+-	if (phyaddr != 8)
+-		return 0;
+-	aml1220_write(0xa6, phyreg);
+-	aml1220_read(0xa7,&data_lo);
+-	aml1220_read(0xa8,&data_hi);
+-	data1 = (data_hi<<8)|data_lo;
+-#endif
+-	ndev = bus->priv;
+-        priv = netdev_priv(ndev);
+-        mii_address = ETH_MAC_4_GMII_Addr;
+-        mii_data = ETH_MAC_5_GMII_Data;
+-        regValue = (((phyaddr << 11) & (0x0000F800)) |
++	struct net_device *ndev = bus->priv;
++        struct am_net_private *priv = netdev_priv(ndev);
++        unsigned int mii_address = ETH_MAC_4_GMII_Addr;
++        unsigned int mii_data = ETH_MAC_5_GMII_Data;
++
++        int data;
++        u16 regValue = (((phyaddr << 11) & (0x0000F800)) |
+                         ((phyreg << 6) & (0x000007C0)));
+         regValue |= MII_BUSY | MDCCLK;
++
+         do {} while (((readl((void*)(priv->base_addr + mii_address))) & MII_BUSY) == 1);
+         writel(regValue, (void*)(priv->base_addr + mii_address));
+         do {} while (((readl((void*)(priv->base_addr + mii_address))) & MII_BUSY) == 1);
++
+         /* Read the data from the MII data register */
+         data = (int)readl((void*)(priv->base_addr + mii_data));
+-#ifdef CONFIG_AML1220
+-        return data1;
+-#else
+-	return data;
+-#endif
++
++        return data;
+ }
+ 
+ static int mdio_write(struct mii_bus *bus, int phyaddr, int phyreg, u16 phydata)
+ {
+-
+         struct net_device *ndev = bus->priv;
+         struct am_net_private *priv = netdev_priv(ndev);
+ 
+         unsigned int mii_address = ETH_MAC_4_GMII_Addr;
+         unsigned int mii_data = ETH_MAC_5_GMII_Data;
++
+         u16 value = (((phyaddr << 11) & (0x0000F800)) | ((phyreg << 6) & (0x000007C0))) | MII_WRITE;
+         value |= MII_BUSY | MDCCLK;
++
+         do {} while (((readl((void*)(priv->base_addr + mii_address))) & MII_BUSY) == 1);
+         writel(phydata, (void*)(priv->base_addr + mii_data));
+ 
+@@ -114,33 +96,6 @@
+         priv->mii = new_bus;
+ 
+         found = 0;
+-#ifdef CONFIG_AML1220
+-for (addr = 8; addr == 8; addr++) {
+-	struct phy_device *phydev = new_bus->phy_map[addr];
+-	if (phydev) {
+-		priv->phydev = phydev;
+-		if (priv->phy_addr == -1) {
+-			priv->phy_addr = addr;
+-			phydev->irq = PHY_POLL;
+-			irqlist[addr] = PHY_POLL;
+-		}
+-		if (phydev->phy_id	!= 0) {
+-			//priv->phydev->addr = addr;
+-			if (!((phydev->phy_id  == 0x001cc916)&& (addr == 0)))
+-			{
+-				priv->phy_addr = addr;
+-				phydev->irq = PHY_POLL;
+-				irqlist[addr] = PHY_POLL;
+-			}
+-		}
+-		pr_info("%s: PHY ID %08x at %d IRQ %d (%s)%s\n",
+-				ndev->name, phydev->phy_id, addr,
+-				phydev->irq, dev_name(&phydev->dev),
+-				(addr == priv->phy_addr) ? " active" : "");
+-		found = 1;
+-	}
+-}
+-#else
+ 	for (addr = 0; addr < 32; addr++) {
+ 		struct phy_device *phydev = new_bus->phy_map[addr];
+ 		if (phydev) {
+@@ -166,7 +121,6 @@
+ 			found = 1;
+ 		}
+ 	}
+-#endif
+ 
+ 	if (!found)
+ 		pr_warning("%s: No PHY found\n", ndev->name);
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_net8218.c linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_net8218.c
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_net8218.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_net8218.c	2015-05-13 10:18:45.000000000 +0300
+@@ -48,9 +48,7 @@
+ #include <linux/kthread.h>
+ #include "am_net8218.h"
+ #include <mach/mod_gate.h>
+-#ifdef CONFIG_AML1220
+-#include <linux/amlogic/aml_pmu.h>
+-#endif
++
+ #define MODULE_NAME "ethernet"
+ #define DRIVER_NAME "ethernet"
+ 
+@@ -67,7 +65,7 @@
+ MODULE_AUTHOR("Platform-BJ@amlogic.com>");
+ MODULE_LICENSE("GPL");
+ MODULE_VERSION(DRV_VERSION);
+-int aml1220_write(int32_t add, uint8_t val);
++
+ // >0 basic init and remove info;
+ // >1 further setup info;
+ // >2 rx data dump
+@@ -83,9 +81,6 @@
+ static int g_rxnum = 64;
+ static int g_txnum = 64;
+ static int new_maclogic = 0;
+-#ifdef CONFIG_AML1220
+-static int used_pmu4_phy = 0;
+-#endif
+ static unsigned int ethbaseaddr = ETHBASE;
+ static unsigned int savepowermode = 0;
+ static int interruptnum = ETH_INTERRUPT;
+@@ -896,7 +891,7 @@
+  */
+ /* --------------------------------------------------------------------------*/
+ //#undef CONFIG_AML_NAND_KEY
+-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
++#ifdef CONFIG_AML_NAND_KEY
+ extern int get_aml_key_kernel(const char* key_name, unsigned char* data, int ascii_flag);
+ extern int extenal_api_key_set_version(char *devvesion);
+ static char print_buff[1025];
+@@ -907,7 +902,7 @@
+ 	char *endp;
+ 	int j;
+ 	ret = get_aml_key_kernel("mac", print_buff, 0);
+-	extenal_api_key_set_version("auto");
++	extenal_api_key_set_version("nand3");
+ 	printk("ret = %d\nprint_buff=%s\n", ret, print_buff);
+ 	if (ret >= 0) {
+ 		strcpy(ndev->dev_addr, print_buff);
+@@ -931,7 +926,7 @@
+ 	printk("--1--write mac add to:");
+ 
+ 	data_dump(ndev->dev_addr, 6);
+-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
++#ifdef CONFIG_AML_NAND_KEY
+ 	read_mac_from_nand(ndev);
+ #endif
+ 	printk("--2--write mac add to:");
+@@ -984,24 +979,6 @@
+ 		val = (8<<27)|(7 << 24)|(1<<16)|(1<<15)|(1 << 13)|(1 << 12)|(4 << 4)|(0 << 1);
+ 		PERIPHS_SET_BITS(P_PREG_ETHERNET_ADDR0, val);
+ 	}
+-#ifdef CONFIG_AML1220
+-	if(phydev->phy_id == PMU4_PHY_ID){
+-		aml1220_write(0x98,0x47);
+-/*
+-eth_cfg_57	0x99	7:6	R/W	0	co_st_miimode[1:0]
+-		5	R/W	0	co_smii_source_sync
+-		4	R/W	0	co_st_pllbp
+-		3	R/W	0	co_st_adcbp
+-		2	R/W	0	co_st_fxmode
+-		1	R/W	0	co_en_high
+-		0	R/W	0	co_automdix_en
+-*/
+-		aml1220_write(0x99,0x40);
+-
+-		aml1220_write(0x9a,0x07);
+-	}
+-#endif
+-
+ 	if (phydev->link) {
+ 		u32 ctrl = readl((void*)(priv->base_addr + ETH_MAC_0_Configuration));
+ 
+@@ -1051,23 +1028,6 @@
+ 						val =0x4100b040;
+ 						WRITE_CBUS_REG(P_PREG_ETHERNET_ADDR0, val);
+ 					}
+-#ifdef CONFIG_AML1220
+-					if(phydev->phy_id == PMU4_PHY_ID){
+-						aml1220_write(0x98,0x41);
+-/*
+-eth_cfg_57	0x99	7:6	R/W	0	co_st_miimode[1:0]
+-		5	R/W	0	co_smii_source_sync
+-		4	R/W	0	co_st_pllbp
+-		3	R/W	0	co_st_adcbp
+-		2	R/W	0	co_st_fxmode
+-		1	R/W	0	co_en_high
+-		0	R/W	0	co_automdix_en	
+-*/
+-						aml1220_write(0x99,0x40);
+-
+-						aml1220_write(0x9a,0x07);
+-					}
+-#endif
+ 					break;
+ 				default:
+ 					printk("%s: Speed (%d) is not 10"
+@@ -1189,7 +1149,7 @@
+ 	int res;
+ 	unsigned long flags;
+ 	int tmp;
+-	printk("----> reset_mac\n");
++
+ 	spin_lock_irqsave(&np->lock, flags);
+ 	res = alloc_ringdesc(dev);
+ 	spin_unlock_irqrestore(&np->lock, flags);
+@@ -2938,156 +2898,6 @@
+ 	return 0;
+ }
+ #endif
+-
+-#ifdef CONFIG_AML1220
+-//#define EXT_CLK
+-/* --------------------------------------------------------------------------*/
+-/**
+- * @brief PMU4_PHY-CONFIG
+- *
+- * @param void
+- *
+- * @return void
+- */
+-/* --------------------------------------------------------------------------*/
+-void pmu4_phy_conifg(void){
+-		int i;
+-		uint8_t value;
+-		int data;
+-		uint8_t data_lo;
+-		uint8_t data_hi;
+-		// eth ldo
+-//		aml_clr_reg32_mask(P_PERIPHS_PIN_MUX_9, 0xf00000c0);
+-//		aml_set_reg32_mask(P_PERIPHS_PIN_MUX_10, 0xc000);
+-		aml1220_write(0x04,0x01);
+-		aml1220_write(0x05,0x01);
+-		mdelay(10);
+-		// pinmux
+-	/*	8a---33
+-2c---51
+-2d---41
+-20---0
+-21---3*/
+-		aml1220_write(0x2c,0x51);
+-		aml1220_write(0x2d,0x41);
+-		aml1220_write(0x20,0x0);
+-		aml1220_write(0x21,0x3);
+-#ifdef EXT_CLK
+-		aml1220_write(0x14,0x01);
+-#else
+-		aml1220_write(0x14,0x00);
+-#endif
+-
+-		aml1220_write(0x15,0x3f);
+-
+-		// pll
+-		aml1220_write(0x78,0x06);
+-		aml1220_write(0x79,0x05);
+-		aml1220_write(0x7a,0xa1);
+-		aml1220_write(0x7b,0xac);
+-		aml1220_write(0x7c,0x5b);
+-		aml1220_write(0x7d,0xa0);
+-		aml1220_write(0x7e,0x20);
+-		aml1220_write(0x7f,0x49);
+-		aml1220_write(0x80,0xd6);
+-		aml1220_write(0x81,0x0b);
+-		aml1220_write(0x82,0xd1);
+-		aml1220_write(0x83,0x00);
+-		aml1220_write(0x84,0x00);
+-		aml1220_write(0x85,0x00);
+-		/*cfg4- --- cfg 45*/
+-		aml1220_write(0x88,0x0);
+-		aml1220_write(0x89,0x0);
+-		aml1220_write(0x8A,0x33);
+-		aml1220_write(0x8B,0x01);
+-		aml1220_write(0x8C,0xd0);
+-
+-		aml1220_write(0x8D,0x01);
+-		//aml1220_write(0x8C,0x01);
+-		//aml1220_write(0x8D,0xc0);
+-		aml1220_write(0x8E,0x00);
+-
+-/* pmu4 phyid = 20142014*/
+-		aml1220_write(0x94,0x14);
+-		aml1220_write(0x95,0x20);
+-
+-		aml1220_write(0x96,0x14);
+-		aml1220_write(0x97,0x20);
+-
+-/*phyadd & mode
+-eth_cfg_56	0x98	7:3	R/W	0	co_st_phyadd[4:0]
+-		2:0	R/W	0	co_st_mode[2:0]
+-		eth_phy_co_st_mode
+-    //           000 - 10Base-T Half Duplex, auto neg disabled
+-    //           001 - 10Base-T Full Duplex, auto neg disabled
+-    //           010 - 100Base-TX Half Duplex, auto neg disabled
+-    //           011 - 100Base-TX Full Duplex, auto neg disabled
+-    //           100 - 100Base-TX Half Duplex, auto neg enabled
+-    //           101 - Repeater mode, auto neg enabled
+-    //           110 - Power Down Mode
+-    //           111 - All capable, auto neg enabled, automdix enabled
+-
+-*/
+-#ifdef EXT_CLK
+-		aml1220_write(0x98,0x73);
+-#else
+-		aml1220_write(0x98,0x47);
+-#endif
+-/*
+-0x99	7:6	R/W	0	co_st_miimode[1:0]
+-	5	R/W	0	co_smii_source_sync
+-	4	R/W	0	co_st_pllbp
+-	3	R/W	0	co_st_adcbp
+-	2	R/W	0	co_st_fxmode
+-	1	R/W	0	co_en_high
+-	0	R/W	0	co_automdix_en
+-0x9A	7			reserved
+-	6	R/W	0	co_pwruprst_byp
+-	5	R/W	0	co_clk_ext
+-	4	R/W	0	co_st_scan
+-	3	R/W	0	co_rxclk_inv
+-	2	R/W	0	co_phy_enb
+-	1	R/W	0	co_clkfreq
+-	0	R/W	0	eth_clk_enable
+-*/
+-		aml1220_write(0x99,0x61);
+-/*
+-eth_cfg_58	0x9a
+-*/
+-		aml1220_write(0x9a,0x07);
+-/*
+-eth_cfg_59	0x9b
+-*/
+-//		aml1220_write(0x75,0x04);
+-//		aml1220_write(0x63,0x22);
+-		aml1220_write(0x04,0x01);
+-		aml1220_write(0x05,0x01);
+-		value = 0;
+-		printk("--------> read 0x9c\n");
+-		#if 0
+-		while((value&0x01) == 0)
+-			aml1220_read(0x9c,&value);
+-		#endif
+-		printk("----2----> read 0x9c over!\n");
+-		aml1220_write(0x9b,0x00);
+-		aml1220_write(0x9b,0x80);
+-		aml1220_write(0x9b,0x00);
+-		mdelay(4);
+-		printk("phy init though i2c done\n");
+-		for (i=0;i<0xb0;i++){
+-			aml1220_read(i, &value);
+-			printk("  i2c[%x]=0x%x\n",i,value);
+-		}
+-		printk("phy reg dump though i2c:\n");
+-		for (i=0;i<0x20;i++){
+-				aml1220_write(0xa6, i);
+-				aml1220_read(0xa7,&data_lo);
+-				aml1220_read(0xa8,&data_hi);
+-			  data = (data_hi<<8)|data_lo;
+-				printk("  phy[%x]=0x%x\n", i, data);
+-		}
+-}
+-#endif
+ /* --------------------------------------------------------------------------*/
+ /**
+  * @brief ethernet_probe
+@@ -3146,15 +2956,7 @@
+ 		reset_pin_num = amlogic_gpio_name_map_num(reset_pin);
+ 		amlogic_gpio_request(reset_pin_num, OWNER_NAME);
+ 	}
+-#ifdef CONFIG_AML1220
+-	ret = of_property_read_u32(pdev->dev.of_node,"used_pmu4_phy",&used_pmu4_phy);
+-	if (ret) {
+-		printk("Please config used_pmu4_phy.\n");
+-	}
+-	if(used_pmu4_phy){
+-		pmu4_phy_conifg();
+-	}
+-#endif
++
+ #endif
+ 	printk(DRV_NAME "init(dbg[%p]=%d)\n", (&g_debug), g_debug);
+ 	switch_mod_gate_by_name("ethernet",1);
+@@ -3180,6 +2982,12 @@
+ 	np = netdev_priv(my_ndev);
+ 	if(np->phydev && savepowermode)
+ 		np->phydev->drv->suspend(np->phydev);
++	//switch_mod_gate_by_name("ethernet",0);
++
++	//if (!eth_pdata) {
++	//	printk("\nethernet pm ops resource undefined.\n");
++	//	return -EFAULT;
++	//}
+ 
+ 	return 0;
+ }
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_net8218.h linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_net8218.h
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/am_net8218.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/am_net8218.h	2015-05-13 10:18:45.000000000 +0300
+@@ -69,7 +69,6 @@
+ #define RX_INTR_EN  1<<6
+ #define EARLY_RX_INTR_EN 1<<14
+ #define INTERNALPHY_ID 79898963
+-#define PMU4_PHY_ID 20142014
+ enum mii_reg_bits {
+ 	MDIO_ShiftClk = 0x10000, MDIO_DataIn = 0x80000, MDIO_DataOut = 0x20000,
+ 	MDIO_EnbOutput = 0x40000, MDIO_EnbIn = 0x00000,
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/Kconfig linux-amlogic-bbdd524/drivers/amlogic/ethernet/Kconfig
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/Kconfig	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/Kconfig	2015-05-13 10:18:45.000000000 +0300
+@@ -8,13 +8,6 @@
+ 	select  NET
+ 	help
+ 		Depends on NET
+-
+-config AM_PHY
+-	tristate "Amloigc PHY support"
+-	select  NET
+-	help
+-		Depends on NET
+-
+ source "drivers/amlogic/ethernet/phy/Kconfig"
+ 	
+ config AM_ETHERNET_DEBUG_LEVEL
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/Makefile linux-amlogic-bbdd524/drivers/amlogic/ethernet/Makefile
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/Makefile	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/Makefile	2015-05-13 10:18:45.000000000 +0300
+@@ -3,4 +3,4 @@
+ #
+ 
+ obj-$(CONFIG_AM_ETHERNET) += am_net8218.o
+-obj-$(CONFIG_AM_PHY) += phy/
++obj-$(CONFIG_AM_ETHERNET) += phy/
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/phy/am_internal.c linux-amlogic-bbdd524/drivers/amlogic/ethernet/phy/am_internal.c
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/phy/am_internal.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/phy/am_internal.c	2015-05-13 10:18:45.000000000 +0300
+@@ -172,123 +172,6 @@
+ 	closeTSTMODE(phydev);
+ }
+ 
+-/*
+-
+-0x00	1354		1354	0000	9354
+-0x13	3600		3400	3410	3400
+-0x14	5100		7900	7900	7900
+-0x15	441c		3404	3404	3404
+-0x16	8406		8646	0246	8446
+-0x18	0003		0003	0003	0003
+-0x1b	00a0		40a0	40a4	40a6
+-0x1d	0a00		0200	0200	0200
+-
+-
+-
+-*/
+-static void init_pmu4_phy(struct phy_device *phydev)
+-{
+-        initTSTMODE(phydev);
+-        // write tstcntl addr val
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x1354);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR);//write addr 0
+-        /* 
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x38);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A0CFG);//write addr 0x11
+-  
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x0c00);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A1CFG);//write addr 0x12
+-        */
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x3400);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A2CFG);//write addr 0x13
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x7900);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A3CFG);//write addr 0x14
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x3404);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A4CFG);//write addr 0x15
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,0x2636);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A5CFG);//write addr 0x16
+-        phy_write(phydev,SMI_ADDR_TSTWRITE,5);//write val
+-        phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A7CFG);//write addr 0x18
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x0108);
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A9CFG);//write addr 0x1b	
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x200);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A11CFG);//write addr 0x1d
+-	closeTSTMODE(phydev);
+-}
+-
+-
+-void init_pmu4_phy_10B(struct phy_device *phydev)
+-{
+-
+-	initTSTMODE(phydev);
+-	// write tstcntl addr val
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x0000);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR);//write addr 0
+-	/*
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x38);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A0CFG);//write addr 0x11
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x0c00);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A1CFG);//write addr 0x12
+-	*/
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x3410);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A2CFG);//write addr 0x13
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x7900);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A3CFG);//write addr 0x14
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x3404);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A4CFG);//write addr 0x15
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x246);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A5CFG);//write addr 0x16
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,5);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A7CFG);//write addr 0x18
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x40a4);//write val by chandle (2)
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A9CFG);//write addr 0x1b
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x200);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A11CFG);//write addr 0x1d
+-	closeTSTMODE(phydev);
+-}
+-/*
+-
+-0x00	1354		1354	0000	9354
+-0x13	3600		3400	3410	3400
+-0x14	5100		7900	7900	7900
+-0x15	441c		3404	3404	3404
+-0x16	8406		8646	0246	8446
+-0x18	0003		0003	0003	0003
+-0x1b	00a0		40a0	40a4	40a6
+-0x1d	0a00		0200	0200	0200
+-
+-
+-
+-*/
+-void init_pmu4_phy_100B(struct phy_device *phydev)
+-{
+-	initTSTMODE(phydev);
+-	// write tstcntl addr val
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x9354);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|0x00);//write addr 0x00
+-	/*
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x38);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A0CFG);//write addr 0x11
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x0c00);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A1CFG);//write addr 0x12
+-	*/
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x3000);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A2CFG);//write addr 0x13
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0xb902);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A3CFG);//write addr 0x14
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x3404);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A4CFG);//write addr 0x15
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x8446);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A5CFG);//write addr 0x16
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x0005);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A7CFG);//write addr 0x18
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x40a6);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A9CFG);//write addr 0x1b
+-	phy_write(phydev,SMI_ADDR_TSTWRITE,0x200);//write val
+-	phy_write(phydev,SMI_ADDR_TSTCNTL,TSTCNTL_WR|WR_ADDR_A11CFG);//write addr 0x1d
+-	closeTSTMODE(phydev);
+-}
+-
+ static int amlogic_phy_config_intr(struct phy_device *phydev)
+ {
+ 	int rc = phy_write (phydev, MII_INTERNAL_IM,
+@@ -344,46 +227,6 @@
+ 
+ 	return amlogic_phy_ack_interrupt (phydev);
+ }
+-static int pmu4_phy_config_init(struct phy_device *phydev)
+-{
+-	int rc = phy_read(phydev, MII_INTERNAL_SPECIAL_MODES);
+-	if (rc < 0)
+-		return rc;
+-	printk("----[ETHERNET]---------pmu4 phy init start-------------\n");
+-	init_pmu4_phy(phydev);
+-	/* If the AML PHY is in power down mode, then set it
+-	 * in all capable mode before using it.
+-	 */
+-
+-	if ((rc & MII_INTERNAL_MODE_MASK) == MII_INTERNAL_MODE_POWERDOWN) {
+-		int timeout = 50000;
+-
+-		/* set "all capable" mode and reset the phy */
+-		rc |= MII_INTERNAL_MODE_ALL;
+-		phy_write(phydev, MII_INTERNAL_SPECIAL_MODES, rc);
+-		phy_write(phydev, MII_BMCR, BMCR_RESET);
+-
+-		/* wait end of reset (max 500 ms) */
+-		do {
+-			udelay(10);
+-			if (timeout-- == 0)
+-				return -1;
+-			rc = phy_read(phydev, MII_BMCR);
+-		} while (rc & BMCR_RESET);
+-	}
+-
+-	rc = phy_read(phydev, MII_INTERNAL_CTRL_STATUS);
+-	if (rc < 0)
+-		return rc;
+-
+-	// Enable energy detect mode for this AML Transceivers
+-	rc = phy_write(phydev, MII_INTERNAL_CTRL_STATUS,
+-		       rc & ~MII_INTERNAL_EDPWRDOWN);
+-	if (rc < 0)
+-		return rc;
+-	// phy_write(phydev,0,0x8000);
+-	return amlogic_phy_ack_interrupt (phydev);
+-}
+ 
+ /*
+  * This workaround will manually toggle the PHY on/off upon calls to read_status
+@@ -428,43 +271,6 @@
+ 	}
+ 	return err;
+ }
+-static int pmu4_read_status(struct phy_device *phydev)
+-{
+-	int err = genphy_read_status(phydev);
+-	if(phydev->speed == SPEED_10){
+-		init_pmu4_phy_10B(phydev);
+-	}
+-	if(phydev->speed == SPEED_100){
+-		init_pmu4_phy_100B(phydev);
+-	}
+-	if (!(AUTONEG_ENABLE == phydev->autoneg)){
+-		if (!phydev->link) {
+-			/* Disable EDPD to wake up PHY */
+-			int rc = phy_read(phydev, MII_INTERNAL_CTRL_STATUS);
+-			if (rc < 0)
+-				return rc;
+-
+-			rc = phy_write(phydev, MII_INTERNAL_CTRL_STATUS,
+-					rc & ~MII_INTERNAL_EDPWRDOWN);
+-			if (rc < 0)
+-				return rc;
+-
+-			/* Sleep 64 ms to allow ~5 link test pulses to be sent */
+-			msleep(64);
+-
+-			/* Re-enable EDPD */
+-			rc = phy_read(phydev, MII_INTERNAL_CTRL_STATUS);
+-			if (rc < 0)
+-				return rc;
+-
+-			rc = phy_write(phydev, MII_INTERNAL_CTRL_STATUS,
+-					rc | MII_INTERNAL_EDPWRDOWN);
+-			if (rc < 0)
+-				return rc;
+-		}
+-	}
+-	return err;
+-}
+ 
+ 
+ int amlogic_phy_config_aneg(struct phy_device *phydev){
+@@ -494,29 +300,6 @@
+ 		.resume		= genphy_resume,
+ 
+ 		.driver		= { .owner = THIS_MODULE, }
+-	},
+-	{
+-		.phy_id		= 0x20142014,
+-		.phy_id_mask	= 0xffffffff,
+-		.name		= "AMLOGIC pmu4 phy",
+-
+-		.features	= (PHY_BASIC_FEATURES | SUPPORTED_Pause
+-				| SUPPORTED_Asym_Pause),
+-		.flags		= PHY_HAS_INTERRUPT | PHY_HAS_MAGICANEG,
+-
+-		/* basic functions */
+-		.config_aneg	= &amlogic_phy_config_aneg,
+-		.read_status	= &pmu4_read_status,
+-		.config_init	= &pmu4_phy_config_init,
+-
+-		/* IRQ related */
+-		.ack_interrupt	= &amlogic_phy_ack_interrupt,
+-		.config_intr	= &amlogic_phy_config_intr,
+-
+-		.suspend	= genphy_suspend,
+-		.resume		= genphy_resume,
+-
+-		.driver		= { .owner = THIS_MODULE, }
+ 	} };
+ 
+ static int __init amlogic_init(void)
+@@ -540,7 +323,6 @@
+ 
+ static struct mdio_device_id __maybe_unused amlogic_tbl[] = {
+ 	{ 0x79898963, 0xffffffff },
+-	{ 0x20142014, 0xffffffff },
+ 	{ }
+ };
+ 
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/ethernet/phy/am_micrel.c linux-amlogic-bbdd524/drivers/amlogic/ethernet/phy/am_micrel.c
+--- linux-amlogic-5f3c177/drivers/amlogic/ethernet/phy/am_micrel.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/ethernet/phy/am_micrel.c	2015-05-13 10:18:45.000000000 +0300
+@@ -38,7 +38,6 @@
+ #include <linux/phy.h>
+ /* Operation Mode Strap Override */
+ #define MII_KSZPHY_OMSO				0x16
+-#define PHY_ID_KSZ9031_RNX			0x221622
+ #define KSZPHY_OMSO_B_CAST_OFF			(1 << 9)
+ #define KSZPHY_OMSO_RMII_OVERRIDE		(1 << 1)
+ #define KSZPHY_OMSO_MII_OVERRIDE		(1 << 0)
+@@ -129,73 +128,7 @@
+ 	rc = kszphy_set_interrupt(phydev);
+ 	return rc < 0 ? rc : 0;
+ }
+-#define MMD_CTRL			       0x0d
+-#define MMD_REG_DATA			0x0e
+-static int cnt;
+-static int ksz9031RNX_read_status(struct phy_device *phydev){
+-       int val = 0;
+-       int err = genphy_read_status(phydev);
+-       if((!phydev->link)&& (cnt <= 1)){
+-               cnt++;
+-               phy_write(phydev,0x4,0x5e1);
+-               val=phy_read(phydev,0x0);
+-               phy_write(phydev,0x0,val| 1<<9);
+-
+-       }
+ 
+-       return err;
+-
+-}
+-static int ksz9031_RNX_config_init(struct phy_device *phydev)
+-{/*Set Auto-Negotiation FLP interval to 16ms using the following programming sequence to set MMD ? Device Address 0h, Register 4h = 0x0006
+-
+-and MMD ? Device Address 0h, Register 3h = 0x1A80
+-
+-*/
+-      int val=0;
+-      cnt = 0;
+-#if 1
+-	phy_write(phydev,MMD_CTRL,0x0);
+-	phy_write(phydev,MMD_REG_DATA,0x4);
+-	phy_write(phydev,MMD_CTRL,0x4000);
+-	phy_write(phydev,MMD_REG_DATA,0x6);
+-
+-	phy_write(phydev,MMD_CTRL,0x0);
+-	phy_write(phydev,MMD_REG_DATA,0x3);
+-	phy_write(phydev,MMD_CTRL,0x4000);
+-	phy_write(phydev,MMD_REG_DATA,0x1A80);
+-
+-	phy_write(phydev,MMD_CTRL,0x1);
+-	phy_write(phydev,MMD_REG_DATA,0x5a);
+-	phy_write(phydev,MMD_CTRL,0x4001);
+-	phy_write(phydev,MMD_REG_DATA,0x106);
+-#endif
+-	printk("----micrel phy init--------\n");
+-
+-/*
+-delay rxclock
+-SET MMD ? Device Address 2h, Register 8h = 0x01F
+-*/
+-#if 0
+-	phy_write(phydev,MMD_CTRL,0x2);
+-	phy_write(phydev,MMD_REG_DATA,0x8);
+-	phy_write(phydev,MMD_CTRL,0x4002);
+-	phy_write(phydev,MMD_REG_DATA,0x3de0);
+-#endif
+-	phy_write(phydev,MMD_CTRL,0x2);
+-	phy_write(phydev,MMD_REG_DATA,0x5);
+-	phy_write(phydev,MMD_CTRL,0x4002);
+-	phy_write(phydev,MMD_REG_DATA,0xffff);
+-	
+-	phy_write(phydev,0x4,0x5e1);
+-	val=phy_read(phydev,0x0);
+-	phy_write(phydev,0x0,val| 1<<9);
+-	return 0;
+-}
+-static int ksz9031_config_init(struct phy_device *phydev)
+-{
+-	return 0;
+-}
+ static int kszphy_config_init(struct phy_device *phydev)
+ {
+ 	int temp;
+@@ -320,8 +253,8 @@
+ static int ksz8091_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *wol)
+ {
+ 	int err, oldpage, temp;
+-	int i = 0;
+ 
++	int i = 0;
+ 	oldpage = phy_read(phydev, KSZ8091_MMD_CTRL);
+ /*
+ Magic-packet detection is enabled by writing a 1 to MMD address 1Fh,register 0h, bit [6]
+@@ -534,30 +467,18 @@
+ 	.driver		= { .owner = THIS_MODULE, },
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9031,
+-	.phy_id_mask	= 0x00ffffff,
++	.phy_id_mask	= 0x00fffff0,
+ 	.name		= "Micrel KSZ9031 Gigabit PHY",
+ 	.features	= (PHY_GBIT_FEATURES | SUPPORTED_Pause
+ 				| SUPPORTED_Asym_Pause),
+ 	.flags		= PHY_HAS_MAGICANEG | PHY_HAS_INTERRUPT,
+-	.config_init	= ksz9031_config_init,
++	.config_init	= kszphy_config_init,
+ 	.config_aneg	= genphy_config_aneg,
+ 	.read_status	= genphy_read_status,
+ 	.ack_interrupt	= kszphy_ack_interrupt,
+ 	.config_intr	= ksz9021_config_intr,
+ 	.driver		= { .owner = THIS_MODULE, },
+ }, {
+-	.phy_id		= PHY_ID_KSZ9031_RNX,
+-	.phy_id_mask	= 0x00ffffff,
+-	.name		= "Micrel KSZ9031RNX Gigabit PHY",
+-	.features	= (PHY_GBIT_FEATURES | SUPPORTED_Pause
+-				| SUPPORTED_Asym_Pause),
+-	.flags		= PHY_HAS_MAGICANEG | PHY_HAS_INTERRUPT,
+-	.config_init	= ksz9031_RNX_config_init,
+-	.config_aneg	= genphy_config_aneg,
+-	.read_status	= ksz9031RNX_read_status,
+-	.ack_interrupt	= kszphy_ack_interrupt,
+-	.driver		= { .owner = THIS_MODULE, },
+-}, {
+ 	.phy_id		= PHY_ID_KSZ8873MLL,
+ 	.phy_id_mask	= 0x00fffff0,
+ 	.name		= "Micrel KSZ8873MLL Switch",
+@@ -600,8 +521,7 @@
+ 
+ static struct mdio_device_id __maybe_unused micrel_tbl[] = {
+ 	{ PHY_ID_KSZ9021, 0x000ffffe },
+-	{ PHY_ID_KSZ9031, 0x00ffffff },
+-	{ PHY_ID_KSZ9031_RNX, 0x00ffffff },
++	{ PHY_ID_KSZ9031, 0x00fffff0 },
+ 	{ PHY_ID_KSZ8001, 0x00ffffff },
+ 	{ PHY_ID_KS8737, 0x00fffff0 },
+ 	{ PHY_ID_KSZ8021, 0x00ffffff },
+@@ -616,4 +536,3 @@
+ };
+ 
+ MODULE_DEVICE_TABLE(mdio, micrel_tbl);
+-
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/Kconfig linux-amlogic-bbdd524/drivers/amlogic/input/Kconfig
+--- linux-amlogic-5f3c177/drivers/amlogic/input/Kconfig	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/Kconfig	2015-05-13 10:18:45.000000000 +0300
+@@ -20,6 +20,7 @@
+ source "drivers/amlogic/input/call_key/Kconfig"
+ source "drivers/amlogic/input/sensor/Kconfig"
+ source "drivers/amlogic/input/gpio_key/Kconfig"
++source "drivers/amlogic/input/vfd/Kconfig"
+ 
+ endif
+ 
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/Makefile linux-amlogic-bbdd524/drivers/amlogic/input/Makefile
+--- linux-amlogic-5f3c177/drivers/amlogic/input/Makefile	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/Makefile	2015-05-13 10:18:45.000000000 +0300
+@@ -14,3 +14,4 @@
+ obj-y   += call_key/
+ obj-y   += sensor/
+ obj-y   += gpio_key/
++obj-y   += vfd/
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/aml.dtd linux-amlogic-bbdd524/drivers/amlogic/input/vfd/aml.dtd
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/aml.dtd	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/aml.dtd	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,16 @@
++#ifdef CONFIG_VFD_ENABLE
++//$$ DEVICE="m1-vfd"
++//$$ L2 PROP_STR = "status"
++//$$ L2 PROP_STR = "vfd_stb_pin"
++//$$ L2 PROP_STR = "vfd_clk_pin"
++//$$ L2 PROP_STR = "vfd_data_pin"
++    m1-vfd{
++		compatible = "amlogic,m1-vfd";
++		status = "okay";
++		dev_name = "m1-vfd.0";
++		pins-integer = <0>;
++		vfd_stb_pin = "GPIOH_3";
++		vfd_clk_pin =  "GPIOH_6";
++		vfd_data_pin = "GPIOH_5";
++	};
++#endif
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/Kconfig linux-amlogic-bbdd524/drivers/amlogic/input/vfd/Kconfig
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/Kconfig	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/Kconfig	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,26 @@
++#
++# VFD configuration
++#
++
++config VFD_ENABLE
++	tristate "VFD support"
++	default n
++	help
++	  Say Y here if you want to use the amlogic VFD control.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called .
++
++config VFD_SM1628
++	depends on VFD_ENABLE
++	bool "SM1628 MCU support"
++	default n
++	help
++	  Use SM1628 MCU as controller
++
++config VFD_TM1628
++	depends on VFD_ENABLE
++	bool "TM1628 MCU support"
++	default n
++	help
++	  Use TM1628 MCU as controller
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/Makefile linux-amlogic-bbdd524/drivers/amlogic/input/vfd/Makefile
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/Makefile	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/Makefile	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,10 @@
++#
++# Makefile for the VFD drivers.
++#
++
++# Each configuration option enables a list of files.
++
++obj-$(CONFIG_VFD_ENABLE)		+= vfd.o
++obj-$(CONFIG_VFD_SM1628)		+= sm1628.o
++obj-$(CONFIG_VFD_TM1628)		+= tm1628.o
++
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/sm1628.c linux-amlogic-bbdd524/drivers/amlogic/input/vfd/sm1628.c
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/sm1628.c	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/sm1628.c	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,425 @@
++
++#include <linux/amlogic/input/vfd.h>
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include "sm1628.h"
++
++//#define VFD_DEBUG
++#ifdef VFD_DEBUG
++#define DBG_VFD(msg)                    msg
++#else
++#define DBG_VFD(msg)                    
++#endif
++
++void MDrv_FrontPnl_Init(void);
++void MDrv_FrontPnl_Update(char *U8str,int colon);
++int MDrv_TM1623_FP_Get_Key(void);
++
++int (*vfd_set_stb_pin_value)(int value);
++int (*vfd_set_clock_pin_value)(int value);
++int (*vfd_set_do_pin_value)(int value);
++int (*vfd_get_di_pin_value)(void);
++
++
++static int sm1628_init(struct vfd_platform_data *pvfd_platform_data)
++{
++		vfd_set_stb_pin_value = pvfd_platform_data->set_stb_pin_value;				
++		vfd_set_clock_pin_value = pvfd_platform_data->set_clock_pin_value;		
++		vfd_set_do_pin_value = pvfd_platform_data->set_do_pin_value;
++		vfd_get_di_pin_value = pvfd_platform_data->get_di_pin_value;
++		
++		MDrv_FrontPnl_Init();
++		
++		return 0;	
++}
++
++
++static int get_sm1628_key_value(void)
++{
++	
++		return MDrv_TM1623_FP_Get_Key();
++}
++
++	
++static int set_sm1628_led_value(char *display_code)
++{
++		int i,j = 0;
++		char data,display_char[8];
++		int dot = 0;
++		for(i = 0; i <= 8; i++)
++		{
++			data = display_code[i];
++			if(data == ':')	{
++				//display_char[i] = display_code[i+1];
++			  dot++;
++			}
++			else{				
++				display_char[j++] = display_code[i];
++				if(data == '\0')break;
++			}
++		}
++		DBG_VFD(printk("function[%s] line %d display string: %s .\n", __FUNCTION__,__LINE__,display_char));
++/*
++		printk("function: %s line %d .\n", __FUNCTION__,__LINE__);
++		for(i=0;i<j;i++){
++		 printk("set led display char[%d] is: %c \n", i,display_char[i]);
++		 if(display_char[i] == '\0')	{
++		 		printk("end char is: char[%d] \n", i);
++		 		break;
++		 	}
++		}
++*/		
++		MDrv_FrontPnl_Update(display_char, dot);
++		return 0;
++}
++
++#ifdef CONFIG_VFD_SM1628
++int hardware_init(struct vfd_platform_data *pdev)
++{
++
++		int ret;	
++		printk("VFD init --------------------CONFIG_VFD_SM1628 jannie");
++				
++		ret = sm1628_init(pdev);					
++		return ret;	
++}
++
++int get_vfd_key_value(void)
++{
++		int key_value;
++		key_value = get_sm1628_key_value();
++		return key_value;
++}
++
++int set_vfd_led_value(char *display_code)
++{
++		int ret;		
++		ret = set_sm1628_led_value(display_code);		
++		return ret;
++}
++#endif
++
++//==============================================================================
++//----------------------------KEY Function--------------------------------------
++//==============================================================================
++//-------------------------------------------------------------------------------------------------
++/// TM16231 Write Data
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_WriteData(U8 Value)
++{
++	U8 i, j;
++
++	for (i = 0; i < 8; i++) {
++		if (Value & 0x01) {
++			PT6964_DIN_H;
++		}
++		else {
++			PT6964_DIN_L;
++		}
++
++		PT6964_CLK_L;
++		udelay(500);
++		PT6964_CLK_H;
++		Value >>= 1;
++		j++;
++	}
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM16231 Write Data
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_Write_Adr_Data(U8 addr, U8 value)
++{
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0x44);
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(addr|0xc0);
++	MDrv_TM1623_WriteData(value);
++	PT6964_STB_H;
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM16231 Clear Ram ( if you want to display new Char , you need Clear All)
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_Clear6964RAM(void)
++{
++	U8  i;
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0x40);			//Command 1, increment address
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0xc0);			//Command 2, RAM address = 0
++	for(i=0;i<=13;i++)			                     //22 bytes
++	{
++		MDrv_TM1623_WriteData(0x00);
++	}
++	PT6964_STB_H;
++}
++
++//-------------------------------------------------------------------------------------------------
++/// Initialize TM16231
++/// @return TRUE  - Success
++///         FALSE - Failure
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_Init(void)
++{
++	U16 i , j ;
++
++	PT6964_STB_H;					//Initial state
++	PT6964_CLK_H;					//Intial state
++	PT6964_DIN_H;
++
++	for (i = 0; i < 1000; i++)
++		for (j = 0; j < 1000; j++)
++			{;}
++	//mdelay(10);
++	MDrv_TM1623_Clear6964RAM();
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(FP_LED_MODE);
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0x8F);
++	PT6964_STB_H;
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM1623 Get Key
++/// @return None
++//-------------------------------------------------------------------------------------------------
++int MDrv_TM1623_FP_Get_Key(void)
++{
++	int i, value = 0, j;
++
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0x42);
++	PT6964_DOUT_GET;
++	for (i = 0; i < 40; i++) {
++		PT6964_CLK_L;
++		j++;
++		value++;
++		j++;
++		if ((PT6964_DOUT_GET == 1 )) {
++			PT6964_CLK_H;
++			PT6964_STB_H;
++			return (value);
++		}
++		PT6964_CLK_H;
++	}
++
++	PT6964_STB_H;
++	value = 0;
++
++	return (value);
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM1623 display on
++/// @return TRUE  - Success
++///         FALSE - Failure
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_Display_On(void)
++{
++	PT6964_STB_L;
++	MDrv_TM1623_WriteData(0x8F);
++	PT6964_STB_H;
++}
++
++// Keypad uAPI
++int  uKeypad_WakeUp(void)
++{
++	bool bGetKey = FALSE;
++
++	//if( !_GPIO_PM2_Read() )
++	if (MDrv_TM1623_FP_Get_Key()) {
++		bGetKey = TRUE;
++	}
++	return bGetKey;
++}
++
++//==============================================================================
++//----------------------------LED Function--------------------------------------
++//==============================================================================
++//-------------------------------------------------------------------------------------------------
++/// Show boot
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_ShowBoot(void)
++{
++	MDrv_TM1623_Write_Adr_Data(0x00, 0x10);
++	//   MDrv_TM1623_Write_Adr_Data(0x01, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x02, 0x10);
++	//    MDrv_TM1623_Write_Adr_Data(0x03, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x04, 0x10);
++	//   MDrv_TM1623_Write_Adr_Data(0x05, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x06, 0x10);
++	//   MDrv_TM1623_Write_Adr_Data(0x07, 0x00);
++}
++
++//-------------------------------------------------------------------------------------------------
++/// StandBy TM1623
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1623_StandBy(void)
++{
++	MDrv_TM1623_Write_Adr_Data(0x00, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x01, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x02, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x03, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x04, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x05, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x06, 0x00);
++	MDrv_TM1623_Write_Adr_Data(0x07, 0x00);
++}
++
++//----------------------------------------------------
++// Function Name: Mdrv_6961_LED_DISP
++// Description:
++//		Update PT6961/PT6964/ET6201 LED display data RAM.
++// Parameters:
++//		U8_LedBit, LED number
++//		U8_LowByte, LowByte data in RAM     LSB~MSB : SEG1~ SEG8
++//		U8_HighByte, High Byte data in RAM	LSB~MSB : SEG9 ~ SEG12 + xxxx
++// 			LED bit sequence Can be address by the following Macro:
++//		LED_WORD1_ADDR /  LED_WORD2_ADDR /LED_WORD3_ADDR / LED_WORD4_ADDR
++//------------------------------------------------------------------------
++void MDrv_TM1623_LED_DISP(char U8_Ledbit, char U8_LowByte, char U8_HighByte)
++{
++#if 1
++	switch (U8_Ledbit) {
++	case 0:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD1_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD1_ADDR + 1, U8_HighByte);
++		break;
++	case 1:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD2_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD2_ADDR + 1, U8_HighByte);
++		break;
++	case 2:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD3_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD3_ADDR + 1, U8_HighByte);
++		break;
++	case 3:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD4_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD4_ADDR + 1, U8_HighByte);
++		break;
++	case 4:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD5_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD5_ADDR + 1, U8_HighByte);
++		break;
++	case 5:
++		MDrv_TM1623_Write_Adr_Data(LED_WORD6_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_WORD6_ADDR + 1, U8_HighByte);
++		break;
++	case 6:
++		MDrv_TM1623_Write_Adr_Data(LED_COLON_ADDR, U8_LowByte);
++		MDrv_TM1623_Write_Adr_Data(LED_COLON_ADDR + 1, U8_HighByte);
++		break;						
++	default:
++		break;
++	}
++	#else  //test vfd
++
++	MDrv_TM1623_Write_Adr_Data(0x00, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x02, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x04, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x06, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x08, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x0A, 0x08);
++
++	MDrv_TM1623_Write_Adr_Data(0x01, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x03, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x05, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x07, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x09, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x0B, 0x08);
++	MDrv_TM1623_Write_Adr_Data(0x0D, 0x08);
++
++	MDrv_TM1623_Write_Adr_Data(0x0C, 0x08);
++
++#endif
++}
++
++//-------------------------------------------------------------
++// Function: MDrv_FP_LED_CharSet
++// Description :
++//			Set dedicated LED data, including dot
++// parameters:
++//			ledBit, led bit select
++//			U8LedChar: char data
++
++//-------------------------------------------------------------------
++bool MDrv_FP_LED_CharSet(char ledBit, char U8LEDChar)
++{
++	char i;
++	char low,high;
++
++	DBG_VFD(printk("[%s]:line %d now display char : %c \n", __FUNCTION__,__LINE__,U8LEDChar));
++	for (i = 0; i < sizeof(_char2SegmentTable) / sizeof (Char2Segment); i++)
++	{
++		if (U8LEDChar == _char2SegmentTable[i].u8Char) {
++
++			low = (char)_char2SegmentTable[i].u8SegmentLowByte;
++			high = (char)_char2SegmentTable[i].u8SegmentHighByte;
++			for(i = 0; i < 8; i++) {
++				if((low >> i)&0x01)
++					dig_value[i] |= 1 << bit2seg[ledBit];
++			}
++
++			//MDrv_TM1623_LED_DISP(ledBit, low, high);
++			return 0;
++		}
++	}
++	return 1;
++}
++
++void MDrv_FrontPnl_Update(char *U8str, int colon)
++{
++	char i = 0;
++	char U8Data;
++	
++	for(i = 0; i < LED_BYTE_NUM; i++)	{
++		dig_value[i] = 0;
++	}
++		
++	for (i = 0; i < LED_NUM; i++) {
++		U8Data = U8str[i];
++		if (U8Data == '\0')	break;
++		if (MDrv_FP_LED_CharSet(i, U8Data))
++			DBG_VFD(printk("FP LED char not defined.\n"));
++	}
++
++	if(colon){
++		if(colon&0x01)	dig_value[FP_DOT1_DIG] |=  1 << (FP_DOT_SEG_NUM-1);
++		if(colon&0x02) 	{ 
++			dig_value[FP_DOT1_DIG] |=  1 << (FP_DOT_SEG_NUM-1);
++			dig_value[FP_DOT2_DIG] |=  1 << (FP_DOT_SEG_NUM-1);
++		}
++	}
++				
++	for(i = 0; i < LED_BYTE_NUM; i++)	{
++		MDrv_TM1623_LED_DISP(i, dig_value[i], 0);
++	}
++
++	MDrv_TM1623_Display_On();
++
++}
++
++// Frontpanel API
++void MDrv_FrontPnl_Init(void)
++{
++	MDrv_TM1623_Init();
++	MDrv_TM1623_ShowBoot();
++	MDrv_FrontPnl_Update((char *)"----", 0);
++}
++
++
++//------------- END OF FILE ------------------------
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/sm1628.h linux-amlogic-bbdd524/drivers/amlogic/input/vfd/sm1628.h
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/sm1628.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/sm1628.h	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,315 @@
++#ifndef SM_1628_H
++#define	SM_1628_H
++//def GIEC_LED_DISPLAY
++
++#if 0//def GK-HD200T
++#define	COLON_ENABLE				0	// Maybe cause error of the display of 1bit LED
++#define	FP_LED_MODE					0x02
++// -------------- DIGITAL LED MACRO -----------------
++#define LED_NUM						4
++#define FP_DOT1_DIG				2
++#define FP_DOT2_DIG				4
++#define FP_DOT_SEG_NUM				6
++#define LED_WORD1_ADDR				0
++#define	LED_WORD2_ADDR				2
++#define	LED_WORD3_ADDR				4
++#define	LED_WORD4_ADDR				6
++#define	LED_WORD5_ADDR				10
++#define	LED_COLON_ADDR				8
++#define	LED_COLON_ENABLE_LOW		0xFF
++#define	LED_COLON_ENABLE_HIGH		0xFF
++#define	LED_COLON_DISABLE_LOW		0
++#define	LED_COLON_DISABLE_HIGH		0
++
++#define FRONTPNL_START_TIME_MS		3	//((1000 / 50) / LED_NUM)
++#define FRONTPNL_PERIOD_TIME_MS		150
++
++
++typedef struct {
++    char u8Char;
++    char u8SegmentLowByte;
++    char u8SegmentHighByte;
++} Char2Segment;
++#define BIT_A		(1 << 0)	//            a
++#define BIT_B		(1 << 1)	//         -------
++#define BIT_C		(1 << 2)	//        |       |
++#define BIT_D		(1 << 3)	//    //f |       | b
++#define BIT_E		(1 << 4)	//         ---g---
++#define BIT_F		(1 << 5)	//        |       |	c
++#define BIT_G		(1 << 6)	//    //e |       |
++#define BIT_P		(1 << 7)	//         ---d---   p
++#else  //B203_PANEL
++#define	COLON_ENABLE				0	// Maybe cause error of the display of 1bit LED
++#define	FP_LED_MODE					0x03
++// -------------- DIGITAL LED MACRO -----------------
++#define LED_NUM								5
++#define LED_BYTE_NUM					7
++#define FP_DOT1_DIG						2
++#define FP_DOT2_DIG						4
++#define FP_DOT_ENABLE					0
++#define FP_DOT_SEG_NUM				6
++#define LED_WORD1_ADDR				0
++#define	LED_WORD2_ADDR				2
++#define	LED_WORD3_ADDR				4
++#define	LED_WORD4_ADDR				6
++#define	LED_WORD5_ADDR				8
++#define	LED_WORD6_ADDR				10
++#define	LED_COLON_ADDR				12
++#define	LED_COLON_ENABLE_LOW		0xFF
++#define	LED_COLON_ENABLE_HIGH		0xFF
++#define	LED_COLON_DISABLE_LOW		0
++#define	LED_COLON_DISABLE_HIGH		0
++
++#define FRONTPNL_START_TIME_MS		3	//((1000 / 50) / LED_NUM)
++#define FRONTPNL_PERIOD_TIME_MS		150
++
++
++typedef struct {
++    char u8Char;
++    char u8SegmentLowByte;
++    char u8SegmentHighByte;
++} Char2Segment;
++#define BIT_A		(1 << 0)	//            a
++#define BIT_B		(1 << 1)	//         -------
++#define BIT_C		(1 << 2)	//        |       |
++#define BIT_D		(1 << 5)	//    //f |       | b
++#define BIT_E		(1 << 4)	//         ---g---
++#define BIT_F		(1 << 3)	//        |       |	c
++#define BIT_G		(1 << 6)	//    //e |       |
++#define BIT_P		(1 << 7)	//         ---d---   p
++
++#endif
++#define LED_DATA_LIGHT		1	// open or close this when choose light mode
++#if (LED_DATA_LIGHT == 0)
++#define DATA_NOT	~	// data_reverse
++#else
++#define DATA_NOT		// no reverse
++#endif
++// ????????????????????????????K??????K????????o?BIT_A??BIT_B??
++#define DATA_0		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_1		(DATA_NOT (BIT_B | BIT_C))
++#define DATA_2		(DATA_NOT (BIT_A | BIT_B | BIT_D | BIT_E | BIT_G))
++#define DATA_3		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_G))
++#define DATA_4		(DATA_NOT (BIT_B | BIT_C | BIT_F | BIT_G))
++#define DATA_5		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_6		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_7		(DATA_NOT (BIT_A | BIT_B | BIT_C))
++#define DATA_8		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_9		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_A		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_b		(DATA_NOT (BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_C		(DATA_NOT (BIT_A | BIT_D | BIT_E | BIT_F))
++#define DATA_c		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_d		(DATA_NOT (BIT_B | BIT_C | BIT_D | BIT_E | BIT_G))
++#define DATA_E		(DATA_NOT (BIT_A | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_F		(DATA_NOT (BIT_A | BIT_E | BIT_F | BIT_G))
++#define DATA_H		(DATA_NOT (BIT_B | BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_h		(DATA_NOT (BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_I		(DATA_NOT (BIT_E | BIT_F))
++#define DATA_i		(DATA_NOT (BIT_E))
++#define DATA_L		(DATA_NOT (BIT_D | BIT_E | BIT_F))
++#define DATA_N		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_E | BIT_F))
++#define DATA_n		(DATA_NOT (BIT_C | BIT_E | BIT_G))
++#define DATA_O		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_o		(DATA_NOT (BIT_C | BIT_D | BIT_E | BIT_G))
++#define DATA_P		(DATA_NOT (BIT_A | BIT_B | BIT_E | BIT_F | BIT_G))
++#define DATA_R		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_r		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_S		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_s		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_T		(DATA_NOT (BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_t		(DATA_NOT (BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_U		(DATA_NOT (BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_u		(DATA_NOT (BIT_C | BIT_D | BIT_E))
++#define DATA_DP		(DATA_NOT (BIT_P))
++#define DATA_HYPH	(DATA_NOT (BIT_G))
++#define DATA_DARK	(DATA_NOT (0x00))
++static const char FP_LED_BOOT[] =
++{
++	0xF0,
++	0x00,
++	0xD0,
++	0x01,
++	0xD0,
++	0x01,
++	0xF0,
++	0x01
++};
++
++static const char FP_LED_STANDBY[]=
++{
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x04
++};
++
++
++//  ---1---
++//    |     |
++//    2     3
++//    |     |
++//  ---4---
++//    |     |
++//    8     5
++//    |     |
++//  ---7---
++
++static const Char2Segment _char2SegmentTable[] =
++{
++#if 0
++	// char, low Byte, High Byte
++	{'S', 0x5B, 0x00},
++	{'0', 0xD7, 0x00},
++	{'1', 0x14, 0x00},	//{'1',0x00,0x03},
++	{'2', 0xCD, 0x00},
++	{'3', 0x5D, 0x00},
++	{'4', 0x1E, 0x00},
++	{'5', 0x5B, 0x00},
++	{'6', 0xDB, 0x00},
++	{'7', 0x15, 0x00},
++	{'8', 0xDF, 0x00},
++	{'9', 0x5F, 0x00},
++	{'A', 0x9F, 0x00},
++	{'B', 0xDA, 0x00},
++	{'b', 0xDA, 0x00},
++	{'C', 0xC3, 0x00},
++	{'c', 0xC8, 0x00},
++	{'D', 0xDC, 0x00},
++	{'d', 0xDC, 0x00},
++	{'E', 0xCB, 0x00},
++	{'F', 0x8B, 0x00},
++	{'H', 0x9E, 0x00},	//{'H',0x70,0x03},
++	{'h', 0x9A, 0x00},
++	{'I', 0x14, 0x00},
++	{'i', 0x14, 0x00},
++	{'L', 0xC2, 0x00},
++	{'n', 0x98, 0x00},
++	{'N', 0x97, 0x00},
++	{'O', 0xD8, 0x00},
++	{'o', 0xD8, 0x00},
++	{'P', 0x8F, 0x00},
++	{'R', 0x9F, 0x00},
++	{'r', 0x9F, 0x00},
++	{'T', 0xCA, 0x00},
++	{'t', 0xCA, 0x00},
++	{'U', 0xD6, 0x00},
++	{'V', 0xD6, 0x00},
++	{'-', 0x08, 0x00},
++	{' ', 0x00, 0x00},
++
++#else	// for HENAG by scares
++	// char, low Byte, High Byte
++	{'0', DATA_0, 0x00},
++	{'1', DATA_1, 0x00},
++	{'2', DATA_2, 0x00},
++	{'3', DATA_3, 0x00},
++	{'4', DATA_4, 0x00},
++	{'5', DATA_5, 0x00},
++	{'6', DATA_6, 0x00},
++	{'7', DATA_7, 0x00},
++	{'8', DATA_8, 0x00},
++	{'9', DATA_9, 0x00},
++	{'A', DATA_A, 0x00},
++	{'B', DATA_b, 0x00},
++	{'b', DATA_b, 0x00},
++	{'C', DATA_C, 0x00},
++	{'c', DATA_c, 0x00},
++	{'D', DATA_d, 0x00},
++	{'d', DATA_d, 0x00},
++	{'E', DATA_E, 0x00},
++	{'F', DATA_F, 0x00},
++	{'H', DATA_H, 0x00},
++	{'h', DATA_h, 0x00},
++	{'I', DATA_I, 0x00},
++	{'i', DATA_i, 0x00},
++	{'L', DATA_L, 0x00},
++	{'n', DATA_n, 0x00},
++	{'N', DATA_N, 0x00},
++	{'O', DATA_O, 0x00},
++	{'o', DATA_o, 0x00},
++	{'P', DATA_P, 0x00},
++	{'R', DATA_R, 0x00},
++	{'r', DATA_r, 0x00},
++	{'S', DATA_S, 0x00},
++	{'T', DATA_T, 0x00},
++	{'t', DATA_t, 0x00},
++	{'U', DATA_U, 0x00},
++	{'V', DATA_u, 0x00},
++	{'-', DATA_HYPH, 0x00},
++	{' ', DATA_DARK, 0x00},
++#endif
++};
++// NOTE: in 6964 the CHAR arrayed like 'hgfedcba', and the 'h' is the MSB.
++
++//----------------- IO MACRO ------------------------
++/*
++#define REG(addr)				(*(volatile MS_U32 *)(addr))
++#define REG_CHIP_TOP_BASE		0xBF803C00
++
++#define REG_CHIP_TOP2C			(0x2C*4 + (REG_CHIP_TOP_BASE))
++#define REG_CHIP_TOP06			(0x06*4 + (REG_CHIP_TOP_BASE))
++#define REG_CHIP_TOP0E			(0x0E*4 + (REG_CHIP_TOP_BASE))
++
++#define REG_GPIO_CI_IN			(0x5A*4 + (REG_CHIP_TOP_BASE))
++#define REG_GPIO_CI_OUT			(0x57*4 + (REG_CHIP_TOP_BASE))
++#define REG_GPIO_CI_OEN			(0x4C*4 + (REG_CHIP_TOP_BASE))
++
++#define REG_PM_BASE				0xBF809F00  //(0x27C0 * 4) + 0xBF800000
++#define REG_PMCEC_EN			(0x00*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_OUT_PM2_EN	(0x01*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_OEN			(0x02*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_IN			(0x03*4 + (REG_PM_BASE))
++
++#define KEYPAD_CHANNEL_START	1           ///< Define the start keypad channel
++#define KEYPAD_CHANNEL_END		2           ///< Define the end keypad channel
++#define KEYPAD_CHANNEL_NUM		(KEYPAD_CHANNEL_END - KEYPAD_CHANNEL_START + 1) ///< Define the number of keypad channel.
++*/
++#define PT6964_CLK_H			vfd_set_clock_pin_value(1)
++#define PT6964_CLK_L			vfd_set_clock_pin_value(0)
++
++#define PT6964_DIN_H			vfd_set_do_pin_value(1)
++#define PT6964_DIN_L			vfd_set_do_pin_value(0)
++
++#define PT6964_DOUT_GET			vfd_get_di_pin_value()
++
++#define	PT6964_STB_H			vfd_set_stb_pin_value(1)
++#define	PT6964_STB_L			vfd_set_stb_pin_value(0)
++
++//------------ KEY PAD macro ------------------
++
++//-------------------------------------------------------------------------------------------------
++// Defines
++//-------------------------------------------------------------------------------------------------
++#define PT6964_KEY_L0			1 //
++#define PT6964_KEY_L1			4 //
++#define PT6964_KEY_L2			5 //
++#define PT6964_KEY_L3			6 //
++#define PT6964_KEY_L4			7 //
++#define PT6964_KEY_L5			8 //
++
++typedef struct {
++	char keyMapData;
++	char keyMapLevel;
++} VFD_KEYMAP;
++
++typedef     unsigned char       U8;
++typedef     unsigned short      U16;
++//typedef 		_Bool								bool;
++
++enum {
++    FALSE = 0,
++    TRUE  = 1
++};
++
++#define DELAY(x) { mdelay(32 * x); }
++char dig_value[LED_BYTE_NUM];
++//char bit2seg[LED_NUM] = {4,3,1,0,2};
++char bit2seg[LED_NUM] = {2,0,1,3,4};
++
++#endif
++
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/tm1628.c linux-amlogic-bbdd524/drivers/amlogic/input/vfd/tm1628.c
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/tm1628.c	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/tm1628.c	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,897 @@
++
++#include <linux/amlogic/input/vfd.h>
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/platform_device.h>
++#include <linux/amlogic/aml_gpio_consumer.h>
++
++#include "tm1628.h"
++
++#include <mach/gpio.h>
++
++
++#define VFD_DEBUG
++#ifdef VFD_DEBUG
++#define DBG_VFD(msg)                    msg
++#else
++#define DBG_VFD(msg)                    
++#endif
++
++int RamAll[14]={0};
++
++#define SYM_PLAY 0
++#define SYM_PAUSE 1
++#define SYM_DVD 2
++#define SYM_CD 3
++#define SYM_COLON 4
++#define SYM_MP4 5
++#define SYM_MP3 6
++
++
++void MDrv_FrontPnl_Init(void);
++void MDrv_FrontPnl_Update();
++int MDrv_TM1628_FP_Get_Key(void);
++
++void MDrv_TM1628_ShowSymbol(int sym, int onoff);
++void MDrv_TM1628_BaseShowDigit(int numDig, char digit);
++void MDrv_TM1628_Write_Ram_Data(U8 addr, U8 value);
++
++int (*vfd_set_stb_pin_value)(int value);
++int (*vfd_set_clock_pin_value)(int value);
++int (*vfd_set_do_pin_value)(int value);
++int (*vfd_get_di_pin_value)(void);
++
++static int LED_Standby_flag = 0; //jj_modify jannie add begin
++//jj_modify jannie add begin
++#if defined(CONFIG_VFD_ENABLE) || defined(CONFIG_VFD_ENABLE_MODULE)
++#include <linux/input.h>
++#include <linux/amlogic/input/vfd.h>
++
++static int gpio_vfd_stb_hdle = 0;
++static int gpio_vfd_clk_hdle = 0;
++static int gpio_vfd_data_hdle = 0;
++	  
++static int jannie_vfd_stb_pin_set_value(int value) //vfd_stb GPIOH_3
++{		
++	     //CLEAR_CBUS_REG_MASK(PERIPHS_PIN_MUX_8, (1<<16));
++		//set_gpio_mode(GPIOX_bank_bit0_31(31), GPIOX_bit_bit0_31(31), GPIO_OUTPUT_MODE);
++		//set_gpio_val(GPIOX_bank_bit0_31(31), GPIOX_bit_bit0_31(31), value);
++	//	gpio_set_status(PAD_GPIOX_31,gpio_status_out);
++	//	gpio_out(PAD_GPIOX_31, value);
++	    amlogic_gpio_direction_output(gpio_vfd_stb_hdle,value,"m1-vfd");  
++
++		return 0;
++}
++
++static int jannie_vfd_clock_pin_set_value(int value) //vfd_clock GPIOH_6
++{
++	  //CLEAR_CBUS_REG_MASK(PERIPHS_PIN_MUX_8, (1<<14));
++		//set_gpio_mode(GPIOX_bank_bit32_35(33), GPIOX_bit_bit32_35(33), GPIO_OUTPUT_MODE);
++		//set_gpio_val(GPIOX_bank_bit32_35(33), GPIOX_bit_bit32_35(33), value);
++	//	gpio_set_status(PAD_GPIOX_33,gpio_status_out);
++	//	gpio_out(PAD_GPIOX_33, value);
++	    amlogic_gpio_direction_output(gpio_vfd_clk_hdle,value,"m1-vfd");  
++
++		return 0;
++}
++
++static int jannie_vfd_do_pin_set_value(int value) //vfd_data GPIOH_5
++{
++	  //CLEAR_CBUS_REG_MASK(PERIPHS_PIN_MUX_8, (1<<12));
++		//set_gpio_mode(GPIOX_bank_bit32_35(35), GPIOX_bit_bit32_35(35), GPIO_OUTPUT_MODE);
++		//set_gpio_val(GPIOX_bank_bit32_35(35), GPIOX_bit_bit32_35(35), value);
++	//	gpio_set_status(PAD_GPIOX_34,gpio_status_out);
++	//	gpio_out(PAD_GPIOX_34, value);
++		    amlogic_gpio_direction_output(gpio_vfd_data_hdle,value,"m1-vfd");  
++
++		return 0;	
++}
++
++static int jannie_vfd_di_pin_get_value(void)
++{		
++	  //CLEAR_CBUS_REG_MASK(PERIPHS_PIN_MUX_8, (1<<13));
++	  
++		//set_gpio_mode(GPIOX_bank_bit32_35(34), GPIOX_bit_bit32_35(34), GPIO_INPUT_MODE);
++//		gpio_set_status(PAD_GPIOX_35,gpio_status_in);
++		//return get_gpio_val(GPIOX_bank_bit32_35(34),GPIOX_bit_bit32_35(34));
++//		return gpio_in_get(PAD_GPIOX_35);
++		amlogic_gpio_direction_input(gpio_vfd_data_hdle,"m1-vfd"); 
++		return amlogic_get_value(gpio_vfd_data_hdle,"m1-vfd");
++	
++}
++
++#endif
++//jj_modify add end for vfd 
++
++
++static int tm1628_init(void)
++{
++		vfd_set_stb_pin_value = jannie_vfd_stb_pin_set_value;				
++		vfd_set_clock_pin_value = jannie_vfd_clock_pin_set_value;		
++		vfd_set_do_pin_value = jannie_vfd_do_pin_set_value;
++		vfd_get_di_pin_value = jannie_vfd_di_pin_get_value;
++		
++		MDrv_FrontPnl_Init();
++		
++		return 0;	
++}
++
++
++static int get_tm1628_key_value(void)
++{
++	
++		return MDrv_TM1628_FP_Get_Key();
++}
++
++	
++static int set_tm1628_led_value(char *display_code)
++{
++		int i,j = 0;
++		char data;
++		if(!display_code)
++			return 0;
++
++		if(!strncmp(display_code, "OFF", 3))
++		{
++			for(i=0; i<14; i++)
++			{
++				RamAll[i]=0;
++			}
++
++			MDrv_FrontPnl_Update();
++			LED_Standby_flag = 1;
++			return 0;
++		}
++		if(!strncmp(display_code, "ON", 2))
++		{
++			LED_Standby_flag = 0;
++			for(i=0; i<14; i++)
++			{
++				RamAll[i]=0;
++			}
++
++			MDrv_FrontPnl_Update();
++			return 0;
++		}
++		int len=strlen(display_code);
++		if(len >11)
++			len = 11;
++		
++		for(i=0; i<len; i++)
++		{
++			data = display_code[i];
++
++			if(data == ':')	
++			{
++				MDrv_TM1628_ShowSymbol(SYM_COLON,1);
++			}
++			else if(data == '.')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_COLON,0);
++			}
++			else if(data == 'a')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_PLAY,1);
++			}
++			else if(data == 'b')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_PAUSE,1);
++			}
++			else if(data == 'c')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_DVD,1);
++			}
++			else if(data == 'd')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_CD,1);
++			}
++			else if(data == 'e')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_MP4,1);
++			}
++			else if(data == 'f')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_MP3,1);
++			}	
++			else if(data == 'A')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_PLAY,0);
++			}
++			else if(data == 'B')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_PAUSE,0);
++			}
++			else if(data == 'C')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_DVD,0);
++			}
++			else if(data == 'D')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_CD,0);
++			}
++			else if(data == 'E')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_MP4,0);
++			}
++			else if(data == 'F')
++			{
++				MDrv_TM1628_ShowSymbol(SYM_MP3,0);
++			}				
++			else
++			{
++				MDrv_TM1628_BaseShowDigit(i, display_code[i]);
++			}
++		}
++
++		
++		DBG_VFD(printk("function[%s] line %d display string: %s .\n", __FUNCTION__,__LINE__,display_code));
++/*
++		printk("function: %s line %d .\n", __FUNCTION__,__LINE__);
++		for(i=0;i<j;i++){
++		 printk("set led display char[%d] is: %c \n", i,display_char[i]);
++		 if(display_char[i] == '\0')	{
++		 		printk("end char is: char[%d] \n", i);
++		 		break;
++		 	}
++		}
++*/		
++		MDrv_FrontPnl_Update();
++		return 0;
++}
++
++#ifdef CONFIG_VFD_TM1628
++int hardware_init(struct device_node* vfd_node)
++{
++		int ret;
++		char * str;
++		int pins_num;
++		printk("VFD init --------------------CONFIG_VFD_TM1628 jannie");
++		
++		//jj_modify jannie add begin		
++		//vfd_stb_pin = "GPIOH_3"
++		//vfd_clk_pin =  "GPIOH_6"
++		//vfd_data_pin = "GPIOH_5"
++		//static int gpio_vfd_stb_hdle = 0;
++		//static int gpio_vfd_clk_hdle = 0;
++		//static int gpio_vfd_data_hdle = 0;
++		pins_num = of_property_read_u32(vfd_node,"pins-integer",&pins_num);
++		if (pins_num != 1)
++		{
++			ret = of_property_read_string(vfd_node, "vfd_stb_pin", &str);
++			if(ret)
++			 {  
++				printk("Error: can not get vfd stb name------%s %d\n",__func__,__LINE__);
++				return -1;
++			 }else{
++				gpio_vfd_stb_hdle = amlogic_gpio_name_map_num(str);
++				printk("####vfd_stb_gpio is %d\n",gpio_vfd_stb_hdle);
++				ret = amlogic_gpio_request(gpio_vfd_stb_hdle,"m1-vfd");
++			 }
++			 
++			 ret = of_property_read_string(vfd_node, "vfd_clk_pin", &str);
++			if(ret)
++			 {  
++				printk("Error: can not get vfd clk name------%s %d\n",__func__,__LINE__);
++				return -1;
++			 }else{
++				gpio_vfd_clk_hdle = amlogic_gpio_name_map_num(str);
++				printk("####vfd_clk_gpio is %d\n",gpio_vfd_clk_hdle);
++				ret = amlogic_gpio_request(gpio_vfd_clk_hdle,"m1-vfd");
++			 }
++			 
++			 ret = of_property_read_string(vfd_node, "vfd_data_pin", &str);
++			if(ret)
++			 {  
++				printk("Error: can not get vfd data name------%s %d\n",__func__,__LINE__);
++				return -1;
++			 }else{
++				gpio_vfd_data_hdle = amlogic_gpio_name_map_num(str);
++				printk("####vfd_stb_gpio is %d\n",gpio_vfd_data_hdle);
++				ret = amlogic_gpio_request(gpio_vfd_data_hdle,"m1-vfd");
++			 }
++		}
++		else
++		{
++			// Pins are numeric values
++			ret = of_property_read_string(vfd_node, "vfd_stb_pin", &str);
++			gpio_vfd_stb_hdle = of_property_read_u32(vfd_node,"vfd_stb_pin",&gpio_vfd_stb_hdle);
++			gpio_vfd_clk_hdle = of_property_read_u32(vfd_node,"vfd_clk_pin",&gpio_vfd_stb_hdle);
++			gpio_vfd_data_hdle = of_property_read_u32(vfd_node,"vfd_data_pin",&gpio_vfd_stb_hdle);
++			
++			amlogic_gpio_request(gpio_vfd_stb_hdle,"m1-vfd");
++			amlogic_gpio_request(gpio_vfd_clk_hdle,"m1-vfd");
++			amlogic_gpio_request(gpio_vfd_data_hdle,"m1-vfd");
++		}
++		 
++		
++		//jj_modify jannie add end		
++	
++		ret = tm1628_init();					
++		return ret;	
++}
++
++int get_vfd_key_value(void)
++{
++		int key_value=0;
++		//key_value = get_tm1628_key_value();
++		return key_value;
++}
++
++int set_vfd_led_value(char *display_code)
++{
++		int ret;		
++		ret = set_tm1628_led_value(display_code);		
++		return ret;
++}
++#endif
++
++//==============================================================================
++//----------------------------KEY Function--------------------------------------
++//==============================================================================
++//-------------------------------------------------------------------------------------------------
++/// TM16281 Write Data
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_WriteData(U8 Value)
++{
++	U8 i, j;
++
++	for (i = 0; i < 8; i++) {
++		if (Value & 0x01) {
++			PT6964_DIN_H;
++		}
++		else {
++			PT6964_DIN_L;
++		}
++
++		PT6964_CLK_L;
++		udelay(30);
++		PT6964_CLK_H;
++		Value >>= 1;
++		j++;
++	}
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM16281 Write Data
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_Write_Adr_Data(U8 addr, U8 value)
++{
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0x40);
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(addr|0xc0);
++	MDrv_TM1628_WriteData(value);
++	PT6964_STB_H;
++}
++
++
++void MDrv_TM1628_Write_Ram_Data(U8 addr, U8 value)
++{
++	if(addr <14 )
++	{
++		RamAll[addr]=value;
++	}
++}
++
++
++
++//-------------------------------------------------------------------------------------------------
++/// TM16281 Clear Ram ( if you want to display new Char , you need Clear All)
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_Clear6964RAM(void)
++{
++	U8  i;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0x44);			//Command 1, increment address
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0xc0);			//Command 2, RAM address = 0
++	for(i=0;i<=13;i++)			                     //22 bytes
++	{
++		MDrv_TM1628_WriteData(0x00);
++	}
++	PT6964_STB_H;
++}
++
++//-------------------------------------------------------------------------------------------------
++/// Initialize TM16281
++/// @return TRUE  - Success
++///         FALSE - Failure
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_Init(void)
++{
++	U16 i , j ;
++
++	for(i=0; i<14; i++)
++	{
++		RamAll[i]=0;
++	}
++
++
++	PT6964_STB_H;					//Initial state
++	PT6964_CLK_H;					//Intial state
++	PT6964_DIN_H;
++
++	for (i = 0; i < 1000; i++)
++		for (j = 0; j < 1000; j++)
++			{;}
++	//mdelay(10);
++	MDrv_TM1628_Clear6964RAM();
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(FP_LED_MODE);
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0x8F);
++	PT6964_STB_H;
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM1628 Get Key
++/// @return None
++//-------------------------------------------------------------------------------------------------
++int MDrv_TM1628_FP_Get_Key(void)
++{
++	int i, value = 0, j;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0x42);
++	PT6964_DOUT_GET;
++	for (i = 0; i < 40; i++) {
++		PT6964_CLK_L;
++		j++;
++		value++;
++		j++;
++		if ((PT6964_DOUT_GET == 1 )) {
++			PT6964_CLK_H;
++			PT6964_STB_H;
++			return (value);
++		}
++		PT6964_CLK_H;
++	}
++
++	PT6964_STB_H;
++	value = 0;
++
++	return (value);
++}
++
++//-------------------------------------------------------------------------------------------------
++/// TM1628 display on
++/// @return TRUE  - Success
++///         FALSE - Failure
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_Display_On(void)
++{
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(FP_LED_MODE);
++	PT6964_STB_H;
++
++	PT6964_STB_L;
++	MDrv_TM1628_WriteData(0x8A); //jj_modify change 0x8F to 0x89
++	PT6964_STB_H;
++}
++
++// Keypad uAPI
++int  uKeypad_WakeUp(void)
++{
++	bool bGetKey = FALSE;
++
++	//if( !_GPIO_PM2_Read() )
++	if (MDrv_TM1628_FP_Get_Key()) {
++		bGetKey = TRUE;
++	}
++	return bGetKey;
++}
++
++void MDrv_TM1628_ShowSymbol(int sym, int onoff)
++{
++	
++	switch(sym)
++	{
++		case SYM_PLAY:
++			if(onoff)
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0]|(0x08));
++			}
++			else
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0]&(~0x08));
++			}
++			break;
++		case SYM_PAUSE:
++			if(onoff)
++			{			
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|(0x08));
++				}
++			else
++				{
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x08));
++				}
++		
++			break;
++
++		case SYM_DVD:
++			if(onoff)
++			{			
++			MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|(0x08));
++				}
++			else
++				{
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x08));
++				}			
++			break;
++		case SYM_CD:
++			if(onoff)
++			{			
++			MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|(0x08));
++				}
++			else
++				{
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~0x08));
++				}			
++			break;
++		case SYM_COLON:
++			if(onoff)
++			{			
++			MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|(0x08));
++				}
++			else
++				{
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~0x08));
++				}			
++			break;
++		case SYM_MP4:
++			if(onoff)
++			{			
++			MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0A]|(0x08));
++				}
++			else
++				{
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0A]&(~0x08));
++				}			
++			break;
++		case SYM_MP3:
++			if(onoff)
++			{			
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0C]|(0x08));
++			}
++			else
++			{
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0C]&(~0x08));
++			}			
++			break;	
++		default:
++			printk("warn: not support symbol\n");
++			break;
++	}
++}
++
++
++void MDrv_TM1628_BaseShowDigit(int numDig, char digit)
++{
++	int val=0x00;
++	if(numDig == 0)
++	{
++		val=0x80;
++	}
++	else if(numDig == 1)
++	{
++		val=0x40;
++	}
++	else if(numDig == 3)
++	{
++		val=0x20;
++	}
++	else if(numDig == 4)
++	{
++		val=0x10;
++	}
++	else
++	{
++		printk("warn: Dig err\n");
++		return;
++	}
++	
++	switch(digit)
++	{
++		case '0':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|val);
++
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0C]&(~val));
++			}
++			break;
++		case '1':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~val));
++
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]&(~val));
++			}
++			break;
++
++		case '2':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~val));
++
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|val);
++			}
++			break;
++		case '3':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|val);
++			}
++			break;
++		case '4':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|val);
++
++			}
++			break;
++		case '5':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|val);
++
++			}
++			break;
++		case '6':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|val);
++
++			}
++			break;	
++		case '7':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]&(~val));
++
++			}
++			break;
++		case '8':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0A]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0C]|val);
++
++			}
++			break;
++		case '9':
++			{
++				MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]|val);
++				MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]|val);
++				MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|val);
++				MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|val);
++				MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~val));
++				MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0A]|val);
++				MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0C]|val);
++			}
++			break;			
++		default:
++			printk("warn: not support symbol\n");
++			break;
++	}
++}
++
++
++//==============================================================================
++//----------------------------LED Function--------------------------------------
++//==============================================================================
++//-------------------------------------------------------------------------------------------------
++/// Show boot
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_ShowBoot(void)
++{
++	//b
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|0x80);
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|0x80);
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|0x80);
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|0x80);
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x80);
++
++	//o
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|0x40);
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|0x40);
++
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|0x40);
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x40);
++
++	//o
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]|0x20);
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|0x20);
++
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|0x20);
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x20);	
++
++	//t
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]|0x10);
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]|0x10);
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]|0x10);
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x10);
++	
++	
++}
++
++//-------------------------------------------------------------------------------------------------
++/// StandBy TM1628
++/// @return None
++//-------------------------------------------------------------------------------------------------
++void MDrv_TM1628_StandBy(void)
++{
++	//-
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x80));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x80);
++
++	//-
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~0x40));
++
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x40));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x40);
++
++	//-
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~0x20));
++
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x20));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x20);	
++
++	//-
++	MDrv_TM1628_Write_Ram_Data(0x00, RamAll[0x00]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x02, RamAll[0x02]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x04, RamAll[0x04]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x06, RamAll[0x06]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x08, RamAll[0x08]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x0A, RamAll[0x0a]&(~0x10));
++	MDrv_TM1628_Write_Ram_Data(0x0C, RamAll[0x0c]|0x10);
++	
++	
++}
++
++//----------------------------------------------------
++// Function Name: Mdrv_6961_LED_DISP
++// Description:
++//		Update PT6961/PT6964/ET6201 LED display data RAM.
++// Parameters:
++//		U8_LedBit, LED number
++//		U8_LowByte, LowByte data in RAM     LSB~MSB : SEG1~ SEG8
++//		U8_HighByte, High Byte data in RAM	LSB~MSB : SEG9 ~ SEG12 + xxxx
++// 			LED bit sequence Can be address by the following Macro:
++//		LED_WORD1_ADDR /  LED_WORD2_ADDR /LED_WORD3_ADDR / LED_WORD4_ADDR
++//------------------------------------------------------------------------
++void MDrv_TM1628_LED_DISP(char U8_Ledbit, char U8_LowByte, char U8_HighByte)
++{
++	return;
++}
++
++//-------------------------------------------------------------
++// Function: MDrv_FP_LED_CharSet
++// Description :
++//			Set dedicated LED data, including dot
++// parameters:
++//			ledBit, led bit select
++//			U8LedChar: char data
++
++//-------------------------------------------------------------------
++bool MDrv_FP_LED_CharSet(char ledBit, char U8LEDChar)
++{
++	return 1;
++}
++
++void MDrv_FrontPnl_Update()
++{
++	int i=0;
++	for(i=0; i<14; i++)
++	{
++//		printk("-----winddylog: addr:%d, value:0x%02x----\n",i, RamAll[i]);
++		MDrv_TM1628_Write_Adr_Data(i,RamAll[i]);
++	}
++
++	MDrv_TM1628_Display_On();
++}
++
++// Frontpanel API
++void MDrv_FrontPnl_Init(void)
++{
++	printk("####################come here #####################\n");
++/*	while(1)
++	{
++		PT6964_CLK_H;
++		udelay(30);
++		PT6964_CLK_L;
++jannie_vfd_stb_pin_set_value(0);
++udelay(30);
++jannie_vfd_stb_pin_set_value(1);
++
++jannie_vfd_do_pin_set_value(0);
++udelay(30);
++jannie_vfd_do_pin_set_value(1);
++	}*/
++	MDrv_TM1628_Init();
++	MDrv_TM1628_ShowBoot();
++	MDrv_FrontPnl_Update();
++}
++
++
++//------------- END OF FILE ------------------------
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/tm1628.h linux-amlogic-bbdd524/drivers/amlogic/input/vfd/tm1628.h
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/tm1628.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/tm1628.h	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,315 @@
++#ifndef TM_1628_H
++#define	TM_1628_H
++//def GIEC_LED_DISPLAY
++
++#if 0//def GK-HD200T
++#define	COLON_ENABLE				0	// Maybe cause error of the display of 1bit LED
++#define	FP_LED_MODE					0x02
++// -------------- DIGITAL LED MACRO -----------------
++#define LED_NUM						4
++#define FP_DOT1_DIG				2
++#define FP_DOT2_DIG				4
++#define FP_DOT_SEG_NUM				6
++#define LED_WORD1_ADDR				0
++#define	LED_WORD2_ADDR				2
++#define	LED_WORD3_ADDR				4
++#define	LED_WORD4_ADDR				6
++#define	LED_WORD5_ADDR				10
++#define	LED_COLON_ADDR				8
++#define	LED_COLON_ENABLE_LOW		0xFF
++#define	LED_COLON_ENABLE_HIGH		0xFF
++#define	LED_COLON_DISABLE_LOW		0
++#define	LED_COLON_DISABLE_HIGH		0
++
++#define FRONTPNL_START_TIME_MS		3	//((1000 / 50) / LED_NUM)
++#define FRONTPNL_PERIOD_TIME_MS		150
++
++
++typedef struct {
++    char u8Char;
++    char u8SegmentLowByte;
++    char u8SegmentHighByte;
++} Char2Segment;
++#define BIT_A		(1 << 0)	//            a
++#define BIT_B		(1 << 1)	//         -------
++#define BIT_C		(1 << 2)	//        |       |
++#define BIT_D		(1 << 3)	//    //f |       | b
++#define BIT_E		(1 << 4)	//         ---g---
++#define BIT_F		(1 << 5)	//        |       |	c
++#define BIT_G		(1 << 6)	//    //e |       |
++#define BIT_P		(1 << 7)	//         ---d---   p
++#else  //B203_PANEL
++#define	COLON_ENABLE				0	// Maybe cause error of the display of 1bit LED
++#define	FP_LED_MODE					0x03
++// -------------- DIGITAL LED MACRO -----------------
++#define LED_NUM								5
++#define LED_BYTE_NUM					7
++#define FP_DOT1_DIG						2
++#define FP_DOT2_DIG						4
++#define FP_DOT_ENABLE					0
++#define FP_DOT_SEG_NUM				6
++#define LED_WORD1_ADDR				0
++#define	LED_WORD2_ADDR				2
++#define	LED_WORD3_ADDR				4
++#define	LED_WORD4_ADDR				6
++#define	LED_WORD5_ADDR				8
++#define	LED_WORD6_ADDR				10
++#define	LED_COLON_ADDR				12
++#define	LED_COLON_ENABLE_LOW		0xFF
++#define	LED_COLON_ENABLE_HIGH		0xFF
++#define	LED_COLON_DISABLE_LOW		0
++#define	LED_COLON_DISABLE_HIGH		0
++
++#define FRONTPNL_START_TIME_MS		3	//((1000 / 50) / LED_NUM)
++#define FRONTPNL_PERIOD_TIME_MS		150
++
++
++typedef struct {
++    char u8Char;
++    char u8SegmentLowByte;
++    char u8SegmentHighByte;
++} Char2Segment;
++#define BIT_A		(1 << 0)	//            a
++#define BIT_B		(1 << 1)	//         -------
++#define BIT_C		(1 << 2)	//        |       |
++#define BIT_D		(1 << 5)	//    //f |       | b
++#define BIT_E		(1 << 4)	//         ---g---
++#define BIT_F		(1 << 3)	//        |       |	c
++#define BIT_G		(1 << 6)	//    //e |       |
++#define BIT_P		(1 << 7)	//         ---d---   p
++
++#endif
++#define LED_DATA_LIGHT		1	// open or close this when choose light mode
++#if (LED_DATA_LIGHT == 0)
++#define DATA_NOT	~	// data_reverse
++#else
++#define DATA_NOT		// no reverse
++#endif
++// ????????????????????????????K??????K????????o?BIT_A??BIT_B??
++#define DATA_0		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_1		(DATA_NOT (BIT_B | BIT_C))
++#define DATA_2		(DATA_NOT (BIT_A | BIT_B | BIT_D | BIT_E | BIT_G))
++#define DATA_3		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_G))
++#define DATA_4		(DATA_NOT (BIT_B | BIT_C | BIT_F | BIT_G))
++#define DATA_5		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_6		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_7		(DATA_NOT (BIT_A | BIT_B | BIT_C))
++#define DATA_8		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_9		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_A		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_b		(DATA_NOT (BIT_C | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_C		(DATA_NOT (BIT_A | BIT_D | BIT_E | BIT_F))
++#define DATA_c		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_d		(DATA_NOT (BIT_B | BIT_C | BIT_D | BIT_E | BIT_G))
++#define DATA_E		(DATA_NOT (BIT_A | BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_F		(DATA_NOT (BIT_A | BIT_E | BIT_F | BIT_G))
++#define DATA_H		(DATA_NOT (BIT_B | BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_h		(DATA_NOT (BIT_C | BIT_E | BIT_F | BIT_G))
++#define DATA_I		(DATA_NOT (BIT_E | BIT_F))
++#define DATA_i		(DATA_NOT (BIT_E))
++#define DATA_L		(DATA_NOT (BIT_D | BIT_E | BIT_F))
++#define DATA_N		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_E | BIT_F))
++#define DATA_n		(DATA_NOT (BIT_C | BIT_E | BIT_G))
++#define DATA_O		(DATA_NOT (BIT_A | BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_o		(DATA_NOT (BIT_C | BIT_D | BIT_E | BIT_G))
++#define DATA_P		(DATA_NOT (BIT_A | BIT_B | BIT_E | BIT_F | BIT_G))
++#define DATA_R		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_r		(DATA_NOT (BIT_D | BIT_E | BIT_G))
++#define DATA_S		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_s		(DATA_NOT (BIT_A | BIT_C | BIT_D | BIT_F | BIT_G))
++#define DATA_T		(DATA_NOT (BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_t		(DATA_NOT (BIT_D | BIT_E | BIT_F | BIT_G))
++#define DATA_U		(DATA_NOT (BIT_B | BIT_C | BIT_D | BIT_E | BIT_F))
++#define DATA_u		(DATA_NOT (BIT_C | BIT_D | BIT_E))
++#define DATA_DP		(DATA_NOT (BIT_P))
++#define DATA_HYPH	(DATA_NOT (BIT_G))
++#define DATA_DARK	(DATA_NOT (0x00))
++static const char FP_LED_BOOT[] =
++{
++	0xF0,
++	0x00,
++	0xD0,
++	0x01,
++	0xD0,
++	0x01,
++	0xF0,
++	0x01
++};
++
++static const char FP_LED_STANDBY[]=
++{
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x00,
++	0x04
++};
++
++
++//  ---1---
++//    |     |
++//    2     3
++//    |     |
++//  ---4---
++//    |     |
++//    8     5
++//    |     |
++//  ---7---
++
++static const Char2Segment _char2SegmentTable[] =
++{
++#if 0
++	// char, low Byte, High Byte
++	{'S', 0x5B, 0x00},
++	{'0', 0xD7, 0x00},
++	{'1', 0x14, 0x00},	//{'1',0x00,0x03},
++	{'2', 0xCD, 0x00},
++	{'3', 0x5D, 0x00},
++	{'4', 0x1E, 0x00},
++	{'5', 0x5B, 0x00},
++	{'6', 0xDB, 0x00},
++	{'7', 0x15, 0x00},
++	{'8', 0xDF, 0x00},
++	{'9', 0x5F, 0x00},
++	{'A', 0x9F, 0x00},
++	{'B', 0xDA, 0x00},
++	{'b', 0xDA, 0x00},
++	{'C', 0xC3, 0x00},
++	{'c', 0xC8, 0x00},
++	{'D', 0xDC, 0x00},
++	{'d', 0xDC, 0x00},
++	{'E', 0xCB, 0x00},
++	{'F', 0x8B, 0x00},
++	{'H', 0x9E, 0x00},	//{'H',0x70,0x03},
++	{'h', 0x9A, 0x00},
++	{'I', 0x14, 0x00},
++	{'i', 0x14, 0x00},
++	{'L', 0xC2, 0x00},
++	{'n', 0x98, 0x00},
++	{'N', 0x97, 0x00},
++	{'O', 0xD8, 0x00},
++	{'o', 0xD8, 0x00},
++	{'P', 0x8F, 0x00},
++	{'R', 0x9F, 0x00},
++	{'r', 0x9F, 0x00},
++	{'T', 0xCA, 0x00},
++	{'t', 0xCA, 0x00},
++	{'U', 0xD6, 0x00},
++	{'V', 0xD6, 0x00},
++	{'-', 0x08, 0x00},
++	{' ', 0x00, 0x00},
++
++#else	// for HENAG by scares
++	// char, low Byte, High Byte
++	{'0', DATA_0, 0x00},
++	{'1', DATA_1, 0x00},
++	{'2', DATA_2, 0x00},
++	{'3', DATA_3, 0x00},
++	{'4', DATA_4, 0x00},
++	{'5', DATA_5, 0x00},
++	{'6', DATA_6, 0x00},
++	{'7', DATA_7, 0x00},
++	{'8', DATA_8, 0x00},
++	{'9', DATA_9, 0x00},
++	{'A', DATA_A, 0x00},
++	{'B', DATA_b, 0x00},
++	{'b', DATA_b, 0x00},
++	{'C', DATA_C, 0x00},
++	{'c', DATA_c, 0x00},
++	{'D', DATA_d, 0x00},
++	{'d', DATA_d, 0x00},
++	{'E', DATA_E, 0x00},
++	{'F', DATA_F, 0x00},
++	{'H', DATA_H, 0x00},
++	{'h', DATA_h, 0x00},
++	{'I', DATA_I, 0x00},
++	{'i', DATA_i, 0x00},
++	{'L', DATA_L, 0x00},
++	{'n', DATA_n, 0x00},
++	{'N', DATA_N, 0x00},
++	{'O', DATA_O, 0x00},
++	{'o', DATA_o, 0x00},
++	{'P', DATA_P, 0x00},
++	{'R', DATA_R, 0x00},
++	{'r', DATA_r, 0x00},
++	{'S', DATA_S, 0x00},
++	{'T', DATA_T, 0x00},
++	{'t', DATA_t, 0x00},
++	{'U', DATA_U, 0x00},
++	{'V', DATA_u, 0x00},
++	{'-', DATA_HYPH, 0x00},
++	{' ', DATA_DARK, 0x00},
++#endif
++};
++// NOTE: in 6964 the CHAR arrayed like 'hgfedcba', and the 'h' is the MSB.
++
++//----------------- IO MACRO ------------------------
++/*
++#define REG(addr)				(*(volatile MS_U32 *)(addr))
++#define REG_CHIP_TOP_BASE		0xBF803C00
++
++#define REG_CHIP_TOP2C			(0x2C*4 + (REG_CHIP_TOP_BASE))
++#define REG_CHIP_TOP06			(0x06*4 + (REG_CHIP_TOP_BASE))
++#define REG_CHIP_TOP0E			(0x0E*4 + (REG_CHIP_TOP_BASE))
++
++#define REG_GPIO_CI_IN			(0x5A*4 + (REG_CHIP_TOP_BASE))
++#define REG_GPIO_CI_OUT			(0x57*4 + (REG_CHIP_TOP_BASE))
++#define REG_GPIO_CI_OEN			(0x4C*4 + (REG_CHIP_TOP_BASE))
++
++#define REG_PM_BASE				0xBF809F00  //(0x27C0 * 4) + 0xBF800000
++#define REG_PMCEC_EN			(0x00*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_OUT_PM2_EN	(0x01*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_OEN			(0x02*4 + (REG_PM_BASE))
++#define REG_PM_GPIO_IN			(0x03*4 + (REG_PM_BASE))
++
++#define KEYPAD_CHANNEL_START	1           ///< Define the start keypad channel
++#define KEYPAD_CHANNEL_END		2           ///< Define the end keypad channel
++#define KEYPAD_CHANNEL_NUM		(KEYPAD_CHANNEL_END - KEYPAD_CHANNEL_START + 1) ///< Define the number of keypad channel.
++*/
++#define PT6964_CLK_H			vfd_set_clock_pin_value(1)
++#define PT6964_CLK_L			vfd_set_clock_pin_value(0)
++
++#define PT6964_DIN_H			vfd_set_do_pin_value(1)
++#define PT6964_DIN_L			vfd_set_do_pin_value(0)
++
++#define PT6964_DOUT_GET			vfd_get_di_pin_value()
++
++#define	PT6964_STB_H			vfd_set_stb_pin_value(1)
++#define	PT6964_STB_L			vfd_set_stb_pin_value(0)
++
++//------------ KEY PAD macro ------------------
++
++//-------------------------------------------------------------------------------------------------
++// Defines
++//-------------------------------------------------------------------------------------------------
++#define PT6964_KEY_L0			1 //
++#define PT6964_KEY_L1			4 //
++#define PT6964_KEY_L2			5 //
++#define PT6964_KEY_L3			6 //
++#define PT6964_KEY_L4			7 //
++#define PT6964_KEY_L5			8 //
++
++typedef struct {
++	char keyMapData;
++	char keyMapLevel;
++} VFD_KEYMAP;
++
++typedef     unsigned char       U8;
++typedef     unsigned short      U16;
++//typedef 		_Bool								bool;
++
++enum {
++    FALSE = 0,
++    TRUE  = 1
++};
++
++#define DELAY(x) { mdelay(32 * x); }
++char dig_value[LED_BYTE_NUM];
++//char bit2seg[LED_NUM] = {4,3,1,0,2};
++char bit2seg[LED_NUM] = {2,0,1,3,4};
++
++#endif
++
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/vfd.c linux-amlogic-bbdd524/drivers/amlogic/input/vfd/vfd.c
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/vfd.c	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/vfd.c	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,456 @@
++/*
++ * linux/drivers/input/vfd/vfd.c
++ *
++ * VFD Driver
++ *
++ * Copyright (C) 2011 Amlogic Corporation
++ *
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * author :   tiejun_peng
++ */
++ /*
++ * !!caution: 
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/types.h>
++#include <linux/input.h>
++#include <linux/kernel.h>
++#include <linux/delay.h>
++#include <linux/platform_device.h>
++#include <linux/mutex.h>
++#include <linux/errno.h>
++#include <asm/irq.h>
++#include <asm/io.h>
++
++#include <mach/am_regs.h>
++#include <mach/pinmux.h>
++#include <linux/major.h>
++#include <linux/slab.h>
++#include <asm/uaccess.h>
++
++#include <linux/amlogic/input/vfd.h>
++
++#ifdef CONFIG_VFD_SM1628
++#include "vfd_comm.h"
++#endif
++
++#ifdef CONFIG_VFD_TM1628
++#include "vfd_comm.h"
++#endif
++
++#ifdef CONFIG_HAS_EARLYSUSPEND
++#include <linux/earlysuspend.h>
++static struct early_suspend vfd_early_suspend;
++#endif
++
++#ifdef AML_VFD_DEBUG
++#define DBG_PR_VAL	1
++#else
++#define DBG_PR_VAL	0
++#endif
++
++struct vfd {
++		struct input_dev *input;
++		struct timer_list timer;		
++	  char config_name[20];
++	  struct class *config_class;
++	  struct device *config_dev;
++	  int config_major;	
++		unsigned int cur_keycode;			
++		unsigned int debug_enable;
++		char set_led_value[12]; //patch 8->11
++		char cur_led_value[12]; //patch 8->11
++		struct vfd_key *key;
++		int key_num;
++};
++
++type_vfd_printk vfd_input_dbg;
++
++static struct vfd *gp_vfd=NULL;
++
++#ifdef CONFIG_HAS_EARLYSUSPEND
++static int vfd_suspend(struct early_suspend *handler);
++static int vfd_resume(struct early_suspend *handler);
++#else
++static int vfd_suspend(struct i2c_client *client, pm_message_t msg);
++static int vfd_resume(struct i2c_client *client, pm_message_t msg);
++#endif
++
++static DEFINE_MUTEX(led_set_mutex);
++
++int vfd_printk(const char *fmt, ...)
++{
++    va_list args;
++    int r;
++
++    if (gp_vfd->debug_enable==0)  return 0;
++    va_start(args, fmt);
++    r = vprintk(fmt, args);
++    va_end(args);
++    return r;
++}
++
++/*****************************************************************
++**
++** func : hardware init
++**       in this function will do pin configuration and and initialize for hardware
++**
++********************************************************************/
++
++static int set_led_string( char *string)
++{	
++		memset(gp_vfd->set_led_value, 0, 12);
++		sprintf(gp_vfd->set_led_value, "%s", string);
++		//gp_vfd->set_led_value[11] = '\0';		
++		return 0;
++}
++
++static ssize_t vfd_key_get(struct device *dev,
++                   struct device_attribute *attr, char *buf)
++{
++    return sprintf(buf, "%u\n", gp_vfd->cur_keycode);
++}
++
++static ssize_t vfd_led_show(struct device *dev,
++                   struct device_attribute *attr, char *buf)
++{
++    return sprintf(buf, "%s\n", gp_vfd->cur_led_value);
++}
++
++//control var by sysfs .
++static ssize_t vfd_led_store(struct device *dev, struct device_attribute *attr,
++                    const char *buf, size_t count)
++{
++		char value[12]={0};
++		if (sscanf(buf, "%s", value) != 1)
++       return -EINVAL;
++		vfd_printk("function[%s]line%d :vfd led display: %s \n",__FUNCTION__,__LINE__, value);
++		mutex_lock(&led_set_mutex);
++		set_led_string(value);
++		mutex_unlock(&led_set_mutex);
++		
++    return strlen(buf);
++}
++
++
++static DEVICE_ATTR(key, S_IRUGO | S_IWUSR, vfd_key_get, NULL);
++static DEVICE_ATTR(led, S_IRUGO | S_IWUSR, vfd_led_show, vfd_led_store);
++
++/*******************************************************************
++**stand code
++********************************************************************/
++
++
++static int vfd_search_key(struct vfd *vfd)
++{
++		struct vfd_key *key = vfd->key;
++		int value,j;
++	
++		value = get_vfd_key_value();		
++		if (value <= 0) {
++			return 0;
++		}
++		vfd_printk("function<%s> line <%d> get VFD key value : [%d]  \n",__FUNCTION__,__LINE__,value);
++	 	for (j=0; j<vfd->key_num; j++) {
++			if ((value == key->value)) {
++				return key->code;
++			}
++			key++;
++		}
++		
++	return 0;
++}
++
++static void vfd_work(struct vfd *vfd)
++{
++		int code = vfd_search_key(vfd);
++	
++		if (vfd->cur_keycode) {
++			if (!code) {
++				vfd_printk("vfd report key code: [%d] released.\n", vfd->cur_keycode);
++				input_report_key(vfd->input, vfd->cur_keycode, 0);
++				vfd->cur_keycode = 0;	
++			}
++			else {
++			// detect another key while pressed
++			}	
++		}
++		else {
++			if (code) {
++				vfd->cur_keycode = code;
++				vfd_printk("vfd report key code: [%d] pressed.\n", vfd->cur_keycode);
++				input_report_key(vfd->input, vfd->cur_keycode, 1);
++			}
++		}
++}
++
++void vfd_timer_sr(unsigned long data)
++{
++		struct vfd *vfd_data=(struct vfd *)data;
++		int i;
++		vfd_work(vfd_data);
++		if(strcmp(gp_vfd->cur_led_value,gp_vfd->set_led_value)) {								
++				vfd_printk("function[%s] line %d current LED value :%s ,set LED value :%s \n",__FUNCTION__,__LINE__,gp_vfd->cur_led_value,gp_vfd->set_led_value);
++				strcpy(gp_vfd->cur_led_value,gp_vfd->set_led_value);//vfd->cur_ledcode = vfd->set_ledcode;
++				set_vfd_led_value(gp_vfd->cur_led_value);
++			}
++		mod_timer(&vfd_data->timer,jiffies+msecs_to_jiffies(200));
++}
++
++static int
++vfd_config_open(struct inode *inode, struct file *file)
++{
++    file->private_data = gp_vfd;
++    return 0;
++}
++
++static int
++vfd_config_release(struct inode *inode, struct file *file)
++{
++    file->private_data=NULL;
++    return 0;
++}
++
++static const struct file_operations vfd_fops = {
++    .owner      = THIS_MODULE,
++    .open       = vfd_config_open,
++    .release    = vfd_config_release,
++};
++
++static int  register_vfd_dev(struct vfd  *vfd)
++{
++    int ret=0;
++    strcpy(vfd->config_name,"aml_vfd");
++    ret=register_chrdev(0,vfd->config_name,&vfd_fops);
++    if(ret <=0)
++    {
++        printk("register char dev vfd error\r\n");
++        return  ret ;
++    }
++    vfd->config_major=ret;
++    printk("vfd config major:%d\r\n",ret);
++    vfd->config_class=class_create(THIS_MODULE,vfd->config_name);
++    vfd->config_dev=device_create(vfd->config_class,NULL,MKDEV(vfd->config_major,0),NULL,vfd->config_name);
++    return ret;
++}
++//jj_modify jannie add begin
++static struct vfd_key vfd_key[] = {
++	{KEY_UP,        "up",   17},
++	{KEY_DOWN,      "down", 20},
++	{KEY_RIGHT,     "right",21},
++	{KEY_BACK,      "back", 25},
++	{KEY_LEFT,      "left", 26},
++	{KEY_REPLY,     "ok",   18},
++};
++//jj_modify jannie add end
++static int __init vfd_probe(struct platform_device *pdev)
++{
++    struct vfd *vfd;
++    struct input_dev *input_dev;
++    int ret,i;
++    struct vfd_key *temp_key;
++	struct device_node* vfd_node = pdev->dev.of_node;  //jj_modify jannie
++    //struct vfd_platform_data *pdata = pdev->dev.platform_data;
++    printk("###################vfd_probe \n");
++    /*if (!pdata) {
++        dev_err(&pdev->dev, "platform data is required!\n");
++        return -EINVAL;
++    }*/
++    if(hardware_init(vfd_node)) {
++    		printk("vfd hardware initial failed!\n");  
++    		return -EINVAL;
++    }
++    
++    vfd = kzalloc(sizeof(struct vfd), GFP_KERNEL);
++    input_dev = input_allocate_device();
++    if (!vfd || !input_dev)
++        goto err1;
++ 
++    gp_vfd = vfd;
++    vfd->debug_enable = DBG_PR_VAL;
++    vfd_input_dbg = vfd_printk;
++		platform_set_drvdata(pdev, vfd);
++		
++		vfd->input = input_dev;
++		vfd->cur_keycode = 0;
++		strcpy(vfd->set_led_value, "OFF");
++		strcpy(vfd->cur_led_value, "OFF");
++		
++		setup_timer(&vfd->timer, vfd_timer_sr, (unsigned long)vfd) ;
++		mod_timer(&vfd->timer, jiffies+msecs_to_jiffies(100));
++		
++		/* setup input device */
++    set_bit(EV_KEY, input_dev->evbit);
++    set_bit(EV_REP, input_dev->evbit);
++    
++    vfd->key = &vfd_key[0];
++    vfd->key_num = ARRAY_SIZE(vfd_key);//pdata->key_num;  //jj_modify jannie add
++    temp_key = &vfd_key[0];//pdata->key;  //jj_modify jannie add
++		for (i=0; i<vfd->key_num; i++) {
++				set_bit(temp_key->code, input_dev->keybit);
++				printk(KERN_INFO "%s vfd key(%d) registed.\n", temp_key->name, temp_key->code);
++        temp_key++;
++    }
++    
++		ret = device_create_file(&pdev->dev, &dev_attr_key);
++		if (ret < 0)
++        goto err1;
++    ret = device_create_file(&pdev->dev, &dev_attr_led);  
++		if (ret < 0)
++        goto err1;
++    vfd_input_dbg("device_create_file completed \r\n");   
++      
++    input_dev->name = "vfd_keypad";
++    input_dev->phys = "vfd_keypad/input0";
++    input_dev->dev.parent = &pdev->dev;
++
++    input_dev->id.bustype = BUS_ISA;
++    input_dev->id.vendor = 0x0001;
++    input_dev->id.product = 0x0001;
++    input_dev->id.version = 0x0100;
++
++    input_dev->rep[REP_DELAY]=0xffffffff;
++    input_dev->rep[REP_PERIOD]=0xffffffff;
++
++    input_dev->keycodesize = sizeof(unsigned short);
++    input_dev->keycodemax = 0x1ff;
++
++    ret = input_register_device(vfd->input);
++    if (ret < 0) {
++        printk(KERN_ERR "Unable to register vfdkeypad input device\n");
++        goto err2;
++    }
++    vfd_input_dbg("input_register_device completed \r\n");    
++
++    register_vfd_dev(gp_vfd);
++	
++#ifdef CONFIG_HAS_EARLYSUSPEND
++	vfd_early_suspend.level = EARLY_SUSPEND_LEVEL_BLANK_SCREEN;
++	vfd_early_suspend.suspend = vfd_suspend;
++	vfd_early_suspend.resume = vfd_resume;
++	//vfd_early_suspend.param = pdata;
++	register_early_suspend(&vfd_early_suspend);
++#endif
++
++    return 0;
++/*    
++err3:
++    input_unregister_device(vfd->input);
++    input_dev = NULL;
++*/    
++err2:
++    device_remove_file(&pdev->dev, &dev_attr_key);
++    device_remove_file(&pdev->dev, &dev_attr_led);
++err1:
++    kfree(vfd);
++    input_free_device(input_dev);
++
++    return -EINVAL;
++}
++
++static int vfd_remove(struct platform_device *pdev)
++{
++	  struct vfd *vfd = platform_get_drvdata(pdev);
++	   /* unregister everything */
++    input_unregister_device(vfd->input);
++		device_remove_file(&pdev->dev, &dev_attr_key);
++    device_remove_file(&pdev->dev, &dev_attr_led);
++    
++		input_free_device(vfd->input);
++    unregister_chrdev(vfd->config_major,vfd->config_name);
++    if(vfd->config_class)
++    {
++        if(vfd->config_dev)
++        device_destroy(vfd->config_class,MKDEV(vfd->config_major,0));
++        class_destroy(vfd->config_class);
++    }       
++    kfree(vfd);
++    gp_vfd = NULL ;
++    return 0;	
++	
++}
++#ifdef CONFIG_HAS_EARLYSUSPEND
++static int vfd_suspend(struct early_suspend *handler)
++{
++	set_led_string("OFF");
++	return 0;
++}
++static int vfd_resume(struct early_suspend *handler)
++{
++	set_led_string("ON");
++	return 0;	
++}
++#else
++static int vfd_suspend(struct i2c_client *client, pm_message_t msg)
++{
++	set_led_string("OFF");
++	return 0;
++}
++
++static int vfd_resume(struct i2c_client *client, pm_message_t msg)
++{
++	set_led_string("OFF");
++	return 0;	
++}
++#endif
++
++static const struct of_device_id key_vfd_match[]={
++        {       .compatible = "amlogic,m1-vfd",
++        },
++        {},
++};
++
++static const struct of_device_id meson6_vfd_dt_match[]={
++	{ .compatible = "amlogic,m1-vfd"},
++	{},
++};
++
++static struct platform_driver vfd_driver = {
++    .probe      = vfd_probe,
++    .remove     = vfd_remove,
++#ifndef CONFIG_HAS_EARLYSUSPEND
++    .suspend    = vfd_suspend,
++    .resume     = vfd_resume,
++#endif    
++    .driver     = {
++        .name   = "m1-vfd",
++		.of_match_table=meson6_vfd_dt_match,
++    },
++};
++
++static int __init vfd_init(void)
++{
++    printk("VFD Driver################################\n");
++
++    return platform_driver_register(&vfd_driver);
++}
++
++static void __exit vfd_exit(void)
++{
++    printk(KERN_INFO "VFD exit \n");
++    platform_driver_unregister(&vfd_driver);
++}
++
++module_init(vfd_init);
++module_exit(vfd_exit);
++
++MODULE_AUTHOR("tiejun_peng");
++MODULE_DESCRIPTION("Amlogic VFD Driver");
++MODULE_LICENSE("GPL");
+diff -Nru linux-amlogic-5f3c177/drivers/amlogic/input/vfd/vfd_comm.h linux-amlogic-bbdd524/drivers/amlogic/input/vfd/vfd_comm.h
+--- linux-amlogic-5f3c177/drivers/amlogic/input/vfd/vfd_comm.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/amlogic/input/vfd/vfd_comm.h	2015-05-13 10:18:45.000000000 +0300
+@@ -0,0 +1,7 @@
++#include <linux/platform_device.h>
++
++typedef int (*type_vfd_printk)(const char *fmt, ...);
++
++int hardware_init(struct device_node* vfd_node);
++int get_vfd_key_value(void);
++int set_vfd_led_value(char *display_code);
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/common.h linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/common.h
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/common.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/common.h	2015-05-13 10:18:44.000000000 +0300
+@@ -40,7 +40,7 @@
+ 
+ #undef CHIP_DEBUG_PRINT
+ /* Turn-on extra printk debug for MAC core, dma and descriptors */
+-//#define CHIP_DEBUG_PRINT 
++/* #define CHIP_DEBUG_PRINT */
+ 
+ #ifdef CHIP_DEBUG_PRINT
+ #define CHIP_DBG(fmt, args...)  printk(fmt, ## args)
+@@ -53,7 +53,7 @@
+ #define	DWMAC_CORE_3_50	0x35
+ 
+ #undef FRAME_FILTER_DEBUG
+- //#define FRAME_FILTER_DEBUG */
++/* #define FRAME_FILTER_DEBUG */
+ 
+ struct stmmac_extra_stats {
+ 	/* Transmit errors */
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c	2015-05-13 10:18:44.000000000 +0300
+@@ -37,17 +37,10 @@
+ 	u32 value = readl(ioaddr + GMAC_CONTROL);
+ 	value |= GMAC_CORE_INIT;
+ 	writel(value, ioaddr + GMAC_CONTROL);
++
+ 	/* Mask GMAC interrupts */
+-	writel(0x0, ioaddr + GMAC_INT_MASK);
+-	//writel(0x207, ioaddr + GMAC_INT_MASK);
+-/*close mmc interrupts this funtion is s812  chip bug*/
+-	 if (IS_MESON_M8M2_CPU){
+-	 	printk("mask interrupts MMC\n");
+-		writel(0xffffffff, ioaddr + ETH_MMC_ipc_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_tx);
+-	 }
+-  
++	writel(0x207, ioaddr + GMAC_INT_MASK);
++
+ #ifdef STMMAC_VLAN_TAG_USED
+ 	/* Tag detection without filtering */
+ 	writel(0x0, ioaddr + GMAC_VLAN_TAG);
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000_dma.c	2015-05-13 10:18:44.000000000 +0300
+@@ -47,13 +47,7 @@
+ 	}
+ 	if (limit < 0)
+ 		return -EBUSY;
+-/*close mmc interrupts this funtion is s812  chip bug*/
+-	 if (IS_MESON_M8M2_CPU){
+-	 	printk("mask interrupts MMC\n");
+-		writel(0xffffffff, ioaddr + ETH_MMC_ipc_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_tx);
+- 	}
++
+ 	/*
+ 	 * Set the DMA PBL (Programmable Burst Length) mode
+ 	 * Before stmmac core 3.50 this mode bit was 4xPBL, and
+@@ -84,13 +78,7 @@
+ 		value |= DMA_BUS_MODE_ATDS;
+ 
+ 	writel(value, ioaddr + DMA_BUS_MODE);
+-/*close mmc interrupts this funtion is s812  chip bug*/
+-	 if (IS_MESON_M8M2_CPU){
+-	 	printk("mask interrupts MMC\n");
+-		writel(0xffffffff, ioaddr + ETH_MMC_ipc_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_tx);
+- 	}
++
+ 	/* In case of GMAC AXI configuration, program the DMA_AXI_BUS_MODE
+ 	 * for supported bursts.
+ 	 *
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h	2015-05-13 10:18:44.000000000 +0300
+@@ -21,9 +21,7 @@
+ *******************************************************************************/
+ #ifndef __DWMAC1000_H__
+ #define __DWMAC1000_H__
+-#ifdef CONFIG_DWMAC_MESON
+-#include<plat/cpu.h>
+-#endif
++
+ #include <linux/phy.h>
+ #include "common.h"
+ 
+@@ -37,9 +35,7 @@
+ #define GMAC_VLAN_TAG		0x0000001c	/* VLAN Tag */
+ #define GMAC_VERSION		0x00000020	/* GMAC CORE Version */
+ #define GMAC_WAKEUP_FILTER	0x00000028	/* Wake-up Frame Filter */
+-#define ETH_MMC_ipc_intr_mask_rx        (0x0200)
+-#define ETH_MMC_intr_mask_rx            (0x010C)
+-#define ETH_MMC_intr_mask_tx            (0x0110)
++
+ #define GMAC_INT_STATUS		0x00000038	/* interrupt status register */
+ enum dwmac1000_irq_status {
+ 	lpiis_irq = 0x400,
+@@ -158,15 +154,10 @@
+ #define GMAC_CONTROL_DC		0x00000010	/* Deferral Check */
+ #define GMAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
+ #define GMAC_CONTROL_RE		0x00000004	/* Receiver Enable */
+-#if 1
+-#define GMAC_CORE_INIT 	(GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL_ACS | \
++
++#define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL_ACS | \
+ 			GMAC_CONTROL_JE | GMAC_CONTROL_BE)
+-#else
+-#define GMAC_CORE_INIT  (GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL_ACS | \
+-			GMAC_CONTROL_JE | GMAC_CONTROL_BE|GMAC_CONTROL_IPC)
+-#endif
+-#define MAC_CORE_100_INIT 	(GMAC_CONTROL_JD | GMAC_CONTROL_PS |GMAC_CONTROL_FES| GMAC_CONTROL_ACS | \
+-			GMAC_CONTROL_JE | GMAC_CONTROL_BE|GMAC_CONTROL_DM)
++
+ /* GMAC Frame Filter defines */
+ #define GMAC_FRAME_FILTER_PR	0x00000001	/* Promiscuous Mode */
+ #define GMAC_FRAME_FILTER_HUC	0x00000002	/* Hash Unicast */
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c	2015-05-13 10:18:44.000000000 +0300
+@@ -30,371 +30,149 @@
+ 
+ #include <linux/crc32.h>
+ #include <asm/io.h>
+-#include "dwmac1000.h"
++#include "dwmac100.h"
++
+ static void dwmac100_core_init(void __iomem *ioaddr)
+ {
+-	u32 value = readl(ioaddr + GMAC_CONTROL);
+-	value |= MAC_CORE_100_INIT;
+-	writel(value, ioaddr + GMAC_CONTROL);
+-	/* Mask GMAC interrupts */
+-	writel(0x0, ioaddr + GMAC_INT_MASK);
+-	//writel(0x207, ioaddr + GMAC_INT_MASK);
+-/*close mmc interrupts this funtion is s812  chip bug*/
+-	 if (IS_MESON_M8M2_CPU){
+-	 	printk("mask interrupts MMC\n");
+-		writel(0xffffffff, ioaddr + ETH_MMC_ipc_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_rx);
+-		writel(0xffffffff, ioaddr + ETH_MMC_intr_mask_tx);
+-	 }
+-  
++	u32 value = readl(ioaddr + MAC_CONTROL);
++
++	writel((value | MAC_CORE_INIT), ioaddr + MAC_CONTROL);
++
+ #ifdef STMMAC_VLAN_TAG_USED
+-	/* Tag detection without filtering */
+-	writel(0x0, ioaddr + GMAC_VLAN_TAG);
++	writel(ETH_P_8021Q, ioaddr + MAC_VLAN1);
+ #endif
+ }
+ 
+-static int dwmac100_rx_ipc_enable(void __iomem *ioaddr)
++static void dwmac100_dump_mac_regs(void __iomem *ioaddr)
+ {
+-	u32 value = readl(ioaddr + GMAC_CONTROL);
+-
+-	value |= GMAC_CONTROL_IPC;
+-	writel(value, ioaddr + GMAC_CONTROL);
+-
+-	value = readl(ioaddr + GMAC_CONTROL);
+-
+-	return !!(value & GMAC_CONTROL_IPC);
++	pr_info("\t----------------------------------------------\n"
++		"\t  DWMAC 100 CSR (base addr = 0x%p)\n"
++		"\t----------------------------------------------\n", ioaddr);
++	pr_info("\tcontrol reg (offset 0x%x): 0x%08x\n", MAC_CONTROL,
++		readl(ioaddr + MAC_CONTROL));
++	pr_info("\taddr HI (offset 0x%x): 0x%08x\n ", MAC_ADDR_HIGH,
++		readl(ioaddr + MAC_ADDR_HIGH));
++	pr_info("\taddr LO (offset 0x%x): 0x%08x\n", MAC_ADDR_LOW,
++		readl(ioaddr + MAC_ADDR_LOW));
++	pr_info("\tmulticast hash HI (offset 0x%x): 0x%08x\n",
++		MAC_HASH_HIGH, readl(ioaddr + MAC_HASH_HIGH));
++	pr_info("\tmulticast hash LO (offset 0x%x): 0x%08x\n",
++		MAC_HASH_LOW, readl(ioaddr + MAC_HASH_LOW));
++	pr_info("\tflow control (offset 0x%x): 0x%08x\n",
++		MAC_FLOW_CTRL, readl(ioaddr + MAC_FLOW_CTRL));
++	pr_info("\tVLAN1 tag (offset 0x%x): 0x%08x\n", MAC_VLAN1,
++		readl(ioaddr + MAC_VLAN1));
++	pr_info("\tVLAN2 tag (offset 0x%x): 0x%08x\n", MAC_VLAN2,
++		readl(ioaddr + MAC_VLAN2));
+ }
+ 
+-static void dwmac100_dump_regs(void __iomem *ioaddr)
++static int dwmac100_rx_ipc_enable(void __iomem *ioaddr)
+ {
+-	int i;
+-	pr_info("\tDWMAC1000 regs (base addr = 0x%p)\n", ioaddr);
++	return 0;
++}
+ 
+-	for (i = 0; i < 55; i++) {
+-		int offset = i * 4;
+-		pr_info("\tReg No. %d (offset 0x%x): 0x%08x\n", i,
+-			offset, readl(ioaddr + offset));
+-	}
++static int dwmac100_irq_status(void __iomem *ioaddr,
++			       struct stmmac_extra_stats *x)
++{
++	return 0;
+ }
+ 
+ static void dwmac100_set_umac_addr(void __iomem *ioaddr, unsigned char *addr,
+-				    unsigned int reg_n)
++				   unsigned int reg_n)
+ {
+-	stmmac_set_mac_addr(ioaddr, addr, GMAC_ADDR_HIGH(reg_n),
+-			    GMAC_ADDR_LOW(reg_n));
++	stmmac_set_mac_addr(ioaddr, addr, MAC_ADDR_HIGH, MAC_ADDR_LOW);
+ }
+ 
+ static void dwmac100_get_umac_addr(void __iomem *ioaddr, unsigned char *addr,
+-				    unsigned int reg_n)
++				   unsigned int reg_n)
+ {
+-	stmmac_get_mac_addr(ioaddr, addr, GMAC_ADDR_HIGH(reg_n),
+-			    GMAC_ADDR_LOW(reg_n));
++	stmmac_get_mac_addr(ioaddr, addr, MAC_ADDR_HIGH, MAC_ADDR_LOW);
+ }
+ 
+ static void dwmac100_set_filter(struct net_device *dev, int id)
+ {
+ 	void __iomem *ioaddr = (void __iomem *)dev->base_addr;
+-	unsigned int value = 0;
+-	unsigned int perfect_addr_number;
+-
+-	CHIP_DBG(KERN_INFO "%s: # mcasts %d, # unicast %d\n",
+-		 __func__, netdev_mc_count(dev), netdev_uc_count(dev));
++	u32 value = readl(ioaddr + MAC_CONTROL);
+ 
+-	if (dev->flags & IFF_PROMISC)
+-		value = GMAC_FRAME_FILTER_PR;
+-	else if ((netdev_mc_count(dev) > HASH_TABLE_SIZE)
+-		 || (dev->flags & IFF_ALLMULTI)) {
+-		value = GMAC_FRAME_FILTER_PM;	/* pass all multi */
+-		writel(0xffffffff, ioaddr + GMAC_HASH_HIGH);
+-		writel(0xffffffff, ioaddr + GMAC_HASH_LOW);
+-	} else if (!netdev_mc_empty(dev)) {
++	if (dev->flags & IFF_PROMISC) {
++		value |= MAC_CONTROL_PR;
++		value &= ~(MAC_CONTROL_PM | MAC_CONTROL_IF | MAC_CONTROL_HO |
++			   MAC_CONTROL_HP);
++	} else if ((netdev_mc_count(dev) > HASH_TABLE_SIZE)
++		   || (dev->flags & IFF_ALLMULTI)) {
++		value |= MAC_CONTROL_PM;
++		value &= ~(MAC_CONTROL_PR | MAC_CONTROL_IF | MAC_CONTROL_HO);
++		writel(0xffffffff, ioaddr + MAC_HASH_HIGH);
++		writel(0xffffffff, ioaddr + MAC_HASH_LOW);
++	} else if (netdev_mc_empty(dev)) {	/* no multicast */
++		value &= ~(MAC_CONTROL_PM | MAC_CONTROL_PR | MAC_CONTROL_IF |
++			   MAC_CONTROL_HO | MAC_CONTROL_HP);
++	} else {
+ 		u32 mc_filter[2];
+ 		struct netdev_hw_addr *ha;
+ 
+-		/* Hash filter for multicast */
+-		value = GMAC_FRAME_FILTER_HMC;
++		/* Perfect filter mode for physical address and Hash
++		 * filter for multicast
++		 */
++		value |= MAC_CONTROL_HP;
++		value &= ~(MAC_CONTROL_PM | MAC_CONTROL_PR |
++			   MAC_CONTROL_IF | MAC_CONTROL_HO);
+ 
+ 		memset(mc_filter, 0, sizeof(mc_filter));
+ 		netdev_for_each_mc_addr(ha, dev) {
+ 			/* The upper 6 bits of the calculated CRC are used to
+ 			 * index the contens of the hash table
+ 			 */
+-			int bit_nr = bitrev32(~crc32_le(~0, ha->addr, 6)) >> 26;
++			int bit_nr = ether_crc(ETH_ALEN, ha->addr) >> 26;
+ 			/* The most significant bit determines the register to
+ 			 * use (H/L) while the other 5 bits determine the bit
+ 			 * within the register.
+ 			 */
+ 			mc_filter[bit_nr >> 5] |= 1 << (bit_nr & 31);
+ 		}
+-		writel(mc_filter[0], ioaddr + GMAC_HASH_LOW);
+-		writel(mc_filter[1], ioaddr + GMAC_HASH_HIGH);
+-	}
+-
+-	/* Extra 16 regs are available in cores newer than the 3.40. */
+-	if (id > DWMAC_CORE_3_40)
+-		perfect_addr_number = GMAC_MAX_PERFECT_ADDRESSES;
+-	else
+-		perfect_addr_number = GMAC_MAX_PERFECT_ADDRESSES / 2;
+-
+-	/* Handle multiple unicast addresses (perfect filtering) */
+-	if (netdev_uc_count(dev) > perfect_addr_number)
+-		/* Switch to promiscuous mode if more than 16 addrs
+-		 * are required
+-		 */
+-		value |= GMAC_FRAME_FILTER_PR;
+-	else {
+-		int reg = 1;
+-		struct netdev_hw_addr *ha;
+-
+-		netdev_for_each_uc_addr(ha, dev) {
+-			dwmac100_set_umac_addr(ioaddr, ha->addr, reg);
+-			reg++;
+-		}
++		writel(mc_filter[0], ioaddr + MAC_HASH_LOW);
++		writel(mc_filter[1], ioaddr + MAC_HASH_HIGH);
+ 	}
+ 
+-#ifdef FRAME_FILTER_DEBUG
+-	/* Enable Receive all mode (to debug filtering_fail errors) */
+-	value |= GMAC_FRAME_FILTER_RA;
+-#endif
+-	writel(value, ioaddr + GMAC_FRAME_FILTER);
++	writel(value, ioaddr + MAC_CONTROL);
+ 
+-	CHIP_DBG(KERN_INFO "\tFilter: 0x%08x\n\tHash: HI 0x%08x, LO 0x%08x\n",
+-		 readl(ioaddr + GMAC_FRAME_FILTER),
+-		 readl(ioaddr + GMAC_HASH_HIGH), readl(ioaddr + GMAC_HASH_LOW));
++	CHIP_DBG(KERN_INFO "%s: Filter: 0x%08x Hash: HI 0x%08x, LO 0x%08x\n",
++		 __func__, readl(ioaddr + MAC_CONTROL),
++		 readl(ioaddr + MAC_HASH_HIGH), readl(ioaddr + MAC_HASH_LOW));
+ }
+ 
+ static void dwmac100_flow_ctrl(void __iomem *ioaddr, unsigned int duplex,
+-				unsigned int fc, unsigned int pause_time)
++			       unsigned int fc, unsigned int pause_time)
+ {
+-	unsigned int flow = 0;
++	unsigned int flow = MAC_FLOW_CTRL_ENABLE;
+ 
+-	CHIP_DBG(KERN_DEBUG "GMAC Flow-Control:\n");
+-	if (fc & FLOW_RX) {
+-		CHIP_DBG(KERN_DEBUG "\tReceive Flow-Control ON\n");
+-		flow |= GMAC_FLOW_CTRL_RFE;
+-	}
+-	if (fc & FLOW_TX) {
+-		CHIP_DBG(KERN_DEBUG "\tTransmit Flow-Control ON\n");
+-		flow |= GMAC_FLOW_CTRL_TFE;
+-	}
+-
+-	if (duplex) {
+-		CHIP_DBG(KERN_DEBUG "\tduplex mode: PAUSE %d\n", pause_time);
+-		flow |= (pause_time << GMAC_FLOW_CTRL_PT_SHIFT);
+-	}
+-
+-	writel(flow, ioaddr + GMAC_FLOW_CTRL);
++	if (duplex)
++		flow |= (pause_time << MAC_FLOW_CTRL_PT_SHIFT);
++	writel(flow, ioaddr + MAC_FLOW_CTRL);
+ }
+ 
++/* No PMT module supported on ST boards with this Eth chip. */
+ static void dwmac100_pmt(void __iomem *ioaddr, unsigned long mode)
+ {
+-	unsigned int pmt = 0;
+-
+-	if (mode & WAKE_MAGIC) {
+-		CHIP_DBG(KERN_DEBUG "GMAC: WOL Magic frame\n");
+-		pmt |= power_down | magic_pkt_en;
+-	}
+-	if (mode & WAKE_UCAST) {
+-		CHIP_DBG(KERN_DEBUG "GMAC: WOL on global unicast\n");
+-		pmt |= global_unicast;
+-	}
+-
+-	writel(pmt, ioaddr + GMAC_PMT);
+-}
+-
+-static int dwmac100_irq_status(void __iomem *ioaddr,
+-				struct stmmac_extra_stats *x)
+-{
+-	u32 intr_status = readl(ioaddr + GMAC_INT_STATUS);
+-	int ret = 0;
+-
+-	/* Not used events (e.g. MMC interrupts) are not handled. */
+-	if ((intr_status & mmc_tx_irq)) {
+-		CHIP_DBG(KERN_INFO "GMAC: MMC tx interrupt: 0x%08x\n",
+-			 readl(ioaddr + GMAC_MMC_TX_INTR));
+-		x->mmc_tx_irq_n++;
+-	}
+-	if (unlikely(intr_status & mmc_rx_irq)) {
+-		CHIP_DBG(KERN_INFO "GMAC: MMC rx interrupt: 0x%08x\n",
+-			 readl(ioaddr + GMAC_MMC_RX_INTR));
+-		x->mmc_rx_irq_n++;
+-	}
+-	if (unlikely(intr_status & mmc_rx_csum_offload_irq)) {
+-		CHIP_DBG(KERN_INFO "GMAC: MMC rx csum offload: 0x%08x\n",
+-			 readl(ioaddr + GMAC_MMC_RX_CSUM_OFFLOAD));
+-		x->mmc_rx_csum_offload_irq_n++;
+-	}
+-	if (unlikely(intr_status & pmt_irq)) {
+-		CHIP_DBG(KERN_INFO "GMAC: received Magic frame\n");
+-		/* clear the PMT bits 5 and 6 by reading the PMT status reg */
+-		readl(ioaddr + GMAC_PMT);
+-		x->irq_receive_pmt_irq_n++;
+-	}
+-	/* MAC trx/rx EEE LPI entry/exit interrupts */
+-	if (intr_status & lpiis_irq) {
+-		/* Clean LPI interrupt by reading the Reg 12 */
+-		ret = readl(ioaddr + LPI_CTRL_STATUS);
+-
+-		if (ret & LPI_CTRL_STATUS_TLPIEN) {
+-			CHIP_DBG(KERN_INFO "GMAC TX entered in LPI\n");
+-			x->irq_tx_path_in_lpi_mode_n++;
+-		}
+-		if (ret & LPI_CTRL_STATUS_TLPIEX) {
+-			CHIP_DBG(KERN_INFO "GMAC TX exit from LPI\n");
+-			x->irq_tx_path_exit_lpi_mode_n++;
+-		}
+-		if (ret & LPI_CTRL_STATUS_RLPIEN) {
+-			CHIP_DBG(KERN_INFO "GMAC RX entered in LPI\n");
+-			x->irq_rx_path_in_lpi_mode_n++;
+-		}
+-		if (ret & LPI_CTRL_STATUS_RLPIEX) {
+-			CHIP_DBG(KERN_INFO "GMAC RX exit from LPI\n");
+-			x->irq_rx_path_exit_lpi_mode_n++;
+-		}
+-	}
+-
+-	if ((intr_status & pcs_ane_irq) || (intr_status & pcs_link_irq)) {
+-		CHIP_DBG(KERN_INFO "GMAC PCS ANE IRQ\n");
+-		readl(ioaddr + GMAC_AN_STATUS);
+-		x->irq_pcs_ane_n++;
+-	}
+-	if (intr_status & rgmii_irq) {
+-		u32 status = readl(ioaddr + GMAC_S_R_GMII);
+-		CHIP_DBG(KERN_INFO "GMAC RGMII/SGMII interrupt\n");
+-		x->irq_rgmii_n++;
+-
+-		/* Save and dump the link status. */
+-		if (status & GMAC_S_R_GMII_LINK) {
+-			int speed_value = (status & GMAC_S_R_GMII_SPEED) >>
+-			    GMAC_S_R_GMII_SPEED_SHIFT;
+-			x->pcs_duplex = (status & GMAC_S_R_GMII_MODE);
+-
+-			if (speed_value == GMAC_S_R_GMII_SPEED_125)
+-				x->pcs_speed = SPEED_1000;
+-			else if (speed_value == GMAC_S_R_GMII_SPEED_25)
+-				x->pcs_speed = SPEED_100;
+-			else
+-				x->pcs_speed = SPEED_10;
+-
+-			x->pcs_link = 1;
+-			pr_debug("Link is Up - %d/%s\n", (int)x->pcs_speed,
+-				 x->pcs_duplex ? "Full" : "Half");
+-		} else {
+-			x->pcs_link = 0;
+-			pr_debug("Link is Down\n");
+-		}
+-	}
+-
+-	return ret;
+-}
+-
+-static void dwmac100_set_eee_mode(void __iomem *ioaddr)
+-{
+-	u32 value;
+-
+-	/* Enable the link status receive on RGMII, SGMII ore SMII
+-	 * receive path and instruct the transmit to enter in LPI
+-	 * state.
+-	 */
+-	value = readl(ioaddr + LPI_CTRL_STATUS);
+-	value |= LPI_CTRL_STATUS_LPIEN | LPI_CTRL_STATUS_LPITXA;
+-	writel(value, ioaddr + LPI_CTRL_STATUS);
+-}
+-
+-static void dwmac100_reset_eee_mode(void __iomem *ioaddr)
+-{
+-	u32 value;
+-
+-	value = readl(ioaddr + LPI_CTRL_STATUS);
+-	value &= ~(LPI_CTRL_STATUS_LPIEN | LPI_CTRL_STATUS_LPITXA);
+-	writel(value, ioaddr + LPI_CTRL_STATUS);
+-}
+-
+-static void dwmac100_set_eee_pls(void __iomem *ioaddr, int link)
+-{
+-	u32 value;
+-
+-	value = readl(ioaddr + LPI_CTRL_STATUS);
+-
+-	if (link)
+-		value |= LPI_CTRL_STATUS_PLS;
+-	else
+-		value &= ~LPI_CTRL_STATUS_PLS;
+-
+-	writel(value, ioaddr + LPI_CTRL_STATUS);
+-}
+-
+-static void dwmac100_set_eee_timer(void __iomem *ioaddr, int ls, int tw)
+-{
+-	int value = ((tw & 0xffff)) | ((ls & 0x7ff) << 16);
+-
+-	/* Program the timers in the LPI timer control register:
+-	 * LS: minimum time (ms) for which the link
+-	 *  status from PHY should be ok before transmitting
+-	 *  the LPI pattern.
+-	 * TW: minimum time (us) for which the core waits
+-	 *  after it has stopped transmitting the LPI pattern.
+-	 */
+-	writel(value, ioaddr + LPI_TIMER_CTRL);
+-}
+-
+-static void dwmac100_ctrl_ane(void __iomem *ioaddr, bool restart)
+-{
+-	u32 value;
+-
+-	value = readl(ioaddr + GMAC_AN_CTRL);
+-	/* auto negotiation enable and External Loopback enable */
+-	value = GMAC_AN_CTRL_ANE | GMAC_AN_CTRL_ELE;
+-
+-	if (restart)
+-		value |= GMAC_AN_CTRL_RAN;
+-
+-	writel(value, ioaddr + GMAC_AN_CTRL);
+-}
+-
+-static void dwmac100_get_adv(void __iomem *ioaddr, struct rgmii_adv *adv)
+-{
+-	u32 value = readl(ioaddr + GMAC_ANE_ADV);
+-
+-	if (value & GMAC_ANE_FD)
+-		adv->duplex = DUPLEX_FULL;
+-	if (value & GMAC_ANE_HD)
+-		adv->duplex |= DUPLEX_HALF;
+-
+-	adv->pause = (value & GMAC_ANE_PSE) >> GMAC_ANE_PSE_SHIFT;
+-
+-	value = readl(ioaddr + GMAC_ANE_LPA);
+-
+-	if (value & GMAC_ANE_FD)
+-		adv->lp_duplex = DUPLEX_FULL;
+-	if (value & GMAC_ANE_HD)
+-		adv->lp_duplex = DUPLEX_HALF;
+-
+-	adv->lp_pause = (value & GMAC_ANE_PSE) >> GMAC_ANE_PSE_SHIFT;
++	return;
+ }
+ 
+ static const struct stmmac_ops dwmac100_ops = {
+ 	.core_init = dwmac100_core_init,
+ 	.rx_ipc = dwmac100_rx_ipc_enable,
+-	.dump_regs = dwmac100_dump_regs,
++	.dump_regs = dwmac100_dump_mac_regs,
+ 	.host_irq_status = dwmac100_irq_status,
+ 	.set_filter = dwmac100_set_filter,
+ 	.flow_ctrl = dwmac100_flow_ctrl,
+ 	.pmt = dwmac100_pmt,
+ 	.set_umac_addr = dwmac100_set_umac_addr,
+ 	.get_umac_addr = dwmac100_get_umac_addr,
+-	.set_eee_mode = dwmac100_set_eee_mode,
+-	.reset_eee_mode = dwmac100_reset_eee_mode,
+-	.set_eee_timer = dwmac100_set_eee_timer,
+-	.set_eee_pls = dwmac100_set_eee_pls,
+-	.ctrl_ane = dwmac100_ctrl_ane,
+-	.get_adv = dwmac100_get_adv,
+ };
+ 
+ struct mac_device_info *dwmac100_setup(void __iomem *ioaddr)
+ {
+ 	struct mac_device_info *mac;
+-	u32 hwid = readl(ioaddr + GMAC_VERSION);
++
+ 	mac = kzalloc(sizeof(const struct mac_device_info), GFP_KERNEL);
+ 	if (!mac)
+ 		return NULL;
+@@ -402,20 +180,14 @@
+ 	pr_info("\tDWMAC100\n");
+ 
+ 	mac->mac = &dwmac100_ops;
+-#ifdef CONFIG_DWMAC_MESON
+-	mac->dma = &dwmac1000_dma_ops;
+-#else
+ 	mac->dma = &dwmac100_dma_ops;
+-#endif
+-
+ 
+-	mac->link.port = GMAC_CONTROL_PS;
+-	//mac->link.port = 0;
+-	mac->link.duplex = GMAC_CONTROL_DM;
+-	mac->link.speed = GMAC_CONTROL_FES;
+-	mac->mii.addr = GMAC_MII_ADDR;
+-	mac->mii.data = GMAC_MII_DATA;
+-	mac->synopsys_uid = hwid;
++	mac->link.port = MAC_CONTROL_PS;
++	mac->link.duplex = MAC_CONTROL_F;
++	mac->link.speed = 0;
++	mac->mii.addr = MAC_MII_ADDR;
++	mac->mii.data = MAC_MII_DATA;
++	mac->synopsys_uid = 0;
+ 
+ 	return mac;
+ }
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c	2015-05-13 10:18:44.000000000 +0300
+@@ -32,3 +32,115 @@
+ #include "dwmac100.h"
+ #include "dwmac_dma.h"
+ 
++static int dwmac100_dma_init(void __iomem *ioaddr, int pbl, int fb, int mb,
++			     int burst_len, u32 dma_tx, u32 dma_rx, int atds)
++{
++	u32 value = readl(ioaddr + DMA_BUS_MODE);
++	int limit;
++
++	/* DMA SW reset */
++	value |= DMA_BUS_MODE_SFT_RESET;
++	writel(value, ioaddr + DMA_BUS_MODE);
++	limit = 10;
++	while (limit--) {
++		if (!(readl(ioaddr + DMA_BUS_MODE) & DMA_BUS_MODE_SFT_RESET))
++			break;
++		mdelay(10);
++	}
++	if (limit < 0)
++		return -EBUSY;
++
++	/* Enable Application Access by writing to DMA CSR0 */
++	writel(DMA_BUS_MODE_DEFAULT | (pbl << DMA_BUS_MODE_PBL_SHIFT),
++	       ioaddr + DMA_BUS_MODE);
++
++	/* Mask interrupts by writing to CSR7 */
++	writel(DMA_INTR_DEFAULT_MASK, ioaddr + DMA_INTR_ENA);
++
++	/* RX/TX descriptor base addr lists must be written into
++	 * DMA CSR3 and CSR4, respectively
++	 */
++	writel(dma_tx, ioaddr + DMA_TX_BASE_ADDR);
++	writel(dma_rx, ioaddr + DMA_RCV_BASE_ADDR);
++
++	return 0;
++}
++
++/* Store and Forward capability is not used at all.
++ *
++ * The transmit threshold can be programmed by setting the TTC bits in the DMA
++ * control register.
++ */
++static void dwmac100_dma_operation_mode(void __iomem *ioaddr, int txmode,
++					int rxmode)
++{
++	u32 csr6 = readl(ioaddr + DMA_CONTROL);
++
++	if (txmode <= 32)
++		csr6 |= DMA_CONTROL_TTC_32;
++	else if (txmode <= 64)
++		csr6 |= DMA_CONTROL_TTC_64;
++	else
++		csr6 |= DMA_CONTROL_TTC_128;
++
++	writel(csr6, ioaddr + DMA_CONTROL);
++}
++
++static void dwmac100_dump_dma_regs(void __iomem *ioaddr)
++{
++	int i;
++
++	CHIP_DBG(KERN_DEBUG "DWMAC 100 DMA CSR\n");
++	for (i = 0; i < 9; i++)
++		pr_debug("\t CSR%d (offset 0x%x): 0x%08x\n", i,
++			 (DMA_BUS_MODE + i * 4),
++			 readl(ioaddr + DMA_BUS_MODE + i * 4));
++	CHIP_DBG(KERN_DEBUG "\t CSR20 (offset 0x%x): 0x%08x\n",
++		 DMA_CUR_TX_BUF_ADDR, readl(ioaddr + DMA_CUR_TX_BUF_ADDR));
++	CHIP_DBG(KERN_DEBUG "\t CSR21 (offset 0x%x): 0x%08x\n",
++		 DMA_CUR_RX_BUF_ADDR, readl(ioaddr + DMA_CUR_RX_BUF_ADDR));
++}
++
++/* DMA controller has two counters to track the number of the missed frames. */
++static void dwmac100_dma_diagnostic_fr(void *data, struct stmmac_extra_stats *x,
++				       void __iomem *ioaddr)
++{
++	struct net_device_stats *stats = (struct net_device_stats *)data;
++	u32 csr8 = readl(ioaddr + DMA_MISSED_FRAME_CTR);
++
++	if (unlikely(csr8)) {
++		if (csr8 & DMA_MISSED_FRAME_OVE) {
++			stats->rx_over_errors += 0x800;
++			x->rx_overflow_cntr += 0x800;
++		} else {
++			unsigned int ove_cntr;
++			ove_cntr = ((csr8 & DMA_MISSED_FRAME_OVE_CNTR) >> 17);
++			stats->rx_over_errors += ove_cntr;
++			x->rx_overflow_cntr += ove_cntr;
++		}
++
++		if (csr8 & DMA_MISSED_FRAME_OVE_M) {
++			stats->rx_missed_errors += 0xffff;
++			x->rx_missed_cntr += 0xffff;
++		} else {
++			unsigned int miss_f = (csr8 & DMA_MISSED_FRAME_M_CNTR);
++			stats->rx_missed_errors += miss_f;
++			x->rx_missed_cntr += miss_f;
++		}
++	}
++}
++
++const struct stmmac_dma_ops dwmac100_dma_ops = {
++	.init = dwmac100_dma_init,
++	.dump_regs = dwmac100_dump_dma_regs,
++	.dma_mode = dwmac100_dma_operation_mode,
++	.dma_diagnostic_fr = dwmac100_dma_diagnostic_fr,
++	.enable_dma_transmission = dwmac_enable_dma_transmission,
++	.enable_dma_irq = dwmac_enable_dma_irq,
++	.disable_dma_irq = dwmac_disable_dma_irq,
++	.start_tx = dwmac_dma_start_tx,
++	.stop_tx = dwmac_dma_stop_tx,
++	.start_rx = dwmac_dma_start_rx,
++	.stop_rx = dwmac_dma_stop_rx,
++	.dma_interrupt = dwmac_dma_interrupt,
++};
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100.h linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac100.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac100.h	2015-05-13 10:18:44.000000000 +0300
+@@ -27,14 +27,7 @@
+ 
+ #include <linux/phy.h>
+ #include "common.h"
+-#ifdef CONFIG_DWMAC_MESON
+-#include<plat/cpu.h>
+-#define ETH_MMC_ipc_intr_mask_rx        (0x0200)
+-#define ETH_MMC_intr_mask_rx            (0x010C)
+-#define ETH_MMC_intr_mask_tx            (0x0110)
+-#define GMAC_CONTROL_IPC	0x00000400	/* Checksum Offload */
+-#define  MAC_VERSION 0x0020
+-#endif
++
+ /*----------------------------------------------------------------------------
+  *	 			MAC BLOCK defines
+  *---------------------------------------------------------------------------*/
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h	2015-05-13 10:18:44.000000000 +0300
+@@ -35,10 +35,6 @@
+ #define DMA_CONTROL		0x00001018	/* Ctrl (Operational Mode) */
+ #define DMA_INTR_ENA		0x0000101c	/* Interrupt Enable */
+ #define DMA_MISSED_FRAME_CTR	0x00001020	/* Missed Frame Counter */
+-
+-#define ETH_MMC_ipc_intr_mask_rx        (0x0200)
+-#define ETH_MMC_ipc_intr_rx         (0x0208)
+-#define ETH_MMC_intr_rx             (0x0104)
+ /* Rx watchdog register */
+ #define DMA_RX_WATCHDOG		0x00001024
+ /* AXI Bus Mode */
+@@ -57,13 +53,9 @@
+ #define DMA_INTR_ENA_TUE 0x00000004	/* Transmit Buffer Unavailable */
+ #define DMA_INTR_ENA_RIE 0x00000040	/* Receive Interrupt */
+ #define DMA_INTR_ENA_ERE 0x00004000	/* Early Receive */
+-#if 0
+-#define DMA_INTR_NORMAL (DMA_INTR_ENA_NIE | DMA_INTR_ENA_RIE | \
+-			DMA_INTR_ENA_TIE|DMA_INTR_ENA_TUE)
+-#else
+-#define DMA_INTR_NORMAL (DMA_INTR_ENA_NIE | DMA_INTR_ENA_RIE | \
++
++#define DMA_INTR_NORMAL	(DMA_INTR_ENA_NIE | DMA_INTR_ENA_RIE | \
+ 			DMA_INTR_ENA_TIE)
+-#endif
+ 
+ /* DMA Abnormal interrupt */
+ #define DMA_INTR_ENA_AIE 0x00008000	/* Abnormal Summary */
+@@ -77,14 +69,9 @@
+ #define DMA_INTR_ENA_TJE 0x00000008	/* Transmit Jabber */
+ #define DMA_INTR_ENA_TSE 0x00000002	/* Transmit Stopped */
+ 
+-#if 0
+-#define DMA_INTR_ABNORMAL (DMA_INTR_ENA_AIE | DMA_INTR_ENA_FBE | \
+-				DMA_INTR_ENA_UNE|DMA_INTR_ENA_OVE|DMA_INTR_ENA_TJE|DMA_INTR_ENA_RSE)}
+-#else
+-#define DMA_INTR_ABNORMAL (DMA_INTR_ENA_AIE | DMA_INTR_ENA_FBE | \
++#define DMA_INTR_ABNORMAL	(DMA_INTR_ENA_AIE | DMA_INTR_ENA_FBE | \
+ 				DMA_INTR_ENA_UNE)
+-			
+-#endif
++
+ /* DMA default interrupt mask */
+ #define DMA_INTR_DEFAULT_MASK	(DMA_INTR_NORMAL | DMA_INTR_ABNORMAL)
+ 
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c	2015-05-13 10:18:44.000000000 +0300
+@@ -223,11 +223,9 @@
+ 	}
+ 	/* Optional hardware blocks, interrupts should be disabled */
+ 	if (unlikely(intr_status &
+-		     (DMA_STATUS_GPI | DMA_STATUS_GMI | DMA_STATUS_GLI))){
++		     (DMA_STATUS_GPI | DMA_STATUS_GMI | DMA_STATUS_GLI)))
+ 		pr_info("%s: unexpected status %08x\n", __func__, intr_status);
+-		readl(ioaddr + ETH_MMC_ipc_intr_rx);
+-		readl(ioaddr + ETH_MMC_intr_rx);
+-	}
++
+ 	/* Clear the interrupt by writing a logic 1 to the CSR5[15-0] */
+ 	writel((intr_status & 0x1ffff), ioaddr + DMA_STATUS);
+ 
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.c	1970-01-01 03:00:00.000000000 +0300
+@@ -1,66 +0,0 @@
+-/*
+- * Amlogic Meson DWMAC glue layer
+- *
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include <linux/device.h>
+-#include <linux/ethtool.h>
+-#include <linux/io.h>
+-#include <linux/ioport.h>
+-#include <linux/platform_device.h>
+-#include <linux/stmmac.h>
+-
+-#define ETHMAC_SPEED_100	BIT(1)
+-
+-struct meson_dwmac {
+-	struct device	*dev;
+-	void __iomem	*reg;
+-};
+-
+-static void meson6_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+-{
+-	struct meson_dwmac *dwmac = priv;
+-	unsigned int val;
+-
+-	val = readl(dwmac->reg);
+-
+-	switch (speed) {
+-	case SPEED_10:
+-		val &= ~ETHMAC_SPEED_100;
+-		break;
+-	case SPEED_100:
+-		val |= ETHMAC_SPEED_100;
+-		break;
+-	}
+-
+-	writel(val, dwmac->reg);
+-}
+-
+-static void *meson6_dwmac_setup(struct platform_device *pdev)
+-{
+-	struct meson_dwmac *dwmac;
+-	struct resource *res;
+-
+-	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
+-	if (!dwmac)
+-		return ERR_PTR(-ENOMEM);
+-
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	dwmac->reg = devm_ioremap_resource(&pdev->dev, res);
+-	if (IS_ERR(dwmac->reg))
+-		return dwmac->reg;
+-
+-	return dwmac;
+-}
+-
+-const struct stmmac_of_data meson6_dwmac_data = {
+-	.setup		= meson6_dwmac_setup,
+-	.fix_mac_speed	= meson6_dwmac_fix_mac_speed,
+-};
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/Kconfig linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/Kconfig
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/Kconfig	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/Kconfig	2015-05-13 10:18:44.000000000 +0300
+@@ -1,11 +1,11 @@
+ config STMMAC_ETH
+ 	tristate "STMicroelectronics 10/100/1000 Ethernet driver"
+ 	depends on HAS_IOMEM && HAS_DMA
++	select NET_CORE
+ 	select MII
+ 	select PHYLIB
+ 	select CRC32
+ 	select PTP_1588_CLOCK
+-	select RESET_CONTROLLER
+ 	---help---
+ 	  This is the driver for the Ethernet IPs are built around a
+ 	  Synopsys IP Core and only tested on the STMicroelectronics
+@@ -26,16 +26,6 @@
+ 
+ 	  If unsure, say N.
+ 
+-config DWMAC_MESON
+-	bool "Amlogic Meson dwmac support"
+-	depends on STMMAC_PLATFORM
+-	help
+-	  Support for Ethernet controller on Amlogic Meson SoCs.
+-
+-	  This selects the Amlogic Meson SoC glue layer support for
+-	  the stmmac device driver. This driver is used for Meson6 and
+-	  Meson8 SoCs.
+-
+ config STMMAC_PCI
+ 	bool "STMMAC PCI bus support"
+ 	depends on STMMAC_ETH && PCI
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/Makefile linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/Makefile
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/Makefile	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/Makefile	2015-05-13 10:18:44.000000000 +0300
+@@ -1,7 +1,6 @@
+ obj-$(CONFIG_STMMAC_ETH) += stmmac.o
+ stmmac-$(CONFIG_STMMAC_PLATFORM) += stmmac_platform.o
+ stmmac-$(CONFIG_STMMAC_PCI) += stmmac_pci.o
+-stmmac-$(CONFIG_DWMAC_MESON) += dwmac-meson.o
+ stmmac-objs:= stmmac_main.o stmmac_ethtool.o stmmac_mdio.o ring_mode.o	\
+ 	      chain_mode.o dwmac_lib.o dwmac1000_core.o  dwmac1000_dma.o \
+ 	      dwmac100_core.o dwmac100_dma.o enh_desc.o  norm_desc.o \
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac.h linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac.h	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac.h	2015-05-13 10:18:44.000000000 +0300
+@@ -65,7 +65,7 @@
+ 	dma_addr_t dma_rx_phy;
+ 
+ 	struct napi_struct napi ____cacheline_aligned_in_smp;
+-	unsigned long base_addr;
++
+ 	void __iomem *ioaddr;
+ 	struct net_device *dev;
+ 	struct device *device;
+@@ -131,9 +131,6 @@
+ bool stmmac_eee_init(struct stmmac_priv *priv);
+ 
+ #ifdef CONFIG_STMMAC_PLATFORM
+-#ifdef CONFIG_DWMAC_MESON
+-extern const struct stmmac_of_data meson6_dwmac_data;
+-#endif
+ extern struct platform_driver stmmac_pltfr_driver;
+ static inline int stmmac_register_platform(void)
+ {
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c	2015-05-13 10:18:44.000000000 +0300
+@@ -51,13 +51,8 @@
+ #include "stmmac_ptp.h"
+ #include "stmmac.h"
+ 
+-#ifdef CONFIG_DWMAC_MESON
+-#include<plat/cpu.h>
+-#include <mach/am_regs.h>
+-#include <mach/am_eth_reg.h>
+-#endif
+-//#undef STMMAC_DEBUG
+-//#define STMMAC_DEBUG
++#undef STMMAC_DEBUG
++/*#define STMMAC_DEBUG*/
+ #ifdef STMMAC_DEBUG
+ #define DBG(nlevel, klevel, fmt, args...) \
+ 		((void)(netif_msg_##nlevel(priv) && \
+@@ -66,16 +61,16 @@
+ #define DBG(nlevel, klevel, fmt, args...) do { } while (0)
+ #endif
+ 
+-//#undef STMMAC_RX_DEBUG
+-//#define STMMAC_RX_DEBUG
++#undef STMMAC_RX_DEBUG
++/*#define STMMAC_RX_DEBUG*/
+ #ifdef STMMAC_RX_DEBUG
+ #define RX_DBG(fmt, args...)  printk(fmt, ## args)
+ #else
+ #define RX_DBG(fmt, args...)  do { } while (0)
+ #endif
+ 
+-//#undef STMMAC_XMIT_DEBUG
+-//#define STMMAC_XMIT_DEBUG
++#undef STMMAC_XMIT_DEBUG
++/*#define STMMAC_XMIT_DEBUG*/
+ #ifdef STMMAC_XMIT_DEBUG
+ #define TX_DBG(fmt, args...)  printk(fmt, ## args)
+ #else
+@@ -177,7 +172,7 @@
+ 	if (eee_timer < 0)
+ 		eee_timer = STMMAC_DEFAULT_LPI_TIMER;
+ }
+-#ifndef CONFIG_DWMAC_MESON
++
+ /**
+  * stmmac_clk_csr_set - dynamically set the MDC clock
+  * @priv: driver private structure
+@@ -218,7 +213,7 @@
+ 			priv->clk_csr = STMMAC_CSR_250_300M;
+ 	}
+ }
+-#endif
++
+ #if defined(STMMAC_XMIT_DEBUG) || defined(STMMAC_RX_DEBUG)
+ static void print_pkt(unsigned char *buf, int len)
+ {
+@@ -742,12 +737,7 @@
+ 						ctrl &= ~(priv->hw->link.speed);
+ 					}
+ 				} else {
+-					ctrl |= priv->hw->link.port;
+-					if (phydev->speed == SPEED_100) {
+-						ctrl |= priv->hw->link.speed;
+-					} else {
+-						ctrl &= ~(priv->hw->link.speed);
+-					}
++					ctrl &= ~priv->hw->link.port;
+ 				}
+ 				stmmac_hw_fix_mac_speed(priv);
+ 				break;
+@@ -811,496 +801,6 @@
+ 		}
+ 	}
+ }
+-#ifdef CONFIG_DWMAC_MESON
+-static int gPhyReg;
+-static void __iomem *c_ioaddr =NULL;
+-static ssize_t show_phy_reg(struct device *dev,
+-				struct device_attribute *attr, char *buf) {
+-	int ret = snprintf(buf, PAGE_SIZE, "current phy reg = 0x%x\n", gPhyReg);
+-	return ret;
+-}
+-
+-static ssize_t set_phy_reg(struct device *dev,struct device_attribute *attr,
+-				const char *buf, size_t count) {
+-	int ovl;
+-	int r = kstrtoint(buf, 0, &ovl);
+-	if (r) printk("kstrtoint failed\n");
+-	gPhyReg = ovl;
+-	printk("%s----ovl=0x%x\n", __FUNCTION__, ovl);
+-	return count;
+-}
+-
+-static ssize_t show_phy_regValue(struct device *dev,
+-					struct device_attribute *attr, char *buf) {
+-	struct phy_device *phy_dev = dev_get_drvdata(dev);
+-	int ret = 0;
+-	int val;
+-#if 0
+-	val = phy_read(phy_dev, gPhyReg);
+-	ret = snprintf(buf, PAGE_SIZE, "phy reg 0x%x = 0x%x\n", gPhyReg, val);
+-#else
+-	int i=0;
+-
+-	for (i=0; i<32; i++) {
+-		printk("%d: 0x%x\n", i, phy_read(phy_dev, i));
+-	}
+-
+-	val = phy_read(phy_dev, gPhyReg);
+-	ret = snprintf(buf, PAGE_SIZE, "phy reg 0x%x = 0x%x\n", gPhyReg, val);
+-#endif
+-	return ret;
+-}
+-
+-static ssize_t set_phy_regValue(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf, size_t count) {
+-	int ovl;
+-	int ret;
+-
+-	struct phy_device *phy_dev = dev_get_drvdata(dev);
+-	ret = kstrtoint(buf, 0, &ovl);
+-	printk("%s----reg 0x%x: ovl=0x%x\n", __FUNCTION__, gPhyReg, ovl);
+-	phy_write(phy_dev, gPhyReg, ovl);
+-	return count;
+-}
+-
+-static struct device_attribute phy_reg_attrs[] = {
+-	__ATTR(phy_reg, S_IRUGO | S_IWUSR, show_phy_reg, set_phy_reg),
+-	__ATTR(phy_regValue, S_IRUGO | S_IWUSR, show_phy_regValue, set_phy_regValue)
+-};
+-#if 1
+-static struct phy_device * c_phy_dev =NULL;
+-static void am_net_dump_phyreg(void)
+-{
+-	int reg = 0;
+-	int val = 0;
+-	if (c_phy_dev == NULL)
+-		return;
+-
+-	printk("========== ETH PHY new regs ==========\n");
+-	for (reg = 0; reg < 32; reg++) {
+-		val = phy_read(c_phy_dev, reg);
+-		printk("[reg_%d] 0x%x\n", reg, val);
+-	}
+-}
+-
+-
+-static int am_net_read_phyreg(int argc, char **argv)
+-{
+-	int reg = 0;
+-	int val = 0;
+-	if (c_phy_dev == NULL)
+-		return -1;
+-	if (argc < 2 || (argv == NULL) || (argv[0] == NULL) || (argv[1] == NULL)) {
+-		printk("Invalid syntax\n");
+-		return -1;
+-	}
+-	reg = simple_strtol(argv[1], NULL, 16);
+-	if (reg >= 0 && reg <= 31) {
+-		val = phy_read(c_phy_dev, reg);
+-		printk("read phy [reg_%d] 0x%x\n", reg, val);
+-	} else {
+-		printk("Invalid parameter\n");
+-	}
+-
+-	return 0;
+-}
+-
+-static int am_net_write_phyreg(int argc, char **argv)
+-{
+-	int reg = 0;
+-	int val = 0;
+-	if (c_phy_dev == NULL)
+-		return -1;
+-	if (argc < 3 || (argv == NULL) || (argv[0] == NULL)
+-			|| (argv[1] == NULL) || (argv[2] == NULL)) {
+-		printk("Invalid syntax\n");
+-		return -1;
+-	}
+-	reg = simple_strtol(argv[1], NULL, 16);
+-	val = simple_strtol(argv[2], NULL, 16);
+-	if (reg >=0 && reg <=31) {
+-		phy_write(c_phy_dev, reg, val);
+-		printk("write phy [reg_%d] 0x%x, 0x%x\n", reg, val,phy_read(c_phy_dev, reg) );
+-	} else {
+-		printk("Invalid parameter\n");
+-	}
+-
+-	return 0;
+-}
+-static void am_net_dump_macreg(void)
+-{
+-	int reg = 0;
+-	int val = 0;
+-	printk("========== ETH_MAC regs ==========\n");
+-	for (reg = ETH_MAC_0_Configuration; reg <=ETH_MMC_rxicmp_err_octets; reg += 0x4) {
+-		val = readl(c_ioaddr+ reg);
+-		printk("[0x%04x] 0x%x\n", reg, val);
+-	}
+-
+-	printk("========== ETH_DMA regs ==========\n");
+-	for (reg = ETH_DMA_0_Bus_Mode; reg <= ETH_DMA_21_Curr_Host_Re_Buffer_Addr; reg += 0x4) {
+-		val = readl( c_ioaddr+ reg);
+-		printk("[0x%04x] 0x%x\n", reg, val);
+-	}
+-	
+-}
+-
+-
+-static int am_net_read_macreg(int argc, char **argv)
+-{
+-	int reg = 0;
+-	int val = 0;
+-
+-	if (argc < 2 || (argv == NULL) || (argv[0] == NULL) || (argv[1] == NULL)) {
+-		printk("Invalid syntax\n");
+-		return -1;
+-	}
+-	reg = simple_strtol(argv[1], NULL, 16);
+-	if (reg >= 0 && reg <= ETH_DMA_21_Curr_Host_Re_Buffer_Addr) {
+-		val = readl(c_ioaddr + reg);
+-		printk("read mac [0x4%x] 0x%x\n", reg, val);
+-	} else {
+-		printk("Invalid parameter\n");
+-	}
+-
+-	return 0;
+-}
+-
+-
+-static int am_net_write_macreg(int argc, char **argv)
+-{
+-	int reg = 0;
+-	int val = 0;
+-
+-	if ((argc < 3) || (argv == NULL) || (argv[0] == NULL)
+-			|| (argv[1] == NULL) || (argv[2] == NULL)) {
+-		printk("Invalid syntax\n");
+-		return -1;
+-	}
+-	reg = simple_strtol(argv[1], NULL, 16);
+-	val = simple_strtol(argv[2], NULL, 16);
+-	if (reg >= 0 && reg <= ETH_DMA_21_Curr_Host_Re_Buffer_Addr) {
+-		writel(val, ( c_ioaddr + reg));
+-		printk("write mac [0x%x] 0x%x, 0x%x\n", reg, val, readl(c_ioaddr + reg));
+-	} else {
+-		printk("Invalid parameter\n");
+-	}
+-
+-	return 0;
+-}
+-static const char *g_phyreg_help = {
+-	"Usage:\n"
+-	"    echo d > phyreg;            //dump ethernet phy reg\n"
+-	"    echo r reg > phyreg;        //read ethernet phy reg\n"
+-	"    echo w reg val > phyreg;    //write ethernet phy reg\n"
+-};
+-
+-static ssize_t eth_phyreg_help(struct class *class, struct class_attribute *attr, char *buf)
+-{
+-	return sprintf(buf, "%s\n", g_phyreg_help);
+-}
+-
+-static ssize_t eth_phyreg_func(struct class *class, struct class_attribute *attr,
+-		const char *buf, size_t count)
+-{
+-	int argc;
+-	char *buff, *p, *para;
+-	char *argv[4];
+-	char cmd;
+-
+-	buff = kstrdup(buf, GFP_KERNEL);
+-	p = buff;
+-	for (argc = 0; argc < 4; argc++) {
+-		para = strsep(&p, " ");
+-		if (para == NULL)
+-			break;
+-		argv[argc] = para;
+-	}
+-	if (argc < 1 || argc > 4)
+-		goto end;
+-
+-	cmd = argv[0][0];
+-	switch (cmd) {
+-	case 'r':
+-	case 'R':
+-		am_net_read_phyreg(argc, argv);
+-		break;
+-	case 'w':
+-	case 'W':
+-		am_net_write_phyreg(argc, argv);
+-		break;
+-	case 'd':
+-	case 'D':
+-		am_net_dump_phyreg();
+-		break;
+-	default:
+-		goto end;
+-	}
+-
+-	return count;
+-
+-end:
+-	kfree(buff);
+-	return 0;
+-}
+-
+-static const char *g_macreg_help = {
+-	"Usage:\n"
+-	"    echo d > macreg;            //dump ethernet mac reg\n"
+-	"    echo r reg > macreg;        //read ethernet mac reg\n"
+-	"    echo w reg val > macreg;    //read ethernet mac reg\n"
+-};
+-
+-
+-static ssize_t eth_macreg_help(struct class *class, struct class_attribute *attr, char *buf)
+-{
+-	return sprintf(buf, "%s\n", g_macreg_help);
+-}
+-
+-
+-static ssize_t eth_macreg_func(struct class *class, struct class_attribute *attr,
+-		const char *buf, size_t count)
+-{
+-	int argc;
+-	char *buff, *p, *para;
+-	char *argv[4];
+-	char cmd;
+-
+-	buff = kstrdup(buf, GFP_KERNEL);
+-	p = buff;
+-	for (argc = 0; argc < 4; argc++) {
+-		para = strsep(&p, " ");
+-		if (para == NULL)
+-			break;
+-		argv[argc] = para;
+-	}
+-	if (argc < 1 || argc > 4)
+-		goto end;
+-
+-	cmd = argv[0][0];
+-	switch (cmd) {
+-	case 'r':
+-	case 'R':
+-		am_net_read_macreg(argc, argv);
+-		break;
+-	case 'w':
+-	case 'W':
+-		am_net_write_macreg(argc, argv);
+-		break;
+-	case 'd':
+-	case 'D':
+-		am_net_dump_macreg();
+-		break;
+-	default:
+-		goto end;
+-	}
+-
+-	return count;
+-
+-end:
+-	kfree(buff);
+-	return 0;
+-}
+-static ssize_t eth_linkspeed_show(struct class *class, struct class_attribute *attr, char *buf)
+-{
+-
+-	int ret;
+-	char buff[100];
+-
+-	if(c_phy_dev) {
+-		phy_print_status(c_phy_dev);
+-
+-		genphy_update_link(c_phy_dev);
+-		if (c_phy_dev->link)
+-			strcpy(buff,"link status: link\n");
+-		else
+-			strcpy(buff,"link status: unlink\n");
+-	} else
+-		strcpy(buff,"link status: unlink\n");
+-
+-	ret = sprintf(buf, "%s\n", buff);
+-
+-	return ret;
+-}
+-static int am_net_cali(int argc, char **argv,int gate)
+-{
+-	int cali_rise = 0;
+-	int cali_sel = 0;
+-	int cali_start = 0;
+-	int cali_time = 0;
+-	int count =99;
+-	int ii=0;
+-	unsigned int value;
+-	int I1,I2,I3,I4,I5;
+-	char problem[20] = {0};
+-	char path[20] = {0};
+-	cali_start = gate;
+-	if(gate == 3)
+-	{
+-		printk("auto test cali\n");
+-		for(cali_sel = 0;cali_sel<4;cali_sel++)
+-		{
+-			aml_read_reg32(P_PREG_ETH_REG1);
+-			strcpy(problem,"no clock delay");
+-			aml_write_reg32((aml_read_reg32(P_PREG_ETH_REG0)&(~(0x1f << 25))),P_PREG_ETH_REG0);
+-			I1=0;
+-			I2=0;
+-			I3=0;
+-			I4=0;
+-			I5=0;
+-			for(cali_rise=0;cali_rise <= 1;cali_rise++)
+-			{
+-				count =99;
+-				aml_write_reg32((aml_read_reg32(P_PREG_ETH_REG0)|(1 << 25)|(cali_rise << 26)|(cali_sel << 27)),P_PREG_ETH_REG0);
+-				while(count >= 0)
+-				{
+-					value = aml_read_reg32(P_PREG_ETH_REG1);
+-					if((value>>15) & 0x1)
+-					{
+-						count --;
+-						switch(value&0x1f){
+-							case 0x0:
+-									I1++;
+-									break;
+-							case 0x1:
+-									I2++;
+-									break;
+-							case 0x2:
+-									I3++;
+-									break;
+-							case 0x3:
+-									I4++;
+-									break;
+-							case 0x4:
+-									I5++;
+-									break;
+-						}
+-				}
+-			}
+-			printk(" I1 = %d; I2 = %d; I3 = %d; I4 = %d; I5 = %d;\n",I1,I2,I3,I4,I5);
+-			if( (I1 > 0)&&(I2 > 0)&&(I3 > 0)&&(I4 > 0)&&(I5 > 0))
+-				strcpy(problem,"clock delay");
+-			printk(" RXDATA Line %d have %s problem\n",cali_sel,problem);
+-			if((I2+I1+I3) > (I5+I4+I3))
+-				strcpy(path,"positive");
+-			else
+-				strcpy(path,"opposite");
+-			if(strcmp(problem,"clock delay") == 0){
+-				printk("Need debug to  delay %s direction \n",path);
+-			}
+-			}
+-		}
+-		return 0;
+-	}
+-	if ((argc < 4) || (argv == NULL) || (argv[0] == NULL)
+-			|| (argv[1] == NULL) || (argv[2] == NULL)|| (argv[3] == NULL)) {
+-		printk("Invalid syntax\n");
+-		return -1;
+-	}
+-	cali_rise = simple_strtol(argv[1], NULL, 0);
+-	cali_sel = simple_strtol(argv[2], NULL, 0);
+-	cali_time = simple_strtol(argv[3], NULL, 0);
+-	aml_read_reg32(P_PREG_ETH_REG1);
+-	aml_write_reg32(P_PREG_ETH_REG0,aml_read_reg32(P_PREG_ETH_REG0)&(~(0x1f << 25)));
+-	aml_write_reg32(P_PREG_ETH_REG0,aml_read_reg32(P_PREG_ETH_REG0)|(cali_start << 25)|(cali_rise << 26)|(cali_sel << 27));
+-	printk("rise :%d   sel: %d  time: %d   start:%d  cbus2050 = %x\n",cali_rise,cali_sel,cali_time,cali_start,aml_read_reg32(P_PREG_ETH_REG0));
+-	for(ii=0;ii < cali_time;ii++){
+-		value = aml_read_reg32(P_PREG_ETH_REG1);
+-		if((value>>15) & 0x1){
+- 			printk("value == %x,  cali_len == %d, cali_idx == %d,  cali_sel =%d,  cali_rise = %d\n",value,(value>>5)&0x1f,(value&0x1f),(value>>11)&0x7,(value>>14)&0x1);
+-		}
+-	}
+-	return 0;
+-}
+-static ssize_t eth_cali_store(struct class *class, struct class_attribute *attr,
+-		const char *buf, size_t count)
+-{
+-	int argc;
+-	char *buff, *p, *para;
+-	char *argv[5];
+-	char cmd;
+-
+-	buff = kstrdup(buf, GFP_KERNEL);
+-	p = buff;
+-	if(IS_MESON_M8_CPU){
+-		printk("Sorry ,this cpu is not support cali!\n");
+-		goto end;
+-	}
+-	for (argc = 0; argc < 6; argc++) {
+-		para = strsep(&p, " ");
+-		if (para == NULL)
+-			break;
+-		argv[argc] = para;
+-	}
+-	if (argc < 1 || argc > 4)
+-		goto end;
+-
+-	cmd = argv[0][0];
+-		switch (cmd) {
+-		case 'e':
+-		case 'E':
+-			am_net_cali(argc, argv,1);
+-			break;
+-		case 'd':
+-		case 'D':
+-			am_net_cali(argc, argv,0);
+-			break;
+-		case 'a':
+-		case 'A':
+-			am_net_cali(argc, argv,3);
+-			break;
+-		default:
+-			goto end;
+-		}
+-		return count;
+-	end:
+-		kfree(buff);
+-		return 0;
+-
+-}
+-#define DRIVER_NAME "ethernet"
+-
+-static struct class *phy_sys_class;
+-static CLASS_ATTR(phyreg, S_IWUSR | S_IRUGO, eth_phyreg_help, eth_phyreg_func);
+-static CLASS_ATTR(macreg, S_IWUSR | S_IRUGO, eth_macreg_help, eth_macreg_func);
+-static CLASS_ATTR(linkspeed, S_IWUSR | S_IRUGO, eth_linkspeed_show, NULL);
+-static CLASS_ATTR(cali, S_IWUSR | S_IRUGO, NULL, eth_cali_store);
+-#endif
+-int gmac_create_sysfs(struct phy_device * phy_dev,void __iomem *ioaddr) {
+-	int r;
+-	int t;
+-	int ret;
+-	c_phy_dev  = phy_dev;
+-	c_ioaddr = ioaddr;
+-	dev_set_drvdata(&phy_dev->dev, phy_dev);
+-	for (t = 0; t < ARRAY_SIZE(phy_reg_attrs); t++) {
+-		r = device_create_file(&phy_dev->dev,&phy_reg_attrs[t]);
+-		if (r) {
+-			dev_err(&phy_dev->dev, "failed to create sysfs file\n");
+-			return r;
+-		}
+-	}
+-	phy_sys_class = class_create(THIS_MODULE, DRIVER_NAME);
+-	ret = class_create_file(phy_sys_class, &class_attr_phyreg);
+-	ret = class_create_file(phy_sys_class, &class_attr_macreg);
+-	ret = class_create_file(phy_sys_class, &class_attr_linkspeed);
+-	ret = class_create_file(phy_sys_class, &class_attr_cali);
+-	return 0;
+-}
+-
+-int gmac_remove_sysfs(struct phy_device * phy_dev) {
+-	int t;
+-
+-	for (t = 0; t < ARRAY_SIZE(phy_reg_attrs); t++) {
+-		device_remove_file(&phy_dev->dev,&phy_reg_attrs[t]);
+-	}
+-	class_destroy(phy_sys_class);
+-	c_phy_dev = NULL;
+-	return 0;
+-}
+-#endif
+-
+ 
+ /**
+  * stmmac_init_phy - PHY initialization
+@@ -1320,15 +820,18 @@
+ 	priv->oldlink = 0;
+ 	priv->speed = 0;
+ 	priv->oldduplex = -1;
++
+ 	if (priv->plat->phy_bus_name)
+ 		snprintf(bus_id, MII_BUS_ID_SIZE, "%s-%x",
+ 			 priv->plat->phy_bus_name, priv->plat->bus_id);
+ 	else
+ 		snprintf(bus_id, MII_BUS_ID_SIZE, "stmmac-%x",
+ 			 priv->plat->bus_id);
++
+ 	snprintf(phy_id_fmt, MII_BUS_ID_SIZE + 3, PHY_ID_FMT, bus_id,
+ 		 priv->plat->phy_addr);
+ 	pr_debug("stmmac_init_phy:  trying to attach to %s\n", phy_id_fmt);
++
+ 	phydev = phy_connect(dev, phy_id_fmt, &stmmac_adjust_link, interface);
+ 
+ 	if (IS_ERR(phydev)) {
+@@ -1357,9 +860,7 @@
+ 		 " Link = %d\n", dev->name, phydev->phy_id, phydev->link);
+ 
+ 	priv->phydev = phydev;
+-#ifdef CONFIG_DWMAC_MESON
+-	//gmac_create_sysfs(phydev,priv->ioaddr);
+-#endif
++
+ 	return 0;
+ }
+ 
+@@ -2067,13 +1568,7 @@
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	int ret;
+-	if (priv->plat->has_gmac) {
+-#if 1
+-	 if (IS_MESON_M8M2_CPU){
+-		aml_write_reg32(P_PERIPHS_PIN_MUX_6,0xfdff);
+- 	}
+-#endif
+-	}
++
+ 	clk_prepare_enable(priv->stmmac_clk);
+ 
+ 	stmmac_check_ether_addr(priv);
+@@ -2153,7 +1648,7 @@
+ 	priv->xstats.threshold = tc;
+ 
+ 	stmmac_mmc_setup(priv);
+-	
++
+ 	ret = stmmac_init_ptp(priv);
+ 	if (ret)
+ 		pr_warn("%s: failed PTP initialisation\n", __func__);
+@@ -2227,9 +1722,6 @@
+ 
+ 	/* Stop and disconnect the PHY */
+ 	if (priv->phydev) {
+-#ifdef CONFIG_DWMAC_MESON
+-	//	gmac_remove_sysfs(priv->phydev);
+-#endif
+ 		phy_stop(priv->phydev);
+ 		phy_disconnect(priv->phydev);
+ 		priv->phydev = NULL;
+@@ -2287,6 +1779,7 @@
+ 	int nfrags = skb_shinfo(skb)->nr_frags;
+ 	struct dma_desc *desc, *first;
+ 	unsigned int nopaged_len = skb_headlen(skb);
++
+ 	if (unlikely(stmmac_tx_avail(priv) < nfrags + 1)) {
+ 		if (!netif_queue_stopped(dev)) {
+ 			netif_stop_queue(dev);
+@@ -3159,7 +2652,7 @@
+ 	priv->plat = plat_dat;
+ 	priv->ioaddr = addr;
+ 	priv->dev->base_addr = (unsigned long)addr;
+-	priv->base_addr = (unsigned long)addr;
++
+ 	/* Verify driver arguments */
+ 	stmmac_verify_args();
+ 
+@@ -3209,10 +2702,7 @@
+ 		pr_err("%s: ERROR %i registering the device\n", __func__, ret);
+ 		goto error_netdev_register;
+ 	}
+-#ifdef CONFIG_DWMAC_MESON
+-	priv->clk_csr = STMMAC_CSR_100_150M;
+-//	priv->clk_csr = STMMAC_CSR_150_250M;
+-#else
++
+ 	priv->stmmac_clk = clk_get(priv->device, STMMAC_RESOURCE_NAME);
+ 	if (IS_ERR(priv->stmmac_clk)) {
+ 		pr_warn("%s: warning: cannot get CSR clock\n", __func__);
+@@ -3229,7 +2719,6 @@
+ 		stmmac_clk_csr_set(priv);
+ 	else
+ 		priv->clk_csr = priv->plat->clk_csr;
+-#endif
+ 
+ 	stmmac_check_pcs_mode(priv);
+ 
+@@ -3243,18 +2732,13 @@
+ 			goto error_mdio_register;
+ 		}
+ 	}
+-#ifdef CONFIG_DWMAC_MESON
+-	gmac_create_sysfs(priv->mii->phy_map[priv->plat->phy_addr],priv->ioaddr);
+-#endif
+-	
++
+ 	return priv;
+ 
+ error_mdio_register:
+ 	clk_put(priv->stmmac_clk);
+-#ifndef CONFIG_DWMAC_MESON
+ error_clk_get:
+ 	unregister_netdev(ndev);
+-#endif
+ error_netdev_register:
+ 	netif_napi_del(&priv->napi);
+ error_free_netdev:
+@@ -3277,9 +2761,7 @@
+ 
+ 	priv->hw->dma->stop_rx(priv->ioaddr);
+ 	priv->hw->dma->stop_tx(priv->ioaddr);
+-#ifdef CONFIG_DWMAC_MESON
+-	gmac_remove_sysfs(priv->phydev);
+-#endif
++
+ 	stmmac_set_mac(priv->ioaddr, false);
+ 	if (priv->pcs != STMMAC_PCS_RGMII && priv->pcs != STMMAC_PCS_TBI &&
+ 	    priv->pcs != STMMAC_PCS_RTBI)
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c	2015-05-13 10:18:44.000000000 +0300
+@@ -34,60 +34,6 @@
+ #define MII_BUSY 0x00000001
+ #define MII_WRITE 0x00000002
+ 
+-#ifdef CONFIG_DWMAC_MESON
+-#define ETH_MAC_4_GMII_Addr         (0x0010)
+-#define ETH_MAC_5_GMII_Data         (0x0014)
+-#define ETH_MAC_4_GMII_Addr_CR_P                2
+-#define ETH_MAC_4_GMII_Addr_CR_100_150          (1<<ETH_MAC_4_GMII_Addr_CR_P)
+-static unsigned int MDCCLK = ETH_MAC_4_GMII_Addr_CR_100_150;
+-
+-static int mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+-{
+-	struct net_device *ndev = bus->priv;
+-	struct stmmac_priv *priv = netdev_priv(ndev);
+-	unsigned int mii_address = priv->hw->mii.addr;
+-	unsigned int mii_data = priv->hw->mii.data;
+-        int data;
+-        u16 regValue = (((phyaddr << 11) & (0x0000F800)) |
+-                        ((phyreg << 6) & (0x000007C0)));
+-        regValue |= MII_BUSY | MDCCLK;
+-
+-        do {}
+-		while (((int)readl(priv->ioaddr + mii_address) & MII_BUSY) == 1);
+-        writel(regValue, (priv->ioaddr + mii_address));
+-        do {} 
+-		while (((int)readl(priv->ioaddr + mii_address)& MII_BUSY) == 1);
+-
+-        /* Read the data from the MII data register */
+-        data = (int)readl(priv->ioaddr + mii_data);
+-
+-        return data;
+-}
+-
+-static int mdio_write(struct mii_bus *bus, int phyaddr, int phyreg, u16 phydata)
+-{
+-        struct net_device *ndev = bus->priv;
+-	struct stmmac_priv *priv = netdev_priv(ndev);
+-	unsigned int mii_address = priv->hw->mii.addr;
+-	unsigned int mii_data = priv->hw->mii.data;
+-        u16 value = (((phyaddr << 11) & (0x0000F800)) | ((phyreg << 6) & (0x000007C0))) | MII_WRITE;
+-        value |= MII_BUSY | MDCCLK;
+-
+-        do {} while (((int)readl(priv->ioaddr + mii_address)& MII_BUSY) == 1);
+-        writel(phydata, priv->ioaddr + mii_data);
+-
+-        writel(value, priv->ioaddr + mii_address);
+-
+-        do {} while (((int)readl(priv->ioaddr + mii_address) & MII_BUSY) == 1);
+-	
+-	return 0;
+-}
+-
+-static int mdio_reset(struct mii_bus *bus)
+-{
+-       return 0;
+-}
+-#else
+ static int stmmac_mdio_busy_wait(void __iomem *ioaddr, unsigned int mii_addr)
+ {
+ 	unsigned long curr;
+@@ -120,16 +66,20 @@
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+ 	unsigned int mii_address = priv->hw->mii.addr;
+ 	unsigned int mii_data = priv->hw->mii.data;
++
+ 	int data;
+-	
+ 	u16 regValue = (((phyaddr << 11) & (0x0000F800)) |
+ 			((phyreg << 6) & (0x000007C0)));
+ 	regValue |= MII_BUSY | ((priv->clk_csr & 0xF) << 2);
++
+ 	if (stmmac_mdio_busy_wait(priv->ioaddr, mii_address))
+ 		return -EBUSY;
++
+ 	writel(regValue, priv->ioaddr + mii_address);
++
+ 	if (stmmac_mdio_busy_wait(priv->ioaddr, mii_address))
+ 		return -EBUSY;
++
+ 	/* Read the data from the MII data register */
+ 	data = (int)readl(priv->ioaddr + mii_data);
+ 
+@@ -178,7 +128,6 @@
+ static int stmmac_mdio_reset(struct mii_bus *bus)
+ {
+ #if defined(CONFIG_STMMAC_PLATFORM)
+-
+ 	struct net_device *ndev = bus->priv;
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+ 	unsigned int mii_address = priv->hw->mii.addr;
+@@ -196,7 +145,7 @@
+ #endif
+ 	return 0;
+ }
+-#endif
++
+ /**
+  * stmmac_mdio_register
+  * @ndev: net device structure
+@@ -222,22 +171,16 @@
+ 		irqlist = mdio_bus_data->irqs;
+ 	else
+ 		irqlist = priv->mii_irq;
++
+ 	new_bus->name = "stmmac";
+-#ifdef CONFIG_DWMAC_MESON
+-	new_bus->read = &mdio_read;
+-	new_bus->write = &mdio_write;
+-	new_bus->reset = &mdio_reset;
+-#else
+ 	new_bus->read = &stmmac_mdio_read;
+ 	new_bus->write = &stmmac_mdio_write;
+ 	new_bus->reset = &stmmac_mdio_reset;
+-#endif
+ 	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+ 		 new_bus->name, priv->plat->bus_id);
+ 	new_bus->priv = ndev;
+ 	new_bus->irq = irqlist;
+ 	new_bus->phy_mask = mdio_bus_data->phy_mask;
+-	new_bus->phy_mask = 0;
+ 	new_bus->parent = priv->device;
+ 	err = mdiobus_register(new_bus);
+ 	if (err != 0) {
+@@ -262,10 +205,7 @@
+ 				irqlist[addr] = mdio_bus_data->probed_phy_irq;
+ 				phydev->irq = mdio_bus_data->probed_phy_irq;
+ 			}
+-#ifdef CONFIG_DWMAC_MESON
+-			irqlist[addr] = PHY_POLL;
+-			phydev->irq = PHY_POLL;
+-#endif
++
+ 			/*
+ 			 * If we're  going to bind the MAC to this PHY bus,
+ 			 * and no PHY number was provided to the MAC,
+diff -Nru linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+--- linux-amlogic-5f3c177/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c	2015-04-29 12:36:08.000000000 +0300
++++ linux-amlogic-bbdd524/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c	2015-05-13 10:18:44.000000000 +0300
+@@ -24,297 +24,38 @@
+ 
+ #include <linux/platform_device.h>
+ #include <linux/io.h>
+-#include <mach/am_regs.h>
+ #include <linux/of.h>
+ #include <linux/of_net.h>
+-#include <linux/of_device.h>
+ #include "stmmac.h"
+-#ifdef CONFIG_DWMAC_MESON
+-#include <mach/mod_gate.h>
+-#endif
+-static const struct of_device_id stmmac_dt_ids[] = {
+-#ifdef CONFIG_DWMAC_MESON
+-	{ .compatible = "amlogic,meson6-dwmac", /*.data = &meson6_dwmac_data*/},
+-	{ .compatible = "amlogic,meson8-rmii-dwmac", /*s802 100m mode this chip have no gmac not support 1000m*/},
+-	{ .compatible = "amlogic,meson8m2-rgmii-dwmac",},// s812 chip 1000m mode
+-	{ .compatible = "amlogic,meson8m2-rmii-dwmac", .data = &meson6_dwmac_data },// s812 chip 100m mode
+-	{ .compatible = "amlogic,meson8b-rgmii-dwmac", },// s805 chip 1000m mode
+-	{ .compatible = "amlogic,meson8b-rmii-dwmac", .data = &meson6_dwmac_data },// s805 chip 100m mode
+-	{ .compatible = "amlogic,meson6-rmii-dwmac",.data = &meson6_dwmac_data },// defined
+-#endif
+-	/* SoC specific glue layers should come before generic bindings */
+-	{ .compatible = "st,spear600-gmac"},
+-	{ .compatible = "snps,dwmac-3.610"},
+-	{ .compatible = "snps,dwmac-3.70a"},
+-	{ .compatible = "snps,dwmac-3.710"},
+-	{ .compatible = "snps,dwmac"},
+-	{ /* sentinel */ }
+-};
+-MODULE_DEVICE_TABLE(of, stmmac_dt_ids);
+-#ifdef CONFIG_DWMAC_MESON
+-static char DEFMAC[] = "\x00\x01\x23\xcd\xee\xaf";
+-static unsigned int g_mac_addr_setup = 0;
+-static unsigned char inline chartonum(char c)
+-{
+-	if (c >= '0' && c <= '9') {
+-		return c - '0';
+-	}
+-	if (c >= 'A' && c <= 'F') {
+-		return (c - 'A') + 10;
+-	}
+-	if (c >= 'a' && c <= 'f') {
+-		return (c - 'a') + 10;
+-	}
+-	return 0;
+-
+-}
+-static int __init mac_addr_set(char *line)
+-{
+-	unsigned char mac[6];
+-	int i = 0;
+-	for (i = 0; i < 6 && line[0] != '\0' && line[1] != '\0'; i++) {
+-		mac[i] = chartonum(line[0]) << 4 | chartonum(line[1]);
+-		line += 3;
+-	}
+-	memcpy(DEFMAC, mac, 6);
+-	printk("******** uboot setup mac-addr: %x:%x:%x:%x:%x:%x\n",
+-			DEFMAC[0], DEFMAC[1], DEFMAC[2], DEFMAC[3], DEFMAC[4], DEFMAC[5]);
+-	g_mac_addr_setup++;
+-
+-	return 1;
+-}
+ 
+-__setup("mac=", mac_addr_set);
+-#endif
+ #ifdef CONFIG_OF
+-
+-/* This function validates the number of Multicast filtering bins specified
+- * by the configuration through the device tree. The Synopsys GMAC supports
+- * 64 bins, 128 bins, or 256 bins. "bins" refer to the division of CRC
+- * number space. 64 bins correspond to 6 bits of the CRC, 128 corresponds
+- * to 7 bits, and 256 refers to 8 bits of the CRC. Any other setting is
+- * invalid and will cause the filtering algorithm to use Multicast
+- * promiscuous mode.
+- */
+-static int dwmac1000_validate_mcast_bins(int mcast_bins)
+-{
+-	int x = mcast_bins;
+-
+-	switch (x) {
+-	case HASH_TABLE_SIZE:
+-	case 128:
+-	case 256:
+-		break;
+-	default:
+-		x = 0;
+-		pr_info("Hash table entries set to unexpected value %d",
+-			mcast_bins);
+-		break;
+-	}
+-	return x;
+-}
+-
+-/* This function validates the number of Unicast address entries supported
+- * by a particular Synopsys 10/100/1000 controller. The Synopsys controller
+- * supports 1, 32, 64, or 128 Unicast filter entries for it's Unicast filter
+- * logic. This function validates a valid, supported configuration is
+- * selected, and defaults to 1 Unicast address if an unsupported
+- * configuration is selected.
+- */
+-static int dwmac1000_validate_ucast_entries(int ucast_entries)
+-{
+-	int x = ucast_entries;
+-
+-	switch (x) {
+-	case 1:
+-	case 32:
+-	case 64:
+-	case 128:
+-		break;
+-	default:
+-		x = 1;
+-		pr_info("Unicast table entries set to unexpected value %d\n",
+-			ucast_entries);
+-		break;
+-	}
+-	return x;
+-}
+-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+-extern int get_aml_key_kernel(const char* key_name, unsigned char* data, int ascii_flag);
+-extern int extenal_api_key_set_version(char *devvesion);
+-static char print_buff[1025];
+-#endif
+ static int stmmac_probe_config_dt(struct platform_device *pdev,
+ 				  struct plat_stmmacenet_data *plat,
+ 				  const char **mac)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+-	struct stmmac_dma_cfg *dma_cfg;
+-	const struct of_device_id *device;
+-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+-	int ret;
+-	char *addr =NULL;
+-#endif
+-	if (!np)
+-		return -ENODEV;
+ 
+-	device = of_match_device(stmmac_dt_ids, &pdev->dev);
+-	if (!device)
++	if (!np)
+ 		return -ENODEV;
+ 
+-	if (device->data) {
+-		const struct stmmac_of_data *data = device->data;
+-		plat->has_gmac = data->has_gmac;
+-		plat->enh_desc = data->enh_desc;
+-		plat->tx_coe = data->tx_coe;
+-		plat->rx_coe = data->rx_coe;
+-		plat->bugged_jumbo = data->bugged_jumbo;
+-		plat->pmt = data->pmt;
+-		plat->riwt_off = data->riwt_off;
+-		plat->fix_mac_speed = data->fix_mac_speed;
+-		plat->bus_setup = data->bus_setup;
+-		plat->setup = data->setup;
+-		plat->free = data->free;
+-		plat->init = data->init;
+-		plat->exit = data->exit;
+-	}
+-
+-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+-	ret = get_aml_key_kernel("mac", print_buff, 0);
+-	extenal_api_key_set_version("auto");
+-	printk("ret = %d\nprint_buff=%s\n", ret, print_buff);
+-	if (ret >= 0) {
+-		strcpy(addr, print_buff);
+-		*mac = addr;
+-	}
+-	else
+-	{
+-		if(g_mac_addr_setup){
+-			*mac = DEFMAC;
+-		}
+-		else{
+-			*mac = of_get_mac_address(np);
+-		}
+-	}
+-
+-#else
+-	
+ 	*mac = of_get_mac_address(np);
+-#endif
+ 	plat->interface = of_get_phy_mode(np);
+-
+-	/* Get max speed of operation from device tree */
+-	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
+-		plat->max_speed = -1;
+-
+-	plat->bus_id = of_alias_get_id(np, "ethernet");
+-	if (plat->bus_id < 0)
+-		plat->bus_id = 0;
+-
+-	/* Default to phy auto-detection */
+-	plat->phy_addr = -1;
+-
+-	/* "snps,phy-addr" is not a standard property. Mark it as deprecated
+-	 * and warn of its use. Remove this when phy node support is added.
+-	 */
+-	if (of_property_read_u32(np, "snps,phy-addr", &plat->phy_addr) == 0)
+-		dev_warn(&pdev->dev, "snps,phy-addr property is deprecated\n");
+-
+-	if (plat->phy_bus_name){
+-		plat->mdio_bus_data = NULL;
+-	}
+-	else
+-		plat->mdio_bus_data =
+-			devm_kzalloc(&pdev->dev,
+-				     sizeof(struct stmmac_mdio_bus_data),
+-				     GFP_KERNEL);
+-
+-	plat->force_sf_dma_mode =
+-		of_property_read_bool(np, "snps,force_sf_dma_mode");
+-
+-	/* Set the maxmtu to a default of JUMBO_LEN in case the
+-	 * parameter is not present in the device tree.
+-	 */
+-
+-	/* Set default value for multicast hash bins */
+-	plat->multicast_filter_bins = HASH_TABLE_SIZE;
+-
+-	/* Set default value for unicast filter entries */
+-	plat->unicast_filter_entries = 1;
++	plat->mdio_bus_data = devm_kzalloc(&pdev->dev,
++					   sizeof(struct stmmac_mdio_bus_data),
++					   GFP_KERNEL);
+ 
+ 	/*
+ 	 * Currently only the properties needed on SPEAr600
+ 	 * are provided. All other properties should be added
+ 	 * once needed on other platforms.
+ 	 */
+-#ifdef CONFIG_DWMAC_MESON
+-#if 0
+-	if(of_device_is_compatible(np,"amlogic,meson8m2-dwmac")){
+-	 	aml_write_reg32(P_PERIPHS_PIN_MUX_6,0xffff);
+-		aml_write_reg32(P_PREG_ETH_REG0,0x7d21);
+-		aml_set_reg32_mask(P_HHI_MPLL_CNTL6,1<<27);
+-        	aml_set_reg32_mask(P_HHI_GEN_CLK_CNTL,0xb803);
+-        	aml_set_reg32_mask(P_HHI_MPLL_CNTL9,(1638<<0)| (0<<14)|(1<<15) | (1<<14) | (5<<16) | (0<<25) | (0<<26) |(0<<30) | (0<<31));
+-		        /* setup ethernet mode */
+-     		aml_clr_reg32_mask(P_HHI_MEM_PD_REG0, (1 << 3) | (1<<2));
+-        /* hardware reset ethernet phy : gpioz14 connect phyreset pin*/
+-        	aml_clr_reg32_mask(P_PREG_PAD_GPIO2_EN_N, 1 << 28);
+-       	aml_clr_reg32_mask(P_PREG_PAD_GPIO2_O, 1 << 28);
+-        	mdelay(10);
+-        	aml_set_reg32_mask(P_PREG_PAD_GPIO2_O, 1 << 28);
+-	}
+-#endif
+-#endif
+ 	if (of_device_is_compatible(np, "st,spear600-gmac") ||
+ 		of_device_is_compatible(np, "snps,dwmac-3.70a") ||
+-		of_device_is_compatible(np,"amlogic,meson8b-rgmii-dwmac")||
+-		of_device_is_compatible(np,"amlogic,meson8m2-rgmii-dwmac")) {
+-		/* Note that the max-frame-size parameter as defined in the
+-		 * ePAPR v1.1 spec is defined as max-frame-size, it's
+-		 * actually used as the IEEE definition of MAC Client
+-		 * data, or MTU. The ePAPR specification is confusing as
+-		 * the definition is max-frame-size, but usage examples
+-		 * are clearly MTUs
+-		 */
+-		of_property_read_u32(np, "max-frame-size", &plat->maxmtu);
+-		of_property_read_u32(np, "snps,multicast-filter-bins",
+-				     &plat->multicast_filter_bins);
+-		of_property_read_u32(np, "snps,perfect-filter-entries",
+-				     &plat->unicast_filter_entries);
+-		plat->unicast_filter_entries = dwmac1000_validate_ucast_entries(
+-					       plat->unicast_filter_entries);
+-		plat->multicast_filter_bins = dwmac1000_validate_mcast_bins(
+-					      plat->multicast_filter_bins);
++		of_device_is_compatible(np, "snps,dwmac")) {
+ 		plat->has_gmac = 1;
+ 		plat->pmt = 1;
+ 	}
+ 
+-	if (of_device_is_compatible(np, "snps,dwmac-3.610") ||
+-		of_device_is_compatible(np,"amlogic,meson6-dwmac")||
+-		of_device_is_compatible(np, "snps,dwmac-3.710")) {
+-		plat->enh_desc = 1;
+-		plat->bugged_jumbo = 1;
+-		plat->force_sf_dma_mode = 1;
+-	}
+-
+-	if (of_find_property(np, "snps,pbl", NULL)) {
+-		dma_cfg = devm_kzalloc(&pdev->dev, sizeof(*dma_cfg),
+-				       GFP_KERNEL);
+-		if (!dma_cfg)
+-			return -ENOMEM;
+-		plat->dma_cfg = dma_cfg;
+-		of_property_read_u32(np, "snps,pbl", &dma_cfg->pbl);
+-		dma_cfg->fixed_burst =
+-			of_property_read_bool(np, "snps,fixed-burst");
+-		dma_cfg->mixed_burst =
+-			of_property_read_bool(np, "snps,mixed-burst");
+-	}
+-	plat->force_thresh_dma_mode = of_property_read_bool(np, "snps,force_thresh_dma_mode");
+-	if (plat->force_thresh_dma_mode) {
+-		plat->force_sf_dma_mode = 0;
+-		pr_warn("force_sf_dma_mode is ignored if force_thresh_dma_mode is set.");
+-	}
+-
+ 	return 0;
+ }
+ #else
+@@ -336,27 +77,23 @@
+ static int stmmac_pltfr_probe(struct platform_device *pdev)
+ {
+ 	int ret = 0;
+-	//addr =phys_to_virt();
+-	   struct resource *res;
+-	 struct device *dev = &pdev->dev;
+-        void __iomem *addr = NULL;
+-        struct stmmac_priv *priv = NULL;
+-        struct plat_stmmacenet_data *plat_dat = NULL;
+-        const char *mac = NULL;
+-#ifdef CONFIG_DWMAC_MESON
+-	switch_mod_gate_by_name("ethernet",1);
+-#endif
+-        res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-        if (!res)
+-                return -ENODEV;
+-
+-        addr = devm_ioremap_resource(dev, res);
+-	//addr =  ( void* )(0xfe0c0000);
+-	printk("ethernet base addr is %x\n", (unsigned int)addr);
+-	plat_dat = dev_get_platdata(&pdev->dev);
++	struct resource *res;
++	struct device *dev = &pdev->dev;
++	void __iomem *addr = NULL;
++	struct stmmac_priv *priv = NULL;
++	struct plat_stmmacenet_data *plat_dat = NULL;
++	const char *mac = NULL;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
++
++	addr = devm_ioremap_resource(dev, res);
++	if (IS_ERR(addr))
++		return PTR_ERR(addr);
++
+ 	if (pdev->dev.of_node) {
+-		if (!plat_dat)
+-			plat_dat = devm_kzalloc(&pdev->dev,
++		plat_dat = devm_kzalloc(&pdev->dev,
+ 					sizeof(struct plat_stmmacenet_data),
+ 					GFP_KERNEL);
+ 		if (!plat_dat) {
+@@ -369,26 +106,21 @@
+ 			pr_err("%s: main dt probe failed", __func__);
+ 			return ret;
+ 		}
+-	}
+-
+-	/* Custom setup (if needed) */
+-	if (plat_dat->setup) {
+-		plat_dat->bsp_priv = plat_dat->setup(pdev);
+-		if (IS_ERR(plat_dat->bsp_priv))
+-			return PTR_ERR(plat_dat->bsp_priv);
++	} else {
++		plat_dat = pdev->dev.platform_data;
+ 	}
+ 
+ 	/* Custom initialisation (if needed)*/
+ 	if (plat_dat->init) {
+-		ret = plat_dat->init(pdev, plat_dat->bsp_priv);
++		ret = plat_dat->init(pdev);
+ 		if (unlikely(ret))
+ 			return ret;
+ 	}
+ 
+ 	priv = stmmac_dvr_probe(&(pdev->dev), plat_dat, addr);
+-	if (IS_ERR(priv)) {
++	if (!priv) {
+ 		pr_err("%s: main driver probe failed", __func__);
+-		return PTR_ERR(priv);
++		return -ENODEV;
+ 	}
+ 
+ 	/* Get MAC address if available (DT) */
+@@ -397,12 +129,10 @@
+ 
+ 	/* Get the MAC information */
+ 	priv->dev->irq = platform_get_irq_byname(pdev, "macirq");
+-	if (priv->dev->irq < 0) {
+-		if (priv->dev->irq != -EPROBE_DEFER) {
+-			netdev_err(priv->dev,
+-				   "MAC IRQ configuration information not found\n");
+-		}
+-		return priv->dev->irq;
++	if (priv->dev->irq == -ENXIO) {
++		pr_err("%s: ERROR: MAC IRQ configuration "
++		       "information not found\n", __func__);
++		return -ENXIO;
+ 	}
+ 
+ 	/*
+@@ -414,15 +144,10 @@
+ 	 * so the driver will continue to use the mac irq (ndev->irq)
+ 	 */
+ 	priv->wol_irq = platform_get_irq_byname(pdev, "eth_wake_irq");
+-	if (priv->wol_irq < 0) {
+-		if (priv->wol_irq == -EPROBE_DEFER)
+-			return -EPROBE_DEFER;
++	if (priv->wol_irq == -ENXIO)
+ 		priv->wol_irq = priv->dev->irq;
+-	}
+ 
+ 	priv->lpi_irq = platform_get_irq_byname(pdev, "eth_lpi");
+-	if (priv->lpi_irq == -EPROBE_DEFER)
+-		return -EPROBE_DEFER;
+ 
+ 	platform_set_drvdata(pdev, priv->dev);
+ 
+@@ -444,10 +169,9 @@
+ 	int ret = stmmac_dvr_remove(ndev);
+ 
+ 	if (priv->plat->exit)
+-		priv->plat->exit(pdev, priv->plat->bsp_priv);
++		priv->plat->exit(pdev);
+ 
+-	if (priv->plat->free)
+-		priv->plat->free(pdev, priv->plat->bsp_priv);
++	platform_set_drvdata(pdev, NULL);
+ 
+ 	return ret;
+ }
+@@ -455,55 +179,63 @@
+ #ifdef CONFIG_PM
+ static int stmmac_pltfr_suspend(struct device *dev)
+ {
+-        struct net_device *ndev = dev_get_drvdata(dev);
++	struct net_device *ndev = dev_get_drvdata(dev);
+ 
+-        return stmmac_suspend(ndev);
++	return stmmac_suspend(ndev);
+ }
+ 
+ static int stmmac_pltfr_resume(struct device *dev)
+ {
+-        struct net_device *ndev = dev_get_drvdata(dev);
++	struct net_device *ndev = dev_get_drvdata(dev);
+ 
+-        return stmmac_resume(ndev);
++	return stmmac_resume(ndev);
+ }
+ 
+ int stmmac_pltfr_freeze(struct device *dev)
+ {
+-        int ret;
+-        struct plat_stmmacenet_data *plat_dat = dev_get_platdata(dev);
+-        struct net_device *ndev = dev_get_drvdata(dev);
+-        struct platform_device *pdev = to_platform_device(dev);
+-
+-        ret = stmmac_freeze(ndev);
+-        if (plat_dat->exit)
+-		plat_dat->exit(pdev, plat_dat->bsp_priv);
++	int ret;
++	struct plat_stmmacenet_data *plat_dat = dev_get_platdata(dev);
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct platform_device *pdev = to_platform_device(dev);
++
++	ret = stmmac_freeze(ndev);
++	if (plat_dat->exit)
++		plat_dat->exit(pdev);
+ 
+-        return ret;
++	return ret;
+ }
+ 
+ int stmmac_pltfr_restore(struct device *dev)
+ {
+-        struct plat_stmmacenet_data *plat_dat = dev_get_platdata(dev);
+-        struct net_device *ndev = dev_get_drvdata(dev);
+-        struct platform_device *pdev = to_platform_device(dev);
++	struct plat_stmmacenet_data *plat_dat = dev_get_platdata(dev);
++	struct net_device *ndev = dev_get_drvdata(dev);
++	struct platform_device *pdev = to_platform_device(dev);
+ 
+-        if (plat_dat->init)
+-                plat_dat->init(pdev,plat_dat->bsp_priv);
++	if (plat_dat->init)
++		plat_dat->init(pdev);
+ 
+-        return stmmac_restore(ndev);
++	return stmmac_restore(ndev);
+ }
+ 
+ static const struct dev_pm_ops stmmac_pltfr_pm_ops = {
+-        .suspend = stmmac_pltfr_suspend,
+-        .resume = stmmac_pltfr_resume,
+-        .freeze = stmmac_pltfr_freeze,
+-        .thaw = stmmac_pltfr_restore,
+-        .restore = stmmac_pltfr_restore,
++	.suspend = stmmac_pltfr_suspend,
++	.resume = stmmac_pltfr_resume,
++	.freeze = stmmac_pltfr_freeze,
++	.thaw = stmmac_pltfr_restore,
++	.restore = stmmac_pltfr_restore,
+ };
+ #else
+ static const struct dev_pm_ops stmmac_pltfr_pm_ops;
+ #endif /* CONFIG_PM */
+ 
++static const struct of_device_id stmmac_dt_ids[] = {
++	{ .compatible = "st,spear600-gmac"},
++	{ .compatible = "snps,dwmac-3.70a"},
++	{ .compatible = "snps,dwmac"},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, stmmac_dt_ids);
++
+ struct platform_driver stmmac_pltfr_driver = {
+ 	.probe = stmmac_pltfr_probe,
+ 	.remove = stmmac_pltfr_remove,
+diff -Nru linux-amlogic-5f3c177/include/linux/amlogic/input/vfd.h linux-amlogic-bbdd524/include/linux/amlogic/input/vfd.h
+--- linux-amlogic-5f3c177/include/linux/amlogic/input/vfd.h	1970-01-01 03:00:00.000000000 +0300
++++ linux-amlogic-bbdd524/include/linux/amlogic/input/vfd.h	2015-05-13 10:18:44.000000000 +0300
+@@ -0,0 +1,21 @@
++#ifndef __LINUX_VFD_H
++#define __LINUX_VFD_H
++
++struct vfd_key{
++	int code;	/* input key code */
++	unsigned char *name;
++	int value;	/* voltage/3.3v * 1023 */
++};
++
++struct vfd_platform_data{
++	int (*set_stb_pin_value)(int value);
++	int (*set_clock_pin_value)(int value);
++	int (*set_do_pin_value)(int value);
++	int (*get_di_pin_value)(void);
++
++	struct vfd_key *key;
++	int key_num;
++};
++
++#endif
++
+diff -Nru linux-amlogic-5f3c177/include/linux/stmmac.h linux-amlogic-bbdd524/include/linux/stmmac.h
+--- linux-amlogic-5f3c177/include/linux/stmmac.h	2015-04-29 12:36:07.000000000 +0300
++++ linux-amlogic-bbdd524/include/linux/stmmac.h	2015-05-13 10:18:44.000000000 +0300
+@@ -80,10 +80,6 @@
+ 	unsigned int phy_mask;
+ 	int *irqs;
+ 	int probed_phy_irq;
+-#ifdef CONFIG_OF
+-	int reset_gpio, active_low;
+-	u32 delays[3];
+-#endif
+ };
+ 
+ struct stmmac_dma_cfg {
+@@ -108,39 +104,13 @@
+ 	int bugged_jumbo;
+ 	int pmt;
+ 	int force_sf_dma_mode;
+-	int force_thresh_dma_mode;
+ 	int riwt_off;
+-	int max_speed;
+-	int maxmtu;
+-	int multicast_filter_bins;
+-	int unicast_filter_entries;
+ 	void (*fix_mac_speed)(void *priv, unsigned int speed);
+ 	void (*bus_setup)(void __iomem *ioaddr);
+-	void *(*setup)(struct platform_device *pdev);
+-	void (*free)(struct platform_device *pdev, void *priv);
+-	int (*init)(struct platform_device *pdev, void *priv);
+-	void (*exit)(struct platform_device *pdev, void *priv);
++	int (*init)(struct platform_device *pdev);
++	void (*exit)(struct platform_device *pdev);
+ 	void *custom_cfg;
+ 	void *custom_data;
+ 	void *bsp_priv;
+ };
+-
+-/* of_data for SoC glue layer device tree bindings */
+-
+-struct stmmac_of_data {
+-	int has_gmac;
+-	int enh_desc;
+-	int tx_coe;
+-	int rx_coe;
+-	int bugged_jumbo;
+-	int pmt;
+-	int riwt_off;
+-	int clk_csr;
+-	void (*fix_mac_speed)(void *priv, unsigned int speed);
+-	void (*bus_setup)(void __iomem *ioaddr);
+-	void *(*setup)(struct platform_device *pdev);
+-	void (*free)(struct platform_device *pdev, void *priv);
+-	int (*init)(struct platform_device *pdev, void *priv);
+-	void (*exit)(struct platform_device *pdev, void *priv);
+-};
+ #endif
