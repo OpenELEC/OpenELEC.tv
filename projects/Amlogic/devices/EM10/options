@@ -1,0 +1,13 @@
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="m8_k200_sdhc.dtd m8_k200_sdhc.dtb m8_k200_sdio.dtd m8_k200_sdio.dtb m8_M10_2gsdhc.dtd m8_M10_2gsdhc.dtb m8_M10_2gsdio.dtd m8_M10_2gsdio.dtb m8m2_M10_2G.dtd m8m2_M10_2G.dtb m8m2_n200_1G.dtd m8m2_n200_1G.dtb"
+
+# Build Android kernel image using mkbootimg
+  BUILD_ANDROID_BOOTIMG="yes"
+
+# Path to a file that will be passed as the --second parameter to Android mkbootimg
+  ANDROID_BOOTIMG_SECOND="out/dt.img"
+
+# OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
+  OPENGLES="opengl-meson8"
+
+  MULTI_DTBS="yes"
