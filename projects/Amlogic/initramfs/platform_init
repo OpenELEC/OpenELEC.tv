@@ -75,8 +75,5 @@ if [ -n "$scaling_max_freq" ]; then
   echo "$scaling_max_freq" > "$cpufreq/scaling_dflt_freq"
 fi
 
-# Enable HDMI audio passthrough
-echo 2 > /sys/class/audiodsp/digital_raw
-
 # Set output type to Multichannel PCM
 echo 6 > /sys/class/audiodsp/digital_codec
