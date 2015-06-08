@@ -1,0 +1,37 @@
+From 51ce9bc149260c62d0021b1efac517101ac09987 Mon Sep 17 00:00:00 2001
+From: davilla <davilla@4pi.com>
+Date: Sat, 27 Dec 2014 14:59:25 -0500
+Subject: [PATCH] [droid/aml] check size too, we might get a zero sized demux
+ packet
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp             | 2 +-
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 9d64aca..1cc036c 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -1740,7 +1740,7 @@ int CAMLCodec::Decode(uint8_t *pData, size_t iSize, double dts, double pts)
+   // OpenDecoder call. So we need to restore it but it does not seem to stick :)
+   g_renderManager.RegisterRenderUpdateCallBack((const void*)this, RenderUpdateCallBack);
+ 
+-  if (pData)
++  if (pData && iSize)
+   {
+     am_private->am_pkt.data = pData;
+     am_private->am_pkt.data_size = iSize;
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index c5e4470..5ba1665 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -206,7 +206,7 @@ int CDVDVideoCodecAmlogic::Decode(uint8_t *pData, int iSize, double dts, double
+ {
+   // Handle Input, add demuxer packet to input queue, we must accept it or
+   // it will be discarded as DVDPlayerVideo has no concept of "try again".
+-  if (pData)
++  if (pData && iSize)
+   {
+     if (m_bitstream)
+     {
