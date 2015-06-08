@@ -1,0 +1,116 @@
+diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
+index 4ea6e5a..c7e9492 100644
+--- a/libavcodec/avcodec.h
++++ b/libavcodec/avcodec.h
+@@ -292,6 +292,10 @@ enum AVCodecID {
+     AV_CODEC_ID_MVC2_DEPRECATED,
+     AV_CODEC_ID_HQX,
+ 
++    /* H264 MVC type */
++    AV_CODEC_ID_H264MVC    = MKBETAG('M','V','C','C'),
++
++
+     AV_CODEC_ID_BRENDER_PIX= MKBETAG('B','P','I','X'),
+     AV_CODEC_ID_Y41P       = MKBETAG('Y','4','1','P'),
+     AV_CODEC_ID_ESCAPE130  = MKBETAG('E','1','3','0'),
+diff --git a/libavcodec/h264.c b/libavcodec/h264.c
+index 6529d98..8bcf0e1 100644
+--- a/libavcodec/h264.c
++++ b/libavcodec/h264.c
+@@ -1668,6 +1668,12 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size,
+             case NAL_SPS_EXT:
+             case NAL_AUXILIARY_SLICE:
+                 break;
++            case NAL_14:
++            case NAL_15:
++            case NAL_20:
++                av_log(avctx, AV_LOG_ERROR, "NAL type: %d for MVC\n", hx->nal_unit_type);
++                avctx->codec_tag = AV_CODEC_ID_H264MVC;
++                break;
+             case NAL_FF_IGNORE:
+                 break;
+             default:
+diff --git a/libavcodec/h264.h b/libavcodec/h264.h
+index 5cb7851..22b09a9 100644
+--- a/libavcodec/h264.h
++++ b/libavcodec/h264.h
+@@ -122,7 +122,10 @@ enum {
+     NAL_END_STREAM      = 11,
+     NAL_FILLER_DATA     = 12,
+     NAL_SPS_EXT         = 13,
++    NAL_14              = 14,
++    NAL_15              = 15,
+     NAL_AUXILIARY_SLICE = 19,
++    NAL_20              = 20,
+     NAL_FF_IGNORE       = 0xff0f001,
+ };
+ 
+diff --git a/libavformat/mov.c b/libavformat/mov.c
+index a5babb7..79900cd 100644
+--- a/libavformat/mov.c
++++ b/libavformat/mov.c
+@@ -1310,6 +1310,34 @@ static int mov_read_glbl(MOVContext *c, AVIOContext *pb, MOVAtom atom)
+     return 0;
+ }
+ 
++static int mov_read_mvcc(MOVContext *c, AVIOContext *pb, MOVAtom atom)
++{
++    int extradata_size;
++    int ret, i;
++    uint32_t n;
++    AVStream *st;
++
++    if (c->fc->nb_streams < 1)
++        return 0;
++    st = c->fc->streams[c->fc->nb_streams-1];
++    extradata_size = st->codec->extradata_size;
++
++    if ((uint64_t)atom.size > (1<<30))
++        return AVERROR_INVALIDDATA;
++
++    if (extradata_size == 0)
++        return 0;
++    if ((ret = mov_read_extradata(c, pb, atom, AV_CODEC_ID_H264)) < 0)
++        return ret;
++    for (i = 0, n = 0; i < 4; i++)
++        n = (n << 8) | st->codec->extradata[extradata_size+i];
++    n -= 4;
++    for (i = 0; i < 4; i++)
++        st->codec->extradata[extradata_size+i] = (n >> ((3 - i) << 3)) & 0xff;
++    st->codec->codec_tag = AV_CODEC_ID_H264MVC;
++    return 0;
++}
++
+ static int mov_read_dvc1(MOVContext *c, AVIOContext *pb, MOVAtom atom)
+ {
+     AVStream *st;
+@@ -3522,6 +3550,7 @@ static const MOVParseTableEntry mov_default_parse_table[] = {
+ { MKTAG('C','i','n', 0x8e), mov_read_targa_y216 },
+ { MKTAG('f','r','e','e'), mov_read_free },
+ { MKTAG('-','-','-','-'), mov_read_custom },
++{ MKTAG('m','v','c','C'), mov_read_mvcc },
+ { 0, NULL }
+ };
+ 
+diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
+index 336d869..067deee 100644
+--- a/libavformat/mpegts.c
++++ b/libavformat/mpegts.c
+@@ -679,7 +679,7 @@ static const StreamType ISO_types[] = {
+     { 0x11, AVMEDIA_TYPE_AUDIO, AV_CODEC_ID_AAC_LATM   }, /* LATM syntax */
+ #endif
+     { 0x1b, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264       },
+-    { 0x20, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264       },
++    { 0x20, AVMEDIA_TYPE_DATA,  AV_CODEC_ID_H264       },
+     { 0x24, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_HEVC       },
+     { 0x42, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_CAVS       },
+     { 0xd1, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_DIRAC      },
+@@ -813,6 +813,8 @@ static int mpegts_set_stream_info(AVStream *st, PESContext *pes,
+             sub_pes->sub_st           = pes->sub_st = sub_st;
+         }
+     }
++    if (pes->stream_type == 0x20) // MVC
++        st->codec->codec_tag = AV_CODEC_ID_H264MVC;
+     if (st->codec->codec_id == AV_CODEC_ID_NONE)
+         mpegts_find_stream_type(st, pes->stream_type, MISC_types);
+     if (st->codec->codec_id == AV_CODEC_ID_NONE) {
