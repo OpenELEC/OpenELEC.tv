@@ -6,7 +6,7 @@
 
 # Path to a file that will be passed as the --second parameter to Android mkbootimg
   ANDROID_BOOTIMG_SECOND="out/dt.img"
-#  ANDROID_BOOTIMG_SECOND="/var/www/amlinux/data/xbmc/OpenELEC.tv/projects/Amlogic/devices/M8S/m8.img"
+#  ANDROID_BOOTIMG_SECOND="/var/www/amlinux/data/xbmc/OpenELEC.tv/projects/Amlogic/devices/M8S/m8s.img"
 
 # OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
   OPENGLES="opengl-meson8"
