@@ -96,6 +96,7 @@ fi
   echo "$PROJECT.$TARGET_ARCH" > $INSTALL/etc/arch
   echo "$OPENELEC_VERSION" > $INSTALL/etc/version
   echo "$TARGET_VERSION" > $INSTALL/etc/release
+  echo "$DEVICE" > $INSTALL/etc/device
   echo "$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION" > $INSTALL/etc/openelec-release
   if [ -n "$GIT_HASH" ]; then
     echo "$GIT_HASH" >> $INSTALL/etc/gitrev
@@ -106,6 +107,7 @@ fi
   echo -e "VERSION=\"$OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "ID=\"openelec\"" >> $INSTALL/etc/os-release
   echo -e "VERSION_ID=\"$OS_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "DEVICE=\"$DEVICE\"" >> $INSTALL/etc/os-release
   echo -e "PRETTY_NAME=\"$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "HOME_URL=\"http://www.openelec.tv\"" >> $INSTALL/etc/os-release
   echo -e "BUG_REPORT_URL=\"https://github.com/OpenELEC/OpenELEC.tv\"" >> $INSTALL/etc/os-release
@@ -332,7 +334,7 @@ fi
       if [ "$1" = "mkimage" -a -n "$BOOTLOADER" ]; then
         # projects can set KERNEL_NAME (kernel.img)
         if [ -z "$KERNEL_NAME" ] ; then
-          KERNEL_NAME="KERNEL"
+          KERNEL_NAME="kernel.img"
         fi
 
         UBOOT_SYSTEM=""
