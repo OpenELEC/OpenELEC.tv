@@ -40,7 +40,7 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   *)
-    PKG_VERSION="4.0.4"
+    PKG_VERSION="4.0.5"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
@@ -155,14 +155,11 @@ makeinstall_target() {
     done
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     mkdir -p $INSTALL/usr/share/bootloader/overlays
-    touch $INSTALL/usr/share/bootloader/overlays/README.TXT
-    for dtb in arch/arm/boot/dts/*.dtb; do
-      if `echo "$dtb" | grep ".*/bcm2[^/]*$" >/dev/null`; then
-        cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
-      else
-        cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
-      fi
+    cp -p arch/arm/boot/dts/*.dtb $INSTALL/usr/share/bootloader
+    for dtb in arch/arm/boot/dts/overlays/*.dtb; do
+      cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
     done
+    cp -p arch/arm/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
   fi
 }
 

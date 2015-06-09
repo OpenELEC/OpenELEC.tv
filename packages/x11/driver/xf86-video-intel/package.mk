@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="2.99.910"
+PKG_VERSION="7d30cce"
 PKG_REV="1"
 PKG_ARCH="x86_64"
 PKG_LICENSE="OSS"
 PKG_SITE="http://intellinuxgraphics.org/"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain libXcomposite util-macros fontsproto systemd xorg-server"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/driver"
@@ -40,19 +41,17 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-backlight \
                            --enable-dri \
                            --disable-dri1 \
                            --enable-dri2 \
-                           --enable-dri3 \
+                           --disable-dri3 \
                            --enable-kms --enable-kms-only \
                            --disable-ums --disable-ums-only \
                            --enable-sna \
                            --enable-uxa \
                            --disable-xvmc \
-                           --disable-glamor \
                            --disable-xaa \
                            --disable-dga \
                            --disable-tear-free \
                            --disable-rendernode \
                            --disable-create2 \
-                           --disable-rotation \
                            --disable-async-swap \
                            --with-xorg-module-dir=$XORG_PATH_MODULES"
 
