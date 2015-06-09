@@ -1,0 +1,127 @@
+diff --git a/drivers/amlogic/i2c/aml_i2c.c b/drivers/amlogic/i2c/aml_i2c.c
+index 70523a9..eb7d201 100755
+--- a/drivers/amlogic/i2c/aml_i2c.c
++++ b/drivers/amlogic/i2c/aml_i2c.c
+@@ -188,22 +188,14 @@ static int aml_i2c_wait_ack(struct aml_i2c *i2c)
+ 	struct aml_i2c_reg_ctrl* ctrl;
+ 
+ 	for(i=0; i<i2c->wait_count; i++) {
+-		ctrl = (struct aml_i2c_reg_ctrl*) &(i2c->master_regs->i2c_ctrl);
+-
+-		if (ctrl->status == IDLE) {
+-            i2c->cur_token = ctrl->cur_token;
+-            if (ctrl->error) {
+-                ctrl->start = 0;
+-                ctrl->start = 1;
+-            }
+-            return (ctrl->error ? (-EIO) : 0);
++		ctrl = (struct aml_i2c_reg_ctrl*)&(i2c->master_regs->i2c_ctrl);
++		if(ctrl->status == IDLE){
++      i2c->cur_token = ctrl->cur_token;
++      return (ctrl->error ? (-EIO) : 0);		  
+ 		}
+-
+-        if (!in_atomic() && (i2c->mode == I2C_DELAY_MODE))
+-            cond_resched();
+-
+-        udelay(i2c->wait_ack_interval);
+-
++    if (!in_atomic() && (i2c->mode == I2C_DELAY_MODE))
++			cond_resched();
++    udelay(i2c->wait_ack_interval);
+ 	}
+ 
+ 	return -ETIMEDOUT;
+@@ -273,7 +265,6 @@ static void aml_i2c_stop(struct aml_i2c *i2c)
+ 	struct aml_i2c_reg_ctrl* ctrl;
+ 	ctrl = (struct aml_i2c_reg_ctrl*)&(i2c->master_regs->i2c_ctrl);
+ 
+-
+   /* Controller has send the stop condition automatically when NACK error.
+    * We must not send again at here, otherwize, the CLK line will be pulled down.
+    */
+@@ -287,11 +278,7 @@ static void aml_i2c_stop(struct aml_i2c *i2c)
+ #else
+   	udelay(i2c->wait_xfer_interval);
+ #endif
+-    ctrl->start = 0;
+-    ctrl->start = 1;
+   }
+-
+-
+ 	aml_i2c_clear_token_list(i2c);	
+ }
+ 
+@@ -380,10 +367,8 @@ static int aml_i2c_write(struct aml_i2c *i2c, unsigned char *buf,
+ 		tagnum = 0;
+ 
+ 		ret = aml_i2c_wait_ack(i2c);
+-		if (ret<0) {
+-            printk(KERN_ALERT "[%s]: wait_ack() failed ret = %d\n", __func__, ret);
++		if(ret<0)
+ 			return ret;
+-        }
+ 
+ 		aml_i2c_clear_token_list(i2c);
+     	}
+@@ -611,15 +596,12 @@ static int aml_i2c_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs,
+ 		p = &msgs[i];
+ 		i2c->msg_flags = p->flags;
+ 		ret = i2c->ops->do_address(i2c, p->addr);
+-		if (ret || !p->len) {
+-            printk("[%s]: do_address failed ret = %d\n", __func__, ret);
++		if (ret || !p->len)
+ 			continue;
+-        }
+-		if (p->flags & I2C_M_RD) {
++		if (p->flags & I2C_M_RD)
+ 			ret = i2c->ops->read(i2c, p->buf, p->len);
+-        } else {
++		else
+ 			ret = i2c->ops->write(i2c, p->buf, p->len);
+-        }
+ 	}
+ 
+ 	i2c->ops->stop(i2c);
+@@ -1190,8 +1172,6 @@ static int aml_i2c_probe(struct platform_device *pdev)
+     if(ret)
+         printk(" class register i2c_class fail!\n");
+ 
+-    platform_set_drvdata(pdev, i2c);
+-
+     return 0;
+ }
+ 
+@@ -1200,24 +1180,14 @@ static int aml_i2c_probe(struct platform_device *pdev)
+ static int aml_i2c_remove(struct platform_device *pdev)
+ {
+     struct aml_i2c *i2c = platform_get_drvdata(pdev);
+-
+-    if (i2c != NULL) {
+-        if (i2c->mode == I2C_INTERRUPT_MODE) {
+-            free_irq(i2c->irq, i2c);
+-        }
+-
+-        if (i2c->mode == I2C_TIMER_POLLING_MODE) {
+-            hrtimer_cancel(&i2c->aml_i2c_hrtimer);
+-        }
+-
+-        mutex_destroy(i2c->lock);
+-        i2c_del_adapter(&i2c->adap);
+-        class_unregister(&i2c->cls);
+-        kzfree(i2c);
+-    } else {
+-        printk(KERN_ALERT "[%s]: i2c is NULL\n", __func__);
+-    }
+-
++    if (i2c->mode == I2C_INTERRUPT_MODE)
++	    free_irq(i2c->irq, i2c);
++    if (i2c->mode == I2C_TIMER_POLLING_MODE)
++    hrtimer_cancel(&i2c->aml_i2c_hrtimer);
++    mutex_destroy(i2c->lock);
++    i2c_del_adapter(&i2c->adap);
++    kzfree(i2c);
++    i2c= NULL;
+     return 0;
+ }
+ 
