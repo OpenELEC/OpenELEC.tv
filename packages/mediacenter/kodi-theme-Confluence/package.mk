@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="kodi-theme-Confluence"
-PKG_VERSION="15.0-beta2-7885f1d"
+PKG_VERSION="15.0-beta2-688813a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
