@@ -350,8 +350,8 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/xbmc-standalone
   rm -rf $INSTALL/usr/lib/kodi/*.cmake
 
-  # fix binaryaddons multiarch build meh
-  cp -P project/cmake/scripts/linux/UseMultiArch.cmake $SYSROOT_PREFIX/usr/lib/kodi
+  # more binaddons cross compile badness meh
+  sed -i -e "s:INCLUDE_DIR /usr/include/kodi:INCLUDE_DIR $SYSROOT_PREFIX/usr/include/kodi:g" $SYSROOT_PREFIX/usr/lib/kodi/kodi-config.cmake
 
   mkdir -p $INSTALL/usr/lib/kodi
     cp $PKG_DIR/scripts/kodi-config $INSTALL/usr/lib/kodi
