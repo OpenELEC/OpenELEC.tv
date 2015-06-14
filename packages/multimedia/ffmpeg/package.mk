@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.6.1"
+PKG_VERSION="2.6.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -47,6 +47,13 @@ if [ "$VDPAU_SUPPORT" = yes ]; then
   FFMPEG_VDPAU="--enable-vdpau"
 else
   FFMPEG_VDPAU="--disable-vdpau"
+fi
+
+if [ "$DCADEC_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET dcadec"
+  FFMPEG_LIBDCADEC="--enable-libdcadec"
+else
+  FFMPEG_LIBDCADEC="--disable-libdcadec"
 fi
 
 if [ "$DEBUG" = yes ]; then
@@ -111,7 +118,7 @@ configure_target() {
               --host-ldflags="$HOST_LDFLAGS" \
               --host-libs="-lm" \
               --extra-cflags="$CFLAGS" \
-              --extra-ldflags="$LDFLAGS" \
+              --extra-ldflags="$LDFLAGS -fPIC" \
               --extra-libs="" \
               --extra-version="" \
               --build-suffix="" \
@@ -184,6 +191,7 @@ configure_target() {
               --disable-libopencore-amrwb \
               --disable-libopencv \
               --disable-libdc1394 \
+              $FFMPEG_LIBDCADEC \
               --disable-libfaac \
               --disable-libfreetype \
               --disable-libgsm \

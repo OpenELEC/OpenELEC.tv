@@ -57,7 +57,7 @@
 
   # Kernel to use. values can be:
   # default:  default mainline kernel
-    LINUX="3.19"
+    LINUX="default"
 
   # NOOBS supported hex versions
     NOOBS_HEX="1040,1041"
@@ -112,6 +112,9 @@
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
     KODIPLAYER_DRIVER="bcm2835-driver"
 
+  # KODI DCADEC support (yes / no)
+    DCADEC_SUPPORT="yes"
+
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
 
@@ -140,3 +143,9 @@
 
   # kernel image name
     KERNEL_NAME="kernel.img"
+
+  # additional drivers to install:
+  # for a list of additinoal drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS mt7601u"
