@@ -1,7 +1,7 @@
-From b9eceb6796f5beba0ad03b55fd20933a351e8a8e Mon Sep 17 00:00:00 2001
+From 334f38e87d0f4d071929f26a73db4075f5a40a86 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 7 Apr 2014 18:19:32 +0100
-Subject: [PATCH 01/46] [rbp/omxplayer] When opening a stream don't try to
+Subject: [PATCH 01/51] [rbp/omxplayer] When opening a stream don't try to
  update gui so often
 
 ---
@@ -25,10 +25,36 @@ index 2faceea..889d7a2 100644
          g_windowManager.ProcessRenderLoop(false);
          if (allowCancel && dialog->IsCanceled())
 
-From 560bcc821fc5ceec473bfa41b36fdc213bd6e32b Mon Sep 17 00:00:00 2001
+From 7ddf4d5ef049c6ab43814ea9946347fd8e13e36c Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 8 Mar 2014 15:36:06 +0000
+Subject: [PATCH 03/51] [hifiberry] Hack: force it to be recognised as IEC958
+ capable to enable passthrough options
+
+---
+ xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+index e22db7a..0120bd5 100644
+--- a/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
++++ b/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+@@ -1342,6 +1342,10 @@ void CAESinkALSA::EnumerateDevice(AEDeviceInfoList &list, const std::string &dev
+     if (snd_card_get_name(cardNr, &cardName) == 0)
+       info.m_displayName = cardName;
+ 
++    // hack: hifiberry digi doesn't correctly report as iec958 device. Needs fixing in kernel driver
++    if (info.m_displayName == "snd_rpi_hifiberry_digi")
++      info.m_deviceType = AE_DEVTYPE_IEC958;
++
+     if (info.m_deviceType == AE_DEVTYPE_HDMI && info.m_displayName.size() > 5 &&
+         info.m_displayName.substr(info.m_displayName.size()-5) == " HDMI")
+     {
+
+From 9d64e65d1de3cd2c18fdb95bc7d7825f42602ad9 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Thu, 1 May 2014 16:28:39 +0100
-Subject: [PATCH 04/46] Improved file buffering in CArchive
+Subject: [PATCH 04/51] Improved file buffering in CArchive
 
 Even though memcpy is typically inlined by the compiler into byte/word loads
 and stores (at least for release builds), the frequency with which 1, 2 and 4
@@ -88,20 +114,20 @@ index 6ed0f8f..8506d95 100644
      }
      else
 
-From fca0641cac1a00faffe3d075d91fd987c9a8fbd1 Mon Sep 17 00:00:00 2001
+From 11c32ec255761eb3763fa4b2bf7f4a261238e102 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 12 Aug 2014 00:31:36 +0100
-Subject: [PATCH 05/46] [omxcodec] Don't force software codec with dvds
+Subject: [PATCH 05/51] [omxcodec] Don't force software codec with dvds
 
 ---
  xbmc/cores/dvdplayer/DVDPlayer.cpp | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index fd21bc2..6d6da33 100644
+index 82b5baa..70b1ac3 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-@@ -3416,7 +3416,9 @@ bool CDVDPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
+@@ -3421,7 +3421,9 @@ bool CDVDPlayer::OpenVideoStream(CDVDStreamInfo& hint, bool reset)
        hint.aspect = aspect;
        hint.forced_aspect = true;
      }
@@ -112,10 +138,10 @@ index fd21bc2..6d6da33 100644
    else if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_PVRMANAGER))
    {
 
-From 161cfe110a110062f52e40fdd2f7658f7805cee7 Mon Sep 17 00:00:00 2001
+From 9a08c47d230a839bc32bf6c81c3d54bb8692b248 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 10 Aug 2014 16:45:16 +0100
-Subject: [PATCH 06/46] filesystem: Make support of browsing into archives
+Subject: [PATCH 06/51] filesystem: Make support of browsing into archives
  optional
 
 The ability to browse, scan and play content in archives can cause problems on low powered/low memory devices.
@@ -133,10 +159,10 @@ We'll let people who don't use archives disable it manually
  3 files changed, 18 insertions(+)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index cb40d52..953b07c 100644
+index 97039ca..9614036 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -16606,6 +16606,15 @@ msgstr ""
+@@ -16582,6 +16582,15 @@ msgstr ""
  #: system/settings/rbp.xml
  msgctxt "#38010"
  msgid "GPU accelerated"
@@ -153,7 +179,7 @@ index cb40d52..953b07c 100644
  
  #. Setting #38011 "Videos -> Library -> Show All Items entry"
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index d1a8e1c..a780a43 100644
+index 8f69bcb..cbcde85 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -304,6 +304,11 @@
@@ -198,10 +224,10 @@ index 5af92e7..568a1a8 100644
    { // XBMC Smart playlist - just XML renamed to XSP
      // read the name of the playlist in
 
-From b2b07e83668cca34845f48d9de812350f43d93d3 Mon Sep 17 00:00:00 2001
+From 52ba2eb2daaeba3eaa7213b2f370f11b73ebdd51 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 27 Oct 2014 13:06:57 +0000
-Subject: [PATCH 08/46] [rbp] Make cachemembuffersize default depend on memory
+Subject: [PATCH 08/51] [rbp] Make cachemembuffersize default depend on memory
  size
 
 ---
@@ -303,10 +329,10 @@ index 2e3282c..d1606a2 100644
  }
  
 
-From d7b43a46c9a7c30494416e0c711edeba1a0d3b93 Mon Sep 17 00:00:00 2001
+From b14ed34e6cf3a147e4e93161c60ff804b6a77286 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 30 May 2014 14:58:43 +0100
-Subject: [PATCH 10/46] [settings] Experiment: Report DESKTOP resolution in
+Subject: [PATCH 10/51] [settings] Experiment: Report DESKTOP resolution in
  video settings
 
 ---
@@ -314,7 +340,7 @@ Subject: [PATCH 10/46] [settings] Experiment: Report DESKTOP resolution in
  1 file changed, 3 insertions(+)
 
 diff --git a/xbmc/settings/DisplaySettings.cpp b/xbmc/settings/DisplaySettings.cpp
-index 666645c..c3dc72c 100644
+index 4376463..fc4e5ea 100644
 --- a/xbmc/settings/DisplaySettings.cpp
 +++ b/xbmc/settings/DisplaySettings.cpp
 @@ -674,6 +674,9 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting,
@@ -328,10 +354,10 @@ index 666645c..c3dc72c 100644
          StringUtils::Format("%dx%d%s", resolution->width, resolution->height,
                              ModeFlagsToString(resolution->flags, false).c_str()),
 
-From 7a435977a8b962bc6cc9257f35f0878796165674 Mon Sep 17 00:00:00 2001
+From 975844c8114a270ab8c97925806b41a09600a90e Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 9 Sep 2014 12:04:26 +0100
-Subject: [PATCH 11/46] egl: Treat unknown display aspect ratio as square pixel
+Subject: [PATCH 11/51] egl: Treat unknown display aspect ratio as square pixel
 
 ---
  xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp | 4 ++--
@@ -360,10 +386,10 @@ index bda7430..68fc647 100644
  
      SetResolutionString(m_desktopRes);
 
-From bcd2ffe88981e8d46c9b36555a013378a0400425 Mon Sep 17 00:00:00 2001
+From 873e875a8538a1c5219054f30a80d90877d0d301 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 19 Sep 2014 11:54:49 +0100
-Subject: [PATCH 12/46] [dvdplayer/rbp] Add pi specific option to maintain
+Subject: [PATCH 12/51] [dvdplayer/rbp] Add pi specific option to maintain
  vsync with pll adjustment
 
 New A/V sync option in settings/video/playback to do "Adjust PLL".
@@ -388,10 +414,10 @@ Needed updated firmware
  9 files changed, 91 insertions(+), 7 deletions(-)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index 953b07c..db2c0a5 100644
+index 9614036..36b8c5d 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -6357,7 +6357,22 @@ msgctxt "#13459"
+@@ -6321,7 +6321,22 @@ msgctxt "#13459"
  msgid "Use OMXPlayer for decoding of video files."
  msgstr ""
  
@@ -415,7 +441,7 @@ index 953b07c..db2c0a5 100644
  
  #: system/settings/settings.xml
  msgctxt "#13505"
-@@ -16652,3 +16667,10 @@ msgstr ""
+@@ -16628,3 +16643,10 @@ msgstr ""
  msgctxt "#38016"
  msgid "%d fps"
  msgstr ""
@@ -427,7 +453,7 @@ index 953b07c..db2c0a5 100644
 +msgstr ""
 +
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index a780a43..aff0bf8 100644
+index cbcde85..a3d4728 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -572,6 +572,20 @@
@@ -466,7 +492,7 @@ index 782a9ba..3e0390c 100644
  
  struct AEDelayStatus
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerAudio.cpp b/xbmc/cores/dvdplayer/DVDPlayerAudio.cpp
-index a429e11..2871ae2 100644
+index 145a622..7b7a223 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerAudio.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerAudio.cpp
 @@ -24,6 +24,7 @@
@@ -655,37 +681,10 @@ index 7df1bf7..732b69d 100644
      float m_audioPlayCountMinimumPercent;
      bool m_dvdplayerIgnoreDTSinWAV;
 
-From e6bc21dbc556ff18da07e22b3064fbb219462678 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Sat, 27 Sep 2014 15:32:37 +0100
-Subject: [PATCH 13/46] [dvdplayer] exerimental: don't raise priority of audio
- thread
-
----
- xbmc/cores/dvdplayer/DVDPlayer.cpp | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index 6d6da33..aed1550 100644
---- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
-+++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-@@ -3401,7 +3401,11 @@ bool CDVDPlayer::OpenAudioStream(CDVDStreamInfo& hint, bool reset)
-   m_dvdPlayerAudio->SendMessage(new CDVDMsg(CDVDMsg::PLAYER_STARTED), 1);
- 
-   /* audio normally won't consume full cpu, so let it have prio */
-+#ifdef TARGET_RASPBERRY_PI
-+  m_dvdPlayerAudio->SetPriority(GetPriority());
-+#else
-   m_dvdPlayerAudio->SetPriority(GetPriority()+1);
-+#endif
-   return true;
- }
- 
-
-From 4de8f510f317ab41c05cc78ee8a914af0f8e4387 Mon Sep 17 00:00:00 2001
+From 0323acdf71a6bf8d66ff569403e8fc0412291325 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 24 Sep 2014 23:13:52 +0100
-Subject: [PATCH 14/46] [audio] Add settings option to boost centre channel
+Subject: [PATCH 13/51] [audio] Add settings option to boost centre channel
  when downmixing
 
 This allows a dB volume increase to be added to centre channel.
@@ -703,10 +702,10 @@ Should work with Pi Sink (dvdplayer/paplayer) and omxplayer
  5 files changed, 45 insertions(+)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index db2c0a5..63f78a1 100644
+index 36b8c5d..c1148e8 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -16674,3 +16674,17 @@ msgctxt "#38006"
+@@ -16650,3 +16650,17 @@ msgctxt "#38006"
  msgid "Audio has to stay in sync, this can either be done by resampling, or adjusting the PLL"
  msgstr ""
  
@@ -725,7 +724,7 @@ index db2c0a5..63f78a1 100644
 +msgid "%i dB"
 +msgstr ""
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index aff0bf8..f6ad877 100644
+index a3d4728..09c3d10 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -2597,6 +2597,18 @@
@@ -807,10 +806,10 @@ index f99c0e6..1911189 100644
      // stereo upmix
      if (upmix && m_src_channels == 2 && m_dst_channels > 2)
 
-From fb43e160b3373ec9c3ed53e67dbcc907706a233d Mon Sep 17 00:00:00 2001
+From 8dada388745328d01b186ede90c64be0b571a936 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 27 Oct 2014 15:23:51 +0000
-Subject: [PATCH 15/46] [rbp] Default extract thumbnails to false
+Subject: [PATCH 14/51] [rbp] Default extract thumbnails to false
 
 It can take 80 seconds for a single file on a Pi. It can cause crashes with out-of-memory errors.
 It genereates a lot of support issues. Best to default to disabled and let users enable it if they must
@@ -840,10 +839,10 @@ index 50fe36a..a54a4c4 100644
  
    <section id="system">
 
-From 42afb7e432619c25a0c6389636784117c049c967 Mon Sep 17 00:00:00 2001
+From cf3e013db35eda90e5e2f337d8355312ce0e5955 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 15 Nov 2014 12:03:34 +0000
-Subject: [PATCH 20/46] [dvdplayer] Add lock for player creation
+Subject: [PATCH 19/51] [dvdplayer] Add lock for player creation
 
 ---
  xbmc/cores/dvdplayer/DVDPlayer.cpp | 3 +++
@@ -851,7 +850,7 @@ Subject: [PATCH 20/46] [dvdplayer] Add lock for player creation
  2 files changed, 4 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
-index aed1550..ff397f7 100644
+index 70b1ac3..b41c8f0 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
 @@ -517,6 +517,7 @@ int CSelectionStreams::CountSource(StreamType type, StreamSource source) const
@@ -870,7 +869,7 @@ index aed1550..ff397f7 100644
    if (!m_players_created)
      return;
    delete m_dvdPlayerVideo;
-@@ -4268,6 +4270,7 @@ double CDVDPlayer::GetQueueTime()
+@@ -4255,6 +4257,7 @@ double CDVDPlayer::GetQueueTime()
  
  void CDVDPlayer::GetVideoStreamInfo(SPlayerVideoStreamInfo &info)
  {
@@ -889,10 +888,10 @@ index 2a4aea5..f74e71d 100644
 +  CCriticalSection m_players_lock;
  };
 
-From 8cc3e50eccf8fbfb00d35f8238f8bc7ee49c159b Mon Sep 17 00:00:00 2001
+From 5d3ab1cf45b4eca6f524b4555e3f103e27467a49 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 24 Nov 2014 22:07:25 +0000
-Subject: [PATCH 21/46] [dvdplayervideo] Prod decoder when in stills mode
+Subject: [PATCH 20/51] [dvdplayervideo] Prod decoder when in stills mode
 
 An asynchronous hardware decoder doesn't only produce output pictures when new packets arrive.
 In dvd stills mode give it a chance to return pictures that weren't ready when frame was decoded.
@@ -901,7 +900,7 @@ In dvd stills mode give it a chance to return pictures that weren't ready when f
  1 file changed, 28 insertions(+), 18 deletions(-)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index a8add39..9f1892b 100644
+index 656c937..bdc3edb 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 @@ -314,7 +314,8 @@ void CDVDPlayerVideo::Process()
@@ -969,10 +968,10 @@ index a8add39..9f1892b 100644
  
      if (pMsg->IsType(CDVDMsg::GENERAL_SYNCHRONIZE))
 
-From 2b43fd15eeb8c63853efbd4bfbfb40d6e3d4d0d0 Mon Sep 17 00:00:00 2001
+From 25d43d2d6bdf9de85a30161aa1c7e0260b4de33b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 27 Nov 2014 16:31:56 +0000
-Subject: [PATCH 22/46] [languageinvoker] Reduce priority of python threads
+Subject: [PATCH 21/51] [languageinvoker] Reduce priority of python threads
 
 ---
  xbmc/interfaces/generic/LanguageInvokerThread.cpp | 5 +++++
@@ -995,10 +994,10 @@ index fcdd063..16f0c89 100644
  }
  
 
-From a878a035369d1f0a74474d1a22801c256a876dd8 Mon Sep 17 00:00:00 2001
+From 126cddbf807d68c42e07d24c733d65abb687b500 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 14 Dec 2013 16:55:05 +0000
-Subject: [PATCH 23/46] logging: Add microsecond timer to log messages
+Subject: [PATCH 22/51] logging: Add microsecond timer to log messages
 
 ---
  xbmc/utils/log.cpp | 17 +++++++++++++++--
@@ -1051,10 +1050,10 @@ index 3443f12..31c4a99 100644
                                    levelNames[logLevel]) + strData;
  
 
-From 1e2fcfee503416f290d7bb20060bf07f0c5a705e Mon Sep 17 00:00:00 2001
+From cfe6214efcc206c97cf8eb6b224c0a8d63981c77 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 29 Nov 2014 15:25:16 +0000
-Subject: [PATCH 24/46] [rbp] hack: wait for splash to complete before changing
+Subject: [PATCH 23/51] [rbp] hack: wait for splash to complete before changing
  hdmi mode
 
 ---
@@ -1128,10 +1127,10 @@ index 68fc647..c80114e 100644
  
    if(!m_fixedMode && GETFLAGS_GROUP(res.dwFlags) && GETFLAGS_MODE(res.dwFlags))
 
-From 03136951f373c285114d45ec73a07c11a62152c9 Mon Sep 17 00:00:00 2001
+From 1610df489966e26604392af08d40a2a2eacad8db Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 11 Dec 2014 17:00:57 +0000
-Subject: [PATCH 25/46] Fix for UI not showing both extractflags and
+Subject: [PATCH 24/51] Fix for UI not showing both extractflags and
  extractthumb
 
 ---
@@ -1140,10 +1139,10 @@ Subject: [PATCH 25/46] Fix for UI not showing both extractflags and
  2 files changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index 5c31c6f..c48b256 100644
+index b6b48b4..6c3a220 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -11023,7 +11023,7 @@ msgstr ""
+@@ -11015,7 +11015,7 @@ msgstr ""
  
  #: system/settings/settings.xml
  msgctxt "#20433"
@@ -1152,7 +1151,7 @@ index 5c31c6f..c48b256 100644
  msgstr ""
  
  #: xbmc/dialogs/GUIDialogSmartPlaylistRule.cpp
-@@ -14573,7 +14573,7 @@ msgstr ""
+@@ -14549,7 +14549,7 @@ msgstr ""
  #. Description of setting "Videos -> File lists -> Extract thumbnails and video information" with label #20433
  #: system/settings/settings.xml
  msgctxt "#36178"
@@ -1161,7 +1160,7 @@ index 5c31c6f..c48b256 100644
  msgstr ""
  
  #. Description of setting "Videos -> File lists -> Replace file names with library titles" with label #20419
-@@ -14585,7 +14585,7 @@ msgstr ""
+@@ -14561,7 +14561,7 @@ msgstr ""
  #. Description of setting "Videos -> File lists -> Extract thumbnails and video information" with label #20433
  #: system/settings/settings.xml
  msgctxt "#36180"
@@ -1170,7 +1169,7 @@ index 5c31c6f..c48b256 100644
  msgstr ""
  
  #: system/settings/settings.xml
-@@ -16703,3 +16703,8 @@ msgstr ""
+@@ -16679,3 +16679,8 @@ msgstr ""
  msgctxt "#38052"
  msgid "Remote button press release time (ms)"
  msgstr ""
@@ -1180,7 +1179,7 @@ index 5c31c6f..c48b256 100644
 +msgid "Extract thumbnails from video files"
 +msgstr ""
 diff --git a/system/settings/settings.xml b/system/settings/settings.xml
-index f6ad877..d1acdae 100644
+index 09c3d10..1059b09 100644
 --- a/system/settings/settings.xml
 +++ b/system/settings/settings.xml
 @@ -861,8 +861,8 @@
@@ -1195,10 +1194,10 @@ index f6ad877..d1acdae 100644
            <control type="toggle" />
          </setting>
 
-From 8c257d47e97ed8a5cb78604746247e7b98693d89 Mon Sep 17 00:00:00 2001
+From 07f3c28448d28cf7347394dca6e6a1faeaa7e3ec Mon Sep 17 00:00:00 2001
 From: anaconda <anaconda@menakite.eu>
 Date: Thu, 11 Sep 2014 21:30:43 +0200
-Subject: [PATCH 26/46] Disable autoscrolling while on screensaver and while
+Subject: [PATCH 25/51] Disable autoscrolling while on screensaver and while
  opening streams.
 
 ---
@@ -1211,10 +1210,10 @@ Subject: [PATCH 26/46] Disable autoscrolling while on screensaver and while
  6 files changed, 24 insertions(+), 3 deletions(-)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 11564aa..48536b9 100644
+index ffc7ad3..f35871a 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -4951,3 +4951,13 @@ bool CApplication::NotifyActionListeners(const CAction &action) const
+@@ -4993,3 +4993,13 @@ bool CApplication::NotifyActionListeners(const CAction &action) const
    
    return false;
  }
@@ -1229,7 +1228,7 @@ index 11564aa..48536b9 100644
 +  return onBlackDimScreenSaver || openingStreams;
 +}
 diff --git a/xbmc/Application.h b/xbmc/Application.h
-index f9c636e..487716a 100644
+index 4b50ab2..07a5da2 100644
 --- a/xbmc/Application.h
 +++ b/xbmc/Application.h
 @@ -389,6 +389,8 @@ class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMs
@@ -1242,7 +1241,7 @@ index f9c636e..487716a 100644
    virtual bool OnSettingsSaving() const;
  
 diff --git a/xbmc/guilib/GUIFadeLabelControl.cpp b/xbmc/guilib/GUIFadeLabelControl.cpp
-index ac3cd94..5b8859d 100644
+index 9eadbe4..b2b5f13 100644
 --- a/xbmc/guilib/GUIFadeLabelControl.cpp
 +++ b/xbmc/guilib/GUIFadeLabelControl.cpp
 @@ -20,6 +20,8 @@
@@ -1254,7 +1253,7 @@ index ac3cd94..5b8859d 100644
  using namespace std;
  
  CGUIFadeLabelControl::CGUIFadeLabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool scrollOut, unsigned int timeToDelayAtEnd, bool resetOnLabelChange)
-@@ -104,7 +106,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
+@@ -102,7 +104,7 @@ void CGUIFadeLabelControl::Process(unsigned int currentTime, CDirtyRegionList &d
      m_lastLabel = m_currentLabel;
    }
  
@@ -1329,10 +1328,10 @@ index 0d5b3f7..6d23024 100644
        if (m_lastRenderTime)
          m_autoScrollDelayTime += currentTime - m_lastRenderTime;
 
-From 4425b2be0ad1e5c3ea6eeddbd91f59046ed361ea Mon Sep 17 00:00:00 2001
+From 5acd81c2d630bbe83763c5463cc26aae862a87b4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 13 Dec 2014 18:35:20 +0000
-Subject: [PATCH 27/46] [demuxer] Avoid memcpy on every demuxer packet
+Subject: [PATCH 26/51] [demuxer] Avoid memcpy on every demuxer packet
 
 Avoids an unnecessary memcpy on every demuxer packet which for
 high bitrate videos can be significant.
@@ -1427,10 +1426,10 @@ index ab298b2..10c5ee0 100644
      }
      catch(...) {
 
-From bdd96e0b98ef05db5e8067a0a802246e0d3f6f36 Mon Sep 17 00:00:00 2001
+From 80367ca635d7fd6ba3e278fe4c4f2a9275f5c358 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sun, 15 Feb 2015 14:06:12 +0000
-Subject: [PATCH 28/46] [mmal] Allow mmal codec for dvd stills
+Subject: [PATCH 27/51] [mmal] Allow mmal codec for dvd stills
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp | 7 +++++++
@@ -1462,10 +1461,10 @@ index 4c363cf..b90237b 100644
    {
       // If dvd is an mpeg2 and hint.stills
 
-From ce8914a9b4816a738606174e8ee4087b0466923e Mon Sep 17 00:00:00 2001
+From 959665eaf7160c8adb2d0f2e862e1e8ef5df2419 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 31 Mar 2015 17:31:47 +0100
-Subject: [PATCH 29/46] [mmalrenderer] Add SetCodecControl function and prefer
+Subject: [PATCH 28/51] [mmalrenderer] Add SetCodecControl function and prefer
  to return pictures when renderer is low (disabled)
 
 ---
@@ -1536,10 +1535,10 @@ index 51a64d1..bde8c06 100644
    CCriticalSection m_sharedSection;
    MMAL_COMPONENT_T *m_dec;
 
-From d93b8a58ddcac183150087703bd7a32c061e510a Mon Sep 17 00:00:00 2001
+From aa0a393eb9fc52c4aa791042dd521d16f8852567 Mon Sep 17 00:00:00 2001
 From: anaconda <anaconda@menakite.eu>
 Date: Wed, 25 Feb 2015 18:22:21 +0100
-Subject: [PATCH 30/46] Load OSD dialogs on startup.
+Subject: [PATCH 29/51] Load OSD dialogs on startup.
 
 Fixes skipped frames the first time they're loaded in memory on less powered
 devices, like a Raspberry Pi, when using DVDPlayer.
@@ -1578,7 +1577,7 @@ index 1670190..329a3b8 100644
  }
  
 diff --git a/xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp b/xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp
-index 5e091eb..35b417f 100644
+index fcbafae..6ab155e 100644
 --- a/xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp
 +++ b/xbmc/video/dialogs/GUIDialogAudioSubtitleSettings.cpp
 @@ -62,7 +62,9 @@ using namespace std;
@@ -1619,7 +1618,7 @@ index 7316936..7033124 100644
  
  CGUIDialogVideoOSD::~CGUIDialogVideoOSD(void)
 diff --git a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp b/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
-index eb814ca..ae4c69f 100644
+index 9f25fa5..3ece45b 100644
 --- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
 +++ b/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
 @@ -63,7 +63,9 @@ using namespace std;
@@ -1634,10 +1633,10 @@ index eb814ca..ae4c69f 100644
  CGUIDialogVideoSettings::~CGUIDialogVideoSettings()
  { }
 
-From 25c18140c09a346a0e9aa98699bcb6e02bda11b2 Mon Sep 17 00:00:00 2001
+From cd731d75ce08cb29dc73de665830a4597db691a9 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 7 Mar 2015 22:46:21 +0000
-Subject: [PATCH 31/46] configure: Add raspberry-pi2 platform
+Subject: [PATCH 30/51] configure: Add raspberry-pi2 platform
 
 ---
  configure.ac                                      | 14 +++++++--
@@ -1649,10 +1648,10 @@ Subject: [PATCH 31/46] configure: Add raspberry-pi2 platform
  6 files changed, 44 insertions(+), 22 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 760e873..2b8660e 100644
+index 96be96f..7e924a2 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -750,8 +750,17 @@ case $use_platform in
+@@ -744,8 +744,17 @@ case $use_platform in
    raspberry-pi)
       target_platform=target_raspberry_pi
       use_neon=no
@@ -1669,9 +1668,9 @@ index 760e873..2b8660e 100644
 +if test "$target_platform" = "target_raspberry_pi" ; then
 +     use_arch="arm"
       use_hardcoded_tables="yes"
+      use_openmax=no
       ARCH="arm"
-      AC_DEFINE(HAS_EGLGLES, [1], [Define if supporting EGL based GLES Framebuffer])
-@@ -759,8 +768,7 @@ case $use_platform in
+@@ -754,8 +763,7 @@ case $use_platform in
       USE_MMAL=1; AC_DEFINE([HAS_MMAL],[1],["Define to 1 if MMAL libs is enabled"])
       CFLAGS="$CFLAGS"
       CXXFLAGS="$CXXFLAGS"
@@ -1679,8 +1678,8 @@ index 760e873..2b8660e 100644
 -esac
 +fi
  
- XBMC_SETUP_ARCH_DEFINES()
- 
+ if test "$host_vendor" = "apple"; then
+   use_avahi=no
 diff --git a/m4/xbmc_arch.m4 b/m4/xbmc_arch.m4
 index 0b66a82..adb8e97 100644
 --- a/m4/xbmc_arch.m4
@@ -1811,10 +1810,10 @@ index cdc2fe4..379bd1d 100644
    set(CMAKE_SYSTEM_NAME Linux)
  endif()
 
-From b8fcca27e22ea37429e7a296968af3c0c611f931 Mon Sep 17 00:00:00 2001
+From a6e8bc8e2784775522dce233f0f9dc0bde7fca44 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 16 Apr 2014 21:18:06 +0100
-Subject: [PATCH 32/46] [omxplayer] Don't propagate 3d flags based on supported
+Subject: [PATCH 31/51] [omxplayer] Don't propagate 3d flags based on supported
  3d modes
 
 ---
@@ -1870,10 +1869,10 @@ index 212a89b..dd509ea 100644
    unsigned int iDisplayHeight = height;
  
 
-From 6f86813ee99e5c019dc2eae80b4fd5877f265318 Mon Sep 17 00:00:00 2001
+From 46641c44cbf4832f8dc2e09de13c90ec263c7eb0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 Apr 2014 13:01:51 +0100
-Subject: [PATCH 33/46] [graphics] Allow switching to a more suitable 3D
+Subject: [PATCH 32/51] [graphics] Allow switching to a more suitable 3D
  resolution
 
 ---
@@ -1959,10 +1958,10 @@ index a8fd03e..8501e58 100644
    void ResetOverscan(RESOLUTION_INFO &resinfo);
    void ResetScreenParameters(RESOLUTION res);
 
-From bd09bf6d6894e58361f24e703963ac24810ff9a0 Mon Sep 17 00:00:00 2001
+From 55a4a727c1c8d0ca28deb1a8ca2c6ffa6a4eb0aa Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 17 Apr 2014 13:38:55 +0100
-Subject: [PATCH 34/46] [3D] Support switching to 3D resolutions
+Subject: [PATCH 33/51] [3D] Support switching to 3D resolutions
 
 Include matching 3D flags (SBS/TAB) in the score of a resolution to switch to, to enable switching to 3d modes.
 Also remove the old code that treated 3D modes differently when assigning a score.
@@ -2044,10 +2043,10 @@ index bfafab7..84e6261 100644
    return current;
  }
 
-From e89f3576f0192f6a0827016fee5d5967f502a3e5 Mon Sep 17 00:00:00 2001
+From 568e84b69fc126735e0c9e298d3fa7d2eea0aae2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Wed, 23 Apr 2014 00:05:07 +0100
-Subject: [PATCH 35/46] [graphics] Make pixel ratio for 3d modes consistent
+Subject: [PATCH 34/51] [graphics] Make pixel ratio for 3d modes consistent
 
 Note: Use the stored stereo flags from lists of resolutions.
 Use current stereo mode for current resolution.
@@ -2250,10 +2249,10 @@ index c80114e..80c05d2 100644
  
          AddUniqueResolution(res2, resolutions);
 
-From 018e123537f5a75f92ff3eb1e71ee72712011d2e Mon Sep 17 00:00:00 2001
+From 0c9da02efd32493162bbe0080ce08fc75d024ad2 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 10 Mar 2015 17:05:18 +0000
-Subject: [PATCH 36/46] [players] Add settings option to enable MVC support
+Subject: [PATCH 35/51] [players] Add settings option to enable MVC support
 
 ---
  addons/resource.language.en_gb/resources/strings.po | 10 ++++++++++
@@ -2263,10 +2262,10 @@ Subject: [PATCH 36/46] [players] Add settings option to enable MVC support
  4 files changed, 27 insertions(+)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index c48b256..8ecf1bf 100644
+index 6c3a220..f5b7c42 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -16704,6 +16704,16 @@ msgctxt "#38052"
+@@ -16680,6 +16680,16 @@ msgctxt "#38052"
  msgid "Remote button press release time (ms)"
  msgstr ""
  
@@ -2334,10 +2333,10 @@ index e4f6d86..5d324f4 100644
      case AV_CODEC_ID_MPEG4:
        // (role name) video_decoder.mpeg4
 
-From 3879afb94401608ee5985a8daabd53ade2e114e5 Mon Sep 17 00:00:00 2001
+From 397a5d0b70abe0922387a0afd8beb4842a56e9b0 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 14 Mar 2015 12:38:08 +0000
-Subject: [PATCH 37/46] [mmalrenderer] Switch to using transform flags for 3d
+Subject: [PATCH 36/51] [mmalrenderer] Switch to using transform flags for 3d
  modes
 
 ---
@@ -2351,10 +2350,10 @@ Subject: [PATCH 37/46] [mmalrenderer] Switch to using transform flags for 3d
  7 files changed, 75 insertions(+), 130 deletions(-)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index 8ecf1bf..aefe898 100644
+index f5b7c42..4848047 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -16714,6 +16714,16 @@ msgctxt "#38111"
+@@ -16690,6 +16690,16 @@ msgctxt "#38111"
  msgid "This option decodes frames for both eyes of MVC video. Disabling may improve performance if you don't require 3D"
  msgstr ""
  
@@ -2716,10 +2715,11 @@ index 80c05d2..ae85484 100644
    CLog::Log(LOGDEBUG, "EGL set resolution %dx%d -> %dx%d @ %.2f fps (%d,%d) flags:%x aspect:%.2f\n",
        m_width, m_height, dst_rect.width, dst_rect.height, res.fRefreshRate, GETFLAGS_GROUP(res.dwFlags), GETFLAGS_MODE(res.dwFlags), (int)res.dwFlags, res.fPixelRatio);
  
-From d4ecbc3818f8cc6c868b757a63a4aa59310363dc Mon Sep 17 00:00:00 2001
+
+From 180bad11da9d406158975f960198af9315170743 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 14 Apr 2015 20:51:14 +0100
-Subject: [PATCH 40/46] [gui] Also limit GUI updates when in non full-screen
+Subject: [PATCH 39/51] [gui] Also limit GUI updates when in non full-screen
  video mode
 
 ---
@@ -2727,10 +2727,10 @@ Subject: [PATCH 40/46] [gui] Also limit GUI updates when in non full-screen
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 48536b9..e83cc9f 100644
+index f35871a..dd58116 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -2486,7 +2486,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
+@@ -2504,7 +2504,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
  #if defined(TARGET_RASPBERRY_PI) || defined(HAS_IMXVPU)
      // This code reduces rendering fps of the GUI layer when playing videos in fullscreen mode
      // it makes only sense on architectures with multiple layers
@@ -2739,7 +2739,7 @@ index 48536b9..e83cc9f 100644
        fps = CSettings::Get().GetInt("videoplayer.limitguiupdate");
  #endif
  
-@@ -2499,6 +2499,8 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
+@@ -2517,6 +2517,8 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
      {
        if (!m_skipGuiRender)
          g_windowManager.Process(CTimeUtils::GetFrameTime());
@@ -2749,10 +2749,10 @@ index 48536b9..e83cc9f 100644
      g_windowManager.FrameMove();
    }
 
-From 0af66e97c3563a209f41f45c01508747ca2e7788 Mon Sep 17 00:00:00 2001
+From a00d53ea266d3513d4785ff730d4d3ed9aace2a4 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 21 Apr 2015 14:32:07 +0100
-Subject: [PATCH 41/46] [mmalrenderer] Add sharpness control
+Subject: [PATCH 40/51] [mmalrenderer] Add sharpness control
 
 ---
  addons/resource.language.en_gb/resources/strings.po |  2 +-
@@ -2761,10 +2761,10 @@ Subject: [PATCH 41/46] [mmalrenderer] Add sharpness control
  3 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
-index a622e73..9341924 100644
+index 5ad526e..d252240 100644
 --- a/addons/resource.language.en_gb/resources/strings.po
 +++ b/addons/resource.language.en_gb/resources/strings.po
-@@ -7524,7 +7524,7 @@ msgstr ""
+@@ -7503,7 +7503,7 @@ msgstr ""
  
  #: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
  msgctxt "#16313"
@@ -2824,17 +2824,17 @@ index 1404fb3..9bced7e 100644
    CCriticalSection m_sharedSection;
    MMAL_COMPONENT_T *m_vout;
 
-From 2f8c52cd11f50ceaa378aec35a5d92c7327bf9a7 Mon Sep 17 00:00:00 2001
+From 38eef3259f992329214af255923b6a2ce7364921 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 24 Apr 2015 13:49:51 +0100
-Subject: [PATCH 42/46] [dvdplayer] Add back required include
+Subject: [PATCH 41/51] [dvdplayer] Add back required include
 
 ---
  xbmc/cores/dvdplayer/DVDPlayerVideo.cpp | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
-index 9f1892b..933d905 100644
+index bdc3edb..2dad96c 100644
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 +++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 @@ -33,6 +33,7 @@
@@ -2846,10 +2846,10 @@ index 9f1892b..933d905 100644
  #include "guilib/GraphicContext.h"
  #include <sstream>
 
-From 0eca10f4cd6f53f8224ed32fab35cd96c423548f Mon Sep 17 00:00:00 2001
+From ec33b18ad7a9fe49b5a9a10f053bd5b9d1ea4214 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Tue, 5 May 2015 23:58:06 +0100
-Subject: [PATCH 44/46] [screensaver] Leave GUI contents available for
+Subject: [PATCH 42/51] [screensaver] Leave GUI contents available for
  screensaver
 
 ---
@@ -2879,10 +2879,10 @@ index ba33908..17ea269 100644
  
    // Add window to the history list (we must do this before we activate it,
 
-From b6d27cef7da6d0d4627f9bb4c8eb034dfffe91db Mon Sep 17 00:00:00 2001
+From 5964fa6583235b7fce1d0c83ba4005380a7bf322 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Fri, 15 May 2015 14:04:11 +0100
-Subject: [PATCH 46/46] [omxplayer] Make unsupported when ac3transcode is
+Subject: [PATCH 44/51] [omxplayer] Make unsupported when ac3transcode is
  enabled
 
 ---
@@ -2906,3 +2906,457 @@ index be54f31..373e3f2 100644
    if (m_pDemuxer)
    {
      // find video stream
+
+From ba0740cf8f5e163720e03516186522bbf16c25b0 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 1 Jun 2015 14:14:43 +0100
+Subject: [PATCH 45/51] [omximage] Don't report failed decode of progressive
+ jpegs as as error
+
+---
+ xbmc/cores/omxplayer/OMXImage.cpp | 26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
+
+diff --git a/xbmc/cores/omxplayer/OMXImage.cpp b/xbmc/cores/omxplayer/OMXImage.cpp
+index a43a446..890ca88 100644
+--- a/xbmc/cores/omxplayer/OMXImage.cpp
++++ b/xbmc/cores/omxplayer/OMXImage.cpp
+@@ -601,7 +601,10 @@ OMX_IMAGE_CODINGTYPE COMXImageFile::GetCodingType(unsigned int &width, unsigned
+   m_orientation   = 0;
+ 
+   if(!m_image_size)
++  {
++    CLog::Log(LOGERROR, "%s::%s %s m_image_size unexpected (%lu)\n", CLASSNAME, __func__, m_filename, m_image_size);
+     return OMX_IMAGE_CodingMax;
++  }
+ 
+   uint8_t *p = m_image_buffer;
+   uint8_t *q = m_image_buffer + m_image_size;
+@@ -848,17 +851,14 @@ OMX_IMAGE_CODINGTYPE COMXImageFile::GetCodingType(unsigned int &width, unsigned
+ 
+     }
+   }
++  else
++    CLog::Log(LOGERROR, "%s::%s error unsupported image format\n", CLASSNAME, __func__);
+ 
+   // apply input orientation
+   m_orientation = m_orientation ^ orientation;
+   if(m_orientation < 0 || m_orientation >= 8)
+     m_orientation = 0;
+ 
+-  if(eCompressionFormat == OMX_IMAGE_CodingMax)
+-  {
+-    CLog::Log(LOGERROR, "%s::%s error unsupported image format\n", CLASSNAME, __func__);
+-  }
+-
+   if(progressive)
+   {
+     CLog::Log(LOGWARNING, "%s::%s progressive images not supported by decoder\n", CLASSNAME, __func__);
+@@ -881,7 +881,7 @@ bool COMXImageFile::ReadFile(const std::string& inputFile, int orientation)
+   m_filename = inputFile.c_str();
+   if(!m_pFile.Open(inputFile, 0))
+   {
+-    CLog::Log(LOGERROR, "%s::%s %s not found\n", CLASSNAME, __func__, inputFile.c_str());
++    CLog::Log(LOGERROR, "%s::%s %s not found\n", CLASSNAME, __func__, m_filename);
+     return false;
+   }
+ 
+@@ -893,13 +893,13 @@ bool COMXImageFile::ReadFile(const std::string& inputFile, int orientation)
+ 
+   if(!m_image_size)
+   {
+-    CLog::Log(LOGERROR, "%s::%s %s m_image_size zero\n", CLASSNAME, __func__, inputFile.c_str());
++    CLog::Log(LOGERROR, "%s::%s %s m_image_size zero\n", CLASSNAME, __func__, m_filename);
+     return false;
+   }
+   m_image_buffer = (uint8_t *)malloc(m_image_size);
+   if(!m_image_buffer)
+   {
+-    CLog::Log(LOGERROR, "%s::%s %s m_image_buffer null (%lu)\n", CLASSNAME, __func__, inputFile.c_str(), m_image_size);
++    CLog::Log(LOGERROR, "%s::%s %s m_image_buffer null (%lu)\n", CLASSNAME, __func__, m_filename, m_image_size);
+     return false;
+   }
+   
+@@ -907,15 +907,9 @@ bool COMXImageFile::ReadFile(const std::string& inputFile, int orientation)
+   m_pFile.Close();
+ 
+   OMX_IMAGE_CODINGTYPE eCompressionFormat = GetCodingType(m_width, m_height, orientation);
+-  if(eCompressionFormat != OMX_IMAGE_CodingJPEG)
+-  {
+-    CLog::Log(LOGERROR, "%s::%s %s GetCodingType=0x%x\n", CLASSNAME, __func__, inputFile.c_str(), eCompressionFormat);
+-    return false;
+-  }
+-
+-  if(m_width < 1 || m_height < 1)
++  if(eCompressionFormat != OMX_IMAGE_CodingJPEG || m_width < 1 || m_height < 1)
+   {
+-    CLog::Log(LOGERROR, "%s::%s %s m_width=%d m_height=%d\n", CLASSNAME, __func__, inputFile.c_str(), m_width, m_height);
++    CLog::Log(LOGDEBUG, "%s::%s %s GetCodingType=0x%x (%dx%x)\n", CLASSNAME, __func__, m_filename, eCompressionFormat, m_width, m_height);
+     return false;
+   }
+ 
+
+From 33a38607218899acba79a30dc7b9163daaf99c65 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 25 May 2015 19:01:00 +0100
+Subject: [PATCH 46/51] [rbp] Allow settings option for timestamp preference
+
+We currently have some files that play better with pts timestamps and some that play better with dts timestamps
+Provide a gui setting to allow users to adjust this behaviour until we have a better solution
+---
+ addons/resource.language.en_gb/resources/strings.po | 10 ++++++++++
+ system/settings/rbp.xml                             |  7 +++++++
+ xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp  |  2 +-
+ xbmc/cores/omxplayer/OMXPlayerVideo.cpp             |  2 +-
+ 4 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index b76e723..3c18575 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -16714,3 +16714,13 @@ msgstr ""
+ msgctxt "#38121"
+ msgid "This option supports 8 channel DTS HD decoding, but may use more CPU. It is only available when DTS and DTS-HD audio passthrough is disabled"
+ msgstr ""
++
++#: system/settings/rbp.xml
++msgctxt "#38210"
++msgid "Prefer PTS timestamps"
++msgstr ""
++
++#: system/settings/rbp.xml
++msgctxt "#38211"
++msgid "Try enabling this if you have stutter with video files"
++msgstr ""
+diff --git a/system/settings/rbp.xml b/system/settings/rbp.xml
+index b27d23f..8c6e69d 100644
+--- a/system/settings/rbp.xml
++++ b/system/settings/rbp.xml
+@@ -42,6 +42,13 @@
+           <control type="toggle" />
+         </setting>
+       </group>
++      <group id="3">
++        <setting id="videoplayer.preferptstimestamps" type="boolean" label="38210" help="38211">
++          <level>3</level>
++          <default>false</default>
++          <control type="toggle" />
++        </setting>
++      </group>
+     </category>
+     <category id="myvideos">
+       <group id="1">
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+index a583450..4a63820 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+@@ -797,7 +797,7 @@ int CMMALVideo::Decode(uint8_t* pData, int iSize, double dts, double pts)
+          pts = 0;
+        buffer->pts = pts == DVD_NOPTS_VALUE ? MMAL_TIME_UNKNOWN : pts;
+        buffer->dts = dts == DVD_NOPTS_VALUE ? MMAL_TIME_UNKNOWN : dts;
+-       if (buffer->dts != MMAL_TIME_UNKNOWN) buffer->pts = MMAL_TIME_UNKNOWN;
++       if (buffer->dts != MMAL_TIME_UNKNOWN && !CSettings::Get().GetBool("videoplayer.preferptstimestamps")) buffer->pts = MMAL_TIME_UNKNOWN;
+        buffer->length = demuxer_bytes > buffer->alloc_size ? buffer->alloc_size : demuxer_bytes;
+        // set a flag so we can identify primary frames from generated frames (deinterlace)
+        buffer->flags = MMAL_BUFFER_HEADER_FLAG_USER0;
+diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+index adf9910..f9b9232 100644
+--- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
++++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+@@ -495,7 +495,7 @@ void OMXPlayerVideo::Process()
+         if (pts != DVD_NOPTS_VALUE)
+           pts += m_iVideoDelay;
+ 
+-        m_omxVideo.Decode(pPacket->pData, pPacket->iSize, dts, dts == DVD_NOPTS_VALUE ? pts : DVD_NOPTS_VALUE);
++        m_omxVideo.Decode(pPacket->pData, pPacket->iSize, dts, dts != DVD_NOPTS_VALUE && !CSettings::Get().GetBool("videoplayer.preferptstimestamps") ? DVD_NOPTS_VALUE : pts);
+ 
+         if (pts == DVD_NOPTS_VALUE)
+           pts = dts;
+
+From 792a42205d18d6d389a36101c85594884eb9b34e Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 6 Jun 2015 18:44:37 +0100
+Subject: [PATCH 47/51] [rbp] Ignore pts value when m_hints.ptsinvalid set
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp | 2 +-
+ xbmc/cores/omxplayer/OMXPlayerVideo.cpp            | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+index 4a63820..f7b0b25 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+@@ -797,7 +797,7 @@ int CMMALVideo::Decode(uint8_t* pData, int iSize, double dts, double pts)
+          pts = 0;
+        buffer->pts = pts == DVD_NOPTS_VALUE ? MMAL_TIME_UNKNOWN : pts;
+        buffer->dts = dts == DVD_NOPTS_VALUE ? MMAL_TIME_UNKNOWN : dts;
+-       if (buffer->dts != MMAL_TIME_UNKNOWN && !CSettings::Get().GetBool("videoplayer.preferptstimestamps")) buffer->pts = MMAL_TIME_UNKNOWN;
++       if (m_hints.ptsinvalid || (buffer->dts != MMAL_TIME_UNKNOWN && !CSettings::Get().GetBool("videoplayer.preferptstimestamps"))) buffer->pts = MMAL_TIME_UNKNOWN;
+        buffer->length = demuxer_bytes > buffer->alloc_size ? buffer->alloc_size : demuxer_bytes;
+        // set a flag so we can identify primary frames from generated frames (deinterlace)
+        buffer->flags = MMAL_BUFFER_HEADER_FLAG_USER0;
+diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+index f9b9232..33aa88c 100644
+--- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
++++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+@@ -495,7 +495,7 @@ void OMXPlayerVideo::Process()
+         if (pts != DVD_NOPTS_VALUE)
+           pts += m_iVideoDelay;
+ 
+-        m_omxVideo.Decode(pPacket->pData, pPacket->iSize, dts, dts != DVD_NOPTS_VALUE && !CSettings::Get().GetBool("videoplayer.preferptstimestamps") ? DVD_NOPTS_VALUE : pts);
++        m_omxVideo.Decode(pPacket->pData, pPacket->iSize, dts, m_hints.ptsinvalid || (dts != DVD_NOPTS_VALUE && !CSettings::Get().GetBool("videoplayer.preferptstimestamps")) ? DVD_NOPTS_VALUE : pts);
+ 
+         if (pts == DVD_NOPTS_VALUE)
+           pts = dts;
+
+From 493d0d8dfac375bedb0e80c08213bb45a714a4bb Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 10 Jun 2015 20:42:03 +0100
+Subject: [PATCH 49/51] [rbp] Fix zoom modes with stereoscopic videos
+
+---
+ xbmc/cores/VideoRenderers/MMALRenderer.cpp | 12 ++++++++++--
+ xbmc/cores/omxplayer/OMXPlayerVideo.cpp    | 12 ++++++++++--
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/cores/VideoRenderers/MMALRenderer.cpp b/xbmc/cores/VideoRenderers/MMALRenderer.cpp
+index 9bf1aed..e420834 100644
+--- a/xbmc/cores/VideoRenderers/MMALRenderer.cpp
++++ b/xbmc/cores/VideoRenderers/MMALRenderer.cpp
+@@ -632,9 +632,17 @@ void CMMALRenderer::SetVideoRect(const CRect& InSrcRect, const CRect& InDestRect
+   CRect display(0, 0, CDisplaySettings::Get().GetResolutionInfo(res).iScreenWidth, CDisplaySettings::Get().GetResolutionInfo(res).iScreenHeight);
+ 
+   if (display_stereo_mode == RENDER_STEREO_MODE_SPLIT_VERTICAL)
+-    DestRect.x2 *= 2.0f;
++  {
++    float width = DestRect.x2 - DestRect.x1;
++    DestRect.x1 *= 2.0f;
++    DestRect.x2 = DestRect.x1 + 2.0f * width;
++  }
+   else if (display_stereo_mode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)
+-    DestRect.y2 *= 2.0f;
++  {
++    float height = DestRect.y2 - DestRect.y1;
++    DestRect.y1 *= 2.0f;
++    DestRect.y2 = DestRect.y1 + 2.0f * height;
++  }
+ 
+   if (gui != display)
+   {
+diff --git a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+index 33aa88c..e008405 100644
+--- a/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
++++ b/xbmc/cores/omxplayer/OMXPlayerVideo.cpp
+@@ -690,9 +690,17 @@ void OMXPlayerVideo::SetVideoRect(const CRect &InSrcRect, const CRect &InDestRec
+   CRect display(0, 0, CDisplaySettings::Get().GetResolutionInfo(res).iScreenWidth, CDisplaySettings::Get().GetResolutionInfo(res).iScreenHeight);
+ 
+   if (display_stereo_mode == RENDER_STEREO_MODE_SPLIT_VERTICAL)
+-    DestRect.x2 *= 2.0f;
++  {
++    float width = DestRect.x2 - DestRect.x1;
++    DestRect.x1 *= 2.0f;
++    DestRect.x2 = DestRect.x1 + 2.0f * width;
++  }
+   else if (display_stereo_mode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)
+-    DestRect.y2 *= 2.0f;
++  {
++    float height = DestRect.y2 - DestRect.y1;
++    DestRect.y1 *= 2.0f;
++    DestRect.y2 = DestRect.y1 + 2.0f * height;
++  }
+ 
+   if (gui != display)
+   {
+
+From 8312d9234bddd5878f60a7a297e16e61d2cab255 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 6 Jun 2015 18:43:57 +0100
+Subject: [PATCH 50/51] ffmpeg: Automatic switch to software decode for GMC
+ with more than one warp point
+
+---
+ ...Signal-unsupported-GMC-with-more-than-one.patch | 48 ++++++++++++++++++++++
+ tools/depends/target/ffmpeg/Makefile               |  4 +-
+ xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp |  2 +
+ xbmc/cores/dvdplayer/DVDDemuxers/DVDDemux.h        |  2 +
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp |  2 +-
+ xbmc/cores/dvdplayer/DVDStreamInfo.cpp             |  3 ++
+ xbmc/cores/dvdplayer/DVDStreamInfo.h               |  1 +
+ xbmc/cores/omxplayer/OMXHelper.cpp                 |  4 +-
+ 8 files changed, 63 insertions(+), 3 deletions(-)
+ create mode 100644 tools/depends/target/ffmpeg/0001-mpeg4video-Signal-unsupported-GMC-with-more-than-one.patch
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+index f7b0b25..3e97f1d 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/MMALCodec.cpp
+@@ -516,6 +516,8 @@ bool CMMALVideo::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
+   // we always qualify even if DVDFactoryCodec does this too.
+   if (!CSettings::Get().GetBool("videoplayer.usemmal") || hints.software)
+     return false;
++  if (hints.workaround_bugs & FF_BUG_GMC_UNSUPPORTED)
++    return false;
+ 
+   m_hints = hints;
+   m_vout_input_pool = (MMAL_POOL_T *)options.m_opaque_pointer;
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemux.h b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemux.h
+index fca164d..d450413 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemux.h
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemux.h
+@@ -162,6 +162,7 @@ class CDemuxStreamVideo : public CDemuxStream
+     type = STREAM_VIDEO;
+     iOrientation = 0;
+     iBitsPerPixel = 0;
++    workaround_bugs = 0;
+   }
+ 
+   virtual ~CDemuxStreamVideo() {}
+@@ -178,6 +179,7 @@ class CDemuxStreamVideo : public CDemuxStream
+   int iOrientation; // orientation of the video in degress counter clockwise
+   int iBitsPerPixel;
+   std::string stereo_mode; // expected stereo mode
++  int workaround_bugs; // info for decoder
+ };
+ 
+ class CDemuxStreamAudio : public CDemuxStream
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 5feac29..f7d6dc8 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -1199,7 +1199,7 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int iId)
+         if (!stereoMode.empty())
+           st->stereo_mode = stereoMode;
+ 
+-        
++        st->workaround_bugs = pStream->codec->workaround_bugs;
+         if ( m_pInput->IsStreamType(DVDSTREAM_TYPE_DVD) )
+         {
+           if (pStream->codec->codec_id == AV_CODEC_ID_PROBE)
+diff --git a/xbmc/cores/dvdplayer/DVDStreamInfo.cpp b/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
+index fa0defa..37c2d16 100644
+--- a/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
++++ b/xbmc/cores/dvdplayer/DVDStreamInfo.cpp
+@@ -73,6 +73,7 @@ void CDVDStreamInfo::Clear()
+   bitspersample = 0;
+ 
+   orientation = 0;
++  workaround_bugs = 0;
+ }
+ 
+ bool CDVDStreamInfo::Equal(const CDVDStreamInfo& right, bool withextradata)
+@@ -174,6 +175,7 @@ void CDVDStreamInfo::Assign(const CDVDStreamInfo& right, bool withextradata)
+   vfr = right.vfr;
+   software = right.software;
+   stereo_mode = right.stereo_mode;
++  workaround_bugs = right.workaround_bugs;
+ 
+   // AUDIO
+   channels      = right.channels;
+@@ -231,6 +233,7 @@ void CDVDStreamInfo::Assign(const CDemuxStream& right, bool withextradata)
+     bitsperpixel = stream->iBitsPerPixel;
+     pid = stream->iPhysicalId;
+     stereo_mode = stream->stereo_mode;
++    workaround_bugs = stream->workaround_bugs;
+   }
+   else if(  right.type == STREAM_SUBTITLE )
+   {
+diff --git a/xbmc/cores/dvdplayer/DVDStreamInfo.h b/xbmc/cores/dvdplayer/DVDStreamInfo.h
+index c0e22a2..3849993 100644
+--- a/xbmc/cores/dvdplayer/DVDStreamInfo.h
++++ b/xbmc/cores/dvdplayer/DVDStreamInfo.h
+@@ -73,6 +73,7 @@ class CDVDStreamInfo
+   int bitsperpixel;
+   int pid;
+   std::string stereo_mode; // stereoscopic 3d mode
++  int workaround_bugs; // info for decoder
+ 
+   // AUDIO
+   int channels;
+diff --git a/xbmc/cores/omxplayer/OMXHelper.cpp b/xbmc/cores/omxplayer/OMXHelper.cpp
+index 373e3f2..093388c 100644
+--- a/xbmc/cores/omxplayer/OMXHelper.cpp
++++ b/xbmc/cores/omxplayer/OMXHelper.cpp
+@@ -77,7 +77,9 @@ bool OMXPlayerUnsuitable(bool m_HasVideo, bool m_HasAudio, CDVDDemux* m_pDemuxer
+       CDVDStreamInfo hint(*stream, true);
+ 
+       bool supported = false;
+-      if ((hint.codec == AV_CODEC_ID_MPEG1VIDEO || hint.codec == AV_CODEC_ID_MPEG2VIDEO) && g_RBP.GetCodecMpg2())
++      if (hint.workaround_bugs & FF_BUG_GMC_UNSUPPORTED)
++        ;
++      else if ((hint.codec == AV_CODEC_ID_MPEG1VIDEO || hint.codec == AV_CODEC_ID_MPEG2VIDEO) && g_RBP.GetCodecMpg2())
+         supported = true;
+       else if ((hint.codec == AV_CODEC_ID_VC1 || hint.codec == AV_CODEC_ID_WMV3) && g_RBP.GetCodecWvc1())
+         supported = true;
+
+From 1798b2059a7dcc34b4dcecfec56736225d2ac918 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 3 Jun 2015 23:13:51 +0100
+Subject: [PATCH 51/51] [rpi] Always add desktop resolution to supported list
+
+There was an assumption that the desktop resolution would be in the probed list, but that is sometimes not the case.
+We don't add interlaced resolutions to list, but they can be the preferred resolution read from edid. See:
+http://openelec.tv/forum/124-raspberry-pi/77074-forcing-interlaced-output
+
+Also hotplug changes causing an edid reread may cause the supported modes to change (e.g. powering on receiver)
+and it is possible the previous preferred mode is no longer there
+
+So ensure that desktop resolution is always added to list. Also handle the case where desktop resolution is invalid on launch
+(e.g. hdmi output powered off)
+---
+ xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
+index ae85484..a4b8a81 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeRaspberryPI.cpp
+@@ -187,7 +187,7 @@ int CEGLNativeTypeRaspberryPI::FindMatchingResolution(const RESOLUTION_INFO &res
+   for (int i = 0; i < (int)resolutions.size(); i++)
+   {
+     if(resolutions[i].iScreenWidth == res.iScreenWidth && resolutions[i].iScreenHeight == res.iScreenHeight && resolutions[i].fRefreshRate == res.fRefreshRate &&
+-      (resolutions[i].dwFlags & (D3DPRESENTFLAG_MODE3DSBS|D3DPRESENTFLAG_MODE3DTB)) == (res.dwFlags & (D3DPRESENTFLAG_MODE3DSBS|D3DPRESENTFLAG_MODE3DTB)))
++      (resolutions[i].dwFlags & D3DPRESENTFLAG_MODEMASK) == (res.dwFlags & D3DPRESENTFLAG_MODEMASK))
+     {
+        return i;
+     }
+@@ -203,8 +203,7 @@ int CEGLNativeTypeRaspberryPI::AddUniqueResolution(RESOLUTION_INFO &res, std::ve
+   int i = FindMatchingResolution(res, resolutions);
+   if (i>=0)
+   {  // don't replace a progressive resolution with an interlaced one of same resolution
+-     if (!(res.dwFlags & D3DPRESENTFLAG_INTERLACED))
+-       resolutions[i] = res;
++     resolutions[i] = res;
+   }
+   else
+   {
+@@ -516,7 +515,7 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+       vc_tv_hdmi_get_property(&property);
+       m_desktopRes.fRefreshRate = property.param1 == HDMI_PIXEL_CLOCK_TYPE_NTSC ? tv_state.display.hdmi.frame_rate * (1000.0f/1001.0f) : tv_state.display.hdmi.frame_rate;
+     }
+-    else // sdtv
++    else if ((tv_state.state & ( VC_SDTV_NTSC | VC_SDTV_PAL )) != 0) // sdtv
+     {
+       m_desktopRes.iScreen      = 0;
+       m_desktopRes.bFullScreen  = true;
+@@ -541,7 +540,6 @@ bool CEGLNativeTypeRaspberryPI::ProbeResolutions(std::vector<RESOLUTION_INFO> &r
+   GetSupportedModes(HDMI_RES_GROUP_CEA, resolutions);
+   GetSupportedModes(HDMI_RES_GROUP_DMT, resolutions);
+ 
+-  if(resolutions.size() == 0)
+   {
+     AddUniqueResolution(m_desktopRes, resolutions);
+     CLog::Log(LOGDEBUG, "EGL probe resolution %s:%x\n", m_desktopRes.strMode.c_str(), m_desktopRes.dwFlags);
+@@ -636,6 +634,12 @@ void CEGLNativeTypeRaspberryPI::GetSupportedModes(HDMI_RES_GROUP_T group, std::v
+       res.fPixelRatio   = get_display_aspect_ratio((HDMI_ASPECT_T)tv->aspect_ratio) / ((float)res.iScreenWidth / (float)res.iScreenHeight);
+       res.iSubtitles    = (int)(0.965 * res.iHeight);
+ 
++      if (!m_desktopRes.dwFlags && prefer_group == group && prefer_mode == tv->code)
++        m_desktopRes = res;
++
++      if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++        continue;
++
+       AddUniqueResolution(res, resolutions);
+       CLog::Log(LOGDEBUG, "EGL mode %d: %s (%.2f) %s%s:%x\n", i, res.strMode.c_str(), res.fPixelRatio,
+           tv->native ? "N" : "", tv->scan_mode ? "I" : "", tv->code);

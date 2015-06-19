@@ -429,9 +429,15 @@ fi
     # create release dir
       mkdir -p $RELEASE_DIR/${DISTRONAME}_${PROJECT}
 
-      cp -PR $ROOT/config/$1/* $RELEASE_DIR/${DISTRONAME}_${PROJECT}
       cp -PR $DISTRO_DIR/$DISTRO/${DISTRONAME}.png $RELEASE_DIR/${DISTRONAME}_${PROJECT}/${DISTRONAME}_${PROJECT}.png
-
+      cp -PR $ROOT/config/noobs/os.json $RELEASE_DIR/${DISTRONAME}_${PROJECT}
+      cp -PR $ROOT/config/noobs/partition_setup.sh $RELEASE_DIR/${DISTRONAME}_${PROJECT}
+      cp -PR $ROOT/config/noobs/partitions.json $RELEASE_DIR/${DISTRONAME}_${PROJECT}
+      if [ -d $DISTRO_DIR/$DISTRO/noobs/marketing ]; then
+        tar cf $RELEASE_DIR/${DISTRONAME}_${PROJECT}/marketing.tar -C $DISTRO_DIR/$DISTRO/noobs/marketing .
+      else
+        tar cf $RELEASE_DIR/${DISTRONAME}_${PROJECT}/marketing.tar -C $ROOT/config/noobs/marketing .
+      fi
       cp $ROOT/README* $RELEASE_DIR/${DISTRONAME}_${PROJECT}
       cp $ROOT/CHANGELOG $RELEASE_DIR/${DISTRONAME}_${PROJECT}/release_notes.txt
 
