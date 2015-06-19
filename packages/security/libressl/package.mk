@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libressl"
-PKG_VERSION="2.1.6"
+PKG_VERSION="2.1.7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
@@ -37,8 +37,9 @@ post_makeinstall_target() {
 # download url: http://curl.haxx.se
 # create new cert: perl ./mk-ca-bundle.pl
   mkdir -p $INSTALL/$SSL_CERTIFICATES
-    cp $PKG_DIR/cert/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cert.pem
+    cp $PKG_DIR/cert/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cacert.pem
   # backwards comatibility
   mkdir -p $INSTALL/etc/pki/tls
-  ln -sf $SSL_CERTIFICATES/cert.pem $INSTALL/etc/pki/tls/cacert.pem
+  ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/pki/tls/cacert.pem
+  ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/ssl/cert.pem
 }

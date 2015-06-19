@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="mesa"
-PKG_VERSION="10.5.4"
+PKG_VERSION="10.6.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -66,7 +66,6 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --enable-opengl \
                            --disable-gles1 \
                            --disable-gles2 \
-                           --disable-openvg \
                            --enable-dri \
                            --disable-dri3 \
                            --enable-glx \
