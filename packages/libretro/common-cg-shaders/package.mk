@@ -18,19 +18,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="odroidc1-mali"
-PKG_VERSION="0cb5ca4"
+PKG_NAME="common-cg-shaders"
+PKG_VERSION="f105229"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="nonfree"
-PKG_SITE="https://github.com/mdrjr/c1_mali_libs"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/libretro/common-shaders"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_BUILD_DEPENDS_TARGET="toolchain"
-PKG_DEPENDS_TARGET="libump"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="graphics"
-PKG_SHORTDESC="Mali-450 blobs for Odroid-C1"
-PKG_LONGDESC="Mali-450 blobs for Odroid-C1"
+PKG_SECTION="libretro"
+PKG_SHORTDESC="Common CG shaders for RetroArch"
+PKG_LONGDESC="Common CG shaders for RetroArch"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
@@ -40,11 +39,6 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $SYSROOT_PREFIX/usr/lib
-    cp -PR fbdev/mali_libs/* $SYSROOT_PREFIX/usr/lib
-  mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -PR fbdev/mali_headers/* $SYSROOT_PREFIX/usr/include
-  mkdir -p $INSTALL/usr/lib
-    cp -PR fbdev/mali_libs/*.so* $INSTALL/usr/lib
+  mkdir -p $INSTALL/usr/share/common-shaders
+  cp -r * $INSTALL/usr/share/common-shaders
 }
-
