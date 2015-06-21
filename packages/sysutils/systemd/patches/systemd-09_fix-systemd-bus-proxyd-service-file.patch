@@ -1,0 +1,17 @@
+diff -Naur systemd-221.orig/units/systemd-bus-proxyd.service.m4.in systemd-221/units/systemd-bus-proxyd.service.m4.in
+--- systemd-221.orig/units/systemd-bus-proxyd.service.m4.in	2015-02-13 08:18:28.158283935 -0800
++++ systemd-221/units/systemd-bus-proxyd.service.m4.in	2015-06-26 13:50:57.089254431 -0700
+@@ -12,8 +12,8 @@
+ ExecStart=@rootlibexecdir@/systemd-bus-proxyd --address=kernel:path=/sys/fs/kdbus/0-system/bus
+ NotifyAccess=main
+ CapabilityBoundingSet=CAP_IPC_OWNER CAP_SETUID CAP_SETGID CAP_SETPCAP m4_ifdef(`HAVE_SMACK', CAP_MAC_ADMIN )
+-PrivateTmp=yes
+-PrivateDevices=yes
+-PrivateNetwork=yes
+-ProtectSystem=full
+-ProtectHome=yes
++#PrivateTmp=yes
++#PrivateDevices=yes
++#PrivateNetwork=yes
++#ProtectSystem=full
++#ProtectHome=yes

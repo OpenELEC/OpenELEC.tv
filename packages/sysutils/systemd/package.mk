@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="https://github.com/systemd/systemd/archive/v$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt kdbus"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -90,7 +90,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-networkd \
                            --disable-efi \
                            --disable-gnuefi \
-                           --disable-kdbus \
+                           --enable-kdbus \
                            --disable-myhostname \
                            --disable-gudev \
                            --enable-hwdb \
@@ -231,6 +231,9 @@ post_install() {
   add_group systemd-network 193
   add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
+  add_group systemd-bus-proxy 194
+  add_user systemd-bus-proxy x 194 194 "systemd-bus-proxy" "/" "/bin/sh"
+
   add_group audio 63
   add_group cdrom 11
   add_group dialout 18
@@ -248,4 +251,5 @@ post_install() {
   enable_service debugconfig.service
   enable_service userconfig.service
   enable_service hwdb.service
+  enable_service systemd-bus-proxyd.socket sockets.target
 }
