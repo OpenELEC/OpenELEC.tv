@@ -76,4 +76,4 @@ if [ -n "$scaling_max_freq" ]; then
 fi
 
 # Set output type to Multichannel PCM
-echo 6 > /sys/class/audiodsp/digital_codec
+#echo 6 > /sys/class/audiodsp/digital_codec
