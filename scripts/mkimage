@@ -177,7 +177,7 @@ LABEL installer
 LABEL live
   MENU LABEL Run $DISTRONAME Live
   KERNEL /KERNEL
-  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet ssh vga=current vt.global_cursor_default=0 loglevel=2
+  APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE quiet ssh vga=current vt.global_cursor_default=0 loglevel=2 udevil=0
 EOF
 
   # install extlinux

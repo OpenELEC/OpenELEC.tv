@@ -1,5 +1,6 @@
 [Unit]
 Description=Udevil mount service
+ConditionKernelCommandLine=!udevil=0
 
 [Service]
 Type=oneshot
