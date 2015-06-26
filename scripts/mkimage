@@ -117,7 +117,16 @@ fi
 if [ "$BOOTLOADER" = "syslinux" ]; then
   # create bootloader configuration
     echo "image: creating bootloader configuration..."
-    cat << EOF > "$OE_TMP"/syslinux.cfg
+    if [ "$PROJECT" = "unRAID" ]; then
+      cat << EOF > "$OE_TMP"/syslinux.cfg
+DEFAULT live
+
+LABEL live
+  KERNEL /$KERNEL_NAME
+  APPEND boot=UUID=$UUID_SYSTEM disk=VIRTFS=appconfig noram quiet tty vga=current
+EOF
+    else
+      cat << EOF > "$OE_TMP"/syslinux.cfg
 SAY Press <TAB> to edit options
 DEFAULT installer
 TIMEOUT 50
@@ -131,6 +140,7 @@ LABEL live
   KERNEL /$KERNEL_NAME
   APPEND boot=UUID=$UUID_SYSTEM live quiet tty vga=current
 EOF
+    fi
 
   # install extlinux
     echo "image: installing extlinux to part1..."
