@@ -96,7 +96,7 @@ fi
   if [ -n "$GIT_HASH" ]; then
     echo "$GIT_HASH" >> $INSTALL/etc/gitrev
   fi
-  
+
 # create /etc/os-release
   echo -e "NAME=\"$DISTRONAME\"" > $INSTALL/etc/os-release
   echo -e "VERSION=\"$OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
@@ -282,7 +282,7 @@ fi
       # only for matrix system or all? (one tar for all updates?)
         if [ "$PROJECT" == "imx6" -a "$SYSTEM" == "matrix" ]; then
           $SCRIPTS/unpack imx6-mfgtool2-tbs-matrix
-          
+
           mkdir -p $RELEASE_DIR/MfgTool2-TBS-Matrix
           cp -PR $BUILD/imx6-mfgtool2-tbs-matrix-*/imx6-mfgtool2-tbs-matrix-*/* $RELEASE_DIR/MfgTool2-TBS-Matrix
         fi
@@ -347,6 +347,7 @@ fi
           UUID_SYSTEM="$(uuidgen)" \
           UUID_STORAGE="$(uuidgen)" \
           UBOOT_SYSTEM="$UBOOT_SYSTEM" \
+          PROJECT="$PROJECT" \
           $SCRIPTS/mkimage
       fi
 

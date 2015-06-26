@@ -300,6 +300,13 @@
     mount_common "$1" "$2" "$3" "ubifs"
   }
 
+  mount_virtfs() {
+    # Mount VIRTFS export
+    VIRTFS_TAG="${1%%,*}"
+
+    mount_common "$VIRTFS_TAG" "$2" "trans=virtio,version=9p2000.L,posixacl" "9p"
+  }
+
   mount_part() {
     # Mount a local or network filesystem
     # $1:[TYPE=]target, $2:mountpoint, $3:mount options, [$4:fs type]
@@ -324,6 +331,10 @@
         ;;
       NFS=*)
         MOUNT_CMD="mount_nfs"
+        ;;
+      VIRTFS=*)
+        MOUNT_CMD="mount_virtfs"
+        RUN_FSCK="no"
         ;;
       *)
         error "mount_part" "Unknown filesystem $1"
