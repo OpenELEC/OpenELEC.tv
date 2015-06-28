@@ -1,6 +1,6 @@
-From 7ade7028747ff0ff56f74f29d30eb48c9bc52575 Mon Sep 17 00:00:00 2001
+From 4e0cb03f8d73ecda1283c6690f30b2944f169455 Mon Sep 17 00:00:00 2001
 From: Stefan Saraev <stefan@saraev.ca>
-Date: Thu, 12 Feb 2015 13:16:54 +0200
+Date: Thu, 11 Jun 2015 10:45:56 +0300
 Subject: [PATCH] dvb: ngene/octopus
 
 source: http://linuxtv.org/hg/~endriss/media_build_experimental/
@@ -10,7 +10,7 @@ note: SYS_DVBC2 not added. ci extensions (en50221) not added.
  drivers/media/dvb-core/Makefile                 |    2 +-
  drivers/media/dvb-core/dvb_netstream.c          |  259 ++
  drivers/media/dvb-core/dvb_netstream.h          |   94 +
- drivers/media/dvb-core/dvbdev.c                 |    3 +-
+ drivers/media/dvb-core/dvbdev.c                 |   11 +-
  drivers/media/dvb-core/dvbdev.h                 |    4 +
  drivers/media/dvb-frontends/Kconfig             |   27 +
  drivers/media/dvb-frontends/Makefile            |    3 +
@@ -57,7 +57,7 @@ note: SYS_DVBC2 not added. ci extensions (en50221) not added.
  drivers/media/pci/ngene/ngene.h                 |   42 +-
  include/uapi/linux/dvb/mod.h                    |   22 +
  include/uapi/linux/dvb/ns.h                     |   68 +
- 50 files changed, 25728 insertions(+), 3537 deletions(-)
+ 50 files changed, 25733 insertions(+), 3540 deletions(-)
  create mode 100644 drivers/media/dvb-core/dvb_netstream.c
  create mode 100644 drivers/media/dvb-core/dvb_netstream.h
  create mode 100644 drivers/media/dvb-frontends/cxd2843.c
@@ -463,7 +463,7 @@ index 0000000..df73ed5
 +
 +#endif
 diff --git a/drivers/media/dvb-core/dvbdev.c b/drivers/media/dvb-core/dvbdev.c
-index 983db75..bc218ab 100644
+index 13bb57f..ef320af 100644
 --- a/drivers/media/dvb-core/dvbdev.c
 +++ b/drivers/media/dvb-core/dvbdev.c
 @@ -47,7 +47,7 @@ static DEFINE_MUTEX(dvbdev_register_lock);
@@ -475,7 +475,42 @@ index 983db75..bc218ab 100644
  };
  
  #ifdef CONFIG_DVB_DYNAMIC_MINORS
-@@ -431,6 +431,7 @@ out:
+@@ -68,7 +68,7 @@ static int dvb_device_open(struct inode *inode, struct file *file)
+ {
+ 	struct dvb_device *dvbdev;
+ 
+-	mutex_lock(&dvbdev_mutex);
++	//mutex_lock(&dvbdev_mutex);
+ 	down_read(&minor_rwsem);
+ 	dvbdev = dvb_minors[iminor(inode)];
+ 
+@@ -84,12 +84,12 @@ static int dvb_device_open(struct inode *inode, struct file *file)
+ 		if (file->f_op->open)
+ 			err = file->f_op->open(inode,file);
+ 		up_read(&minor_rwsem);
+-		mutex_unlock(&dvbdev_mutex);
++		//mutex_unlock(&dvbdev_mutex);
+ 		return err;
+ 	}
+ fail:
+ 	up_read(&minor_rwsem);
+-	mutex_unlock(&dvbdev_mutex);
++	//mutex_unlock(&dvbdev_mutex);
+ 	return -ENODEV;
+ }
+ 
+@@ -553,8 +553,10 @@ int dvb_usercopy(struct file *file,
+ 	}
+ 
+ 	/* call driver */
++	//mutex_lock(&dvbdev_mutex);
+ 	if ((err = func(file, cmd, parg)) == -ENOIOCTLCMD)
+ 		err = -ENOTTY;
++	//mutex_unlock(&dvbdev_mutex);
+ 
+ 	if (err < 0)
+ 		goto out;
+@@ -573,6 +575,7 @@ out:
  	kfree(mbuf);
  	return err;
  }
@@ -484,10 +519,10 @@ index 983db75..bc218ab 100644
  static int dvb_uevent(struct device *dev, struct kobj_uevent_env *env)
  {
 diff --git a/drivers/media/dvb-core/dvbdev.h b/drivers/media/dvb-core/dvbdev.h
-index f96b28e..f901b54 100644
+index 12629b8..e918a09 100644
 --- a/drivers/media/dvb-core/dvbdev.h
 +++ b/drivers/media/dvb-core/dvbdev.h
-@@ -47,6 +47,10 @@
+@@ -48,6 +48,10 @@
  #define DVB_DEVICE_CA         6
  #define DVB_DEVICE_NET        7
  #define DVB_DEVICE_OSD        8
@@ -499,7 +534,7 @@ index f96b28e..f901b54 100644
  #define DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr) \
  	static short adapter_nr[] = \
 diff --git a/drivers/media/dvb-frontends/Kconfig b/drivers/media/dvb-frontends/Kconfig
-index 6c75418..0b6233c 100644
+index 97c151d..2bf9390 100644
 --- a/drivers/media/dvb-frontends/Kconfig
 +++ b/drivers/media/dvb-frontends/Kconfig
 @@ -72,6 +72,33 @@ config DVB_SI2165
@@ -537,10 +572,10 @@ index 6c75418..0b6233c 100644
  	depends on DVB_CORE
  
 diff --git a/drivers/media/dvb-frontends/Makefile b/drivers/media/dvb-frontends/Makefile
-index ba59df6..33bc12b 100644
+index 23d399b..db9b87a 100644
 --- a/drivers/media/dvb-frontends/Makefile
 +++ b/drivers/media/dvb-frontends/Makefile
-@@ -105,6 +105,9 @@ obj-$(CONFIG_DVB_STV0367) += stv0367.o
+@@ -106,6 +106,9 @@ obj-$(CONFIG_DVB_STV0367) += stv0367.o
  obj-$(CONFIG_DVB_CXD2820R) += cxd2820r.o
  obj-$(CONFIG_DVB_DRXK) += drxk.o
  obj-$(CONFIG_DVB_TDA18271C2DD) += tda18271c2dd.o
@@ -9715,7 +9750,7 @@ index 0000000..4e8b3cc
 +#endif
 diff --git a/drivers/media/dvb-frontends/stv0367dd.c b/drivers/media/dvb-frontends/stv0367dd.c
 new file mode 100644
-index 0000000..a9d2e5b
+index 0000000..64f7970
 --- /dev/null
 +++ b/drivers/media/dvb-frontends/stv0367dd.c
 @@ -0,0 +1,2331 @@
@@ -12075,7 +12110,7 @@ index 0000000..665d4c8
 +#endif
 diff --git a/drivers/media/dvb-frontends/stv0367dd_regs.h b/drivers/media/dvb-frontends/stv0367dd_regs.h
 new file mode 100644
-index 0000000..0f02bea
+index 0000000..eec0f57
 --- /dev/null
 +++ b/drivers/media/dvb-frontends/stv0367dd_regs.h
 @@ -0,0 +1,3431 @@
@@ -17005,7 +17040,7 @@ index 0000000..a6fad29
 +#endif
 diff --git a/drivers/media/dvb-frontends/stv0910_regs.h b/drivers/media/dvb-frontends/stv0910_regs.h
 new file mode 100644
-index 0000000..305f5da
+index 0000000..16e922f
 --- /dev/null
 +++ b/drivers/media/dvb-frontends/stv0910_regs.h
 @@ -0,0 +1,3998 @@
@@ -22511,7 +22546,7 @@ index de0a1c1..ad7c72e 100644
  		state->m_Regs[MPD] &= ~0x80;
  		if (Standard > HF_AnalogMax)
 diff --git a/drivers/media/dvb-frontends/tda18271c2dd.h b/drivers/media/dvb-frontends/tda18271c2dd.h
-index dd84f7b..1389c74 100644
+index 7ebd8ea..31f7926 100644
 --- a/drivers/media/dvb-frontends/tda18271c2dd.h
 +++ b/drivers/media/dvb-frontends/tda18271c2dd.h
 @@ -1,9 +1,7 @@
@@ -22520,9 +22555,9 @@ index dd84f7b..1389c74 100644
 -
 -#include <linux/kconfig.h>
 -
--#if IS_ENABLED(CONFIG_DVB_TDA18271C2DD)
+-#if IS_REACHABLE(CONFIG_DVB_TDA18271C2DD)
 +#if defined(CONFIG_DVB_TDA18271C2DD) || (defined(CONFIG_DVB_TDA18271C2DD_MODULE) \
-+        && defined(MODULE))
++	&& defined(MODULE))
  struct dvb_frontend *tda18271c2dd_attach(struct dvb_frontend *fe,
  					 struct i2c_adapter *i2c, u8 adr);
  #else
@@ -34098,5 +34133,5 @@ index 0000000..691c65d
 +
 +#endif /*_UAPI_DVBNS_H_*/
 -- 
-2.1.0
+2.1.4
 
