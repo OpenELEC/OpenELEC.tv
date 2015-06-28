@@ -15,4 +15,5 @@ Please refer to our website http://www.lakka.tv/get on how to setup Lakka.
 
 * [FAQ](https://github.com/lakkatv/Lakka/wiki/FAQ)
 * #lakkatv on irc.freenode.org
+* [Forums](http://libretro.com/forums/forumdisplay.php?f=26)
 * contact@lakka.tv
