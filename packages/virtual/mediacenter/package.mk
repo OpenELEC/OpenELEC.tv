@@ -42,9 +42,51 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET simplejson"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
 
+# audio decoder/encoder addons
+#  if [ "$KODI_OPTICAL_SUPPORT" = "yes" ]; then
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.modplug"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.nosefart"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.sidplay"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.snesapu"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.stsound"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.timidity"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audiodecoder.vgmstream"
+
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.flac"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.lame"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.vorbis"
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET audioencoder.wav"
+#  fi
+
+# various PVR clients
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.argustv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.demo"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.dvblink"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.dvbviewer"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.filmon"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.hts"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.iptvsimple"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.mediaportal.tvserver"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.mythtv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.nextpvr"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.njoy"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.pctv"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.stalker"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.vbox"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.vdr.vnsi"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.vuplus"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.wmc"
+
+# visualization addons
+#  if [ "$KODI_VIS_FISHBMC" = "yes" ]; then
+#    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET visualization.fishbmc"
+#  fi
+#  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET visualization.spectrum"
+#  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET visualization.waveform"
+
 # other packages
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET OpenELEC-settings"
 fi
 
 # pvr addons
- PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.hts"
+ PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET"
