@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="b2e10eb"
+PKG_VERSION="865ae6a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MAME"
@@ -36,17 +36,18 @@ PKG_AUTORECONF="no"
 
 make_target() {
 
-  sed -i -e "s/\tCC_AS = gcc/\tCC_AS = \$\(CC\)/" Makefile.libretro
-  sed -i -e "s/\tCC = g++//" Makefile.libretro
-  sed -i -e "s/\tNATIVECC = g++/\tNATIVECC = \$\(CXX\)/" Makefile.libretro
-  sed -i -e "s/\tAR = @ar//" Makefile.libretro
-  sed -i -e "s/\tLD = g++//" Makefile.libretro
-  sed -i -e "s/\tNATIVELD = g++/\tNATIVELD = \$\(CXX\)/" Makefile.libretro
-  #sed -i -e "s/-Wl,--version-script=src\/osd\/retro\/link.T//" Makefile.libretro
-  #sed -i -e "s/-Wl,--no-undefined//" Makefile.libretro
-  #sed -i -e "s/-Wl,--warn-common//" Makefile.libretro
-  sed -i -e "s/CONLYFLAGS = -fpermissive//" Makefile.libretro
-  make -f Makefile.libretro
+  #sed -i -e "s/\tCC_AS = gcc/\tCC_AS = \$\(CC\)/" Makefile.libretro
+  #sed -i -e "s/\tCC = g++//" Makefile.libretro
+  #sed -i -e "s/\tNATIVECC = g++/\tNATIVECC = \$\(CXX\)/" Makefile.libretro
+  #sed -i -e "s/\tAR = @ar//" Makefile.libretro
+  #sed -i -e "s/\tLD = g++//" Makefile.libretro
+  #sed -i -e "s/\tNATIVELD = g++/\tNATIVELD = \$\(CXX\)/" Makefile.libretro
+  ##sed -i -e "s/-Wl,--version-script=src\/osd\/retro\/link.T//" Makefile.libretro
+  ##sed -i -e "s/-Wl,--no-undefined//" Makefile.libretro
+  ##sed -i -e "s/-Wl,--warn-common//" Makefile.libretro
+  #sed -i -e "s/CONLYFLAGS = -fpermissive//" Makefile.libretro
+  echo $CC
+  make -f Makefile.libretro DISTRO="" OVERRIDE_CC="$CC" CROSS_BUILD=""
 }
 
 makeinstall_target() {
