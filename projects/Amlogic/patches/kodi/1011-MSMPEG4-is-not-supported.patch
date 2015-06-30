@@ -1,0 +1,22 @@
+From 30a4e0c2a91858aafe5afecef7e2618aba82b650 Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sun, 30 Nov 2014 11:29:42 +0100
+Subject: [PATCH] FIX: [aml] MSMPEG4 is not supported
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index b1bc801..687d1e1 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -112,8 +112,6 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+       //m_bitparser->Open();
+       break;
+     case AV_CODEC_ID_MPEG4:
+-    case AV_CODEC_ID_MSMPEG4V2:
+-    case AV_CODEC_ID_MSMPEG4V3:
+       if (m_hints.width <= 800)
+       {
+         // mpeg4 playback is ugly; avoid for SD

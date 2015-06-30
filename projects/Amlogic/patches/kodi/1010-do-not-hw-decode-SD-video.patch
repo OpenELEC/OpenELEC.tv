@@ -1,0 +1,100 @@
+From 194f88dfbb291e6d12549067c75371f67204019c Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Tue, 27 May 2014 17:14:28 +0200
+Subject: [PATCH] CHG: [droid] do not h/w decode SD video (save on support)
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp | 47 ++++++++++++++++------
+ .../DVDCodecs/Video/DVDVideoCodecAmlogic.cpp       |  6 +++
+ 2 files changed, 40 insertions(+), 13 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+index 10648c5..8dae109 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+@@ -206,6 +206,19 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, unsigne
+     // amcodec can handle dvd playback.
+     if (!hint.software && CSettings::Get().GetBool("videoplayer.useamcodec"))
+     {
++      switch(hint.codec)
++      {
++        case AV_CODEC_ID_MPEG4:
++        case AV_CODEC_ID_MSMPEG4V2:
++        case AV_CODEC_ID_MSMPEG4V3:
++          // Avoid h/w decoder for SD; Those files might use features
++          // not supported and can easily be soft-decoded
++          if (hint.width <= 800)
++            break;
++        default:
++          if ( (pCodec = OpenCodec(new CDVDVideoCodecAmlogic(), hint, options)) ) return pCodec;
++          break;
++      }
+       if ( (pCodec = OpenCodec(new CDVDVideoCodecAmlogic(), hint, options)) ) return pCodec;
+     }
+ #endif
+@@ -249,8 +262,19 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, unsigne
+ #if defined(TARGET_ANDROID)
+     if (!hint.software && CSettings::Get().GetBool("videoplayer.usemediacodec"))
+     {
+-      CLog::Log(LOGINFO, "MediaCodec Video Decoder...");
+-      if ( (pCodec = OpenCodec(new CDVDVideoCodecAndroidMediaCodec(), hint, options)) ) return pCodec;
++      switch(hint.codec)
++      {
++        case AV_CODEC_ID_MPEG4:
++        case AV_CODEC_ID_MSMPEG4V2:
++        case AV_CODEC_ID_MSMPEG4V3:
++          // Avoid h/w decoder for SD; Those files might use features
++          // not supported and can easily be soft-decoded
++          if (hint.width <= 800)
++            break;
++        default:
++          CLog::Log(LOGINFO, "MediaCodec Video Decoder...");
++          if ( (pCodec = OpenCodec(new CDVDVideoCodecAndroidMediaCodec(), hint, options)) ) return pCodec;
++      }
+     }
+ #endif
+ 
+@@ -282,18 +306,15 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, unsigne
+     {
+       switch(hint.codec)
+       {
+-        case CODEC_ID_H264:
+-        case CODEC_ID_MPEG4:
+-        case CODEC_ID_MPEG2VIDEO:
+-        case CODEC_ID_VC1:
+-        case CODEC_ID_WMV3:
+-        case CODEC_ID_VP3:
+-        case CODEC_ID_VP6:
+-        case CODEC_ID_VP6F:
+-        case CODEC_ID_VP8:
+-          if ( (pCodec = OpenCodec(new CDVDVideoCodecStageFright(), hint, options)) ) return pCodec;
+-          break;
++        case AV_CODEC_ID_MPEG4:
++        case AV_CODEC_ID_MSMPEG4V2:
++        case AV_CODEC_ID_MSMPEG4V3:
++          // Avoid h/w decoder for SD; Those files might use features
++          // not supported and can easily be soft-decoded
++          if (hint.width <= 800)
++            break;
+         default:
++          if ( (pCodec = OpenCodec(new CDVDVideoCodecStageFright(), hint, options)) ) return pCodec;
+           break;
+       }
+     }
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index 24c1ab9..c832ff9 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -102,6 +102,12 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+     case AV_CODEC_ID_MPEG4:
+     case AV_CODEC_ID_MSMPEG4V2:
+     case AV_CODEC_ID_MSMPEG4V3:
++      if (m_hints.width <= 800)
++      {
++        // mpeg4 playback is ugly; avoid for SD
++        return false;
++        break;
++      }
+       m_pFormatName = "am-mpeg4";
+       break;
+     case AV_CODEC_ID_H263:
