@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="865ae6a"
+PKG_VERSION="d8f35df"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MAME"
@@ -35,19 +35,8 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-
-  #sed -i -e "s/\tCC_AS = gcc/\tCC_AS = \$\(CC\)/" Makefile.libretro
-  #sed -i -e "s/\tCC = g++//" Makefile.libretro
-  #sed -i -e "s/\tNATIVECC = g++/\tNATIVECC = \$\(CXX\)/" Makefile.libretro
-  #sed -i -e "s/\tAR = @ar//" Makefile.libretro
-  #sed -i -e "s/\tLD = g++//" Makefile.libretro
-  #sed -i -e "s/\tNATIVELD = g++/\tNATIVELD = \$\(CXX\)/" Makefile.libretro
-  ##sed -i -e "s/-Wl,--version-script=src\/osd\/retro\/link.T//" Makefile.libretro
-  ##sed -i -e "s/-Wl,--no-undefined//" Makefile.libretro
-  ##sed -i -e "s/-Wl,--warn-common//" Makefile.libretro
-  #sed -i -e "s/CONLYFLAGS = -fpermissive//" Makefile.libretro
-  echo $CC
-  make -f Makefile.libretro DISTRO="" OVERRIDE_CC="$CC" CROSS_BUILD=""
+  strip_gold
+  make REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2 CONFIG=libretro LIBRETRO_OS="unix" ARCH="" LIBRETRO_CPU="x86_64" DISTRO="debian-stable" OVERRIDE_CC="$CC" OVERRIDE_CXX="$CXX" CROSS_BUILD=""
 }
 
 makeinstall_target() {
