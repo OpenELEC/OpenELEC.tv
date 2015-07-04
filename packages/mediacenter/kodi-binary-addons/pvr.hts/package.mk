@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="pvr.hts"
-PKG_VERSION="9a0b1da"
+PKG_VERSION="a220074"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_URL="http://amlinux.ru/source/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain kodi-platform"
 PKG_PRIORITY="optional"
 PKG_SECTION=""

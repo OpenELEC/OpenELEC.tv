@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="kodi-theme-Confluence"
-PKG_VERSION="15.0-rc1-01b7ae0"
+PKG_VERSION="15.0-rc1-9ff25f8"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_URL="http://amlinux.ru/source/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain kodi"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
