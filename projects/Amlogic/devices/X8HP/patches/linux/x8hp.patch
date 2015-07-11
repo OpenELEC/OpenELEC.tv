@@ -4,15 +4,6 @@ new mode 100644
 index 7e7df57..754f311
 --- a/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd
 +++ b/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd
-@@ -157,7 +157,7 @@ void root_func(){
- 		compatible = "amlogic,deinterlace";
- 		dev_name = "deinterlace";
- 		status = "ok";
--		reserve-memory = <0x01800000>; //8x1920x1088x3/2=24M
-+		reserve-memory = <0x02100000>; //10x1920x1088x3/2=33M
- 	};
- 
- /// ***************************************************************************************
 @@ -188,6 +188,19 @@ void root_func(){
  //		reserve-iomap = "true";
  		linux,contiguous-region = <&mem_4k2k_decoder>;
@@ -164,24 +155,12 @@ index 305d7b5..fcb5e03
  
  /// ***************************************************************************************
  ///	-	ION
-diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd
-old mode 100755
-new mode 100644
 diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
 old mode 100755
 new mode 100644
 index 3c6f729..49349d5
 --- a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
 +++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
-@@ -280,7 +280,7 @@ void root_func(){
-         status = "ok";
-         share-memory-name = "ppmgr0";
-         share-memory-offset = <0>;
--        share-memory-size = <0x01000000>; //16M
-+        share-memory-size = <0x02000000>; //32M
-     };
- /// ***************************************************************************************
- ///	-	DISP&MM-Vout
 @@ -314,7 +314,7 @@ void root_func(){
  //$$ L2 PROP_STR = "status"
      rtc{
