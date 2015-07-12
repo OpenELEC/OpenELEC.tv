@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch-assets"
-PKG_VERSION="2ed4a03"
+PKG_VERSION="e2d7855"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -39,6 +39,6 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/usr/share/retroarch
-  cp -r * $INSTALL/usr/share/retroarch
+  mkdir -p $INSTALL/usr/share/retroarch-assets
+  cp -r * $INSTALL/usr/share/retroarch-assets
 }
