@@ -46,6 +46,15 @@ index da54323..81ba0e7 100644
  
  ifdef DEBUG
  INCLUDES += -DDEBUG
+ @@ -54,7 +54,7 @@
+ INCLUDES += -DDEBUG
+ endif
+ 
+-DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DXVDR_VERSION='"$(VERSION)"'
++DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DXVDR_VERSION='"$(VERSION)"' -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+ 
+ ### The object files (add further files here):
+ 
 @@ -136,6 +128,7 @@ install-i18n: $(I18Nmsgs)
  
  $(SOFILE): $(OBJS)
