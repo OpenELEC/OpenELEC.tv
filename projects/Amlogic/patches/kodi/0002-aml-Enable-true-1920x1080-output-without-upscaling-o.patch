@@ -1,16 +1,16 @@
-From 0fdd487aa04abdbf65402b720e363e4890d98ad1 Mon Sep 17 00:00:00 2001
+From 01f1dea15cba372ec68e20325de2fc1461e2b0dd Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
-Date: Tue, 29 Jul 2014 10:31:07 +0300
-Subject: [PATCH 06/17] Fix the issue when the video display is disabled after
- a resolution change
+Date: Wed, 16 Apr 2014 23:08:58 +0300
+Subject: [PATCH 02/15] [aml] Enable true 1920x1080 output without upscaling on
+ Amlogic-based devices.
 
 ---
- xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp | 55 +----------------------------
- xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |  1 -
- 2 files changed, 1 insertion(+), 55 deletions(-)
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp | 74 ++++++++++++-----------------
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |  4 +-
+ 2 files changed, 33 insertions(+), 45 deletions(-)
 
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
-index c9a3bd8..6b38889 100644
+index f2073cb..b4f24a5 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 @@ -66,7 +66,7 @@ void CEGLNativeTypeAmlogic::Initialize()
@@ -22,7 +22,47 @@ index c9a3bd8..6b38889 100644
  }
  void CEGLNativeTypeAmlogic::Destroy()
  {
-@@ -278,64 +278,11 @@ void CEGLNativeTypeAmlogic::SetupVideoScaling(const char *mode)
+@@ -88,9 +88,12 @@ bool CEGLNativeTypeAmlogic::CreateNativeWindow()
+   if (!nativeWindow)
+     return false;
+ 
+-  nativeWindow->width = 1280;
+-  nativeWindow->height = 720;
++  nativeWindow->width = 1920;
++  nativeWindow->height = 1080;
+   m_nativeWindow = nativeWindow;
++
++  SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
++
+   return true;
+ #else
+   return false;
+@@ -135,6 +138,12 @@ bool CEGLNativeTypeAmlogic::GetNativeResolution(RESOLUTION_INFO *res) const
+ 
+ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+ {
++  if (m_nativeWindow)
++  {
++    ((fbdev_window *)m_nativeWindow)->width = res.iScreenWidth;
++    ((fbdev_window *)m_nativeWindow)->height = res.iScreenHeight;
++  }
++
+   switch((int)(0.5 + res.fRefreshRate))
+   {
+     default:
+@@ -220,7 +229,10 @@ bool CEGLNativeTypeAmlogic::SetDisplayResolution(const char *resolution)
+   std::string mode = resolution;
+   // switch display resolution
+   SysfsUtils::SetString("/sys/class/display/mode", mode.c_str());
+-  SetupVideoScaling(mode.c_str());
++
++  RESOLUTION_INFO res;
++  aml_mode_to_resolution(mode.c_str(), &res);
++  SetFramebufferResolution(res);
+ 
+   return true;
+ }
+@@ -246,50 +258,20 @@ void CEGLNativeTypeAmlogic::SetupVideoScaling(const char *mode)
    SysfsUtils::SetInt("/sys/class/graphics/fb0/blank", 0);
  }
  
@@ -63,35 +103,45 @@ index c9a3bd8..6b38889 100644
    SysfsUtils::SetInt("/sys/class/graphics/fb0/free_scale", 0);
    SysfsUtils::SetInt("/sys/class/graphics/fb1/free_scale", 0);
 -  SysfsUtils::SetString("/sys/class/graphics/fb0/free_scale_axis", "0 0 1279 719");
--
++}
+ 
 -  SysfsUtils::SetInt("/sys/class/ppmgr/ppscaler", 0);
 -  SysfsUtils::SetInt("/sys/class/video/disable_video", 0);
 -  // now default video display to off
 -  SysfsUtils::SetInt("/sys/class/video/disable_video", 1);
--
++void CEGLNativeTypeAmlogic::SetFramebufferResolution(const RESOLUTION_INFO &res) const
++{
++  SetFramebufferResolution(res.iScreenWidth, res.iScreenHeight);
++}
+ 
 -  // revert display axis
--  int fd0;
--  std::string framebuffer = "/dev/" + m_framebuffer_name;
--
--  if ((fd0 = open(framebuffer.c_str(), O_RDWR)) >= 0)
--  {
--    struct fb_var_screeninfo vinfo;
--    if (ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0)
--    {
++void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) const
++{
+   int fd0;
+   std::string framebuffer = "/dev/" + m_framebuffer_name;
+ 
+@@ -298,9 +280,13 @@ void CEGLNativeTypeAmlogic::DisableFreeScale()
+     struct fb_var_screeninfo vinfo;
+     if (ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0)
+     {
 -      char daxis_str[256] = {0};
 -      sprintf(daxis_str, "%d %d %d %d 0 0 0 0", 0, 0, vinfo.xres-1, vinfo.yres-1);
 -      SysfsUtils::SetString("/sys/class/display/axis", daxis_str);
--    }
--    close(fd0);
--  }
- }
- 
- void CEGLNativeTypeAmlogic::SetFramebufferResolution(const RESOLUTION_INFO &res) const
++      vinfo.xres = width;
++      vinfo.yres = height;
++      vinfo.xres_virtual = 1920;
++      vinfo.yres_virtual = 2160;
++      vinfo.bits_per_pixel = 32;
++      vinfo.activate = FB_ACTIVATE_ALL;
++      ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
+     }
+     close(fd0);
+   }
 diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-index 8042f36..2e52b7e 100644
+index cc34ff7..6867c38 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-@@ -50,7 +50,6 @@ public:
+@@ -50,9 +50,11 @@ public:
  protected:
    bool SetDisplayResolution(const char *resolution);
    void SetupVideoScaling(const char *mode);
@@ -99,6 +149,11 @@ index 8042f36..2e52b7e 100644
    void DisableFreeScale();
  
  private:
++  void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
++  void SetFramebufferResolution(int width, int height) const;
++
+   std::string m_framebuffer_name;
+ };
 -- 
-2.1.4
+1.9.1
 

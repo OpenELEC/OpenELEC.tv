@@ -1,19 +1,19 @@
-From 6aa16d7fe7e6dbe95bdca8069a16d2aa415adf37 Mon Sep 17 00:00:00 2001
+From e8dada5a8abc4ebe1e972b3100c0728abc07cded Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Tue, 3 Feb 2015 17:58:19 +0100
-Subject: [PATCH 16/17] Disable deinterlacing for HD content while video is
- being played in a window to prevent screen blinking in 1080p50/60hz display
- modes
+Subject: [PATCH 09/15] [aml] Disable deinterlacing for HD content while video
+ is being played in a window to prevent screen blinking in 1080p50/60hz
+ display modes
 
 ---
  xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-index 2fad224..74804de 100644
+index 98f9816..1f14340 100644
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
 +++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
-@@ -2261,6 +2261,11 @@ void CAMLCodec::SetVideoRect(const CRect &SrcRect, const CRect &DestRect)
+@@ -2258,6 +2258,11 @@ void CAMLCodec::SetVideoRect(const CRect &SrcRect, const CRect &DestRect)
    CLog::Log(LOGDEBUG, "CAMLCodec::SetVideoRect:m_stereo_view(%d)", m_stereo_view);
  #endif
  
@@ -26,5 +26,5 @@ index 2fad224..74804de 100644
    // fix them.
    dst_rect.x2--;
 -- 
-2.1.4
+1.9.1
 

@@ -1,0 +1,25 @@
+From 4f34b5afa8d097365d79d01633b99690d17f89e8 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Tue, 14 Jul 2015 15:57:24 +0300
+Subject: [PATCH 12/15] Enable remoteaskeyboard setting by default
+
+---
+ system/settings/settings.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index 8f69bcb..e238eb9 100644
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -2872,7 +2872,7 @@
+       <group id="2">
+         <setting id="powermanagement.wakeonaccess" type="boolean" label="13026" help="36350">
+           <level>1</level>
+-          <default>false</default>
++          <default>true</default>
+           <control type="toggle" />
+         </setting>
+       </group>
+-- 
+1.9.1
+

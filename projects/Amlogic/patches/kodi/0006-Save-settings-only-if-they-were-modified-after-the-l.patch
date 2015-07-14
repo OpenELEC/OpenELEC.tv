@@ -1,7 +1,7 @@
-From 55a51ac4c992deaa1122ec8fccd21f8a336889e0 Mon Sep 17 00:00:00 2001
+From 0bf938d6520299b73e16c005893c93e43548dd4a Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Sun, 19 Oct 2014 16:20:33 +0300
-Subject: [PATCH 13/17] Save settings only if they were modified after the last
+Subject: [PATCH 06/15] Save settings only if they were modified after the last
  save
 
 This prevents from multiple saving the same settings and helps to resolve
@@ -50,5 +50,5 @@ index 2e690e3..bd0200d 100644
  }
  
 -- 
-2.1.4
+1.9.1
 
