@@ -33,10 +33,6 @@ PKG_LONGDESC="LCDproc is a piece of software that displays real-time system info
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-if [ "$IRSERVER_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET irserver"
-fi
-
 PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars"
 
 pre_make_target() {
