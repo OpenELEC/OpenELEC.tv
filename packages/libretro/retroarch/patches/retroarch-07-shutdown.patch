@@ -1,0 +1,96 @@
+diff -Naur retroarch.git/command_event.c retroarch.patch/command_event.c
+--- retroarch.git/command_event.c	2015-07-17 21:17:22.401430602 +0200
++++ retroarch.patch/command_event.c	2015-07-25 02:00:45.116537114 +0200
+@@ -1029,7 +1029,7 @@
+    driver_t  *driver    = driver_get_ptr();
+    global_t  *global    = global_get_ptr();
+    settings_t *settings = config_get_ptr();
+-   rarch_system_info_t *system = rarch_system_info_get_ptr();
++   rarch_system_info_t *info = rarch_system_info_get_ptr();
+ 
+    (void)i;
+ 
+@@ -1404,6 +1404,11 @@
+       case EVENT_CMD_QUIT_RETROARCH:
+          rarch_main_set_state(RARCH_ACTION_STATE_FORCE_QUIT);
+          break;
++      case EVENT_CMD_SHUTDOWN:
++         rarch_main_msg_queue_push("Shutting down...", 1, 180, true);
++         rarch_main_set_state(RARCH_ACTION_STATE_FORCE_QUIT);
++         system("shutdown -P now");
++         break;
+       case EVENT_CMD_RESUME:
+          rarch_main_set_state(RARCH_ACTION_STATE_MENU_RUNNING_FINISHED);
+          break;
+@@ -1621,11 +1626,11 @@
+          global->log_file = NULL;
+          break;
+       case EVENT_CMD_DISK_EJECT_TOGGLE:
+-         if (system && system->disk_control.get_num_images)
++         if (info && info->disk_control.get_num_images)
+          {
+             const struct retro_disk_control_callback *control = 
+                (const struct retro_disk_control_callback*)
+-               &system->disk_control;
++               &info->disk_control;
+ 
+             if (control)
+                event_check_disk_eject(control);
+@@ -1636,11 +1641,11 @@
+                   1, 120, true);
+          break;
+       case EVENT_CMD_DISK_NEXT:
+-         if (system && system->disk_control.get_num_images)
++         if (info && info->disk_control.get_num_images)
+          {
+             const struct retro_disk_control_callback *control = 
+                (const struct retro_disk_control_callback*)
+-               &system->disk_control;
++               &info->disk_control;
+ 
+             if (!control)
+                return false;
+@@ -1656,11 +1661,11 @@
+                   1, 120, true);
+          break;
+       case EVENT_CMD_DISK_PREV:
+-         if (system && system->disk_control.get_num_images)
++         if (info && info->disk_control.get_num_images)
+          {
+             const struct retro_disk_control_callback *control = 
+                (const struct retro_disk_control_callback*)
+-               &system->disk_control;
++               &info->disk_control;
+ 
+             if (!control)
+                return false;
+diff -Naur retroarch.git/command_event.h retroarch.patch/command_event.h
+--- retroarch.git/command_event.h	2015-07-08 12:03:45.480974767 +0200
++++ retroarch.patch/command_event.h	2015-07-25 01:57:55.648527745 +0200
+@@ -115,6 +115,8 @@
+    EVENT_CMD_RESTART_RETROARCH,
+    /* Force-quit RetroArch. */
+    EVENT_CMD_QUIT_RETROARCH,
++   /* Shutdown the OS. */
++   EVENT_CMD_SHUTDOWN,
+    /* Resume RetroArch when in menu. */
+    EVENT_CMD_RESUME,
+    /* Toggles pause. */
+diff -Naur retroarch.git/menu/menu_setting.c retroarch.patch/menu/menu_setting.c
+--- retroarch.git/menu/menu_setting.c	2015-07-18 23:51:52.178107581 +0200
++++ retroarch.patch/menu/menu_setting.c	2015-07-25 02:08:03.142900900 +0200
+@@ -2628,6 +2628,14 @@
+    menu_settings_list_current_add_cmd(list, list_info, EVENT_CMD_QUIT_RETROARCH);
+ #endif
+ 
++   CONFIG_ACTION(
++         "shutdown",
++         "Shutdown",
++         group_info.name,
++         subgroup_info.name,
++         parent_group);
++   menu_settings_list_current_add_cmd(list, list_info, EVENT_CMD_SHUTDOWN);
++
+    END_SUB_GROUP(list, list_info, parent_group);
+    END_GROUP(list, list_info, parent_group);
+ 
