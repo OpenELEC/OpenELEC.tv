@@ -74,6 +74,3 @@ if [ -n "$scaling_max_freq" ]; then
   echo "$scaling_max_freq" > "$cpufreq/scaling_max_freq"
   echo "$scaling_max_freq" > "$cpufreq/scaling_dflt_freq"
 fi
-
-# Set output type to Multichannel PCM
-#echo 6 > /sys/class/audiodsp/digital_codec
