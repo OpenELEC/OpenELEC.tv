@@ -1,0 +1,65 @@
+From 354c62268898fee5c558844da228bd09455edce5 Mon Sep 17 00:00:00 2001
+From: alex <surkov.alex@gmail.com>
+Date: Thu, 16 Jul 2015 16:29:06 +0300
+Subject: [PATCH] Revert "[aml/meson6] Fix an issue when no signal on HDMI
+ port after you turn of and then turn on the TV during
+ playback of a video in 480p59hz, 720p59hz, 1080i59hz,
+ 1080p59hz or 1080p23hz display mode"
+
+This reverts commit 07bbd4f49b91965443fa596d15fc9d92ffdc91b9.
+---
+ drivers/amlogic/display/vout/enc_clk_config.c |   17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/drivers/amlogic/display/vout/enc_clk_config.c b/drivers/amlogic/display/vout/enc_clk_config.c
+index 8962c4d..0bb1a83 100755
+--- a/drivers/amlogic/display/vout/enc_clk_config.c
++++ b/drivers/amlogic/display/vout/enc_clk_config.c
+@@ -235,11 +235,9 @@ static void set_hpll_clk_out(unsigned clk)
+     printk("%s[%d] clk = %d\n", __func__, __LINE__, clk);
+     switch(clk){
+         case 1488:
+-        case 1490:
+             WRITE_CBUS_REG(HHI_VID_PLL_CNTL, 0x43e);
+             break;
+         case 1080:
+-        case 1081:
+             WRITE_CBUS_REG(HHI_VID_PLL_CNTL, 0x42d);
+             break;
+         case 1066:
+@@ -594,32 +592,17 @@ static enc_clk_val_t setting_enc_clk_val[] = {
+     {VMODE_480I,       1080, 4, 1, VIU_ENCI,  5, 4, 2,-1,  2, -1, -1,  2,  -1},
+     {VMODE_480CVBS,    1080, 4, 1, VIU_ENCI,  5, 4, 2,-1,  2, -1, -1,  2,  -1},
+     {VMODE_480P,       1080, 4, 1, VIU_ENCP,  5, 4, 2, 1, -1, -1, -1,  1,  -1},
+-#ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
+-    {VMODE_480P_59HZ,  1081, 4, 1, VIU_ENCP,  5, 4, 2, 1, -1, -1, -1,  1,  -1},
+-#endif
+     {VMODE_576I,       1080, 4, 1, VIU_ENCI,  5, 4, 2,-1,  2, -1, -1,  2,  -1},
+     {VMODE_576CVBS,    1080, 4, 1, VIU_ENCI,  5, 4, 2,-1,  2, -1, -1,  2,  -1},
+     {VMODE_576P,       1080, 4, 1, VIU_ENCP,  5, 4, 2, 1, -1, -1, -1,  1,  -1},
+     {VMODE_720P,       1488, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+-#ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
+-    {VMODE_720P_59HZ,  1490, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+-#endif
+     {VMODE_1080I,      1488, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+-#ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
+-    {VMODE_1080I_59HZ, 1490, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+-#endif
+     {VMODE_1080P,      1488, 1, 1, VIU_ENCP, 10, 1, 1, 1, -1, -1, -1,  1,  -1},
+     {VMODE_1080P,      1488, 1, 1, VIU_ENCP, 10, 1, 1, 1, -1, -1, -1,  1,  -1},
+-#ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
+-    {VMODE_1080P_59HZ, 1490, 1, 1, VIU_ENCP, 10, 1, 1, 1, -1, -1, -1,  1,  -1},
+-#endif
+     {VMODE_720P_50HZ,  1488, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+     {VMODE_1080I_50HZ, 1488, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  -1},
+     {VMODE_1080P_50HZ, 1488, 1, 1, VIU_ENCP, 10, 1, 1, 1, -1, -1, -1,  1,  -1},
+     {VMODE_1080P_24HZ, 1488, 2, 1, VIU_ENCP, 10, 2, 1, 1, -1, -1, -1,  1,  -1},
+-#ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
+-    {VMODE_1080P_23HZ, 1490, 2, 1, VIU_ENCP, 10, 2, 1, 1, -1, -1, -1,  1,  -1},
+-#endif
+     {VMODE_VGA,  1066, 3, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  1},
+     {VMODE_SVGA, 1058, 2, 1, VIU_ENCP, 10, 1, 2, 1, -1, -1, -1,  1,  1},
+     {VMODE_XGA, 1085, 1, 1, VIU_ENCP, 5, 1, 1, 1, -1, -1, -1,  1,  1},
+-- 
+1.7.10.4
+
