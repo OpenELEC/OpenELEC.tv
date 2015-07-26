@@ -16,8 +16,8 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="pvr.mythtv"
-PKG_VERSION="30d4e6f"
+PKG_NAME="screensavers.rsxs"
+PKG_VERSION="195e0ec"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -26,12 +26,16 @@ PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain kodi-platform"
 PKG_PRIORITY="optional"
 PKG_SECTION=""
-PKG_SHORTDESC="pvr.mythtv"
-PKG_LONGDESC="pvr.mythtv"
+PKG_SHORTDESC="screensavers.rsxs"
+PKG_LONGDESC="screensavers.rsxs"
 PKG_AUTORECONF="no"
 
 PKG_IS_ADDON="yes"
-PKG_ADDON_TYPE="xbmc.pvrclient"
+PKG_ADDON_TYPE="xbmc.ui.screensaver"
+
+if [ "$OPENGL" = "no" ] ; then
+  exit 0
+fi
 
 configure_target() {
   cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
@@ -42,7 +46,17 @@ configure_target() {
 }
 
 addon() {
-  mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME/* $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -PL $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$PKG_NAME/*.so $ADDON_BUILD/$PKG_ADDON_ID/
+  for _ADDON in $PKG_BUILD/.install_pkg/usr/share/kodi/addons/* ; do
+    _ADDON_ID=$(basename $_ADDON)
+
+    mkdir -p $ADDON_BUILD/$_ADDON_ID/
+    cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$_ADDON_ID/* $ADDON_BUILD/$_ADDON_ID/
+    cp -PL $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$_ADDON_ID/*.so $ADDON_BUILD/$_ADDON_ID/
+
+    MULTI_ADDONS="$MULTI_ADDONS $_ADDON_ID"
+  done
+
+  # export MULTI_ADDONS so create_addon knows multiple addons
+  # were installed in $ADDON_BUILD/
+  export MULTI_ADDONS="$MULTI_ADDONS"
 }

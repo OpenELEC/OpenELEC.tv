@@ -16,25 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libinput"
-PKG_VERSION="0.19.0"
+PKG_NAME="libprojectM"
+PKG_VERSION="2.0.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.freedesktop.org/wiki/Software/libinput/"
-PKG_URL="http://www.freedesktop.org/software/libinput/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain libevdev mtdev"
+PKG_SITE="http://projectm.sourceforge.net/"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain ftgl"
 PKG_PRIORITY="optional"
-PKG_SECTION="wayland"
-PKG_SHORTDESC="libinput is a library to handle input devices in Wayland compositors and to provide a generic X.Org input driver."
-PKG_LONGDESC="libinput is a library to handle input devices in Wayland compositors and to provide a generic X.Org input driver."
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="libprojectM:"
+PKG_LONGDESC="libprojectM:"
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_TARGET="--with-sysroot=$SYSROOT_PREFIX \
-                           --enable-shared \
-                           --disable-static \
-                           --disable-documentation \
-                           --disable-event-gui \
-                           --disable-tests"
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        -DBUILD_PROJECTM_STATIC=1 \
+        ..
+}
