@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="gpsp"
-PKG_VERSION="cf973d0"
+PKG_VERSION="4036107"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
