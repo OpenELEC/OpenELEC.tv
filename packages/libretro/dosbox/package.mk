@@ -34,6 +34,10 @@ PKG_LONGDESC="An open source DOS emulator for BeOS, Linux, Mac OS X, OS/2, and W
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_configure_target() {
+  strip_lto
+}
+
 make_target() {
   make -f Makefile.libretro
 }
