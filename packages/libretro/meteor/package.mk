@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="meteor"
-PKG_VERSION="f76c721"
+PKG_VERSION="20cda1a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
