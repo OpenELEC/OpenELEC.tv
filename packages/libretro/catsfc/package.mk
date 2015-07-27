@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="catsfc"
-PKG_VERSION="d3aacd7"
+PKG_VERSION="f85531b"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
