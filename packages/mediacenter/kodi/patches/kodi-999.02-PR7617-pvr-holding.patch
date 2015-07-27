@@ -1,0 +1,39 @@
+From ec41388ebee3b100445ac34fdafab25242c09559 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Thu, 23 Jul 2015 13:04:58 +0200
+Subject: [PATCH] [pvr] fix holding lock while querying backend
+
+---
+ xbmc/pvr/addons/PVRClients.cpp | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/pvr/addons/PVRClients.cpp b/xbmc/pvr/addons/PVRClients.cpp
+index d09e195..32e0526 100644
+--- a/xbmc/pvr/addons/PVRClients.cpp
++++ b/xbmc/pvr/addons/PVRClients.cpp
+@@ -261,12 +261,21 @@ bool CPVRClients::GetClientName(int iClientId, std::string &strName) const
+ std::vector<SBackend> CPVRClients::GetBackendProperties() const
+ {
+   std::vector<SBackend> backendProperties;
+-  CSingleLock lock(m_critSection);
++  std::vector<PVR_CLIENT> clients;
++
++  {
++    CSingleLock lock(m_critSection);
++
++    for (PVR_CLIENTMAP_CITR itr = m_clientMap.begin(); itr != m_clientMap.end(); itr++)
++    {
++      PVR_CLIENT client = itr->second;
++      if (client)
++        clients.push_back(client);
++    }
++  }
+ 
+-  for (const auto &entry : m_clientMap)
++  for (const auto &client : clients)
+   {
+-    const auto &client = entry.second;
+-    
+     if (!client->ReadyToUse())
+       continue;
+ 

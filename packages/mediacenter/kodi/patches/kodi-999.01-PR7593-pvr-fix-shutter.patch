@@ -1,0 +1,30 @@
+From f1d16a914a4ca6b99f916606fbba811adc083849 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Wed, 22 Jul 2015 16:41:34 +0200
+Subject: [PATCH] [pvr] fix stuttering indruduced by
+ 9c3adb5a9f390ad73c52469ed79de297dad68d80
+
+---
+ xbmc/pvr/PVRGUIInfo.cpp | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/pvr/PVRGUIInfo.cpp b/xbmc/pvr/PVRGUIInfo.cpp
+index 627fa77..d64b598 100644
+--- a/xbmc/pvr/PVRGUIInfo.cpp
++++ b/xbmc/pvr/PVRGUIInfo.cpp
+@@ -681,7 +681,14 @@ void CPVRGUIInfo::UpdateBackendCache(void)
+ 
+   // Update the backend information for all backends once per iteration
+   if (m_iCurrentActiveClient == 0)
+-    m_backendProperties = g_PVRClients->GetBackendProperties();
++  {
++    std::vector<SBackend> backendProperties;
++    {
++      CSingleExit exit(m_critSection);
++      backendProperties = g_PVRClients->GetBackendProperties();
++    }
++    m_backendProperties = backendProperties;
++  }
+ 
+   // Get the properties for the currently active backend
+   const auto &backend = GetCurrentActiveBackend();
