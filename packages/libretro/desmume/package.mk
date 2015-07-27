@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="desmume"
-PKG_VERSION="bc06a46"
+PKG_VERSION="0849c57"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
