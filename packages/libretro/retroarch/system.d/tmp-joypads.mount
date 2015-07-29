@@ -1,0 +1,13 @@
+[Unit]
+Description=Joypad configs directory
+Before=retroarch.target
+After=storage.mount
+After=systemd-tmpfiles-setup.service
+
+[Mount]
+What=unionfs#/storage/joypads=RW:/etc/retroarch-joypad-autoconfig=RO
+Where=/tmp/joypads
+Type=fuse
+
+[Install]
+WantedBy=retroarch.target
