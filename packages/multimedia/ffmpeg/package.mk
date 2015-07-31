@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.6.4"
+PKG_VERSION="2.7.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -150,7 +150,7 @@ configure_target() {
               --disable-w32threads \
               --disable-x11grab \
               --enable-network \
-              --disable-gnutls --enable-libressl \
+              --disable-gnutls --enable-openssl \
               --disable-gray \
               --enable-swscale-alpha \
               --disable-small \
