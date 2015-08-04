@@ -1,14 +1,13 @@
 # Kernel extra targets to build
-  KERNEL_UBOOT_EXTRA_TARGET="meson8_k200b_1G_emmc_sdhc.dtd meson8_k200b_1G_emmc_sdhc.dtb meson8_k200b_1G_emmc_sdio.dtd meson8_k200b_1G_emmc_sdio.dtb meson8_k200b_2G_emmc_sdhc.dtd meson8_k200b_2G_emmc_sdhc.dtb meson8_k200b_2G_emmc_sdio.dtd meson8_k200b_2G_emmc_sdio.dtb meson8m2_n200_1G.dtd meson8m2_n200_1G.dtb meson8m2_n200_2G.dtd meson8m2_n200_2G.dtb"
+  KERNEL_UBOOT_EXTRA_TARGET="meson8m2_n200_2G.dtd meson8m2_n200_2G.dtb"
 
 # Build Android kernel image using mkbootimg
   BUILD_ANDROID_BOOTIMG="yes"
 
 # Path to a file that will be passed as the --second parameter to Android mkbootimg
-  ANDROID_BOOTIMG_SECOND="out/dt.img"
-#  ANDROID_BOOTIMG_SECOND="/var/www/amlinux/data/xbmc/OpenELEC.tv/projects/Amlogic/devices/M8S/m8.img"
+  ANDROID_BOOTIMG_SECOND="arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtb"
 
 # OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
   OPENGLES="opengl-meson8"
 
-  MULTI_DTBS="yes"
+#  MULTI_DTBS="yes"
