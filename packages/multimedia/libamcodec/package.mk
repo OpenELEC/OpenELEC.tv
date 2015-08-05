@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2014 Alex Deryskyba (alex@codesnake.com)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 ################################################################################
 
 PKG_NAME="libamcodec"
-PKG_VERSION="269b07c"
+PKG_VERSION="45a1086"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="other"
-PKG_SITE="http://www.amlogic.com"
-PKG_URL="http://amlinux.ru/source/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib ffmpeg"
+PKG_SITE="http://openlinux.amlogic.com"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="libamcodec: Amlogic media player library for M8"
-PKG_LONGDESC="libamplayer: Amlogic media player library for M8"
+PKG_SHORTDESC="libamcodec: Interface library for Amlogic media codecs"
+PKG_LONGDESC="libamplayer: Interface library for Amlogic media codecs"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
@@ -35,7 +35,6 @@ PKG_AUTORECONF="no"
 make_target() {
   make -C amavutils CC="$CC" PREFIX="$SYSROOT_PREFIX/usr"
   mkdir -p $SYSROOT_PREFIX/usr/lib
-  mkdir -p $SYSROOT_PREFIX/usr/include/amcodec
   cp -PR amavutils/*.so $SYSROOT_PREFIX/usr/lib
 
   make -C amadec CC="$CC" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="$TARGET_PREFIX" install
@@ -45,7 +44,6 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib
   cp -PR amavutils/*.so $INSTALL/usr/lib
-  mkdir -p $INSTALL/usr/include/amcodec
 
   make -C amadec PREFIX="$INSTALL/usr" install
   make -C amcodec HEADERS_DIR="$INSTALL/usr/include/amcodec" PREFIX="$INSTALL/usr" install
