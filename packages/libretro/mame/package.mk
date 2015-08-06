@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mame"
-PKG_VERSION="d8f35df"
+PKG_VERSION="e986bb3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MAME"
@@ -36,10 +36,23 @@ PKG_AUTORECONF="no"
 
 make_target() {
   strip_gold
-  make REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2 CONFIG=libretro LIBRETRO_OS="unix" ARCH="" LIBRETRO_CPU="x86_64" DISTRO="debian-stable" OVERRIDE_CC="$CC" OVERRIDE_CXX="$CXX" OVERRIDE_LD="$CXX" CROSS_BUILD=""
+  strip_lto
+
+  LCPU=$ARCH
+  PTR64=0
+
+  if [ "$ARCH" == "i386" ]; then
+    LCPU=x86
+  fi
+
+  if [ "$ARCH" == "x86_64" ]; then
+    PTR64=1
+  fi
+
+  make REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2 CONFIG=libretro LIBRETRO_OS="unix" ARCH="" LIBRETRO_CPU="$LCPU" DISTRO="debian-stable" OVERRIDE_CC="$CC" OVERRIDE_CXX="$CXX" OVERRIDE_LD="$LD" CROSS_BUILD="" PTR64="$PTR64"
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp 0152/mame_libretro.so $INSTALL/usr/lib/libretro/
+  cp mame_libretro.so $INSTALL/usr/lib/libretro/
 }
