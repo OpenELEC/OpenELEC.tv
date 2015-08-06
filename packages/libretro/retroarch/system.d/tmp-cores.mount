@@ -1,0 +1,13 @@
+[Unit]
+Description=Cores directory
+Before=retroarch.target
+After=storage.mount
+After=systemd-tmpfiles-setup.service
+
+[Mount]
+What=unionfs#/storage/cores=RW:/usr/lib/libretro=RO
+Where=/tmp/cores
+Type=fuse
+
+[Install]
+WantedBy=retroarch.target
