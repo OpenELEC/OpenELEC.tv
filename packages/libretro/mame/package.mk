@@ -49,10 +49,10 @@ make_target() {
     PTR64=1
   fi
 
-  make REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2 CONFIG=libretro LIBRETRO_OS="unix" ARCH="" LIBRETRO_CPU="$LCPU" DISTRO="debian-stable" OVERRIDE_CC="$CC" OVERRIDE_CXX="$CXX" OVERRIDE_LD="$LD" CROSS_BUILD="" PTR64="$PTR64"
+  make REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2 CONFIG=libretro LIBRETRO_OS="unix" ARCH="" LIBRETRO_CPU="$LCPU" DISTRO="debian-stable" OVERRIDE_CC="$CC" OVERRIDE_CXX="$CXX" OVERRIDE_LD="$LD" CROSS_BUILD="" PTR64="$PTR64" TARGET="mame" SUBTARGET="arcade"
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp mame_libretro.so $INSTALL/usr/lib/libretro/
+  cp *_libretro.so $INSTALL/usr/lib/libretro/mame_libretro.so
 }
