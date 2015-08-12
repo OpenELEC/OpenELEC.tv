@@ -1,0 +1,133 @@
+#AP6234_NVRAM_V1.1_TEST_20140729.txt
+manfid=0x2d0
+prodid=0x0653
+vendid=0x14e4
+devid=0x4386
+boardtype=0x0653
+boardrev=0x1203
+boardnum=22
+macaddr=00:90:4c:c5:12:38
+sromrev=3
+#boardflags: 
+# bit 19 3tswitch:   2.4GHz FEM: SP3T switch share with BT
+# bit 16	 nopa:   no external pa
+#            keep original 0x200
+boardflags=0x0090201
+xtalfreq=37400
+nocrc=1
+ag0=255
+aa2g=1
+ccode=ALL
+pa0itssit=0x20
+#PA parameters for 2.4GHz
+pa0b0=6957 default
+#pa0b0=6727 
+pa0b1=-808
+pa0b2=-178
+tssifloor2g=69
+# rssi params for 2.4GHz
+rssismf2g=0xf
+rssismc2g=0x8
+rssisav2g=0x1
+cckPwrOffset=3
+
+# rssi params for 5GHz
+rssismf5g=0xf
+rssismc5g=0x7
+#rssisav5g=0x1
+rssisav5g=0x3
+
+#PA parameters for lower a-band
+#pa1lob0=5659 default
+pa1lob0=5859
+#pa1lob0=5659
+pa1lob1=-693
+pa1lob2=-178
+tssifloor5gl=77
+
+#PA parameters for midband
+pa1b0=5372 
+#pa1b0=5172
+pa1b1=-671
+pa1b2=-212
+tssifloor5gm=77
+
+#PA paramasdeters for high band
+#pa1hib0=5320 default
+pa1hib0=5620
+#pa1hib1=-963
+pa1hib1=-663
+pa1hib2=-179
+tssifloor5gh=74
+
+rxpo5g=0
+maxp2ga0=76
+#  19.5dBm max; 18dBm target
+#Per rate power back-offs for g band, in .5 dB steps. Set it once you have the right numbers.
+cck2gpo=0x2222 
+ofdm2gpo=0x333333333
+# R54 16dBm; R48 17dBm; others 18dBm
+mcs2gpo0=0x5555
+# M0~ M4 17dBm
+mcs2gpo1=0x5555
+# M5M6 15dBm; M7 14.5dBm
+#max power for 5G
+maxp5ga0=68
+# 16dBm target; 17.5dBm Max 
+maxp5gla0=68
+maxp5gha0=68
+#Per rate power back-offs for a band, in .5 dB steps. Set it once you have the right numbers.
+ofdm5gpo=0x66666666
+# R54 13.5dBm
+ofdm5glpo=0x66666666
+ofdm5ghpo=0x66666666
+mcs5gpo0=0x8888
+# M0~M4 16dBm (1dB higher than ofdm)
+mcs5gpo1=0x8888
+# M5M6 13.5dBm; M7 12dBm
+mcs5glpo0=0x7777
+mcs5glpo1=0x7777
+mcs5ghpo0=0x7777
+mcs5ghpo1=0x7777
+# Parameters for DAC2x mode and ALPF bypass
+# RF SW Truth Table: ctrl0 for BT_TX; ctrl1 or 5G Tx; ctrl2 for 5G Rx; Ctrl3 for 2G Tx; Ctrl4 for 2G Rx
+swctrlmap_2g=0x00080008,0x00100010,0x00080008,0x011010,0x11f
+swctrlmap_5g=0x00040004,0x00020002,0x00040004,0x011010,0x2fe
+gain=32
+triso2g=8
+triso5g=8
+#tx parameters
+loflag=0
+iqlocalidx5g=40
+dlocalidx5g=70
+iqcalidx5g=50
+lpbckmode5g=1 
+txiqlopapu5g=0
+txiqlopapu2g=0
+dlorange_lowlimit=5
+txalpfbyp=1
+txalpfpu=1
+dacrate2xen=1
+papden2g=1
+papden5g=1
+#rx parameters
+gain_settle_dly_2g=4
+gain_settle_dly_5g=4
+noise_cal_po_2g=-1
+noise_cal_po_40_2g=-1
+noise_cal_high_gain_2g=73
+noise_cal_nf_substract_val_2g=346
+noise_cal_po_5g=-1
+noise_cal_po_40_5g=-1
+noise_cal_high_gain_5g=73
+noise_cal_nf_substract_val_5g=346
+cckpapden=0
+# Enable OOB interrupt: level trigger
+muxenab=0x10
+
+#BTC params
+btc_flags=71
+btc_params8=15000
+btc_params22=8000
+btc_params83=9000
+btc_params84=4500
