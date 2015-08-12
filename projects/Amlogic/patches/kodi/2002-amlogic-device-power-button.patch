@@ -1,0 +1,12 @@
+diff -rupd kodi-15.1-rc1-2ecd830.orig/system/keymaps/keyboard.xml kodi-15.1-rc1-2ecd830/system/keymaps/keyboard.xml
+--- kodi-15.1-rc1-2ecd830.orig/system/keymaps/keyboard.xml	2015-07-27 19:42:00.000000000 +0200
++++ kodi-15.1-rc1-2ecd830/system/keymaps/keyboard.xml	2015-08-13 01:41:01.877628364 +0200
+@@ -97,6 +97,7 @@
+       <home>FirstPage</home>
+       <end>LastPage</end>
+       <power>ActivateWindow(shutdownmenu)</power>
++      <key id='116'>ActivateWindow(shutdownmenu)</key>
+       <sleep>ActivateWindow(shutdownmenu)</sleep>
+       <!-- PVR windows -->
+       <e>ActivateWindow(TVGuide)</e>
+Only in kodi-15.1-rc1-2ecd830/system/keymaps: keyboard.xml~
