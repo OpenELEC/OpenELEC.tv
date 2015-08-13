@@ -1,0 +1,13 @@
+[Unit]
+Description=Database directory
+Before=retroarch.target
+After=storage.mount
+After=systemd-tmpfiles-setup.service
+
+[Mount]
+What=unionfs#/storage/database=RW:/usr/share/libretro-database=RO
+Where=/tmp/database
+Type=fuse
+
+[Install]
+WantedBy=retroarch.target

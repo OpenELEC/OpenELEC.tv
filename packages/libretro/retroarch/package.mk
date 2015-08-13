@@ -99,7 +99,7 @@ makeinstall_target() {
   sed -i -e "s/# libretro_path = \"\/path\/to\/libretro.so\"/libretro_path = \"\/tmp\/cores\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# core_assets_directory =/core_assets_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# content_database_path =/content_database_path =\/usr\/share\/libretro-database\/rdb/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# content_database_path =/content_database_path =\/tmp\/database\/rdb/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# playlist_directory =/playlist_directory =\/storage\/playlists/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savefile_directory =/savefile_directory =\/storage\/savefiles/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# savestate_directory =/savestate_directory =\/storage\/savestates/" $INSTALL/etc/retroarch.cfg
@@ -108,7 +108,7 @@ makeinstall_target() {
   sed -i -e "s/# video_shader_dir =/video_shader_dir =\/usr\/share\/common-shaders/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_show_start_screen = true/rgui_show_start_screen = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# assets_directory =/assets_directory =\/usr\/share\/retroarch-assets/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# cheat_database_path =/cheat_database_path =\/usr\/share\/libretro-database\/cht/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# cheat_database_path =/cheat_database_path =\/tmp\/database\/cht/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"xmb\"/" $INSTALL/etc/retroarch.cfg
   
   # Video
@@ -147,4 +147,5 @@ post_install() {
   enable_service retroarch.service
   enable_service tmp-cores.mount
   enable_service tmp-joypads.mount
+  enable_service tmp-database.mount
 }
