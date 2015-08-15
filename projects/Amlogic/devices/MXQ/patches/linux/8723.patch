@@ -1,0 +1,26 @@
+diff --git a/drivers/amlogic/wifi/realtek/rtl8723BS/include/autoconf.h b/drivers/amlogic/wifi/realtek/rtl8723BS/include/autoconf.h
+index d05ed49..156bbfe 100755
+--- a/drivers/amlogic/wifi/realtek/rtl8723BS/include/autoconf.h
++++ b/drivers/amlogic/wifi/realtek/rtl8723BS/include/autoconf.h
+@@ -168,7 +168,7 @@
+ #endif
+ 
+ 
+-//#define CONFIG_CONCURRENT_MODE
++#undef CONFIG_CONCURRENT_MODE
+ #ifdef CONFIG_CONCURRENT_MODE
+ 	#define CONFIG_TSF_RESET_OFFLOAD 1			// For 2 PORT TSF SYNC.
+ 	//#define CONFIG_HWPORT_SWAP				//Port0->Sec , Port1 -> Pri
+diff --git a/drivers/amlogic/wifi/realtek/rtl8723BU/include/autoconf.h b/drivers/amlogic/wifi/realtek/rtl8723BU/include/autoconf.h
+index 2efaa38..da3e5b6 100755
+--- a/drivers/amlogic/wifi/realtek/rtl8723BU/include/autoconf.h
++++ b/drivers/amlogic/wifi/realtek/rtl8723BU/include/autoconf.h
+@@ -104,7 +104,7 @@
+ #endif
+ 
+ 
+-#define CONFIG_CONCURRENT_MODE 1
++#undef CONFIG_CONCURRENT_MODE
+ #ifdef CONFIG_CONCURRENT_MODE
+ 	//#define CONFIG_HWPORT_SWAP				//Port0->Sec , Port1 -> Pri
+ 	#define CONFIG_RUNTIME_PORT_SWITCH
