@@ -5,7 +5,7 @@
  	-DSDTEST -DBDC -DDHD_BCMEVENTS -DPROP_TXSTATUS -DPROP_TXSTATUS_VSDB   \
  	-DWL_SUPPORT_BACKPORTED_KPATCHES -DDHDTCPACK_SUPPRESS                 \
 -	-Idrivers/amlogic/wifi/broadcom/bcmdhd_4354/ -Idrivers/amlogic/wifi/broadcom/bcmdhd_4354/include
-+	-Idrivers/amlogic/wifi/broadcom/bcmdhd_4354/ -Idrivers/amlogic/wifi/broadcom/broadcm_4354/include
++	-Idrivers/amlogic/wifi/broadcom/broadcm_4354/ -Idrivers/amlogic/wifi/broadcom/broadcm_4354/include
         
  
  DHDCFLAGS += \
