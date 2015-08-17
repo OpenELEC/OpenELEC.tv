@@ -1,0 +1,29 @@
+From 3aced488073565e7e02a5fc9a69c0a3c9341367a Mon Sep 17 00:00:00 2001
+From: Richard Braakman <richard.braakman@jollamobile.com>
+Date: Wed, 19 Mar 2014 16:16:46 +0200
+Subject: [PATCH] [arm] adler32_vec: don't read past end of buffer
+
+The checksum code would read past the end of its buffer, which
+made valgrind sad and which could cause a segmentation fault
+if the buffer happened to be allocated at the end of a malloc segment.
+---
+ arm/adler32.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arm/adler32.c b/arm/adler32.c
+index d23bfb0..e939d7f 100644
+--- a/arm/adler32.c
++++ b/arm/adler32.c
+@@ -190,9 +190,9 @@ local noinline uLong adler32_vec(adler, buf, len)
+             /* add k times vs1 for this trailer */
+             vs2 = vmlaq_u32(vs2, vs1, vdupq_n_u32(k));
+ 
+-            /* get input data */
+-            in16 = *(const uint8x16_t *)buf;
+-            /* masks out bad data */
++            /* get input data, don't read past the end of buf */
++            memcpy(&in16, buf, k);
++            /* mask out bad data */
+             in16 = neon_simple_alignq(v0, in16, k);
+ 
+             /* pairwise add bytes and long, pairwise add word long acc */
