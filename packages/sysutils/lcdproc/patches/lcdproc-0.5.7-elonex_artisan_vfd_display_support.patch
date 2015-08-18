@@ -1,0 +1,920 @@
+diff -Naur old/acinclude.m4 new/acinclude.m4
+--- old/acinclude.m4	2014-02-17 21:36:35.000000000 +0000
++++ new/acinclude.m4	2014-12-27 10:42:13.582626389 +0000
+@@ -9,7 +9,7 @@
+ 	[                  which is a comma-separated list of drivers.]
+ 	[                  Possible drivers are:]
+ 	[                    bayrad,CFontz,CFontzPacket,curses,CwLnx,]
+-	[                    dm140,ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,]
++	[                    dm140,ea65,EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,]
+ 	[                    icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,]
+ 	[                    joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,]
+ 	[                    ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,]
+@@ -20,9 +20,9 @@
+ 	[                  'all' compiles all drivers;]
+ 	[                  'all,!xxx,!yyy' de-selects previously selected drivers],
+ 	drivers="$enableval",
+-	drivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,glk,lb216,lcdm001,MtxOrb,pyramid,text])
++	drivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,futaba,glk,lb216,lcdm001,MtxOrb,pyramid,text])
+ 
+-allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,dm140,ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd]
++allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,dm140,ea65,EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd]
+ if test "$debug" = yes; then
+ 	allDrivers=["${allDrivers},debug"]
+ fi
+@@ -139,6 +139,10 @@
+ 			DRIVERS="$DRIVERS EyeboxOne${SO}"
+ 			actdrivers=["$actdrivers EyeboxOne"]
+ 			;;
++		futaba)
++			DRIVERS="$DRIVERS futaba${SO}"
++			actdrivers=["$actdrivers futaba"]
++			;;
+ 		g15)
+ 			AC_CHECK_HEADERS([g15daemon_client.h],[
+ 				AC_CHECK_LIB(g15daemon_client, new_g15_screen,[
+diff -Naur old/LCDd.conf new/LCDd.conf
+--- old/LCDd.conf	2014-02-17 21:36:35.000000000 +0000
++++ new/LCDd.conf	2014-12-27 10:06:44.350550910 +0000
+@@ -34,7 +34,7 @@
+ #            the driver modules and will thus not be able to
+ #            function properly.
+ # NOTE: Always place a slash as last character !
+-DriverPath=server/drivers/
++DriverPath=/usr/lib/lcdproc/
+ 
+ # Tells the server to load the given drivers. Multiple lines can be given.
+ # The name of the driver is case sensitive and determines the section
+@@ -45,12 +45,12 @@
+ #
+ # The following drivers are supported:
+ #   bayrad, CFontz, CFontzPacket, curses, CwLnx, ea65,
+-#   EyeboxOne, g15, glcd, glcdlib, glk, hd44780, icp_a106, imon, imonlcd,
++#   EyeboxOne, futaba, g15, glcd, glcdlib, glk, hd44780, icp_a106, imon, imonlcd,
+ #   IOWarrior, irman, joy, lb216, lcdm001, lcterm, lirc, lis, MD8800,
+ #   mdm166a, ms6931, mtc_s16209x, MtxOrb, mx5000, NoritakeVFD, picolcd,
+ #   pyramid, sdeclcd, sed1330, sed1520, serialPOS, serialVFD, shuttleVFD, sli,
+ #   stv5730, svga, t6963, text, tyan, ula200, vlsys_m428, xosd
+-Driver=curses
++Driver=futaba
+ 
+ # Tells the driver to bind to the given interface. [default: 127.0.0.1]
+ Bind=127.0.0.1
+@@ -67,7 +67,7 @@
+ 
+ # User to run as.  LCDd will drop its root privileges and run as this user
+ # instead. [default: nobody]
+-User=nobody
++#User=nobody
+ 
+ # The server will stay in the foreground if set to yes.
+ # [default: no, legal: yes, no]
+@@ -88,13 +88,13 @@
+ # same effect as if the ToggleRotateKey had been pressed. Rotation will start
+ # if the ToggleRotateKey is pressed. Note that this setting does not turn off
+ # priority sorting of screens. [default: on; legal: on, off]
+-#AutoRotate=off
++AutoRotate=off
+ 
+ # If yes, the the serverscreen will be rotated as a usual info screen. If no,
+ # it will be a background screen, only visible when no other screens are
+ # active. The special value 'blank' is similar to no, but only a blank screen
+ # is displayed. [default: on; legal: on, off, blank]
+-#ServerScreen=off
++ServerScreen=off
+ 
+ # Set master backlight setting. If set to 'open' a client may control the
+ # backlight for its own screens (only). [default: open; legal: off, open, on]
+@@ -105,7 +105,7 @@
+ #Heartbeat=open
+ 
+ # set title scrolling speed [default: 10; legal: 0-10]
+-#TitleSpeed=10
++TitleSpeed=5
+ 
+ # The "...Key=" lines define what the server does with keypresses that
+ # don't go to any client. The ToggleRotateKey stops rotation of screens, while
+@@ -347,6 +347,12 @@
+ keypad_test_mode=no
+ 
+ 
++## Futaba TOSD-5711BB VFD Driver ##
++[futaba]
++
++# Display size in characters (currently not used)
++Size=7x1
++
+ 
+ ## g15 driver for Logitech G15 Keyboard LCDs ##
+ [g15]
+diff -Naur old/server/drivers/futaba.c new/server/drivers/futaba.c
+--- old/server/drivers/futaba.c	1970-01-01 01:00:00.000000000 +0100
++++ new/server/drivers/futaba.c	2014-12-27 10:06:44.358550816 +0000
+@@ -0,0 +1,668 @@
++/** \file server/drivers/futaba.c
++ * LCDd \ driver for the Futaba TOSD-5711BB LED display,
++ * as found in Elonex Artisan/FIC Spectra media centre cases
++ */
++
++/* Copyright (C) 2014 Blackeagle  email: gm(dot)blackeagle(at)gmail(dot)com
++ * 
++ * CREDITS to Steve Williams for the original driver code and the
++ * inspiration to write this.
++ *
++ * V E R S I O N  - 1.1 
++ * 
++ * 
++ * C H A N G E L O G 
++ * =================
++ * 
++ * 24/03/14 - Attempt to add some custom icon support.
++ * 
++ * Definitely working - Volume (the Word), play, pause, stop, mute
++ * Music & photo Icons light but do not extinguish !!
++ * 
++ * 25/03/14 -  Finished adding custom icon support with the XBMC
++ * 				LCDproc addon and my custom futaba extension.
++ * 
++ * 26/03/14 -  Added support to XBMC client for FWD/REW icons. 
++ * 			   Volume bar algorithm tweaked to display 0 bars
++ * 			   when muted.
++ * 
++ * 27/03/14 -  As the display doesnt support ':', added a routine
++ * 			   to swap this to '-' for the clock display
++ * 
++ * 
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
++ * 
++ * 
++ * 
++ * ***************************  TO DO **********************************
++ * 
++ *  Implement the custom icons on the display and add volume display  *
++ *  
++ *  Now done !!
++ * 
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <stdio.h>
++#include <stdint.h>
++#include <unistd.h>
++#include <stdlib.h>
++#include <libusb-1.0/libusb.h>
++#include <string.h>
++#include <ctype.h>
++#include "lcd.h"
++#include "futaba.h" 
++#include "errno.h"
++#include "report.h"
++
++
++
++#define SET_REPORT 0x09
++
++#define VENDOR_ID 0x0547
++#define PRODUCT_ID 0x7000
++futabaDriver_t g_futabaDriver;
++
++//----------------------------------------------------------------------
++
++
++/** private data for the \* futaba TOSD-5711BB LED driver */
++typedef struct futaba_private_data {
++	int width;		/**< display width in characters */
++	int height;		/**< display height in characters */
++	char *framebuf;		/**< frame buffer */
++	char *old_framebuf;	/** < old framebuffer */
++	int is_busy;		/** < busy flag for futaba_flush  */
++	int old_icon_map;		/** < futaba icon map  */
++	libusb_device_handle	*my_handle; /** < usb device handle  */
++	libusb_context 			*ctx;    /** < usb context  */
++	
++} PrivateData;
++
++
++/* Vars for the server core */
++MODULE_EXPORT char *api_version = API_VERSION;
++MODULE_EXPORT int stay_in_foreground = 0;
++MODULE_EXPORT int supports_multiple = 0;
++MODULE_EXPORT char *symbol_prefix = "futaba_";
++
++
++/**
++ * Send the report to the display.
++ * \param my_report  Pointer to the report holding the string.
++ * \param my_handle	 Pointer to usb handle.
++ * \retval 			 0 on success, -1 on error.
++ */
++ 
++ int futabaSendReport(libusb_device_handle *my_handle, futabaReport_t *my_report)
++{
++	
++
++	int retVal = -1;
++	uint8_t *p_rep = (uint8_t *)my_report;
++
++	retVal  = libusb_control_transfer(
++					my_handle,
++					LIBUSB_DT_HID,				// Request Type
++					SET_REPORT,					// Request
++					0x0200,						// Report Type OUTPUT | ID 0
++					0,							// Endpoint
++					p_rep,						// Data to go
++					sizeof(futabaReport_t),		// Length
++					5000);
++
++	return(retVal != sizeof(futabaReport_t));
++}
++
++
++ 
++ /**
++ * Send the data to the display.
++ * \param drvthis  Pointer to driver structure.
++ * \param string   The string to send.
++ * \return         0 on success, -1 on error.
++ */
++ 
++ int futaba_send_string(Driver *drvthis)
++{
++	
++
++	
++	int len;
++	int n, i;
++	futabaReport_t my_report;
++	PrivateData *p = drvthis->private_data;
++	char string[p->width * p->height];
++
++	memset(&my_report,0,sizeof(futabaReport_t));
++	
++	p->is_busy = 1;
++	
++// get our string
++	
++	for (i = 0; i < p->height; i++) { 
++		
++		memcpy(string, p->framebuf + (i * p->width), p->width);
++		string[p->width] = '\0';
++
++// swap the : chars for -
++		len = strlen (string);
++		
++		for(n=0; n < len; n++)
++		{
++			if (string[n] == ':')
++				string[n] ='-';
++		}
++		
++
++		len = strlen (string);
++				
++		my_report.opcode = FUTABA_OPCODE_STRING;
++		my_report.param1 = 0x04;
++		my_report.type.str.startPos = 0x01;
++		my_report.type.str.len = len;
++		
++//      Convert to UPPER case as that's all the display uses	
++	
++		for(n=0; n < len; n++)
++		{
++		my_report.type.str.string[n] = toupper(string[n]);
++		}
++		
++		 				
++		if( len > 7)
++		{
++			while( len >= 7)
++			{
++				if( futabaSendReport(p->my_handle, &my_report) )
++				{	
++					fprintf(stderr,"Failed in futabaSendString()\n");
++					return -1;
++				usleep(500000);
++			
++				}
++			
++				my_report.type.str.startPos--;
++				len--;
++			}
++		}
++		else
++		{
++			my_report.type.str.len = 7;
++			futabaSendReport(p->my_handle,&my_report);
++		}
++		
++	}
++
++	p->is_busy = 0;
++	return 0;
++}
++/**
++ * Initalize the usb data and internal handles.
++ * \param drvthis  Pointer to driver structure.
++ * \param my_driver Pointer to futaba driver structure.
++ * \return         0 on success, -1 on error.
++ */
++
++int futabaInitDriver( futabaDriver_t *my_driver, Driver *drvthis)
++{
++
++	int retVal = -1;
++
++	if( my_driver->ctx == NULL )
++	{
++		if( libusb_init(&my_driver->ctx) < 0 )
++		{
++			report(RPT_DEBUG, "%s: USB init Failed", drvthis->name);
++			retVal--;
++		}
++	}
++
++//	Get a handle to our device
++	if( (my_driver->my_handle = libusb_open_device_with_vid_pid(
++				my_driver->ctx,
++				VENDOR_ID,
++				PRODUCT_ID)) == NULL )
++	{
++		report(RPT_DEBUG, "%s: LibUsb open failed", drvthis->name);
++		
++	}
++	else
++	{
++
++        retVal++;
++	}
++
++	if( libusb_kernel_driver_active(my_driver->my_handle,0) )
++	{
++		report(RPT_DEBUG, "%s: Kernel driver found. Detatching it...", drvthis->name);
++		
++
++		if( libusb_detach_kernel_driver(my_driver->my_handle,0) )
++		{
++			report(RPT_DEBUG, "%s: Can't detach kernel driver", drvthis->name);
++			retVal--;
++		}
++
++		
++	}
++
++	return retVal;
++}
++	/**
++ * Internal routine to set up usb interface and reset display.
++ * \param drvthis  Pointer to driver structure.
++ * \return         0 on success.
++ */
++ 
++int futaba_start_driver(Driver *drvthis)
++{
++
++	int n;
++	futabaDriver_t *my_driver = &g_futabaDriver;
++	PrivateData *p = drvthis->private_data;
++
++	if( futabaInitDriver(my_driver,drvthis) )
++	{
++		report(RPT_DEBUG, "%s: Failed to init driver", drvthis->name);
++		
++		futaba_shutdown(drvthis);
++	}
++
++		{
++	
++		report(RPT_DEBUG, "%s: RESET Device", drvthis->name);
++			if( (n = libusb_reset_device(my_driver->my_handle)) )
++			{
++				report(RPT_DEBUG, "%s: RESET Failed", drvthis->name);
++				libusb_close(my_driver->my_handle);
++				if( futabaInitDriver(my_driver, drvthis) )
++				{
++					report(RPT_DEBUG, "%s: Failed to re-init driver", drvthis->name);
++					futaba_shutdown(drvthis);
++				}
++			}
++
++		}
++
++//	Claim the interface for us
++	if( (n = libusb_claim_interface(my_driver->my_handle,0)) )
++	{
++		report(RPT_DEBUG, "%s: Failed to claim interface", drvthis->name);
++		libusb_close(my_driver->my_handle);
++		libusb_exit(my_driver->ctx);
++		exit(-1);
++	}
++	else
++
++// write the usb handle and context to the private_data
++	{
++		p->my_handle = my_driver->my_handle;
++		p->ctx = my_driver->ctx;
++
++	}
++	return 0;
++	
++}
++/**
++ * Internal function to cleanly exit.
++ * \param drvthis  Pointer to driver structure.
++  */
++
++void futaba_shutdown(Driver *drvthis)
++{
++	PrivateData *p = drvthis->private_data;
++	
++    libusb_release_interface(p->my_handle,0);
++	libusb_close(p->my_handle);
++
++	libusb_exit(p->ctx);
++	// printf("Futaba display driver shutdown complete\n");
++}
++ /**
++ * Initalize the private data and call futaba_start_driver.
++ * \param drvthis  Pointer to driver structure.
++ * \return         0 on success, -1 on error.
++ */
++ 
++MODULE_EXPORT int
++futaba_init (Driver *drvthis)
++{
++	PrivateData *p;
++	
++
++	/* Allocate and store private data */
++	p = (PrivateData *) calloc(1, sizeof(PrivateData));
++	if (p == NULL)
++		return -1;
++	if (drvthis->store_private_ptr(drvthis, p))
++		return -1;
++
++	/* initialize private data */
++	
++		p->width = 7;
++		p->height = 1;
++	
++        p->old_icon_map = 0;
++        
++        
++        
++        p->framebuf = (char *)malloc(p->width * p->height);
++  if (p->framebuf == NULL) {
++    report(RPT_ERR, "%s: unable to create framebuffer", drvthis->name);
++    return -1;
++	}
++
++	p->old_framebuf = (char *)malloc(p->width * p->height);
++	if (p->old_framebuf == NULL) {
++    report(RPT_ERR, "%s: unable to create old_framebuffer", drvthis->name);
++    return -1;
++	}
++
++   
++      /* write to the file */
++      
++    futaba_start_driver(drvthis);
++	memset(p->framebuf, ' ', p->width * p->height);
++    memcpy(p->old_framebuf, p->framebuf,p->width * p->height);
++	report(RPT_DEBUG, "%s: init() done", drvthis->name);
++	 
++	return 0;
++}
++
++
++/**
++ * Close the driver (do necessary clean-up).
++ * \param drvthis  Pointer to driver structure.
++ */
++MODULE_EXPORT void
++futaba_close (Driver *drvthis)
++{
++	PrivateData *p = drvthis->private_data;
++	
++	if (p != NULL) {
++		if (p->framebuf != NULL)
++			free(p->framebuf);
++	if (p->old_framebuf)
++			free(p->old_framebuf);
++		free(p);
++	}
++	drvthis->store_private_ptr(drvthis, NULL);
++	
++	futaba_shutdown(drvthis);
++	return;
++}
++
++
++/**
++ * Return the display width in characters.
++ * \param drvthis  Pointer to driver structure.
++ * \return         Number of characters the display is wide.
++ */
++MODULE_EXPORT int
++futaba_width (Driver *drvthis)
++{
++ 	PrivateData *p = drvthis->private_data;
++	return p->width;
++}
++
++
++/**
++ * Return the display height in characters.
++ * \param drvthis  Pointer to driver structure.
++ * \return         Number of characters the display is high.
++ */
++MODULE_EXPORT int
++futaba_height (Driver *drvthis)
++{
++	PrivateData *p = drvthis->private_data;
++	return p->height;
++}
++
++
++/**
++ * Clear the screen.
++ * \param drvthis  Pointer to driver structure.
++ */
++MODULE_EXPORT void
++futaba_clear (Driver *drvthis)
++{
++	PrivateData *p = drvthis->private_data;
++	memset(p->framebuf, ' ', p->width * p->height);
++	
++}
++
++
++/**
++ * Flush data on screen to the display.
++ * \param drvthis  Pointer to driver structure.
++ */
++MODULE_EXPORT void
++futaba_flush (Driver *drvthis)
++{
++	PrivateData *p = drvthis->private_data;
++	int i;
++
++		
++		/* If driver is busy scrolling, do nothing 
++		 * This shouldn't occur as LCDd should be sending
++		 * the correct sized strings */
++		
++		if (p->is_busy == 1)
++		return;
++		
++		for (i = 0; i < p->height; i++) {
++			int offset = i * p->width;
++
++		/* Backing-store based implementation:
++		 * Only put it on the screen if it's not already there 
++		 * Otherwise the display flickers badly !!   */
++		 
++		if (memcmp(p->old_framebuf+offset, p->framebuf+offset, p->width) != 0) {
++			memcpy(p->old_framebuf+offset, p->framebuf+offset, p->width);
++
++	futaba_send_string(drvthis);
++		}
++	}
++}
++
++/**
++ * Print a string on the screen at position (x,y).
++ * The upper-left corner is (1,1), the lower-right corner is (p->width, p->height).
++ * \param drvthis  Pointer to driver structure.
++ * \param x        Horizontal character position (column).
++ * \param y        Vertical character position (row).
++ * \param string   String that gets written.
++ */
++MODULE_EXPORT void
++futaba_string (Driver *drvthis, int x, int y, const char string[])
++{
++	PrivateData *p = drvthis->private_data;
++	int i;
++
++	x--; y--; // Convert 1-based coords to 0-based...
++
++	if ((y < 0) || (y >= p->height))
++		return;
++		
++	for (i = 0; (string[i] != '\0') && (x < p->width); i++, x++) {
++		if (x >= 0)	// no write left of left border
++			p->framebuf[(y * p->width) + x] = string[i];
++			
++	}
++	
++}
++
++
++/**
++ * Print a character on the screen at position (x,y).
++ * The upper-left corner is (1,1), the lower-right corner is (p->width, p->height).
++ * \param drvthis  Pointer to driver structure.
++ * \param x        Horizontal character position (column).
++ * \param y        Vertical character position (row).
++ * \param c        Character that gets written.
++ */
++MODULE_EXPORT void
++futaba_chr (Driver *drvthis, int x, int y, char c)
++{
++	PrivateData *p = drvthis->private_data;
++
++	y--; x--;
++	if ((x >= 0) && (y >= 0) && (x < p->width) && (y < p->height))
++		p->framebuf[x] = c;
++}
++
++
++/**
++ * Change the display contrast.
++ * Display is LED so we ignore it.
++ * \param drvthis  Pointer to driver structure.
++ * \param promille New contrast value in promille.
++ */
++MODULE_EXPORT void
++futaba_set_contrast (Driver *drvthis, int promille)
++{
++	//PrivateData *p = drvthis->private_data;
++
++	debug(RPT_DEBUG, "Contrast: %d", promille);
++}
++
++/**
++ * Turn the display backlight on or off.
++ * Display is LED so we ignore it.
++ * \param drvthis  Pointer to driver structure.
++ * \param on       New backlight status.
++ */
++MODULE_EXPORT void
++futaba_backlight (Driver *drvthis, int on)
++{
++	//PrivateData *p = drvthis->private_data;
++
++	debug(RPT_DEBUG, "Backlight %s", (on) ? "ON" : "OFF");
++}
++
++/**
++ * Provide some information about this driver.
++ * \param drvthis  Pointer to driver structure.
++ * \return         Constant string with information.
++ */
++MODULE_EXPORT const char *
++futaba_get_info (Driver *drvthis)
++{
++    	//PrivateData *p = drvthis->private_data;
++        static char *info_string = "Futaba TOSD-5711BB Driver v1.1 (c) Blackeagle 2014";
++
++	return info_string;
++	
++
++}
++/** 
++ *  Controls the custom icons.
++ *
++ * The bits of the \c icon_map value map to icons as this (a bit set '1' means the
++ * icon is switched on, a bit set '0' means the icon is turned off):
++ * 
++ * Icon 				Bit
++ * Volume (the word)	0
++ * shuffle				1
++ * mute					2
++ * phone				3 (unused)
++ * rec					4
++ * radio				5
++ * dvd					6 (set on movie / tv show playback)
++ * vcd					7
++ * cd					8
++ * music				9	
++ * photo				10
++ * tv					11
++ * disk in tray			12
++ * 5.1					13
++ * 7.1					14
++ * repeat				15
++ * all					16
++ * rew					17
++ * pause				18
++ * play					19
++ * timer				20
++ * guide1				21
++ * guide2				22
++ * home					23	
++ * eject				24
++ * fwd					25
++ * vol (decimal 1-10)	26....29
++ *
++ * \param drvthis		pointer to driver structure
++ * \param state			integer with bits representing LED states
++ * 
++ */
++ 
++
++MODULE_EXPORT void
++futaba_output (Driver *drvthis, int icon_map)
++{
++	PrivateData *p = drvthis->private_data;
++	int icons_changed = icon_map ^ p->old_icon_map;
++	const char Icon[26] = {0x01, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29};
++	futabaReport_t my_report;
++	int i, numBars, the_volume, n;
++		
++	memset(&my_report,0,sizeof(futabaReport_t));
++	
++	my_report.opcode = FUTABA_OPCODE_SYMBOL;
++	my_report.param1 = 0x02;
++	my_report.type.sym.count=1; /* set just one icon with each call */
++	
++	for (i=0; i<26; i++){
++		if (icons_changed & (1 << i)){
++			
++			my_report.type.sym.symbol[0].symName = Icon[i];
++			my_report.type.sym.symbol[0].state = ((icon_map & (1 << i)) < 1) ? 0 : 1;;
++			
++			futabaSendReport(p->my_handle, &my_report);
++		}
++	}
++	the_volume = (icon_map >> 26) & 0x0F ; /* this is 0 - 10 */
++	
++	/* Only write to the display if the volume has changed */
++	
++	if (the_volume != ((p->old_icon_map >> 26) & 0x0F )){
++		memset(&my_report,0,sizeof(futabaReport_t));
++
++		numBars = (the_volume*FUTABA_VOLUME_BARS)/10;
++
++		my_report.opcode = FUTABA_OPCODE_SYMBOL;
++		my_report.param1 = 0x02;
++		my_report.type.sym.count = FUTABA_VOLUME_BARS;
++		for(n=0; n < FUTABA_VOLUME_BARS; n++)
++		{
++			my_report.type.sym.symbol[n].symName = FUTABA_VOLUME_START+n;
++
++			if( n <= numBars)
++			{  /* if we don't do this we always light one bar ! */
++				if (the_volume != 0)
++				my_report.type.sym.symbol[n].state = FUTABA_SYM_ON;
++				else
++				my_report.type.sym.symbol[n].state = 0;
++			}
++			
++		}
++		futabaSendReport(p->my_handle, &my_report);
++	}
++	p->old_icon_map = icon_map;
++}
++	
+diff -Naur old/server/drivers/futaba.h new/server/drivers/futaba.h
+--- old/server/drivers/futaba.h	1970-01-01 01:00:00.000000000 +0100
++++ new/server/drivers/futaba.h	2014-12-27 10:06:44.358550816 +0000
+@@ -0,0 +1,104 @@
++/*
++ * Definitions for the Futaba TSOD-5711BB
++ *
++ * As found on the Black Artisan media center case.
++ * This is a 7 digit VFD plus a load of symbols
++ */
++#ifndef FUTABA_TSOD_5711BB_INCLUDED
++#define FUTABA_TSOD_5711BB_INCLUDED
++
++//---------------------------INCLUDES------------------------------------------
++#include <stdint.h>
++
++//---------------------------DEFINITIONS---------------------------------------
++#define FUTABA_REPORT_LENGTH 64
++#define FUTABA_STR_LEN 60
++#define FUTABA_SYM_LEN 30
++
++//---------------------------OPCODES-------------------------------------------
++#define	FUTABA_OPCODE_SYMBOL 0x85
++#define	FUTABA_OPCODE_STRING 0x8b
++
++#define FUTABA_SYM_ON 0x01
++#define FUTABA_SYM_OFF 0x00
++
++//---------------------------SYMBOL DEFINITIONS--------------------------------
++#define FUTABA_VOLUME_START 0x02
++#define FUTABA_VOLUME_BARS  11
++
++//--------------------------REPORT STRUCTURE-----------------------------------
++
++// The report definition for a string
++typedef struct
++{
++	uint8_t	startPos;
++	uint8_t len;
++	char	string[FUTABA_STR_LEN];
++}futabaStringRep_t;
++
++// The symbol report inner part looks like this
++typedef struct
++{
++	uint8_t	symName;
++	uint8_t	state;
++}futabaSymAttr_t;
++
++// The complete symbol report
++typedef struct
++{
++	uint8_t	count;
++	futabaSymAttr_t	symbol[FUTABA_SYM_LEN];
++}futabaSymbolRep_t;
++
++
++// Put it all together to get the overall structure of a report
++typedef struct
++{
++	uint8_t	opcode;
++	uint8_t	param1;
++	union
++	{
++		futabaStringRep_t	str;
++		futabaSymbolRep_t	sym;
++	}type;
++
++}futabaReport_t;
++
++
++// The driver object definition
++typedef struct
++{
++	libusb_device_handle	*my_handle;
++	libusb_context 			*ctx;
++}futabaDriver_t;
++
++//---------------------------Function declarations-----------------------------
++int futabaSendReport(libusb_device_handle *my_handle, futabaReport_t *report);
++
++int futabaSetVolume(libusb_device_handle *my_handle, int volPercent);
++
++int futabaInitDriver( futabaDriver_t *my_driver, Driver *drvthis);
++
++int futaba_set_icon (Driver *drvthis);
++
++void futaba_shutdown(Driver *drvthis);
++
++
++
++
++
++MODULE_EXPORT int  futaba_init (Driver *drvthis);
++MODULE_EXPORT void futaba_close (Driver *drvthis);
++MODULE_EXPORT int  futaba_width (Driver *drvthis);
++MODULE_EXPORT int  futaba_height (Driver *drvthis);
++MODULE_EXPORT void futaba_clear (Driver *drvthis);
++MODULE_EXPORT void futaba_flush (Driver *drvthis);
++MODULE_EXPORT void futaba_string (Driver *drvthis, int x, int y, const char string[]);
++MODULE_EXPORT void futaba_chr (Driver *drvthis, int x, int y, char c);
++MODULE_EXPORT void futaba_set_contrast (Driver *drvthis, int promille);
++MODULE_EXPORT void futaba_backlight (Driver *drvthis, int on);
++MODULE_EXPORT void futaba_output (Driver *drvthis, int icon_map);
++MODULE_EXPORT const char * futaba_get_info (Driver *drvthis);
++
++
++#endif		//#ifndef FUTABA_TSOD_5711BB_INCLUDED
+diff -Naur old/server/drivers/Makefile.am new/server/drivers/Makefile.am
+--- old/server/drivers/Makefile.am	2014-02-17 21:36:35.000000000 +0000
++++ new/server/drivers/Makefile.am	2014-12-27 10:20:57.614582431 +0000
+@@ -23,9 +23,10 @@
+ 
+ lcdexecbindir = $(pkglibdir)
+ lcdexecbin_PROGRAMS = @DRIVERS@
+-EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses debug CwLnx dm140 ea65 EyeboxOne g15 glcd glcdlib glk hd44780 icp_a106 imon imonlcd IOWarrior irman joy lb216 lcdm001 lcterm lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD picolcd pyramid sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD stv5730 SureElec svga t6963 text tyan sli ula200 vlsys_m428 xosd i2500vfd irtrans
++EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses debug CwLnx dm140 ea65 EyeboxOne futaba g15 glcd glcdlib glk hd44780 icp_a106 imon imonlcd IOWarrior irman joy lb216 lcdm001 lcterm lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD picolcd pyramid sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD stv5730 SureElec svga t6963 text tyan sli ula200 vlsys_m428 xosd i2500vfd irtrans
+ noinst_LIBRARIES = libLCD.a libbignum.a
+ 
++futaba_CFLAGS =      @LIBUSB_CFLAGS@ @LIBUSB_1_0_CFLAGS@ $(AM_CFLAGS)
+ g15_CFLAGS =         @LIBUSB_CFLAGS@ $(AM_CFLAGS)
+ glcd_CFLAGS =        @FT2_CFLAGS@ @LIBPNG_CFLAGS@ @LIBUSB_CFLAGS@ @LIBX11_CFLAGS@ $(AM_CFLAGS)
+ hd44780_CFLAGS =     @LIBUSB_CFLAGS@ @LIBFTDI_CFLAGS@ $(AM_CFLAGS)
+@@ -43,6 +44,7 @@
+ CFontzPacket_LDADD = libLCD.a libbignum.a
+ curses_LDADD =       @LIBCURSES@
+ CwLnx_LDADD =        libLCD.a libbignum.a
++futaba_LDADD =	     @LIBUSB_LIBS@ @LIBUSB_1_0_LIBS@ libLCD.a
+ g15_LDADD =          @LIBG15@
+ glcd_LDADD =         libLCD.a @GLCD_DRIVERS@ @FT2_LIBS@ @LIBPNG_LIBS@ @LIBSERDISP@ @LIBUSB_LIBS@ @LIBX11_LIBS@
+ glcd_DEPENDENCIES =  @GLCD_DRIVERS@ glcd-glcd-render.o
+@@ -90,6 +92,7 @@
+ dm140_SOURCES =      lcd.h led.c libvfd.h led.h dm140.c dm140.h report.h
+ ea65_SOURCES =       lcd.h ea65.h ea65.c report.h
+ EyeboxOne_SOURCES =  lcd.h lcd_lib.h EyeboxOne.c EyeboxOne.h report.h
++futaba_SOURCES =     lcd.h futaba.c futaba.h report.h
+ g15_SOURCES =        lcd.h lcd_lib.h g15.h g15-num.c g15.c report.h
+ glcd_SOURCES =       lcd.h report.h glcd_drv.c glcd_drv.h glcd-low.h glcd-drivers.h glcd-render.c glcd-render.h
+ EXTRA_glcd_SOURCES = glcd-t6963.c t6963_low.c t6963_low.h glcd-png.c glcd-serdisp.c glcd-glcd2usb.c glcd-glcd2usb.h glcd-x11.c glcd-picolcdgfx.c
