@@ -1,7 +1,6 @@
-diff --git a/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c b/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c
-index 68b6093..6959dd3 100755
---- a/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c
-+++ b/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c
+diff -rupd linux-amlogic-3.10-4f26511.orig/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c linux-amlogic-3.10-4f26511/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c
+--- linux-amlogic-3.10-4f26511.orig/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c	2015-08-14 08:43:36.000000000 +0200
++++ linux-amlogic-3.10-4f26511/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx.c	2015-08-22 23:51:27.950238889 +0200
 @@ -58,6 +58,7 @@
  static dev_t hdmitx_id;
  static struct class *hdmitx_class;
@@ -10,7 +9,7 @@ index 68b6093..6959dd3 100755
  
  static int set_disp_mode_auto(void);
  const vinfo_t * hdmi_get_current_vinfo(void);
-@@ -555,6 +556,14 @@ static ssize_t store_cec_config(struct device * dev, struct device_attribute *at
+@@ -555,6 +556,14 @@ static ssize_t store_cec_config(struct d
      return count;
  }
  
@@ -25,7 +24,7 @@ index 68b6093..6959dd3 100755
  static ssize_t store_cec_lang_config(struct device * dev, struct device_attribute *attr, const char * buf, size_t count)
  {
      hdmi_print(INF, CEC "store_cec_lang_config\n");
-@@ -932,6 +941,7 @@ void hdmi_print(int dbg_lvl, const char *fmt, ...)
+@@ -932,6 +941,7 @@ void hdmi_print(int dbg_lvl, const char
      }
  }
  
@@ -33,7 +32,7 @@ index 68b6093..6959dd3 100755
  static DEVICE_ATTR(disp_mode, S_IWUSR | S_IRUGO | S_IWGRP, show_disp_mode, store_disp_mode);
  static DEVICE_ATTR(aud_mode, S_IWUSR | S_IRUGO, show_aud_mode, store_aud_mode);
  static DEVICE_ATTR(edid, S_IWUSR | S_IRUGO, show_edid, store_edid);
-@@ -1542,6 +1552,14 @@ static int amhdmitx_probe(struct platform_device *pdev)
+@@ -1542,6 +1552,14 @@ static int amhdmitx_probe(struct platfor
      struct device_node *init_data;
  #endif
  
@@ -48,7 +47,7 @@ index 68b6093..6959dd3 100755
      hdmi_print(IMP, SYS "amhdmitx_probe\n");
  
      r = alloc_chrdev_region(&hdmitx_id, 0, HDMI_TX_COUNT, DEVICE_NAME);
-@@ -1597,6 +1615,7 @@ static int amhdmitx_probe(struct platform_device *pdev)
+@@ -1597,6 +1615,7 @@ static int amhdmitx_probe(struct platfor
      ret=device_create_file(hdmitx_dev, &dev_attr_cec);
      ret=device_create_file(hdmitx_dev, &dev_attr_cec_config);
      ret=device_create_file(hdmitx_dev, &dev_attr_cec_lang_config);
@@ -56,10 +55,9 @@ index 68b6093..6959dd3 100755
  
      if (hdmitx_dev == NULL) {
          hdmi_print(ERR, SYS "device_create create error\n");
-diff --git a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c
-index 384d251..ea25dfb 100755
---- a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c
-+++ b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c
+diff -rupd linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c
+--- linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c	2015-08-14 08:43:36.000000000 +0200
++++ linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.c	2015-08-22 23:59:22.649172406 +0200
 @@ -1,6 +1,8 @@
  
  #include <typedefs.h>
@@ -69,7 +67,7 @@ index 384d251..ea25dfb 100755
  
  #include <bcmutils.h>
  #include <hndsoc.h>
-@@ -120,6 +122,13 @@ const static char *bcm4354a1_ag_fw_name[] = {
+@@ -120,6 +122,14 @@ const static char *bcm4354a1_ag_fw_name[
  	"fw_bcm4354a1_ag_mfg.bin"
  };
  
@@ -78,12 +76,13 @@ index 384d251..ea25dfb 100755
 +	"ap6330_nvram.txt",
 +	"ap6181_nvram.txt",
 +	"ap6212_nvram.txt",
++	"ap6335e_nvram.txt"
 +};
 +
  #define htod32(i) i
  #define htod16(i) i
  #define dtoh32(i) i
-@@ -144,6 +153,12 @@ dhd_conf_free_mac_list(wl_mac_list_ctrl_t *mac_list)
+@@ -144,6 +154,12 @@ dhd_conf_free_mac_list(wl_mac_list_ctrl_
  }
  
  int
@@ -96,7 +95,7 @@ index 384d251..ea25dfb 100755
  dhd_conf_get_mac(dhd_pub_t *dhd, bcmsdh_info_t *sdh, uint8 *mac)
  {
  	int i, err = -1;
-@@ -423,6 +438,54 @@ dhd_conf_set_fw_name_by_chip(dhd_pub_t *dhd, char *fw_path)
+@@ -423,6 +439,57 @@ dhd_conf_set_fw_name_by_chip(dhd_pub_t *
  	printf("%s: firmware_path=%s\n", __FUNCTION__, fw_path);
  }
  
@@ -143,6 +142,9 @@ index 384d251..ea25dfb 100755
 +		case BCM43430_CHIP_ID:
 +					strcpy(&nv_path[i+1], nv_name[3]);
 +						break;
++		case BCM4335_CHIP_ID:
++					strcpy(&nv_path[i+1], nv_name[4]);
++						break;
 +	
 +	}
 +	printf("%s: yxg ----nv_path=%s\n", __FUNCTION__, nv_path);
@@ -151,10 +153,10 @@ index 384d251..ea25dfb 100755
  #if defined(HW_OOB)
  void
  dhd_conf_set_hw_oob_intr(bcmsdh_info_t *sdh, uint chip)
-diff --git a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h
-index e95fdd1..a03a2ff 100755
---- a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h
-+++ b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h
+Only in linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx: dhd_config.c~
+diff -rupd linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h
+--- linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h	2015-08-14 08:43:36.000000000 +0200
++++ linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_config.h	2015-08-22 23:51:27.954238914 +0200
 @@ -10,6 +10,7 @@
  
  #define FW_PATH_AUTO_SELECT 1
@@ -171,11 +173,10 @@ index e95fdd1..a03a2ff 100755
  #if defined(HW_OOB)
  void dhd_conf_set_hw_oob_intr(bcmsdh_info_t *sdh, uint chip);
  #endif
-diff --git a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c
-index 998a52f..10262dc 100755
---- a/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c
-+++ b/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c
-@@ -7661,6 +7661,7 @@ dhdsdio_download_firmware(struct dhd_bus *bus, osl_t *osh, void *sdh)
+diff -rupd linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c
+--- linux-amlogic-3.10-4f26511.orig/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c	2015-08-14 08:43:36.000000000 +0200
++++ linux-amlogic-3.10-4f26511/drivers/amlogic/wifi/broadcom/bcmdhd_1_141_xx/dhd_sdio.c	2015-08-22 23:51:27.954238914 +0200
+@@ -7661,6 +7661,7 @@ dhdsdio_download_firmware(struct dhd_bus
  	dhd_conf_preinit(bus->dhd);
  	dhd_conf_read_config(bus->dhd);
  	dhd_conf_set_fw_name_by_chip(bus->dhd, bus->fw_path);
