@@ -369,12 +369,6 @@
     done
   }
 
-  init_console() {
-    # clear screen and hide cursor
-    clear
-    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
-  }
-
   load_splash() {
     if [ ! "$SPLASH" = "no" ]; then
       progress "Loading bootsplash"
@@ -662,7 +656,6 @@
   # main boot sequence
   for BOOT_STEP in \
       load_modules \
-      init_console \
       check_disks \
       mount_flash \
       load_splash \
