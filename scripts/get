@@ -29,11 +29,12 @@ fi
 
 if [ -n "$PKG_URL" ]; then
   for i in $PKG_URL; do
-    SOURCE_NAME="`basename $i`"
+    SOURCE_NAME=${PKG_SOURCE_NAME:-`basename $i`}
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
     PACKAGE_MIRROR="$DISTRO_MIRROR/$PKG_NAME/$SOURCE_NAME"
     [ "$VERBOSE" != "yes" ] && WGET_OPT=-q
-    WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1"
+    [ -n "$PKG_SOURCE_NAME" ]  && WGET_OUTPUT_OPTION="-O $SOURCES/$1/$PKG_SOURCE_NAME"
+    WGET_CMD="wget --passive-ftp --no-check-certificate -c $WGET_OPT -P $SOURCES/$1 $WGET_OUTPUT_OPTION"
 
     NBWGET="1"
 
