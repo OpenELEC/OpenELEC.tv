@@ -18,17 +18,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="WandBoard"
+PKG_NAME="Wandboard"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/lakkatv/Lakka"
 PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch 2048 mupen64plus vba-next dosbox beetle-vb beetle-wswan beetle-ngp beetle-pcfx pcsx_rearmed vecx snes9x-next dinothawr prboom beetle-pce handy picodrive nxengine nestopia gambatte stella fba libretro-ffmpeg" 
+PKG_DEPENDS_TARGET="retroarch 81 fuse-libretro gw-libretro beetle-sgx genesis-plus-gx mupen64plus lutro gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x-next dinothawr prboom beetle-pce handy picodrive nxengine nestopia gambatte stella fba libretro-ffmpeg"
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for WandBoard"
+PKG_SHORTDESC="Lakka metapackage for Wandboard"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
