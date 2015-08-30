@@ -10,5 +10,5 @@ nv_by_mac=1 nvram_ap6335e.txt 5 0x0022F4 0xE85408 0xE8549D 0x983B16 0x3557A9 0x3
                           0x983B16 0x916157 0x916487
 bcn_timeout=20
 kso_enable=0
-ccode=US
+ccode=ALL
 regrev=0
