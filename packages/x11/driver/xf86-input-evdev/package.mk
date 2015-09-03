@@ -16,39 +16,22 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="x11"
-PKG_VERSION=""
+PKG_NAME="xf86-input-evdev"
+PKG_VERSION="2.9.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
-PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain xorg-server"
+PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_TARGET="toolchain util-macros inputproto libevdev systemd"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="x11: the Windowing system"
-PKG_LONGDESC="X11 is the Windowing system"
+PKG_SECTION="x11/driver"
+PKG_SHORTDESC="xf86-input-evdev: Generic Xorg Linux input driver"
+PKG_LONGDESC="Evdev is an Xorg input driver for Linux's generic event devices. It therefore supports all input devices that the kernel knows about, including most mice and keyboards."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
-# Additional packages we need for using xorg-server:
-# Fonts
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET encodings font-xfree86-type1 font-bitstream-type1 font-misc-misc"
-
-# Server
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xkeyboard-config xkbcomp"
-
-# Tools
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xrandr setxkbmap"
-
-if [ -n "$WINDOWMANAGER" -a "$WINDOWMANAGER" != "none" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $WINDOWMANAGER"
-fi
-
-get_graphicdrivers
-# Drivers
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-input-evdev"
-  for drv in $XORG_DRIVERS; do
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-video-$drv"
-  done
+PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
+                           --with-xorg-module-dir=$XORG_PATH_MODULES \
+                           --with-gnu-ld"
