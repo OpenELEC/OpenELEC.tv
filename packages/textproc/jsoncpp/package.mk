@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="jsoncpp"
-PKG_VERSION="1.6.5"
+PKG_VERSION="src-0.5.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_URL="http://sources.openelec.tv/devel/jsoncpp-$PKG_NAME-$PKG_VERSION.tar.yz"
+PKG_URL="http://mirrors.kodi.tv/build-deps/sources/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
