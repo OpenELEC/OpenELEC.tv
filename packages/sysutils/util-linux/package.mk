@@ -77,7 +77,7 @@ if [ "$SWAP_SUPPORT" = "yes" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-swapon"
 fi
 
-PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared $UTILLINUX_CONFIG_DEFAULT"
+PKG_CONFIGURE_OPTS_HOST="--enable-static --disable-shared --enable-libuuid --disable-wall"
 
 PKG_CONFIGURE_OPTS_INIT="--prefix=/ \
                          --bindir=/bin \
