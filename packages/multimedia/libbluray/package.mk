@@ -44,7 +44,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-werror \
                            --disable-extra-warnings \
                            --disable-optimizations \
                            --disable-examples \
-                           --disable-bdjava \
+                           --enable-bdjava \
                            --enable-udf \
                            --disable-doxygen-doc \
                            --disable-doxygen-dot \
