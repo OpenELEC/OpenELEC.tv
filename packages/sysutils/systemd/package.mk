@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="219"
+PKG_VERSION="226"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
-PKG_URL="http://www.freedesktop.org/software/systemd/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt"
+PKG_URL="https://github.com/systemd/systemd/archive/v$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux libgcrypt kdbus"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -35,13 +35,10 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            ac_cv_have_decl_IFLA_BOND_AD_INFO=no \
                            ac_cv_have_decl_IFLA_BRPORT_UNICAST_FLOOD=no \
+                           ac_cv_path_MOUNT_PATH="/bin/mount"
+                           ac_cv_path_UMOUNT_PATH="/bin/umount"
                            KMOD=/usr/bin/kmod \
                            --disable-nls \
-                           --disable-gtk-doc \
-                           --disable-gtk-doc-html \
-                           --disable-gtk-doc-pdf \
-                           --disable-python-devel \
-                           --disable-python-devel \
                            --disable-dbus \
                            --disable-utmp \
                            --disable-compat-libs \
@@ -51,7 +48,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --enable-blkid \
                            --disable-seccomp \
                            --disable-ima \
-                           --disable-chkconfig \
                            --disable-selinux \
                            --disable-apparmor \
                            --disable-xz \
@@ -70,6 +66,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-gnutls \
                            --disable-libcurl \
                            --disable-libidn \
+                           --disable-libiptc \
                            --disable-binfmt \
                            --disable-vconsole \
                            --disable-bootchart \
@@ -92,8 +89,8 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-resolved \
                            --disable-networkd \
                            --disable-efi \
-                           --disable-terminal \
-                           --disable-kdbus \
+                           --disable-gnuefi \
+                           --enable-kdbus \
                            --disable-myhostname \
                            --disable-gudev \
                            --enable-hwdb \
@@ -113,15 +110,28 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --with-rootprefix=/usr \
                            --with-rootlibdir=/lib"
 
+unpack() {
+  tar xf $ROOT/$SOURCES/systemd/v$PKG_VERSION.tar.gz -C $ROOT/$BUILD
+}
+
+pre_build_target() {
+# broken autoreconf
+  ( cd $PKG_BUILD
+    intltoolize --force
+  )
+}
+
 post_makeinstall_target() {
   # remove unneeded stuff
   rm -rf $INSTALL/etc/systemd/system
   rm -rf $INSTALL/etc/xdg
+  rm -rf $INSTALL/etc/X11
   rm  -f $INSTALL/usr/bin/kernel-install
   rm -rf $INSTALL/usr/lib/kernel/install.d
   rm -rf $INSTALL/usr/lib/rpm
   rm -rf $INSTALL/usr/lib/systemd/user
   rm -rf $INSTALL/usr/lib/tmpfiles.d/etc.conf
+  rm -rf $INSTALL/usr/lib/tmpfiles.d/home.conf
   rm -rf $INSTALL/usr/share/factory
   rm -rf $INSTALL/usr/share/zsh
 
@@ -221,6 +231,9 @@ post_install() {
   add_group systemd-network 193
   add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
+  add_group systemd-bus-proxy 194
+  add_user systemd-bus-proxy x 194 194 "systemd-bus-proxy" "/" "/bin/sh"
+
   add_group audio 63
   add_group cdrom 11
   add_group dialout 18
@@ -238,4 +251,5 @@ post_install() {
   enable_service debugconfig.service
   enable_service userconfig.service
   enable_service hwdb.service
+  enable_service systemd-bus-proxyd.socket sockets.target
 }

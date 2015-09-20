@@ -1,7 +1,5 @@
 [Unit]
 Description=Connection service
-Requires=dbus.socket
-After=dbus.socket
 Before=network.target
 Wants=network.target
 
