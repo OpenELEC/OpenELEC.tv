@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="fuse-exfat"
-PKG_VERSION="1.1.0"
+PKG_VERSION="1.2.0"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://code.google.com/p/exfat"
-#PKG_URL="http://exfat.googlecode.com/files/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_URL="http://distfiles.gentoo.org/distfiles/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPLv2+"
+PKG_SITE="https://github.com/relan/exfat"
+PKG_URL="https://github.com/relan/exfat/releases/download/v$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain scons:host fuse"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
