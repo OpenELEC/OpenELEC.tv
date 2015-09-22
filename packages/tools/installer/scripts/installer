@@ -275,23 +275,19 @@ do_install_quick() {
       # create filesystem
       msg_progress_install "23" "creating filesystem on ${INSTALL_DEVICE}1"
       if [ "$UEFI" = "1" ]; then
-        mkfs.vfat ${INSTALL_DEVICE}${PART1} >> $LOGFILE 2>&1
+        UUID_1=$(date '+%d%m')
+        UUID_2=$(date '+%M%S')
+        FAT_VOL_ID="${UUID_1}${UUID_2}"
+        UUID_SYSTEM="${UUID_1}-${UUID_2}"
+        mkfs.vfat -i "$FAT_VOL_ID" ${INSTALL_DEVICE}${PART1} >> $LOGFILE 2>&1
       else
-        mke2fs -t ext4 -m 0 ${INSTALL_DEVICE}${PART1} >> $LOGFILE 2>&1
-      fi
-
-      msg_progress_install "25" "set uuid and disklabel $DISKLABEL_SYSTEM on ${INSTALL_DEVICE}${PART1}"
-      if [ "$UEFI" = "1" ]; then
-        dosfslabel ${INSTALL_DEVICE}${PART1}  $DISKLABEL_SYSTEM >> $LOGFILE 2>&1
-      else
-        tune2fs -U random -L $DISKLABEL_SYSTEM  ${INSTALL_DEVICE}${PART1} >> $LOGFILE 2>&1
+        UUID_SYSTEM="$(uuidgen)"
+        mke2fs -t ext4 -U "$UUID_SYSTEM" -m 0 ${INSTALL_DEVICE}${PART1} >> $LOGFILE 2>&1
       fi
 
       msg_progress_install "28" "creating filesystem on ${INSTALL_DEVICE}${PART2}"
-      mke2fs -t ext4 -m 0 ${INSTALL_DEVICE}${PART2} >> $LOGFILE 2>&1
-
-      msg_progress_install "30" "set uuid and disklabel $DISKLABEL_STORAGE on ${INSTALL_DEVICE}${PART2}"
-      tune2fs -U random -L $DISKLABEL_STORAGE  ${INSTALL_DEVICE}${PART2} >> $LOGFILE 2>&1
+      UUID_STORAGE="$(uuidgen)"
+      mke2fs -t ext4 -U "$UUID_STORAGE" -m 0 ${INSTALL_DEVICE}${PART2} >> $LOGFILE 2>&1
 
       # mount system partition
       msg_progress_install "35" "creating $TMPDIR/part1"
@@ -321,13 +317,13 @@ do_install_quick() {
       sync
 
       # configuring bootloader
-      msg_progress_install "80" "setup bootloader with boot label = $DISKLABEL_SYSTEM and disk label = $DISKLABEL_STORAGE"
+      msg_progress_install "80" "setup bootloader with boot uuid = $UUID_SYSTEM and disk uuid = $UUID_STORAGE"
       echo "DEFAULT linux" > $TMPDIR/part1/extlinux.conf
       echo "PROMPT 0" >> $TMPDIR/part1/extlinux.conf
       echo " " >> $TMPDIR/part1/extlinux.conf
       echo "LABEL linux" >> $TMPDIR/part1/extlinux.conf
       echo " KERNEL /KERNEL" >> $TMPDIR/part1/extlinux.conf
-      echo " APPEND boot=LABEL=$DISKLABEL_SYSTEM disk=LABEL=$DISKLABEL_STORAGE $EXTLINUX_PARAMETERS quiet" >> $TMPDIR/part1/extlinux.conf
+      echo " APPEND boot=UUID=$UUID_SYSTEM disk=UUID=$UUID_STORAGE $EXTLINUX_PARAMETERS quiet" >> $TMPDIR/part1/extlinux.conf
       # uefi boot / hybrid mode
       if [ "$UEFI" = "1" ]; then
         mv $TMPDIR/part1/extlinux.conf $TMPDIR/part1/syslinux.cfg
