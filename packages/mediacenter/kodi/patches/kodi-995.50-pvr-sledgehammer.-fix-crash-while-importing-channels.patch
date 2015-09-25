@@ -1,0 +1,28 @@
+From 8876ef8910b04e60b5260357f90e5f0fd17ab6df Mon Sep 17 00:00:00 2001
+From: Stefan Saraev <stefan@saraev.ca>
+Date: Sat, 26 Sep 2015 00:32:42 +0300
+Subject: [PATCH] [pvr] sledgehammer. fix crash while importing channels
+
+---
+ xbmc/pvr/channels/PVRChannel.cpp | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/xbmc/pvr/channels/PVRChannel.cpp b/xbmc/pvr/channels/PVRChannel.cpp
+index 79e4b46..96c2598 100644
+--- a/xbmc/pvr/channels/PVRChannel.cpp
++++ b/xbmc/pvr/channels/PVRChannel.cpp
+@@ -219,10 +219,7 @@ bool CPVRChannel::Persist()
+ 
+   if (CPVRDatabase *database = GetPVRDatabase())
+   {
+-    bool bReturn = database->Persist(*this) && database->CommitInsertQueries();
+-    CSingleLock lock(m_critSection);
+-    m_bChanged = !bReturn;
+-    return bReturn;
++    // meh
+   }
+ 
+   return false;
+-- 
+2.5.0
+
