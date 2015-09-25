@@ -47,8 +47,14 @@ if [ -n "$WINDOWMANAGER" -a "$WINDOWMANAGER" != "none" ]; then
 fi
 
 get_graphicdrivers
-# Drivers
+
+# Drivers 
+if [ -n "$LIBINPUT" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-input-libinput"
-  for drv in $XORG_DRIVERS; do
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-video-$drv"
-  done
+else
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-input-evdev"
+fi
+
+for drv in $XORG_DRIVERS; do
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xf86-video-$drv"
+done
