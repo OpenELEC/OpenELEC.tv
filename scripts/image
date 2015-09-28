@@ -93,6 +93,8 @@ fi
 
   echo "$TARGET_VERSION" > $INSTALL/etc/release
 
+  echo "$DEVICE" > $INSTALL/etc/device
+
 # create /etc/os-release
   echo -e "NAME=\"$DISTRONAME\"" > $INSTALL/etc/os-release
   echo -e "VERSION=\"$OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
