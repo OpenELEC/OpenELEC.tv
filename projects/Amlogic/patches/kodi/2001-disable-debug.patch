@@ -1,0 +1,25 @@
+From 1c482f6b8559ec1cf768b86deba4ce06c8be862e Mon Sep 17 00:00:00 2001
+From: alex <surkov.alex@gmail.com>
+Date: Mon, 21 Sep 2015 16:42:09 +0300
+Subject: [PATCH 1/2] disable debug
+
+---
+ system/settings/settings.xml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index f0d39d8..0b73d88 100644
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -2881,7 +2881,7 @@
+       <group id="1">
+         <setting id="debug.showloginfo" type="boolean" label="20191" help="36392">
+           <level>1</level>
+-          <default>true</default>
++          <default>false</default>
+           <control type="toggle" />
+         </setting>
+         <setting id="debug.extralogging" type="boolean" label="666" help="36394">
+-- 
+1.7.10.4
+

@@ -1,0 +1,25 @@
+From cc887dc39bd41cdbc339ecea4a5796fefffbefb6 Mon Sep 17 00:00:00 2001
+From: alex <surkov.alex@gmail.com>
+Date: Mon, 21 Sep 2015 16:42:35 +0300
+Subject: [PATCH 2/2] disable wake on access
+
+---
+ system/settings/settings.xml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index 0b73d88..3ef33e0 100644
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -2872,7 +2872,7 @@
+       <group id="2">
+         <setting id="powermanagement.wakeonaccess" type="boolean" label="13026" help="36350">
+           <level>1</level>
+-          <default>true</default>
++          <default>false</default>
+           <control type="toggle" />
+         </setting>
+       </group>
+-- 
+1.7.10.4
+

@@ -96,8 +96,8 @@ index a2a5af0..765b7c6 100644
  
 -  nativeWindow->width = 1920;
 -  nativeWindow->height = 1080;
-+  nativeWindow->width = m_maxResolution.iScreenWidth;
-+  nativeWindow->height = m_maxResolution.iScreenHeight;
++  nativeWindow->width = 3840;
++  nativeWindow->height = 2160;
    m_nativeWindow = nativeWindow;
  
    SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
@@ -200,8 +200,8 @@ index a2a5af0..765b7c6 100644
        vinfo.yres = height;
 -      vinfo.xres_virtual = 1920;
 -      vinfo.yres_virtual = 2160;
-+      vinfo.xres_virtual = m_maxResolution.iScreenWidth;
-+      vinfo.yres_virtual = m_maxResolution.iScreenHeight * 2;
++      vinfo.xres_virtual = 3840;
++      vinfo.yres_virtual = 4320;
        vinfo.bits_per_pixel = 32;
        ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
      }
