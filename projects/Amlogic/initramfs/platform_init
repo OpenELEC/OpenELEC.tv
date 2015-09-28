@@ -80,10 +80,3 @@ for cpufreq in /sys/devices/system/cpu/cpu[0-9]*/cpufreq; do
     echo "$scaling_max_freq" > "$cpufreq/scaling_max_freq"
   fi
 done
-
-echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
-echo 4 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
-echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
-
-echo 0 > /sys/block/data/queue/add_random
-echo 0 > /sys/block/system/queue/add_random
