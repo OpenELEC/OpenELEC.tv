@@ -357,7 +357,7 @@ fi
 
     # create ZIP update and auto-install packages for Amlogic project
       INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/devices/$DEVICE/install"
-      if [ -f "$INSTALL_SRC_DIR/update-binary" -a -f "$INSTALL_SRC_DIR/updater-script" ]; then
+      if [ "$1" = "amlpkg" ]; then
         echo "Creating Amlogic ZIP update package"
 
         AML_PKG_DIR="$RELEASE_DIR/ampl-pkg"

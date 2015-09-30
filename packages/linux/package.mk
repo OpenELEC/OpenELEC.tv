@@ -40,17 +40,13 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   *)
-    PKG_VERSION="4.1.8"
+    PKG_VERSION="4.1.6"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
-fi
 
 if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
@@ -146,7 +142,7 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  if [ -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
     for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
       LDFLAGS="" make $extra_target
     done
@@ -163,33 +159,6 @@ make_target() {
       --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
     mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
   fi
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    ( cd tools/perf
-
-      # dont use some optimizations because of build problems
-        strip_lto
-        LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
-
-      export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/lib -L$SYSROOT_PREFIX/usr/lib"
-
-      make CROSS_COMPILE="$TARGET_PREFIX" \
-           ARCH="$TARGET_ARCH" \
-           V=1 \
-           DEBUG=false \
-           NLS=false \
-           NO_GTK2=true \
-           NO_LIBELF=false \
-           NO_LIBPERL=true \
-           NO_LIBPYTHON=false \
-           PYTHON=$SYSROOT_PREFIX/usr/bin/python \
-           WERROR=0 \
-           NO_SLANG=1 \
-           EXTRA_CFLAGS="$CFLAGS"
-    )
-  fi
 }
 
 makeinstall_target() {
@@ -205,15 +174,6 @@ makeinstall_target() {
       cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
     done
     cp -p arch/arm/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
-  fi
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    mkdir -p $INSTALL/usr/bin
-      cp -P tools/perf/perf $INSTALL/usr/bin/
-
-    mkdir -p $INSTALL/usr/libexec/perf-core/scripts/python/
-      cp -P tools/perf/perf-archive $INSTALL/usr/libexec/perf-core/
-      cp -rP tools/perf/scripts/python/* $INSTALL/usr/libexec/perf-core/scripts/python/
   fi
 }
 

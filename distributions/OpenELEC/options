@@ -14,9 +14,6 @@
 # Root password to integrate in the target system
   ROOT_PASSWORD="openelec"
 
-# Install glibc locales to the build (yes / no)
-  GLIBC_LOCALES="yes"
-
 # Mediacenter to use (kodi / no)
   MEDIACENTER="kodi"
 
@@ -89,14 +86,14 @@
 # build with libnfs support (mounting nfs shares with KODI) (yes / no)
   KODI_NFS_SUPPORT="yes"
 
-# build with afpfs-ng support (mounting AFP shares with KODI) (yes / no)
-  KODI_AFP_SUPPORT="yes"
-
 # build with Samba Client support (mounting SAMBA shares with KODI) (yes / no)
   KODI_SAMBA_SUPPORT="yes"
 
 # build with NFS support (mounting nfs shares via the OS) (yes / no)
   NFS_SUPPORT="yes"
+
+# build with afpfs-ng support (mounting AFP shares with KODI) (yes / no)
+  KODI_AFP_SUPPORT="yes"
 
 # build with Samba Client support (mounting samba shares via the OS) (yes / no)
   SAMBA_SUPPORT="yes"
