@@ -33,15 +33,29 @@ PKG_LONGDESC="The ConnMan project provides a daemon for managing internet connec
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
+if [ "$PPTP_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET ppp pptp"
+  CONNMAN_PPTP="--enable-pptp PPPD=/usr/sbin/pppd PPTP=/usr/sbin/pptp"
+else
+  CONNMAN_PPTP="--disable-pptp"
+fi
+
+if [ "$OPENVPN_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET openvpn"
+  CONNMAN_OPENVPN="--enable-openvpn --with-openvpn=/usr/sbin/openvpn"
+else
+  CONNMAN_OPENVPN="--disable-openvpn"
+fi
+
 PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --disable-gtk-doc \
                            --disable-debug \
                            --disable-hh2serial-gps \
                            --disable-openconnect \
-                           --disable-openvpn \
+                           $CONNMAN_OPENVPN \
                            --disable-vpnc \
                            --disable-l2tp \
-                           --disable-pptp \
+                           $CONNMAN_PPTP \
                            --disable-iospm \
                            --disable-tist \
                            --disable-session-policy-local \
@@ -68,6 +82,7 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
 
 
 PKG_MAKE_OPTS_TARGET="storagedir=/storage/.cache/connman \
+                      vpn_storagedir=/storage/.config/vpn-config \
                       statedir=/run/connman"
 
 post_makeinstall_target() {
@@ -92,8 +107,7 @@ post_makeinstall_target() {
         -e "s|^# PreferredTechnologies.*|PreferredTechnologies = ethernet,wifi,cellular|g" \
         -e "s|^# TetheringTechnologies.*|TetheringTechnologies = wifi|g" \
         -e "s|^# AllowHostnameUpdates.*|AllowHostnameUpdates = false|g" \
-        -e "s|^# PersistentTetheringMode.*|PersistentTetheringMode = true|g" \
-        -e "s|^# NetworkInterfaceBlacklist = vmnet,vboxnet,virbr,ifb|NetworkInterfaceBlacklist = vmnet,vboxnet,virbr,ifb,docker,veth|g"
+        -e "s|^# PersistentTetheringMode.*|PersistentTetheringMode = true|g"
 
   mkdir -p $INSTALL/usr/config
     cp $PKG_DIR/config/hosts.conf $INSTALL/usr/config
