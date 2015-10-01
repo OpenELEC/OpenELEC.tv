@@ -1,0 +1,25 @@
+From bdd8f95cd97f5c3c3c58b7262237bed72d8f621d Mon Sep 17 00:00:00 2001
+From: fritsch <peter.fruehberger@gmail.com>
+Date: Thu, 1 Oct 2015 07:57:19 +0200
+Subject: [PATCH] Kodi: Use Limited Range by default
+
+---
+ system/settings/settings.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index 0266423..7894c3e 100644
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -2561,7 +2561,7 @@
+             </or>
+           </requirement>
+           <level>3</level>
+-          <default>false</default>
++          <default>true</default>
+           <updates>
+             <update type="rename">videoplayer.vdpaustudiolevel</update>
+           </updates>
+-- 
+1.9.1
+
