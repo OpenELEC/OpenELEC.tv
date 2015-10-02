@@ -1,0 +1,28 @@
+From 1633e43fe2822ee3d3a8185a3dde9a9236692663 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Sun, 2 Nov 2014 15:54:29 +0200
+Subject: [PATCH 08/15] [aml] Add some key mappings for HDMI CEC
+
+---
+ xbmc/input/linux/LinuxInputDevices.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/xbmc/input/linux/LinuxInputDevices.cpp b/xbmc/input/linux/LinuxInputDevices.cpp
+index 32a3b46..37d9c63 100644
+--- a/xbmc/input/linux/LinuxInputDevices.cpp
++++ b/xbmc/input/linux/LinuxInputDevices.cpp
+@@ -252,6 +252,11 @@ KeyMap keyMap[] = {
+   { KEY_PRINT         , XBMCK_PRINT       },
+   { KEY_QUESTION      , XBMCK_HELP        },
+   { KEY_BACK          , XBMCK_BACKSPACE   },
++  { KEY_SELECT        , XBMCK_RETURN      },
++  { KEY_RED           , XBMCK_TAB         },
++  { KEY_GREEN         , XBMCK_z           },
++  { KEY_YELLOW        , XBMCK_i           },
++  { KEY_BLUE          , XBMCK_c           },
+   // The Little Black Box Remote Additions
+   { 384               , XBMCK_LEFT        }, // Red
+   { 378               , XBMCK_RIGHT       }, // Green
+-- 
+1.9.1
+

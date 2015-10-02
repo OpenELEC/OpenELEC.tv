@@ -41,11 +41,20 @@ if [ "$OPENELEC_VERSION" = devel ]; then
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
 fi
 
-TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
-IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
-if [ "$DEVEL_VERSION" = "devel" ] ; then
-  IMAGE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
+if [ -n "$DEVICE" ]; then
+  if [ "$DEVEL_VERSION" = "devel" ] ; then
+    TARGET_VERSION="$PROJECT.$DEVICE.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
+  else
+    TARGET_VERSION="$PROJECT.$DEVICE.$TARGET_ARCH-$OPENELEC_VERSION"
+  fi
+else
+  if [ "$DEVEL_VERSION" = "devel" ] ; then
+    TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
+  else
+    TARGET_VERSION="$PROJECT.$TARGET_ARCH-$OPENELEC_VERSION"
+  fi
 fi
+IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
 if [ "$PROJECT" == "imx6" -a -n "$SYSTEM" ]; then
   IMAGE_NAME="$IMAGE_NAME-$SYSTEM"
@@ -126,7 +135,9 @@ fi
   $SCRIPTS/install linux
   $SCRIPTS/install linux-drivers
   $SCRIPTS/install linux-firmware
-  $SCRIPTS/install $BOOTLOADER
+  if [ -n "$BOOTLOADER" ]; then
+    $SCRIPTS/install $BOOTLOADER
+  fi
   $SCRIPTS/install busybox
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
@@ -177,6 +188,11 @@ fi
     done
   fi
 
+# copy board related files to filesystem
+  if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/* $INSTALL
+  fi
+
 # run depmod
   MODVER=$(basename $(ls -d $INSTALL/lib/modules/*))
   find $INSTALL/lib/modules/$MODVER/ -name *.ko | \
@@ -193,7 +209,7 @@ fi
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
 
 # copy kernel to target dir
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
     KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
     KERNEL_IMAGE="zImage"
@@ -341,7 +357,11 @@ fi
       if [ "$1" = "amlpkg" ]; then
         echo "Creating Amlogic ZIP update package"
 
-        INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/install"
+        if [ -n "$DEVICE" ]; then
+          INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/devices/$DEVICE/install"
+        else
+          INSTALL_SRC_DIR="$PROJECT_DIR/$PROJECT/install"
+        fi
         AML_PKG_DIR="$RELEASE_DIR/ampl-pkg"
 
         # create package directory
@@ -379,7 +399,9 @@ fi
           pushd sign > /dev/null
           echo --update_package=/sdcard/$IMAGE_NAME-update.zip > factory_update_param.aml
           cp $INSTALL_SRC_DIR/files/recovery.img .
-          cp $INSTALL_SRC_DIR/files/aml_autoscript .
+          if [ -f $INSTALL_SRC_DIR/files/aml_autoscript ]; then
+            cp $INSTALL_SRC_DIR/files/aml_autoscript .
+          fi
           zip -q $TARGET_IMG/$IMAGE_NAME.zip *
           popd > /dev/null
         fi

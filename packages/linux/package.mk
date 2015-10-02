@@ -48,16 +48,22 @@ esac
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
+fi
+
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
 
-if [ "$BOOTLOADER" = "u-boot" ]; then
+if [ "$BOOTLOADER" = "u-boot" -o "$LINUX" = "amlogic" ]; then
   KERNEL_IMAGE="$KERNEL_UBOOT_TARGET"
 else
   KERNEL_IMAGE="bzImage"
 fi
 
 post_patch() {
-  if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+  if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+    KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
+  elif [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
     KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
   else
     KERNEL_CFG_FILE=$PKG_DIR/config/$PKG_NAME.$TARGET_ARCH.conf
@@ -70,7 +76,10 @@ post_patch() {
          $PKG_BUILD/Makefile
 
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
-  sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+
+  if [ ! "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
+  fi
 
   # set default hostname based on $DISTRONAME
     sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
@@ -140,10 +149,16 @@ make_target() {
   fi
 
   LDFLAGS="" make $KERNEL_IMAGE $KERNEL_MAKE_EXTRACMD
+
+  if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
+    LDFLAGS="" mkbootimg --kernel arch/arm/boot/$KERNEL_IMAGE --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+      --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
+    mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
+  fi
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -a -f "arch/arm/boot/dts/*.dtb" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :

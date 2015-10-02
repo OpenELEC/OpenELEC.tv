@@ -1,0 +1,11 @@
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="meson8b_m201_1G.dtd meson8b_m201_1G.dtb"
+
+# Build Android kernel image using mkbootimg
+  BUILD_ANDROID_BOOTIMG="yes"
+
+# Path to a file that will be passed as the --second parameter to Android mkbootimg
+  ANDROID_BOOTIMG_SECOND="arch/arm/boot/dts/amlogic/meson8b_m201_1G.dtb"
+
+# OpenGL-ES implementation to use (no / bcm2835-driver / opengl-meson6 / opengl-meson8)
+  OPENGLES="opengl-meson8"

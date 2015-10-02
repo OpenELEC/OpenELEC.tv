@@ -332,7 +332,7 @@
     $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
   }
 
-  update() {
+  update_file() {
     if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
       echo "updating $1..."
       mount -o remount,rw /flash
@@ -342,6 +342,21 @@
         mount -o remount,ro /flash
       fi
       sync
+    fi
+  }
+
+  update_partition() {
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+      echo "updating $1..."
+      case $IMAGE_KERNEL in
+        /dev/mtd*)
+          flash_eraseall "$3"
+          nandwrite -p "$3" "$UPDATE_DIR/$2"
+          ;;
+        *)
+          dd if="$UPDATE_DIR/$2" of="$3"
+          ;;
+      esac
     fi
   }
 
@@ -369,6 +384,12 @@
       insmod "$MODULE_DIR/$module.ko" || \
         progress "... Failed to load kernel module $module, skipping"
     done
+  }
+
+  init_console() {
+    # clear screen and hide cursor
+    clear
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
   }
 
   load_splash() {
@@ -457,7 +478,7 @@
   check_disks() {
     if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
       progress "Checking disk(s): $RUN_FSCK_DISKS"
-        /sbin/fsck -T -M -p -a $RUN_FSCK_DISKS > /dev/null 2>&1
+        /sbin/fsck -T -M -y $RUN_FSCK_DISKS > /dev/null 2>&1
         FSCK_RET="$?"
 
         # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
@@ -602,7 +623,16 @@
       # get sizes
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
-      OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+
+      case $IMAGE_KERNEL in
+        /dev/*)
+          OLD_KERNEL="0"
+          ;;
+        *)
+          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+          ;;
+      esac
+
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
       NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
@@ -624,8 +654,15 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-          update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          case $IMAGE_KERNEL in
+            /dev/*)
+              update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+              ;;
+            *)
+              update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+              ;;
+          esac
+          update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           do_reboot
@@ -679,6 +716,7 @@
   # main boot sequence
   for BOOT_STEP in \
       load_modules \
+      init_console \
       check_disks \
       mount_flash \
       load_splash \
