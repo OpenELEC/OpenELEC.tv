@@ -5,18 +5,6 @@
   # The TARGET_CPU variable controls which processor should be targeted for
   # generated code.
     case $TARGET_ARCH in
-      i386)
-        # (AMD CPUs)    k8 k8-sse3 opteron opteron-sse3 athlon64 athlon64-sse3
-        #               athlon-fx athlon-mp athlon-xp athlon-4
-        #               athlon-tbird athlon k6-3 k6-2 k6 geode
-        # (Intel CPUs)  atom core2 nocona prescott pentium4[m] pentium3[m]
-        #               pentium-m pentium2 pentiumpro pentium-mmx pentium
-        #               i686 i586 i486 i386
-        # (VIA CPUs)    c3 c3-2
-        #
-        TARGET_CPU="i686"
-        ;;
-
       x86_64)
         # (AMD CPUs)    k8 k8-sse3 opteron opteron-sse3 athlon64 athlon64-sse3
         #               athlon-fx amdfam10 barcelona
@@ -79,8 +67,8 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (no / Mesa)
-    OPENGL="Mesa"
+  # OpenGL(X) implementation to use (no / mesa)
+    OPENGL="mesa"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
     OPENGLES="no"
@@ -94,6 +82,9 @@
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
     KODIPLAYER_DRIVER="default"
 
+  # KODI DCADEC support (yes / no)
+    DCADEC_SUPPORT="yes"
+
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
 
@@ -102,3 +93,8 @@
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
     FIRMWARE="misc-firmware wlan-firmware dvb-firmware iwlwifi-firmware"
 
+  # additional drivers to install:
+  # for a list of additinoal drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS bcm_sta"

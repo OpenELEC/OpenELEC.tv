@@ -31,7 +31,7 @@
         # fpa fpe2 fpe3 maverick vfp vfpv3 vfpv3-fp16 vfpv3-d16 vfpv3-d16-fp16
         # vfpv3xd vfpv3xd-fp16 neon neon-fp16 vfpv4 vfpv4-d16 fpv4-sp-d16
         # neon-vfpv4.
-        TARGET_FPU="neon"
+        TARGET_FPU="neon-fp16"
         ;;
     esac
 
@@ -51,7 +51,7 @@
     KERNEL_UBOOT_TARGET="uImage-dtb"
 
   # Kernel extra targets to build
-    KERNEL_UBOOT_EXTRA_TARGET="meson6_g18.dtd"
+    KERNEL_UBOOT_EXTRA_TARGET="wetek_play.dtd"
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=""
@@ -87,7 +87,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (no / Mesa)
+  # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q / opengl-meson6)
@@ -102,13 +102,16 @@
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
-  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
+  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
   # Space separated list is supported,
-  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
+  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
     GRAPHIC_DRIVERS=""
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap / libamcodec)
     KODIPLAYER_DRIVER="libamcodec"
+
+  # KODI DCADEC support (yes / no)
+    DCADEC_SUPPORT="yes"
 
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
@@ -117,12 +120,12 @@
   # for a list of additinoal drivers see packages/linux-drivers
   # Space separated list is supported,
   # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU"
+    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU wetekdvb"
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-    FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
+    FIRMWARE="misc-firmware wlan-firmware dvb-firmware brcmfmac_sdio-firmware"
 
   # build and install ATV IR remote support (yes / no)
     ATVCLIENT_SUPPORT="no"
@@ -144,18 +147,6 @@
 
   # build with installer (yes / no)
     INSTALLER_SUPPORT="no"
-
-  # build and install 'RSXS' Screensaver (yes / no)
-    KODI_SCR_RSXS="no"
-
-  # build and install 'ProjectM' Visualization (yes / no)
-    KODI_VIS_PROJECTM="no"
-
-  # build and install 'GOOM' Visualization (yes / no)
-    KODI_VIS_GOOM="no"
-
-  # build and install 'FishBMC' Visualization (yes / no)
-    KODI_VIS_FISHBMC="no"
 
   # extra build dependeices
     EXTRA_DEPS="mkimage"

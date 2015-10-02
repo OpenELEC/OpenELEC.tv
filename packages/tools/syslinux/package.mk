@@ -19,7 +19,7 @@
 PKG_NAME="syslinux"
 PKG_VERSION="6.03"
 PKG_REV="1"
-PKG_ARCH="i386 x86_64"
+PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="http://syslinux.zytor.com/"
 PKG_URL="http://www.kernel.org/pub/linux/utils/boot/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -74,9 +74,6 @@ makeinstall_host() {
     cp bios/linux/syslinux $ROOT/$TOOLCHAIN/bin
 
   mkdir -p $ROOT/$TOOLCHAIN/share/syslinux
-    cp bios/com32/menu/vesamenu.c32 $ROOT/$TOOLCHAIN/share/syslinux
-    cp bios/com32/lib/libcom32.c32 $ROOT/$TOOLCHAIN/share/syslinux
-    cp bios/com32/libutil/libutil.c32 $ROOT/$TOOLCHAIN/share/syslinux
     cp bios/mbr/mbr.bin $ROOT/$TOOLCHAIN/share/syslinux
     cp bios/mbr/gptmbr.bin $ROOT/$TOOLCHAIN/share/syslinux
     cp efi64/efi/syslinux.efi $ROOT/$TOOLCHAIN/share/syslinux/bootx64.efi

@@ -37,9 +37,26 @@
   </section>
 
   <section id="pvr">
+    <category id="epg">
+      <group id="2">
+        <setting id="epg.preventupdateswhileplayingtv">
+          <default>true</default>
+        </setting>
+        <setting id="epg.ignoredbforclient">
+          <default>true</default>
+        </setting>
+      </group>
+    </category>
+    <category id="pvrplayback">
+      <group id="1">
+        <setting id="pvrplayback.signalquality">
+          <default>false</default>
+        </setting>
+      </group>
+    </category>
     <category id="pvrpowermanagement">
       <group id="2">
-        <setting id="pvrpowermanagement.setwakeupcmd" type="string" label="19245" help="">
+        <setting id="pvrpowermanagement.setwakeupcmd">
           <default>/usr/bin/setwakeup.sh</default>
         </setting>
       </group>

@@ -53,12 +53,14 @@
     KERNEL_UBOOT_EXTRA_TARGET=""
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
-    KERNEL_MAKE_EXTRACMD=""
+    KERNEL_MAKE_EXTRACMD="dtbs"
 
   # Kernel to use. values can be:
   # default:  default mainline kernel
     LINUX="default"
 
+  # NOOBS supported hex versions
+    NOOBS_HEX="2,3,4,5,6,7,8,9,d,e,f,10,11,12,14,19"
 
 ################################################################################
 # setup build defaults
@@ -87,7 +89,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (no / Mesa)
+  # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
@@ -102,13 +104,16 @@
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
-  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
+  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
   # Space separated list is supported,
-  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
+  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
     GRAPHIC_DRIVERS=""
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
     KODIPLAYER_DRIVER="bcm2835-driver"
+
+  # KODI DCADEC support (yes / no)
+    DCADEC_SUPPORT="yes"
 
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
@@ -136,17 +141,16 @@
   # build with installer (yes / no)
     INSTALLER_SUPPORT="no"
 
-  # build and install 'RSXS' Screensaver (yes / no)
-    KODI_SCR_RSXS="no"
-
-  # build and install 'ProjectM' Visualization (yes / no)
-    KODI_VIS_PROJECTM="no"
-
-  # build and install 'GOOM' Visualization (yes / no)
-    KODI_VIS_GOOM="no"
-
-  # build and install 'FishBMC' Visualization (yes / no)
-    KODI_VIS_FISHBMC="no"
-
   # kernel image name
     KERNEL_NAME="kernel.img"
+
+  # additional drivers to install:
+  # for a list of additinoal drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS"
+
+  # set up serial console when building a development image
+    if [ "$DEVEL_VERSION" = "devel" ] ; then
+      EXTRA_CMDLINE="console=ttyAMA0,115200"
+    fi

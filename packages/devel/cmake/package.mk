@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="cmake"
-PKG_VERSION="3.0.2"
+PKG_VERSION="3.3.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.cmake.org/"
-PKG_URL="http://www.cmake.org/files/v3.0/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="http://www.cmake.org/files/v3.3/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
@@ -34,8 +34,11 @@ PKG_AUTORECONF="no"
 
 configure_host() {
   ../configure --prefix=$ROOT/$TOOLCHAIN \
-               --no-qt-gui \
+               --no-qt-gui --no-system-libs \
                -- \
+               -DCMAKE_C_FLAGS="-O2 -Wall -pipe -Wno-format-security" \
+               -DCMAKE_CXX_FLAGS="-O2 -Wall -pipe -Wno-format-security" \
+               -DCMAKE_EXE_LINKER_FLAGS="$HOST_LDFLAGS" \
                -DBUILD_CursesDialog=0
 }
 
@@ -47,6 +50,9 @@ post_makeinstall_host() {
 SET(CMAKE_SYSTEM_NAME Linux)
 #this one not so much
 SET(CMAKE_SYSTEM_VERSION 1)
+
+# processor (or hardware) of the target system
+SET(CMAKE_SYSTEM_PROCESSOR  $TARGET_ARCH)
 
 # specify the cross compiler
 SET(CMAKE_C_COMPILER   $TARGET_CC)

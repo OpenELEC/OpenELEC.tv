@@ -35,7 +35,7 @@ Type=nfs
 
 
 [Install]
-# The target is used by 'servicectl enable <name_of_this_file.mount>' to link
+# The target is used by 'systemctl enable <name_of_this_file.mount>' to link
 # this service to a runlevel for starting on boot. usually 'multi-user.target'
 # is ok here.
 WantedBy=multi-user.target
@@ -46,5 +46,5 @@ WantedBy=multi-user.target
 # as extension.
 # This means, if we want mount to "/storage/movies2" (see above "Where=/storage/movies2")
 # then this file must be renamed to 'storage-movies2.mount' and can be enabled via ssh with the
-# command 'servicectl enable storage-movies2.mount'
+# command 'systemctl enable storage-movies2.mount'
 

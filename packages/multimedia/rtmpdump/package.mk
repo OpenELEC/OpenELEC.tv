@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="rtmpdump"
-PKG_VERSION="e0056c5"
+PKG_VERSION="a107cef"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -84,4 +84,8 @@ makeinstall_target() {
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/sbin
+
+  # to be removed: hack for "compatibility"
+  mkdir -p $INSTALL/usr/lib
+    ln -sf librtmp.so.1 $INSTALL/usr/lib/librtmp.so.0
 }

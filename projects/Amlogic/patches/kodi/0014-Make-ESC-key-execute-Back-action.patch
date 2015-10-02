@@ -1,0 +1,33 @@
+From dbf6373b5cdee382b7afe64f9d4099f6c76204dd Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Tue, 14 Jul 2015 16:01:06 +0300
+Subject: [PATCH 14/15] Make ESC key execute Back action
+
+---
+ system/keymaps/keyboard.xml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/system/keymaps/keyboard.xml b/system/keymaps/keyboard.xml
+index 460634a..6e178a5 100644
+--- a/system/keymaps/keyboard.xml
++++ b/system/keymaps/keyboard.xml
+@@ -57,7 +57,7 @@
+       <key id='65446'>Back</key>
+       <m>ActivateWindow(PlayerControls)</m>
+       <s>ActivateWindow(shutdownmenu)</s>
+-      <escape>PreviousMenu</escape>
++      <escape>Back</escape>
+       <i>Info</i>
+       <menu>ContextMenu</menu>
+       <c>ContextMenu</c>
+@@ -172,6 +172,7 @@
+   <VirtualKeyboard>
+     <keyboard>
+       <backspace>Backspace</backspace>
++      <escape>PreviousMenu</escape>
+     </keyboard>
+   </VirtualKeyboard>
+   <MyTVChannels>
+-- 
+1.9.1
+

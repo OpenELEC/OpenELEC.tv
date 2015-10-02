@@ -18,38 +18,14 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# Force 720p display mode at startup
-echo 720p > /sys/class/display/mode
-
-# Enable framebuffer device
-echo 0 > /sys/class/graphics/fb0/blank
-
-# Disable framebuffer scaling
-echo 0 > /sys/class/graphics/fb0/free_scale
-
-# Set framebuffer geometry
-fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
-
-# Set framebuffer size in CVBS mode to match the resolution,
-# for splash screen to be shown correctly
-hpd_state=$(cat /sys/class/amhdmitx/amhdmitx0/hpd_state)
-if [ "$hpd_state" != "1" ]; then # HDMI is not connected
-  display_height=480
-  display_mode=$(cat /sys/class/display/mode)
-  if [ "$display_mode" = "576cvbs" ]; then
-    display_height=576
-  fi
-  fbset -fb /dev/fb0 -g 720 "$display_height" 720 "$display_height" 32
-  fbset -fb /dev/fb1 -g 720 "$display_height" 720 "$display_height" 32
-fi
-
-# Include deinterlacer into default VFM map
-echo rm default > /sys/class/vfm/map
-echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map
+hdmimode=720p
 
 # Parse command line arguments
 for arg in $(cat /proc/cmdline); do
   case $arg in
+    hdmimode=*)
+      hdmimode="${arg#*=}"
+      ;;
     scaling_governor=*)
       scaling_governor="${arg#*=}"
       ;;
@@ -62,13 +38,30 @@ for arg in $(cat /proc/cmdline); do
   esac
 done
 
+echo "$hdmimode" > /sys/class/display/mode
+
+# Enable framebuffer device
+echo 0 > /sys/class/graphics/fb0/blank
+
+# Disable framebuffer scaling
+echo 0 > /sys/class/graphics/fb0/free_scale
+
+# Set framebuffer geometry to match the resolution
+case "$hdmimode" in
+  720*)
+    fbset -fb /dev/fb0 -g 1280 720 1280 1440 32
+    ;;
+  1080*)
+    fbset -fb /dev/fb0 -g 1920 1080 1920 2160 32
+    ;;
+esac
+
+# Include deinterlacer into default VFM map
+echo rm default > /sys/class/vfm/map
+echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map
+
 # Boot with performance governor, then switch to the governor specified in the kernel command line
-cpu_idx=0
-while [ $cpu_idx -lt 128 ]; do
-  cpufreq="/sys/devices/system/cpu/cpu$cpu_idx/cpufreq"
-  if [ ! -d "$cpufreq" ]; then
-    break
-  fi
+for cpufreq in /sys/devices/system/cpu/cpu[0-9]*/cpufreq; do
   if [ -n "$scaling_governor" ]; then
     echo "$scaling_governor" > "$cpufreq/scaling_governor"
   fi
@@ -78,5 +71,4 @@ while [ $cpu_idx -lt 128 ]; do
   if [ -n "$scaling_max_freq" ]; then
     echo "$scaling_max_freq" > "$cpufreq/scaling_max_freq"
   fi
-  cpu_idx=`expr $cpu_idx + 1`
 done

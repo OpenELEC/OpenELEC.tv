@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="sqlite"
-PKG_VERSION="autoconf-3080801"
+PKG_VERSION="autoconf-3081101"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="PublicDomain"
-PKG_SITE="http://www.sqlite.org/"
-PKG_URL="http://sqlite.org/2015/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_SITE="https://www.sqlite.org/"
+PKG_URL="https://www.sqlite.org/2015/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="database"
@@ -63,6 +63,10 @@ PKG_AUTORECONF="yes"
 # mmap_size pragma.
   CFLAGS="$CFLAGS -DSQLITE_TEMP_STORE=3 -DSQLITE_DEFAULT_MMAP_SIZE=268435456"
 
+pre_make_target() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-shared \

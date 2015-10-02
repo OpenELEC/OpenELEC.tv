@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="libva"
-PKG_VERSION="1.5.0"
+PKG_VERSION="1.6.1"
 PKG_REV="1"
-PKG_ARCH="i386 x86_64"
+PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="http://freedesktop.org/wiki/Software/vaapi"
-PKG_URL="http://cgit.freedesktop.org/vaapi/libva/snapshot/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libX11 libXext libXfixes libdrm Mesa glu"
+PKG_URL="http://www.freedesktop.org/software/vaapi/releases/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_TARGET="toolchain libX11 libXext libXfixes libdrm mesa glu"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="libva: The main motivation for VAAPI (Video Acceleration API) is to enable hardware accelerated video decode/encode at various entry-points (VLD, IDCT, Motion Compensation etc.) for the prevailing coding standards today (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3)."
@@ -41,12 +41,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
                            --disable-wayland \
                            --disable-dummy-driver \
                            --with-drivers-path=/usr/lib/va"
-
-pre_configure_target() {
-# todo: libva fails to build in subdirs
-  cd $ROOT/$PKG_BUILD
-  rm -rf .$TARGET_NAME
-}
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin

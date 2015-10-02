@@ -20,8 +20,8 @@ PKG_NAME="flac"
 PKG_VERSION="1.3.1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="LGPL"
-PKG_SITE="http://flac.sourceforge.net/"
+PKG_LICENSE="GPLv2"
+PKG_SITE="https://xiph.org/flac/"
 PKG_URL="http://downloads.xiph.org/releases/flac/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain libogg"
 PKG_PRIORITY="optional"
@@ -45,7 +45,7 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --with-ogg=$SYSROOT_PREFIX/usr \
                            --with-gnu-ld"
 
-if [ $TARGET_ARCH = "i386" -o $TARGET_ARCH = "x86_64" ]; then
+if [ $TARGET_ARCH = "x86_64" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-sse"
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-sse"

@@ -17,20 +17,6 @@
 ################################################################################
 
 PKG_NAME="linux"
-case "$LINUX" in
-  amlogic)
-    PKG_VERSION="amlogic-3.10-fa4c242"
-    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-    ;;
-  imx6)
-    PKG_VERSION="cuboxi-3.14-dc5edb8"
-    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-    ;;
-  *)
-    PKG_VERSION="3.18.3"
-    PKG_URL="http://www.kernel.org/pub/linux/kernel/v3.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-    ;;
-esac
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -43,13 +29,24 @@ PKG_PRIORITY="optional"
 PKG_SECTION="linux"
 PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
 PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
+case "$LINUX" in
+  amlogic)
+    PKG_VERSION="amlogic-3.10-a9cef51"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
+  imx6)
+    PKG_VERSION="cuboxi-3.14-ea83bda"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
+    ;;
+  *)
+    PKG_VERSION="4.1.8"
+    PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
+esac
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET elfutils Python"
-fi
 
 if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
@@ -86,11 +83,6 @@ post_patch() {
 
   # set default hostname based on $DISTRONAME
     sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
-
-  # disable PPP support if not enabled
-  if [ ! "$PPTP_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_PPP=.*$|# CONFIG_PPP is not set|" $PKG_BUILD/.config
-  fi
 
   # disable swap support if not enabled
   if [ ! "$SWAP_SUPPORT" = yes ]; then
@@ -146,6 +138,7 @@ make_target() {
   rm -f $INSTALL/lib/modules/*/source
 
   ( cd $ROOT
+    rm -rf $ROOT/$BUILD/initramfs
     $SCRIPTS/install initramfs
   )
 
@@ -162,33 +155,6 @@ make_target() {
       --second "$ANDROID_BOOTIMG_SECOND" --output arch/arm/boot/boot.img
     mv -f arch/arm/boot/boot.img arch/arm/boot/$KERNEL_IMAGE
   fi
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    ( cd tools/perf
-
-      # dont use some optimizations because of build problems
-        strip_lto
-        LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
-
-      export FLAGSGLIBC="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include"
-      export LDFLAGS="$LDFLAGS -L$SYSROOT_PREFIX/lib -L$SYSROOT_PREFIX/usr/lib"
-
-      make CROSS_COMPILE="$TARGET_PREFIX" \
-           ARCH="$TARGET_ARCH" \
-           V=1 \
-           DEBUG=false \
-           NLS=false \
-           NO_GTK2=true \
-           NO_LIBELF=false \
-           NO_LIBPERL=true \
-           NO_LIBPYTHON=false \
-           PYTHON=$SYSROOT_PREFIX/usr/bin/python \
-           WERROR=0 \
-           NO_SLANG=1 \
-           EXTRA_CFLAGS="$CFLAGS"
-    )
-  fi
 }
 
 makeinstall_target() {
@@ -197,15 +163,13 @@ makeinstall_target() {
     for dtb in arch/arm/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
     done
-  fi
-
-  if [ "$PERF_SUPPORT" = "yes" -a "$DEVTOOLS" = "yes" ]; then
-    mkdir -p $INSTALL/usr/bin
-      cp -P tools/perf/perf $INSTALL/usr/bin/
-
-    mkdir -p $INSTALL/usr/libexec/perf-core/scripts/python/
-      cp -P tools/perf/perf-archive $INSTALL/usr/libexec/perf-core/
-      cp -rP tools/perf/scripts/python/* $INSTALL/usr/libexec/perf-core/scripts/python/
+  elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+    mkdir -p $INSTALL/usr/share/bootloader/overlays
+    cp -p arch/arm/boot/dts/*.dtb $INSTALL/usr/share/bootloader
+    for dtb in arch/arm/boot/dts/overlays/*.dtb; do
+      cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
+    done
+    cp -p arch/arm/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
   fi
 }
 
@@ -237,6 +201,4 @@ makeinstall_init() {
 post_install() {
   mkdir -p $INSTALL/lib/firmware/
     ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
-
-  enable_service cpufreq-threshold.service
 }

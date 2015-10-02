@@ -55,8 +55,15 @@
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
   SYSTEM_TORAM_LIMIT=1024000
 
+  LIVE="no"
+
   # hide kernel log messages on console
   echo '1 4 1 7' > /proc/sys/kernel/printk
+
+  # set ondemand up_threshold
+  if [ -e /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ] ; then
+    echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+  fi
 
   # run platform_init script if exists
   if [ -f "./platform_init" ]; then
@@ -128,6 +135,9 @@
         ;;
       noram)
         SYSTEM_TORAM=no
+        ;;
+      live)
+        LIVE=yes
         ;;
       overlay)
         OVERLAY=yes
@@ -286,6 +296,10 @@
     mount_common "$NFS_EXPORT" "$2" "$3,nolock,soft,timeo=3,retrans=2,rsize=32768,wsize=32768,$NFS_OPTIONS" "nfs"
   }
 
+  mount_ubifs() {
+    mount_common "$1" "$2" "$3" "ubifs"
+  }
+
   mount_part() {
     # Mount a local or network filesystem
     # $1:[TYPE=]target, $2:mountpoint, $3:mount options, [$4:fs type]
@@ -293,6 +307,11 @@
 
     MOUNT_TARGET="${1#*=}"
     case $1 in
+      /dev/ubi*)
+        MOUNT_CMD="mount_ubifs"
+        MOUNT_TARGET="$1"
+        RUN_FSCK="no"
+        ;;
       LABEL=*|UUID=*|/*)
         MOUNT_CMD="mount_common"
         MOUNT_TARGET="$1"
@@ -424,28 +443,59 @@
     /bin/busybox reboot
   }
 
+  force_fsck() {
+    echo "Filesystem corruption has been detected"
+    echo "To prevent an automatic repair attempt continuing"
+    echo "press any key or power off your system within the next 120 seconds"
+    echo ""
+    read -t120 -n1
+    # The exit status is 0 if input is available
+    # The exit status is greater than 128 if the timeout is exceeded
+    if [ "$?" -ne "0" -o "$?" -gt "128" ] ; then
+      echo "repairing filesystem.."
+      echo ""
+      /sbin/fsck -T -M -y $RUN_FSCK_DISKS
+      FSCK_RET="$?"
+      if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
+        # fubar
+        echo "Forced fsck failed. Your system is broken beyond repair"
+        echo "Please re-install OpenELEC"
+        echo ""
+        echo "Press enter to shutdown now"
+        echo ""
+        read fubar
+        poweroff
+      fi
+      do_reboot
+    else
+      echo "shutting down..."
+      sleep 5
+      sync
+      poweroff
+    fi
+  }
+
   check_disks() {
     if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
       progress "Checking disk(s): $RUN_FSCK_DISKS"
         /sbin/fsck -T -M -y $RUN_FSCK_DISKS > /dev/null 2>&1
         FSCK_RET="$?"
 
-        case "$FSCK_RET" in
-          0) # no errors found
-            progress "no filesystem errors found, continuing..."
-            ;;
-          1) # filesystem errors corrected
-            progress "filesystem errors corrected , continuing..."
-            ;;
-          2) # reboot needed
-            echo "filesystem repaired, reboot needed..."
-            do_reboot
-            ;;
-          4) # errors left
-            error "could not repair filesystem, dropping to debug shell, try to run 'fsck' manually"
-            do_reboot
-            ;;
-        esac
+        # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
+        if [ "$(( $FSCK_RET & 4 ))" = 4 ] ; then
+          # errors left
+          force_fsck
+        elif [ "$(( $FSCK_RET & 2 ))" = 2 ] ; then
+          # reboot needed
+          echo "filesystem repaired, reboot needed..."
+          do_reboot
+        elif [ "$(( $FSCK_RET & 1 ))" = 1 ] ; then
+          # filesystem errors corrected
+          progress "filesystem errors corrected , continuing..."
+        elif [ "$(( $FSCK_RET & 0 ))" = 0 ] ; then
+          # no errors found
+          progress "no filesystem errors found, continuing..."
+        fi
     fi
   }
 
@@ -481,6 +531,12 @@
   mount_storage() {
     progress "Mounting storage"
 
+    if [ "$LIVE" = "yes" ]; then
+      # mount tmpfs and exit early. disk=xx is not allowed in live mode
+      mount -t tmpfs none /storage
+      return
+    fi
+
     wakeonlan
 
     if [ -n "$disk" ]; then
@@ -501,6 +557,9 @@
         fi
       fi
       mount_part "$disk" "/storage" "rw,noatime"
+    else
+      # /storage should always be writable
+      mount -t tmpfs none /storage
     fi
   }
 
@@ -633,10 +692,7 @@
     fi
 
     mount --move /flash /sysroot/flash
-
-    if [ -n "$disk" ]; then
-      mount --move /storage /sysroot/storage
-    fi
+    mount --move /storage /sysroot/storage
 
     if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
       echo ""

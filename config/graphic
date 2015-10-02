@@ -1,9 +1,3 @@
-if [ "$DISPLAYSERVER" = "x11" ]; then
-  SDL_SUPPORT="yes"
-else
-  SDL_SUPPORT="no"
-fi
-
 if [ "$OPENGL" = no ]; then
   OPENGL_SUPPORT="no"
 else
@@ -16,26 +10,12 @@ else
   OPENGLES_SUPPORT="yes"
 fi
 
-if [ "$SDL_SUPPORT" = no ]; then
-  JOYSTICK_SUPPORT="no"
-fi
-
-if [ "$OPENGL_SUPPORT" = no ]; then
-  KODI_SCR_RSXS="no"
-  KODI_VIS_PROJECTM="no"
-  KODI_VIS_GOOM="no"
-fi
-
 get_graphicdrivers() {
   if [ "$GRAPHIC_DRIVERS" = "all" ]; then
     GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nvidia"
   fi
 
   for drv in $GRAPHIC_DRIVERS; do
-    if [ "$drv" = "dove" ]; then
-      XORG_DRIVERS="$XORG_DRIVERS dove"
-    fi
-
     if [ "$drv" = "i915" ]; then
       DRI_DRIVERS="$DRI_DRIVERS,i915"
       XORG_DRIVERS="$XORG_DRIVERS intel"
@@ -48,16 +28,6 @@ get_graphicdrivers() {
       XORG_DRIVERS="$XORG_DRIVERS intel"
       COMPOSITE_SUPPORT="yes"
       VAAPI_SUPPORT="yes"
-    fi
-
-    if [ "$drv" = "nouveau" ]; then
-      # DRI_DRIVERS are only used for NV04 - NV20 (which we dont want to support anymore)
-      DRI_DRIVERS="$DRI_DRIVERS"
-      # GALLIUM_DRIVERS are used for all cards from NV30 to nvc0
-      # see also http://nouveau.freedesktop.org/wiki/MesaDrivers/
-      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,nouveau"
-      XORG_DRIVERS="$XORG_DRIVERS nouveau"
-      COMPOSITE_SUPPORT="yes"
     fi
 
     if [ "$drv" = "nvidia" ]; then

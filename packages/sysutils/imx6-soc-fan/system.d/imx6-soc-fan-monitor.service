@@ -1,0 +1,8 @@
+[Unit]
+Description=i.MX6 SoC fan monitor service
+
+[Service]
+ExecStart=/usr/bin/imx6-soc-fan-monitor
+
+[Install]
+WantedBy=multi-user.target
