@@ -45,3 +45,7 @@ if [ "$MEDIACENTER" = "kodi" ]; then
 # other packages
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET OpenELEC-settings"
 fi
+
+
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pvr.demo pvr.filmon pvr.hts pvr.iptvsimple pvr.mythtv pvr.nextpvr pvr.njoy pvr.pctv pvr.stalker pvr.vdr.vnsi pvr.wmc"
+
