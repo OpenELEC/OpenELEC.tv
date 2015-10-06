@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="libcec"
-PKG_VERSION="3.0.0"
+PKG_VERSION="3.0.1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPLv2"
 PKG_SITE="http://libcec.pulse-eight.com/"
-PKG_URL="http://mirrors.xbmc.org/build-deps/sources/$PKG_NAME-$PKG_VERSION-6.tar.gz"
+PKG_URL="https://github.com/Pulse-Eight/libcec/archive/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain systemd lockdev platform"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
@@ -31,6 +31,12 @@ PKG_LONGDESC="libCEC is an open-source dual licensed library designed for commun
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+unpack() {
+ mkdir -p $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+ tar xf $ROOT/$SOURCES/libcec/$PKG_NAME-$PKG_VERSION.tar.gz --strip-components=1 -C $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+}
+
 
 if [ "$KODIPLAYER_DRIVER" = "bcm2835-driver" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
@@ -61,8 +67,4 @@ configure_target() {
         -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
         $EXTRA_CMAKE_OPTS \
         ..
-}
-
-post_makeinstall_target() {
-  mv $INSTALL/usr/lib/python2.7/dist-packages $INSTALL/usr/lib/python2.7/site-packages
 }
