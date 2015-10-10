@@ -1,0 +1,376 @@
+diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+index 3c6f729..cf9f906
+--- a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+@@ -314,6 +314,7 @@ void root_func(){
+ //$$ L2 PROP_STR = "status"
+     rtc{
+ 		compatible = "amlogic,aml_rtc";
++		sec_adjust = <1735>;
+ 		status = "okay";
+ 	};
+ 
+@@ -405,19 +406,19 @@ void root_func(){
+ 		irq_trigger_type = "GPIO_IRQ_HIGH";
+ 		power_on_pin = "GPIOAO_6";
+ 		power_on_pin2 = "GPIOX_11";
+-		clock_32k_pin = "GPIOX_10";
++//		clock_32k_pin = "GPIOX_10";
+ 	};
+ 
+ //$$ DEVICE="wifi_power"
+ //$$ L2 PROP_STR = "status"
+ //$$ L2 PROP_STR = "power_gpio"
+-	wifi_power{
+-            compatible = "amlogic,wifi_power";
+-            dev_name = "wifi_power";
+-            status = "okay";
+-            power_gpio = "GPIOAO_6";
+-            power_gpio2 = "GPIOX_11";
+-	};
++//	wifi_power{
++//            compatible = "amlogic,wifi_power";
++//            dev_name = "wifi_power";
++//            status = "okay";
++//            power_gpio = "GPIOAO_6";
++//            power_gpio2 = "GPIOX_11";
++//	}; 
+ 
+ /// ***************************************************************************************
+ ///	-	MMC
+@@ -477,7 +478,7 @@ sdio{
+             gpio_dat3 = "CARD_4";
+             jtag_pin = "CARD_0";
+             gpio_cd = "CARD_6";
+-            gpio_ro = "GPIOZ_0";
++            //gpio_ro = "GPIOZ_0";
+             irq_in = <3>;
+             irq_out = <5>;
+             card_type = <5>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
+@@ -525,7 +526,7 @@ sdio{
+             port = <0>;          /*0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
+             pinname = "sdio";
+             ocr_avail = <0x200000>;          /*VDD voltage 3.3 ~ 3.4 */
+-            caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE";
++            caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_SDIO_IRQ","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE";
+             f_min = <300000>;
+             f_max = <50000000>;
+             max_req_size = <0x20000>;          /**128KB*/
+@@ -655,19 +656,19 @@ sdio{
+ //$$ L3 PROP_U32 2 ="reg"
+ //$$ L3 PROP_STR = "pinctrl-names"
+ //$$ L2 PROP_CHOICE "I2C_AO_pin_match" = "pinctrl-0"
+-	i2c@c8100500{ /*I2C-AO*/
+-		compatible = "amlogic,aml_i2c";
+-		dev_name = "i2c-AO";
+-		status = "ok";
+-		reg = <0xc8100500 0x1d>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		device_id = <0>;
+-		pinctrl-names="default";
+-		pinctrl-0=<&ao_i2c_master>;
+-		use_pio = <0>;
+-		master_i2c_speed = <100000>;
+-	};
++//	i2c@c8100500{ /*I2C-AO*/
++//		compatible = "amlogic,aml_i2c";
++//		dev_name = "i2c-AO";
++//		status = "ok";
++//		reg = <0xc8100500 0x1d>;
++//		#address-cells = <1>;
++//		#size-cells = <0>;
++//		device_id = <0>;
++//		pinctrl-names="default";
++//		pinctrl-0=<&ao_i2c_master>;
++//		use_pio = <0>;
++//		master_i2c_speed = <100000>;
++//	};
+ 
+ //$$ DEVICE = "I2C_A"
+ //$$ L2 PROP_STR = "status"
+@@ -761,95 +762,83 @@ sdio{
+             dvfs_table  = <
+             /* NOTE: frequent in this table must be ascending order */
+             /* frequent(Khz)    min_uV      max_uV                  */
+-                  96000         825000      825000
+-                 192000         825000      825000
+-                 312000         825000      825000
+-                 408000         825000      825000
+-                 504000         825000      825000
+-                 600000         850000      850000
+-                 720000         850000      850000
+-                 816000         875000      875000
+-                1008000         925000      925000
+-                1200000         975000      975000
+-                1416000        1025000     1025000
++                  96000         860000      860000
++                 192000         860000      860000
++                 312000         860000      860000
++                 408000         860000      860000
++                 504000         860000      860000
++                 600000         860000      860000
++                 720000         860000      860000
++                 816000         880000      880000
++                1008000         930000      930000
++                1200000         980000      980000
++                1416000        1030000     1030000
+                 1608000        1100000     1100000
+-                1800000        1125000     1125000
+-                1992000        1150000     1150000
++                1800000        1130000     1130000
++                1992000        1140000     1140000
+             >;
+         };
+     };
+ 
+-//$$ DEVICE="arm_pmu"
++//$$ DEVICE="meson_vcck_dvfs_driver"
+ //$$ L2 PROP_STR = "status"
+-//$$ L2 PROP_U32 4*3 = "interrupts"
+-    arm_pmu {
+-        compatible = "arm,cortex-a9-pmu";
++//$$ L2 PROP_STR = "pinctrl-names"
++//$$ L2 PROP_CHOICE "meson_vcck_dvfs_pin_0_match" = "pinctrl-0"
++//$$ L2 PROP_U32 = "use_pwm"
++//$$ L2 PROP_U32 = "table_count"
++//$$ L2 PROP_U32 16*2 = "cs_voltage_table"
++	meson_vcck_dvfs_driver{
++        compatible = "amlogic, meson_vcck_dvfs";
++        dev_name = "meson_vcck_dvfs_driver";
+         status = "ok";
+-        interrupts = <0     137     0x04
+-                      0     138     0x04
+-                      0     153     0x04
+-                      0     154     0x04>;
+-    };
+-
+-    pmu {
+-        compatible = "amlogic, aml_pmu_prober";                 /* fixed for pmu driver, don't change   */
+-        #address-cells = <1>;
+-        #size-cells = <0>;
+-//$$ DEVICE = "Pmu_axp202"
+-//$$ L2 PROP_STR = "sub_type"
+-//$$ L2 PROP_STR = "i2c_bus"
+-//$$ L2 PROP_U32 = "reg"
+-//$$ L2 PROP_U32 = "soft_limit_to99"
+-//$$ L2 PROP_U32 = "ddr_voltage"
+-//$$ L2 PROP_U32 = "vddao_voltage"
+-//$$ L2 PROP_STR = "status"
+-//        axp202 { /* PMU for AXP */
+-//            compatible = "axp_mfd";                             /* for driver probe, must have          */
+-//            sub_type = "axp20_mfd";                             /** sub type of pmu family, must have    */
+-//            i2c_bus = "i2c_bus_ao";                             /** attached i2c bus, must have          */
+-//            reg = <0x34>;                                       /** device i2c address, must have        */
+-//            soft_limit_to99 = <0>;                              /** optional                             */
+-//            ddr_voltage   = <1500000>;                          /** default voltage for DDR, optional    */
+-//            vddao_voltage = <1200000>;                          /** default voltage for AO, optional     */
+-//            status = "disable";                                 /** status of pmu, only one should be OK */
+-//        };
+-//$$ DEVICE = "Pmu_aml1212"
+-//$$ L2 PROP_STR = "sub_type"
+-//$$ L2 PROP_STR = "i2c_bus"
+-//$$ L2 PROP_U32 = "reg"
+-//$$ L2 PROP_U32 = "soft_limit_to99"
+-//$$ L2 PROP_U32 = "ddr_voltage"
+-//$$ L2 PROP_U32 = "vddao_voltage"
+-//$$ L2 PROP_STR = "status"
+-//        aml1212{                                                /* PMU for AML1212, see comment above   */
+-//            compatible = "aml_pmu";                             /* for driver probe, must have          */
+-//            sub_type = "aml1212";                               /** sub type of pmu family, must have    */
+-//            i2c_bus = "i2c_bus_ao";                             /** attached i2c bus, must have          */
+-//            reg = <0x35>;                                       /** device i2c address, must have        */
+-//            soft_limit_to99 = <0>;                              /** optional                             */
+-//            ddr_voltage   = <1500000>;                          /** default voltage for DDR, optional    */
+-//            vddao_voltage = <1200000>;                          /** default voltage for AO, optional     */
+-//            status = "disable";                                 /** status of pmu, only one should be OK */
+-//        };
+-//$$ DEVICE = "Pmu_rn5t618"
+-//$$ L2 PROP_STR = "sub_type"
+-//$$ L2 PROP_STR = "i2c_bus"
+-//$$ L2 PROP_U32 = "reg"
+-//$$ L2 PROP_U32 = "soft_limit_to99"
+-//$$ L2 PROP_U32 = "ddr_voltage"
+-//$$ L2 PROP_U32 = "vddao_voltage"
+-//$$ L2 PROP_STR = "status"
+-        rn5t618{                                                /* PMU for RN5T618, see comment above   */
+-            compatible = "ricoh_pmu";                           /* for driver probe, must have          */
+-            sub_type = "rn5t618";                               /** sub type of pmu family, must have    */
+-            i2c_bus = "i2c_bus_ao";                             /** attached i2c bus, must have          */
+-            reg = <0x32>;                                       /** device i2c address, must have        */
+-            soft_limit_to99 = <0>;                              /** optional                             */
+-            ddr_voltage   = <1500000>;                          /** default voltage for DDR, optional    */
+-            vddao_voltage = <1200000>;                          /** default voltage for AO, optional     */
+-            status = "okay";                                    /** status of pmu, only one should be OK */
+-        };
+-    };
++        pinctrl-names = "default";
++        pinctrl-0 = <&aml_pwm_pins>;
++        use_pwm = <1>; 
++        pmw_controller = "PWM_C";
++        table_count = <29>;
++        cs_voltage_table = <
++        /*   
++         * Note: This table is hardware depended, If your hardware use PWM method,
++         * then first line in this table is PWM register value, second line is
++         * voltage of VCCK according this PWM register value. If your platform use
++         * constant-current source to adjust vcck voltage, then the first line should 
++         * set to 0, means not valid, member 'use_pwm' in this node should set to 0.
++         *
++         *  ---- This table must be in ascending order by voltage ----
++         *    
++         *  PWM value       VCCK voltage 
++         */   
++		0x1c0000        860000
++		0x1b0001        870000
++		0x1a0002        880000
++		0x190003        890000		
++		0x180004        900000			
++		0x170005        910000
++		0x160006        920000
++		0x150007        930000
++		0x140008        940000			
++		0x130009        950000		
++		0x12000a        960000			
++		0x11000b        970000		
++		0x10000c        980000			
++		0x0f000d        990000			
++		0x0e000e        1000000			
++		0x0d000f        1010000		
++		0x0c0010        1020000			
++		0x0b0011        1030000			
++		0x0a0012        1040000			
++		0x090013        1050000
++		0x080014        1060000
++		0x070015        1070000			
++		0x060016        1080000
++		0x050017        1090000
++		0x040018        1100000
++		0x030019        1110000			
++		0x02001a        1120000			
++		0x01001b        1130000
++		0x00001c        1140000
++        >;   
++    };   	
+ 
+ /// ***************************************************************************************
+ ///	-	USB Controller
+@@ -899,7 +888,7 @@ sdio{
+ 			lm-periph-id = <0>; /** lm name */
+ 			clock-src = "usb0"; /** clock src */
+ 			port-id = <0>;  /** ref to mach/usb.h */
+-			port-type = <0>;	/** 0: otg, 1: host, 2: slave */
++			port-type = <1>;	/** 0: otg, 1: host, 2: slave */
+ 			port-speed = <0>; /** 0: default, high, 1: full */
+ 			port-config = <0>; /** 0: default */
+ 			port-dma = <0>; /** 0: default, 1: single, 2: incr, 3: incr4, 4: incr8, 5: incr16, 6: disable*/
+@@ -1024,7 +1013,7 @@ sdio{
+         trip_point=<70 1608001 1608001 511 511 3 5 
+                     80 1200001 1200001 435 435 2 4
+                     90  800001 800001  328 328 2 3
+-                    260 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff>;
++                    110 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff>;
+ 		cpu_cali_a=<0>;
+ 		idle_interval=<1000>;
+         use_virtual_thermal;
+@@ -1108,7 +1097,7 @@ sdio{
+     audio_m8_audio{
+         compatible = "amlogic,m8_audio_codec";
+         dev_name = "aml_m8_codec.0";
+-        status = "disable";
++        status = "okay";
+     };
+ 
+ //$$ DEVICE="dummy_codec"
+@@ -1116,14 +1105,14 @@ sdio{
+     dummy_codec{
+         compatible = "amlogic,aml_dummy_codec";
+         dev_name = "dummy_codec.0";
+-        status = "okay";
++        status = "disable";
+     };
+ 
+     aml_audio_codec{
+         compatible = "amlogic,audio_codec";
+           dummy:dummy{
+             codec_name = "dummy_codec";
+-            status = "okay";
++            status = "disable";
+           };
+ //        rt5616:rt5616{
+ //            codec_name = "rt5616";
+@@ -1213,7 +1202,7 @@ sdio{
+ 		key_num = <1>;
+         key_name = "power";
+ 		key_code = <116>;
+-		key_pin = "GPIOAO_3";
++		key_pin = "GPIOAO_4";
+                 gpio_high_z;
+         irq_keyup = <6>;
+         irq_keydown = <7>;
+@@ -1757,11 +1746,11 @@ sdio{
+ //$$ L2 PROP_U32 2 = "amlogic,setmask"
+ //$$ L2 PROP_U32 2 = "amlogic,clrmask"
+ //$$ L2 PROP_STR 2 = "amlogic,pins"
+-		ao_i2c_master:ao_i2c{
+-			amlogic,setmask=<10 0x60>;
+-			amlogic,clrmask=<10 0x1800006>;
+-			amlogic,pins="GPIOAO_4","GPIOAO_5";
+-		};
++//		ao_i2c_master:ao_i2c{
++//			amlogic,setmask=<10 0x60>;
++//			amlogic,clrmask=<10 0x1800006>;
++//			amlogic,pins="GPIOAO_3","GPIOAO_5";
++//		};
+ 
+ // MATCH "I2C_A_pin_match" = "&a_i2c_master"
+ // L2 PROP_U32 2 = "amlogic,setmask"
+@@ -1888,7 +1877,19 @@ sdio{
+ 			amlogic,pins = "GPIOY_5","GPIOY_6";
+ 		};
+ 
++//$$ MATCH "meson_vcck_dvfs_pin_0_match" = "&aml_pwm_pins"
++//$$ L2 PROP_U32 2 = "amlogic,setmask"
++//$$ L2 PROP_U32 2 = "amlogic,clrmask"
++//$$ L2 PROP_STR = "amlogic,pins"
++		aml_pwm_pins:aml_pwm_pins{
++			amlogic,setmask=<3 0x1000000>;
++			amlogic,clrmask=<0 0x108
++											 7 0x10000200>;
++			amlogic,pins="GPIODV_9";
++		};
++		
+ 	};
++		
+ /// ***************************************************************************************
+ ///	-	Ethernet
+ //$$ MODULE="Ethernet"
+@@ -1898,15 +1899,24 @@ sdio{
+ 		compatible = "amlogic,meson-eth";
+ 		dev_name = "meson-eth";
+ 		status = "okay";
+-		ethbaseaddr = <0xfe0c0000>;
+ 		interruptnum = <40>;
+-                phy_interface = <1>;
++                phy_interface = <0>;
+                 new_maclogic = <1>;
+                 reset_pin_enable = <0>;
+-                reset_pin = "GPIOH_4";
++                reset_pin = "GPI0DV_28";
+                 reset_delay = <100>;
+ 	};
+-
++		
++	ethmac: ethernet@0xc9410000{
++		compatible = "amlogic,meson8m2-rgmii-dwmac", "snps,dwmac";
++		reg = <0xc9410000 0x10000 
++		0xc1108108 0x4>;
++		interrupts = <0 8 1>;
++		interrupt-names = "macirq";
++		clocks = "clk81";
++		clock-names = "stmmaceth";
++	};
++	
+ /// ***************************************************************************************
+ ///	-	DVB
+ //$$ MODULE="DVB"
