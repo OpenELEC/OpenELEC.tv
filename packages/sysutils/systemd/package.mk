@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="226"
+PKG_VERSION="227"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -92,7 +92,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-gnuefi \
                            --disable-kdbus \
                            --disable-myhostname \
-                           --disable-gudev \
                            --enable-hwdb \
                            --disable-manpages \
                            --disable-hibernate \
