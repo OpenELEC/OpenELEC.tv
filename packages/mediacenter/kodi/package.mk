@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="15.2-rc3-cf72616"
+PKG_VERSION="16.0-alpha4-69b5778"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg"
+PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg crossguid giflib"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -245,12 +245,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $KODI_CEC \
                            --enable-udev \
                            --disable-libusb \
-                           --disable-goom \
-                           --disable-rsxs \
-                           --disable-projectm \
-                           --disable-waveform \
-                           --disable-spectrum \
-                           --disable-fishbmc \
                            $KODI_XORG \
                            --disable-ccache \
                            $KODI_ALSA \
@@ -267,6 +261,7 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            $KODI_SSH \
                            $KODI_AIRPLAY \
                            $KODI_AIRTUNES \
+                           --enable-gif \
                            $KODI_NONFREE \
                            --disable-asap-codec \
                            $KODI_WEBSERVER \
@@ -364,6 +359,7 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/applications
   rm -rf $INSTALL/usr/share/icons
   rm -rf $INSTALL/usr/share/kodi/addons/service.xbmc.versioncheck
+  rm -rf $INSTALL/usr/share/kodi/addons/visualization.vortex
   rm -rf $INSTALL/usr/share/xsessions
 
   mkdir -p $INSTALL/usr/share/kodi/addons
