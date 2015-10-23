@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="b7785a3"
+PKG_VERSION="c0878c7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -77,7 +77,7 @@ pre_configure_target() {
 }
 
 make_target() {
-  make V=1
+  make V=1 HAVE_LAKKA=1
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
