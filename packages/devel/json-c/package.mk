@@ -1,8 +1,7 @@
-#!/bin/bash
-
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,29 +17,23 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. config/options $1
+PKG_NAME="json-c"
+PKG_VERSION="0645020"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/json-c/json-c/wiki"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="accessibility"
+PKG_SHORTDESC="json-c"
+PKG_LONGDESC="JSON-C implements a reference counting object model that allows you to easily construct JSON objects in C, output them as JSON formatted strings and parse JSON formatted strings back into the C representation of JSON objects"
 
-if [ -z "$1" ]; then
-  echo "usage: $0 package_name"
-  exit 1
-fi
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
 
-if [ ! -f $PKG_DIR/package.mk ]; then
-  printf "${boldred}$1: no package.mk file found${endcolor}\n"
-  exit 1
-fi
-
-STAMP=$PKG_BUILD/.openelec-unpack
-
-if [ -f $STAMP ] ; then
-  printf "%${BUILD_INDENT}c ${boldcyan}SKIP_UNPACK${endcolor}   $1\n" ' '>&$SILENT_OUT
-  export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
-
-  rm -f $STAMP
-  STAMP_DEPENDS="$PKG_DIR $PKG_NEED_UNPACK $PROJECT_DIR/$PROJECT/patches/$PKG_NAME"
-  PKG_DEEPMD5=$(find $STAMP_DEPENDS -exec md5sum {} \; 2>/dev/null | sort | md5sum | cut -d" " -f1)
-  for i in PKG_NAME PKG_DEEPMD5; do
-    eval val=\$$i
-    echo "STAMP_$i=\"$val\"" >> $STAMP
-  done
-fi
+PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_realloc_0_nonnull=yes \
+                           ac_cv_func_malloc_0_nonnull=yes \
+                           --enable-static --disable-shared \
+                           --disable-oldname-compat"

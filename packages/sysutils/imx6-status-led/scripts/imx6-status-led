@@ -18,7 +18,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-. /etc/profile
+. /usr/lib/openelec/imx6-system-type
 
 case "$1" in
   "on")
@@ -28,22 +28,21 @@ case "$1" in
     TRIGGER=heartbeat
     ;;
   *)
-    TRIGGER=""
+    exit 0
     ;;
 esac
 
 case "$SYSTEM_TYPE" in
   "matrix")
-    LED=/sys/class/leds/red/trigger
+    LED="/sys/class/leds/red/trigger"
     ;;
   "cuboxi")
-    LED=/sys/class/leds/imx6\:red\:front/trigger
+    LED="/sys/class/leds/imx6:red:front/trigger"
     ;;
   *)
-    LED=""
+    exit 0
     ;;
 esac
 
-if [ -n "$TRIGGER" -a -n "$LED" ]; then
-  echo $TRIGGER > $LED
-fi
+echo "$TRIGGER" > "$LED"
+

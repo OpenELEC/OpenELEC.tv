@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2015 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,35 +16,21 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# $ cat /sys/devices/soc0/machine
-# Freescale i.MX6 Quad SABRE Smart Device Board
-# $ cat /sys/devices/soc0/machine
-# TBS Matrix
-# $ cat /sys/devices/soc0/family
-# Freescale i.MX
-# $ cat /sys/devices/soc0/soc_id
-# i.MX6Q
-# $ cat /sys/devices/soc0/revision
-# 1.2
+PKG_NAME="sbc"
+PKG_VERSION="1.3"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.bluez.org/"
+PKG_URL="http://www.kernel.org/pub/linux/bluetooth/sbc-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="network"
+PKG_SHORTDESC="sbc: standalone SBC library"
+PKG_LONGDESC="standalone SBC library"
 
-SYSTEM_TYPE=$(cat /sys/bus/soc/devices/soc0/machine)
-case "$SYSTEM_TYPE" in
-  "TBS Matrix")
-    export SYSTEM_TYPE="matrix"
-    ;;
-  "SolidRun Cubox-i Dual/Quad")
-    export SYSTEM_TYPE="cuboxi"
-    ;;
-  "Udoo i.MX6 Dual-lite Board"|"Udoo i.MX6 Quad Board")
-    export SYSTEM_TYPE="udoo"
-    ;;
-  *)
-    export SYSTEM_TYPE="undef"
-    ;;
-esac
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="yes"
 
-# don't make from initramfs (no touch there)
-if [ -e /bin/touch ]; then
-  mkdir -p /var/run
-  touch /var/run/system_type_$SYSTEM_TYPE
-fi
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
+         --disable-tools --disable-tester"
