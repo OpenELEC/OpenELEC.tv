@@ -21,8 +21,8 @@ PKG_VERSION="2.0.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.libsdl.org/"
-PKG_URL="http://www.libsdl.org/release/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_SITE="https://www.libsdl.org/"
+PKG_URL="https://www.libsdl.org/release/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain yasm:host alsa-lib systemd dbus"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
@@ -55,7 +55,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static \
                            --with-alsa-prefix=$SYSROOT_PREFIX/usr/lib \
                            --with-alsa-inc-prefix=$SYSROOT_PREFIX/usr/include \
                            --disable-esd --disable-esdtest --disable-esd-shared \
-                           --disable-pulseaudio --disable-pulseaudio-shared \
                            --disable-arts --disable-arts-shared \
                            --disable-nas --enable-nas-shared \
                            --disable-sndio --enable-sndio-shared \
@@ -101,6 +100,14 @@ if [ ! "$OPENGL" = "no" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-video-opengl --disable-video-opengles"
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-video-opengl --disable-video-opengles"
+fi
+
+if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
+
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-pulseaudio --enable-pulseaudio-shared"
+else
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-pulseaudio --disable-pulseaudio-shared"
 fi
 
 pre_make_target() {
