@@ -16,20 +16,21 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libopenmpt"
-PKG_VERSION="0.2.5598"
+PKG_NAME="sbc"
+PKG_VERSION="1.3"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="BSD"
-PKG_SITE="http://lib.openmpt.org/libopenmpt/"
-PKG_URL="http://buildbot.openmpt.org/builds/auto/src/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.bluez.org/"
+PKG_URL="http://www.kernel.org/pub/linux/bluetooth/sbc-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="audio"
-PKG_SHORTDESC="libopenmpt: renders mod music files as raw audio data, for playing or conversion."
-PKG_LONGDESC="libopenmpt renders mod music files as raw audio data, for playing or conversion."
+PKG_SECTION="network"
+PKG_SHORTDESC="sbc: standalone SBC library"
+PKG_LONGDESC="standalone SBC library"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
+         --disable-tools --disable-tester"
