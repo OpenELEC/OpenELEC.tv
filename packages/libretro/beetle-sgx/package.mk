@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="beetle-sgx"
-PKG_VERSION="48ba6e8"
+PKG_VERSION="c6d3488"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
