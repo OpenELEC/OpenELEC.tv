@@ -22,9 +22,10 @@
 
 show_config
 
-$SCRIPTS/checkdeps build
+$SCRIPTS/checkdeps
 $SCRIPTS/build toolchain
 $SCRIPTS/build squashfs:host
+$SCRIPTS/build dosfstools:host
 $SCRIPTS/build fakeroot:host
 $SCRIPTS/build kmod:host
 
@@ -286,7 +287,7 @@ fi
       # only for matrix system or all? (one tar for all updates?)
         if [ "$PROJECT" == "imx6" -a "$SYSTEM" == "matrix" ]; then
           $SCRIPTS/unpack imx6-mfgtool2-tbs-matrix
-          
+
           mkdir -p $RELEASE_DIR/MfgTool2-TBS-Matrix
           cp -PR $BUILD/imx6-mfgtool2-tbs-matrix-*/imx6-mfgtool2-tbs-matrix-*/* $RELEASE_DIR/MfgTool2-TBS-Matrix
         fi

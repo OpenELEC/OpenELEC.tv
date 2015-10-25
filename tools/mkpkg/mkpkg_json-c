@@ -20,24 +20,24 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d linux-amlogic.git ]; then
-    git clone https://github.com/codesnake/linux linux-amlogic.git
+  if [ ! -d json-c.git ]; then
+    git clone https://github.com/json-c/json-c.git json-c.git
   fi
 
-  cd linux-amlogic.git
+  cd json-c.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf linux-amlogic-3.10-$GIT_REV
-  cp -R linux-amlogic.git linux-amlogic-3.10-$GIT_REV
+  rm -rf json-c-$GIT_REV
+  cp -R json-c.git json-c-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf linux-amlogic-3.10-$GIT_REV/.git
+  rm -rf json-c-$GIT_REV/.git
 
 echo "packing sources..."
-  tar cvJf linux-amlogic-3.10-$GIT_REV.tar.xz linux-amlogic-3.10-$GIT_REV
+  tar cvJf json-c-$GIT_REV.tar.xz json-c-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf linux-amlogic-3.10-$GIT_REV
+  rm -rf json-c-$GIT_REV
