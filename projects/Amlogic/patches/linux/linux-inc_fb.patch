@@ -15,4 +15,111 @@ index 3c6f729..2de59b5 100755
 +		4k2k_fb = <1>;
   		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
  	};
+diff --git a/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd b/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd
+index 7e7df57..2df9ce1
+--- a/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdhc.dtd
+@@ -142,11 +142,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
+ 	
+diff --git a/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdhc.dtd b/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdhc.dtd
+index 484ac36..4789bb2 100644
+--- a/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdhc.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdhc.dtd
+@@ -133,11 +133,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
+ 	
+diff --git a/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdio.dtd b/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdio.dtd
+index 305d7b5..13a4e65
+--- a/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdio.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_k200b_1G_emmc_sdio.dtd
+@@ -142,11 +142,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
+ 	
+diff --git a/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdio.dtd b/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdio.dtd
+index 7f1231b..80620bb 100644
+--- a/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdio.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_k200b_2G_emmc_sdio.dtd
+@@ -133,11 +133,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
+ 	
+diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd
+index e70ba5f..f044e11
+--- a/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_1G.dtd
+@@ -140,11 +138,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+index 3c6f729..2de59b5 100755
+--- a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+@@ -133,11 +133,11 @@ void root_func(){
+ 		compatible = "amlogic,mesonfb";
+ 		dev_name = "mesonfb";
+ 		status = "okay";
+-	   	reserve-memory = <0x01800000  0x00100000>;
++	   	reserve-memory = <0x04800000  0x00100000>;
+ 	   	reserve-iomap = "true";
+                 vmode = <3>; /**0:VMODE_720P 1:VMODE_LCD  2:VMODE_LVDS_1080P 3:VMODE_1080P*/
+ 		scale_mode = <1>; /*0:default 1:new*/
+-		4k2k_fb = <0>;
++		4k2k_fb = <1>;
+  		display_size_default = <1920 1080 1920 3240 32>; //1920*1080*4*3 = 0x17BB000
+ 	};
  
