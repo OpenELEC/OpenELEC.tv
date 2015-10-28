@@ -72,7 +72,7 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --enable-glx \
                            --disable-osmesa \
                            --disable-gallium-osmesa \
-                           --enable-egl --with-egl-platforms=x11,drm \
+                           --enable-egl --with-egl-platforms=drm \
                            --disable-xa \
                            --enable-gbm \
                            --disable-nine \
@@ -98,11 +98,11 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --with-dri-drivers=$DRI_DRIVERS \
                            --with-sysroot=$SYSROOT_PREFIX"
 
-post_makeinstall_target() {
-  # rename and relink for cooperate with nvidia drivers
-    rm -rf $INSTALL/usr/lib/libGL.so
-    rm -rf $INSTALL/usr/lib/libGL.so.1
-    ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
-    ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
-    mv $INSTALL/usr/lib/libGL.so.1.2.0 $INSTALL/usr/lib/libGL_mesa.so.1
-}
+#post_makeinstall_target() {
+#  # rename and relink for cooperate with nvidia drivers
+#    rm -rf $INSTALL/usr/lib/libGL.so
+#    rm -rf $INSTALL/usr/lib/libGL.so.1
+#    ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
+#    ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
+#    mv $INSTALL/usr/lib/libGL.so.1.2.0 $INSTALL/usr/lib/libGL_mesa.so.1
+#}
