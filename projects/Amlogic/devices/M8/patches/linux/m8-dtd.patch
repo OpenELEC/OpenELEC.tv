@@ -1,0 +1,21 @@
+diff --git a/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd b/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd
+index 47911da..adca0d4 100755
+--- a/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_k200a_2G.dtd
+@@ -458,7 +458,6 @@ sdio{
+             gpio_dat3 = "CARD_4";
+             jtag_pin = "CARD_0";
+             gpio_cd = "CARD_6";
+-            gpio_ro = "GPIOZ_0";
+             irq_in = <3>;
+             irq_out = <5>;
+             card_type = <5>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
+@@ -481,7 +480,7 @@ sdio{
+             port = <2>;          /**0:sdio_a, 1:sdio_b, 2:sdio_c, 3:sdhc_a, 4:sdhc_b, 5:sdhc_c */
+             pinname = "emmc";
+             ocr_avail = <0x200000>;          /**VDD voltage 3.3 ~ 3.4 */
+-            caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE"; // MMC_CAP_NEEDS_POLL -- for detect, MMC_CAP_NONREMOVABLE -- for eMMC/TSD
++            caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_ERASE", "MMC_CAP_HW_RESET"; // MMC_CAP_NEEDS_POLL -- for detect, MMC_CAP_NONREMOVABLE -- for eMMC/TSD
+             f_min = <300000>;
+             f_max = <50000000>;
+             f_max_w = <50000000>;
