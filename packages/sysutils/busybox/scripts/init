@@ -58,7 +58,7 @@
   LIVE="no"
 
   # hide kernel log messages on console
-  #echo '1 4 1 7' > /proc/sys/kernel/printk
+  # echo '1 4 1 7' > /proc/sys/kernel/printk
 
   # set ondemand up_threshold
   if [ -e /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ] ; then
@@ -332,7 +332,7 @@
     $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
   }
 
-  update() {
+  update_file() {
     if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
       echo "updating $1..."
       mount -o remount,rw /flash
@@ -342,6 +342,21 @@
         mount -o remount,ro /flash
       fi
       sync
+    fi
+  }
+
+  update_partition() {
+    if [ -f "$UPDATE_DIR/$2" -a -e "$3" ]; then
+      echo "updating $1..."
+      case $IMAGE_KERNEL in
+        /dev/mtd*)
+          flash_eraseall "$3"
+          nandwrite -p "$3" "$UPDATE_DIR/$2"
+          ;;
+        *)
+          dd if="$UPDATE_DIR/$2" of="$3"
+          ;;
+      esac
     fi
   }
 
@@ -602,7 +617,16 @@
       # get sizes
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
-      OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+
+      case $IMAGE_KERNEL in
+        /dev/*)
+          OLD_KERNEL="0"
+          ;;
+        *)
+          OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+          ;;
+      esac
+
       OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
       NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
@@ -624,8 +648,15 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-          update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          case $IMAGE_KERNEL in
+            /dev/*)
+              update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+              ;;
+            *)
+              update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+              ;;
+          esac
+          update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
           update_bootloader
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
           do_reboot
