@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="kodi-theme-Confluence"
-PKG_VERSION="15.2-rc3-cf72616"
+PKG_VERSION="16.0-alpha4-69b5778"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain kodi"
+PKG_DEPENDS_TARGET="toolchain kodi:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
 PKG_SHORTDESC="kodi-theme-Confluence: Kodi Mediacenter default theme"

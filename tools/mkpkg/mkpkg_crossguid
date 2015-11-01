@@ -20,24 +20,24 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d screensavers.rsxs.git ]; then
-    git clone https://github.com/notspiff/screensavers.rsxs.git screensavers.rsxs.git
+  if [ ! -d crossguid.git ]; then
+    git clone https://github.com/graeme-hill/crossguid.git -b master crossguid.git
   fi
 
-  cd screensavers.rsxs.git
+  cd crossguid.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf screensavers.rsxs-$GIT_REV
-  cp -R screensavers.rsxs.git screensavers.rsxs-$GIT_REV
+  rm -rf crossguid-$GIT_REV
+  cp -R crossguid.git crossguid-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf screensavers.rsxs-$GIT_REV/.git
+  rm -rf crossguid-$GIT_REV/.git
 
 echo "packing sources..."
-  tar cvJf screensavers.rsxs-$GIT_REV.tar.xz screensavers.rsxs-$GIT_REV
+  tar cvJf crossguid-$GIT_REV.tar.xz crossguid-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf screensavers.rsxs-$GIT_REV
+  rm -rf crossguid-$GIT_REV

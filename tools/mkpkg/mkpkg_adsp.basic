@@ -20,24 +20,24 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d visualization.projectm.git ]; then
-    git clone https://github.com/notspiff/visualization.projectm.git visualization.projectm.git
+  if [ ! -d adsp.basic.git ]; then
+    git clone https://github.com/kodi-adsp/adsp.basic.git adsp.basic.git
   fi
 
-  cd visualization.projectm.git
+  cd adsp.basic.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf visualization.projectm-$GIT_REV
-  cp -R visualization.projectm.git visualization.projectm-$GIT_REV
+  rm -rf adsp.basic-$GIT_REV
+  cp -R adsp.basic.git adsp.basic-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf visualization.projectm-$GIT_REV/.git
+  rm -rf adsp.basic-$GIT_REV/.git
 
 echo "packing sources..."
-  tar cvJf visualization.projectm-$GIT_REV.tar.xz visualization.projectm-$GIT_REV
+  tar cvJf adsp.basic-$GIT_REV.tar.xz adsp.basic-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf visualization.projectm-$GIT_REV
+  rm -rf adsp.basic-$GIT_REV
