@@ -1,0 +1,24 @@
+diff --git a/drivers/amlogic/ethernet/am_net8218.c b/drivers/amlogic/ethernet/am_net8218.c
+index 3a3a533..73b614a 100755
+--- a/drivers/amlogic/ethernet/am_net8218.c
++++ b/drivers/amlogic/ethernet/am_net8218.c
+@@ -51,6 +51,8 @@
+ #ifdef CONFIG_AML1220
+ #include <linux/amlogic/aml_pmu.h>
+ #endif
++#include <linux/amlogic/securitykey.h>
++
+ #define MODULE_NAME "ethernet"
+ #define DRIVER_NAME "ethernet"
+ 
+@@ -906,8 +908,9 @@ void read_mac_from_nand(struct net_device *ndev)
+ 	u8 mac[ETH_ALEN];
+ 	char *endp;
+ 	int j;
+-	extenal_api_key_set_version("auto3");
++	//extenal_api_key_set_version("auto3");
+ 	ret = get_aml_key_kernel("mac", print_buff, 0);
++	extenal_api_key_set_version("nand3");
+ 	printk("ret = %d\nprint_buff=%s\n", ret, print_buff);
+ 	if (ret >= 0) {
+ 		strcpy(ndev->dev_addr, print_buff);

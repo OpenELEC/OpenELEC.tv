@@ -1,0 +1,13 @@
+diff --git a/drivers/amlogic/ethernet/am_net8218.c b/drivers/amlogic/ethernet/am_net8218.c
+index 3a3a533..b4bff81 100755
+--- a/drivers/amlogic/ethernet/am_net8218.c
++++ b/drivers/amlogic/ethernet/am_net8218.c
+@@ -932,7 +932,7 @@ static int aml_mac_init(struct net_device *ndev)
+ 
+ 	data_dump(ndev->dev_addr, 6);
+ #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+-	read_mac_from_nand(ndev);
++	//read_mac_from_nand(ndev);
+ #endif
+ 	printk("--2--write mac add to:");
+ 	data_dump(ndev->dev_addr, 6);
