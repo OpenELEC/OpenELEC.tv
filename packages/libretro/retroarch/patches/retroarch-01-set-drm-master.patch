@@ -1,0 +1,23 @@
+--- a/gfx/drivers_context/drm_egl_ctx.c	(revision 3ef70c1c3ddb49abcaed48e41897c7350076f1f5)
++++ b/gfx/drivers_context/drm_egl_ctx.c	(revision )
+@@ -356,8 +356,10 @@
+    if (drm->g_orig_crtc)
+       drmModeFreeCrtc(drm->g_orig_crtc);
+ 
+-   if (drm->g_drm_fd >= 0)
++   if (drm->g_drm_fd >= 0) {
++      drmDropMaster(drm->g_drm_fd);
+       retro_fclose(drm->g_drm);
++   }
+ 
+    drm->g_gbm_surface = NULL;
+    drm->g_gbm_dev     = NULL;
+@@ -565,6 +567,8 @@
+     * one for get_video_size() purposes. */
+    drm->g_fb_width  = drm->g_connector->modes[0].hdisplay;
+    drm->g_fb_height = drm->g_connector->modes[0].vdisplay;
++
++   drmSetMaster(drm->g_drm_fd);
+ 
+    drm->g_gbm_dev = gbm_create_device(drm->g_drm_fd);
+ 
