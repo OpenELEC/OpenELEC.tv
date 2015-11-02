@@ -1,0 +1,17 @@
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index 609ec62..f270c28 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -68,6 +70,12 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+ 
+   m_hints = hints;
+ 
++  if (m_hints.width <= 800)
++     {
++       CLog::Log(LOGDEBUG, "Use Software decoding for SD content");
++        return false;
++     }
++
+   switch(m_hints.codec)
+   {
+     case AV_CODEC_ID_MJPEG:
