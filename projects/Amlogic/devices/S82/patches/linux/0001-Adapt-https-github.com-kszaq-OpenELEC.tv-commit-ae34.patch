@@ -76,10 +76,10 @@ index 5b42539..0d48810 100755
  	}
  }
  #endif
-@@ -260,7 +274,8 @@ static void meson_pm_suspend(void)
+@@ -259,7 +273,8 @@ static void meson_pm_suspend(void)
+ 	aml_clr_reg32_mask(P_HHI_SYS_CPU_CLK_CNTL, 1 << 7);
  	aml_clr_reg32_mask(P_HHI_SYS_PLL_CNTL, 1 << 30);//disable sys pll
  
- #ifdef CONFIG_AML_GPIO_KEY
 -	if(det_pwr_key())//get pwr key and wakeup im
 +	//if(det_pwr_key())//get pwr key and wakeup im
 +	if(poweroff_state==0 && det_pwr_key())//get pwr key and wakeup im
