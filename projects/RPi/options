@@ -152,3 +152,7 @@
 
   # kernel image name
     KERNEL_NAME="kernel.img"
+
+  # override some playlist core assignation
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//snes9x_next/pocketsnes}"
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//genesis_plus_gx/picodrive}"
