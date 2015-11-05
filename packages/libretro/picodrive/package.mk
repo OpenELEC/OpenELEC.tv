@@ -43,7 +43,9 @@ configure_host() {
 }
 
 make_host() {
-  make -C ../cpu/cyclone CONFIG_FILE=../cyclone_config.h
+  if [ "$ARCH" == "arm" ]; then
+    make -C ../cpu/cyclone CONFIG_FILE=../cyclone_config.h
+  fi
 }
 
 makeinstall_host() {
