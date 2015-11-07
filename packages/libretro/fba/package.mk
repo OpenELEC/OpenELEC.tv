@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="fba"
-PKG_VERSION="b1f734c"
+PKG_VERSION="ddc9955"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
