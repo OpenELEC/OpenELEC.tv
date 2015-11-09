@@ -1,0 +1,13 @@
+[Unit]
+Description=Generate locale archive if not already there
+DefaultDependencies=no
+ConditionPathExists=!/storage/.config/locale/locale-archive
+After=userconfig.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "/usr/bin/locale-gen-archive &> /dev/null"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
