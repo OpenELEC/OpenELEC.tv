@@ -1,0 +1,33 @@
+--- a/modules/mali/DX910-SW-99002-r3p2-01rel2/driver/src/devicedrv/mali/linux/mali_platform.c	2015-01-27 03:29:37.000000000 +0100
++++ b/modules/mali/DX910-SW-99002-r3p2-01rel2/driver/src/devicedrv/mali/linux/mali_platform.c	2015-11-11 22:23:37.165808431 +0100
+@@ -48,11 +48,19 @@
+ 
+ static struct mali_gpu_device_data mali_gpu_data;
+ 
++#if defined(CONFIG_ARCH_SUN8IW3P1) || defined(CONFIG_ARCH_SUN8IW5P1) || defined(CONFIG_ARCH_SUN8IW9P1)
+ static struct resource mali_gpu_resources[]=
+-{                                    
++{
+     MALI_GPU_RESOURCES_MALI400_MP2_PMU(SUNXI_GPU_PBASE, SUNXI_IRQ_GPUGP, SUNXI_IRQ_GPUGPMMU, \
+                                         SUNXI_IRQ_GPUPP0, SUNXI_IRQ_GPUPPMMU0, SUNXI_IRQ_GPUPP1, SUNXI_IRQ_GPUPPMMU1)
+ };
++#elif defined(CONFIG_ARCH_SUN8IW7P1)
++static struct resource mali_gpu_resources[]=
++{
++    MALI_GPU_RESOURCES_MALI400_MP2_PMU(SUNXI_GPU_PBASE, SUNXI_IRQ_GPU_GP, SUNXI_IRQ_GPU_GPMMU, \
++                                        SUNXI_IRQ_GPU_PP0, SUNXI_IRQ_GPU_PPMMU0, SUNXI_IRQ_GPU_PP1, SUNXI_IRQ_GPU_PPMMU1)
++};
++#endif
+ 
+ static struct platform_device mali_gpu_device =
+ {
+@@ -191,6 +199,9 @@
+ #ifdef CONFIG_ARCH_SUN8IW5
+ 	h_gpu_pll = clk_get(NULL, PLL_GPU_CLK);
+ #endif /* CONFIG_ARCH_SUN8IW5 */
++#ifdef CONFIG_ARCH_SUN8IW7P1
++	h_gpu_pll = clk_get(NULL, PLL_GPU_CLK);
++#endif /* CONFIG_ARCH_SUN8IW7P1 */
+ 	if(!h_gpu_pll || IS_ERR(h_gpu_pll)){
+ 		printk(KERN_ERR "Failed to get gpu pll clock!\n");
+ 		return _MALI_OSK_ERR_FAULT;

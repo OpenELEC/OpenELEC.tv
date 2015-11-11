@@ -252,4 +252,8 @@ makeinstall_init() {
 
   cp $PKG_DIR/scripts/init $INSTALL
   chmod 755 $INSTALL/init
+  
+  mkdir -p $INSTALL/dev
+  fakeroot mknod -m 622 $INSTALL/dev/console c 5 1
+  fakeroot mknod -m 622 $INSTALL/dev/tty0 c 4 0
 }
