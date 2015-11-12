@@ -1,3 +1,13 @@
+#Orange Pi 2 development
+
+**This is unofficial and not yet working, however feel free to contribute**
+
+**Current Status**
+* Splash screen is shown on HDMI output
+* Serial console works
+* kodi have big troubles at startup
+
+
 [OpenELEC](http://www.openelec.tv)
 
 # OpenELEC - Open Embedded Linux Entertainment Center
