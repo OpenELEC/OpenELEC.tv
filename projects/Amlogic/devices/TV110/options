@@ -1,5 +1,6 @@
 # Optimize for Cortex-A5
   TARGET_CPU="cortex-a5"
+  TARGET_FPU="neon-vfpv4"
 
 # Kernel extra targets to build
   KERNEL_UBOOT_EXTRA_TARGET="meson8b_m201_1G.dtd meson8b_m201_1G.dtb"
