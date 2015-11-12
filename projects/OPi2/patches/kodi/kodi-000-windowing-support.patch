@@ -1,0 +1,299 @@
+diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
+--- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2015-11-12 22:03:10.723370665 +0100
+@@ -0,0 +1,201 @@
++/*
++ *      Copyright (C) 2011-2013 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "EGLNativeTypeSunxi.h"
++#include "guilib/gui3d.h"
++#include "utils/StringUtils.h"
++#include "utils/SysfsUtils.h"
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <linux/fb.h>
++#include <sys/ioctl.h>
++#include <EGL/egl.h>
++
++//fixme
++#ifndef _FBDEV_WINDOW_H_
++#define _FBDEV_WINDOW_H_
++typedef struct fbdev_window
++{
++  unsigned short width;
++  unsigned short height;
++} fbdev_window;
++#endif
++
++CEGLNativeTypeSunxi::CEGLNativeTypeSunxi()
++{
++  const char *env_framebuffer = getenv("FRAMEBUFFER");
++
++  // default to framebuffer 0
++  m_framebuffer_name = "fb0";
++  if (env_framebuffer)
++  {
++    std::string framebuffer(env_framebuffer);
++    std::string::size_type start = framebuffer.find("fb");
++    m_framebuffer_name = framebuffer.substr(start);
++  }
++  m_nativeWindow = NULL;
++}
++
++CEGLNativeTypeSunxi::~CEGLNativeTypeSunxi()
++{
++}
++
++bool CEGLNativeTypeSunxi::CheckCompatibility()
++{
++  std::string name;
++  std::string modalias = "/sys/class/graphics/" + m_framebuffer_name + "/device/modalias";
++
++  SysfsUtils::GetString(modalias, name);
++  StringUtils::Trim(name);
++  if (name == "platform:disp")
++    return true;
++  return false;
++}
++
++void CEGLNativeTypeSunxi::Initialize()
++{
++  // todo
++}
++void CEGLNativeTypeSunxi::Destroy()
++{
++  // todo
++}
++
++bool CEGLNativeTypeSunxi::CreateNativeDisplay()
++{
++  m_nativeDisplay = EGL_DEFAULT_DISPLAY;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::CreateNativeWindow()
++{
++#if defined(_FBDEV_WINDOW_H_)
++  fbdev_window *nativeWindow = new fbdev_window;
++  if (!nativeWindow)
++    return false;
++
++  nativeWindow->width = 1280;
++  nativeWindow->height = 720;
++  m_nativeWindow = nativeWindow;
++
++  SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
++
++  return true;
++#else
++  return false;
++#endif
++}
++
++bool CEGLNativeTypeSunxi::GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const
++{
++  if (!nativeDisplay)
++    return false;
++  *nativeDisplay = (XBNativeDisplayType*) &m_nativeDisplay;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::GetNativeWindow(XBNativeWindowType **nativeWindow) const
++{
++  if (!nativeWindow)
++    return false;
++  *nativeWindow = (XBNativeWindowType*) &m_nativeWindow;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::DestroyNativeDisplay()
++{
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::DestroyNativeWindow()
++{
++#if defined(_FBDEV_WINDOW_H_)
++  delete (fbdev_window*)m_nativeWindow, m_nativeWindow = NULL;
++#endif
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::GetNativeResolution(RESOLUTION_INFO *res) const
++{
++    //TODO
++    
++    res->iWidth = 1280;
++    res->iHeight= 720;
++    res->iScreenWidth = 1280;
++    res->iScreenHeight= 720;
++    res->fRefreshRate = 50;
++    res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++    
++    return res->iWidth > 0 && res->iHeight> 0;
++}
++
++bool CEGLNativeTypeSunxi::SetNativeResolution(const RESOLUTION_INFO &res)
++{
++    //TODO
++    return false;
++}
++
++bool CEGLNativeTypeSunxi::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
++{
++  RESOLUTION_INFO res;
++  res.iWidth = 1280;
++  res.iHeight= 720;
++  res.iScreenWidth = 1280;
++  res.iScreenHeight= 720;
++  res.fRefreshRate = 50;
++  res.dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++  resolutions.push_back(res);
++
++  return resolutions.size() > 0;
++
++}
++
++bool CEGLNativeTypeSunxi::GetPreferredResolution(RESOLUTION_INFO *res) const
++{
++  //TODO
++  GetNativeResolution(res);
++
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::ShowWindow(bool show)
++{
++  std::string blank_framebuffer = "/sys/class/graphics/" + m_framebuffer_name + "/blank";
++  SysfsUtils::SetInt(blank_framebuffer.c_str(), show ? 0 : 1);
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::SetDisplayResolution(const char *resolution)
++{
++  //TODO
++
++  return true;
++}
++
++void CEGLNativeTypeSunxi::SetFramebufferResolution(const RESOLUTION_INFO &res) const
++{
++  SetFramebufferResolution(res.iScreenWidth, res.iScreenHeight);
++}
++
++void CEGLNativeTypeSunxi::SetFramebufferResolution(int width, int height) const
++{
++  //TODO
++}
+diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.h b/xbmc/windowing/egl/EGLNativeTypeSunxi.h
+--- a/xbmc/windowing/egl/EGLNativeTypeSunxi.h	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.h	2015-11-12 21:19:24.864781371 +0100
+@@ -0,0 +1,58 @@
++#pragma once
++
++/*
++ *      Copyright (C) 2011-2013 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "EGLNativeType.h"
++class CEGLNativeTypeSunxi : public CEGLNativeType
++{
++public:
++  CEGLNativeTypeSunxi();
++  virtual ~CEGLNativeTypeSunxi();
++  virtual std::string GetNativeName() const { return "sunxi"; };
++  virtual bool  CheckCompatibility();
++  virtual void  Initialize();
++  virtual void  Destroy();
++  virtual int   GetQuirks() { return EGL_QUIRK_NONE; };
++
++  virtual bool  CreateNativeDisplay();
++  virtual bool  CreateNativeWindow();
++  virtual bool  GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const;
++  virtual bool  GetNativeWindow(XBNativeWindowType **nativeWindow) const;
++
++  virtual bool  DestroyNativeWindow();
++  virtual bool  DestroyNativeDisplay();
++
++  virtual bool  GetNativeResolution(RESOLUTION_INFO *res) const;
++  virtual bool  SetNativeResolution(const RESOLUTION_INFO &res);
++  virtual bool  ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions);
++  virtual bool  GetPreferredResolution(RESOLUTION_INFO *res) const;
++
++  virtual bool  ShowWindow(bool show);
++
++protected:
++  bool SetDisplayResolution(const char *resolution);
++
++private:
++  void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
++  void SetFramebufferResolution(int width, int height) const;
++
++  std::string m_framebuffer_name;
++};
+diff -Nur a/xbmc/windowing/egl/EGLWrapper.cpp b/xbmc/windowing/egl/EGLWrapper.cpp
+--- a/xbmc/windowing/egl/EGLWrapper.cpp	2015-11-02 10:54:40.000000000 +0100
++++ b/xbmc/windowing/egl/EGLWrapper.cpp	2015-11-12 20:50:36.597112788 +0100
+@@ -37,6 +37,7 @@
+   #include "EGLNativeTypeIMX.h"
+ #endif
+ #include "EGLNativeTypeAmlogic.h"
++#include "EGLNativeTypeSunxi.h"
+ #include "EGLWrapper.h"
+ 
+ #define CheckError() m_result = eglGetError(); if(m_result != EGL_SUCCESS) CLog::Log(LOGERROR, "EGL error in %s: %x",__FUNCTION__, m_result);
+@@ -105,7 +106,8 @@
+ #if defined(HAS_IMXVPU)
+       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeIMX>(implementation)) ||
+ #endif
+-      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation))
++      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation)) ||
++      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeSunxi>(implementation))
+       )
+   {
+     m_nativeTypes = nativeGuess;
+diff -Nur a/xbmc/windowing/egl/Makefile.in b/xbmc/windowing/egl/Makefile.in
+--- a/xbmc/windowing/egl/Makefile.in	2015-11-02 10:54:40.000000000 +0100
++++ b/xbmc/windowing/egl/Makefile.in	2015-11-12 20:15:22.693415124 +0100
+@@ -2,6 +2,7 @@
+ 
+ SRCS = WinSystemEGL.cpp
+ SRCS+= EGLNativeTypeAmlogic.cpp
++SRCS+= EGLNativeTypeSunxi.cpp
+ ifeq (@USE_ANDROID@,1)
+ SRCS+= EGLNativeTypeAndroid.cpp
+ SRCS+= EGLNativeTypeAmlAndroid.cpp

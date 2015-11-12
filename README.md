@@ -3,9 +3,12 @@
 **This is unofficial and not yet working, however feel free to contribute**
 
 **Current Status**
-* Splash screen is shown on HDMI output
-* Serial console works
-* kodi have big troubles at startup
+* kodi runs!
+* video is SW decoded
+* no sound
+* single 1280x720p @ 50 Hz resolution
+* serial console works
+* network can be configured via serial console
 
 
 [OpenELEC](http://www.openelec.tv)
