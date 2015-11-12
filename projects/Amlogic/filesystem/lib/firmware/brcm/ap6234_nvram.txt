@@ -13,7 +13,7 @@ sromrev=3
 # bit 16	 nopa:   no external pa
 #            keep original 0x200
 boardflags=0x0090201
-xtalfreq=37400
+xtalfreq=26000
 nocrc=1
 ag0=255
 aa2g=1
