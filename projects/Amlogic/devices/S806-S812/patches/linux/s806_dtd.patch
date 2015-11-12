@@ -1,0 +1,48 @@
+diff --git a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+old mode 100755
+new mode 100644
+index 3c6f729..15255e2
+--- a/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8m2_n200_2G.dtd
+@@ -455,7 +455,6 @@ sdio{
+ //$$ L2 PROP_STR 3 = "caps"
+ //$$ L3 PROP_U32 = "f_min"
+ //$$ L3 PROP_U32 = "f_max"
+-//$$ L3 PROP_U32 = "f_max_w"
+ //$$ L3 PROP_U32 = "max_req_size"
+ //$$ L2 PROP_STR = "gpio_dat3"
+ //$$ L2 PROP_STR = "jtag_pin"
+@@ -472,7 +471,6 @@ sdio{
+             caps = "MMC_CAP_4_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED";
+             f_min = <300000>;
+             f_max = <50000000>;
+-            f_max_w = <50000000>;
+             max_req_size = <0x20000>;          /**128KB*/
+             gpio_dat3 = "CARD_4";
+             jtag_pin = "CARD_0";
+@@ -616,8 +600,8 @@ sdio{
+             ocr_avail = <0x00200080>; // 3.3:0x200000, 1.8+3.3:0x00200080
+             caps = "MMC_CAP_8_BIT_DATA","MMC_CAP_MMC_HIGHSPEED","MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE","MMC_CAP_ERASE", "MMC_CAP_HW_RESET"; // MMC_CAP_NEEDS_POLL -- for detect, MMC_CAP_NONREMOVABLE -- for eMMC/TSD
+             caps2 = "MMC_CAP2_HS200_1_8V_SDR";
+-	    f_min = <300000>;
+-            f_max = <100000000>;
++	        f_min = <300000>;
++            f_max = <150000000>;
+             max_req_size = <0x20000>;          /**128KB*/
+             gpio_dat3 = "BOOT_3";
+             card_type = <1>; /* 0:unknown, 1:mmc card(include eMMC), 2:sd card(include tSD), 3:sdio device(ie:sdio-wifi), 4:SD combo (IO+mem) card, 5:NON sdio device(means sd/mmc card), other:reserved */
+@@ -1954,14 +1878,4 @@ sdio{
+ 		pinctrl-0 = <&dvb_fe_pins>;
+ 	};
+ 
+-/// ***************************************************************************************
+-///	-	RNG
+-//$$ MODULE="RNG"
+-//$$ DEVICE="meson-rng"
+-//$$ L2 PROP_STR = "status"
+-	meson-rng{
+-		compatible = "amlogic,meson-rng";
+-		status = "ok";
+-	};
+-
+ }; /* end of / */
