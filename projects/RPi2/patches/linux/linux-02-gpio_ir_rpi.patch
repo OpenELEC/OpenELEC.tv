@@ -1,0 +1,51 @@
+diff -Naur linux-4.1.12/arch/arm/boot/dts/overlays/ir-gpio-overlay.dts linux_new/arch/arm/boot/dts/overlays/ir-gpio-overlay.dts
+--- linux-4.1.12/arch/arm/boot/dts/overlays/ir-gpio-overlay.dts	1970-01-01 01:00:00.000000000 +0100
++++ linux_new/arch/arm/boot/dts/overlays/ir-gpio-overlay.dts	2015-11-13 19:40:22.893626713 +0100
+@@ -0,0 +1,36 @@
++// Definitions for lirc-rpi module
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target-path = "/";
++		__overlay__ {
++			ir_gpio: ir-receiver {
++				compatible = "gpio-ir-receiver";
++				gpios = <&gpio 18 1>;
++
++				// parameter for keymap name
++				linux,rc-map-name = "rc-rc6-mce";
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&gpio>;
++		__overlay__ {
++			lirc_pins: lirc_pins {
++				brcm,pins = <18>;
++				brcm,function = <0>; // in
++				brcm,pull = <0>; // up
++			};
++		};
++	};
++
++	__overrides__ {
++		gpio_in_pin =   <&lirc_pins>,"brcm,pins:4";
++		gpio_in_pull =  <&lirc_pins>,"brcm,pull:4";
++	};
++};
+diff -Naur linux-4.1.12/arch/arm/boot/dts/overlays/Makefile linux_new/arch/arm/boot/dts/overlays/Makefile
+--- linux-4.1.12/arch/arm/boot/dts/overlays/Makefile	2015-11-13 19:45:19.293396364 +0100
++++ linux_new/arch/arm/boot/dts/overlays/Makefile	2015-11-13 19:41:42.775451133 +0100
+@@ -29,6 +29,7 @@
+ dtb-$(RPI_DT_OVERLAYS) += iqaudio-dac-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += iqaudio-dacplus-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += lirc-rpi-overlay.dtb
++dtb-$(RPI_DT_OVERLAYS) += ir-gpio-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += mcp2515-can0-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += mcp2515-can1-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += mmc-overlay.dtb

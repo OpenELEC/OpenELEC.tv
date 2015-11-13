@@ -103,6 +103,9 @@
 # decode_DTS=0x00000000
 # decode_DDP=0x00000000
 
+# enable rc-core driver for RPi-style GPIO IR receiver at GPIO pin 18
+dtoverlay=ir-gpio
+
 ################################################################################
 # End of default configuration
 # all values below this line were inserted from config.txt.bk (your old config)

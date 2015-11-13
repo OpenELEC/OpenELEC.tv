@@ -32,6 +32,7 @@
 
   cp -p $SYSTEM_ROOT/usr/share/bootloader/*.dtb $BOOT_ROOT
   cp -pR $SYSTEM_ROOT/usr/share/bootloader/overlays $BOOT_ROOT
+  cp -p $(get_build_dir linux)/arch/arm/boot/dts/overlays/ir-gpio-overlay.dtb $BOOT_ROOT/overlays/
 
 # cleanup not more needed files
   rm -rf $BOOT_ROOT/loader.bin
