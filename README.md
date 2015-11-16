@@ -8,7 +8,7 @@
 * no sound
 * single 1280x720p @ 50 Hz resolution
 * serial console works
-* network can be configured via serial console
+* network can be configured via kodi
 
 
 [OpenELEC](http://www.openelec.tv)
