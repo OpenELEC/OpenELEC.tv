@@ -5,7 +5,7 @@
 **Current Status**
 * kodi runs!
 * video is SW decoded
-* no sound
+* poor sound (probably because of CPU overload)
 * single 1280x720p @ 50 Hz resolution
 * serial console works
 * network can be configured via kodi
