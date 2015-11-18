@@ -1,0 +1,13 @@
+diff --git a/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx_cec.c b/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx_cec.c
+index a69bbed..7f0612f 100755
+--- a/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx_cec.c
++++ b/drivers/amlogic/hdmi/hdmi_tx/hdmi_tx_cec.c
+@@ -471,7 +471,7 @@ void cec_input_handle_message(void)
+ 
+     opcode = cec_global_info.cec_rx_msg_buf.cec_rx_message[cec_global_info.cec_rx_msg_buf.rx_write_pos].content.msg.opcode;
+ 
+-    hdmi_print(INF, CEC "opcode:0x%x, hdmitx_device->cec_func_config:0x%x\n",opcode,hdmitx_device->cec_func_config);
++//    hdmi_print(INF, CEC "opcode:0x%x, hdmitx_device->cec_func_config:0x%x\n",opcode,hdmitx_device->cec_func_config);
+ 
+     if (NULL == hdmitx_device)
+     {

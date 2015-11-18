@@ -1,0 +1,28 @@
+diff --git a/arch/arm/mach-meson8b/pm.c b/arch/arm/mach-meson8b/pm.c
+index 79622a6..b72c214 100755
+--- a/arch/arm/mach-meson8b/pm.c
++++ b/arch/arm/mach-meson8b/pm.c
+@@ -501,12 +501,19 @@ static void m6ref_set_vccx2(int power_on)
+ {
+     if(power_on == OFF) {
+         printk("m6ref_set_vccx2: OFF");
+-        CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
+-        SET_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<31);
++        //CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
++        //SET_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<31);
++        //CLEAR_AOBUS_REG_MASK(P_AO_RTI_PIN_MUX_REG, 1<<11);
++        SET_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<1);
++        CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<17);
++        
+     } else {
+         printk("m6ref_set_vccx2: ON");
+-        CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
+-        CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<31);
++        //CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
++        //CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<31);
++        //CLEAR_AOBUS_REG_MASK(P_AO_RTI_PIN_MUX_REG, 1<<11);
++        CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<1);
++        SET_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<17);
+     }
+     return;
+ }

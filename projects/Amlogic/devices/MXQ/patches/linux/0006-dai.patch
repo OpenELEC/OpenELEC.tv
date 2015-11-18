@@ -1,0 +1,13 @@
+diff --git a/sound/soc/aml/m8/aml_pcm_dai.c b/sound/soc/aml/m8/aml_pcm_dai.c
+index 8ddf901..d28cf7b 100755
+--- a/sound/soc/aml/m8/aml_pcm_dai.c
++++ b/sound/soc/aml/m8/aml_pcm_dai.c
+@@ -169,7 +169,7 @@ static int aml_dai_pcm_resume(struct snd_soc_dai *dai)
+ #endif /* CONFIG_PM */
+ 
+ 
+-#define AML_DAI_PCM_RATES		(SNDRV_PCM_RATE_8000)
++#define AML_DAI_PCM_RATES		(SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_88200 | SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_192000)
+ #define AML_DAI_PCM_FORMATS		(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
+ 
+ 

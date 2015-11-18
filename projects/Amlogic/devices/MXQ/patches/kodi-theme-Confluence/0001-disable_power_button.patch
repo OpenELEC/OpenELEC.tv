@@ -1,0 +1,23 @@
+diff --git a/720p/DialogButtonMenu.xml b/720p/DialogButtonMenu.xml
+index 4242b2b..ae90330 100644
+--- a/720p/DialogButtonMenu.xml
++++ b/720p/DialogButtonMenu.xml
+@@ -98,7 +98,7 @@
+ 				<texturefocus border="25,5,25,5">ShutdownButtonFocus.png</texturefocus>
+ 				<texturenofocus border="25,5,25,5">ShutdownButtonNoFocus.png</texturenofocus>
+ 				<onclick>Powerdown()</onclick>
+-				<visible>System.CanPowerDown</visible>
++				<visible>false</visible>
+ 				<pulseonselect>no</pulseonselect>
+ 				<font>font13</font>
+ 				<label>13016</label>
+@@ -117,8 +117,7 @@
+ 				<pulseonselect>no</pulseonselect>
+ 				<font>font13</font>
+ 				<label>20150</label>
+-				<visible>!System.HasAlarm(shutdowntimer)</visible>
+-				<visible>System.CanPowerDown | System.CanSuspend | System.CanHibernate</visible>
++				<visible>false</visible>
+ 			</control>
+ 			<control type="button" id="5">
+ 				<description>Cancel Shutdown Timer</description>

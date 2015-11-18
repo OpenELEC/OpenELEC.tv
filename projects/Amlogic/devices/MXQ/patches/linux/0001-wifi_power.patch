@@ -1,0 +1,23 @@
+diff --git a/drivers/amlogic/wifi/wifi_dummy.c b/drivers/amlogic/wifi/wifi_dummy.c
+index 460e4dd..1aadd2f 100644
+--- a/drivers/amlogic/wifi/wifi_dummy.c
++++ b/drivers/amlogic/wifi/wifi_dummy.c
+@@ -2,6 +2,8 @@
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/gpio.h>
++#include <linux/amlogic/aml_gpio_consumer.h>
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("kszaq");
+@@ -20,6 +22,9 @@ static int __init wifi_dummy_init(void)
+ 	msleep(300);
+ 	extern_wifi_set_enable(1);
+ 	sdio_reinit();
++	amlogic_gpio_request(GPIOX_11, "wifi_power");
++	msleep(300);
++	amlogic_gpio_direction_output(GPIOX_11, 0, "wifi_power");
+ 	return 0;
+ }
+ 
