@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="ac155dc"
+PKG_VERSION="91aa9d5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -86,7 +86,6 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
   mkdir -p $INSTALL/etc
     cp $ROOT/$PKG_BUILD/retroarch $INSTALL/usr/bin
-    cp $ROOT/$PKG_BUILD/tools/retroarch-joyconfig $INSTALL/usr/bin
     cp $ROOT/$PKG_BUILD/retroarch.cfg $INSTALL/etc
   mkdir -p $INSTALL/usr/share/video_filters
     cp $ROOT/$PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
