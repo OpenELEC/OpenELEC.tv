@@ -110,7 +110,3 @@ post_makeinstall_target() {
   cp $PKG_DIR/config/system.pa $INSTALL/etc/pulse/
   cp $PKG_DIR/config/pulseaudio-system.conf $INSTALL/etc/dbus-1/system.d/
 }
-
-post_install() {
-  enable_service pulseaudio.service
-}
