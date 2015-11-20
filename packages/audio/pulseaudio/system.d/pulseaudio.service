@@ -1,10 +1,15 @@
 [Unit]
 Description=PulseAudio Sound System
 After=syslog.target local-fs.target
+ConditionPathExists=/storage/.cache/services/pulse.conf
 
 [Service]
+Restart=on-failure
 ExecStart=/usr/bin/pulseaudio --system
-Restart=always
+TimeoutStopSec=1s
+RestartSec=2
+StartLimitInterval=60
+StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target
