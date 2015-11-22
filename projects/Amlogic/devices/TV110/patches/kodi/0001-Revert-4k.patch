@@ -1,0 +1,223 @@
+From a561e10a9f17728c81010c302f98164e39055ae0 Mon Sep 17 00:00:00 2001
+From: alex <surkov.alex@gmail.com>
+Date: Sun, 22 Nov 2015 10:47:22 +0300
+Subject: [PATCH] Revert "4k"
+
+---
+ xbmc/utils/AMLUtils.cpp                     |   16 +++---
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   83 +++++++--------------------
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    2 -
+ 3 files changed, 28 insertions(+), 73 deletions(-)
+
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 4555072..ac2667c 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -430,8 +430,8 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2ksmpte"))
+   {
+-    res->iWidth = 4096;
+-    res->iHeight= 2160;
++    res->iWidth = 1920;
++    res->iHeight= 1080;
+     res->iScreenWidth = 4096;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 24;
+@@ -448,8 +448,8 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k24hz"))
+   {
+-    res->iWidth = 3840;
+-    res->iHeight= 2160;
++    res->iWidth = 1920;
++    res->iHeight= 1080;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 24;
+@@ -457,8 +457,8 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k25hz"))
+   {
+-    res->iWidth = 3840;
+-    res->iHeight= 2160;
++    res->iWidth = 1920;
++    res->iHeight= 1080;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 25;
+@@ -475,8 +475,8 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k30hz"))
+   {
+-    res->iWidth = 3840;
+-    res->iHeight= 2160;
++    res->iWidth = 1920;
++    res->iHeight= 1080;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 30;
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 2cfb02f..1227d4b 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -66,26 +66,13 @@ void CEGLNativeTypeAmlogic::Initialize()
+   aml_permissions();
+   aml_cpufreq_min(true);
+   aml_cpufreq_max(true);
+-  GetMaxResolution(m_maxResolution);
++  return;
+ }
+-
+-void CEGLNativeTypeAmlogic::GetMaxResolution(RESOLUTION_INFO &maxResolution)
+-{
+-  std::vector<RESOLUTION_INFO> resolutions;
+-  ProbeResolutions(resolutions);
+-
+-  maxResolution = {0};
+-  for (size_t i = 0; i < resolutions.size(); i++)
+-  {
+-    if (resolutions[i].iScreenWidth > maxResolution.iScreenWidth || resolutions[i].iScreenHeight > maxResolution.iScreenHeight)
+-      maxResolution = resolutions[i];
+-  }
+-}
+-
+ void CEGLNativeTypeAmlogic::Destroy()
+ {
+   aml_cpufreq_min(false);
+   aml_cpufreq_max(false);
++  return;
+ }
+ 
+ bool CEGLNativeTypeAmlogic::CreateNativeDisplay()
+@@ -101,8 +88,8 @@ bool CEGLNativeTypeAmlogic::CreateNativeWindow()
+   if (!nativeWindow)
+     return false;
+ 
+-  nativeWindow->width = m_maxResolution.iScreenWidth;
+-  nativeWindow->height = m_maxResolution.iScreenHeight;
++  nativeWindow->width = 1920;
++  nativeWindow->height = 1080;
+   m_nativeWindow = nativeWindow;
+ 
+   SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
+@@ -157,78 +144,48 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+     ((fbdev_window *)m_nativeWindow)->height = res.iScreenHeight;
+   }
+ 
+-  switch((int)(res.fRefreshRate*10))
++  switch((int)(0.5 + res.fRefreshRate))
+   {
+     default:
+-    case 600:
++    case 60:
+       switch(res.iScreenWidth)
+       {
+         default:
+         case 1280:
+-          return SetDisplayResolution("720p");
++          SetDisplayResolution("720p");
+           break;
+         case 1920:
+           if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            return SetDisplayResolution("1080i");
++            SetDisplayResolution("1080i");
+           else
+-            return SetDisplayResolution("1080p");
++            SetDisplayResolution("1080p");
+           break;
+       }
+       break;
+-    case 500:
++    case 50:
+       switch(res.iScreenWidth)
+       {
+         default:
+         case 1280:
+-          return SetDisplayResolution("720p50hz");
++          SetDisplayResolution("720p50hz");
+           break;
+         case 1920:
+           if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            return SetDisplayResolution("1080i50hz");
++            SetDisplayResolution("1080i50hz");
+           else
+-            return SetDisplayResolution("1080p50hz");
++            SetDisplayResolution("1080p50hz");
+           break;
+       }
+       break;
+-    case 300:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k30hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p30hz");
+-          break;
+-      }
++    case 30:
++      SetDisplayResolution("1080p30hz");
+       break;
+-    case 250:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k25hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p25hz");
+-          break;
+-      }
+-      break;
+-    case 240:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k24hz");
+-          break;
+-        case 4096:
+-          return SetDisplayResolution("4k2ksmpte");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p24hz");
+-          break;
+-      }
++    case 24:
++      SetDisplayResolution("1080p24hz");
+       break;
+   }
+ 
+-  return false;
++  return true;
+ }
+ 
+ bool CEGLNativeTypeAmlogic::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
+@@ -297,8 +254,8 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
+     {
+       vinfo.xres = width;
+       vinfo.yres = height;
+-      vinfo.xres_virtual = m_maxResolution.iScreenWidth;
+-      vinfo.yres_virtual = m_maxResolution.iScreenHeight * 2;
++      vinfo.xres_virtual = 1920;
++      vinfo.yres_virtual = 2160;
+       vinfo.bits_per_pixel = 32;
+       vinfo.activate = FB_ACTIVATE_ALL;
+       ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
+index d0b0ff1..687ab1c 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
+@@ -53,8 +53,6 @@ protected:
+ private:
+   void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
+   void SetFramebufferResolution(int width, int height) const;
+-  void GetMaxResolution(RESOLUTION_INFO &maxResolution);
+ 
+   std::string m_framebuffer_name;
+-  RESOLUTION_INFO m_maxResolution;
+ };
+-- 
+1.7.10.4
+
