@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="visualization.spectrum"
-PKG_VERSION="d832db91"
+PKG_VERSION="a9e4d46"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
