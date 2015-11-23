@@ -3,12 +3,13 @@
 **This is unofficial and not yet working, however feel free to contribute**
 
 **Current Status**
-* kodi runs!
-* video is SW decoded
-* poor sound (probably because of CPU overload)
-* single 1280x720p @ 50 Hz resolution
-* serial console works
-* network can be configured via kodi
+* video & audio is SW decoded
+* poor sound
+* used boot time resolution (can be changed via script.bin or kernel parameters)
+* kswapd using one whole core
+
+Any help appreciated via pull requests or [Orange Pi forum](www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
+
 
 
 [OpenELEC](http://www.openelec.tv)
