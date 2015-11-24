@@ -135,6 +135,7 @@ makeinstall_target() {
 
   # Menu
   sed -i -e "s/# menu_core_enable = true/menu_core_enable = false/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# boxarts_directory =/boxarts_directory = \/storage\/boxarts/" $INSTALL/etc/retroarch.cfg
   
   # Playlists
   echo "playlist_names = \"$RA_PLAYLIST_NAMES\"" >> $INSTALL/etc/retroarch.cfg
