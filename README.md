@@ -1,12 +1,11 @@
 #Orange Pi 2 development
 
-**This is unofficial and not yet working, however feel free to contribute**
+**This is unofficial and barely usable, however feel free to contribute**
 
 **Current Status**
-* video & audio is SW decoded
-* poor sound
+* video is SW decoded
 * used boot time resolution (can be changed via script.bin or kernel parameters)
-* kswapd using one whole core
+* kswapd using one whole core, seems that kodi triggers it
 
 Any help appreciated via pull requests or [Orange Pi forum](www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
 
