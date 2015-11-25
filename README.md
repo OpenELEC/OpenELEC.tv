@@ -7,7 +7,7 @@
 * used boot time resolution (can be changed via script.bin or kernel parameters)
 * kswapd using one whole core, seems that kodi triggers it
 
-Any help appreciated via pull requests or [Orange Pi forum](www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
+Any help appreciated via pull requests or [Orange Pi forum](http://www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
 
 
 
