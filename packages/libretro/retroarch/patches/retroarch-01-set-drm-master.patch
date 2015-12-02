@@ -6,7 +6,7 @@ diff -Naur retroarch.git/gfx/drivers_context/drm_egl_ctx.c retroarch.patch/gfx/d
  
     if (g_drm_fd >= 0)
 +   {
-+      drmDropMaster(drm->g_drm_fd);
++      drmDropMaster(g_drm_fd);
        retro_fclose(drm->g_drm);
 +   }
  
@@ -16,7 +16,7 @@ diff -Naur retroarch.git/gfx/drivers_context/drm_egl_ctx.c retroarch.patch/gfx/d
     drm->g_fb_width  = g_drm_connector->modes[0].hdisplay;
     drm->g_fb_height = g_drm_connector->modes[0].vdisplay;
  
-+   drmSetMaster(drm->g_drm_fd);
++   drmSetMaster(g_drm_fd);
 +
     g_gbm_dev        = gbm_create_device(fd);
  
