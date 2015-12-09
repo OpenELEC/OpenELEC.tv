@@ -104,7 +104,7 @@
     GRAPHIC_DRIVERS=""
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
-    KODIPLAYER_DRIVER="default"
+    KODIPLAYER_DRIVER="cedarx"
 
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
