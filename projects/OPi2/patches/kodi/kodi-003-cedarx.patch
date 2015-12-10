@@ -72,8 +72,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  struct DVDVideoUserData
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-09 21:02:29.258100966 +0100
-@@ -0,0 +1,449 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-10 18:40:44.003620250 +0100
+@@ -0,0 +1,426 @@
 +	/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -115,7 +115,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +
 +CDVDVideoCodecSunxi::~CDVDVideoCodecSunxi()
 +{
-+  CLog::Log(0,"CDVDVideoCodecSunxi::~CDVDVideoCodecSunxi");
 +  Dispose();
 +}
 +
@@ -124,12 +123,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  VConfig vConfig;
 +  
 +  m_hints = hints;
-+  
-+  if (hints.height <= 480) 
-+  {
-+    CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::Open height <= 480");
-+    return false;
-+  }
 +  
 +  memset(&m_streamInfo, 0, sizeof(m_streamInfo));
 +   
@@ -152,7 +145,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      break;
 +    case AV_CODEC_ID_MPEG4:
 +      m_pFormatName = "cedarx-mpeg4";
-+      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX5;
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX5; // suggested XVID?
 +      break;
 +    case AV_CODEC_ID_MSMPEG4V2:
 +      m_pFormatName = "cedarx-mpeg4";
@@ -212,23 +205,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    case AV_CODEC_ID_HEVC:
 +      m_pFormatName = "cedarx-h265";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_H265;
-+      // check for hevc-hvcC and convert to h265-annex-b      
-+      if (hints.extradata)      
-+      {        
-+          m_bitstream = new CBitstreamConverter;        
-+          if (!m_bitstream->Open(hints.codec, (uint8_t*)hints.extradata, hints.extrasize, true))       
-+          {          
-+              SAFE_DELETE(m_bitstream);        
-+          }
-+          else 
-+          {
-+              // make sure we do not leak the existing hints.extradata
-+              free(hints.extradata);
-+              hints.extrasize = m_bitstream->GetExtraSize();
-+              hints.extradata = malloc(hints.extrasize);
-+              memcpy(hints.extradata, m_bitstream->GetExtraData(), hints.extrasize);
-+          }
-+      }
 +      break;
 +    default:
 +      CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - Codec format is not supported (%d)!", (int)hints.codec);
@@ -335,6 +311,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +
 +void CDVDVideoCodecSunxi::Dispose(void)
 +{
++  CLog::Log(LOGDEBUG,"CDVDVideoCodecSunxi::Dispose");
 +  if (m_videoCodec) 
 +  {
 +    DestroyVideoDecoder(m_videoCodec);
