@@ -148,6 +148,4 @@
   # build and install 'FishBMC' Visualization (yes / no)
     KODI_VIS_FISHBMC="no"
 
-    AVAHI_DAEMON="no"
-
     ADDITIONAL_DRIVERS=""
