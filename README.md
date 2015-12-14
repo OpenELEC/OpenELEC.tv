@@ -1,3 +1,19 @@
+#Orange Pi 2 development
+
+**This is unofficial and should be usable, however expect bugs**
+**Feel free to contribute!**
+
+**Current Status**
+* video is HW decoded
+* no zero copy display
+* no HW deinterlacing
+* used boot time resolution (can be changed via script.bin or kernel parameters)
+* kswapd using one whole core, seems like a bug in kernel
+
+Any help appreciated via pull requests or [Orange Pi forum](http://www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
+
+
+
 [OpenELEC](http://www.openelec.tv)
 
 # OpenELEC - Open Embedded Linux Entertainment Center

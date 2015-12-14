@@ -1,0 +1,54 @@
+--- a/drivers/video_sunxi/sunxi_v3/de/lowlevel_sun8iw7/de_gsu.c	2015-01-27 03:29:01.000000000 +0100
++++ b/drivers/video_sunxi/sunxi_v3/de/lowlevel_sun8iw7/de_gsu.c	2015-11-03 22:57:02.809069139 +0100
+@@ -219,7 +219,7 @@
+ 
+ 	//fir coefficient
+ 	pt_coef = de_gsu_calc_fir_coef(para->vstep);
+-	memcpy(&gsu_dev[sel][chno_t]->hcoeff, lan2coefftab16 + pt_coef, sizeof(unsigned int)*GSU_PHASE_NUM);
++	memcpy((void*)&gsu_dev[sel][chno_t]->hcoeff, lan2coefftab16 + pt_coef, sizeof(unsigned int)*GSU_PHASE_NUM);
+ 	gsu_dev[sel][chno_t]->ctrl.bits.coef_switch_rdy = 1;
+ 	gsu_glb_block[sel][chno_t].dirty   = 1;
+ 	gsu_out_block[sel][chno_t].dirty   = 1;
+--- a/drivers/video_sunxi/sunxi_v3/de/lowlevel_sun8iw7/de_vsu.c	2015-01-27 03:29:01.000000000 +0100
++++ b/drivers/video_sunxi/sunxi_v3/de/lowlevel_sun8iw7/de_vsu.c	2015-11-03 23:06:35.516479962 +0100
+@@ -297,30 +297,30 @@
+ 	//fir coefficient
+ 	//ch0
+ 	pt_coef = de_vsu_calc_fir_coef(ypara->hstep);
+-	memcpy(&vsu_dev[sel][chno]->yhcoeff0, lan3coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+-	memcpy(&vsu_dev[sel][chno]->yhcoeff1, lan3coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++	memcpy((void*)&vsu_dev[sel][chno]->yhcoeff0, lan3coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++	memcpy((void*)&vsu_dev[sel][chno]->yhcoeff1, lan3coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 
+ 	pt_coef = de_vsu_calc_fir_coef(ypara->vstep);
+-	memcpy(&vsu_dev[sel][chno]->yvcoeff, lan2coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++	memcpy((void*)&vsu_dev[sel][chno]->yvcoeff, lan2coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 
+ 	//ch1/2
+ 	if(VSU_FORMAT_RGB == format)
+ 	{
+ 		pt_coef = de_vsu_calc_fir_coef(cpara->hstep);
+-		memcpy(&vsu_dev[sel][chno]->chcoeff0, lan3coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+-		memcpy(&vsu_dev[sel][chno]->chcoeff1, lan3coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->chcoeff0, lan3coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->chcoeff1, lan3coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 
+ 		pt_coef = de_vsu_calc_fir_coef(cpara->vstep);
+-		memcpy(&vsu_dev[sel][chno]->cvcoeff, lan2coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->cvcoeff, lan2coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 	}
+ 	else
+ 	{
+ 		pt_coef = de_vsu_calc_fir_coef(cpara->hstep);
+-		memcpy(&vsu_dev[sel][chno]->chcoeff0, bicubic8coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+-		memcpy(&vsu_dev[sel][chno]->chcoeff1, bicubic8coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->chcoeff0, bicubic8coefftab32_left+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->chcoeff1, bicubic8coefftab32_right+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 
+ 		pt_coef = de_vsu_calc_fir_coef(cpara->vstep);
+-		memcpy(&vsu_dev[sel][chno]->cvcoeff, bicubic4coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
++		memcpy((void*)&vsu_dev[sel][chno]->cvcoeff, bicubic4coefftab32+pt_coef, sizeof(unsigned int)*VSU_PHASE_NUM);
+ 	}
+ 	vsu_dev[sel][chno]->ctrl.bits.coef_switch_rdy = 1;
+ 	vsu_glb_block[sel][chno].dirty 			= 1;
+

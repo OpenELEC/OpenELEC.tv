@@ -1,0 +1,2 @@
+bootargs=console=ttyS0,115200 hdmi.audio=EDID:0 boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 consoleblank=0
+uenvcmd=fatload mmc 0:1 0x42000000 kernel;bootm 0x42000000

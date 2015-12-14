@@ -28,7 +28,12 @@ mkdir -p $RELEASE_DIR/3rdparty/bootloader
   cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
   cp -PR $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
   cp -PR $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
-  cp -PR $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
+  if [ ! "$UBOOT_VERSION" = "awh3-opi2" ]; then
+    cp -PR $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
+  else
+    cp -PRv $BUILD/u-boot-*/u-boot-sunxi.bin $RELEASE_DIR/3rdparty/bootloader
+    cp -PRv $BUILD/u-boot-*/boot0_sdcard_sun8iw7p1 $RELEASE_DIR/3rdparty/bootloader/boot0_sdcard_sun8iw7p1.bin
+  fi
 
   cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
 

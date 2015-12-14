@@ -30,8 +30,9 @@
   SYSTEM_SIZE=256
   STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
 
-  DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 4 ))
+  DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 24 ))
   DISK="$TARGET_IMG/$IMAGE_NAME.img"
+  PART_START=40960
 
 # functions
   cleanup() {
@@ -73,8 +74,8 @@ trap cleanup SIGINT
 
 # create part1
   echo "image: creating part1 on $DISK..."
-  SYSTEM_PART_END=$(( $SYSTEM_SIZE * 1024 * 1024 / 512 + 2048 ))
-  parted -s "$LOOP" -a min unit s mkpart primary fat32 2048 $SYSTEM_PART_END
+  SYSTEM_PART_END=$(( $SYSTEM_SIZE * 1024 * 1024 / 512 + $PART_START ))
+  parted -s "$LOOP" -a min unit s mkpart primary fat32 $PART_START $SYSTEM_PART_END
   if [ "$BOOTLOADER" = "syslinux" ]; then
     parted -s "$LOOP" set 1 legacy_boot on
   else
@@ -82,7 +83,7 @@ trap cleanup SIGINT
   fi
 # create part2
   echo "image: creating part2 on $DISK..."
-  STORAGE_PART_START=$(( $SYSTEM_PART_END + 2048 ))
+  STORAGE_PART_START=$(( $SYSTEM_PART_END + 1024 ))
   STORAGE_PART_END=$(( $STORAGE_PART_START + (( $STORAGE_SIZE * 1024 * 1024 / 512 )) ))
   parted -s "$LOOP" -a min unit s mkpart primary ext4 $STORAGE_PART_START $STORAGE_PART_END
   sync
@@ -100,7 +101,7 @@ fi
 # create filesystem on part1
   losetup -d "$LOOP"
   echo "image: creating filesystem on part1..."
-  OFFSET=$(( 2048 * 512 ))
+  OFFSET=$(( $PART_START * 512 ))
   SIZELIMIT=$(( $SYSTEM_SIZE * 1024 * 1024 ))
   losetup -o $OFFSET --sizelimit $SIZELIMIT "$LOOP" "$DISK"
   if [ "$BOOTLOADER" = "syslinux" ]; then
@@ -190,6 +191,9 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.imx" of="$DISK" bs=512 seek=2 conv=notrunc
     elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi.bin" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/boot0_sdcard_sun8iw7p1.bin" of="$DISK" bs=1k seek=8 conv=notrunc
+      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi.bin" of="$DISK" bs=1k seek=16400 conv=notrunc
     fi
 
     echo "image: copying files to part1..."

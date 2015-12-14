@@ -1,0 +1,19 @@
+--- a/Makefile.orig	2015-01-27 03:29:00.000000000 +0100
++++ b/Makefile	2015-11-05 22:24:39.067499653 +0100
+@@ -162,6 +162,7 @@
+ ifeq ($(HOSTARCH),$(ARCH))
+ CROSS_COMPILE ?= arm-linux-gnueabi-
+ endif
++USE_PRIVATE_LIBGCC="."
+ 
+ # load other configuration
+ include $(TOPDIR)/config.mk
+@@ -400,7 +401,7 @@
+ endif
+ 
+ # Always append ALL so that arch config.mk's can add custom ones
+-ALL-y += $(obj)u-boot.srec $(obj)u-boot.bin $(obj)System.map $(obj)u-boot-$(TARGET).bin
++ALL-y += $(obj)u-boot.srec $(obj)u-boot.bin $(obj)System.map
+ 
+ ALL-$(CONFIG_NAND_U_BOOT) += $(obj)u-boot-nand.bin
+ ALL-$(CONFIG_ONENAND_U_BOOT) += $(obj)u-boot-onenand.bin
