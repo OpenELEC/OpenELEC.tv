@@ -122,6 +122,9 @@ pack_addon() {
     if [ -f $ADDON_BUILD/$PKG_ADDON_ID/icon.png ]; then
       cp $ADDON_BUILD/$PKG_ADDON_ID/icon.png $ADDON_INSTALL_DIR/icon.png
     fi
+    if [ -f $ADDON_BUILD/$PKG_ADDON_ID/addon.xml ]; then
+      cp $ADDON_BUILD/$PKG_ADDON_ID/addon.xml $ADDON_INSTALL_DIR/addon.xml
+    fi
   fi
 }
 
