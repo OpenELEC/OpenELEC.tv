@@ -72,8 +72,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  struct DVDVideoUserData
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-14 18:29:00.744155248 +0100
-@@ -0,0 +1,458 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-14 22:26:11.607072510 +0100
+@@ -0,0 +1,468 @@
 +	/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -453,11 +453,21 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  picture = RequestPicture(m_videoCodec, 0);
 +  if(picture != NULL)
 +  {
++    int realWidth = picture->nWidth;
++    int realHeight = picture->nHeight;
++    
++    if((picture->nBottomOffset != 0 || picture->nRightOffset != 0) &&
++        picture->nRightOffset <= picture->nLineStride)
++    {
++        realWidth = picture->nRightOffset - picture->nLeftOffset;
++        realHeight = picture->nBottomOffset - picture->nTopOffset;
++    }
++    
 +    m_videobuffer.pts = (picture->nPts > 0) ? 
 +      (double)picture->nPts : DVD_NOPTS_VALUE;
 +    m_videobuffer.dts = DVD_NOPTS_VALUE;
-+    m_videobuffer.iWidth  = picture->nWidth;
-+    m_videobuffer.iHeight = picture->nHeight;
++    m_videobuffer.iWidth  = realWidth;
++    m_videobuffer.iHeight = realHeight;
 +    
 +    m_videobuffer.iFlags = DVP_FLAG_ALLOCATED;
 +    if (!picture->bIsProgressive)
@@ -477,15 +487,15 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    m_videobuffer.iLineSize[2] = picture->nWidth / 2;
 +    m_videobuffer.privData = picture;
 +
-+    m_videobuffer.iDisplayWidth  = m_videobuffer.iWidth;
-+    m_videobuffer.iDisplayHeight = m_videobuffer.iHeight;
++    m_videobuffer.iDisplayWidth  = realWidth;
++    m_videobuffer.iDisplayHeight = realHeight;
 +    if (m_hints.aspect > 1.0 && !m_hints.forced_aspect)
 +    {
-+      m_videobuffer.iDisplayWidth  = ((int)lrint(m_videobuffer.iHeight * m_hints.aspect)) & -3;
-+      if (m_videobuffer.iDisplayWidth > m_videobuffer.iWidth)
++      m_videobuffer.iDisplayWidth  = ((int)lrint(realHeight * m_hints.aspect)) & -3;
++      if (m_videobuffer.iDisplayWidth > realWidth)
 +      {
-+        m_videobuffer.iDisplayWidth  = m_videobuffer.iWidth;
-+        m_videobuffer.iDisplayHeight = ((int)lrint(m_videobuffer.iWidth / m_hints.aspect)) & -3;
++        m_videobuffer.iDisplayWidth  = realWidth;
++        m_videobuffer.iDisplayHeight = ((int)lrint(realWidth / m_hints.aspect)) & -3;
 +      }
 +    }
 +    
