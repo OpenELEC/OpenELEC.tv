@@ -72,8 +72,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  struct DVDVideoUserData
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-10 18:40:44.003620250 +0100
-@@ -0,0 +1,426 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-14 18:29:00.744155248 +0100
+@@ -0,0 +1,458 @@
 +	/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -100,14 +100,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +#include "DVDClock.h"
 +#include "utils/log.h"
 +
-+#define __MODULE_NAME__ "CDVDVideoCodecSunxi"
-+
-+#include <cedarx/memoryAdapter.h>
++#define _4CC(c1,c2,c3,c4) (((uint32_t)(c4)<<24)|((uint32_t)(c3)<<16)|((uint32_t)(c2)<<8)|(uint32_t)(c1))
 +
 +CDVDVideoCodecSunxi::CDVDVideoCodecSunxi() :
 +  m_videoCodec(NULL),
-+  m_pFormatName("cedarx-xx"),
-+  m_DropBFrameIfDelay(0),
++  m_pFormatName("cedarx-xxx"),
 +  m_bitstream(NULL)
 +{
 +  
@@ -133,26 +130,54 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG1;
 +      break;
 +    case AV_CODEC_ID_MPEG2VIDEO:
-+    case AV_CODEC_ID_MPEG2VIDEO_XVMC:
 +      m_pFormatName = "cedarx-mpeg2";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG2;
 +      break;
 +    case AV_CODEC_ID_H263:
-+    case AV_CODEC_ID_H263P:
-+    case AV_CODEC_ID_H263I:
 +      m_pFormatName = "cedarx-h263";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_H263;
 +      break;
 +    case AV_CODEC_ID_MPEG4:
-+      m_pFormatName = "cedarx-mpeg4";
-+      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX5; // suggested XVID?
++      switch(m_hints.codec_tag)
++      {
++      case _4CC('d','i','v','x'):
++      case _4CC('D','I','V','X'):
++        m_pFormatName = "cedarx-divx";
++        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX4;
++        break;
++      case _4CC('D','X','5','0'):
++      case _4CC('d','x','5','0'):
++      case _4CC('D','I','V','5'):
++      case _4CC('d','i','v','5'):
++        m_pFormatName = "cedarx-divx5";
++        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX5;
++        break;
++      case _4CC('X','V','I','D'):
++      case _4CC('x','v','i','d'):
++      case _4CC('M','P','4','V'):
++      case _4CC('m','p','4','v'):
++      case _4CC('P','M','P','4'):
++      case _4CC('F','M','P','4'):
++        m_pFormatName = "cedarx-xvid";
++        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_XVID;
++        break;
++      default:
++        CLog::Log(LOGERROR, "CedarX : Using XVID for MPEG4 codec with tag %d.", m_hints.codec_tag);
++        m_pFormatName = "cedarx-xvid";
++        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_XVID;
++        break;
++      }
++      break;
++    case AV_CODEC_ID_MSMPEG4V1:
++      m_pFormatName = "cedarx-mpeg4v1";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MSMPEG4V1;
 +      break;
 +    case AV_CODEC_ID_MSMPEG4V2:
-+      m_pFormatName = "cedarx-mpeg4";
++      m_pFormatName = "cedarx-mpeg4v2";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MSMPEG4V2;
 +      break;
 +    case AV_CODEC_ID_MSMPEG4V3:
-+      m_pFormatName = "cedarx-mpeg4";
++      m_pFormatName = "cedarx-divx3";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_DIVX3;
 +      break;
 +    case AV_CODEC_ID_FLV1:
@@ -161,6 +186,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      break;
 +    case AV_CODEC_ID_RV10:
 +    case AV_CODEC_ID_RV20:
++      m_pFormatName = "cedarx-rxg2";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_RXG2;
++      break;
 +    case AV_CODEC_ID_RV30:
 +    case AV_CODEC_ID_RV40:
 +      m_pFormatName = "cedarx-rx";
@@ -192,9 +220,17 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MJPEG;
 +      m_pFormatName = "cedarx-mjpeg";
 +      break;
++    case AV_CODEC_ID_WMV1:
++      m_pFormatName = "cedarx-wmv1";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV1;
++      break;
++    case AV_CODEC_ID_WMV2:
++      m_pFormatName = "cedarx-wmv2";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV2;
++      break;
 +    case AV_CODEC_ID_VC1:
 +    case AV_CODEC_ID_WMV3:
-+      m_pFormatName = "cedarx-vc1";
++      m_pFormatName = "cedarx-wmv3";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV3;
 +      break;
 +    case AV_CODEC_ID_AVS:
@@ -206,6 +242,18 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      m_pFormatName = "cedarx-h265";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_H265;
 +      break;
++    case AV_CODEC_ID_VP6:
++      m_pFormatName = "cedarx-vp6";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_VP6;
++      break;
++    case AV_CODEC_ID_VP8:
++      m_pFormatName = "cedarx-vp8";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_VP8;
++      break;
++    case AV_CODEC_ID_VP9:
++      m_pFormatName = "cedarx-vp9";
++      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_VP9;
++      break;
 +    default:
 +      CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - Codec format is not supported (%d)!", (int)hints.codec);
 +      return false;
@@ -214,6 +262,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  m_streamInfo.nWidth = hints.width;
 +  m_streamInfo.nHeight = hints.height;
 +
++  //FIXME: rfpsrate is not handled correctly
 +  // handle video rate
 +  if ( hints.fpsrate > 0)
 +  {
@@ -247,9 +296,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - fpsrate[%d], fpsscale[%d], rfpsrate[%d], rfpsscale[%d]",
 +            hints.fpsrate, hints.fpsscale, hints.rfpsrate, hints.rfpsscale);
 +  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - nFrameRate = %d", m_streamInfo.nFrameRate);
-+  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - nFrameDuration = %d", m_streamInfo.nFrameDuration);
-+  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - nWidth * nHeight[%d*%d]  CodecFormat[0x%x] ExtraSize[%d]",
-+            m_streamInfo.nWidth, m_streamInfo.nHeight, m_streamInfo.eCodecFormat, hints.extrasize);
++  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - ExtraSize[%d]", hints.extrasize);
 +  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - AVCodecID(%d) -> CedarXID(0x%x)",
 +            (int)hints.codec, m_streamInfo.eCodecFormat);
 +
@@ -257,17 +304,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  vConfig.eOutputPixelFormat = PIXEL_FORMAT_YV12;
 +  if (hints.width >= 3840 && hints.height >= 2160)
 +  {
-+      // decoder drop delay frame
-+      m_DropBFrameIfDelay = 1;
 +      CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - 4K -> config drop delay frame, and enable scale down");
 +      // decoder config scale down, refrence to awplayer H3 scale down when 4k
 +      vConfig.bScaleDownEn = 1;
 +      vConfig.nHorizonScaleDownRatio = 1;
 +      vConfig.nVerticalScaleDownRatio = 1;
-+  }
-+  else 
-+  {
-+     m_DropBFrameIfDelay = 0;
 +  }
 +
 +  m_videoCodec = CreateVideoDecoder();
@@ -305,7 +346,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    }
 +  }
 +
-+  CLog::Log(LOGINFO, "%s: Opened AllwinnerTech CedarX Codec", __MODULE_NAME__);    
++  CLog::Log(LOGINFO, "CDVDVideoCodecSunxi: Opened AllwinnerTech CedarX Codec");    
++  
 +  return true;
 +}
 +
@@ -384,7 +426,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    }
 +  }
 +  
-+  ret = DecodeVideoStream(m_videoCodec, 0, 0, m_DropBFrameIfDelay, GetPlayerPts());
++  ret = DecodeVideoStream(m_videoCodec, 0, 0, 0, 0);
 +  switch(ret)
 +  {
 +    case VDECODE_RESULT_FRAME_DECODED:
@@ -490,20 +532,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +void CDVDVideoCodecSunxi::SetDropState(bool bDrop)
 +{
 +}
-+
-+int64_t CDVDVideoCodecSunxi::GetPlayerPts()
-+{
-+  int64_t clock_pts = 0;
-+  CDVDClock *playerclock = CDVDClock::GetMasterClock();
-+  if (playerclock)
-+    clock_pts = playerclock->GetClock();
-+
-+  return clock_pts;
-+}
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	2015-12-04 16:27:42.367995204 +0100
-@@ -0,0 +1,55 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	2015-12-14 18:29:16.604321058 +0100
+@@ -0,0 +1,54 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -555,7 +587,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h b/xbmc/cor
 +  VideoDecoder    *m_videoCodec;
 +  VideoStreamInfo  m_streamInfo;
 +  const char      *m_pFormatName;
-+  int              m_DropBFrameIfDelay;
 +
 +  CBitstreamConverter *m_bitstream;
 +};
