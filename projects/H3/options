@@ -38,13 +38,13 @@
     BOOTLOADER="u-boot"
 
   # u-boot version to use (default)
-    UBOOT_VERSION=""
+    UBOOT_VERSION="2016.01-rc2"
 
   # Configuration for u-boot
     UBOOT_CONFIG=""
 
   # Target Configfile for u-boot
-    UBOOT_CONFIGFILE=""
+    UBOOT_CONFIGFILE="boot.scr"
 
   # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
     KERNEL_UBOOT_TARGET="uImage"
