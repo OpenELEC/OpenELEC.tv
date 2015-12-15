@@ -25,11 +25,6 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_VERSION="imx6-e817fa3"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-elif [ "$UBOOT_VERSION" = "awh3-opi2" ]; then
-  PKG_DEPENDS_HOST="sunxi-tools:host"
-  PKG_VERSION="$UBOOT_VERSION"
-  PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
-  PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/7de19646f7a8bf77df6f2f40fff7aa978f9beb67/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
 else
   exit 0
 fi
@@ -43,10 +38,6 @@ PKG_SHORTDESC="u-boot: Universal Bootloader project"
 PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems, used as the default boot loader by several board vendors. It is intended to be easy to port and to debug, and runs on many supported architectures, including PPC, ARM, MIPS, x86, m68k, NIOS, and Microblaze."
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$UBOOT_VERSION" = "awh3-opi2" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host sunxi-uboot-patch:host"
-fi
 
 pre_configure_target() {
   if [ -z "$UBOOT_CONFIG" ]; then
@@ -71,12 +62,7 @@ make_target() {
   for UBOOT_TARGET in $UBOOT_CONFIG; do
     UBOOT_TARGET_CNT=$((UBOOT_TARGET_CNT + 1))
   done
-  
-  if [ "$UBOOT_VERSION" = "awh3-opi2" ]; then
-    cp -PRv $PKG_DIR/extra/libgcc.a .
-    cp -PRv $PKG_DIR/extra/boot0_sdcard_sun8iw7p1.bin ./boot0_sdcard_sun8iw7p1
-  fi
-  
+
   for UBOOT_TARGET in $UBOOT_CONFIG; do
     make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" mrproper
     make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_TARGET
@@ -94,18 +80,11 @@ make_target() {
         TARGET_NAME="undef"
       fi
 
-      if [ ! "$UBOOT_VERSION" = "awh3-opi2" ]; then
-        [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
-      fi
+      [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
       [ -f u-boot.imx ] && mv u-boot.imx u-boot-$TARGET_NAME.imx || :
       [ -f SPL ] && mv SPL SPL-$TARGET_NAME || :
     fi
   done
-  
-  if [ "$UBOOT_VERSION" = "awh3-opi2" ]; then
-    fex2bin $PKG_DIR/extra/orange_pi2.fex script.bin
-    update_uboot u-boot.bin script.bin u-boot-sunxi.bin
-  fi
 }
 
 makeinstall_target() {
@@ -133,11 +112,6 @@ makeinstall_target() {
   cp ./u-boot*.imx $INSTALL/usr/share/bootloader 2>/dev/null || :
   cp ./u-boot*.img $INSTALL/usr/share/bootloader 2>/dev/null || :
   cp ./SPL* $INSTALL/usr/share/bootloader 2>/dev/null || :
-  
-  if [ "$UBOOT_VERSION" = "awh3-opi2" ]; then
-    cp -PRv ./u-boot-sunxi.bin $INSTALL/usr/share/bootloader
-    cp -PRv $PKG_DIR/extra/boot0_sdcard_sun8iw7p1.bin $INSTALL/usr/share/bootloader/
-  fi
 
   cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/bootloader 2>/dev/null || :
 
