@@ -72,8 +72,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  struct DVDVideoUserData
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-14 22:26:11.607072510 +0100
-@@ -0,0 +1,468 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-15 19:42:50.468676091 +0100
+@@ -0,0 +1,462 @@
 +	/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -130,6 +130,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG1;
 +      break;
 +    case AV_CODEC_ID_MPEG2VIDEO:
++    case AV_CODEC_ID_MPEG2VIDEO_XVMC:
 +      m_pFormatName = "cedarx-mpeg2";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_MPEG2;
 +      break;
@@ -232,6 +233,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    case AV_CODEC_ID_WMV3:
 +      m_pFormatName = "cedarx-wmv3";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV3;
++      m_streamInfo.bIsFramePackage = 1;
 +      break;
 +    case AV_CODEC_ID_AVS:
 +    case AV_CODEC_ID_CAVS:
@@ -262,35 +264,27 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  m_streamInfo.nWidth = hints.width;
 +  m_streamInfo.nHeight = hints.height;
 +
-+  //FIXME: rfpsrate is not handled correctly
 +  // handle video rate
-+  if ( hints.fpsrate > 0)
++  if((hints.rfpsscale > 0) && (hints.rfpsrate > 0))
 +  {
-+    if (hints.rfpsscale > 0)
-+    {
-+      // check ffmpeg r_frame_rate 1st
-+      m_streamInfo.nFrameRate = hints.rfpsrate * 1000 / hints.rfpsscale; 
-+    }
-+    else if (hints.fpsscale > 0)
-+    {
-+      // then ffmpeg avg_frame_rate next
-+      m_streamInfo.nFrameRate = hints.fpsrate * 1000 / hints.fpsscale; 
-+    }
-+    else
-+    {
-+      m_streamInfo.nFrameRate = hints.fpsrate * 1000;
-+    }
++    // check ffmpeg r_frame_rate 1st
++    m_streamInfo.nFrameRate = hints.rfpsrate * 1000 / hints.rfpsscale; 
++  }
++  else if(hints.fpsscale > 0)
++  {
++    // then ffmpeg avg_frame_rate next
++    m_streamInfo.nFrameRate = hints.fpsrate * 1000 / hints.fpsscale; 
++  }
++  else
++  {
++    m_streamInfo.nFrameRate = hints.fpsrate * 1000;
 +  }
 +  
-+  if (hints.extrasize != NULL)
++  // extra data corrupts WMV3 video decoding
++  if((hints.extrasize != NULL) && (m_streamInfo.eCodecFormat != VIDEO_CODEC_FORMAT_WMV3))
 +  {
 +    m_streamInfo.pCodecSpecificData = (char*)hints.extradata;
 +    m_streamInfo.nCodecSpecificDataLen = hints.extrasize;
-+  }
-+  
-+  if (m_streamInfo.eCodecFormat == VIDEO_CODEC_FORMAT_WMV3)
-+  {
-+    m_streamInfo.bIsFramePackage = 1;
 +  }
 +  
 +  CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::OpenDecoder - fpsrate[%d], fpsscale[%d], rfpsrate[%d], rfpsscale[%d]",
@@ -459,8 +453,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    if((picture->nBottomOffset != 0 || picture->nRightOffset != 0) &&
 +        picture->nRightOffset <= picture->nLineStride)
 +    {
-+        realWidth = picture->nRightOffset - picture->nLeftOffset;
-+        realHeight = picture->nBottomOffset - picture->nTopOffset;
++      realWidth = picture->nRightOffset - picture->nLeftOffset;
++      realHeight = picture->nBottomOffset - picture->nTopOffset;
 +    }
 +    
 +    m_videobuffer.pts = (picture->nPts > 0) ? 
