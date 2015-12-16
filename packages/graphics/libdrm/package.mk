@@ -49,7 +49,7 @@ for drv in $GRAPHIC_DRIVERS; do
 
   [ "$drv" = "nouveau" ] && \
     DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-libkms/enable-libkms/'` && \
-    DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-intel/enable-nouveau/'`
+    DRM_CONFIG=`echo $DRM_CONFIG | sed -e 's/disable-nouveau/enable-nouveau/'`
 done
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-udev \
