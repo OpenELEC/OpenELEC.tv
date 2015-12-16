@@ -72,8 +72,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  struct DVDVideoUserData
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-15 19:42:50.468676091 +0100
-@@ -0,0 +1,462 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp	2015-12-16 18:43:51.579074614 +0100
+@@ -0,0 +1,464 @@
 +	/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -420,7 +420,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    }
 +  }
 +  
-+  ret = DecodeVideoStream(m_videoCodec, 0, 0, 0, 0);
++  ret = DecodeVideoStream(m_videoCodec, 0, 0, m_dropState ? 1 : 0, 0);
 +  switch(ret)
 +  {
 +    case VDECODE_RESULT_FRAME_DECODED:
@@ -450,11 +450,15 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +    int realWidth = picture->nWidth;
 +    int realHeight = picture->nHeight;
 +    
-+    if((picture->nBottomOffset != 0 || picture->nRightOffset != 0) &&
-+        picture->nRightOffset <= picture->nLineStride)
++    //HACK: this is quick fix until HW deinterlacing gets implemented
++    if (picture->bIsProgressive)
 +    {
-+      realWidth = picture->nRightOffset - picture->nLeftOffset;
-+      realHeight = picture->nBottomOffset - picture->nTopOffset;
++      if((picture->nBottomOffset != 0 || picture->nRightOffset != 0) &&
++          picture->nRightOffset <= picture->nLineStride)
++      {
++        realWidth = picture->nRightOffset - picture->nLeftOffset;
++        realHeight = picture->nBottomOffset - picture->nTopOffset;
++      }
 +    }
 +    
 +    m_videobuffer.pts = (picture->nPts > 0) ? 
@@ -470,6 +474,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +      m_videobuffer.iFlags |= DVP_FLAG_TOP_FIELD_FIRST;
 +    if (picture->bRepeatTopField)
 +      m_videobuffer.iFlags |= DVP_FLAG_REPEAT_TOP_FIELD;
++    if (m_dropState)
++      m_videobuffer.iFlags |= DVP_FLAG_DROPPED;
 +    
 +    //TODO: change this to special render
 +    m_videobuffer.format = RENDER_FMT_YUV420P;
@@ -532,14 +538,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.cpp b/xbmc/c
 +  
 +  return false;
 +}
-+
-+void CDVDVideoCodecSunxi::SetDropState(bool bDrop)
-+{
-+}
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	2015-12-14 18:29:16.604321058 +0100
-@@ -0,0 +1,54 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h	2015-12-16 18:26:16.307911872 +0100
+@@ -0,0 +1,53 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -580,17 +582,16 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecSunxi.h b/xbmc/cor
 +  virtual void Reset(void);
 +  virtual bool ClearPicture(DVDVideoPicture* pDvdVideoPicture);
 +  virtual bool GetPicture(DVDVideoPicture *pDvdVideoPicture);
-+  virtual void SetDropState(bool bDrop);
++  virtual void SetDropState(bool bDrop) { m_dropState = bDrop; }
 +  virtual const char* GetName(void) { return (const char*)m_pFormatName; }
 +  
 +protected:
-+  int64_t       GetPlayerPts();
-+  
 +  DVDVideoPicture  m_videobuffer;
 +  CDVDStreamInfo   m_hints;
 +  VideoDecoder    *m_videoCodec;
 +  VideoStreamInfo  m_streamInfo;
 +  const char      *m_pFormatName;
++  bool             m_dropState;
 +
 +  CBitstreamConverter *m_bitstream;
 +};
