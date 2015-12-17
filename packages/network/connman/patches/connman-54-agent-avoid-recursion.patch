@@ -1,0 +1,45 @@
+From b869288216887edeb05d2c31f416e8e8ea94ebaf Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Mon, 30 Nov 2015 13:07:48 +0100
+Subject: agent: Avoid recursion in connman_agent_cancel()
+
+It is possible that connman_agent_cancel() from within
+connman_agent_cancel():
+
+-> request->callback() == request_peer_authorization_reply()
+-> auth_reply->peer_callback() == request_authorization_cb()
+-> peer_driver->connect() returns -EBUSY (wifi->p2p_connecting == TRUE)
+-> connman_peer_set_state()
+   with old_state == 2 and new_state == 1
+-> peer_disconnect()
+-> connman_agent_cancel()
+
+Break the loop by removing the request from the list before calling the
+callback funtion.
+---
+ src/agent.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/agent.c b/src/agent.c
+index d26d8dc..4866c8d 100644
+--- a/src/agent.c
++++ b/src/agent.c
+@@ -524,12 +524,12 @@ void connman_agent_cancel(void *user_context)
+ 								user_context) {
+ 				DBG("cancel pending %p", request);
+ 
++				agent->queue = g_list_delete_link(agent->queue,
++									list);
++
+ 				request->callback(NULL, request->user_data);
+ 
+ 				agent_request_free(request);
+-
+-				agent->queue = g_list_delete_link(agent->queue,
+-									list);
+ 			}
+ 
+ 			list = next;
+-- 
+cgit v0.11.2
+
