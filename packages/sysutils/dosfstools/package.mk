@@ -17,10 +17,10 @@
 ################################################################################
 
 PKG_NAME="dosfstools"
-PKG_VERSION="3.0.27"
+PKG_VERSION="3.0.28"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/dosfstools/dosfstools"
 PKG_URL="https://github.com/dosfstools/dosfstools/releases/download/v$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
@@ -40,9 +40,25 @@ make_init() {
   : # reuse make_target()
 }
 
+pre_build_host() {
+  mkdir -p $PKG_BUILD/.$HOST_NAME
+  cp -RP $PKG_BUILD/* $PKG_BUILD/.$HOST_NAME
+}
+
+make_host() {
+  cd $ROOT/$PKG_BUILD/.$HOST_NAME
+  make PREFIX=/usr
+}
+
 makeinstall_init() {
   mkdir -p $INSTALL/sbin
     cp fsck.fat $INSTALL/sbin
     ln -sf fsck.fat $INSTALL/sbin/fsck.msdos
     ln -sf fsck.fat $INSTALL/sbin/fsck.vfat
+}
+
+makeinstall_host() {
+  mkdir -p $ROOT/$TOOLCHAIN/sbin
+    cp mkfs.fat $ROOT/$TOOLCHAIN/sbin
+    ln -sf mkfs.fat $ROOT/$TOOLCHAIN/sbin/mkfs.vfat
 }
