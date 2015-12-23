@@ -18,19 +18,30 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
+PKG_NAME="puae"
+PKG_VERSION="7cbc230"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch puae snes9x picodrive 81 yabause hatari dosbox mame2003 gw-libretro fuse-libretro scummvm bluemsx beetle-sgx lutro 4do prosystem bsnes-mercury tyrquake 2048 virtualjaguar ppsspp beetle-vb beetle-wswan desmume beetle-ngp beetle-pcfx beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine nestopia gambatte stella vbam libretro-ffmpeg"
+PKG_SITE="https://github.com/libretro/libretro-uae"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+PKG_SECTION="libretro"
+PKG_SHORTDESC="WIP libretro port of UAE (P-UAE and libco) Expect bugs"
+PKG_LONGDESC="WIP libretro port of UAE (P-UAE and libco) Expect bugs"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_configure_target() {
+  strip_lto
+  if [ "$ARCH" == "arm" ]; then
+    CFLAGS="$CFLAGS -DARM"
+  fi
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp puae_libretro.so $INSTALL/usr/lib/libretro/
+}
