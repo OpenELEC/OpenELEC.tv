@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="pvr.nextpvr"
-PKG_VERSION="3a205e4"
+PKG_VERSION="0547ce5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,6 +32,10 @@ PKG_AUTORECONF="no"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.pvrclient"
+
+pre_configure_target() {
+  CXXFLAGS="$CXXFLAGS -Wno-narrowing"
+}
 
 configure_target() {
   cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \

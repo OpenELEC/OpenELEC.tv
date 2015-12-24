@@ -31,6 +31,9 @@
 # install extra subtitle Fonts for KODI (yes / no)
   KODI_EXTRA_FONTS="yes"
 
+# build and install PulseAudio support (yes / no)
+  PULSEAUDIO_SUPPORT="yes"
+
 # build and install espeak support (yes / no)
   ESPEAK_SUPPORT="yes"
 
@@ -57,7 +60,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8812AU dvbhdhomerun"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU RTL8812AU dvbhdhomerun"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"
@@ -124,7 +127,7 @@
 # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
 # Space separated list is supported,
 # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
-  GRAPHIC_DRIVERS="r300 r600 radeonsi i915 i965 nvidia"
+  GRAPHIC_DRIVERS="r300 r600 radeonsi i915 i965 nvidia nvidia-legacy"
 
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="yes"
