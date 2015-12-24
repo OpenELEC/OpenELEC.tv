@@ -1,0 +1,15 @@
+diff -Naur mupen64plus.git/mupen64plus-core/src/plugin/audio_libretro/audio_backend_libretro.c mupen64plus.patch/mupen64plus-core/src/plugin/audio_libretro/audio_backend_libretro.c
+--- mupen64plus.git/mupen64plus-core/src/plugin/audio_libretro/audio_backend_libretro.c	2015-12-23 17:17:21.886100651 +0100
++++ mupen64plus.patch/mupen64plus-core/src/plugin/audio_libretro/audio_backend_libretro.c	2015-12-23 18:14:20.560292807 +0100
+@@ -77,7 +77,11 @@
+ 
+ void init_audio_libretro(unsigned max_audio_frames)
+ {
++#if defined(__ARM_NEON__)
++   rarch_resampler_realloc(&resampler_audio_data, &resampler, "sinc", 1.0);
++#else
+    rarch_resampler_realloc(&resampler_audio_data, &resampler, "CC", 1.0);
++#endif
+ 
+    MAX_AUDIO_FRAMES = max_audio_frames;
+ 
