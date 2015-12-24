@@ -65,6 +65,8 @@ if [[ "$TARGET_FPU" =~ "neon" ]]; then
   RETROARCH_NEON="--enable-neon"
 fi
 
+CFLAGS="$CFLAGS -DLAKKA_PROJECT='\"$PROJECT.$ARCH\"'"
+
 TARGET_CONFIGURE_OPTS=""
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --disable-sdl \

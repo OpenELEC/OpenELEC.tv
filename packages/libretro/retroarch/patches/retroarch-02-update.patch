@@ -1,0 +1,289 @@
+diff --git a/menu/cbs/menu_cbs_deferred_push.c b/menu/cbs/menu_cbs_deferred_push.c
+index c1ac157..c92ca3f 100644
+--- a/menu/cbs/menu_cbs_deferred_push.c
++++ b/menu/cbs/menu_cbs_deferred_push.c
+@@ -43,6 +43,7 @@
+ #define CB_UPDATE_SHADERS_CG           0xc93a53feU
+ #define CB_CORE_CONTENT_LIST           0xebc51227U
+ #define CB_CORE_CONTENT_DOWNLOAD       0x03b3c0a3U
++#define CB_LAKKA_DOWNLOAD              0x54eaa904U
+ 
+ #ifndef BIND_ACTION_DEFERRED_PUSH
+ #define BIND_ACTION_DEFERRED_PUSH(cbs, name) \
+@@ -421,6 +422,9 @@ void cb_generic_download(void *task_data, void *user_data, const char *err)
+          dir_path = shaderdir;
+          break;
+       }
++      case CB_LAKKA_DOWNLOAD:
++         dir_path = "/storage/.update/"; /* TODO unhardcode this */
++         break;
+       default:
+          RARCH_WARN("Unknown transfer type '%u' bailing out.\n", transf->type_hash);
+          break;
+@@ -489,6 +493,12 @@ static int deferred_push_core_content_list(menu_displaylist_info_t *info)
+ {
+    return deferred_push_dlist(info, DISPLAYLIST_CORE_CONTENT);
+ }
++
++static int deferred_push_lakka_list(menu_displaylist_info_t *info)
++{
++   return deferred_push_dlist(info, DISPLAYLIST_LAKKA);
++}
++
+ #endif
+ 
+ static int deferred_archive_action_detect_core(menu_displaylist_info_t *info)
+@@ -783,6 +793,10 @@ static int menu_cbs_init_bind_deferred_push_compare_label(menu_file_list_cbs_t *
+ #ifdef HAVE_NETWORKING
+             BIND_ACTION_DEFERRED_PUSH(cbs, deferred_push_core_updater_list);
+ #endif
++         case MENU_LABEL_DEFERRED_LAKKA_LIST:
++#ifdef HAVE_NETWORKING
++            BIND_ACTION_DEFERRED_PUSH(cbs, deferred_push_lakka_list);
++#endif
+             break;
+          case MENU_LABEL_LOAD_CONTENT_HISTORY:
+             BIND_ACTION_DEFERRED_PUSH(cbs, deferred_push_history_list);
+diff --git a/menu/cbs/menu_cbs_ok.c b/menu/cbs/menu_cbs_ok.c
+index 61b5bc6..a6e81c3 100644
+--- a/menu/cbs/menu_cbs_ok.c
++++ b/menu/cbs/menu_cbs_ok.c
+@@ -299,6 +299,12 @@ int generic_action_ok_displaylist_push(const char *path,
+          info_path          = path;
+          info_label         = menu_hash_to_str(MENU_LABEL_DEFERRED_CORE_CONTENT_LIST);
+          break;
++      case ACTION_OK_DL_LAKKA_LIST:
++         info.type          = type;
++         info.directory_ptr = idx;
++         info_path          = path;
++         info_label         = menu_hash_to_str(MENU_LABEL_DEFERRED_LAKKA_LIST);
++         break;
+       case ACTION_OK_DL_DEFERRED_CORE_LIST:
+          info.directory_ptr = idx;
+          info_path          = settings->libretro_directory;
+@@ -1160,6 +1166,12 @@ static int action_ok_download_generic(const char *path,
+       fill_pathname_join(s, settings->network.buildbot_assets_url,
+             "cores/gw", sizeof(s));
+    }
++   else if (!strcmp(type_msg, "cb_lakka_download"))
++   {
++      /* TODO unhardcode this path*/
++      fill_pathname_join(s, "http://sources.lakka.tv/nightly",
++            LAKKA_PROJECT, sizeof(s));
++   }
+    else if (!strcmp(type_msg, "cb_update_assets"))
+       path = "assets.zip";
+    else if (!strcmp(type_msg, "cb_update_autoconfig_profiles"))
+@@ -1209,6 +1221,13 @@ static int action_ok_core_updater_download(const char *path,
+          "cb_core_updater_download");
+ }
+ 
++static int action_ok_lakka_download(const char *path,
++      const char *label, unsigned type, size_t idx, size_t entry_idx)
++{
++   return action_ok_download_generic(path, label, type, idx, entry_idx,
++         "cb_lakka_download");
++}
++
+ static int action_ok_update_assets(const char *path,
+       const char *label, unsigned type, size_t idx, size_t entry_idx)
+ {
+@@ -1405,7 +1424,8 @@ static int action_ok_lookup_setting(const char *path,
+ enum
+ {
+    ACTION_OK_NETWORK_CORE_CONTENT_LIST = 0,
+-   ACTION_OK_NETWORK_CORE_UPDATER_LIST
++   ACTION_OK_NETWORK_CORE_UPDATER_LIST,
++   ACTION_OK_NETWORK_LAKKA_LIST,
+ };
+ 
+ static int generic_action_ok_network(const char *path,
+@@ -1442,6 +1462,16 @@ static int generic_action_ok_network(const char *path,
+          type_id2  = ACTION_OK_DL_CORE_UPDATER_LIST;
+          callback = cb_net_generic;
+          break;
++      case ACTION_OK_NETWORK_LAKKA_LIST:
++         /* TODO unhardcode this path */
++         fill_pathname_join(url_path, "http://sources.lakka.tv/nightly",
++               LAKKA_PROJECT, sizeof(url_path));
++         fill_pathname_join(url_path, url_path,
++               ".index", sizeof(url_path));
++         url_label = "cb_lakka_list";
++         type_id2  = ACTION_OK_DL_LAKKA_LIST;
++         callback = cb_net_generic;
++         break;
+    }
+ 
+    rarch_task_push_http_transfer(url_path, url_label, callback, NULL);
+@@ -1463,6 +1493,14 @@ static int action_ok_core_updater_list(const char *path,
+    return generic_action_ok_network(path, label, type, idx, entry_idx,
+          ACTION_OK_NETWORK_CORE_UPDATER_LIST);
+ }
++
++static int action_ok_lakka_list(const char *path,
++      const char *label, unsigned type, size_t idx, size_t entry_idx)
++{
++   return generic_action_ok_network(path, label, type, idx, entry_idx,
++         ACTION_OK_NETWORK_LAKKA_LIST);
++}
++
+ #endif
+ 
+ 
+@@ -2030,6 +2068,9 @@ static int menu_cbs_init_bind_ok_compare_label(menu_file_list_cbs_t *cbs,
+       case MENU_LABEL_VALUE_CORE_UPDATER_LIST:
+          BIND_ACTION_OK(cbs, action_ok_core_updater_list);
+          break;
++      case MENU_LABEL_UPDATE_LAKKA:
++         BIND_ACTION_OK(cbs, action_ok_lakka_list);
++         break;
+ #endif
+       case MENU_LABEL_VIDEO_SHADER_PARAMETERS:
+       case MENU_LABEL_VIDEO_SHADER_PRESET_PARAMETERS:
+@@ -2294,6 +2335,9 @@ static int menu_cbs_init_bind_ok_compare_type(menu_file_list_cbs_t *cbs,
+          case MENU_FILE_DOWNLOAD_CORE:
+             BIND_ACTION_OK(cbs, action_ok_core_updater_download);
+             break;
++         case MENU_FILE_DOWNLOAD_LAKKA:
++            BIND_ACTION_OK(cbs, action_ok_lakka_download);
++            break;
+          case MENU_FILE_DOWNLOAD_CORE_INFO:
+             break;
+          case MENU_FILE_RDB:
+diff --git a/menu/intl/menu_hash_us.c b/menu/intl/menu_hash_us.c
+index b7a7c58..cb41c64 100644
+--- a/menu/intl/menu_hash_us.c
++++ b/menu/intl/menu_hash_us.c
+@@ -124,6 +124,8 @@ static const char *menu_hash_to_str_us_label(uint32_t hash)
+          return "update_core_info_files";
+       case MENU_LABEL_DEFERRED_CORE_CONTENT_LIST:
+          return "deferred_core_content_list";
++      case MENU_LABEL_DEFERRED_LAKKA_LIST:
++         return "deferred_lakka_list";
+       case MENU_LABEL_DOWNLOAD_CORE_CONTENT:
+          return "download_core_content";
+       case MENU_LABEL_SCAN_THIS_DIRECTORY:
+@@ -670,6 +672,8 @@ static const char *menu_hash_to_str_us_label(uint32_t hash)
+          return "audio_dsp_plugin";
+       case MENU_LABEL_UPDATE_ASSETS:
+          return "update_assets";
++      case MENU_LABEL_UPDATE_LAKKA:
++         return "update_lakka";
+       case MENU_LABEL_UPDATE_CHEATS:
+          return "update_cheats";
+       case MENU_LABEL_UPDATE_AUTOCONFIG_PROFILES:
+@@ -1350,6 +1354,8 @@ const char *menu_hash_to_str_us(uint32_t hash)
+          return "ON";
+       case MENU_LABEL_VALUE_UPDATE_ASSETS:
+          return "Update Assets";
++      case MENU_LABEL_VALUE_UPDATE_LAKKA:
++         return "Update Lakka";
+       case MENU_LABEL_VALUE_UPDATE_CHEATS:
+          return "Update Cheats";
+       case MENU_LABEL_VALUE_UPDATE_AUTOCONFIG_PROFILES:
+diff --git a/menu/menu_cbs.h b/menu/menu_cbs.h
+index 6ec51f7..67617fe 100644
+--- a/menu/menu_cbs.h
++++ b/menu/menu_cbs.h
+@@ -53,6 +53,7 @@ enum
+    ACTION_OK_DL_CONTENT_COLLECTION_LIST,
+    ACTION_OK_DL_CHEAT_FILE,
+    ACTION_OK_DL_CORE_LIST,
++   ACTION_OK_DL_LAKKA_LIST,
+    ACTION_OK_DL_CONFIGURATIONS_LIST,
+    ACTION_OK_DL_COMPRESSED_ARCHIVE_PUSH,
+    ACTION_OK_DL_COMPRESSED_ARCHIVE_PUSH_DETECT_CORE,
+diff --git a/menu/menu_displaylist.c b/menu/menu_displaylist.c
+index c95e577..8574aa6 100644
+--- a/menu/menu_displaylist.c
++++ b/menu/menu_displaylist.c
+@@ -1933,6 +1933,14 @@ static int menu_displaylist_parse_scan_directory_list(menu_displaylist_info_t *i
+ static int menu_displaylist_parse_options(menu_displaylist_info_t *info)
+ {
+ #ifdef HAVE_NETWORKING
++
++#ifdef HAVE_LAKKA
++   menu_entries_push(info->list,
++         menu_hash_to_str(MENU_LABEL_VALUE_UPDATE_LAKKA),
++         menu_hash_to_str(MENU_LABEL_UPDATE_LAKKA),
++         MENU_SETTING_ACTION, 0, 0);
++#endif
++
+    menu_entries_push(info->list,
+          menu_hash_to_str(MENU_LABEL_VALUE_CORE_UPDATER_LIST),
+          menu_hash_to_str(MENU_LABEL_CORE_UPDATER_LIST),
+@@ -1983,6 +1991,7 @@ static int menu_displaylist_parse_options(menu_displaylist_info_t *info)
+          menu_hash_to_str(MENU_LABEL_UPDATE_GLSL_SHADERS),
+          MENU_SETTING_ACTION, 0, 0);
+ #endif
++
+ #else
+    menu_entries_push(info->list,
+          menu_hash_to_str(MENU_LABEL_VALUE_NO_ITEMS),
+@@ -2469,6 +2478,7 @@ int menu_displaylist_push_list(menu_displaylist_info_t *info, unsigned type)
+       case DISPLAYLIST_CORES:
+       case DISPLAYLIST_CORES_DETECTED:
+       case DISPLAYLIST_CORES_UPDATER:
++      case DISPLAYLIST_LAKKA:
+       case DISPLAYLIST_CORES_SUPPORTED:
+       case DISPLAYLIST_CORES_COLLECTION_SUPPORTED:
+       case DISPLAYLIST_CORE_INFO:
+@@ -2915,6 +2925,12 @@ int menu_displaylist_push_list(menu_displaylist_info_t *info, unsigned type)
+          info->need_push    = true;
+          info->need_refresh = true;
+ #endif
++      case DISPLAYLIST_LAKKA:
++#ifdef HAVE_NETWORKING
++         print_buf_lines(info->list, core_buf, core_len, MENU_FILE_DOWNLOAD_LAKKA);
++         info->need_push    = true;
++         info->need_refresh = true;
++#endif
+          break;
+       case DISPLAYLIST_PLAYLIST_COLLECTION:
+          if (!strcmp(info->path, "content_history.lpl"))
+diff --git a/menu/menu_displaylist.h b/menu/menu_displaylist.h
+index 3534768..0697688 100644
+--- a/menu/menu_displaylist.h
++++ b/menu/menu_displaylist.h
+@@ -66,6 +66,7 @@ enum
+    DISPLAYLIST_CORES_SUPPORTED,
+    DISPLAYLIST_CORES_COLLECTION_SUPPORTED,
+    DISPLAYLIST_CORES_UPDATER,
++   DISPLAYLIST_LAKKA,
+    DISPLAYLIST_CORES_DETECTED,
+    DISPLAYLIST_CORE_OPTIONS,
+    DISPLAYLIST_CORE_INFO,
+diff --git a/menu/menu_driver.h b/menu/menu_driver.h
+index a88a0ed..b8ebe23 100644
+--- a/menu/menu_driver.h
++++ b/menu/menu_driver.h
+@@ -164,6 +164,7 @@ typedef enum
+    MENU_FILE_DOWNLOAD_CORE,
+    MENU_FILE_DOWNLOAD_CORE_CONTENT,
+    MENU_FILE_DOWNLOAD_CORE_INFO,
++   MENU_FILE_DOWNLOAD_LAKKA,
+    MENU_FILE_RDB,
+    MENU_FILE_RDB_ENTRY,
+    MENU_FILE_RPL_ENTRY,
+diff --git a/menu/menu_hash.h b/menu/menu_hash.h
+index 8b930cc..98eda25 100644
+--- a/menu/menu_hash.h
++++ b/menu/menu_hash.h
+@@ -130,6 +130,7 @@ extern "C" {
+ #define MENU_VALUE_SEARCH                                                      0xd0d5febbU
+ 
+ #define MENU_LABEL_DEFERRED_CORE_CONTENT_LIST                                  0x76150c63U
++#define MENU_LABEL_DEFERRED_LAKKA_LIST                                         0x3db437c4U
+ 
+ #define MENU_LABEL_VALUE_DOWNLOAD_CORE_CONTENT                                 0xa8bb22d8U
+ #define MENU_LABEL_DOWNLOAD_CORE_CONTENT                                       0xc63b1d3fU
+@@ -165,6 +166,9 @@ extern "C" {
+ #define MENU_LABEL_UPDATE_ASSETS                                               0x37fa42daU
+ #define MENU_LABEL_VALUE_UPDATE_ASSETS                                         0x0fdf0b1bU
+ 
++#define MENU_LABEL_UPDATE_LAKKA                                                0x19b51eebU
++#define MENU_LABEL_VALUE_UPDATE_LAKKA                                          0x6611630cU
++
+ #define MENU_LABEL_UPDATE_CHEATS                                               0x3bd5c83fU
+ #define MENU_LABEL_VALUE_UPDATE_CHEATS                                         0x13ba9080U
+ 
