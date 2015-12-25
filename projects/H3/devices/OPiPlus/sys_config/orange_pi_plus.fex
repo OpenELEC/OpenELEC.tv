@@ -472,13 +472,13 @@ disp_init_enable         = 1
 disp_mode                = 0
 
 screen0_output_type      = 3
-screen0_output_mode      = 4
+screen0_output_mode      = 10
 
 screen1_output_type      = 3
-screen1_output_mode      = 4
+screen1_output_mode      = 10
 
-;fb0_framebuffer_num      = 2
-fb0_format               = 0
+fb0_framebuffer_num      = 2
+fb0_format               = 10
 fb0_width                = 0
 fb0_height               = 0
 
