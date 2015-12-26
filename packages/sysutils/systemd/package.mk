@@ -78,7 +78,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-backlight \
                            --disable-rfkill \
                            --enable-logind \
-                           --disable-machined \
+                           --enable-machined \
                            --disable-importd \
                            --disable-hostnamed \
                            --disable-timedated \
@@ -172,8 +172,8 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/systemd/system/*.target.wants/systemd-udev-hwdb-update.service
 
   # remove nspawn
-  rm -rf $INSTALL/usr/bin/systemd-nspawn
-  rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
+#  rm -rf $INSTALL/usr/bin/systemd-nspawn
+#  rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
 
   # remove genetators/catalog
   rm -rf $INSTALL/usr/lib/systemd/system-generators
