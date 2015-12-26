@@ -1,0 +1,18 @@
+diff -Naur a/project/cmake/addons/addons/pvr.dvblink/pvr.dvblink.txt b/project/cmake/addons/addons/pvr.dvblink/pvr.dvblink.txt
+--- a/project/cmake/addons/addons/pvr.dvblink/pvr.dvblink.txt	2015-12-26 19:03:33.252651380 +0100
++++ b/project/cmake/addons/addons/pvr.dvblink/pvr.dvblink.txt	2015-12-26 19:23:29.304223912 +0100
+@@ -1 +1 @@
+-pvr.dvblink https://github.com/kodi-pvr/pvr.dvblink cf756e9
++pvr.dvblink https://github.com/kodi-pvr/pvr.dvblink b87e8a7
+diff -Naur a/project/cmake/addons/addons/pvr.mythtv/pvr.mythtv.txt b/project/cmake/addons/addons/pvr.mythtv/pvr.mythtv.txt
+--- a/project/cmake/addons/addons/pvr.mythtv/pvr.mythtv.txt	2015-12-26 19:03:33.252651380 +0100
++++ b/project/cmake/addons/addons/pvr.mythtv/pvr.mythtv.txt	2015-12-26 19:23:47.950262212 +0100
+@@ -1 +1 @@
+-pvr.mythtv https://github.com/kodi-pvr/pvr.mythtv 8cb158c
++pvr.mythtv https://github.com/kodi-pvr/pvr.mythtv 5450056
+diff -Naur a/project/cmake/addons/addons/pvr.nextpvr/pvr.nextpvr.txt b/project/cmake/addons/addons/pvr.nextpvr/pvr.nextpvr.txt
+--- a/project/cmake/addons/addons/pvr.nextpvr/pvr.nextpvr.txt	2015-12-26 19:03:33.252651380 +0100
++++ b/project/cmake/addons/addons/pvr.nextpvr/pvr.nextpvr.txt	2015-12-26 19:24:06.602300524 +0100
+@@ -1 +1 @@
+-pvr.nextpvr https://github.com/kodi-pvr/pvr.nextpvr 3a205e4
++pvr.nextpvr https://github.com/kodi-pvr/pvr.nextpvr e53841d
