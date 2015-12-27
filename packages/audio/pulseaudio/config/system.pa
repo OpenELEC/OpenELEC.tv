@@ -18,14 +18,6 @@
 # This startup script is used only if PulseAudio is started in system
 # mode.
 
-### Automatically load driver modules depending on the hardware available
-.ifexists module-udev-detect.so
-load-module module-udev-detect
-.else
-### Use the static hardware detection module (for systems that lack udev/hal support)
-load-module module-detect
-.endif
-
 ### Load several protocols
 .ifexists module-esound-protocol-unix.so
 load-module module-esound-protocol-unix
@@ -55,7 +47,6 @@ load-module module-suspend-on-idle
 ### Enable positioned event sounds
 load-module module-position-event-sounds
 
-
 ### Automatically load modules for dbus
 .ifexists module-dbus-protocol.so
  load-module module-dbus-protocol
@@ -72,10 +63,6 @@ load-module module-position-event-sounds
 
 .ifexists module-zeroconf-publish.so
   load-module module-zeroconf-publish
-.endif
-
-.ifexists module-zeroconf-discover.so
-  load-module module-zeroconf-discover
 .endif
 
 load-module module-native-protocol-tcp auth-anonymous=1

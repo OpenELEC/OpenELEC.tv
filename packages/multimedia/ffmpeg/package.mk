@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.8.2"
+PKG_VERSION="2.8.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPLv2.1+"
@@ -162,6 +162,8 @@ configure_target() {
               --enable-encoder=ac3 \
               --enable-encoder=aac \
               --enable-encoder=wmav2 \
+              --enable-encoder=mjpeg \
+              --enable-encoder=png \
               --disable-decoder=mpeg_xvmc \
               --enable-hwaccels \
               --disable-muxers \
