@@ -469,24 +469,19 @@ hdmi_mode_check = 1
 ;lcdx_backlight       (lcd init backlight,the range:[0,256],default:197
 ;----------------------------------------------------------------------------------
 [disp_init]
-disp_init_enable         = 1
-disp_mode                = 0
-
-screen0_output_type      = 3
-screen0_output_mode      = 10
-
-screen1_output_type      = 3
-screen1_output_mode      = 10
-
-fb0_framebuffer_num      = 2
-fb0_format               = 10
-fb0_width                = 0
-fb0_height               = 0
-
-fb0_framebuffer_num      = 0
-fb1_format               = 0
-fb1_width                = 0
-fb1_height               = 0
+disp_init_enable = 1
+disp_mode = 0
+screen0_output_type = 3
+screen0_output_mode = 10
+screen1_output_type = 3
+screen1_output_mode = 10
+fb0_format = 0
+fb0_width = 0
+fb0_height = 0
+fb1_format = 0
+fb1_width = 0
+fb1_height = 0
+fb0_framebuffer_num = 2
 
 ;----------------------------------------------------------------------------------
 ;hdmi configuration
