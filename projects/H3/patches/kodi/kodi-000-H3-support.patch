@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdp
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2015-12-28 17:16:31.935546167 +0100
-@@ -0,0 +1,802 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2015-12-28 21:55:35.677743584 +0100
+@@ -0,0 +1,806 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -797,12 +797,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    video_config.info.fb.align[1] = 0;
 +    video_config.info.fb.align[2] = 0;
 +    
-+    // image cropping
-+    video_config.info.fb.crop.x = (unsigned long long)(renderbuf->leftOffset + lrint(srcRect.x1)) << 32;
-+    video_config.info.fb.crop.y = (unsigned long long)(renderbuf->topOffset + lrint(srcRect.y1)) << 32;
-+    video_config.info.fb.crop.width = (unsigned long long)(lrint(srcRect.x2 - srcRect.x1)) << 32;
-+    video_config.info.fb.crop.height = (unsigned long long)(lrint(srcRect.y2 - srcRect.y1)) << 32;
-+    
 +    // display rectangle
 +    video_config.info.screen_win.x = lrint(dstRect.x1);
 +    video_config.info.screen_win.y = lrint(dstRect.y1);
@@ -814,28 +808,38 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    unsigned int height = g_Windowing.GetHeight();
 +    double xzoom = (dstRect.x2 - dstRect.x1) / (srcRect.x2 - srcRect.x1);
 +    double yzoom = (dstRect.y2 - dstRect.y1) / (srcRect.y2 - srcRect.x1);
++    double cropX = renderbuf->leftOffset + srcRect.x1;
++    double cropY = renderbuf->topOffset + srcRect.y1;
++    double cropWidth = srcRect.x2 - srcRect.x1;
++    double cropHeight = srcRect.y2 - srcRect.y1;
 +
 +    if (video_config.info.screen_win.x < 0)
 +    {
-+      video_config.info.fb.crop.x -= video_config.info.screen_win.x / xzoom;
++      cropX -= video_config.info.screen_win.x / xzoom;
 +      video_config.info.screen_win.x = 0;
 +    }
 +    if (video_config.info.screen_win.width > width)
 +    {
-+      video_config.info.fb.crop.width -= (video_config.info.screen_win.width - width) / xzoom;
++      cropWidth -= (video_config.info.screen_win.width - width) / xzoom;
 +      video_config.info.screen_win.width = width;
 +    }
 +
 +    if (video_config.info.screen_win.y < 0)
 +    {
-+      video_config.info.fb.crop.y -= video_config.info.screen_win.y / yzoom;
++      cropY -= video_config.info.screen_win.y / yzoom;
 +      video_config.info.screen_win.y = 0;
 +    }
 +    if (video_config.info.screen_win.height > height)
 +    {
-+      video_config.info.fb.crop.height -= (video_config.info.screen_win.height - height) / yzoom;
++      cropHeight -= (video_config.info.screen_win.height - height) / yzoom;
 +      video_config.info.screen_win.height = height;
 +    }
++    
++    // image cropping
++    video_config.info.fb.crop.x = (unsigned long long)(lrint(cropX)) << 32;
++    video_config.info.fb.crop.y = (unsigned long long)(lrint(cropY)) << 32;
++    video_config.info.fb.crop.width = (unsigned long long)(lrint(cropWidth)) << 32;
++    video_config.info.fb.crop.height = (unsigned long long)(lrint(cropHeight)) << 32;
 +    
 +    // misc
 +    video_config.enable = 1;
