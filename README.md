@@ -8,9 +8,8 @@
 * video is HW decoded
 * direct rendering
 * HW deinterlacing
-* taking screenshots doesn't work
-* zoom doesn't work
 * WMV1, WMV2, VP6 and VP9 codecs, although supported by CedarX, are SW decoded (nothing can be done to improve this)
+* taking screenshots doesn't work
 * VSync is commented out, because of big frame drop (needs some code reorganization)
 * used boot time resolution (can be changed via script.bin or kernel parameters)
 * kswapd using one whole core, seems like a bug in kernel

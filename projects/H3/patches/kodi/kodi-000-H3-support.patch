@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdp
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2015-12-28 14:39:15.091634552 +0100
-@@ -0,0 +1,773 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2015-12-28 17:16:31.935546167 +0100
+@@ -0,0 +1,802 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -133,6 +133,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +#include "DVDClock.h"
 +#include "utils/log.h"
 +#include "threads/Atomics.h"
++#include "windowing/WindowingFactory.h"
 +
 +//FIXME: find better way
 +#include "windowing/egl/EGLNativeTypeSunxi.h"
@@ -807,6 +808,34 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    video_config.info.screen_win.y = lrint(dstRect.y1);
 +    video_config.info.screen_win.width = lrint(dstRect.x2 - dstRect.x1);
 +    video_config.info.screen_win.height = lrint(dstRect.y2 - dstRect.y1);
++    
++    // check zoom
++    unsigned int width = g_Windowing.GetWidth();
++    unsigned int height = g_Windowing.GetHeight();
++    double xzoom = (dstRect.x2 - dstRect.x1) / (srcRect.x2 - srcRect.x1);
++    double yzoom = (dstRect.y2 - dstRect.y1) / (srcRect.y2 - srcRect.x1);
++
++    if (video_config.info.screen_win.x < 0)
++    {
++      video_config.info.fb.crop.x -= video_config.info.screen_win.x / xzoom;
++      video_config.info.screen_win.x = 0;
++    }
++    if (video_config.info.screen_win.width > width)
++    {
++      video_config.info.fb.crop.width -= (video_config.info.screen_win.width - width) / xzoom;
++      video_config.info.screen_win.width = width;
++    }
++
++    if (video_config.info.screen_win.y < 0)
++    {
++      video_config.info.fb.crop.y -= video_config.info.screen_win.y / yzoom;
++      video_config.info.screen_win.y = 0;
++    }
++    if (video_config.info.screen_win.height > height)
++    {
++      video_config.info.fb.crop.height -= (video_config.info.screen_win.height - height) / yzoom;
++      video_config.info.screen_win.height = height;
++    }
 +    
 +    // misc
 +    video_config.enable = 1;
