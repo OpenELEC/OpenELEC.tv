@@ -1,0 +1,11 @@
+--- a/drivers/video/sunxi/disp2/disp/dev_fb.c	2015-01-27 03:29:32.000000000 +0100
++++ b/drivers/video/sunxi/disp2/disp/dev_fb.c	2015-12-28 10:45:14.276418445 +0100
+@@ -874,7 +874,7 @@
+ 
+ 	case FBIO_WAITFORVSYNC:
+ 	{
+-		//ret = fb_wait_for_vsync(info);
++		ret = fb_wait_for_vsync(info);
+ 		break;
+ 	}
+ 

@@ -1,12 +1,17 @@
 #Orange Pi 2 development
 
 **This is unofficial and should be usable, however expect bugs**
+
 **Feel free to contribute!**
 
 **Current Status**
 * video is HW decoded
-* no zero copy display
-* no HW deinterlacing
+* direct rendering
+* HW deinterlacing
+* taking screenshots doesn't work
+* zoom doesn't work
+* WMV1, WMV2, VP6 and VP9 codecs, although supported by CedarX, are SW decoded (nothing can be done to improve this)
+* VSync is commented out, because of big frame drop (needs some code reorganization)
 * used boot time resolution (can be changed via script.bin or kernel parameters)
 * kswapd using one whole core, seems like a bug in kernel
 
