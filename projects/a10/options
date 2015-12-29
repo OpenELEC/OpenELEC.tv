@@ -148,8 +148,6 @@
   # build and install 'FishBMC' Visualization (yes / no)
     KODI_VIS_FISHBMC="no"
 
-    ADDITIONAL_DRIVERS=""
-
   # override some playlist core assignation
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//snes9x_next/pocketsnes}"
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//genesis_plus_gx/picodrive}"
