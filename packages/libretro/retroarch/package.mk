@@ -19,13 +19,13 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="5cdbe7e"
+PKG_VERSION="ce16de3"
 PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib freetype retroarch-assets core-info retroarch-joypad-autoconfig common-shaders lakka-update libretro-database ffmpeg unionfs-fuse"
+PKG_DEPENDS_TARGET="toolchain alsa-lib freetype zlib retroarch-assets core-info retroarch-joypad-autoconfig common-shaders lakka-update libretro-database ffmpeg unionfs-fuse"
 PKG_PRIORITY="optional"
 PKG_SECTION="libretro"
 PKG_SHORTDESC="Reference frontend for the libretro API."
@@ -75,6 +75,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            $RETROARCH_GL \
                            $RETROARCH_NEON \
                            --enable-fbo \
+                           --enable-zlib \
                            --enable-freetype"
 
 pre_configure_target() {
