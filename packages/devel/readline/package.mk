@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="readline"
-PKG_VERSION="6.2"
+PKG_VERSION="6.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="http://www.gnu.org/readline"
-PKG_URL="ftp://ftp.gnu.org/gnu/readline/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="http://ftp.gnu.org/gnu/readline/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain ncurses"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
@@ -32,7 +32,8 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-shared \
+PKG_CONFIGURE_OPTS_TARGET="bash_cv_wcwidth_broken=no \
+                           --disable-shared \
                            --enable-static \
                            --with-curses \
                            --without-purify"
