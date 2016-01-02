@@ -34,6 +34,11 @@ echo "copying sources..."
   cp -R core-info.git core-info-$GIT_REV
 
 echo "cleaning sources..."
+  rm -rf core-info-$GIT_REV/docs
+  rm -rf core-info-$GIT_REV/recipes
+  rm -rf core-info-$GIT_REV/rules.d
+  rm -rf core-info-$GIT_REV/script-modules
+  rm -rf core-info-$GIT_REV/*.sh
   rm -rf core-info-$GIT_REV/.git
   rm core-info-$GIT_REV/.gitignore
 
