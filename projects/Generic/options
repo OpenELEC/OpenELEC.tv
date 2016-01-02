@@ -68,16 +68,16 @@
     ALSA_SUPPORT="yes"
 
   # OpenGL(X) implementation to use (no / mesa)
-    OPENGL="mesa"
+    OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
-    OPENGLES="no"
+    OPENGLES="mesa"
 
   # include uvesafb support (yes / no)
     UVESAFB_SUPPORT="yes"
 
   # Displayserver to use (x11 / no)
-    DISPLAYSERVER="x11"
+    DISPLAYSERVER="wayland"
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
     KODIPLAYER_DRIVER="default"
@@ -95,3 +95,6 @@
   # Space separated list is supported,
   # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
     ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS bcm_sta"
+
+
+GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nouveau"
