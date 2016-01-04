@@ -50,7 +50,41 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-unittest \
                            --with-ssl=no \
                            --with-stressjob=no"
 
+post_makeinstall_host() {
+  mv $ROOT/$TOOLCHAIN/bin/tntnet-config $ROOT/$TOOLCHAIN/bin/tntnet-config.host
+
+  cat >$ROOT/$TOOLCHAIN/bin/tntnet-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/tntnet-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/tntnet-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/tntnet-config
+}
+
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share
+
+  mv $SYSROOT_PREFIX/usr/bin/tntnet-config $ROOT/$TOOLCHAIN/bin/tntnet-config.target
+
+  cat >$ROOT/$TOOLCHAIN/bin/tntnet-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/tntnet-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/tntnet-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/tntnet-config
 }
