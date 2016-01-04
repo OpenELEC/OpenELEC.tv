@@ -44,10 +44,39 @@ pre_configure_target() {
 
 
 post_makeinstall_host() {
-  rm -rf $TOOLCHAIN/bin/cxxtools-config
+  mv $ROOT/$TOOLCHAIN/bin/cxxtools-config $ROOT/$TOOLCHAIN/bin/cxxtools-config.host
+
+  cat >$ROOT/$TOOLCHAIN/bin/cxxtools-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/cxxtools-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/cxxtools-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/cxxtools-config
 }
 
 post_makeinstall_target() {
-  rm -rf $SYSROOT_PREFIX/usr/bin/cxxtools-config
   rm -rf $INSTALL/usr/bin
+
+  mv $SYSROOT_PREFIX/usr/bin/cxxtools-config $ROOT/$TOOLCHAIN/bin/cxxtools-config.target
+
+  cat >$ROOT/$TOOLCHAIN/bin/cxxtools-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/cxxtools-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/cxxtools-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/cxxtools-config
 }
