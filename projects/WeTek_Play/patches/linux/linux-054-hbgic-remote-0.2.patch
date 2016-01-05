@@ -42,9 +42,9 @@ diff -Naur linux-amlogic-3.10-9df7905/drivers/hid/hid-hbgic-kbd.c linux-amlogic-
 +		unsigned long **bit, int *max)
 +{
 +	switch (usage->hid) {
-+	case 0x00070029:	hbgic_map_key(KEY_BACK);		break;
-+	case 0x0007002a:	hbgic_map_key(KEY_BACK);		break;
-+	case 0x0007003a:	hbgic_map_key(KEY_BACK);		break;
++	case 0x00070029:	hbgic_map_key(KEY_F3);		break;
++	case 0x0007002a:	hbgic_map_key(KEY_F2);		break;
++	case 0x0007003a:	hbgic_map_key(KEY_F1);		break;
 +	case 0x0007003b:	hbgic_map_key(KEY_HOME);		break;
 +	case 0x0007003c:	hbgic_map_key(KEY_HOMEPAGE);		break;
 +	case 0x0007003d:	hbgic_map_key(KEY_MENU);		break;
