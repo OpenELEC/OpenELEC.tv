@@ -1,0 +1,68 @@
+diff -Naur kodi-15.2-02e7013/system/keymaps/keyboard.xml kodi-15.2-02e7013.patch/system/keymaps/keyboard.xml
+--- kodi-15.2-02e7013/system/keymaps/keyboard.xml	2016-01-04 10:29:34.001845961 +0100
++++ kodi-15.2-02e7013.patch/system/keymaps/keyboard.xml	2016-01-05 06:23:38.100043689 +0100
+@@ -100,6 +100,7 @@
+       <sleep>ActivateWindow(shutdownmenu)</sleep>
+       <!-- PVR windows -->
+       <e>ActivateWindow(TVGuide)</e>
++      <epg>ActivateWindow(TVGuide)</epg>
+       <h>ActivateWindow(TVChannels)</h>
+       <j>ActivateWindow(RadioChannels)</j>
+       <k>ActivateWindow(TVRecordings)</k>
+@@ -234,6 +235,12 @@
+       <blue>Blue</blue>
+     </keyboard>
+   </MyRadioTimers>
++  <TVGuide>
++    <keyboard>
++      <e>PreviousMenu</e>
++      <epg>PreviousMenu</epg>
++    </keyboard>
++  </TVGuide>
+   <MyFiles>
+     <keyboard>
+       <space>Highlight</space>
+diff -Naur kodi-15.2-02e7013/xbmc/input/linux/LinuxInputDevices.cpp kodi-15.2-02e7013.patch/xbmc/input/linux/LinuxInputDevices.cpp
+--- kodi-15.2-02e7013/xbmc/input/linux/LinuxInputDevices.cpp	2016-01-04 10:29:34.050846059 +0100
++++ kodi-15.2-02e7013.patch/xbmc/input/linux/LinuxInputDevices.cpp	2016-01-05 06:18:19.577596687 +0100
+@@ -268,6 +268,7 @@
+   { KEY_FILE          , XBMCK_LAUNCH_FILE_BROWSER},
+   { KEY_SELECT        , XBMCK_RETURN      },
+   { KEY_CONFIG        , XBMCK_CONFIG      },
++  { KEY_EPG           , XBMCK_EPG         },
+   // The Little Black Box Remote Additions
+   { 384               , XBMCK_LEFT        }, // Red
+   { 378               , XBMCK_RIGHT       }, // Green
+diff -Naur kodi-15.2-02e7013/xbmc/input/XBMC_keysym.h kodi-15.2-02e7013.patch/xbmc/input/XBMC_keysym.h
+--- kodi-15.2-02e7013/xbmc/input/XBMC_keysym.h	2016-01-04 10:29:34.002845963 +0100
++++ kodi-15.2-02e7013.patch/xbmc/input/XBMC_keysym.h	2016-01-05 06:19:13.652671442 +0100
+@@ -229,6 +229,7 @@
+   XBMCK_FAVORITES   = 0x14d,
+   XBMCK_HOMEPAGE    = 0x14e,
+   XBMCK_CONFIG      = 0x14f,
++  XBMCK_EPG         = 0x150,
+ 
+   // Add any other keys here
+ 
+diff -Naur kodi-15.2-02e7013/xbmc/input/XBMC_keytable.cpp kodi-15.2-02e7013.patch/xbmc/input/XBMC_keytable.cpp
+--- kodi-15.2-02e7013/xbmc/input/XBMC_keytable.cpp	2016-01-04 10:29:34.002845963 +0100
++++ kodi-15.2-02e7013.patch/xbmc/input/XBMC_keytable.cpp	2016-01-05 06:19:59.320734540 +0100
+@@ -243,6 +243,7 @@
+ , { XBMCK_FAVORITES,              0,    0, XBMCVK_FAVORITES,     "favorites" }
+ , { XBMCK_HOMEPAGE ,              0,    0, XBMCVK_HOMEPAGE,      "homepage" }
+ , { XBMCK_CONFIG,                 0,    0, XBMCVK_CONFIG,        "config" }
++, { XBMCK_EPG   ,                 0,    0, XBMCVK_EPG,           "epg" }
+ };
+ 
+ static int XBMCKeyTableSize = sizeof(XBMCKeyTable)/sizeof(XBMCKEYTABLE);
+diff -Naur kodi-15.2-02e7013/xbmc/input/XBMC_vkeys.h kodi-15.2-02e7013.patch/xbmc/input/XBMC_vkeys.h
+--- kodi-15.2-02e7013/xbmc/input/XBMC_vkeys.h	2016-01-04 10:29:34.002845963 +0100
++++ kodi-15.2-02e7013.patch/xbmc/input/XBMC_vkeys.h	2016-01-05 06:20:30.192777231 +0100
+@@ -221,6 +221,7 @@
+   XBMCVK_FAVORITES      = 0xE9,
+   XBMCVK_HOMEPAGE       = 0xEA,
+   XBMCVK_CONFIG         = 0xEB,
++  XBMCVK_EPG            = 0xEC,
+ 
+   XBMCVK_LAST           = 0xFF
+ } XBMCVKey;
