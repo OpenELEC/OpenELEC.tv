@@ -44,6 +44,24 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-shared \
              --enable-unicode-properties \
              --with-gnu-ld"
 
+post_makeinstall_host() {
+  mv $ROOT/$TOOLCHAIN/bin/pcre-config $ROOT/$TOOLCHAIN/bin/pcre-config.host
+
+  cat >$ROOT/$TOOLCHAIN/bin/pcre-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/pcre-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/pcre-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/pcre-config
+}
+
 pre_configure_target() {
   CFLAGS="$CFLAGS -fPIC"
   CXXFLAGS="$CXXFLAGS -fPIC"
@@ -52,4 +70,20 @@ pre_configure_target() {
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
+
+  mv $SYSROOT_PREFIX/usr/bin/pcre-config $ROOT/$TOOLCHAIN/bin/pcre-config.target
+
+  cat >$ROOT/$TOOLCHAIN/bin/pcre-config <<EOT
+#!/bin/sh
+case "\$1" in
+--c*flags*|--libs*)
+$ROOT/$TOOLCHAIN/bin/pcre-config.\$DESTIMAGE "\$@" | xargs -n1 | grep -v -e^-I/usr/include\\$ -e^-L/usr/lib\\$ | xargs
+;;
+*)
+$ROOT/$TOOLCHAIN/bin/pcre-config.\$DESTIMAGE "\$@"
+;;
+esac
+EOT
+
+  chmod 0755 $ROOT/$TOOLCHAIN/bin/pcre-config
 }
