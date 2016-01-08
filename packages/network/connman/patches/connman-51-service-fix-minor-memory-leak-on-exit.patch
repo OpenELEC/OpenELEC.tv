@@ -1,0 +1,31 @@
+From b796b2e1e2071c58ca8cce00b0fc8aef16498ab5 Mon Sep 17 00:00:00 2001
+From: Slava Monich <slava.monich@jolla.com>
+Date: Tue, 20 Oct 2015 17:07:28 +0300
+Subject: service: Fix minor memory leak on exit
+
+services_notify->add and services_notify->remove are always created
+and have to be always destroyed.
+---
+ src/service.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/service.c b/src/service.c
+index 196f6b5..02a6844 100644
+--- a/src/service.c
++++ b/src/service.c
+@@ -7118,9 +7118,10 @@ void __connman_service_cleanup(void)
+ 	if (services_notify->id != 0) {
+ 		g_source_remove(services_notify->id);
+ 		service_send_changed(NULL);
+-		g_hash_table_destroy(services_notify->remove);
+-		g_hash_table_destroy(services_notify->add);
+ 	}
++
++	g_hash_table_destroy(services_notify->remove);
++	g_hash_table_destroy(services_notify->add);
+ 	g_free(services_notify);
+ 
+ 	dbus_connection_unref(connection);
+-- 
+cgit v0.11.2
+

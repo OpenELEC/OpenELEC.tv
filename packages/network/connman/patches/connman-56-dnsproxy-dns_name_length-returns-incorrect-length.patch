@@ -1,0 +1,48 @@
+From 19579a658d2311d89f8ed6fc0eae942d3d9075a8 Mon Sep 17 00:00:00 2001
+From: Frank Stevers <f.stevers@ultimaker.com>
+Date: Wed, 9 Sep 2015 16:51:24 +0200
+Subject: dnsproxy: dns_name_length() returns incorrect length
+
+When testing dnsproxy of connman, it was noticed that when sending a
+cached response, the TTL field and CLASS field might be incorrect.
+
+When looking into this, it was found that the TTL value might be
+written one or two characters earlier in the DNS answer.
+
+When looking in the send_cached_response() response routine,
+update_cached_ttl() is called, which uses dns_name_length to shift the
+pointer for the name of DNS Question and the name of DNS answer. When
+further looking in dns_name_length(), strlen() is used to determine
+the length of the name. However, strlen() is excluding the terminating
+NULL character '\0', so 1 should be added to strlen for the length of
+the name. dns_name_length() is also used in reply_query_type, here 1
+is added to dns_name_length().
+---
+ src/dnsproxy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/dnsproxy.c b/src/dnsproxy.c
+index a1eda55..c37eee9 100644
+--- a/src/dnsproxy.c
++++ b/src/dnsproxy.c
+@@ -355,7 +355,7 @@ static int dns_name_length(unsigned char *buf)
+ {
+ 	if ((buf[0] & NS_CMPRSFLGS) == NS_CMPRSFLGS) /* compressed name */
+ 		return 2;
+-	return strlen((char *)buf);
++	return strlen((char *)buf) + 1;
+ }
+ 
+ static void update_cached_ttl(unsigned char *buf, int len, int new_ttl)
+@@ -1357,7 +1357,7 @@ static int reply_query_type(unsigned char *msg, int len)
+ 		return 0;
+ 
+ 	/* now the query, which is a name and 2 16 bit words */
+-	l = dns_name_length(c) + 1;
++	l = dns_name_length(c);
+ 	c += l;
+ 	type = c[0] << 8 | c[1];
+ 
+-- 
+cgit v0.11.2
+

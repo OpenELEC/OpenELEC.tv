@@ -1,0 +1,42 @@
+From 80da72acf69216a116218510bc7f9e2bd12415e0 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Mon, 30 Nov 2015 13:00:50 +0100
+Subject: gdhcp: Don't call the lease added callback for OFFER
+
+The lease added callback only used to determine and announce the peer
+address. Without this, the peer address is announced via D-Bus before
+the peer actually ueses the address.
+
+If the first OFFER is lost, then the difference can actually be several
+seconds.
+---
+ gdhcp/server.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/gdhcp/server.c b/gdhcp/server.c
+index 8574c24..f7795f7 100644
+--- a/gdhcp/server.c
++++ b/gdhcp/server.c
+@@ -214,9 +214,6 @@ static struct dhcp_lease *add_lease(GDHCPServer *dhcp_server, uint32_t expire,
+ 	g_hash_table_insert(dhcp_server->nip_lease_hash,
+ 				GINT_TO_POINTER((int) lease->lease_nip), lease);
+ 
+-	if (dhcp_server->lease_added_cb)
+-		dhcp_server->lease_added_cb(lease->lease_mac, yiaddr);
+-
+ 	return lease;
+ }
+ 
+@@ -616,6 +613,9 @@ static void send_ACK(GDHCPServer *dhcp_server,
+ 	send_packet_to_client(dhcp_server, &packet);
+ 
+ 	add_lease(dhcp_server, 0, packet.chaddr, packet.yiaddr);
++
++	if (dhcp_server->lease_added_cb)
++		dhcp_server->lease_added_cb(packet.chaddr, packet.yiaddr);
+ }
+ 
+ static void send_NAK(GDHCPServer *dhcp_server,
+-- 
+cgit v0.11.2
+
