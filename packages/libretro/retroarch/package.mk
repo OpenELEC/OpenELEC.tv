@@ -146,6 +146,11 @@ makeinstall_target() {
   # Menu
   sed -i -e "s/# menu_core_enable = true/menu_core_enable = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# boxarts_directory =/boxarts_directory = \/storage\/boxarts/" $INSTALL/etc/retroarch.cfg
+
+  # Updater
+  if [ "$ARCH" == "arm" ]; then
+    sed -i -e "s/# core_updater_buildbot_url = \"http:\/\/buildbot.libretro.com\"/core_updater_buildbot_url = \"http:\/\/buildbot.libretro.com\/nightly\/linux\/armhf\/latest\/\"/" $INSTALL/etc/retroarch.cfg
+  fi
   
   # Playlists
   echo "playlist_names = \"$RA_PLAYLIST_NAMES\"" >> $INSTALL/etc/retroarch.cfg
