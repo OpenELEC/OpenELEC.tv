@@ -12,7 +12,6 @@
 * taking screenshots doesn't work
 * VSync is commented out, because of big frame drop (needs some code reorganization)
 * used boot time resolution (can be changed via script.bin or kernel parameters)
-* kswapd using one whole core, seems like a bug in kernel
 
 Any help appreciated via pull requests or [Orange Pi forum](http://www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
 
