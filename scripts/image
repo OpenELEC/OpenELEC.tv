@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ fi
   echo -e "VERSION=\"$OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "ID=\"openelec\"" >> $INSTALL/etc/os-release
   echo -e "VERSION_ID=\"$OS_VERSION\"" >> $INSTALL/etc/os-release
-  echo -e "PRETTY_NAME=\"$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) - Version: $OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "PRETTY_NAME=\"$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "community")) - Version: $OPENELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "HOME_URL=\"http://www.openelec.tv\"" >> $INSTALL/etc/os-release
   echo -e "BUG_REPORT_URL=\"https://github.com/OpenELEC/OpenELEC.tv\"" >> $INSTALL/etc/os-release
   if [ -n "$GIT_HASH" ]; then
@@ -109,16 +109,16 @@ fi
   if [ "$OFFICIAL" = "yes" ]; then
     echo -e "OPENELEC_BUILD=\"official\"" >> $INSTALL/etc/os-release
   else
-    echo -e "OPENELEC_BUILD=\"unofficial\"" >> $INSTALL/etc/os-release
+    echo -e "OPENELEC_BUILD=\"community\"" >> $INSTALL/etc/os-release
   fi
 
 # create /etc/issue
-  echo $GREETING0 >  $INSTALL/etc/issue
-  echo $GREETING1 >> $INSTALL/etc/issue
-  echo $GREETING2 >> $INSTALL/etc/issue
-  echo $GREETING3 >> $INSTALL/etc/issue
-  echo $GREETING4 >> $INSTALL/etc/issue
-  echo "$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "unofficial")) Version: $OPENELEC_VERSION" >> $INSTALL/etc/issue
+  echo "$GREETING0" >  $INSTALL/etc/issue
+  echo "$GREETING1" >> $INSTALL/etc/issue
+  echo "$GREETING2" >> $INSTALL/etc/issue
+  echo "$GREETING3" >> $INSTALL/etc/issue
+  echo "$GREETING4" >> $INSTALL/etc/issue
+  echo "$DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" ||  echo "community")) Version: $OPENELEC_VERSION" >> $INSTALL/etc/issue
   if [ -n "$GIT_HASH" ]; then
     echo "$DISTRONAME git: $GIT_HASH" >> $INSTALL/etc/issue
   fi

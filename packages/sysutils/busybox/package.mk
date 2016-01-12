@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -182,9 +182,6 @@ makeinstall_target() {
 
   # /etc/machine-id, needed by systemd and dbus
     ln -sf /run/machine-id $INSTALL/etc/machine-id
-
-  # /etc/hosts must be writeable
-    ln -sf /var/cache/hosts $INSTALL/etc/hosts
 
   # /etc/mtab is needed by udisks etc...
     ln -sf /proc/self/mounts $INSTALL/etc/mtab

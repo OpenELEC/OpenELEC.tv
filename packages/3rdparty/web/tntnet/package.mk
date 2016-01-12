@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -51,6 +51,8 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-unittest \
                            --with-stressjob=no"
 
 post_makeinstall_target() {
+  $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/tntnet-config
+
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/usr/share
 }

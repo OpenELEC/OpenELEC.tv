@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -48,9 +48,9 @@ pre_configure_target() {
 }
 
 post_makeinstall_target() {
-  mkdir -p $ROOT/$TOOLCHAIN/bin
-    cp -f $PKG_DIR/scripts/fribidi-config $ROOT/$TOOLCHAIN/bin
-    chmod +x $ROOT/$TOOLCHAIN/bin/fribidi-config
+  mkdir -p $SYSROOT_PREFIX/usr/bin
+    cp -f $PKG_DIR/scripts/fribidi-config $SYSROOT_PREFIX/usr/bin
+    chmod +x $SYSROOT_PREFIX/usr/bin/fribidi-config
 
   rm -rf $INSTALL/usr/bin
 }

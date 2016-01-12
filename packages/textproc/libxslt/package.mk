@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -36,11 +36,11 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_header_ansidecl_h=no \
                            --enable-static \
                            --disable-shared \
                            --without-python \
+                           --with-libxml-prefix=$SYSROOT_PREFIX/usr \
                            --without-crypto"
 
 post_makeinstall_target() {
-  $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $INSTALL/usr/bin/xslt-config
-  mv $INSTALL/usr/bin/xslt-config $ROOT/$TOOLCHAIN/bin
+  $SED "s:\(['= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/xslt-config
 
   rm -rf $INSTALL/usr/bin/xsltproc
   rm -rf $INSTALL/usr/lib/xsltConf.sh

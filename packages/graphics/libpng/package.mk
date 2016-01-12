@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -51,10 +51,8 @@ pre_configure_target() {
 
 post_makeinstall_target() {
   sed -e "s:\([\"'= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \
-      -e "s:libs=\"-lpng15\":libs=\"-lpng15 -lz\":g" \
+      -e "s:libs=\"-lpng16\":libs=\"-lpng16 -lz\":g" \
       -i $SYSROOT_PREFIX/usr/bin/libpng*-config
-
-  cp -P $SYSROOT_PREFIX/usr/bin/libpng*-config $ROOT/$TOOLCHAIN/bin
 
   rm -rf $INSTALL/usr/bin
 }
