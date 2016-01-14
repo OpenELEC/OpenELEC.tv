@@ -1,5 +1,0 @@
-  # Configuration for u-boot
-    UBOOT_CONFIG="HYH-TBH3_defconfig"
-
-  # Board Configuration
-    FEXFILE="hyh-tbh3.fex"
