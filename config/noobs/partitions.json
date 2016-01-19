@@ -3,9 +3,9 @@
     {
       "label":                     "@DISTRONAME@_@PROJECT@_System",
       "filesystem_type":           "FAT",
-      "partition_size_nominal":    160,
+      "partition_size_nominal":    200,
       "want_maximised":            false,
-      "uncompressed_tarball_size": 120,
+      "uncompressed_tarball_size": 170,
       "mkfs_options":              ""
     },
     {
