@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <advancedsettings>
+  
+  <cputempcommand>echo "$(cat /sys/devices/virtual/thermal/thermal_zone0/temp) $
+
   <showexitbutton>false</showexitbutton>
 
   <fanartres>720</fanartres>
