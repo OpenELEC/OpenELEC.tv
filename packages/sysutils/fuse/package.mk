@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="fuse"
-PKG_VERSION="2.9.3"
+PKG_VERSION="2.9.5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://sourceforge.net/projects/fuse/"
-PKG_URL="$SOURCEFORGE_SRC/fuse/fuse-2.X/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_SITE="https://github.com/libfuse/libfuse/"
+PKG_URL="https://github.com/libfuse/libfuse/releases/download/${PKG_NAME}_${PKG_VERSION//./_}/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
