@@ -8,6 +8,7 @@ After=systemd-tmpfiles-setup.service
 What=unionfs#/storage/joypads=RW:/etc/retroarch-joypad-autoconfig=RO
 Where=/tmp/joypads
 Type=fuse
+Options=cow
 
 [Install]
 WantedBy=retroarch.target

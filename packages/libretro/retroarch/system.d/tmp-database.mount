@@ -8,6 +8,7 @@ After=systemd-tmpfiles-setup.service
 What=unionfs#/storage/database=RW:/usr/share/libretro-database=RO
 Where=/tmp/database
 Type=fuse
+Options=cow
 
 [Install]
 WantedBy=retroarch.target
