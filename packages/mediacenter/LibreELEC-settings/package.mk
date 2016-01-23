@@ -41,6 +41,13 @@ else
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bkeymaps"
 fi
 
+post_unpack() {
+  if [ -e $DISTRO_DIR/$DISTRO/OpenELEC-settings/ ]; then
+    mkdir -p $ROOT/$PKG_BUILD/textures/$DISTRO
+    cp -r $DISTRO_DIR/$DISTRO/OpenELEC-settings/textures/* $ROOT/$PKG_BUILD/textures/$DISTRO
+  fi
+}
+
 post_makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libreelec
     cp $PKG_DIR/scripts/* $INSTALL/usr/lib/libreelec

@@ -1,0 +1,31 @@
+diff -ru OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py
+--- OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py	2015-06-14 08:05:06.000000000 +0000
++++ OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py	2015-09-16 20:58:24.741652775 +0000
+@@ -516,18 +516,26 @@
+         except Exception, e:
+             self.oe.dbg_log('system::get_keyboard_layouts', 'ERROR: (' + repr(e) + ')')
+ 
++    def get_os_type(self):
++        typ = 'stable'
++        with open('/storage/installed_os.json') as fd:
++            name = json.load(fd)[0]["name"]
++            typ = name.split('(')[1].split(')')[0]
++        return str(typ)
++
+     def check_updates_v2(self, force=False):
+         try:
+             self.oe.dbg_log('system::check_updates_v2', 'enter_function', 0)
+             if hasattr(self, 'update_in_progress'):
+                 self.oe.dbg_log('system::check_updates_v2', 'Update in progress (exit)', 0)
+                 return
+-            url = '%s?i=%s&d=%s&pa=%s&v=%s&l=%s' % (
++            url = '%s?i=%s&d=%s&pa=%s&v=%s&t=%s&l=%s' % (
+                 self.UPDATE_REQUEST_URL,
+                 self.oe.SYSTEMID,
+                 self.oe.DISTRIBUTION,
+                 self.oe.ARCHITECTURE,
+                 self.oe.VERSION,
++                self.get_os_type(),
+                 self.cpu_lm_flag,
+                 )
+             self.oe.dbg_log('system::check_updates_v2', 'URL: %s' % url, 0)

@@ -1,0 +1,15 @@
+diff -ru LibreELEC-settings-659a94c/src/defaults.py LibreELEC-settings-659a94c-new/src/defaults.py
+--- LibreELEC-settings-659a94c/src/defaults.py	2016-03-13 17:38:30.000000000 +0000
++++ LibreELEC-settings-659a94c-new/src/defaults.py	2016-03-24 22:34:15.401652775 +0000
+@@ -82,8 +82,8 @@
+     'ENABLED': True,
+     'KERNEL_CMD': '/proc/cmdline',
+     'SET_CLOCK_CMD': '/sbin/hwclock --systohc --utc',
+-    'UPDATE_REQUEST_URL': 'http://update.libreelec.tv/updates.php',
+-    'UPDATE_DOWNLOAD_URL': 'http://%s.libreelec.tv/%s',
++    'UPDATE_REQUEST_URL': 'http://updates.fiveninjas.com/updates.php',
++    'UPDATE_DOWNLOAD_URL': 'http://%s.fiveninjas.com/%s',
+     'LOCAL_UPDATE_DIR': '/storage/.update/',
+     'GET_CPU_FLAG': "cat /proc/cpuinfo | grep -q 'flags.* lm ' && echo '1' || echo '0'",
+     'XBMC_RESET_FILE': '%s/reset_xbmc' % CONFIG_CACHE,
+Only in LibreELEC-settings-659a94c-new/src: defaults.py.orig

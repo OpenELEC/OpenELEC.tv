@@ -481,6 +481,18 @@ fi
         # create System dir
           mkdir -p $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System
 
+        # Get total size for partition spec
+          sz=`du -s $RELEASE_DIR/${DISTRONAME}_${PROJECT}/ | cut -f1`
+          sz=$((sz/1000))
+          sed -e "s/@TARBALL_SIZE@/$sz/g" \
+              -i $RELEASE_DIR/${DISTRONAME}_${PROJECT}/partitions.json
+
+        # remove an previous created release tarball
+          rm -rf $TARGET_IMG/${IMAGE_NAME}-$1.tar
+
+        # create release tarball
+          tar cf $TARGET_IMG/${IMAGE_NAME}-$1.tar -C $TARGET ${IMAGE_NAME}-$1
+
             BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
             if [ -d "$BOOTLOADER_DIR"/files/3rdparty/bootloader/ ]; then
               cp -PR $BOOTLOADER_DIR/files/3rdparty/bootloader/* $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System

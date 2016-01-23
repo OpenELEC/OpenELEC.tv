@@ -1,0 +1,150 @@
+diff -ru OpenELEC-settings-0.6.8/language/English/strings.po OpenELEC-settings-0.6.8-new/language/English/strings.po
+--- OpenELEC-settings-0.6.8/language/English/strings.po	2015-10-27 21:24:55.385652775 +0000
++++ OpenELEC-settings-0.6.8-new/language/English/strings.po	2015-10-31 13:25:19.557652775 +0000
+@@ -302,6 +302,18 @@
+ msgid "Automatic Updates"
+ msgstr ""
+ 
++msgctxt "#32015"
++msgid "Infra red contol"
++msgstr ""
++
++msgctxt "#32016"
++msgid "Enable Infra Red Sensor"
++msgstr ""
++
++msgctxt "#32017"
++msgid "Disable here if you're having trouble with an IR remote"
++msgstr ""
++
+ #empty strings from id 32015 to 32099
+ 
+ msgctxt "#32100"
+diff -ru OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py
+--- OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py	2015-10-27 21:23:57.685652775 +0000
++++ OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py	2015-10-31 13:25:31.089652775 +0000
+@@ -132,8 +132,24 @@
+                             },
+                         },
+                     },
+-                'update': {
++
++                'lirc': {
+                     'order': 3,
++                    'name' : 32015,
++                    'settings' : {
++                        'LIRCEnable' : {
++                            'name' : 32016,
++                            'value': '1',
++                            'action': 'set_ir_enable',
++                            'type': 'bool',
++                            'InfoText': 32017,
++                            'order': 1,
++                        },
++                    },
++                },
++
++                'update': {
++                    'order': 4,
+                     'name': 32013,
+                     'settings': {
+                         'AutoUpdate': {
+@@ -173,7 +189,7 @@
+                          },
+                     },
+                 'backup': {
+-                    'order': 7,
++                    'order': 5,
+                     'name': 32371,
+                     'settings': {
+                         'backup': {
+@@ -195,8 +211,8 @@
+                         },
+                     },
+ 
+-		'debug': {
+-		    'order': 8,
++                'debug': {
++                    'order': 6,
+                     'name': 32376,
+                     'settings': {
+                         'paste': {
+@@ -211,7 +227,7 @@
+                     },
+                              
+                 'reset': {
+-                    'order': 9,
++                    'order': 7,
+                     'name': 32323,
+                     'settings': {
+                         'xbmc_reset': {
+@@ -330,6 +346,13 @@
+             else:
+                 self.struct['ident']['settings']['hostname']['value'] = self.oe.DISTRIBUTION
+ 
++            # LIRC enable
++            value = self.oe.read_setting('system', 'LIRCEnable')
++            if not value is None:
++                self.struct['lirc']['settings']['LIRCEnable']['value'] = value
++            else:
++                self.struct['lirc']['settings']['LIRCEnable']['value'] = '0' if os.path.exists('/storage/.config/modprobe.d/disable-lirc.conf') else '1'
++
+             # AutoUpdate
+ 
+             value = self.oe.read_setting('system', 'AutoUpdate')
+@@ -378,7 +401,7 @@
+     def set_update_type(self, listItem=None):
+         try:
+             self.oe.dbg_log('system::set_update_type', 'enter_function ', 0)
+-	    self.set_value(listItem)
++            self.set_value(listItem)
+             updateType = listItem.getProperty('value')
+             xbmcDialog = xbmcgui.Dialog()
+             answer = xbmcDialog.yesno('Slice Update', 'Switching update type to ' + updateType + ' requires a forced update, do you want to update now?')
+@@ -388,6 +411,37 @@
+         except Exception, e:
+             self.oe.dbg_log('system::set_update_type', 'ERROR: (' + repr(e) + ')')
+ 
++    def set_ir_enable(self, listItem=None):
++        try:
++            self.oe.dbg_log('system::set_ir_enable', 'enter_function ', 0)
++            self.set_value(listItem)
++            enable = listItem.getProperty('value') == '1'
++            self.oe.dbg_log('system::set_ir_enable', 'enable', 0)
++            if enable and os.path.exists('/storage/.config/modprobe.d/disable-lirc.conf'):
++                self.oe.dbg_log('system::set_ir_enable', 'remove file', 0)
++                os.remove('/storage/.config/modprobe.d/disable-lirc.conf')
++                xbmcDialog = xbmcgui.Dialog()
++                answer = xbmcDialog.yesno('Enable LIRC', 'Needs reboot to enable')
++                if answer == 1 :
++                    self.oe.winOeMain.close()
++                    time.sleep(1)
++                    xbmc.executebuiltin('Reboot')
++            if not enable:
++                self.oe.dbg_log('system::set_ir_enable', 'do command', 0)
++		f = open('/storage/.config/modprobe.d/disable-lirc.conf', 'w')
++		f.write('blacklist lirc_rpi\n')
++		f.close()
++                xbmcDialog = xbmcgui.Dialog()
++                answer = xbmcDialog.yesno('Disable LIRC', 'Needs reboot to disable')
++                if answer == 1:
++                    self.oe.winOeMain.close()
++                    time.sleep(1)
++                    xbmc.executebuiltin('Reboot')
++            self.oe.dbg_log('system::set_ir_enable', 'exit_function', 0)       
++        except Exception, e:
++            self.oe.dbg_log('system::set_ir_enable', 'ERROR: (' + repr(e) + ')')
++
++
+     def set_keyboard_layout(self, listItem=None):
+         try:
+             self.oe.dbg_log('system::set_keyboard_layout', 'enter_function', 0)
+@@ -807,7 +861,7 @@
+                 link = result.find('http')
+                 done_dlg = xbmcgui.Dialog()
+                 if link > 0:
+-		    done_dlg.ok('Debug pasted', 'Log files pasted to ' + result[link:])
++                    done_dlg.ok('Debug pasted', 'Log files pasted to ' + result[link:])
+                     self.oe.dbg_log('system::do_pastebin', result[link:]) 
+                 else:
+                     done_dlg.ok('Failed paste', 'Failed to paste log files, try again')

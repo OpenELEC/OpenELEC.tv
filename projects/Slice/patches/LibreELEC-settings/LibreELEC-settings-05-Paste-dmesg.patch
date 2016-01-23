@@ -1,0 +1,28 @@
+diff -ru OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py
+--- OpenELEC-settings-0.6.8-new/src/resources/lib/modules/system.py	2015-11-27 19:00:31.005652775 +0000
++++ OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py	2015-11-27 19:12:57.677652775 +0000
+@@ -797,11 +797,23 @@
+         except Exception, e:
+             self.oe.dbg_log('system::do_restore', 'ERROR: (' + repr(e) + ')')
+ 
++    def cat_file(self, tmp, filen):
++        self.oe.execute('echo "======== ' + filen + ' ==============" >> ' + tmp)
++        self.oe.execute('cat ' + filen + ' >> ' + tmp)
++
+     def do_pastebin(self, listItem=None):
+         try:
+             paste_dlg = xbmcgui.DialogProgress()
+             paste_dlg.create('Pasting log files', 'Pasting...', ' ', ' ')
+-            result = self.oe.execute('paste /flash/config.txt /flash/cmdline.txt /storage/.kodi/temp/kodi.log /storage/.kodi/temp/kodi.old.log', 1)
++            self.oe.execute('echo "Paste output" > /storage/.kodi/temp/paste.tmp')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/flash/config.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/flash/cmdline.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/kodi.log')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/kodi.old.log')
++            self.oe.execute('dmesg > /storage/.kodi/temp/dmesg.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/dmesg.txt')
++
++            result = self.oe.execute('paste /storage/.kodi/temp/paste.tmp', 1)
+             if not paste_dlg.iscanceled():
+                 paste_dlg.close()
+                 link = result.find('http')

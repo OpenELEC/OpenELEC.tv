@@ -430,6 +430,11 @@ post_makeinstall_target() {
   # more binaddons cross compile badness meh
   sed -i -e "s:INCLUDE_DIR /usr/include/kodi:INCLUDE_DIR $SYSROOT_PREFIX/usr/include/kodi:g" $SYSROOT_PREFIX/usr/lib/kodi/kodi-config.cmake
 
+  mkdir -p $INSTALL/usr/share/kodi/media
+    if [ -d $PROJECT_DIR/$PROJECT/kodi/ledpatterns ]; then
+      cp -R $PROJECT_DIR/$PROJECT/kodi/ledpatterns $INSTALL/usr/share/kodi/media
+    fi
+
   if [ "$KODI_EXTRA_FONTS" = yes ]; then
     mkdir -p $INSTALL/usr/share/kodi/media/Fonts
       cp $PKG_DIR/fonts/*.ttf $INSTALL/usr/share/kodi/media/Fonts

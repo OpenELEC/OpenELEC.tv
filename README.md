@@ -1,4 +1,14 @@
 # LibreELEC
+[SliceOS]
+
+This is a build system to create the SliceOS build for the Slice media player.  To build you need to run:
+
+```
+ARCH=arm PROJECT=Slice DISTRO=Slice make
+```
+This will then build the targets for the Slice distribution.  To install the build it should be possible to achieve this using standard update mechanism for OpenELEC (copy the SYSTEM SYSTEM.md5 KERNEL KERNEL.md5 into the updates share). 
+
+[LibreELEC](http://www.libreelec.tv)
 
 LibreELEC is a 'Just enough OS' Linux distribution for running the award-winning [Kodi](http://kodi.tv) software on popular mediacentre hardware. LibreELEC is a conservative fork of the popular [OpenELEC](http://openelec.tv) project with a stronger focus on pre-release testing and post-release change management. Further information on the project can be found on the [LibreELEC website](https://libreelec.tv).
 

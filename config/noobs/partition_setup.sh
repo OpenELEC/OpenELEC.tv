@@ -38,13 +38,11 @@ md5sumCheck() {
   )
 }
 
-if [ -z $part1 -o -z $part2 -o -z $id1 -o -z $id2 ]; then
-  echo "error: part1, part2, id1 or id2 not specified"
+if [ -z $part1 -o -z $id1 ]; then
+  echo "error: part1 or id1 not specified"
   echo "actual values:"
   echo "part1:" $part1
-  echo "part2:" $part2
   echo "id1  :" $id1
-  echo "id2  :" $id2
   exit 1
 fi
 
@@ -60,7 +58,11 @@ fi
 
 # create bootloader configuration
   echo "creating bootloader configuration..."
-  echo "boot=$id1 disk=$id2 quiet" > $MOUNTPOINT/cmdline.txt
+  echo "boot=$part1 disk=LABEL=SETTINGS quiet" > $MOUNTPOINT/cmdline.txt
+  cat /mnt/licenses.txt >> $MOUNTPOINT/config.txt
+  sed -i $MOUNTPOINT/config.txt -e s/MPEG2_LICENSE/decode_MPG2/
+  sed -i $MOUNTPOINT/config.txt -e s/VC1_LICENSE/decode_WVC1/
+  cp $MOUNTPOINT/dt-blob.bin.bak $MOUNTPOINT/dt-blob.bin
 
 # cleanup mountpoint
   umount $MOUNTPOINT

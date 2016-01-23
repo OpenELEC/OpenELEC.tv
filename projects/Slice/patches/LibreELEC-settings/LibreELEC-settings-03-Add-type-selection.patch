@@ -1,0 +1,354 @@
+diff -ru LibreELEC-settings-659a94c/language/English/strings.po LibreELEC-settings-659a94c-new/language/English/strings.po
+--- LibreELEC-settings-659a94c/language/English/strings.po	2016-03-24 22:36:39.817652775 +0000
++++ LibreELEC-settings-659a94c-new/language/English/strings.po	2016-03-24 22:37:44.881652775 +0000
+@@ -17,7 +17,7 @@
+ "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+ 
+ msgctxt "#600"
+-msgid "@DISTRONAME@ Settings"
++msgid "Slice Settings"
+ msgstr ""
+ 
+ msgctxt "#601"
+@@ -93,7 +93,7 @@
+ #empty strings from id 706 to 709
+ 
+ msgctxt "#710"
+-msgid "Configure the Hostname of your @DISTRONAME@ system. This will be used for the HTPC \\\\hostname in Windows and SMB server name in the Mac OS Finder"
++msgid "Configure the Hostname of your Slice system. This will be used for the HTPC \\\\hostname in Windows and SMB server name in the Mac OS Finder"
+ msgstr ""
+ 
+ msgctxt "#711"
+@@ -109,7 +109,7 @@
+ msgstr ""
+ 
+ msgctxt "#714"
+-msgid "@DISTRONAME@ can be configured for automatic or manual updates. Automatic updates are available on stable releases and stable release candidates. Automatic update self-disables on beta and development builds"
++msgid "Slice can be configured for automatic or manual updates. Automatic updates are available on stable releases and stable release candidates. Automatic update self-disables on beta and development builds"
+ msgstr ""
+ 
+ msgctxt "#715"
+@@ -117,23 +117,29 @@
+ msgstr ""
+ 
+ msgctxt "#716"
+-msgid "Click to manually check the @DISTRONAME@ servers for an updated release"
++msgid "Click to manually check the Slice servers for an updated release"
+ msgstr ""
+ 
+ msgctxt "#717"
+-msgid "If you have an small LCD or VFD attached to your @DISTRONAME@ system you must configure the correct display driver"
++msgid "If you have an small LCD or VFD attached to your Slice system you must configure the correct display driver"
+ msgstr ""
+ 
+-#empty strings from id 718 to 719
++msgctxt "#718"
++msgid "This specifies the build type you are checking for, stable is the default and preferred"
++msgstr ""
++
++#empty strings from id 719 to 719
+ 
+ msgctxt "#720"
+ msgid "Set to ON and Bluetooth devices will be disabled during power-saving modes"
+ msgstr ""
+ 
+-#empty string with id 721
++msgctxt "#721"
++msgid "Output config.txt, cmdline.txt, shutdown.sh, autostart.sh, kodi.log and kodi.old.log to pastebin and show a link to copy"
++msgstr ""
+ 
+ msgctxt "#722"
+-msgid "Create a tar archive containing all @DISTRONAME@ and Kodi configuration settings, databases and thumbnail content. Backup files will be stored in /storage/backups"
++msgid "Create a tar archive containing all Slice and Kodi configuration settings, databases and thumbnail content. Backup files will be stored in /storage/backups"
+ msgstr ""
+ 
+ msgctxt "#723"
+@@ -141,11 +147,11 @@
+ msgstr ""
+ 
+ msgctxt "#724"
+-msgid "[COLOR FF00FF00]SOFT RESET[/COLOR]\nPermanently reset @DISTRONAME@ configuration to defaults (resets also Kodi to default including your library. your media - music/videos/etc are not touched)"
++msgid "[COLOR FF00FF00]SOFT RESET[/COLOR]\nPermanently reset Slice configuration to defaults (resets also Kodi to default including your library. your media - music/videos/etc are not touched)"
+ msgstr ""
+ 
+ msgctxt "#725"
+-msgid "[COLOR FFFF0000]HARD RESET[/COLOR]\nPermanently reset @DISTRONAME@ and Kodi configuration to defaults (everything in your storage partition will be deleted)"
++msgid "[COLOR FFFF0000]HARD RESET[/COLOR]\nPermanently reset Slice and Kodi configuration to defaults (everything in your storage partition will be deleted)"
+ msgstr ""
+ 
+ msgctxt "#726"
+@@ -209,7 +215,7 @@
+ msgstr ""
+ 
+ msgctxt "#742"
+-msgid "Set to ON to enable the embedded SSH server. The SSH console can be accessed with username 'root' and password '@ROOT_PASSWORD@'."
++msgid "Set to ON to enable the embedded SSH server. The SSH console can be accessed with username 'root' and password 'openelec'."
+ msgstr ""
+ 
+ msgctxt "#743"
+@@ -231,7 +237,7 @@
+ msgstr ""
+ 
+ msgctxt "#751"
+-msgid "With OBEX filetransfer you can send files, for example movies or pictures over bluetooth to @DISTRONAME@."
++msgid "With OBEX filetransfer you can send files, for example movies or pictures over bluetooth to Slice."
+ msgstr ""
+ 
+ msgctxt "#752"
+@@ -465,7 +471,7 @@
+ #empty strings from id 32151 to 32179
+ 
+ msgctxt "#32180"
+-msgid "Would you like to update @DISTRONAME@ now?"
++msgid "Would you like to update Slice now?"
+ msgstr ""
+ 
+ msgctxt "#32181"
+@@ -573,7 +579,7 @@
+ #empty strings from id 32217 to 32299
+ 
+ msgctxt "#32300"
+-msgid "Welcome to @DISTRONAME@"
++msgid "Welcome to Slice"
+ msgstr ""
+ 
+ msgctxt "#32301"
+@@ -581,7 +587,7 @@
+ msgstr ""
+ 
+ msgctxt "#32302"
+-msgid "This wizard will guide you through the process of setting up your new @DISTRONAME@ installation - setting your location, timezone and connecting you to the internet.[CR][CR]These settings can be changed later by navigating to Programs > @DISTRONAME@ Settings."
++msgid "This wizard will guide you through the process of setting up your new Slice installation - setting your location, timezone and connecting you to the internet.[CR][CR]These settings can be changed later by navigating to Programs > Slice Settings."
+ msgstr ""
+ 
+ msgctxt "#32303"
+@@ -589,7 +595,7 @@
+ msgstr ""
+ 
+ msgctxt "#32304"
+-msgid "To be identified easily on the network, your new @DISTRONAME@ machine needs a name.[CR][CR]Try to choose something meaningful - like the room it's in - so you'll know what it is when you see it on the network.[CR][CR]This name is used when configuring network services, like file sharing using samba."
++msgid "To be identified easily on the network, your new Slice machine needs a name.[CR][CR]Try to choose something meaningful - like the room it's in - so you'll know what it is when you see it on the network.[CR][CR]This name is used when configuring network services, like file sharing using samba."
+ msgstr ""
+ 
+ msgctxt "#32305"
+@@ -597,7 +603,7 @@
+ msgstr ""
+ 
+ msgctxt "#32306"
+-msgid "In order to download backdrops, banners and thumbnails for your movies and TV shows and to stream online content from sites like YouTube, @DISTRONAME@ needs to be connected the Internet.[CR][CR]An Internet connection is also required for @DISTRONAME@ to automatically update itself."
++msgid "In order to download backdrops, banners and thumbnails for your movies and TV shows and to stream online content from sites like YouTube, Slice needs to be connected the Internet.[CR][CR]An Internet connection is also required for Slice to automatically update itself."
+ msgstr ""
+ 
+ #empty string with id 32307
+@@ -617,11 +623,11 @@
+ msgstr ""
+ 
+ msgctxt "#32312"
+-msgid "@DISTRONAME@ also supports SSH for remote access. This is for advanced users who wish to interact with @DISTRONAME@'s underlying operating system. The default user is [COLOR blue]root[/COLOR] and the default password is [COLOR blue]@ROOT_PASSWORD@[/COLOR]."
++msgid "Slice also supports SSH for remote access. This is for advanced users who wish to interact with Slice's underlying operating system. The default user is [COLOR blue]root[/COLOR] and the default password is [COLOR blue]openelec[/COLOR]."
+ msgstr ""
+ 
+ msgctxt "#32313"
+-msgid "In order to share your files between your computers @DISTRONAME@ has incorporated a samba server. This samba server can be integrated into your local network by accessing it in a familiar way with Finder or Windows Explorer."
++msgid "In order to share your files between your computers Slice has incorporated a samba server. This samba server can be integrated into your local network by accessing it in a familiar way with Finder or Windows Explorer."
+ msgstr ""
+ 
+ #empty strings from id 32314 to 32315
+@@ -635,7 +641,7 @@
+ msgstr ""
+ 
+ msgctxt "#32318"
+-msgid "Your @DISTRONAME@ installation is now complete and you'll now enter Kodi when you can set up your media libraries. For help with this, there is a guide available at wiki.kodi.tv[CR][CR]@DISTRONAME@ is developed by a dedicated team of developers who work purely in their spare time. Even as a volunteer project, we still have to pay for our internet bandwidth and development resources so if you find @DISTRONAME@ useful, we will always appreciate a donation of any amount.[CR][CR]Finally, we hope you enjoy using @DISTRONAME@ as much as we've enjoying building it. If you need any more help, you can find links to get help along with latest news at our website"
++msgid "Your Slice installation is now complete and you'll now enter Kodi when you can set up your media libraries. For help with this, there is a guide available at wiki.kodi.tv[CR][CR]Slice is developed by a dedicated team of developers who work purely in their spare time. Even as a volunteer project, we still have to pay for our internet bandwidth and development resources so if you find Slice useful, we will always appreciate a donation of any amount.[CR][CR]Finally, we hope you enjoy using Slice as much as we've enjoying building it. If you need any more help, you can find links to get help along with latest news at our website"
+ msgstr ""
+ 
+ msgctxt "#32319"
+@@ -657,7 +663,7 @@
+ msgstr ""
+ 
+ msgctxt "#32325"
+-msgid "Reset @DISTRONAME@ to defaults"
++msgid "Reset Slice to defaults"
+ msgstr ""
+ 
+ msgctxt "#32326"
+@@ -728,14 +734,18 @@
+ msgid "Trust and Connect"
+ msgstr ""
+ 
+-#empty strings from id 32359 to 32361
++#empty strings from id 32359 to 32360
++
++msgctxt "#32361"
++msgid "Update Type"
++msgstr ""
+ 
+ msgctxt "#32362"
+ msgid "Check for updates now:"
+ msgstr ""
+ 
+ msgctxt "#32363"
+-msgid "@DISTRONAME@"
++msgid "Slice"
+ msgstr ""
+ 
+ msgctxt "#32364"
+@@ -784,7 +794,15 @@
+ msgid "Backup Progress"
+ msgstr ""
+ 
+-#empty strings from id 32376 to 32378
++msgctxt "#32376"
++msgid "Debug"
++msgstr ""
++
++msgctxt "#32377"
++msgid "Paste debug to pastebin"
++msgstr ""
++
++#empty strings from id 32378 to 32378
+ 
+ msgctxt "#32379"
+ msgid "There is not enough free storage space to continue!"
+Only in LibreELEC-settings-659a94c-new/language/English: strings.po.orig
+diff -ru LibreELEC-settings-659a94c/src/resources/lib/modules/system.py LibreELEC-settings-659a94c-new/src/resources/lib/modules/system.py
+--- LibreELEC-settings-659a94c/src/resources/lib/modules/system.py	2016-03-24 22:36:39.821652775 +0000
++++ LibreELEC-settings-659a94c-new/src/resources/lib/modules/system.py	2016-03-24 22:40:53.261652775 +0000
+@@ -161,7 +161,16 @@
+                             'InfoText': 716,
+                             'order': 3,
+                             },
+-                        },
++                        'UpdateType': {
++                            'name': 32361,
++                            'value': 'stable',
++                            'action': 'set_update_type',
++                            'type': 'multivalue',
++                            'values': ['stable', 'nightly', 'bloody'],
++                            'InfoText': 718,
++                            'order': 4,
++                            },
++                         },
+                     },
+                 'backup': {
+                     'order': 7,
+@@ -185,8 +194,24 @@
+                             },
+                         },
+                     },
++
++		'debug': {
++		    'order': 8,
++                    'name': 32376,
++                    'settings': {
++                        'paste': {
++                            'name': 32377,
++                            'value': '0',
++                            'action': 'do_pastebin',
++                            'type': 'button',
++                            'InfoText': 721,
++                            'order': 1,
++                            },
++                        },
++                    },
++                             
+                 'reset': {
+-                    'order': 8,
++                    'order': 9,
+                     'name': 32323,
+                     'settings': {
+                         'xbmc_reset': {
+@@ -316,6 +341,12 @@
+             if os.path.isfile('%s/SYSTEM' % self.LOCAL_UPDATE_DIR):
+                 self.update_in_progress = True
+ 
++            value = self.oe.read_setting('system', 'UpdateType')
++            if not value is None:
++                self.struct['update']['settings']['UpdateType']['value'] = value
++            else:
++                self.struct['update']['settings']['UpdateType']['value'] = self.get_os_type()
++
+             # AutoUpdate = manual by environment var.
+ 
+             if os.path.exists('/dev/.update_disabled'):
+@@ -344,6 +375,19 @@
+         except Exception, e:
+             self.oe.dbg_log('system::set_value', 'ERROR: (' + repr(e) + ')')
+ 
++    def set_update_type(self, listItem=None):
++        try:
++            self.oe.dbg_log('system::set_update_type', 'enter_function ', 0)
++	    self.set_value(listItem)
++            updateType = listItem.getProperty('value')
++            xbmcDialog = xbmcgui.Dialog()
++            answer = xbmcDialog.yesno('Slice Update', 'Switching update type to ' + updateType + ' requires a forced update, do you want to update now?')
++            if answer == 1:
++                self.check_updates_v2(True, True)
++            self.oe.dbg_log('system::set_update_type', 'exit_function', 0)       
++        except Exception, e:
++            self.oe.dbg_log('system::set_update_type', 'ERROR: (' + repr(e) + ')')
++
+     def set_keyboard_layout(self, listItem=None):
+         try:
+             self.oe.dbg_log('system::set_keyboard_layout', 'enter_function', 0)
+@@ -523,19 +567,22 @@
+             typ = name.split('(')[1].split(')')[0]
+         return str(typ)
+ 
+-    def check_updates_v2(self, force=False):
++    def check_updates_v2(self, force=False, ignore_version=False):
+         try:
+             self.oe.dbg_log('system::check_updates_v2', 'enter_function', 0)
+             if hasattr(self, 'update_in_progress'):
+                 self.oe.dbg_log('system::check_updates_v2', 'Update in progress (exit)', 0)
+                 return
++            version = self.oe.VERSION
++            if ignore_version:
++                version = 'devel-0-nothing'
+             url = '%s?i=%s&d=%s&pa=%s&v=%s&t=%s&l=%s' % (
+                 self.UPDATE_REQUEST_URL,
+                 self.oe.SYSTEMID,
+                 self.oe.DISTRIBUTION,
+                 self.oe.ARCHITECTURE,
+-                self.oe.VERSION,
+-                self.get_os_type(),
++                version,
++                self.struct['update']['settings']['UpdateType']['value'],
+                 self.cpu_lm_flag,
+                 )
+             self.oe.dbg_log('system::check_updates_v2', 'URL: %s' % url, 0)
+@@ -632,7 +679,7 @@
+             self.oe.dbg_log('system::reset_oe', 'enter_function', 0)
+             if self.ask_sure_reset('LibreELEC') == 1:
+                 self.oe.set_busy(1)
+-                reset_file = open(self.LIBREELEC_RESET_FILE, 'w')
++                reset_file = open(self.XBMC_RESET_FILE, 'w')
+                 reset_file.write('reset')
+                 reset_file.close()
+                 self.oe.winOeMain.close()
+@@ -762,6 +809,24 @@
+         except Exception, e:
+             self.oe.dbg_log('system::do_restore', 'ERROR: (' + repr(e) + ')')
+ 
++    def do_pastebin(self, listItem=None):
++        try:
++            paste_dlg = xbmcgui.DialogProgress()
++            paste_dlg.create('Pasting log files', 'Pasting...', ' ', ' ')
++            result = self.oe.execute('paste /flash/config.txt /flash/cmdline.txt /storage/.kodi/temp/kodi.log /storage/.kodi/temp/kodi.old.log', 1)
++            if not paste_dlg.iscanceled():
++                paste_dlg.close()
++                link = result.find('http')
++                done_dlg = xbmcgui.Dialog()
++                if link > 0:
++		    done_dlg.ok('Debug pasted', 'Log files pasted to ' + result[link:])
++                    self.oe.dbg_log('system::do_pastebin', result[link:]) 
++                else:
++                    done_dlg.ok('Failed paste', 'Failed to paste log files, try again')
++        except Exception, e:
++            self.oe.dbg_log('system::do_pastebin', 'ERROR: (' + repr(e) + ')')
++           
++
+     def tar_add_folder(self, tar, folder):
+         try:
+             for item in os.listdir(folder):
+Only in LibreELEC-settings-659a94c-new/src/resources/lib/modules: system.py.orig

@@ -1,0 +1,12 @@
+diff -ru kodi-16.0-beta5-19fc4fa/system/keymaps/keyboard.xml kodi-16.0-beta5-19fc4fa-new/system/keymaps/keyboard.xml
+--- kodi-16.0-beta5-19fc4fa/system/keymaps/keyboard.xml	2016-01-08 07:16:35.489652775 +0000
++++ kodi-16.0-beta5-19fc4fa-new/system/keymaps/keyboard.xml	2016-01-08 07:17:43.713652775 +0000
+@@ -74,7 +74,7 @@
+       <menu mod="longpress">Menu</menu>
+       <c>ContextMenu</c>
+       <c mod="longpress">Menu</c>
+-      <space>Pause</space>
++      <space>PlayPause</space>
+       <x>Stop</x>
+       <period>SkipNext</period>
+       <comma>SkipPrevious</comma>

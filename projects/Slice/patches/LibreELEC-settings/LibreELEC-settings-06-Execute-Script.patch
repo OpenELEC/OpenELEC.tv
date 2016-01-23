@@ -1,0 +1,62 @@
+diff -ru OpenELEC-settings-0.6.8/language/English/strings.po OpenELEC-settings-0.6.8-n/language/English/strings.po
+--- OpenELEC-settings-0.6.8/language/English/strings.po	2015-11-28 18:28:07.717652775 +0000
++++ OpenELEC-settings-0.6.8-n/language/English/strings.po	2015-11-28 18:28:43.849652775 +0000
+@@ -128,7 +128,9 @@
+ msgid "This specifies the build type you are checking for, stable is the default and preferred"
+ msgstr ""
+ 
+-#empty strings from id 719 to 719
++msgctxt "#719"
++msgid "Execute a script as stored on sprunge.us"
++msgstr ""
+ 
+ msgctxt "#720"
+ msgid "Set to ON and Bluetooth devices will be disabled during power-saving modes"
+@@ -814,6 +816,10 @@
+ msgid "Paste debug to pastebin"
+ msgstr ""
+ 
++msgctxt "#32378"
++msgid "Execute script"
++msgstr ""
++
+ #empty strings from id 32378 to 32378
+ 
+ msgctxt "#32379"
+diff -ru OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py OpenELEC-settings-0.6.8-n/src/resources/lib/modules/system.py
+--- OpenELEC-settings-0.6.8/src/resources/lib/modules/system.py	2015-11-28 18:28:07.729652775 +0000
++++ OpenELEC-settings-0.6.8-n/src/resources/lib/modules/system.py	2015-11-28 18:28:59.217652775 +0000
+@@ -223,6 +223,14 @@
+                             'InfoText': 721,
+                             'order': 1,
+                             },
++                        'execute': {
++                            'name': 32378,
++                            'value': '0',
++                            'action': 'do_execscript',
++                            'type': 'button',
++                            'InfoText': 719,
++                            'order': 1,
++                            },
+                         },
+                     },
+                              
+@@ -879,7 +887,17 @@
+                     done_dlg.ok('Failed paste', 'Failed to paste log files, try again')
+         except Exception, e:
+             self.oe.dbg_log('system::do_pastebin', 'ERROR: (' + repr(e) + ')')
+-           
++
++    def do_execscript(self, listItem=None):
++        try:
++            editfield = xbmcgui.Dialog()
++            link = editfield.input('Enter link for script', 'http://sprunge.us/')
++            self.oe.dbg_log('link', 'link is ' + link)
++            self.oe.execute('curl ' + link + ' > /storage/.kodi/temp/script.sh')
++            self.oe.execute('chmod +x /storage/.kodi/temp/script.sh')
++            self.oe.execute('/storage/.kodi/temp/script.sh > /storage/.kodi/temp/paste.tmp')
++        except Exception, e:
++            self.oe.dbg_log('system::do_executescript', 'ERROR: (' + repr(e) + ')')
+ 
+     def tar_add_folder(self, tar, folder):
+         try:

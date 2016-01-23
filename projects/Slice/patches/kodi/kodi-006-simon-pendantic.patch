@@ -1,0 +1,12 @@
+diff -ru kodi-15.1-f4dda26/addons/resource.language.en_gb/resources/strings.po kodi-15.1-f4dda26-new/addons/resource.language.en_gb/resources/strings.po
+--- kodi-15.1-f4dda26/addons/resource.language.en_gb/resources/strings.po	2015-08-17 16:46:17.000000000 +0000
++++ kodi-15.1-f4dda26-new/addons/resource.language.en_gb/resources/strings.po	2015-09-19 09:13:52.889652775 +0000
+@@ -10594,7 +10594,7 @@
+ #: xbmc/dialogs/GUIDialogSmartPlaylistEditor.cpp
+ #: xbmc/filesystem/VideoDatabaseDirectory/DirectoryNodeOverview.cpp
+ msgctxt "#20343"
+-msgid "TV shows"
++msgid "TV Shows"
+ msgstr ""
+ 
+ msgctxt "#20344"
