@@ -176,7 +176,7 @@ pll_de           = 864
 ;
 ;*****************************************************************************
 [dram_para]
-dram_clk        = 672
+dram_clk        = 624
 dram_type       = 3
 dram_zq         = 0x3b3bfb
 dram_odt_en     = 0x1
@@ -480,7 +480,6 @@ fb0_height = 0
 fb1_format = 0
 fb1_width = 0
 fb1_height = 0
-fb0_framebuffer_num = 2
 
 ;----------------------------------------------------------------------------------
 ;hdmi configuration
@@ -1256,7 +1255,3 @@ mali_used = 1
 mali_clkdiv = 1
 mali_extreme_freq = 600
 mali_extreme_vol = 1400
-
-[g2d_para]
-g2d_used = 0
-g2d_size = 0x1000000
