@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
@@ -16,32 +17,25 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="kodi-platform"
-PKG_VERSION="fed924e"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kodi.tv"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain tinyxml kodi p8-platform"
-PKG_PRIORITY="optional"
-PKG_SECTION="multimedia"
-PKG_SHORTDESC="kodi-platform:"
-PKG_LONGDESC="kodi-platform:"
+echo "getting sources..."
+  if [ ! -d libcec.git ]; then
+    git clone --depth=1 https://github.com/Pulse-Eight/libcec.git libcec.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd libcec.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-configure_target() {
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_PREFIX_TOOLCHAIN=$SYSROOT_PREFIX/usr \
-        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
-        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
-        -DBUILD_SHARED_LIBS=0 \
-        ..
-}
+echo "copying sources..."
+  rm -rf libcec-$GIT_REV
+  cp -R libcec.git libcec-$GIT_REV
 
-post_makeinstall_target() {
-  rm -rf $INSTALL/usr/lib/kodiplatform
-}
+echo "cleaning sources..."
+  rm -rf libcec-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf libcec-$GIT_REV.tar.xz libcec-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf libcec-$GIT_REV

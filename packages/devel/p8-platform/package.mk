@@ -16,18 +16,18 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="platform"
-PKG_VERSION="1.0.10"
+PKG_NAME="p8-platform"
+PKG_VERSION="38343e0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_URL="http://mirrors.xbmc.org/build-deps/sources/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="platform:"
-PKG_LONGDESC="platform:"
+PKG_SHORTDESC="Platform support library used by libCEC and binary add-ons for Kodi"
+PKG_LONGDESC="Platform support library used by libCEC and binary add-ons for Kodi"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
