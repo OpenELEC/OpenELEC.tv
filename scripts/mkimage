@@ -191,6 +191,8 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.imx" of="$DISK" bs=512 seek=2 conv=notrunc
     elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" of="$DISK" bs=1k seek=8 conv=notrunc
     fi
 
     echo "image: copying files to part1..."
@@ -201,6 +203,8 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       cp "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" "$OE_TMP/u-boot.img"
     elif [ -f $RELEASE_DIR/3rdparty/bootloader/u-boot.img ]; then
       cp $RELEASE_DIR/3rdparty/bootloader/u-boot.img "$OE_TMP"
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/script.bin" ]; then
+      cp $RELEASE_DIR/3rdparty/bootloader/script.bin "$OE_TMP"
     fi
 
     for dtb in $RELEASE_DIR/3rdparty/bootloader/*.dtb ; do

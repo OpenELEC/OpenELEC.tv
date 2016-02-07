@@ -1,4 +1,7 @@
 <settings>
+  <audiooutput>
+    <audiodevice>ALSA:sysdefault:CARD=sndhdmi</audiodevice>
+  </audiooutput>
   <debug>
     <screenshotpath pathversion="1">/storage/screenshots/</screenshotpath>
   </debug>

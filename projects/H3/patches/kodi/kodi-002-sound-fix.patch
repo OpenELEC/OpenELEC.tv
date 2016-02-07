@@ -1,0 +1,23 @@
+diff -Nur kodi-16.0-beta2-64de219.orig/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp kodi-16.0-beta2-64de219/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp
+--- kodi-16.0-beta2-64de219.orig/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp	2015-11-25 23:02:39.000000000 +0100
++++ kodi-16.0-beta2-64de219/xbmc/cores/AudioEngine/Sinks/AESinkALSA.cpp	2015-11-25 23:04:05.321722544 +0100
+@@ -695,7 +695,18 @@
+         continue;
+ 
+       if (m_passthrough && i != AE_FMT_S16BE && i != AE_FMT_S16LE)
+-	continue;
++        continue;
++      
++      if(i == AE_FMT_S24BE4 ||
++         i == AE_FMT_S24LE4 ||
++         i == AE_FMT_S24NE4 ||
++         i == AE_FMT_S24NE4MSB ||
++         i == AE_FMT_S24BE3 ||
++         i == AE_FMT_S24LE3 ||
++         i == AE_FMT_S24NE3)
++      {
++        continue;
++      }
+ 
+       fmt = AEFormatToALSAFormat(i);
+ 

@@ -1,0 +1,8 @@
+  # Configuration for u-boot
+    UBOOT_CONFIG="orangepi_plus_defconfig"
+
+  # Board Configuration
+    FEXFILE="orange_pi_plus.fex"
+
+  # additional drivers
+    ADDITIONAL_DRIVERS+=" rtk8189es"
