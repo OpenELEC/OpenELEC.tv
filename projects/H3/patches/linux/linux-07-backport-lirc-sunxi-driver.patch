@@ -27,14 +27,16 @@ diff -Nur a/drivers/media/rc/Makefile b/drivers/media/rc/Makefile
 +obj-$(CONFIG_IR_SUNXI) += sunxi-cir.o
 diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 --- a/drivers/media/rc/sunxi-cir.c	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/media/rc/sunxi-cir.c	2016-02-07 09:56:54.000000000 +0100
-@@ -0,0 +1,333 @@
++++ b/drivers/media/rc/sunxi-cir.c	2016-02-07 23:27:01.192917078 +0100
+@@ -0,0 +1,334 @@
 +/*
 + * Driver for Allwinner sunXi IR controller
 + *
 + * Copyright (C) 2014 Alexsey Shestacov <wingrime@linux-sunxi.org>
 + * Copyright (C) 2014 Alexander Bersenev <bay@hackerdom.ru>
-+ * Copyright (C) 2015 Jernej Skrabec <jernej.skrabec@siol.net>
++ * 
++ * Backported by:
++ * Copyright (C) 2016 Jernej Skrabec <jernej.skrabec@siol.net>
 + *
 + * Based on sun5i-ir.c:
 + * Copyright (C) 2007-2012 Daniel Wang
@@ -360,5 +362,4 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +
 +MODULE_DESCRIPTION("Allwinner sunXi IR controller driver");
 +MODULE_AUTHOR("Alexsey Shestacov <wingrime@linux-sunxi.org>");
-+MODULE_AUTHOR("Jernej Skrabec <jernej.skrabec@siol.net>");
 +MODULE_LICENSE("GPL");
