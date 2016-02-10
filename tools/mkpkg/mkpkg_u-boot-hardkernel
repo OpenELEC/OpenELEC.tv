@@ -1,0 +1,41 @@
+#!/bin/sh
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+echo "getting sources..."
+  if [ ! -d u-boot-hardkernel.git ]; then
+    git clone --depth=1 --single-branch -b odroidc2-v2015.01 https://github.com/hardkernel/u-boot.git u-boot-hardkernel.git
+  fi
+
+  cd u-boot-hardkernel.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
+
+echo "copying sources..."
+  rm -rf u-boot-hardkernel-$GIT_REV
+  cp -R u-boot-hardkernel.git u-boot-hardkernel-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf u-boot-hardkernel-$GIT_REV/.git
+
+echo "packing sources..."
+  tar cvJf u-boot-hardkernel-$GIT_REV.tar.xz u-boot-hardkernel-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf u-boot-hardkernel-$GIT_REV

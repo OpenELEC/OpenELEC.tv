@@ -25,11 +25,24 @@ if [ -z "$UBOOT_CONFIGFILE" ]; then
 fi
 
 mkdir -p $RELEASE_DIR/3rdparty/bootloader
-  cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
+  if [ -e $BUILD/u-boot-*/$UBOOT_CONFIGFILE ]; then
+    cp -PR $BUILD/u-boot-*/$UBOOT_CONFIGFILE $RELEASE_DIR/3rdparty/bootloader
+  fi
+
   cp -PR $BUILD/u-boot-*/SPL* $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
   cp -PR $BUILD/u-boot-*/u-boot*.imx $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
   cp -PR $BUILD/u-boot-*/u-boot*.img $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
 
   cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
 
-  cp -PR $BUILD/linux-*/arch/arm/boot/dts/*.dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
+  for dtb in $BUILD/linux-*/arch/$TARGET_ARCH/boot/dts/*.dtb; do
+    cp -PR $dtb $RELEASE_DIR/3rdparty/bootloader 2>/dev/null || :
+  done
+
+  case $PROJECT in
+    Odroid_C2)
+      cp -PR $BUILD/$BOOTLOADER-$UBOOT_VERSION-*/sd_fuse/bl1.bin.hardkernel $RELEASE_DIR/3rdparty/bootloader/bl1
+      cp -PR $BUILD/$BOOTLOADER-$UBOOT_VERSION-*/sd_fuse/u-boot.bin $RELEASE_DIR/3rdparty/bootloader/u-boot
+      cp -PR $PROJECT_DIR/$PROJECT/bootloader/boot.ini $RELEASE_DIR/3rdparty/bootloader
+      ;;
+  esac
