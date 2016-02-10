@@ -1,0 +1,85 @@
+diff -Nur a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp	2015-12-02 14:14:22.171069704 -0500
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp	2015-12-02 14:16:13.638954142 -0500
+@@ -23,6 +23,7 @@
+ #include "utils/AMLUtils.h"
+ #include "utils/StringUtils.h"
+ #include "utils/SysfsUtils.h"
++#include "utils/log.h"
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -30,6 +31,12 @@
+ #include <sys/ioctl.h>
+ #include <EGL/egl.h>
+ 
++#ifdef CLASSNAME
++#undef CLASSNAME
++#endif
++
++#define CLASSNAME "CEGLNativeTypeAmlogic"
++
+ CEGLNativeTypeAmlogic::CEGLNativeTypeAmlogic()
+ {
+   const char *env_framebuffer = getenv("FRAMEBUFFER");
+@@ -77,12 +84,14 @@
+ 
+ bool CEGLNativeTypeAmlogic::CreateNativeDisplay()
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+   m_nativeDisplay = EGL_DEFAULT_DISPLAY;
+   return true;
+ }
+ 
+ bool CEGLNativeTypeAmlogic::CreateNativeWindow()
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+ #if defined(_FBDEV_WINDOW_H_)
+   fbdev_window *nativeWindow = new fbdev_window;
+   if (!nativeWindow)
+@@ -103,6 +112,7 @@
+ 
+ bool CEGLNativeTypeAmlogic::GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+   if (!nativeDisplay)
+     return false;
+   *nativeDisplay = (XBNativeDisplayType*) &m_nativeDisplay;
+@@ -111,6 +121,7 @@
+ 
+ bool CEGLNativeTypeAmlogic::GetNativeWindow(XBNativeWindowType **nativeWindow) const
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+   if (!nativeWindow)
+     return false;
+   *nativeWindow = (XBNativeWindowType*) &m_nativeWindow;
+@@ -119,11 +130,13 @@
+ 
+ bool CEGLNativeTypeAmlogic::DestroyNativeDisplay()
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+   return true;
+ }
+ 
+ bool CEGLNativeTypeAmlogic::DestroyNativeWindow()
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+ #if defined(_FBDEV_WINDOW_H_)
+   delete (fbdev_window*)m_nativeWindow, m_nativeWindow = NULL;
+ #endif
+@@ -140,6 +153,7 @@
+ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+ {
+ #if defined(_FBDEV_WINDOW_H_)
++  CLog::Log(LOGNOTICE, "%s::%s to %dx%d@%f", CLASSNAME, __func__, res.iScreenWidth, res.iScreenHeight, res.fRefreshRate);
+   if (m_nativeWindow)
+   {
+     ((fbdev_window *)m_nativeWindow)->width = res.iScreenWidth;
+@@ -253,6 +267,7 @@
+ 
+ bool CEGLNativeTypeAmlogic::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
+ {
++  CLog::Log(LOGDEBUG, "%s::%s", CLASSNAME, __func__);
+   std::string valstr;
+   SysfsUtils::GetString("/sys/class/amhdmitx/amhdmitx0/disp_cap", valstr);
+ 
