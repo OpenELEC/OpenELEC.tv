@@ -1,0 +1,21 @@
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 2103f0b..7612724 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -51,6 +51,7 @@ CEGLNativeTypeAmlogic::~CEGLNativeTypeAmlogic()
+ 
+ bool CEGLNativeTypeAmlogic::CheckCompatibility()
+ {
++/*
+   std::string name;
+   std::string modalias = "/sys/class/graphics/" + m_framebuffer_name + "/device/modalias";
+ 
+@@ -59,6 +60,8 @@ bool CEGLNativeTypeAmlogic::CheckCompatibility()
+   if (name == "platform:mesonfb")
+     return true;
+   return false;
++*/
++  return true;
+ }
+ 
+ void CEGLNativeTypeAmlogic::Initialize()
