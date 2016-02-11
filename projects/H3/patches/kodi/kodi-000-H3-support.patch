@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdp
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-02-08 10:15:06.622092668 +0100
-@@ -0,0 +1,797 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-02-11 20:39:46.596163785 +0100
+@@ -0,0 +1,800 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -387,6 +387,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  InitializeVideoDecoder(m_videoCodec, &m_streamInfo, &vConfig);
 +  g_SunxiContext.Configure();
++  g_SunxiContext.m_decoders.insert(m_videoCodec);
 +
 +  CLog::Log(LOGINFO, "CDVDVideoCodecSunxi: Opened AllwinnerTech CedarX Codec");
 +  
@@ -401,6 +402,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  if (m_videoCodec) 
 +  {
++    g_SunxiContext.m_decoders.erase(m_videoCodec);
 +    DestroyVideoDecoder(m_videoCodec);
 +    m_videoCodec = NULL;
 +  }
@@ -609,7 +611,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +
 +CCedarXBuffer::~CCedarXBuffer()
 +{
-+  if(freeImage && (pPicture != NULL) && (pVideoCodec != NULL))
++  if((g_SunxiContext.m_decoders.find(pVideoCodec) != g_SunxiContext.m_decoders.end()) &&
++     (pPicture != NULL) && (pVideoCodec != NULL))
 +  { 
 +    ReturnPicture(pVideoCodec, pPicture);
 +    pPicture = NULL;
@@ -727,7 +730,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  if(buffer == NULL)
 +    return;
 +  
-+  if((m_instances == 0) || !buffer->freeImage)
++  if(m_instances == 0)
 +    return;
 +  
 +  if ((m_deinterlace) && (m_last != NULL) &&
@@ -900,8 +903,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +}
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-01-14 23:03:50.031524959 +0100
-@@ -0,0 +1,112 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-02-11 20:14:26.532879232 +0100
+@@ -0,0 +1,116 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -926,6 +929,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +#include <cedarx/vdecoder.h>
 +#include "windowing/egl/sunxi_display2.h"
 +#include <linux/fb.h>
++#include <set>
 +
 +#include "DVDVideoCodec.h"
 +#include "DVDStreamInfo.h"
@@ -936,7 +940,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +class CCedarXBuffer 
 +{
 +public:
-+  CCedarXBuffer() : pPicture(NULL), freeImage(true), m_iRefs(0) {}
++  CCedarXBuffer() : pPicture(NULL), m_iRefs(0) {}
 +
 +  // Shared pointer interface
 +  virtual void Lock();
@@ -947,7 +951,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +  VideoDecoder *pVideoCodec;
 +  int           leftOffset;
 +  int           topOffset;
-+  bool          freeImage;
 +  
 +protected:
 +  long          m_iRefs;
@@ -1000,6 +1003,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +  void Render(CCedarXBuffer *buffer, CRect &srcRect, CRect &dstRect);
 +  CCedarXBuffer *Deinterlace(CCedarXBuffer *current, int nField);
 +  void SetVSync(bool enabled);
++  
++// ugly hack:
++public:
++  std::set<void*> m_decoders;
 +  
 +private:
 +  disp_layer_config video_config;
@@ -1062,7 +1069,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPl
    return "UNKNOWN";
 diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
 --- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-01-14 23:03:50.031524959 +0100
++++ b/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-02-11 20:07:31.755610656 +0100
 @@ -93,6 +93,10 @@
  #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
  #endif
@@ -1219,7 +1226,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
  bool CLinuxRendererGLES::RenderCapture(CRenderCapture* capture)
  {
    if (!m_bValidated)
-@@ -2889,7 +2975,33 @@
+@@ -2889,7 +2975,32 @@
    glDisable(m_textureTarget);
    return true;
  }
@@ -1237,7 +1244,6 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
 +
 +  if(buf.Disp2Buffer != NULL)
 +  {
-+    buf.Disp2Buffer->freeImage = false;
 +    SAFE_RELEASE(buf.Disp2Buffer);
 +  }
 +#endif
@@ -1253,7 +1259,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
  
  bool CLinuxRendererGLES::Supports(ERENDERFEATURE feature)
  {
-@@ -2996,6 +3108,14 @@
+@@ -2996,6 +3107,14 @@
  
    if(m_renderMethod & RENDER_CVREF)
      return false;
@@ -1268,7 +1274,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
  
    if(method == VS_INTERLACEMETHOD_AUTO)
      return true;
-@@ -3034,6 +3154,10 @@
+@@ -3034,6 +3153,10 @@
  
    if(m_renderMethod & RENDER_IMXMAP)
      return false;
@@ -1279,7 +1285,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
  
    if (m_renderMethod & RENDER_MEDIACODECSURFACE)
      return false;
-@@ -3073,6 +3197,9 @@
+@@ -3073,6 +3196,9 @@
  
    if(m_renderMethod & RENDER_IMXMAP)
      return VS_INTERLACEMETHOD_IMX_FASTMOTION;
@@ -1289,7 +1295,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
  
  #if !defined(TARGET_ANDROID) && (defined(__i386__) || defined(__x86_64__))
    return VS_INTERLACEMETHOD_DEINTERLACE_HALF;
-@@ -3090,7 +3217,8 @@
+@@ -3090,7 +3216,8 @@
       m_format == RENDER_FMT_CVBREF ||
       m_format == RENDER_FMT_EGLIMG ||
       m_format == RENDER_FMT_MEDIACODEC ||
@@ -1299,7 +1305,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRe
      info.optimal_buffer_size = 2;
    else if(m_format == RENDER_FMT_IMXMAP)
    {
-@@ -3187,9 +3315,22 @@
+@@ -3187,9 +3314,22 @@
  }
  #endif
  
