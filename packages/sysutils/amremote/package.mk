@@ -19,7 +19,7 @@
 PKG_NAME="amremote"
 PKG_VERSION="ecdf401"
 PKG_REV="1"
-PKG_ARCH="arm"
+PKG_ARCH="arm aarch64"
 PKG_LICENSE="other"
 PKG_SITE="http://www.amlogic.com"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -41,6 +41,7 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/etc/amremote
     cp $PKG_DIR/config/*.conf $INSTALL/etc/amremote
+    cp $ROOT/$PKG_BUILD/remote.conf $INSTALL/etc/amremote
 }
 
 post_install() {
