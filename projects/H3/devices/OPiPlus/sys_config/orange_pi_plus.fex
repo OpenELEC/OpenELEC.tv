@@ -487,6 +487,8 @@ fb1_height = 0
 [hdmi_para]
 hdmi_used           = 1
 hdmi_power          = "vcc-hdmi-18"
+hdmi_cts_compatibility = 1
+hdcp_enable = 0
 
 [tv_para]
 tv_used				= 1
