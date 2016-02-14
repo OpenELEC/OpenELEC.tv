@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdp
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-02-11 20:39:46.596163785 +0100
-@@ -0,0 +1,800 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-02-14 21:54:27.470067718 +0100
+@@ -0,0 +1,824 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -387,7 +387,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  InitializeVideoDecoder(m_videoCodec, &m_streamInfo, &vConfig);
 +  g_SunxiContext.Configure();
-+  g_SunxiContext.m_decoders.insert(m_videoCodec);
++  g_SunxiContext.AddDecoder(m_videoCodec);
 +
 +  CLog::Log(LOGINFO, "CDVDVideoCodecSunxi: Opened AllwinnerTech CedarX Codec");
 +  
@@ -402,7 +402,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  if (m_videoCodec) 
 +  {
-+    g_SunxiContext.m_decoders.erase(m_videoCodec);
++    g_SunxiContext.RemoveDecoder(m_videoCodec);
 +    DestroyVideoDecoder(m_videoCodec);
 +    m_videoCodec = NULL;
 +  }
@@ -611,12 +611,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +
 +CCedarXBuffer::~CCedarXBuffer()
 +{
-+  if((g_SunxiContext.m_decoders.find(pVideoCodec) != g_SunxiContext.m_decoders.end()) &&
-+     (pPicture != NULL) && (pVideoCodec != NULL))
-+  { 
-+    ReturnPicture(pVideoCodec, pPicture);
-+    pPicture = NULL;
-+  }
++  g_SunxiContext.FreePicture(pVideoCodec, pPicture);
++  pPicture = NULL;
 +}
 +
 +CSunxiContext::CSunxiContext() : 
@@ -901,10 +897,38 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  return m_last;
 +}
++
++void CSunxiContext::AddDecoder(VideoDecoder *decoder)
++{
++  CSingleLock lk(m_decodersLock);
++  
++  if(decoder != NULL)
++  {
++    m_decoders.insert(decoder);
++  }
++}
++
++void CSunxiContext::RemoveDecoder(VideoDecoder *decoder)
++{
++  CSingleLock lk(m_decodersLock);
++  
++  m_decoders.erase(decoder);
++}
++
++void CSunxiContext::FreePicture(VideoDecoder *decoder, VideoPicture *picture)
++{
++  CSingleLock lk(m_decodersLock);
++  
++  if((m_decoders.find(decoder) != m_decoders.end()) &&
++     (picture != NULL))
++  { 
++    ReturnPicture(decoder, picture);
++  }
++}
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-02-11 20:14:26.532879232 +0100
-@@ -0,0 +1,116 @@
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-02-14 21:38:43.077719060 +0100
+@@ -0,0 +1,120 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -1004,9 +1028,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +  CCedarXBuffer *Deinterlace(CCedarXBuffer *current, int nField);
 +  void SetVSync(bool enabled);
 +  
-+// ugly hack:
-+public:
-+  std::set<void*> m_decoders;
++// ugly hack
++  void AddDecoder(VideoDecoder *decoder);
++  void RemoveDecoder(VideoDecoder *decoder);
++  void FreePicture(VideoDecoder *decoder, VideoPicture *picture);
 +  
 +private:
 +  disp_layer_config video_config;
@@ -1018,6 +1043,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +  unsigned int      m_instances;
 +  bool              m_vsync;
 +  int               m_fbHandle;
++  // ugly hack
++  std::set<VideoDecoder*> m_decoders;
++  CCriticalSection  m_decodersLock;
 +};
 +
 +extern CSunxiContext g_SunxiContext;
