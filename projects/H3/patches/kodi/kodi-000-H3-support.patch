@@ -1480,8 +1480,8 @@ diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp b/xbmc/video/dialogs/G
    for (StaticIntegerSettingOptions::iterator it = entries.begin(); it != entries.end(); )
 diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
 --- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-02-03 23:55:12.083292435 +0100
-@@ -0,0 +1,571 @@
++++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-02-15 23:37:10.256174206 +0100
+@@ -0,0 +1,557 @@
 +/*
 + *      Copyright (C) 2011-2013 Team XBMC
 + *      http://xbmc.org
@@ -1529,7 +1529,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +} fbdev_window;
 +#endif
 +
-+#if 0
 +static const unsigned long supportedModes[] = 
 +{
 +  DISP_TV_MOD_480I,
@@ -1545,8 +1544,10 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +  DISP_TV_MOD_1080P_60HZ,
 +  DISP_TV_MOD_1080P_25HZ,
 +  DISP_TV_MOD_1080P_30HZ,
++  DISP_TV_MOD_3840_2160P_24HZ,
++  DISP_TV_MOD_3840_2160P_25HZ,
++  DISP_TV_MOD_3840_2160P_30HZ
 +};
-+#endif
 +
 +CEGLNativeTypeSunxi::CEGLNativeTypeSunxi()
 +{
@@ -1689,8 +1690,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +
 +bool CEGLNativeTypeSunxi::SetNativeResolution(const RESOLUTION_INFO &res)
 +{
-+  return false;
-+#if 0
 +  if (m_nativeWindow)
 +  {
 +    ((fbdev_window *)m_nativeWindow)->width = res.iScreenWidth;
@@ -1724,11 +1723,11 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +        case 576:
 +          SetDisplayResolution(DISP_TV_MOD_576I);
 +          break;
-+        default:
 +        case 720:
 +          SetDisplayResolution(DISP_TV_MOD_720P_50HZ);
 +          break;
-+        case 1280:
++        default:
++        case 1080:
 +          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
 +            SetDisplayResolution(DISP_TV_MOD_1080I_50HZ);
 +          else
@@ -1746,6 +1745,9 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +        case 1080:
 +          SetDisplayResolution(DISP_TV_MOD_1080P_30HZ);
 +          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_30HZ);
++          break;
 +      }
 +      break;
 +    case 25:
@@ -1758,39 +1760,53 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +        case 1080:
 +          SetDisplayResolution(DISP_TV_MOD_1080P_25HZ);
 +          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_25HZ);
++          break;
 +      }
 +      break;
 +    case 24:
-+      SetDisplayResolution(DISP_TV_MOD_1080P_24HZ);
++      switch(res.iScreenHeight)
++      {
++        default:
++        case 1080:
++          SetDisplayResolution(DISP_TV_MOD_1080P_24HZ);
++          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_24HZ);
++          break;
++      }
 +      break;
 +  }
 +  
 +  return true;
-+#endif
 +}
 +
 +bool CEGLNativeTypeSunxi::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
 +{
-+  RESOLUTION_INFO res;
-+  if(GetNativeResolution(&res))
-+    resolutions.push_back(res);
-+#if 0
++  unsigned long args[4];
++  
++  args[0] = SCREENID;
++  args[2] = 0;
++  args[3] = 0;
++
 +  for(unsigned int i = 0; i < sizeof(supportedModes) / sizeof(supportedModes[0]); i++)
 +  {
-+    RESOLUTION_INFO res;
-+    //TODO: add hdmi check
-+    ModeToResolution(supportedModes[i], &res);
-+    resolutions.push_back(res);
++    args[1] = supportedModes[i];
++    if(ioctl(g_disp, DISP_HDMI_SUPPORT_MODE, args))
++    {
++      RESOLUTION_INFO res;
++
++      ModeToResolution(supportedModes[i], &res);
++      resolutions.push_back(res);
++    }
 +  }
-+#endif
 +
 +  return resolutions.size() > 0;
 +}
 +
 +bool CEGLNativeTypeSunxi::GetPreferredResolution(RESOLUTION_INFO *res) const
 +{
-+  return GetNativeResolution(res);
-+#if 0
 +  // check display/mode, it gets defaulted at boot
 +  if (!GetNativeResolution(res))
 +  {
@@ -1799,7 +1815,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +  }
 +
 +  return true;
-+#endif
 +}
 +
 +bool CEGLNativeTypeSunxi::ShowWindow(bool show)
@@ -1811,8 +1826,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +
 +bool CEGLNativeTypeSunxi::SetDisplayResolution(unsigned int mode)
 +{
-+  return false;
-+#if 0
 +  unsigned long args[4];
 +  disp_output para;
 +  
@@ -1834,12 +1847,10 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +  SetFramebufferResolution(res.iScreenWidth, res.iScreenHeight);
 +
 +  return true;
-+#endif
 +}
 +
 +void CEGLNativeTypeSunxi::SetFramebufferResolution(int width, int height) const
 +{
-+#if 0
 +  int fd0;
 +  std::string framebuffer = "/dev/fb0";
 +
@@ -1852,13 +1863,12 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +      vinfo.yres = height;
 +      vinfo.xres_virtual = width;
 +      vinfo.yres_virtual = height * 2;
-+      //vinfo.bits_per_pixel = 16;
-+      //vinfo.activate = FB_ACTIVATE_ALL;
++      vinfo.bits_per_pixel = 32;
++      vinfo.activate = FB_ACTIVATE_ALL;
 +      ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
 +    }
 +    close(fd0);
 +  }
-+#endif
 +}
 +
 +bool CEGLNativeTypeSunxi::ModeToResolution(unsigned int mode, RESOLUTION_INFO *res) const
@@ -2000,30 +2010,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNa
 +      res->fRefreshRate = 24;
 +      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
 +      break;
-+    /*case DISP_TV_MOD_3840_2160P_30HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 30;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_3840_2160P_25HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 25;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_3840_2160P_24HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 24;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;*/
 +    /*case DISP_TV_MOD_PAL:
 +      res->iWidth = 720;
 +      res->iHeight= 576;
