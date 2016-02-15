@@ -1955,7 +1955,7 @@ index 5401814..15b36b7 100644
  /**
   * request_firmware: - send firmware request and wait for it
   * @firmware_p: pointer to firmware image
-@@ -580,31 +1069,17 @@ err_put_dev:
+@@ -580,34 +1069,17 @@ err_put_dev:
   *      @name will be used as $FIRMWARE in the uevent environment and
   *      should be distinctive enough not to be confused with any other
   *      firmware image for this or any other device.
@@ -1971,6 +1971,9 @@ index 5401814..15b36b7 100644
  {
 -	struct firmware_priv *fw_priv;
 -	int ret;
+-
+-	if (!name || name[0] == '\0')
+-		return -EINVAL;
 -
 -	fw_priv = _request_firmware_prepare(firmware_p, name, device, true,
 -					    false);
