@@ -27,8 +27,8 @@ diff -Nur a/drivers/media/rc/Makefile b/drivers/media/rc/Makefile
 +obj-$(CONFIG_IR_SUNXI) += sunxi-cir.o
 diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 --- a/drivers/media/rc/sunxi-cir.c	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/media/rc/sunxi-cir.c	2016-02-07 23:27:01.192917078 +0100
-@@ -0,0 +1,334 @@
++++ b/drivers/media/rc/sunxi-cir.c	2016-02-16 00:19:39.938126949 +0100
+@@ -0,0 +1,321 @@
 +/*
 + * Driver for Allwinner sunXi IR controller
 + *
@@ -59,7 +59,7 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +#include <linux/slab.h>
 +#include <media/rc-core.h>
 +#include <mach/sunxi-smc.h>
-+#include <linux/init-input.h>
++#include <linux/pinctrl/consumer.h>
 +
 +#include <linux/clk/clk-sun8iw7.h>
 +#define IR0_BASE         (void __iomem *)(0xf1f02000)
@@ -133,13 +133,10 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +	spinlock_t      ir_lock;
 +	struct rc_dev   *rc;
 +	void __iomem    *base;
-+	int		fifo_size;
++	int             fifo_size;
 +	struct clk      *clk;
 +	struct clk      *apb_clk;
-+};
-+
-+static struct ir_config_info ir_info = {
-+	.input_type = IR_TYPE,
++	struct pinctrl  *pinctrl;
 +};
 +
 +static char ir_dev_name[] = "s_cir0";
@@ -191,15 +188,6 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +{
 +	int ret = 0;
 +	unsigned long tmp = 0;
-+	
-+	if (input_fetch_sysconfig_para(&(ir_info.input_type))) {
-+		pr_err("%s: ir_rx_fetch_sysconfig_para err.\n", __func__);
-+		return -1;
-+	}
-+	if (ir_info.ir_used == 0) {
-+		pr_err("*** ir_used set to 0 !\n");
-+		return -1;
-+	}
 +
 +	ir = kzalloc(sizeof(struct sunxi_ir), GFP_KERNEL);
 +	if (!ir)
@@ -280,9 +268,8 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +	
 +	/* pin config */
 +	ir->rc->dev.init_name = &ir_dev_name[0];
-+	ir_info.dev = &(ir->rc->dev);
-+	ret = input_init_platform_resource(&(ir_info.input_type));
-+	if (0 != ret) {
++	ir->pinctrl = devm_pinctrl_get_select_default(&ir->rc->dev);
++	if (IS_ERR_OR_NULL(ir->pinctrl)) {
 +		pr_err("%s: config ir rx pin err.\n", __func__);
 +		goto exit_free_dev;
 +	}
@@ -321,7 +308,7 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +	return 0;
 +
 +exit_free_pinctrl:
-+	input_free_platform_resource(&(ir_info.input_type));
++	devm_pinctrl_put(ir->pinctrl);
 +exit_free_dev:
 +	rc_free_device(ir->rc);
 +exit_clkdisable_clk:
@@ -351,7 +338,7 @@ diff -Nur a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
 +	
 +	free_irq(SUNXI_IRQ_R_CIR_RX, ir);
 +	
-+	input_free_platform_resource(&(ir_info.input_type));
++	devm_pinctrl_put(ir->pinctrl);
 +
 +	rc_unregister_device(ir->rc);
 +}
