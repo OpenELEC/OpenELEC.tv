@@ -2,4 +2,4 @@
     UBOOT_CONFIG="orangepi_pc_defconfig"
 
   # Board Configuration
-    FEXFILE="orange_pi_pc.fex"
+    FEXFILE="orange_pi_one.fex"

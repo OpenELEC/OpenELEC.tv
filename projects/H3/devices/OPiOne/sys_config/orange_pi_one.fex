@@ -401,13 +401,11 @@ ths_trip2_0 = 110
 ;cooler_table  cooler_count <=32
 ;----------------------------------------------------------------------------------
 [cooler_table]
-cooler_count = 6
-cooler0 = "1296000 4 4294967295 0"
-cooler1 = "1200000 4 4294967295 0"
-cooler2 = "1008000 4 4294967295 0"
-cooler3 =  "816000 4 4294967295 0"
-cooler4 =  "648000 4 4294967295 0"
-cooler5 =  "480000 1 4294967295 0"
+cooler_count = 4
+cooler0 = "1200000 4 4294967295 0"
+cooler1 = "1008000 4 4294967295 0"
+cooler2 = "816000 4 4294967295 0"
+cooler3 = "648000 1 4294967295 0"
 
 
 [nand0_para]
@@ -1092,29 +1090,18 @@ ir_tx               = port:PH07<2><default><default><default>
 ;
 ;----------------------------------------------------------------------------------
 [dvfs_table]
-pmuic_type = 2
+pmuic_type = 1
 pmu_gpio0 = port:PL06<1><1><2><1>
 pmu_level0 = 11300
 pmu_level1 = 1100
-max_freq = 1296000000
+;extremity_freq = 1296000000
+max_freq = 1200000000
 min_freq = 648000000
-LV_count = 8
-LV1_freq = 1296000000
-LV1_volt = 1340
-LV2_freq = 1200000000
-LV2_volt = 1320
-LV3_freq = 1008000000
-LV3_volt = 1200
-LV4_freq = 816000000
-LV4_volt = 1100
-LV5_freq = 648000000
-LV5_volt = 1040
-LV6_freq = 0
-LV6_volt = 1040
-LV7_freq = 0
-LV7_volt = 1040
-LV8_freq = 0
-LV8_volt = 1040
+LV_count = 2
+LV1_freq = 1200000000
+LV1_volt = 1300
+LV2_freq = 648000000
+LV2_volt = 1100
 
 [gpu_dvfs_table]
 
