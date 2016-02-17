@@ -44,6 +44,12 @@ make_target() {
 
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ download
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ untar
+
+  if [ "$PROJECT" = "H3" ]; then
+    make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C v4l/ Makefile.media
+    patch v4l/Makefile.media < $ROOT/packages/linux-drivers/media_build/Makefile.media.H3.patch
+  fi
+
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) allyesconfig
   make VER=$KERNEL_VER SRCDIR=$(kernel_path)
 }

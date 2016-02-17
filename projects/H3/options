@@ -131,3 +131,6 @@
 
   # build with installer (yes / no)
     INSTALLER_SUPPORT="no"
+
+  # additional drivers
+    ADDITIONAL_DRIVERS+=" media_build"
