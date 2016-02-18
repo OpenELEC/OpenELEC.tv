@@ -372,12 +372,12 @@ standby_led     = "gpio_pin_1"
 [ths_para]
 ths_used = 1
 ths_trip1_count = 6
-ths_trip1_0 = 80
-ths_trip1_1 = 85
-ths_trip1_2 = 95
-ths_trip1_3 = 95
-ths_trip1_4 = 100
-ths_trip1_5 = 105
+ths_trip1_0 = 70
+ths_trip1_1 = 80
+ths_trip1_2 = 85
+ths_trip1_3 = 90
+ths_trip1_4 = 95
+ths_trip1_5 = 100
 ths_trip1_6 = 0
 ths_trip1_7 = 0
 ths_trip1_0_min = 0
@@ -395,7 +395,7 @@ ths_trip1_5_max = 5
 ths_trip1_6_min = 0
 ths_trip1_6_max = 0
 ths_trip2_count = 1
-ths_trip2_0 = 110
+ths_trip2_0 = 105
 
 ;----------------------------------------------------------------------------------
 ;cooler_table  cooler_count <=32
@@ -1092,16 +1092,16 @@ ir_tx               = port:PH07<2><default><default><default>
 [dvfs_table]
 pmuic_type = 1
 pmu_gpio0 = port:PL06<1><1><2><1>
-pmu_level0 = 11300
-pmu_level1 = 1100
+pmu_level0 = 1270
+pmu_level1 = 1270
 ;extremity_freq = 1296000000
 max_freq = 1200000000
 min_freq = 648000000
 LV_count = 2
 LV1_freq = 1200000000
-LV1_volt = 1300
+LV1_volt = 1270
 LV2_freq = 648000000
-LV2_volt = 1100
+LV2_volt = 1270
 
 [gpu_dvfs_table]
 
