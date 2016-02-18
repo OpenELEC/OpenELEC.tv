@@ -196,6 +196,7 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     echo "image: copying files to part1..."
     cp $TARGET_IMG/$IMAGE_NAME.kernel "$OE_TMP/$KERNEL_NAME"
     cp $TARGET_IMG/$IMAGE_NAME.system "$OE_TMP/SYSTEM"
+    cp $RELEASE_DIR/target/*.md5 "$OE_TMP"
 
     if [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" ]; then
       cp "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" "$OE_TMP/u-boot.img"
