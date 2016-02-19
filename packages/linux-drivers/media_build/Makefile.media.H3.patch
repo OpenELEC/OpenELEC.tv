@@ -1,0 +1,30 @@
+--- Makefile.media.bak	2016-02-17 10:47:34.144172000 +0100
++++ Makefile.media	2016-02-17 11:00:46.015909999 +0100
+@@ -13,11 +13,6 @@
+ msp3400-objs	:=	msp3400-driver.o msp3400-kthreads.o
+ obj-$(CONFIG_VIDEO_MSP3400) += msp3400.o
+ 
+-# Including linux/drivers/media/i2c/smiapp/Makefile
+-smiapp-objs			+= smiapp-core.o smiapp-regs.o \
+-				   smiapp-quirk.o smiapp-limits.o
+-obj-$(CONFIG_VIDEO_SMIAPP)	+= smiapp.o
+-
+ # Including linux/drivers/media/i2c/cx25840/Makefile
+ cx25840-objs    := cx25840-core.o cx25840-audio.o cx25840-firmware.o \
+ 		   cx25840-vbi.o cx25840-ir.o
+@@ -467,7 +462,6 @@
+ 
+ # stand-alone IR receivers/transmitters
+ obj-$(CONFIG_RC_ATI_REMOTE) += ati_remote.o
+-obj-$(CONFIG_IR_HIX5HD2) += ir-hix5hd2.o
+ obj-$(CONFIG_IR_IMON) += imon.o
+ obj-$(CONFIG_IR_ITE_CIR) += ite-cir.o
+ obj-$(CONFIG_IR_MCEUSB) += mceusb.o
+@@ -483,7 +477,6 @@
+ obj-$(CONFIG_IR_IGUANA) += iguanair.o
+ obj-$(CONFIG_IR_TTUSBIR) += ttusbir.o
+ obj-$(CONFIG_RC_ST) += st_rc.o
+-obj-$(CONFIG_IR_SUNXI) += sunxi-cir.o
+ # Including linux/drivers/media/rc/img-ir/Makefile
+ img-ir-y			:= img-ir-core.o
+ img-ir-$(CONFIG_IR_IMG_RAW)	+= img-ir-raw.o
