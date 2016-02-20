@@ -222,8 +222,12 @@ fi
     SQUASHFS_COMPRESSION="gzip"
   fi
 
+  if [ "$SQUASHFS_COMPRESSION" = "lz4" ]; then
+    SQUASHFS_COMPRESSION_LEVEL="-Xhc"
+  fi
+
   echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT
-  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT
+  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION $SQUASHFS_COMPRESSION_LEVEL" >> $FAKEROOT_SCRIPT
 
 # run fakeroot
   $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT
