@@ -62,7 +62,7 @@ fi
 NSS_CONF_DIR="$PKG_BUILD/nss"
 
 GLIBC_EXCLUDE_BIN="catchsegv gencat getconf iconv iconvconfig ldconfig lddlibc4"
-GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN localedef makedb mtrace pcprofiledump"
+GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN makedb mtrace pcprofiledump"
 GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN pldd rpcgen sln sotruss sprof tzselect"
 GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN xtrace zdump zic"
 
@@ -138,14 +138,18 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/*.map
   rm -rf $INSTALL/var
 
-# remove locales and charmaps
-  rm -rf $INSTALL/usr/share/i18n/charmaps
-
   if [ ! "$GLIBC_LOCALES" = yes ]; then
+    # remove locales and charmaps
+    rm -rf $INSTALL/usr/share/i18n/charmaps
     rm -rf $INSTALL/usr/share/i18n/locales
 
     mkdir -p $INSTALL/usr/share/i18n/locales
-      cp -PR $ROOT/$PKG_BUILD/localedata/locales/POSIX $INSTALL/usr/share/i18n/locales
+    cp -PR $ROOT/$PKG_BUILD/localedata/locales/POSIX $INSTALL/usr/share/i18n/locales
+    cp -PR $ROOT/$PKG_BUILD/localedata/locales/* $INSTALL/usr/share/i18n/locales
+  else
+    # prepare locale environment, actual archive generation has to be done on target 
+    cp $PKG_DIR/scripts/locale-gen-archive $INSTALL/usr/bin
+    ln -s /storage/.config/locale $INSTALL/usr/lib/
   fi
 
 # create default configs
@@ -178,4 +182,10 @@ makeinstall_init() {
     if [ "$TARGET_ARCH" = "arm" -a "$TARGET_FLOAT" = "hard" ]; then
       ln -sf ld.so $INSTALL/lib/ld-linux.so.3
     fi
+}
+
+post_install() {
+  if [ "$GLIBC_LOCALES" = yes ]; then
+    enable_service locale.service
+  fi
 }

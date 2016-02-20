@@ -336,7 +336,9 @@ if [ ! -f $STAMP ]; then
             rm -rf $i/share/doc
             rm -rf $i/share/gtk-doc
             rm -rf $i/share/info
-            rm -rf $i/share/locale
+            if [ ! "$GLIBC_LOCALES" = yes ]; then
+              rm -rf $i/share/locale
+            fi
             rm -rf $i/share/man
             rm -rf $i/share/pkgconfig
             find $i -name "*.la" -exec rm -f "{}" ";" 2>/dev/null || true

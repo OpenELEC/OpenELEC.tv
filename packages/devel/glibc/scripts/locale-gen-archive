@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# generate locale archive containing for some common languages
+# TODO: make configurable
+mkdir -p /storage/.config/locale
+echo "This directory contains the locale archive, please do not delete" > /storage/.config/locale/README
+
+localedef --prefix=$INSTALL -v -c -i de_DE -f UTF-8 de_DE.UTF-8
+localedef --prefix=$INSTALL -v -c -i en_US -f UTF-8 en_US.UTF-8
+localedef --prefix=$INSTALL -v -c -i es_ES -f UTF-8 es_ES.UTF-8
+localedef --prefix=$INSTALL -v -c -i fr_FR -f UTF-8 fr_FR.UTF-8
+localedef --prefix=$INSTALL -v -c -i ru_RU -f UTF-8 ru_RU.UTF-8
