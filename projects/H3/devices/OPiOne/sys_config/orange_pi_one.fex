@@ -1,13 +1,6 @@
-;H3 dolphin-p1 board application
-;H3 dolphin-p1 board application
-;---------------------------------------------------------------------------------------------------------
-; 说明： 脚本中的字符串区分大小写，用户可以修改"="后面的数值，但是不要修改前面的字符串
-; 描述gpio的形式：Port:端口+组内序号<功能分配><内部电阻状态><驱动能力><输出电平状态>
-;---------------------------------------------------------------------------------------------------------
-
 [product]
 version = "100"
-machine = "orangepi-plus"
+machine = "orangepi-one"
 
 ;---------------------------------------------------------------------------------------------------------
 ; eraseflag - 1 erase data partition, 0 - do not erase data partition
@@ -27,23 +20,6 @@ next_work = 2
 #boot_clock   	= 1008
 boot_clock   	= 1200
 storage_type    = -1
-
-;---------------------------------------------------------------------------------
-; uboot key detect enable
-; 当keyen_flag = 1 时，支持按键检测
-; 当keyen_flag = 0 时，不支持
-;---------------------------------------------------------------------------------
-[key_detect_en]
-keyen_flag = 0
-
-;---------------------------------------------------------------------------------
-;"一键进烧写功能"的按键值配置，按住位于min~max范围内的按键都可以强制进烧写
-; fel_key_max用于配置按键的最大键值
-; fel_key_min用于配置按键的最小键值
-;---------------------------------------------------------------------------------
-[fel_key]
-fel_key_max            =07
-fel_key_min            =02
 
 ;----------------------------------------------------------------------------------
 ;card boot
@@ -80,28 +56,6 @@ pmukey_num = 3
 led_power = 0
 led_state = 0
 
-;-------------------------------------------------------------------------------
-; 	boot阶段上电初始化GPIO
-;		used		:模块使能端     置1：开启模块   置0：关闭模块
-;		gpiox ：上电初始化gpio （名称自定，但不能重复，并且GPIO允许可以多个）
-;		PH06  : 系统显示LED GPIO
-;-------------------------------------------------------------------------------
-[boot_init_gpio]
-used	=	1
-gpio0	=  port:PA15<1><default><default><1>
-gpio1	=  port:PG11<1><default><default><1>
-
-;----------------------------------------------------------------------------------
-;	used: 模块使能端     1：开启模块   0：关闭模块
-;	mode: 模式选择		 1：一键进入OTA升级		2：一键恢复（通过sysrecovery分区来恢复）  其他值：无效
-;	recovery_key ： 按键配置  （例如：recovery_key= port:PH16<0><default>）
-;----------------------------------------------------------------------------------
-[recovery_para]
-used =	1
-mode =	2
-recovery_key = port:PL04<0><default><default><default>
-
-
 ;---------------------------------------------------------------------------------------------------------
 ; if 1 == standby_mode, then support super standby;
 ; else, support normal standby.
@@ -109,6 +63,7 @@ recovery_key = port:PL04<0><default><default><default>
 [pm_para]
 standby_mode		= 1
 
+; THIS PARAMETERS SEEMS TO BE USED ONLY FOR TESTING
 [card0_boot_para]
 card_ctrl       = 0
 card_high_speed = 1
@@ -119,23 +74,6 @@ sdc_clk         = port:PF02<2><1><2><default>
 sdc_cmd         = port:PF03<2><1><2><default>
 sdc_d3          = port:PF04<2><1><2><default>
 sdc_d2          = port:PF05<2><1><2><default>
-
-[card2_boot_para]
-card_ctrl       = 2
-card_high_speed = 1
-card_line       = 8
-sdc_cmd         = port:PC06<3><1><2><default>
-sdc_clk         = port:PC05<3><1><2><default>
-sdc_d0          = port:PC08<3><1><2><default>
-sdc_d1          = port:PC09<3><1><2><default>
-sdc_d2          = port:PC10<3><1><2><default>
-sdc_d3          = port:PC11<3><1><2><default>
-sdc_d4          = port:PC12<3><1><2><default>
-sdc_d5          = port:PC13<3><1><2><default>
-sdc_d6          = port:PC14<3><1><2><default>
-sdc_d7          = port:PC15<3><1><2><default>
-sdc_2xmode   	= 1
-sdc_ddrmode		= 1
 
 [twi_para]
 twi_port        = 0
@@ -410,7 +348,6 @@ cooler3 = "648000 1 4294967295 0"
 
 [nand0_para]
 nand_support_2ch    = 0
-
 nand0_used          = 0
 nand0_we            = port:PC00<2><default><default><default>
 nand0_ale           = port:PC01<2><default><default><default>
@@ -429,28 +366,6 @@ nand0_d5            = port:PC13<2><default><default><default>
 nand0_d6            = port:PC14<2><default><default><default>
 nand0_d7            = port:PC15<2><default><default><default>
 nand0_ndqs          = port:PC16<2><default><default><default>
-
-
-;-----------------------------------------------------------------
-;auto_hpd    -   1:need hotplud for hdmi/tv;  0:don't hotplud for lcd
-;output_type -   0:none; 1:lcd; 2:tv; 4:hdmi; 8:vga (as default config in homlet)
-;hdmi_channel-   the display channel for hdmi (as default config in homlet)
-;cvbs_channel-   the display channel for cvbs (as default config in homlet)
-;hdmi_mode   -   as default config for output of hdmi in homlet
-;cvbs_mode   -   as default config for output of tv in homlet. 11:PAL; 14:NTSC
-;check the definition(of hdmi/cvbs_mode) of disp_tv_mode in sunxi_display2.h
-;hdmi_mode_check - disable/enable the function of checking hdmi mode, 0 is disable, 1 is enable
-;-----------------------------------------------------------------
-[boot_disp]
-advert_disp     = 0
-auto_hpd        = 1
-output_type     = 4
-hdmi_channel    = 0
-hdmi_mode       = 4
-cvbs_channel    = 1
-cvbs_mode       = 11
-output_full     = 1
-hdmi_mode_check = 1
 
 ;----------------------------------------------------------------------------------
 ;disp init configuration
@@ -645,20 +560,6 @@ vip_dev1_pwdn            =
 vip_dev1_flash_en        =
 vip_dev1_flash_mode      =
 vip_dev1_af_pwdn         =
-
-
-;--------------------------------------------------------------------------------
-;tv configuration
-;
-;--------------------------------------------------------------------------------
-[tvout_para]
-tvout_used          =
-tvout_channel_num   =
-tv_en               =
-
-[tvin_para]
-tvin_used           =
-tvin_channel_num    =
 
 ;----------------------------------------------------------------------------------
 ;DE-Interlace configuration
@@ -1225,7 +1126,6 @@ key2_vol				  = 444
 key3_vol				  =	666
 key4_vol				  =	857
 key5_vol				  = 2000
-
 
 ;----------------------------------------------------------------------------------
 ;display seven segment para
