@@ -67,7 +67,12 @@ makeinstall_target() {
     cp tools/mkimage $ROOT/$TOOLCHAIN/bin
   fi
 
-  BOOT_CFG="$PROJECT_DIR/$PROJECT/devices/$DEVICE/u-boot/boot.cfg"
+  if [ -n "$DEVICE" -a -r "$PROJECT_DIR/$PROJECT/devices/$DEVICE/bootloader/boot.cfg" ]; then
+    BOOT_CFG="$PROJECT_DIR/$PROJECT/devices/$DEVICE/bootloader/boot.cfg"
+  else
+    BOOT_CFG="$PROJECT_DIR/$PROJECT/bootloader/boot.cfg"
+  fi
+  
   if [ -r "$BOOT_CFG" ]; then
     cp $BOOT_CFG boot.cfg
     mkimage -A "$TARGET_ARCH" \
