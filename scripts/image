@@ -28,6 +28,8 @@ $SCRIPTS/build squashfs:host
 $SCRIPTS/build dosfstools:host
 $SCRIPTS/build fakeroot:host
 $SCRIPTS/build kmod:host
+$SCRIPTS/build mtools:host
+$SCRIPTS/build populatefs:host
 
 BUILD_DATE=`date +%Y%m%d%H%M%S`
 
@@ -182,6 +184,28 @@ fi
     done
   fi
 
+# copy vendor related files to filesystem
+  if [ -d "$HOME/.openelec/filesystem" ]; then
+    cp -PR $HOME/.openelec/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $HOME/.openelec/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
+  fi
+
+# copy vendor project related files to filesystem
+  if [ -d "$HOME/.openelec/projects/$PROJECT/filesystem" ]; then
+    cp -PR $HOME/.openelec/projects/$PROJECT/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $HOME/.openelec/projects/$PROJECT/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
+  fi
+  
 # copy board related files to filesystem
   if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem" ]; then
     cp -PR $PROJECT_DIR/$PROJECT/devices/$DEVICE/filesystem/* $INSTALL
@@ -328,10 +352,8 @@ fi
           fi
         fi
 
-        echo "mkimage: boo. now root access (sudo) is required..."
-        echo "mkimage: see scripts/image and scripts/mkimage if you dont trust us :)"
         # variables used in image script must be passed
-        sudo env \
+        env \
           PATH="$PATH:/sbin" \
           ROOT="$ROOT" \
           TOOLCHAIN="$TOOLCHAIN" \
