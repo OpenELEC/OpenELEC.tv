@@ -1,210 +1,35 @@
-Patch for generation of OrangePI 2 kernel with gcc-5.2.1
+From da8f70efb66866f929594650943b3425d2e5e858 Mon Sep 17 00:00:00 2001
+From: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+Date: Mon, 7 Dec 2015 11:37:37 +0200
+Subject: [PATCH] Fix compilation problems with more modern version of GCC
 
---- a/arch/arm/kernel/perf_event.c
-+++ b/arch/arm/kernel/perf_event.c
-@@ -702,8 +702,8 @@
- 
-     return ret;
- }
--static void __init cpu_pmu_init(struct arm_pmu *armpmu);
--static int __devinit armpmu_device_probe(struct platform_device *pdev)
-+static void cpu_pmu_init(struct arm_pmu *armpmu);
-+static int armpmu_device_probe(struct platform_device *pdev)
- {
-     struct arm_pmu *pmu;
-     int cpu;
-@@ -750,7 +750,7 @@
-  * UNKNOWN at reset, the PMU must be explicitly reset to avoid reading
-  * junk values out of them.
-  */
--static int __cpuinit pmu_cpu_notify(struct notifier_block *b,
-+static int pmu_cpu_notify(struct notifier_block *b,
- 					unsigned long action, void *hcpu)
- {
-     struct arm_pmu *pmu = per_cpu(cpu_pmu, (long)hcpu);
-@@ -816,7 +816,7 @@
- 	return &__get_cpu_var(cpu_hw_events);
- }
- 
--static void __init cpu_pmu_init(struct arm_pmu *armpmu)
-+static void cpu_pmu_init(struct arm_pmu *armpmu)
- {
- 	int cpu;
- 	for_each_cpu_mask(cpu, armpmu->valid_cpus) {
---- a/arch/arm/kernel/perf_event_v7.c
-+++ b/arch/arm/kernel/perf_event_v7.c
-@@ -1274,7 +1274,7 @@
-        cpu_pmu->max_period     = (1LLU << 32) - 1;
-  };
- 
--static u32 __init armv7_read_num_pmnc_events(void)
-+static u32 armv7_read_num_pmnc_events(void)
- {
- 	u32 nb_cnt;
- 
-@@ -1285,7 +1285,7 @@
- 	return nb_cnt + 1;
- }
- 
--static int __devinit armv7_a8_pmu_init(struct arm_pmu *cpu_pmu)
-+static int armv7_a8_pmu_init(struct arm_pmu *cpu_pmu)
- {
-        armv7pmu_init(cpu_pmu);
-        cpu_pmu->id             = ARM_PERF_PMU_ID_CA8;
-@@ -1295,7 +1295,7 @@
-        return 0;
- }
- 
--static int __devinit armv7_a9_pmu_init(struct arm_pmu *cpu_pmu)
-+static int armv7_a9_pmu_init(struct arm_pmu *cpu_pmu)
- {
-        armv7pmu_init(cpu_pmu);
-        cpu_pmu->id             = ARM_PERF_PMU_ID_CA9;
-@@ -1305,7 +1305,7 @@
-        return 0;
- }
- 
--static int __devinit armv7_a5_pmu_init(struct arm_pmu *cpu_pmu)
-+static int armv7_a5_pmu_init(struct arm_pmu *cpu_pmu)
- {
-        armv7pmu_init(cpu_pmu);
-        cpu_pmu->id             = ARM_PERF_PMU_ID_CA5;
-@@ -1315,7 +1315,7 @@
-        return 0;
- }
- 
--static int __devinit armv7_a15_pmu_init(struct arm_pmu *cpu_pmu)
-+static int armv7_a15_pmu_init(struct arm_pmu *cpu_pmu)
- {
-        armv7pmu_init(cpu_pmu);
-        cpu_pmu->id             = ARM_PERF_PMU_ID_CA15;
-@@ -1326,7 +1326,7 @@
-        return 0;
-  }
- 
--static int __devinit armv7_a7_pmu_init(struct arm_pmu *cpu_pmu)
-+static int armv7_a7_pmu_init(struct arm_pmu *cpu_pmu)
- {
-        armv7pmu_init(cpu_pmu);
-        cpu_pmu->id             = ARM_PERF_PMU_ID_CA7;
---- a/arch/arm/mach-sunxi/include/mach/sunxi-chip.h
-+++ b/arch/arm/mach-sunxi/include/mach/sunxi-chip.h
-@@ -64,6 +64,6 @@
- 
- /* sunxi platform init functions */
- void __init sunxi_soc_ver_init(void);
--void __init sunxi_chip_id_init(void);
-+void sunxi_chip_id_init(void);
- 
- #endif  /* __SUNXI_MACH_SUNXI_CHIP_H */
---- a/arch/arm/mach-sunxi/sunxi-chip.c
-+++ b/arch/arm/mach-sunxi/sunxi-chip.c
-@@ -251,7 +251,7 @@
- 	pr_debug("Init chip version:%x\n", sunxi_soc_ver);
- }
- 
--void __init sunxi_chip_id_init(void)
-+void sunxi_chip_id_init(void)
- {
- 	/* PMU chip id init */
- #if (defined CONFIG_SUNXI_ARISC) && (defined CONFIG_AW_AXP)
---- a/arch/arm/mach-sunxi/sunxi-platsmp.c
-+++ b/arch/arm/mach-sunxi/sunxi-platsmp.c
-@@ -65,7 +65,7 @@
- /* boot entry for each cpu */
- extern void *cpus_boot_entry[NR_CPUS];
- extern void secondary_startup(void);
--void sunxi_set_cpus_boot_entry(int cpu, void *entry)
-+void __cpuinit sunxi_set_cpus_boot_entry(int cpu, void *entry)
- {
- 	if(cpu < NR_CPUS) {
- 		cpus_boot_entry[cpu] = (void *)(virt_to_phys(entry));
-@@ -78,7 +78,7 @@
- /*
-  * Setup the set of possible CPUs (via set_cpu_possible)
-  */
--void sunxi_smp_init_cpus(void)
-+void __init sunxi_smp_init_cpus(void)
- {
- 	unsigned int i, ncores;
- 
-@@ -124,7 +124,7 @@
- #endif
- }
- 
--static void sunxi_smp_prepare_cpus(unsigned int max_cpus)
-+static __cpuinit void sunxi_smp_prepare_cpus(unsigned int max_cpus)
- {
- 	pr_info("[%s] enter\n", __func__);
- 	sunxi_set_secondary_entry((void *)(virt_to_phys(sunxi_secondary_startup)));
-@@ -133,7 +133,7 @@
- /*
-  * Perform platform specific initialisation of the specified CPU.
-  */
--void sunxi_smp_secondary_init(unsigned int cpu)
-+void __cpuinit sunxi_smp_secondary_init(unsigned int cpu)
- {
- 	/*
- 	 * if any interrupts are already enabled for the primary
-@@ -153,7 +153,7 @@
-  * Boot a secondary CPU, and assign it the specified idle task.
-  * This also gives us the initial stack to use for this CPU.
-  */
--int  sunxi_smp_boot_secondary(unsigned int cpu, struct task_struct *idle)
-+int __cpuinit sunxi_smp_boot_secondary(unsigned int cpu, struct task_struct *idle)
- {
- 	pr_debug("[%s] enter\n", __func__);
- 	spin_lock(&boot_lock);
+Now the kernel can be compiled at least with GCC 4.7
+
+Signed-off-by: Siarhei Siamashka <siarhei.siamashka@gmail.com>
+---
+ arch/arm/mach-sunxi/power/brom/Makefile | 2 +-
+ arch/arm/mm/dma-mapping.c               | 2 +-
+ drivers/gpu/ion/ion_cma_heap.c          | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/mach-sunxi/power/brom/Makefile b/arch/arm/mach-sunxi/power/brom/Makefile
+index 5bce9ee..b7b36d8 100755
 --- a/arch/arm/mach-sunxi/power/brom/Makefile
 +++ b/arch/arm/mach-sunxi/power/brom/Makefile
-@@ -3,9 +3,14 @@
- always  := resumes.code
- targets := resumes.elf
+@@ -5,7 +5,7 @@ targets := resumes.elf
  
-+hostprogs-y	:= mksunxichecksum
-+#always		+= $(hostprogs-y)
-+
  #use "-Os" flags.
  #Don't use "-O2" flags.
 -KBUILD_CFLAGS := -g -c -nostdlib -march=armv7-a -marm -fno-unwind-tables -fno-asynchronous-unwind-tables -mlittle-endian -O2 --min_array_alignment=4 --no_unaligned_access
-+KBUILD_CFLAGS := -g -c -nostdlib -march=armv7-a -marm \
-+	-fno-unwind-tables -fno-asynchronous-unwind-tables -mlittle-endian -Os
-+#	--min_array_alignment=4 --no_unaligned_acces
++KBUILD_CFLAGS := -g -c -nostdlib -march=armv7-a -marm -fno-unwind-tables -fno-asynchronous-unwind-tables -mlittle-endian -O2
  
  #Include the cur dir.
  KBUILD_CPPFLAGS += -I.
-@@ -22,21 +27,22 @@
- 
- resumes-y := $(addprefix $(obj)/,$(resumes-y))
- 
--$(obj)/resumes.code: $(obj)/resumes.bin
--	$(Q)$(obj)/gen_check_code $(obj)/resumes.bin $(obj)/resumes.code
-+$(obj)/resumes.code: $(obj)/resumes.bin $(obj)/mksunxichecksum
-+	$(obj)/mksunxichecksum $(obj)/resumes.bin $(obj)/resumes.code
-+#	$(Q)$(obj)/gen_check_code $(obj)/resumes.bin $(obj)/resumes.code
- 
- $(obj)/resumes.bin: $(obj)/resumes.elf FORCE
- 	$(Q)$(CROSS_COMPILE)objcopy -O binary $(obj)/resumes.elf $(obj)/resumes.bin
- 
- ifneq ($(strip $(CONFIG_ARCH_SUN9I)),)
--$(obj)/resumes.elf: $(obj)/sun9i_brom_scatter.scat $(resumes-y)
--	$(Q)$(CROSS_COMPILE)ld -T $(obj)/sun9i_brom_scatter.scat  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
-+$(obj)/resumes.elf: $(srctree)/$(src)/sun9i_brom_scatter.scat $(resumes-y)
-+	$(Q)$(CROSS_COMPILE)ld -T $(srctree)/$(src)/sun9i_brom_scatter.scat -EL $(resumes-y) -o $(obj)/resumes.elf -Map $(obj)/resumes.map
- 	$(Q)$(CROSS_COMPILE)objdump -D $(obj)/resumes.elf > $(obj)/resumes.lst
- endif
- 
- ifneq ($(strip $(CONFIG_ARCH_SUN8I)),)
--$(obj)/resumes.elf: $(obj)/sun8i_brom_scatter.scat $(resumes-y)
--	$(Q)$(CROSS_COMPILE)ld -T $(obj)/sun8i_brom_scatter.scat  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
-+$(obj)/resumes.elf: $(srctree)/$(src)/sun8i_brom_scatter.scat $(resumes-y)
-+	$(Q)$(CROSS_COMPILE)ld -T $(srctree)/$(src)/sun8i_brom_scatter.scat -EL $(resumes-y) -o $(obj)/resumes.elf -Map $(obj)/resumes.map
- 	$(Q)$(CROSS_COMPILE)objdump -D $(obj)/resumes.elf > $(obj)/resumes.lst
- endif
- 
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 5e2530c..ee9a374 100755
 --- a/arch/arm/mm/dma-mapping.c
 +++ b/arch/arm/mm/dma-mapping.c
-@@ -576,7 +576,7 @@
+@@ -576,7 +576,7 @@ static void __free_from_contiguous(struct device *dev, struct page *page,
  	dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
  }
  
@@ -213,78 +38,11 @@ Patch for generation of OrangePI 2 kernel with gcc-5.2.1
  {
  	prot = dma_get_attr(DMA_ATTR_WRITE_COMBINE, attrs) ?
  			    pgprot_writecombine(prot) :
---- a/drivers/arisc/arisc.c
-+++ b/drivers/arisc/arisc.c
-@@ -21,6 +21,7 @@
-  */
- 
- #include "arisc_i.h"
-+#include <linux/init.h>
- #include <mach/sunxi-chip.h>
- #include <asm/firmware.h>
- #include <linux/dma-mapping.h>
---- a/drivers/bluetooth/rtl_bluesleep.c
-+++ b/drivers/bluetooth/rtl_bluesleep.c
-@@ -33,6 +33,7 @@
- #include <linux/module.h>       /* kernel module definitions */
- #include <linux/init.h>
- #include <linux/interrupt.h>
-+#include <linux/proc_fs.h>
- #include <linux/platform_device.h>
- #include <linux/serial_core.h>
- 
---- a/drivers/crypto/sunxi/sunxi_ss.c
-+++ b/drivers/crypto/sunxi/sunxi_ss.c
-@@ -720,7 +720,7 @@
- };
- 
- /* Requeset the resource: IRQ, mem */
--static int __devinit sunxi_ss_res_request(struct platform_device *pdev)
-+static int sunxi_ss_res_request(struct platform_device *pdev)
- {
- 	int irq = 0;
- 	int ret = 0;
-@@ -784,7 +784,7 @@
- }
- 
- /* Release the resource: IRQ, mem */
--static int __devexit sunxi_ss_res_release(sunxi_ss_t *sss)
-+static int sunxi_ss_res_release(sunxi_ss_t *sss)
- {
- #ifdef SS_IDMA_ENABLE
- 	int i;
-@@ -977,7 +977,7 @@
- 	device_remove_file(&_pdev->dev, &sunxi_ss_status_attr);
- }
- 
--static int __devinit sunxi_ss_probe(struct platform_device *pdev)
-+static int sunxi_ss_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	sunxi_ss_t *sss = NULL;
-@@ -1038,7 +1038,7 @@
- 	return ret;
- }
- 
--static int __devexit sunxi_ss_remove(struct platform_device *pdev)
-+static int sunxi_ss_remove(struct platform_device *pdev)
- {
- 	sunxi_ss_t *sss = platform_get_drvdata(pdev);
- 
---- a/drivers/crypto/sunxi/v3/sunxi_ss_proc.c
-+++ b/drivers/crypto/sunxi/v3/sunxi_ss_proc.c
-@@ -12,7 +12,7 @@
- 
- #include <linux/spinlock.h>
- #include <linux/platform_device.h>
--#include <asm/highmem.h>
-+#include <linux/highmem.h>
- #include <crypto/internal/hash.h>
- #include <crypto/internal/rng.h>
- #include <crypto/des.h>
+diff --git a/drivers/gpu/ion/ion_cma_heap.c b/drivers/gpu/ion/ion_cma_heap.c
+index 86612c0..2e95a9d 100755
 --- a/drivers/gpu/ion/ion_cma_heap.c
 +++ b/drivers/gpu/ion/ion_cma_heap.c
-@@ -48,7 +48,7 @@
+@@ -48,7 +48,7 @@ struct ion_cma_buffer_info {
  struct page *dma_alloc_from_contiguous(struct device *dev,
  				int count, unsigned int align);
  void __dma_clear_buffer(struct page *page, size_t size);
@@ -293,47 +51,30 @@ Patch for generation of OrangePI 2 kernel with gcc-5.2.1
  void *__dma_alloc_remap(struct page *page, size_t size, gfp_t gfp,
  				pgprot_t prot, const void *caller);
  void __dma_remap(struct page *page, size_t size, pgprot_t prot);
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -104,7 +104,7 @@
- }
- EXPORT_SYMBOL_GPL(hwmon_device_unregister);
- 
--static void __init hwmon_pci_quirks(void)
-+static void hwmon_pci_quirks(void)
- {
- #if defined CONFIG_X86 && defined CONFIG_PCI
- 	struct pci_dev *sb;
---- a/drivers/media/video/sunxi-tsc/tscdrv.c
-+++ b/drivers/media/video/sunxi-tsc/tscdrv.c
-@@ -595,7 +595,7 @@
-     return ret;
- }
- 
--static void __exit tscdev_exit(void)
-+static void tscdev_exit(void)
- {
-     dev_t dev;
- 
-@@ -642,13 +642,13 @@
- 
- #endif
- 
--static int __devexit sunxi_tsc_remove(struct platform_device *pdev)
-+static int sunxi_tsc_remove(struct platform_device *pdev)
- {
- 	tscdev_exit();
- 	return 0;
- }
- 
--static int __devinit sunxi_tsc_probe(struct platform_device *pdev)
-+static int sunxi_tsc_probe(struct platform_device *pdev)
- {
- 		tscdev_init();
- 		return 0;
---- a/drivers/net/wireless/rtl8189es/include/ieee80211.h
-+++ b/drivers/net/wireless/rtl8189es/include/ieee80211.h
-@@ -1314,18 +1314,18 @@
+From acdcb2a675ed117c97e321ddf3a4e077994b1e43 Mon Sep 17 00:00:00 2001
+From: Trevor Woerner <twoerner@gmail.com>
+Date: Thu, 24 Sep 2015 17:07:26 -0400
+Subject: [PATCH] gcc5 fixes
+
+gcc5 is pickier about inline functions defined in headers.
+
+Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+
+Adjusted to this source tree.
+
+Signed-off-by: Yann Dirson <ydirson@o-computers.com>
+---
+ drivers/net/wireless/rtl8188eu/include/ieee80211.h | 6 +++---
+ drivers/net/wireless/rtl8189es/include/ieee80211.h | 6 +++---
+ drivers/net/wireless/rtl8723bs/include/ieee80211.h | 6 +++---
+ drivers/staging/rtl8712/ieee80211.h                | 4 ++--
+ 4 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/wireless/rtl8188eu/include/ieee80211.h b/drivers/net/wireless/rtl8188eu/include/ieee80211.h
+index fc293c4..0898cd4 100755
+--- a/drivers/net/wireless/rtl8188eu/include/ieee80211.h
++++ b/drivers/net/wireless/rtl8188eu/include/ieee80211.h
+@@ -1314,18 +1314,18 @@ enum ieee80211_state {
  (((Addr[2]) & 0xff) == 0xff) && (((Addr[3]) & 0xff) == 0xff) && (((Addr[4]) & 0xff) == 0xff) && \
  (((Addr[5]) & 0xff) == 0xff))
  #else
@@ -355,198 +96,63 @@ Patch for generation of OrangePI 2 kernel with gcc-5.2.1
  {
  	return ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) &&   \
  		(addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00));
---- a/drivers/usb/sunxi_usb/udc/sunxi_udc.c
-+++ b/drivers/usb/sunxi_usb/udc/sunxi_udc.c
-@@ -3113,7 +3113,7 @@
- 	return 0;
- }
- #endif
--static int __init sunxi_udc_probe(struct platform_device *pdev)
-+static int sunxi_udc_probe(struct platform_device *pdev)
+diff --git a/drivers/net/wireless/rtl8189es/include/ieee80211.h b/drivers/net/wireless/rtl8189es/include/ieee80211.h
+index fc293c4..0898cd4 100755
+--- a/drivers/net/wireless/rtl8189es/include/ieee80211.h
++++ b/drivers/net/wireless/rtl8189es/include/ieee80211.h
+@@ -1314,18 +1314,18 @@ enum ieee80211_state {
+ (((Addr[2]) & 0xff) == 0xff) && (((Addr[3]) & 0xff) == 0xff) && (((Addr[4]) & 0xff) == 0xff) && \
+ (((Addr[5]) & 0xff) == 0xff))
+ #else
+-extern __inline int is_multicast_mac_addr(const u8 *addr)
++static __inline int is_multicast_mac_addr(const u8 *addr)
  {
- #ifdef  CONFIG_USB_SUNXI_USB0_OTG
- #if defined (CONFIG_ARCH_SUN8IW6) || defined (CONFIG_ARCH_SUN8IW7) || defined (CONFIG_ARCH_SUN8IW8)
---- a/drivers/video/sunxi/disp2/hdmi/dev_hdmi.c
-+++ b/drivers/video/sunxi/disp2/hdmi/dev_hdmi.c
-@@ -148,7 +148,7 @@
- 
- static DEVICE_ATTR(edid, S_IRUGO|S_IWUSR|S_IWGRP,hdmi_edid_show, hdmi_edid_store);
- 
--static int __init hdmi_probe(struct platform_device *pdev)
-+static int hdmi_probe(struct platform_device *pdev)
- {
- 	__inf("hdmi_probe call\n");
- 	memset(&ghdmi, 0, sizeof(hdmi_info_t));
---- a/drivers/video/sunxi/disp2/tv/dev_tv.c
-+++ b/drivers/video/sunxi/disp2/tv/dev_tv.c
-@@ -30,7 +30,7 @@
- 
- 
- 
--static int __init tv_probe(struct platform_device *pdev)
-+static int tv_probe(struct platform_device *pdev)
- {
- 	int ret;
- 	memset(&g_tv_info, 0, sizeof(struct tv_info_t));
---- a/sound/soc/sunxi/audiocodec/sun8iw7_sndcodec.c
-+++ b/sound/soc/sunxi/audiocodec/sun8iw7_sndcodec.c
-@@ -1702,7 +1702,7 @@
- 	.attrs  = audio_debug_attrs,
- };
- 
--static int __init sndpcm_codec_probe(struct platform_device *pdev)
-+static int sndpcm_codec_probe(struct platform_device *pdev)
- {
- 	int err = -1;
- 	int req_status;
-@@ -1776,7 +1776,7 @@
- 	return 0;
+         return ((addr[0] != 0xff) && (0x01 & addr[0]));
  }
  
--static int __exit sndpcm_codec_remove(struct platform_device *pdev)
-+static int sndpcm_codec_remove(struct platform_device *pdev)
+-extern __inline int is_broadcast_mac_addr(const u8 *addr)
++static __inline int is_broadcast_mac_addr(const u8 *addr)
  {
- 	if ((NULL == codec_moduleclk)||(IS_ERR(codec_moduleclk))) {
- 		pr_err("codec_moduleclk handle is invaled, just return\n");
---- a/sound/soc/sunxi/audiocodec/sunxi_codecdma.c
-+++ b/sound/soc/sunxi/audiocodec/sunxi_codecdma.c
-@@ -314,12 +314,12 @@
- 	.pcm_free	= sunxi_pcm_free_dma_buffers,
- };
- 
--static int __init sunxi_codec_pcm_probe(struct platform_device *pdev)
-+static int sunxi_codec_pcm_probe(struct platform_device *pdev)
- {
- 	return snd_soc_register_platform(&pdev->dev, &sunxi_soc_platform);
+ 	return ((addr[0] == 0xff) && (addr[1] == 0xff) && (addr[2] == 0xff) &&   \
+ 		(addr[3] == 0xff) && (addr[4] == 0xff) && (addr[5] == 0xff));
  }
  
--static int __exit sunxi_codec_pcm_remove(struct platform_device *pdev)
-+static int sunxi_codec_pcm_remove(struct platform_device *pdev)
+-extern __inline int is_zero_mac_addr(const u8 *addr)
++static __inline int is_zero_mac_addr(const u8 *addr)
  {
- 	snd_soc_unregister_platform(&pdev->dev);
- 	return 0;
---- a/sound/soc/sunxi/audiocodec/sunxi_codec.c
-+++ b/sound/soc/sunxi/audiocodec/sunxi_codec.c
-@@ -491,7 +491,7 @@
- 	#endif
- };
- 
--static int __init sunxi_pcm_dev_probe(struct platform_device *pdev)
-+static int sunxi_pcm_dev_probe(struct platform_device *pdev)
+ 	return ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) &&   \
+ 		(addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00));
+diff --git a/drivers/net/wireless/rtl8723bs/include/ieee80211.h b/drivers/net/wireless/rtl8723bs/include/ieee80211.h
+index fc293c4..0898cd4 100755
+--- a/drivers/net/wireless/rtl8723bs/include/ieee80211.h
++++ b/drivers/net/wireless/rtl8723bs/include/ieee80211.h
+@@ -1314,18 +1314,18 @@ enum ieee80211_state {
+ (((Addr[2]) & 0xff) == 0xff) && (((Addr[3]) & 0xff) == 0xff) && (((Addr[4]) & 0xff) == 0xff) && \
+ (((Addr[5]) & 0xff) == 0xff))
+ #else
+-extern __inline int is_multicast_mac_addr(const u8 *addr)
++static __inline int is_multicast_mac_addr(const u8 *addr)
  {
- 	int err = -1;
- 
-@@ -509,7 +509,7 @@
- 	return 0;
+         return ((addr[0] != 0xff) && (0x01 & addr[0]));
  }
  
--static int __exit sunxi_pcm_dev_remove(struct platform_device *pdev)
-+static int sunxi_pcm_dev_remove(struct platform_device *pdev)
+-extern __inline int is_broadcast_mac_addr(const u8 *addr)
++static __inline int is_broadcast_mac_addr(const u8 *addr)
  {
- 	snd_soc_unregister_dai(&pdev->dev);
- 	platform_set_drvdata(pdev, NULL);
---- a/sound/soc/sunxi/audiocodec/sunxi_sndcodec.c
-+++ b/sound/soc/sunxi/audiocodec/sunxi_sndcodec.c
-@@ -94,7 +94,7 @@
- 	.num_links 	= 1,
- };
- 
--static int __devinit sunxi_sndpcm_dev_probe(struct platform_device *pdev)
-+static int sunxi_sndpcm_dev_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	struct snd_soc_card *card = &snd_soc_sunxi_sndpcm;
-@@ -108,7 +108,7 @@
- 	return ret;
+ 	return ((addr[0] == 0xff) && (addr[1] == 0xff) && (addr[2] == 0xff) &&   \
+ 		(addr[3] == 0xff) && (addr[4] == 0xff) && (addr[5] == 0xff));
  }
  
--static int __exit sunxi_sndpcm_dev_remove(struct platform_device *pdev)
-+static int sunxi_sndpcm_dev_remove(struct platform_device *pdev)
+-extern __inline int is_zero_mac_addr(const u8 *addr)
++static __inline int is_zero_mac_addr(const u8 *addr)
  {
- 	struct snd_soc_card *card = platform_get_drvdata(pdev);
- 
---- a/sound/soc/sunxi/audiohub/sun8iw7-hubaudio.c
-+++ b/sound/soc/sunxi/audiohub/sun8iw7-hubaudio.c
-@@ -359,7 +359,7 @@
- 	}
- };
- 
--static int __init sunxi_audiohub_dev_probe(struct platform_device *pdev)
-+static int sunxi_audiohub_dev_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 
---- a/sound/soc/sunxi/hdmiaudio/sndhdmi.c
-+++ b/sound/soc/sunxi/hdmiaudio/sndhdmi.c
-@@ -332,7 +332,7 @@
- 	.resume 	= sunxi_sndhdmi_resume,
- };
- 
--static int __init sndhdmi_codec_probe(struct platform_device *pdev)
-+static int sndhdmi_codec_probe(struct platform_device *pdev)
- {	
- 	if (!pdev) {
- 		pr_err("error:%s,line:%d\n", __func__, __LINE__);
-@@ -344,7 +344,7 @@
- 	return snd_soc_register_codec(&pdev->dev, &soc_codec_dev_sndhdmi, &sndhdmi_dai, 1);	
- }
- 
--static int __exit sndhdmi_codec_remove(struct platform_device *pdev)
-+static int sndhdmi_codec_remove(struct platform_device *pdev)
- {
- 	if (!pdev) {
- 		pr_err("error:%s,line:%d\n", __func__, __LINE__);
---- a/sound/soc/sunxi/hdmiaudio/sunxi-hdmipcm.c
-+++ b/sound/soc/sunxi/hdmiaudio/sunxi-hdmipcm.c
-@@ -473,12 +473,12 @@
- 		.pcm_free	= sunxi_pcm_free_dma_buffers,
- };
- 
--static int __init sunxi_hdmiaudio_pcm_probe(struct platform_device *pdev)
-+static int sunxi_hdmiaudio_pcm_probe(struct platform_device *pdev)
- {
- 	return snd_soc_register_platform(&pdev->dev, &sunxi_soc_platform_hdmiaudio);
- }
- 
--static int __exit sunxi_hdmiaudio_pcm_remove(struct platform_device *pdev)
-+static int sunxi_hdmiaudio_pcm_remove(struct platform_device *pdev)
- {
- 	snd_soc_unregister_platform(&pdev->dev);
- 	return 0;
---- a/sound/soc/sunxi/hdmiaudio/sunxi-hdmitdm.c
-+++ b/sound/soc/sunxi/hdmiaudio/sunxi-hdmitdm.c
-@@ -711,7 +711,7 @@
- };
- 
- static struct pinctrl *daudio_pinctrl;
--static int __init sunxi_daudio_dev_probe(struct platform_device *pdev)
-+static int sunxi_daudio_dev_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	int reg_val = 0;
-@@ -758,7 +758,7 @@
- 	return 0;
- }
- 
--static int __exit sunxi_daudio_dev_remove(struct platform_device *pdev)
-+static int sunxi_daudio_dev_remove(struct platform_device *pdev)
- {
- 	if (daudio_used) {
- 		daudio_used = 0;
---- a/sound/soc/sunxi/hdmiaudio/sunxi-sndhdmi.c
-+++ b/sound/soc/sunxi/hdmiaudio/sunxi-sndhdmi.c
-@@ -29,6 +29,7 @@
- #include "sunxi-hdmitdm.h"
- #endif
- int hdmi_format = 1;
-+EXPORT_SYMBOL_GPL(hdmi_format);
- #if defined (CONFIG_ARCH_SUN9I) || defined (CONFIG_ARCH_SUN8IW7) || defined (CONFIG_ARCH_SUN8IW6)
- /*i2s1 as master, hdmi as slave*/
- static int i2s1_master 		= 4;
-diff -Nur a/drivers/staging/rtl8712/ieee80211.h b/drivers/staging/rtl8712/ieee80211.h
---- a/drivers/staging/rtl8712/ieee80211.h	2015-01-27 03:29:30.000000000 +0100
-+++ b/drivers/staging/rtl8712/ieee80211.h	2016-01-19 20:42:22.106770460 +0100
-@@ -734,7 +734,7 @@
+ 	return ((addr[0] == 0x00) && (addr[1] == 0x00) && (addr[2] == 0x00) &&   \
+ 		(addr[3] == 0x00) && (addr[4] == 0x00) && (addr[5] == 0x00));
+diff --git a/drivers/staging/rtl8712/ieee80211.h b/drivers/staging/rtl8712/ieee80211.h
+index 3c0092b..1e7b55b 100644
+--- a/drivers/staging/rtl8712/ieee80211.h
++++ b/drivers/staging/rtl8712/ieee80211.h
+@@ -734,7 +734,7 @@ enum ieee80211_state {
  #define IEEE_G            (1<<2)
  #define IEEE_MODE_MASK    (IEEE_A|IEEE_B|IEEE_G)
  
@@ -555,7 +161,7 @@ diff -Nur a/drivers/staging/rtl8712/ieee80211.h b/drivers/staging/rtl8712/ieee80
  {
  	/* Single white space is for Linksys APs */
  	if (essid_len == 1 && essid[0] == ' ')
-@@ -748,7 +748,7 @@
+@@ -748,7 +748,7 @@ extern inline int ieee80211_is_empty_essid(const char *essid, int essid_len)
  	return 1;
  }
  
@@ -564,104 +170,63 @@ diff -Nur a/drivers/staging/rtl8712/ieee80211.h b/drivers/staging/rtl8712/ieee80
  {
  	int hdrlen = 24;
  
---- /dev/null
-+++ b/arch/arm/mach-sunxi/power/brom/mksunxichecksum.c
-@@ -0,0 +1,98 @@
-+/*
-+ * (C) Copyright 2015 Jean-Francois Moine
-+ * (C) Copyright 2014 Henrik Nordstrom
-+ *
-+ * Based on mksunxiboot
-+ *
-+ * (C) Copyright 2007-2011
-+ * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
-+ *
-+ * SPDX-License-Identifier:	GPL-2.0+
-+ */
-+#include <stdio.h>
-+#include <string.h>
-+#include <errno.h>
-+#include <stdint.h>
-+#include <stdlib.h>
-+
-+/* boot head definition from sun4i boot code */
-+struct boot_file_head {
-+	uint32_t b_instruction;	/* one intruction jumping to real code */
-+	uint8_t magic[8];	/* ="eGON.BT0" or "eGON.BT1", not C-style str */
-+	uint32_t check_sum;	/* generated by PC */
-+	uint32_t length;	/* generated by PC */
-+	/*
-+	 * We use a simplified header, only filling in what is needed
-+	 * for checksum calculation.
-+	 */
-+};
-+
-+#define STAMP_VALUE                     0x5F0A6C39
-+
-+/* check sum functon from sun4i boot code */
-+static int gen_check_sum(struct boot_file_head *head_p)
-+{
-+	uint32_t length;
-+	uint32_t *buf;
-+	uint32_t loop;
-+	uint32_t i;
-+	uint32_t sum;
-+
-+	length = head_p->length;
-+//	if ((length & 0x3) != 0)	/* must 4-byte-aligned */
-+//		return -1;
-+	buf = (uint32_t *)head_p;
-+	head_p->check_sum = STAMP_VALUE;	/* fill stamp */
-+	loop = length >> 2;
-+
-+	/* calculate the sum */
-+	for (i = 0, sum = 0; i < loop; i++)
-+		sum += buf[i];
-+
-+	/* write back check sum */
-+	head_p->check_sum = sum;
-+
-+	return 0;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	struct boot_file_head h, *buf;
-+	unsigned file_size;
-+	FILE *f;
-+
-+	if (argc != 3) {
-+		printf("Usage: %s file.bin file.code\n"
-+		       "calculates BROM checksum in boot header of given .bin file and writes to .code file\n"
-+		       "", argv[0]);
-+		exit(1);
-+	}
-+
-+	f = fopen(argv[1], "rb");
-+	if (!f) {
-+		perror("Open input file");
-+		exit(1);
-+	}
-+
-+	fread(&h, 1, sizeof h, f);
-+	file_size = h.length;			// wanted length
-+
-+	buf = malloc(file_size);
-+	memset(buf, 0xff, file_size);
-+	rewind(f);
-+
-+	fread(buf, 1, file_size, f);
-+	fclose(f);
-+
-+	gen_check_sum(buf);
-+
-+	f = fopen(argv[2], "wb");
-+	if (!f) {
-+		perror("Open output file");
-+		exit(1);
-+	}
-+	fwrite(buf, 1, file_size, f);
-+	fclose(f);
-+
-+	return 0;
-+}
+From 11a03eba724c555fff11fdb7a8846a98f5838358 Mon Sep 17 00:00:00 2001
+From: Yann Dirson <ydirson@o-computers.com>
+Date: Thu, 14 Jan 2016 02:32:31 +0100
+Subject: [PATCH] Fix paths to files in $(src) erroneously searched for in
+ $(obj).
+
+This fixes some part of building the kernel in a separate directory.
+The remaining part (real libs really in source tree) is more tricky.
+---
+ arch/arm/mach-sunxi/power/brom/Makefile | 12 ++++++------
+ drivers/arisc/binary/Makefile           |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/mach-sunxi/power/brom/Makefile b/arch/arm/mach-sunxi/power/brom/Makefile
+index b7b36d8..488cd6b 100755
+--- a/arch/arm/mach-sunxi/power/brom/Makefile
++++ b/arch/arm/mach-sunxi/power/brom/Makefile
+@@ -22,21 +22,21 @@ resumes-y :=   resumes.o        \
+ 
+ resumes-y := $(addprefix $(obj)/,$(resumes-y))
+ 
+-$(obj)/resumes.code: $(obj)/resumes.bin
+-	$(Q)$(obj)/gen_check_code $(obj)/resumes.bin $(obj)/resumes.code
++$(obj)/resumes.code: $(src)/gen_check_code $(obj)/resumes.bin
++	$(Q)$< $(obj)/resumes.bin $(obj)/resumes.code
+ 
+ $(obj)/resumes.bin: $(obj)/resumes.elf FORCE
+ 	$(Q)$(CROSS_COMPILE)objcopy -O binary $(obj)/resumes.elf $(obj)/resumes.bin
+ 
+ ifneq ($(strip $(CONFIG_ARCH_SUN9I)),)
+-$(obj)/resumes.elf: $(obj)/sun9i_brom_scatter.scat $(resumes-y)
+-	$(Q)$(CROSS_COMPILE)ld -T $(obj)/sun9i_brom_scatter.scat  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
++$(obj)/resumes.elf: $(src)/sun9i_brom_scatter.scat $(resumes-y)
++	$(Q)$(CROSS_COMPILE)ld -T $<  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
+ 	$(Q)$(CROSS_COMPILE)objdump -D $(obj)/resumes.elf > $(obj)/resumes.lst
+ endif
+ 
+ ifneq ($(strip $(CONFIG_ARCH_SUN8I)),)
+-$(obj)/resumes.elf: $(obj)/sun8i_brom_scatter.scat $(resumes-y)
+-	$(Q)$(CROSS_COMPILE)ld -T $(obj)/sun8i_brom_scatter.scat  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
++$(obj)/resumes.elf: $(src)/sun8i_brom_scatter.scat $(resumes-y)
++	$(Q)$(CROSS_COMPILE)ld -T $<  -EL  $(resumes-y) -o $(obj)/resumes.elf  -Map $(obj)/resumes.map
+ 	$(Q)$(CROSS_COMPILE)objdump -D $(obj)/resumes.elf > $(obj)/resumes.lst
+ endif
+ 
+diff --git a/drivers/arisc/binary/Makefile b/drivers/arisc/binary/Makefile
+index ab3d5d2..08b81fd5 100755
+--- a/drivers/arisc/binary/Makefile
++++ b/drivers/arisc/binary/Makefile
+@@ -29,8 +29,8 @@ ifdef CONFIG_ARCH_SUN9IW1P1
+ PLATFORM=arisc_sun9iw1p1
+ endif
+ 
+-$(obj)/$(PLATFORM).bin : $(obj)/$(PLATFORM).code
+-	cp $(obj)/$(PLATFORM).code $(obj)/$(PLATFORM).tar.bz2; \
++$(obj)/$(PLATFORM).bin : $(src)/$(PLATFORM).code
++	cp $< $(obj)/$(PLATFORM).tar.bz2; \
+ 	tar -xjvf $(obj)/$(PLATFORM).tar.bz2 -C $(obj)/; \
+ 	cp $(obj)/arisc_package/$(PLATFORM).bin $(obj)/$(PLATFORM).bin; \
+ 	cp $(obj)/arisc_package/$(PLATFORM).tar.bz2.aes $(obj)/arisc; \
