@@ -42,15 +42,15 @@ pre_make_target() {
 }
 
 make_target() {
-  cd src
-  make V=1 \
+  make -C src V=1 \
        ARCH=$TARGET_ARCH \
        LINUX_SRC=$(kernel_path) \
        CROSS_COMPILE=$TARGET_PREFIX
-  cd ..
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
     cp src/os/linux/mt7601Usta.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  mkdir -p $INSTALL/etc/Wireless/RT2870STA
+    cp src/RT2870STA.dat $INSTALL/etc/Wireless/RT2870STA
 }
