@@ -1,0 +1,12 @@
+diff -Naur bluez-tools.git/configure.ac bluez-tools.patch/configure.ac
+--- bluez-tools.git/configure.ac	2016-02-26 06:43:45.207906284 +0100
++++ bluez-tools.patch/configure.ac	2016-02-26 07:29:38.281249888 +0100
+@@ -54,7 +54,7 @@
+ 	echo "** readline/history.h was not found."
+ 	exit 1
+ fi
+-LIBREADLINE="-lreadline"
++LIBREADLINE="-lreadline -lncurses"
+ 
+ AC_SUBST(LIBREADLINE)
+ 
