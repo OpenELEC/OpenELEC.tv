@@ -1,0 +1,18 @@
+language: c
+compiler: gcc
+before_install:
+- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+- sudo apt-get update -qq
+- sudo apt-get install -y build-essential
+- sudo apt-get install -y gawk texi2html texinfo gperf cvs xsltproc java-common libncurses5-dev
+
+script:
+- DISTRO=Lakka PROJECT=Generic ARCH=x86_64 make image
+deploy:
+  provider: releases
+  api_key:
+    secure: izRzfRA5wGkmLJwAiE8fSu+gVYWqW4YsZhYrq2iPeWtVqQQAq+7K6FrrT6wS5FjBNyCbh7LQZY+HSYkYp3/tJrf8oUT/7229hFv/fPgwkNfxPIg1YKsuIyfWGMuXiYLyhbDOvNbbFNFTH18pOtfQDCT7DiRiQ5D7VZEXzQaP3GM0VYdPhJAnp41tS6cCBToLl0/HYIH/J9dYNqlIf+DHsYZS1EsV377nMB/lQ+rEj0gc+fMj41MXqEmu4lsSqns4LzGg+uHVuAilHGDFSqxQxsgLjQc1RsiieGPYTdn2zP49MDUjfa0oxSaGLJ4eh4bkwxwKxqnX42iKKXUYeFoX798BNOUErGZ2u+PyhuFvTcxaYSgBh+Yr3ZqDg9JLgb3vZ7ZO/ixy1avAA4eDVPKLXQHCEJeBrF3QZkLiOweuP92GVe9sFZenaYCRYvLk+jvMRlOr3tlrlQflayNzTFsdtMl/JkkIrKHH2tQ3HxWNp91qykjPvjrv5OLsQnG+wLwk7QPw2vaZFsF/mCBH35wjn8cp+9sHbNdufy2ZrmX54kR8mhkYfHZ0WGglXgcWdor7hGlj7pWtg5v1WSaY5qFadTfMRscFKnHwSmikL+8ad0G7bGMRSFhFWap62kcLcsxqHFICG80w+nbRaPIKUr5VVzkGYBzeGsllwhyAgsfmGpQ=
+  file: "*.img.gz"
+  on:
+    repo: gouchi/Lakka
+    branch: lakka
