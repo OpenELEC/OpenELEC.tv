@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and
 PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 case "$LINUX" in
   amlogic)
-    PKG_VERSION="amlogic-3.10-716f179"
+    PKG_VERSION="amlogic-3.10-ca65e57"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
@@ -186,4 +186,7 @@ makeinstall_init() {
 post_install() {
   mkdir -p $INSTALL/lib/firmware/
     ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
+
+  # bluez looks in /etc/firmware/
+    ln -sf /lib/firmware/ $INSTALL/etc/firmware
 }

@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,6 +41,12 @@ if [ "$KODIPLAYER_DRIVER" = "libfslvpuwrap" ]; then
   EXTRA_CMAKE_OPTS="-DHAVE_IMX_API=1"
 else
   EXTRA_CMAKE_OPTS="-DHAVE_IMX_API=0"
+fi
+
+if [ "$KODIPLAYER_DRIVER" = "libamcodec" ]; then
+  EXTRA_CMAKE_OPTS="-DHAVE_AMLOGIC_API=1"
+else
+  EXTRA_CMAKE_OPTS="-DHAVE_AMLOGIC_API=0"
 fi
 
 configure_target() {

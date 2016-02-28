@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -178,6 +178,28 @@ fi
     done
   fi
 
+# copy vendor related files to filesystem
+  if [ -d "$HOME/.openelec/filesystem" ]; then
+    cp -PR $HOME/.openelec/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $HOME/.openelec/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
+  fi
+
+# copy vendor project related files to filesystem
+  if [ -d "$HOME/.openelec/projects/$PROJECT/filesystem" ]; then
+    cp -PR $HOME/.openelec/projects/$PROJECT/filesystem/* $INSTALL
+    # install project specific systemd services
+    for service in $HOME/.openelec/projects/$PROJECT/filesystem/usr/lib/systemd/system/*.service ; do
+      if [ -f "$service" ] ; then
+        enable_service $(basename $service)
+      fi
+    done
+  fi
+
 # run depmod
   MODVER=$(basename $(ls -d $INSTALL/lib/modules/*))
   find $INSTALL/lib/modules/$MODVER/ -name *.ko | \
@@ -271,7 +293,7 @@ fi
           $SCRIPTS/unpack imx6-mfgtool2-tbs-matrix
 
           mkdir -p $RELEASE_DIR/MfgTool2-TBS-Matrix
-          cp -PR $BUILD/imx6-mfgtool2-tbs-matrix-*/imx6-mfgtool2-tbs-matrix-*/* $RELEASE_DIR/MfgTool2-TBS-Matrix
+          cp -PR $BUILD/imx6-mfgtool2-tbs-matrix-*/* $RELEASE_DIR/MfgTool2-TBS-Matrix
         fi
 
         cp $ROOT/README* $RELEASE_DIR
