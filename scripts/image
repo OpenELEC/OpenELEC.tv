@@ -207,6 +207,8 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
     KERNEL_ARCH="x86"
   elif [ "$TARGET_ARCH" = arm ]; then
     KERNEL_ARCH="arm"
+  elif [ "$TARGET_ARCH" = aarch64 ]; then
+    KERNEL_ARCH="arm64"
   fi
 
   if [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
