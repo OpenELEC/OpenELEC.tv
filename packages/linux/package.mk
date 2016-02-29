@@ -26,6 +26,11 @@ case "$LINUX" in
     PKG_VERSION="a761439"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
+  linux-odroidc2-3.14.y)
+    TARGET_ARCH=arm64
+    PKG_VERSION="4c5bfd0"
+    PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   linux-sun7i)
     PKG_VERSION="6ce48b3"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -43,8 +48,12 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   rpi)
-    PKG_VERSION="8295285"
+    PKG_VERSION="02ce957"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
+  awh3)
+    PKG_VERSION="awh3-3.4"
+    PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/7de19646f7a8bf77df6f2f40fff7aa978f9beb67/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   *)
     PKG_VERSION="4.3"
@@ -181,7 +190,7 @@ make_target() {
 makeinstall_target() {
   if [ "$BOOTLOADER" = "u-boot" -a ! "$LINUX" = "linux-sun7i" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
-    for dtb in arch/arm/boot/dts/*.dtb; do
+    for dtb in arch/$TARGET_ARCH/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
     done
   elif [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
