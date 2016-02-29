@@ -18,7 +18,7 @@
 
 PKG_NAME="media_build"
 PKG_VERSION="66f4030"
-MEDIA_BUILD_VERSION="2014-09-26-214635f"
+MEDIA_BUILD_VERSION="2014-10-21-1ef2496"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -45,10 +45,8 @@ make_target() {
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ download
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ untar
 
-  if [ "$PROJECT" = "H3" ]; then
-    make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C v4l/ Makefile.media
-    patch v4l/Makefile.media < $ROOT/packages/linux-drivers/media_build/Makefile.media.H3.patch
-  fi
+  make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C v4l/ Makefile.media
+  patch v4l/Makefile.media < $PROJECT_DIR/$PROJECT/packages/media_build/Makefile.media.H3.patch
 
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) allyesconfig
   make VER=$KERNEL_VER SRCDIR=$(kernel_path)
