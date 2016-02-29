@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="sunxi-mali"
-PKG_VERSION="20151111"
+PKG_VERSION="20160229"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="nonfree"
 PKG_SITE="https://github.com/WhiteWind/sunxi-mali-proprietary"
-PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/7de19646f7a8bf77df6f2f40fff7aa978f9beb67/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/78aebeef1b75d2a6407e9be1efa5937da37d1320/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain libump"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
