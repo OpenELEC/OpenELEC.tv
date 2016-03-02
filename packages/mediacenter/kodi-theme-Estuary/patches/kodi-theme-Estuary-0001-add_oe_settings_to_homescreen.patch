@@ -1,0 +1,16 @@
+diff -Naur a/1080i/Home.xml b/1080i/Home.xml
+--- a/1080i/Home.xml	2016-03-02 22:59:39.000000000 +0100
++++ b/1080i/Home.xml	2016-03-02 23:17:43.347966012 +0100
+@@ -1089,6 +1089,12 @@
+ 							<property name="id">weather</property>
+ 							<visible>!Skin.HasSetting(HomeMenuNoWeatherButton)</visible>
+ 						</item>
++						<item>
++							<label>@DISTRONAME@</label>
++							<onclick>RunAddon(service.openelec.settings)</onclick>
++							<thumb>icons/home/openelec.png</thumb>
++							<property name="id">openelec</property>
++						</item>
+ 					</content>
+ 				</control>
+ 			</control>
