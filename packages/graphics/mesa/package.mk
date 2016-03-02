@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="mesa"
-PKG_VERSION="10.5.1"
+PKG_VERSION="11.2.0-rc1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
-PKG_URL="ftp://freedesktop.org/pub/mesa/older-versions/10.x/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain Python:host Mako:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence"
+PKG_URL="ftp://freedesktop.org/pub/mesa/11.2.0/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="mesa: 3-D graphics library with OpenGL API"
@@ -66,7 +66,6 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --enable-opengl \
                            --disable-gles1 \
                            --disable-gles2 \
-                           --disable-openvg \
                            --enable-dri \
                            --disable-dri3 \
                            --enable-glx \
