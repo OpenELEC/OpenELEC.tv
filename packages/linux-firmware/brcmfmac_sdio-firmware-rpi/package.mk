@@ -16,18 +16,18 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="iwlwifi-firmware"
-PKG_VERSION="0.0.5"
+PKG_NAME="brcmfmac_sdio-firmware-rpi"
+PKG_VERSION="0.1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="Free-to-use"
-PKG_SITE="https://github.com/OpenELEC/iwlwifi-firmware"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/OpenELEC/OpenELEC.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="firmware"
-PKG_SHORTDESC="iwlwifi-firmware: firmwares for various Intel WLAN drivers"
-PKG_LONGDESC="iwlwifi-firmware: firmwares for various Intel WLAN drivers"
+PKG_SHORTDESC="brcmfmac_sdio-firmware: firmware for brcm bluetooth chips used on RaspberryPi devices"
+PKG_LONGDESC="Firmware for Broadcom Bluetooth chips used on RaspberryPi devices, and brcm-patchram-plus that downloads a patchram files in the HCD format to the Bluetooth based silicon and combo chips and other utility functions."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
@@ -38,4 +38,8 @@ make_target() {
 
 makeinstall_target() {
   DESTDIR=$INSTALL ./install
+}
+
+post_install() {
+  enable_service brcmfmac_sdio-firmware.service
 }
