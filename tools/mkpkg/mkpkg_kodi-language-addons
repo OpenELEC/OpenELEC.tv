@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
@@ -16,36 +17,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="RTL8192DU"
-PKG_VERSION="7498302"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lwfinger/rtl8192du"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain linux"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
-PKG_PRIORITY="optional"
-PKG_SECTION="driver"
-PKG_SHORTDESC="Realtek RTL8192DU Linux 3.x driver"
-PKG_LONGDESC="Realtek RTL8192DU Linux 3.x driver"
+if [ -z "$1" ]; then
+  echo "Usage: $0 <branch-name>"
+  exit 0
+fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+echo "getting sources..."
+  if [ ! -d kodi-language-addons.git ]; then
+    git clone --depth=1 -b $1 https://github.com/xbmc/repo-resources.git kodi-language-addons.git
+  fi
 
-pre_make_target() {
-  unset LDFLAGS
-}
+  cd kodi-language-addons.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-make_target() {
-  make V=1 \
-       ARCH=$TARGET_KERNEL_ARCH \
-       KSRC=$(kernel_path) \
-       CROSS_COMPILE=$TARGET_PREFIX \
-       CONFIG_POWER_SAVING=n
-}
+echo "copying sources..."
+  rm -rf kodi-language-addons-$GIT_REV
+  cp -R kodi-language-addons.git kodi-language-addons-$GIT_REV
 
-makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-}
+echo "cleaning sources..."
+  cd kodi-language-addons-$GIT_REV
+    rm -rf .git
+    ls | grep -v resource.language | xargs rm -r
+  cd ..
+
+echo "packing sources..."
+  tar cvJf kodi-language-addons-$GIT_REV.tar.xz kodi-language-addons-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf kodi-language-addons-$GIT_REV

@@ -16,36 +16,27 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="RTL8192DU"
-PKG_VERSION="7498302"
+PKG_NAME="kodi-language-addons"
+PKG_VERSION="ce9947c"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lwfinger/rtl8192du"
+PKG_SITE="https://github.com/xbmc/repo-resources"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain linux"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="driver"
-PKG_SHORTDESC="Realtek RTL8192DU Linux 3.x driver"
-PKG_LONGDESC="Realtek RTL8192DU Linux 3.x driver"
+PKG_SECTION="mediacenter"
+PKG_SHORTDESC="kodi language add-ons"
+PKG_LONGDESC="kodi language add-ons"
 
-PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-pre_make_target() {
-  unset LDFLAGS
-}
+PKG_IS_ADDON="no"
 
 make_target() {
-  make V=1 \
-       ARCH=$TARGET_KERNEL_ARCH \
-       KSRC=$(kernel_path) \
-       CROSS_COMPILE=$TARGET_PREFIX \
-       CONFIG_POWER_SAVING=n
+  :
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  mkdir -p $INSTALL/usr/share/kodi/addons/
+    cp -PR $ROOT/$PKG_BUILD/* $INSTALL/usr/share/kodi/addons/
 }

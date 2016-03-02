@@ -16,36 +16,30 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="RTL8192DU"
-PKG_VERSION="7498302"
+PKG_NAME="brcmfmac_sdio-firmware-rpi"
+PKG_VERSION="0.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lwfinger/rtl8192du"
+PKG_SITE="https://github.com/OpenELEC/OpenELEC.tv"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain linux"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="driver"
-PKG_SHORTDESC="Realtek RTL8192DU Linux 3.x driver"
-PKG_LONGDESC="Realtek RTL8192DU Linux 3.x driver"
+PKG_SECTION="firmware"
+PKG_SHORTDESC="brcmfmac_sdio-firmware: firmware for brcm bluetooth chips used on RaspberryPi devices"
+PKG_LONGDESC="Firmware for Broadcom Bluetooth chips used on RaspberryPi devices, and brcm-patchram-plus that downloads a patchram files in the HCD format to the Bluetooth based silicon and combo chips and other utility functions."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_make_target() {
-  unset LDFLAGS
-}
-
 make_target() {
-  make V=1 \
-       ARCH=$TARGET_KERNEL_ARCH \
-       KSRC=$(kernel_path) \
-       CROSS_COMPILE=$TARGET_PREFIX \
-       CONFIG_POWER_SAVING=n
+  : # nothing todo
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  DESTDIR=$INSTALL ./install
+}
+
+post_install() {
+  enable_service brcmfmac_sdio-firmware.service
 }

@@ -46,8 +46,8 @@
   # Target Configfile for u-boot
     UBOOT_CONFIGFILE=""
 
-  # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
-    KERNEL_UBOOT_TARGET=""
+  # Kernel target
+    KERNEL_TARGET="zImage"
 
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET=""
@@ -59,8 +59,11 @@
   # default:  default mainline kernel
     LINUX="default"
 
-  # NOOBS supported hex versions
-    NOOBS_HEX="1040,1041"
+  # NOOBS supported hex versions (legacy)
+    NOOBS_HEX="1040,1041,2082"
+
+  # NOOBS supported model versions
+    NOOBS_SUPPORTED_MODELS="'Pi 2','Pi 3'"
 
 ################################################################################
 # setup build defaults
@@ -118,7 +121,7 @@
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-    FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
+    FIRMWARE="misc-firmware wlan-firmware dvb-firmware brcmfmac_sdio-firmware-rpi"
 
   # build and install ATV IR remote support (yes / no)
     ATVCLIENT_SUPPORT="no"
