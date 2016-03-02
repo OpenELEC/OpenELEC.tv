@@ -43,7 +43,7 @@ pre_make_target() {
 
 make_target() {
   make -C src V=1 \
-       ARCH=$TARGET_ARCH \
+       ARCH=$TARGET_KERNEL_ARCH \
        LINUX_SRC=$(kernel_path) \
        CROSS_COMPILE=$TARGET_PREFIX
 }

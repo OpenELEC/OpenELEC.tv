@@ -47,7 +47,7 @@
     UBOOT_CONFIGFILE="boot.scr"
 
   # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)
-    KERNEL_UBOOT_TARGET="uImage"
+    KERNEL_TARGET="uImage"
 
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET=""

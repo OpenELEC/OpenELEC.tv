@@ -40,7 +40,7 @@ pre_make_target() {
 make_target() {
   cd rtl8189ES
   make V=1 \
-       ARCH=$TARGET_ARCH \
+       ARCH=$TARGET_KERNEL_ARCH \
        KSRC=$(kernel_path) \
        CROSS_COMPILE=$TARGET_PREFIX
   cd ..
