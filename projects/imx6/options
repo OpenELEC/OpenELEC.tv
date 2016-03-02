@@ -42,6 +42,8 @@
 
   # Configuration for u-boot
     UBOOT_CONFIG="mx6_cubox-i_config"
+    UBOOT_CONFIG="$UBOOT_CONFIG matrix"
+    UBOOT_CONFIG="$UBOOT_CONFIG udoo_config"
 
   # Target Configfile for u-boot
     UBOOT_CONFIGFILE=""
@@ -52,6 +54,8 @@
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET="imx6q-cubox-i.dtb imx6dl-cubox-i.dtb"
     KERNEL_UBOOT_EXTRA_TARGET="$KERNEL_UBOOT_EXTRA_TARGET imx6q-hummingboard.dtb imx6dl-hummingboard.dtb"
+    KERNEL_UBOOT_EXTRA_TARGET="$KERNEL_UBOOT_EXTRA_TARGET imx6q-tbs2910.dtb"
+    KERNEL_UBOOT_EXTRA_TARGET="$KERNEL_UBOOT_EXTRA_TARGET imx6q-udoo.dtb imx6dl-udoo.dtb"
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=""
@@ -103,9 +107,9 @@
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
-  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
+  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
   # Space separated list is supported,
-  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
+  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
     GRAPHIC_DRIVERS=""
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
@@ -113,6 +117,12 @@
 
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
+
+  # additional drivers to install:
+  # for a list of additinoal drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8188EU RTL8812AU"
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
@@ -137,14 +147,3 @@
   # build with installer (yes / no)
     INSTALLER_SUPPORT="no"
 
-  # build and install 'RSXS' Screensaver (yes / no)
-    KODI_SCR_RSXS="no"
-
-  # build and install 'ProjectM' Visualization (yes / no)
-    KODI_VIS_PROJECTM="no"
-
-  # build and install 'GOOM' Visualization (yes / no)
-    KODI_VIS_GOOM="no"
-
-  # build and install 'FishBMC' Visualization (yes / no)
-    KODI_VIS_FISHBMC="no"
