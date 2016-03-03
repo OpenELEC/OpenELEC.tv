@@ -16,7 +16,6 @@ DISTRO=Lakka PROJECT=OdroidC1 ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=OdroidXU3 ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=WeTek_Play ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=WeTek_Core ARCH=arm make image -j9
-DISTRO=Lakka PROJECT=WandBoard ARCH=arm make image -j9
 
 for f in target/*; do
   md5sum $f > $f.md5
