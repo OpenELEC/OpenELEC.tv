@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="repository.unofficial.addon.pro"
-PKG_VERSION="7.0"
+PKG_VERSION="8.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
