@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="bcm2835-driver"
-PKG_VERSION="7f01b12"
+PKG_VERSION="1efc1ec"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -55,6 +55,7 @@ make_target() {
     cp -PRv $FLOAT/opt/vc/lib/libmmal_core.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_util.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_vc_client.so $SYSROOT_PREFIX/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libvcsm.so $SYSROOT_PREFIX/usr/lib
 }
 
 makeinstall_target() {
@@ -74,6 +75,7 @@ makeinstall_target() {
     cp -PRv $FLOAT/opt/vc/lib/libmmal_core.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_util.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_vc_client.so $INSTALL/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libvcsm.so $INSTALL/usr/lib
 
 # some usefull debug tools
   mkdir -p $INSTALL/usr/bin
