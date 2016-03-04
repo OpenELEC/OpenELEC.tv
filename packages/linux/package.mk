@@ -149,6 +149,11 @@ make_target() {
          BUILD=release \
          KDIR=$(kernel_path) \
          CROSS_COMPILE=$TARGET_PREFIX
+    mkdir -p $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump/ump.ko \
+      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali/mali.ko \
+      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
   fi
   
   rm -f $INSTALL/lib/modules/*/build
@@ -187,14 +192,6 @@ makeinstall_target() {
       cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
     done
     cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
-  fi
-  
-  if [ "$LINUX" = "awh3" ]; then
-    mkdir -p $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump/ump.ko \
-      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali/mali.ko \
-      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
   fi
 }
 
