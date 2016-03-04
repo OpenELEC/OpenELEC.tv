@@ -107,7 +107,7 @@
     KODIPLAYER_DRIVER="cedarx"
 
   # Modules to install in initramfs for early boot
-    INITRAMFS_MODULES="nand"
+    INITRAMFS_MODULES=""
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,

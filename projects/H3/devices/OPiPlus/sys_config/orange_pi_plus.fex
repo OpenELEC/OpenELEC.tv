@@ -356,15 +356,15 @@ cooler5 =  "480000 1 4294967295 0"
 
 [nand0_para]
 nand_support_2ch    = 0
-nand0_used          = 1
-;nand0_we            = port:PC00<2><default><default><default>
-;nand0_ale           = port:PC01<2><default><default><default>
-;nand0_cle           = port:PC02<2><default><default><default>
-;nand0_ce1           = port:PC03<2><default><default><default>
-;nand0_ce0           = port:PC04<2><default><default><default>
+nand0_used          = 0
+nand0_we            = port:PC00<2><default><default><default>
+nand0_ale           = port:PC01<2><default><default><default>
+nand0_cle           = port:PC02<2><default><default><default>
+nand0_ce1           = port:PC03<2><default><default><default>
+nand0_ce0           = port:PC04<2><default><default><default>
 nand0_nre           = port:PC05<2><default><default><default>
 nand0_rb0           = port:PC06<2><default><default><default>
-;nand0_rb1           = port:PC07<2><default><default><default>
+nand0_rb1           = port:PC07<2><default><default><default>
 nand0_d0            = port:PC08<2><default><default><default>
 nand0_d1            = port:PC09<2><default><default><default>
 nand0_d2            = port:PC10<2><default><default><default>
