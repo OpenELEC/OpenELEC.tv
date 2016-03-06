@@ -48,7 +48,7 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   rpi)
-    PKG_VERSION="02ce957"
+    PKG_VERSION="b39e1e3"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   awh3)
