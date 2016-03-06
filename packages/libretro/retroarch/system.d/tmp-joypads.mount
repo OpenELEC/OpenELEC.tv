@@ -5,10 +5,10 @@ After=storage.mount
 After=systemd-tmpfiles-setup.service
 
 [Mount]
-What=unionfs#/storage/joypads=RW:/etc/retroarch-joypad-autoconfig=RO
+What=none
 Where=/tmp/joypads
-Type=fuse
-Options=cow
+Type=overlay
+Options=lowerdir=/etc/retroarch-joypad-autoconfig,upperdir=/storage/joypads,workdir=/storage/.tmp/joypads-workdir
 
 [Install]
 WantedBy=retroarch.target

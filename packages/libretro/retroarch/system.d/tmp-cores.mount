@@ -5,10 +5,10 @@ After=storage.mount
 After=systemd-tmpfiles-setup.service
 
 [Mount]
-What=unionfs#/storage/cores=RW:/usr/lib/libretro=RO
+What=none
 Where=/tmp/cores
-Type=fuse
-Options=cow
+Type=overlay
+Options=lowerdir=/usr/lib/libretro,upperdir=/storage/cores,workdir=/storage/.tmp/cores-workdir
 
 [Install]
 WantedBy=retroarch.target

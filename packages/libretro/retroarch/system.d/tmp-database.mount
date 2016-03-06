@@ -7,8 +7,8 @@ After=systemd-tmpfiles-setup.service
 [Mount]
 What=unionfs#/storage/database=RW:/usr/share/libretro-database=RO
 Where=/tmp/database
-Type=fuse
-Options=cow
+Type=overlay
+Options=lowerdir=/usr/share/libretro-database,upperdir=/storage/database,workdir=/storage/.tmp/database-workdir
 
 [Install]
 WantedBy=retroarch.target
