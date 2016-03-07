@@ -30,7 +30,7 @@ diff -Nur a/configs/orangepi_pc_defconfig b/configs/orangepi_pc_defconfig
 +CONFIG_DM_GPIO=y
 diff -Nur a/configs/orangepi_plus_defconfig b/configs/orangepi_plus_defconfig
 --- a/configs/orangepi_plus_defconfig	2016-02-15 22:44:30.000000000 +0100
-+++ b/configs/orangepi_plus_defconfig	2016-02-19 00:59:04.440204776 +0100
++++ b/configs/orangepi_plus_defconfig	2016-03-06 23:39:10.453856671 +0100
 @@ -1,7 +1,7 @@
  CONFIG_ARM=y
  CONFIG_ARCH_SUNXI=y
@@ -40,9 +40,10 @@ diff -Nur a/configs/orangepi_plus_defconfig b/configs/orangepi_plus_defconfig
  CONFIG_DRAM_ZQ=3881979
  CONFIG_DRAM_ODT_EN=y
  # CONFIG_VIDEO is not set
-@@ -12,3 +12,5 @@
+@@ -12,3 +12,6 @@
  # CONFIG_CMD_FLASH is not set
  # CONFIG_CMD_FPGA is not set
  CONFIG_CMD_GPIO=y
 +CONFIG_DM=y
 +CONFIG_DM_GPIO=y
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2

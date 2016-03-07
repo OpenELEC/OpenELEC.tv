@@ -56,10 +56,16 @@ make_target() {
     make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
     make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
     fex2bin $PROJECT_DIR/$PROJECT/devices/$DEVICE/sys_config/$FEXFILE script.bin
+    sed 's/^tools-only: scripts_basic /tools-only: /' -i Makefile
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$CC" HOSTSTRIP="true" tools-only
+    cp tools/mkimage .
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true" tools-only
 }
 
 makeinstall_target() {
   mkdir -p $ROOT/$TOOLCHAIN/bin
+  mkdir -p $INSTALL/usr/bin
+  cp -PR mkimage $INSTALL/usr/bin
 
   if [ -f build/tools/mkimage ]; then
     cp build/tools/mkimage $ROOT/$TOOLCHAIN/bin
