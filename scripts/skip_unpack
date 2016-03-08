@@ -37,7 +37,7 @@ if [ -f $STAMP ] ; then
   export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
   rm -f $STAMP
-  STAMP_DEPENDS="$PKG_DIR $PKG_NEED_UNPACK $PROJECT_DIR/$PROJECT/patches/$PKG_NAME"
+  STAMP_DEPENDS="$PKG_DIR $PKG_NEED_UNPACK $PROJECT_DIR/$PROJECT/patches/$PKG_NAME $HOME/.openelec/projects/$PROJECT/patches/$PKG_NAME $HOME/.openelec/patches/$PKG_NAME"
   PKG_DEEPMD5=$(find $STAMP_DEPENDS -exec md5sum {} \; 2>/dev/null | sort | md5sum | cut -d" " -f1)
   for i in PKG_NAME PKG_DEEPMD5; do
     eval val=\$$i

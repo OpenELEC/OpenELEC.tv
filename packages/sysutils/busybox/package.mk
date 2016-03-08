@@ -56,17 +56,8 @@ if [ "$NFS_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET rpcbind"
 fi
 
-if [ -f $PROJECT_DIR/$PROJECT/busybox/busybox-target.conf ]; then
-  BUSYBOX_CFG_FILE_TARGET=$PROJECT_DIR/$PROJECT/busybox/busybox-target.conf
-else
-  BUSYBOX_CFG_FILE_TARGET=$PKG_DIR/config/busybox-target.conf
-fi
-
-if [ -f $PROJECT_DIR/$PROJECT/busybox/busybox-init.conf ]; then
-  BUSYBOX_CFG_FILE_INIT=$PROJECT_DIR/$PROJECT/busybox/busybox-init.conf
-else
-  BUSYBOX_CFG_FILE_INIT=$PKG_DIR/config/busybox-init.conf
-fi
+BUSYBOX_CFG_FILE_TARGET=$(get_project_file busybox/busybox-target.conf $PKG_DIR/config/busybox-target.conf)
+BUSYBOX_CFG_FILE_INIT=$(get_project_file busybox/busybox-init.conf $PKG_DIR/config/busybox-target.conf)
 
 pre_build_target() {
   mkdir -p $PKG_BUILD/.$TARGET_NAME
@@ -242,8 +233,8 @@ makeinstall_init() {
     touch $INSTALL/etc/fstab
     ln -sf /proc/self/mounts $INSTALL/etc/mtab
 
-  if [ -f $PROJECT_DIR/$PROJECT/initramfs/platform_init ]; then
-    cp $PROJECT_DIR/$PROJECT/initramfs/platform_init $INSTALL
+  if [ -n "$(get_project_file initramfs/platform_init)" ]; then
+    cp $(get_project_file initramfs/platform_init) $INSTALL
     chmod 755 $INSTALL/platform_init
   fi
 

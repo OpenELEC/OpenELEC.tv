@@ -45,11 +45,7 @@ post_install() {
     cp $PKG_DIR/scripts/installer $INSTALL/usr/bin
 
   mkdir -p $INSTALL/etc
-    if [ -f $PROJECT_DIR/$PROJECT/installer/installer.conf ]; then
-      cp $PROJECT_DIR/$PROJECT/installer/installer.conf $INSTALL/etc
-    else
-      cp $PKG_DIR/config/installer.conf $INSTALL/etc
-    fi
+    cp $(get_project_file installer/installer.conf $PKG_DIR/config/installer.conf) $INSTALL/etc
 
   enable_service installer.service
 }

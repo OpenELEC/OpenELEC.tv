@@ -55,29 +55,13 @@ setup_toolchain() {
 }
 
 kernel_path() {
-  if [ -e $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk
-  elif [ -e $HOME/.openelec/packages/linux/package.mk ]; then
-    . $HOME/.openelec/packages/linux/package.mk
-  elif [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $ROOT/projects/$PROJECT/packages/linux/package.mk
-  else
-    . $ROOT/packages/linux/package.mk
-  fi
+  . $(get_project_file linux/package.mk $ROOT/packages/linux/package.mk)
 
   echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
 }
 
 kernel_version() {
-  if [ -e $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk
-  elif [ -e $HOME/.openelec/packages/linux/package.mk ]; then
-    . $HOME/.openelec/packages/linux/package.mk
-  elif [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $ROOT/projects/$PROJECT/packages/linux/package.mk
-  else
-    . $ROOT/packages/linux/package.mk
-  fi
+  . $(get_project_file linux/package.mk $ROOT/packages/linux/package.mk)
 
   echo ${PKG_VERSION}
 }
@@ -217,6 +201,41 @@ strip_gold() {
   LDFLAGS=`echo $LDFLAGS | sed -e "s|-fuse-ld=gold||g"`
 }
 
+# search various project dirs for a given file ($1)
+# if file is not found return a default file   ($2)
+get_project_file() {
+  local d_list=( # main directory roots to search
+    $PROJECT_DIR/$PROJECT/packages
+    $PROJECT_DIR/$PROJECT
+    $HOME/.openelec/projects/$PROJECT/packages
+    $HOME/.openelec/projects/$PROJECT
+    $HOME/.openelec/packages
+    $HOME/.openelec
+  )
+  local s_list=( # subdirectories to search
+    $PKG_NAME
+    .
+  )
+  local result dir sdir
+  for dir in ${d_list[@]} ; do
+    for sdir in ${s_list[@]} ; do
+      if [ -f $dir/$sdir/$1 ]; then
+        result="$dir/$sdir/$1"
+        break 2
+      fi
+    done
+  done
+  if [ -z "$result" -a -n "$2" ]; then
+    if [ -f "$2" ]; then
+      result="$2"
+    else
+      echo "ERROR: $1 not found and $2 doesn't exist"
+      exit 1
+    fi
+  fi
+  echo $result
+}
+
 fix_module_depends() {
   # modify .modinfo section in kernel module to depends on other required modules
   local MODULE="$1"
@@ -281,14 +300,16 @@ dashes="==========================="
     exit 1
   fi
 
-  if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -a ! -f $HOME/.openelec/projects/$PROJECT/linux/linux.$TARGET_ARCH.conf ]; then
+  if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -a \
+       ! -f $HOME/.openelec/projects/$PROJECT/linux/linux.$TARGET_ARCH.conf -a \
+       ! -f $HOME/.openelec/linux/linux.$TARGET_ARCH.conf ]; then
     check_arch="$check_arch\n $dashes$dashes$dashes"
     check_arch="$check_arch\n ERROR: Architecture not found, use a valid Architecture"
     check_arch="$check_arch\n for your project or create a new config"
     check_arch="$check_arch\n $dashes$dashes$dashes"
     check_arch="$check_arch\n\n Valid Architectures for your project: $PROJECT"
 
-    for arch in $PROJECT_DIR/$PROJECT/linux/*.conf $HOME/.openelec/projects/$PROJECT/linux/*.conf; do
+    for arch in $PROJECT_DIR/$PROJECT/linux/*.conf $HOME/.openelec/projects/$PROJECT/linux/*.conf $HOME/.openelec/linux/*.conf; do
       check_arch="$check_arch\n - $(basename $arch | cut -f2 -d".")"
     done
     echo -e $check_arch

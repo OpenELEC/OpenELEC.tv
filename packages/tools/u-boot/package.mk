@@ -95,7 +95,7 @@ makeinstall_target() {
       cp tools/mkimage $ROOT/$TOOLCHAIN/bin
     fi
 
-  BOOT_CFG="$PROJECT_DIR/$PROJECT/bootloader/boot.cfg"
+  BOOT_CFG="$(get_project_file bootloader/boot.cfg)"
   if [ -r "$BOOT_CFG" ]; then
     cp $BOOT_CFG boot.cfg
     mkimage -A "$TARGET_ARCH" \
@@ -118,4 +118,6 @@ makeinstall_target() {
   cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
 
   cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $INSTALL/usr/share/bootloader 2>/dev/null || :
+  cp -PR $HOME/.openelec/projects/$PROJECT/bootloader/uEnv*.txt $INSTALL/usr/share/bootloader 2>/dev/null || :
+  cp -PR $HOME/.openelec/bootloader/uEnv*.txt $INSTALL/usr/share/bootloader 2>/dev/null || :
 }
