@@ -16,18 +16,26 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libogg"
-PKG_VERSION="1.3.2"
+PKG_NAME="sidplay-libs"
+PKG_VERSION="2.1.1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="BSD"
-PKG_SITE="https://www.xiph.org/ogg/"
-PKG_URL="http://downloads.xiph.org/releases/ogg/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPL"
+PKG_SITE="http://sidplay2.sourceforge.net/"
+PKG_URL="http://mirrors.xbmc.org/build-deps/sources/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
-PKG_SHORTDESC="libogg: Open source bitstream container format"
-PKG_LONGDESC="Libogg contains necessary functionality to create, decode, and work with Ogg bitstreams."
+PKG_SHORTDESC="sidplay-libs"
+PKG_LONGDESC="sidplay-libs"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static"
+
+pre_configure_target() {
+  # fails to build in subdirs
+  cd $ROOT/$PKG_BUILD
+  rm -rf .$TARGET_NAME
+}

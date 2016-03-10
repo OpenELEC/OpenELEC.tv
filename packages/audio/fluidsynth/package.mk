@@ -16,18 +16,28 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libogg"
-PKG_VERSION="1.3.2"
+PKG_NAME="fluidsynth"
+PKG_VERSION="1.1.6"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="BSD"
-PKG_SITE="https://www.xiph.org/ogg/"
-PKG_URL="http://downloads.xiph.org/releases/ogg/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPL"
+PKG_SITE="http://fluidsynth.org/"
+PKG_URL="$SOURCEFORGE_SRC/project/fluidsynth/fluidsynth-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
-PKG_SHORTDESC="libogg: Open source bitstream container format"
-PKG_LONGDESC="Libogg contains necessary functionality to create, decode, and work with Ogg bitstreams."
+PKG_SHORTDESC="FluidSynth: A SoundFont Synthesizer."
+PKG_LONGDESC="FluidSynth renders midi music files as raw audio data, for playing or conversion. "
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
+
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_SHARED_LIBS=0 \
+        -Denable-readline=0 \
+        -Denable-pulseaudio=0 \
+        -Denable-libsndfile=0 \
+        ..
+}

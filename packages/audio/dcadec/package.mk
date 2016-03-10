@@ -16,18 +16,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libogg"
-PKG_VERSION="1.3.2"
+PKG_NAME="dcadec"
+PKG_VERSION="37d8e68"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="BSD"
-PKG_SITE="https://www.xiph.org/ogg/"
-PKG_URL="http://downloads.xiph.org/releases/ogg/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/foo86/dcadec"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
-PKG_SHORTDESC="libogg: Open source bitstream container format"
-PKG_LONGDESC="Libogg contains necessary functionality to create, decode, and work with Ogg bitstreams."
+PKG_SHORTDESC="DTS Coherent Acoustics decoder with support for HD extensions"
+PKG_LONGDESC="DTS Coherent Acoustics decoder with support for HD extensions"
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
+
+# todo: we need to build as shared library, otherwise sond dont work
+# in kodi with enabled dcadec support and we have 100% CPU usage
+# (to test disable passtrough and use a DTS-HD sample)
+PKG_MAKE_OPTS_TARGET="PREFIX=/usr BINDIR=/usr/bin LIBDIR=/usr/lib INCLUDEDIR=/usr/include PKG_CONFIG_PATH=/usr/lib/pkgconfig CONFIG_SHARED=1"
+PKG_MAKEINSTALL_OPTS_TARGET="$PKG_MAKE_OPTS_TARGET"
+
+pre_configure_target() {
+  export CFLAGS="$CFLAGS -fPIC -DPIC"
+  export LDFLAGS="$LDFLAGS -fPIC -DPIC"
+}
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr/bin
+}

@@ -16,33 +16,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="taglib"
-PKG_VERSION="1.9.1"
+PKG_NAME="libsndfile"
+PKG_VERSION="1.0.25"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
-PKG_SITE="http://taglib.github.com/"
-PKG_URL="http://taglib.github.io/releases/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain cmake:host zlib"
+PKG_SITE="http://www.mega-nerd.com/libsndfile/"
+PKG_URL="http://www.mega-nerd.com/$PKG_NAME/files/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain alsa-lib flac libvorbis libogg"
 PKG_PRIORITY="optional"
 PKG_SECTION="audio"
-PKG_SHORTDESC="taglib: a library for reading and editing the meta-data of several popular audio formats."
-PKG_LONGDESC="TagLib is a library for reading and editing the meta-data of several popular audio formats."
+PKG_SHORTDESC="libsndfile: A library for accessing various audio file formats"
+PKG_LONGDESC="libsndfile is a C library for reading and writing sound files such as AIFF, AU, WAV, and others through one standard interface. It can currently read/write 8, 16, 24 and 32-bit PCM files as well as 32 and 64-bit floating point WAV files and a number of compressed formats. It compiles and runs on *nix, MacOS, and Win32."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
 # package specific configure options
-configure_target() {
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_STATIC=1 ..
-}
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
+                           --disable-silent-rules \
+                           --disable-sqlite \
+                           --enable-alsa \
+                           --enable-external-libs \
+                           --disable-experimental \
+                           --disable-test-coverage \
+                           --enable-largefile \
+                           --with-gnu-ld"
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
-  # pkgconf hack
-  $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/taglib-config
-  $SED "s:\([':\" ]\)-I/usr:\\1-I$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib.pc
-  $SED "s:\([':\" ]\)-L/usr:\\1-L$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib.pc
-  $SED "s:\([':\" ]\)-I/usr:\\1-I$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib_c.pc
-  $SED "s:\([':\" ]\)-L/usr:\\1-L$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/lib/pkgconfig/taglib_c.pc
 }
