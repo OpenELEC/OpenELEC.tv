@@ -261,11 +261,11 @@ full_duplex   = 1
 manual_cs     = 0
 
 ;----------------------------------------------------------------------------------
-;userspace gpio interface for android
+;userspace gpio interface
 ;----------------------------------------------------------------------------------
 [gpio_para]
 gpio_used       = 1
-gpio_num        = 25
+gpio_num        = 24
 gpio_pin_1      = port:PL10<1><default><default><1>
 gpio_pin_2      = port:PA15<1><default><default><0>
 gpio_pin_3      = port:PA12<1><default><default><0>
@@ -280,17 +280,16 @@ gpio_pin_11      = port:PA03<1><default><default><0>
 gpio_pin_12      = port:PC04<1><default><default><0>
 gpio_pin_13      = port:PC07<1><default><default><0>
 gpio_pin_14      = port:PA02<1><default><default><0>
-gpio_pin_15      = port:PA21<1><default><default><0>
-gpio_pin_16      = port:PA19<1><default><default><0>
-gpio_pin_17      = port:PA18<1><default><default><0>
-gpio_pin_18      = port:PA07<1><default><default><0>
-gpio_pin_19      = port:PA08<1><default><default><0>
-gpio_pin_20      = port:PG08<1><default><default><0>
-gpio_pin_21      = port:PA09<1><default><default><0>
-gpio_pin_22      = port:PA10<1><default><default><0>
-gpio_pin_23      = port:PG09<1><default><default><0>
-gpio_pin_24      = port:PG06<1><default><default><0>
-gpio_pin_25      = port:PG07<1><default><default><0>
+gpio_pin_15      = port:PA19<1><default><default><0>
+gpio_pin_16      = port:PA18<1><default><default><0>
+gpio_pin_17      = port:PA07<1><default><default><0>
+gpio_pin_18      = port:PA08<1><default><default><0>
+gpio_pin_19      = port:PG08<1><default><default><0>
+gpio_pin_20      = port:PA09<1><default><default><0>
+gpio_pin_21      = port:PA10<1><default><default><0>
+gpio_pin_22      = port:PG09<1><default><default><0>
+gpio_pin_23      = port:PG06<1><default><default><0>
+gpio_pin_24      = port:PG07<1><default><default><0>
 
 [led_assign]
 normal_led      = "gpio_pin_2"
@@ -407,6 +406,10 @@ fb1_height = 0
 hdmi_used           = 1
 hdmi_power          = "vcc-hdmi-18"
 hdcp_enable = 0
+
+[hdmi_cec]
+hdmi_cec_used = 1
+hdmi_cec_pin = port:PA21<0><0><default><default>
 
 [tv_para]
 tv_used				= 1
