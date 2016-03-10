@@ -1,20 +1,20 @@
-diff -Naur retroarch.git/gfx/drivers_context/drm_egl_ctx.c retroarch.patch/gfx/drivers_context/drm_egl_ctx.c
---- retroarch.git/gfx/drivers_context/drm_egl_ctx.c	2015-11-27 17:52:55.202785319 +0100
-+++ retroarch.patch/gfx/drivers_context/drm_egl_ctx.c	2015-11-27 17:59:22.080211897 +0100
-@@ -285,7 +285,10 @@
+diff -Naur retroarch.git/gfx/drivers_context/drm_ctx.c retroarch.patch/gfx/drivers_context/drm_ctx.c
+--- retroarch.git/gfx/drivers_context/drm_ctx.c	2016-03-09 19:11:23.513778479 +0100
++++ retroarch.patch/gfx/drivers_context/drm_ctx.c	2016-03-09 19:25:21.431346555 +0100
+@@ -324,7 +324,10 @@
     drm_free();
  
     if (g_drm_fd >= 0)
 +   {
 +      drmDropMaster(g_drm_fd);
-       retro_fclose(drm->g_drm);
+       retro_fclose(drm->drm);
 +   }
  
     g_gbm_surface      = NULL;
     g_gbm_dev          = NULL;
-@@ -368,6 +371,8 @@
-    drm->g_fb_width  = g_drm_connector->modes[0].hdisplay;
-    drm->g_fb_height = g_drm_connector->modes[0].vdisplay;
+@@ -420,6 +423,8 @@
+    drm->fb_width    = g_drm_connector->modes[0].hdisplay;
+    drm->fb_height   = g_drm_connector->modes[0].vdisplay;
  
 +   drmSetMaster(g_drm_fd);
 +
