@@ -1,0 +1,27 @@
+From 1f133059e579d7aeef76ab8402b95eb4418e8ca4 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Wed, 9 Mar 2016 17:25:59 +0000
+Subject: [PATCH] brcmfmac: Disable power management
+
+Disable wireless power saving in the brcmfmac WLAN driver. This is a
+temporary measure until the connectivity loss resulting from power
+saving is resolved.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/net/wireless/brcm80211/brcmfmac/cfg80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/brcm80211/brcmfmac/cfg80211.c
+index 8a15ebb..a3eff1d 100644
+--- a/drivers/net/wireless/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/brcm80211/brcmfmac/cfg80211.c
+@@ -2482,6 +2482,8 @@ brcmf_cfg80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *ndev,
+ 	 * preference in cfg struct to apply this to
+ 	 * FW later while initializing the dongle
+ 	 */
++	pr_info("power management disabled\n");
++	enabled = false;
+ 	cfg->pwr_save = enabled;
+ 	if (!check_vif_up(ifp->vif)) {
+ 
