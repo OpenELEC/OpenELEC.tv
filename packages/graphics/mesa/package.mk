@@ -23,7 +23,6 @@ PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="ftp://freedesktop.org/pub/mesa/11.2.0/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="mesa: 3-D graphics library with OpenGL API"
@@ -31,6 +30,25 @@ PKG_LONGDESC="Mesa is a 3-D graphics library with an API which is very similar t
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
+
+if [ "$DISPLAYSERVER" = "x11" ]; then
+  PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 systemd dri3proto libxshmfence"
+  
+  export DRI_DRIVER_INSTALL_DIR=$XORG_PATH_DRI
+  export DRI_DRIVER_SEARCH_DIR=$XORG_PATH_DRI
+  export X11_INCLUDES=
+  MESA_GLES="--disable-gles1 --disable-gles2 --with-gl-lib-name=GL"
+  MESA_GLX="--enable-glx --enable-driglx-direct --enable-glx-tls"
+  MESA_EGL_PLATFORMS="--with-egl-platforms=x11,drm"
+  
+elif [ "$DISPLAYSERVER" = "wayland" ]; then
+  PKG_DEPENDS_TARGET="toolchain Python:host expat libdrm wayland dri2proto dri3proto glproto presentproto libxcb"
+  
+  MESA_GLES="--disable-gles1 --enable-gles2"
+  MESA_GLX="--disable-glx --disable-driglx-direct --disable-glx-tls"
+  MESA_EGL_PLATFORMS="--with-egl-platforms=wayland,drm"
+  
+fi
 
 # configure GPU drivers and dependencies:
   get_graphicdrivers
@@ -43,7 +61,7 @@ else
   MESA_GALLIUM_LLVM="--disable-gallium-llvm"
 fi
 
-if [ "$VDPAU_SUPPORT" = "yes" ]; then
+if [ "$VDPAU_SUPPORT" = "yes" -a "$DISPLAYSERVER" = "x11" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   MESA_VDPAU="--enable-vdpau"
 else
@@ -55,23 +73,21 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            CFLAGS_FOR_BUILD= \
                            CXXFLAGS_FOR_BUILD= \
                            LDFLAGS_FOR_BUILD= \
-                           X11_INCLUDES= \
-                           DRI_DRIVER_INSTALL_DIR=$XORG_PATH_DRI \
-                           DRI_DRIVER_SEARCH_DIR=$XORG_PATH_DRI \
                            --disable-debug \
                            --disable-mangling \
                            --enable-texture-float \
                            --enable-asm \
                            --disable-selinux \
                            --enable-opengl \
-                           --disable-gles1 \
-                           --disable-gles2 \
+                           $MESA_GLES \
+                           --disable-openvg \
                            --enable-dri \
                            --disable-dri3 \
-                           --enable-glx \
+                           $MESA_GLX \
                            --disable-osmesa \
                            --disable-gallium-osmesa \
-                           --enable-egl --with-egl-platforms=x11,drm \
+                           --enable-egl \
+                           $MESA_EGL_PLATFORMS \
                            --disable-xa \
                            --enable-gbm \
                            --disable-nine \
@@ -87,21 +103,20 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --enable-shared-glapi \
                            --enable-shader-cache \
                            --enable-sysfs \
-                           --enable-driglx-direct \
-                           --enable-glx-tls \
                            $MESA_GALLIUM_LLVM \
                            --disable-silent-rules \
-                           --with-gl-lib-name=GL \
                            --with-osmesa-lib-name=OSMesa \
                            --with-gallium-drivers=$GALLIUM_DRIVERS \
                            --with-dri-drivers=$DRI_DRIVERS \
                            --with-sysroot=$SYSROOT_PREFIX"
 
 post_makeinstall_target() {
-  # rename and relink for cooperate with nvidia drivers
+  if [ "$DISPLAYSERVER" = "x11" ]; then
+    # rename and relink for cooperate with nvidia drivers
     rm -rf $INSTALL/usr/lib/libGL.so
     rm -rf $INSTALL/usr/lib/libGL.so.1
     ln -sf libGL.so.1 $INSTALL/usr/lib/libGL.so
     ln -sf /var/lib/libGL.so $INSTALL/usr/lib/libGL.so.1
     mv $INSTALL/usr/lib/libGL.so.1.2.0 $INSTALL/usr/lib/libGL_mesa.so.1
+  fi
 }

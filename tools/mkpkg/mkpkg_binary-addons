@@ -97,16 +97,16 @@ if [ ! -d $KODI_DIR ] ; then
   exit 127
 fi
 
-# platform
-REPO=$(cat $KODI_DIR/project/cmake/addons/depends/common/platform/platform.txt | awk '{print $2}')
-GIT_HASH=$(cat $KODI_DIR/project/cmake/addons/depends/common/platform/platform.txt | awk '{print $3}')
+# p8-platform
+REPO=$(cat $KODI_DIR/project/cmake/addons/depends/common/p8-platform/p8-platform.txt | awk '{print $2}')
+GIT_HASH=$(cat $KODI_DIR/project/cmake/addons/depends/common/p8-platform/p8-platform.txt | awk '{print $3}')
 
-copy_and_package $REPO platform $GIT_HASH
+copy_and_package $REPO p8-platform $GIT_HASH
 
-if [ -f ../../packages/mediacenter/platform/package.mk ] ; then
+if [ -f ../../packages/mediacenter/p8-platform/package.mk ] ; then
   # update package.mk
   RESOLVED_HASH=$(resolve_hash $PKG_NAME.git $GIT_HASH)
-  sed -i "s|PKG_VERSION=.*|PKG_VERSION=\"$RESOLVED_HASH\"|g" ../../packages/mediacenter/platform/package.mk
+  sed -i "s|PKG_VERSION=.*|PKG_VERSION=\"$RESOLVED_HASH\"|g" ../../packages/mediacenter/p8-platform/package.mk
 fi
 
 # kodi-platform

@@ -1,0 +1,5166 @@
+diff -Naur a/bootstrap.mk b/bootstrap.mk
+--- a/bootstrap.mk	2016-03-10 09:58:06.000000000 +0100
++++ b/bootstrap.mk	2016-03-10 10:15:28.599413711 +0100
+@@ -1,21 +1,19 @@
+-srcdir ?= .
+-
+ BOOTSTRAP_SUBDIRS += configure.ac
+ BOOTSTRAP_SUBDIRS += lib/cpluff/configure.ac
+ BOOTSTRAP_SUBDIRS += lib/gtest/configure.ac
+ 
+-BOOTSTRAP_TARGETS=$(addprefix $(srcdir)/,$(basename $(BOOTSTRAP_SUBDIRS)))
++BOOTSTRAP_TARGETS=$(basename $(BOOTSTRAP_SUBDIRS))
+ all: $(BOOTSTRAP_TARGETS)
+ 
+ %: %.ac
+ 	autoreconf -vif $(@D)
+ 	-@rm -rf $(@D)/autom4te.cache
+ 
+-%: $(srcdir)/%.in
++%: %.in
+ 	autoreconf -vif $(@D)
+ 	-@rm -rf $(@D)/autom4te.cache
+ 
+-$(srcdir)/configure: $(srcdir)/configure.ac
++configure: configure.ac
+ 	autoreconf -vif $(@D)
+ 	-@rm -rf $(@D)/autom4te.cache
+ 	@test -n "$$BOOTSTRAP_STANDALONE" || ( echo "Configuration is stale. You should almost certainly reconfigure" && false )
+diff -Naur a/configure.ac b/configure.ac
+--- a/configure.ac	2016-03-10 10:12:02.742014045 +0100
++++ b/configure.ac	2016-03-10 10:15:48.850453022 +0100
+@@ -2331,31 +2331,15 @@
+     addons/skin.estuary/media/Makefile \
+     addons/skin.estouchy/media/Makefile \
+     xbmc/Makefile \
+-    xbmc/addons/Makefile \
+-    xbmc/addons/test/Makefile \
+     xbmc/addons/binary/interfaces/Makefile \
+-    xbmc/addons/binary/interfaces/api1/Addon/Makefile \
+-    xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile \
+-    xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile \
+-    xbmc/addons/binary/interfaces/api1/Codec/Makefile \
+-    xbmc/addons/binary/interfaces/api1/GUI/Makefile \
+-    xbmc/addons/binary/interfaces/api1/InputStream/Makefile \
+-    xbmc/addons/binary/interfaces/api1/PVR/Makefile \
+     xbmc/cdrip/Makefile \
+-    xbmc/commons/Makefile \
+-    xbmc/contrib/kissfft/Makefile \
+     xbmc/cores/Makefile \
+-    xbmc/cores/AudioEngine/Sinks/test/Makefile \
+-    xbmc/cores/ExternalPlayer/Makefile \
+-    xbmc/cores/VideoPlayer/DVDInputStreams/Makefile \
+-    xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile \
+     xbmc/cores/VideoPlayer/VideoRenderers/Makefile \
+     xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile \
+     xbmc/cores/VideoPlayer/Makefile \
+     lib/libdvd/Makefile \
+     xbmc/cores/DllLoader/Makefile \
+     xbmc/cores/DllLoader/exports/Makefile \
+-    xbmc/cores/DllLoader/exports/util/Makefile \
+     xbmc/cores/VideoPlayer/DVDCodecs/Makefile \
+     xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile \
+     xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile \
+@@ -2367,81 +2351,14 @@
+     xbmc/cores/paplayer/Makefile \
+     xbmc/cores/omxplayer/Makefile \
+     xbmc/cores/playercorefactory/Makefile \
+-    xbmc/dbwrappers/Makefile \
+-    xbmc/dialogs/Makefile \
+-    xbmc/events/Makefile \
+-    xbmc/media/Makefile \
+     xbmc/messaging/Makefile \
+     xbmc/messaging/helpers/Makefile \
+-    xbmc/music/dialogs/Makefile \
+-    xbmc/music/infoscanner/Makefile \
+-    xbmc/music/Makefile \
+-    xbmc/music/tags/Makefile \
+-    xbmc/music/tags/test/Makefile \
+-    xbmc/music/windows/Makefile \
+-    xbmc/epg/Makefile \
+     xbmc/guilib/Makefile \
+-    xbmc/input/Makefile \
+     xbmc/input/linux/Makefile \
+-    xbmc/input/touch/generic/Makefile \
+-    xbmc/input/touch/Makefile \
+     xbmc/interfaces/Makefile \
+     xbmc/interfaces/builtins/Makefile \
+-    xbmc/interfaces/generic/Makefile \
+-    xbmc/interfaces/info/Makefile \
+-    xbmc/interfaces/json-rpc/Makefile \
+-    xbmc/interfaces/legacy/Makefile \
+-    xbmc/interfaces/legacy/wsgi/Makefile \
+-    xbmc/listproviders/Makefile \
+     xbmc/network/Makefile \
+-    xbmc/network/dacp/Makefile \
+-    xbmc/network/httprequesthandler/Makefile \
+-    xbmc/network/linux/Makefile \
+-    xbmc/network/mdns/Makefile \
+-    xbmc/network/osx/Makefile \
+-    xbmc/network/test/Makefile \
+     xbmc/network/upnp/Makefile \
+-    xbmc/network/websocket/Makefile \
+-    xbmc/peripherals/dialogs/Makefile \
+-    xbmc/peripherals/Makefile \
+-    xbmc/pictures/Makefile \
+-    xbmc/playlists/Makefile \
+-    xbmc/profiles/dialogs/Makefile \
+-    xbmc/profiles/Makefile \
+-    xbmc/profiles/windows/Makefile \
+-    xbmc/powermanagement/android/Makefile \
+-    xbmc/powermanagement/linux/Makefile \
+-    xbmc/powermanagement/Makefile \
+-    xbmc/powermanagement/osx/Makefile \
+-    xbmc/programs/Makefile \
+-    xbmc/pvr/addons/Makefile \
+-    xbmc/pvr/channels/Makefile \
+-    xbmc/pvr/dialogs/Makefile \
+-    xbmc/pvr/Makefile \
+-    xbmc/pvr/recordings/Makefile \
+-    xbmc/pvr/timers/Makefile \
+-    xbmc/pvr/windows/Makefile \
+-    xbmc/rendering/gles/Makefile \
+-    xbmc/rendering/gl/Makefile \
+-    xbmc/rendering/Makefile \
+-    xbmc/settings/dialogs/Makefile \
+-    xbmc/settings/lib/Makefile \
+-    xbmc/settings/Makefile \
+-    xbmc/settings/windows/Makefile \
+-    xbmc/storage/android/Makefile \
+-    xbmc/storage/linux/Makefile \
+-    xbmc/storage/Makefile \
+-    xbmc/storage/osx/Makefile \
+-    xbmc/threads/Makefile \
+-    xbmc/threads/test/Makefile \
+-    xbmc/video/dialogs/Makefile \
+-    xbmc/video/jobs/Makefile \
+-    xbmc/video/Makefile \
+-    xbmc/video/test/Makefile \
+-    xbmc/video/videosync/Makefile \
+-    xbmc/video/windows/Makefile \
+-    xbmc/view/Makefile \
+-    xbmc/windows/Makefile \
+     lib/libexif/Makefile \
+     lib/libUPnP/Makefile \
+     xbmc/DllPaths_generated.h \
+@@ -2449,14 +2366,8 @@
+     xbmc/freebsd/Makefile \
+     xbmc/linux/Makefile \
+     xbmc/filesystem/Makefile \
+-    xbmc/filesystem/MusicDatabaseDirectory/Makefile \
+-    xbmc/filesystem/VideoDatabaseDirectory/Makefile \
+-    xbmc/filesystem/test/Makefile \
+     xbmc/windowing/Makefile \
+     xbmc/windowing/egl/Makefile \
+-    xbmc/windowing/X11/Makefile \
+-    xbmc/windowing/android/Makefile \
+-    xbmc/windowing/osx/Makefile \
+     lib/addons/library.xbmc.addon/Makefile \
+     lib/addons/library.kodi.adsp/Makefile \
+     lib/addons/library.kodi.audioengine/Makefile \
+@@ -2464,10 +2375,6 @@
+     lib/addons/library.kodi.guilib/Makefile \
+     lib/addons/library.xbmc.pvr/Makefile \
+     lib/addons/library.kodi.inputstream/Makefile \
+-    tools/depends/native/JsonSchemaBuilder/Makefile \
+-    tools/depends/target/libdvdcss/Makefile \
+-    tools/depends/target/libdvdnav/Makefile \
+-    tools/depends/target/libdvdread/Makefile \
+     tools/Linux/kodi.sh \
+     tools/Linux/kodi-standalone.sh \
+     tools/Linux/kodi-xsession.desktop \
+@@ -2481,7 +2388,6 @@
+     xbmc/platform/android/loader/Makefile \
+     xbmc/platform/android/jni/Makefile \
+     xbmc/utils/Makefile \
+-    xbmc/utils/test/Makefile \
+     xbmc/platform/Makefile \
+     tools/darwin/Configurations/App.xcconfig \
+     tools/darwin/Configurations/Common.xcconfig \
+diff -Naur a/configure.ac.orig b/configure.ac.orig
+--- a/configure.ac.orig	2016-03-10 09:58:06.000000000 +0100
++++ b/configure.ac.orig	2016-03-10 10:12:02.742014045 +0100
+@@ -661,6 +661,18 @@
+      use_wayland=no
+      USE_STATIC_FFMPEG=1
+      ;;
++  aarch64*-*-linux-gnu*)
++     target_platform=target_linux
++     ARCH="aarch64"
++     use_arch="aarch64"
++     use_cpu=cortex-a53
++     use_joystick=no
++     use_neon=yes
++     use_gles=yes
++     use_gl=no
++     use_wayland=no
++     USE_STATIC_FFMPEG=1
++     ;;
+   arm*-*linux-android*)
+      target_platform=target_android
+      CORE_SYSTEM_NAME=android
+diff -Naur a/.gitignore b/.gitignore
+--- a/.gitignore	2016-03-10 09:58:06.000000000 +0100
++++ b/.gitignore	2016-03-10 10:15:48.850453022 +0100
+@@ -338,15 +338,11 @@
+ #/tools/depends
+ /tools/depends/native/*/*native/
+ /tools/depends/native/JsonSchemaBuilder/bin/
+-/tools/depends/native/JsonSchemaBuilder/Makefile
+ /tools/depends/native/TexturePacker/bin/
+ /tools/depends/target/ffmpeg/.ffmpeg-installed
+ /tools/depends/target/ffmpeg/ffmpeg-*-*.tar.gz
+ /tools/depends/target/ffmpeg/ffmpeg-*-*/
+ /tools/depends/target/ffmpeg/ffmpeg-install/
+-/tools/depends/target/libdvdcss/Makefile
+-/tools/depends/target/libdvdnav/Makefile
+-/tools/depends/target/libdvdread/Makefile
+ /tools/depends/target/Toolchain_binaddons.cmake
+ /tools/depends/target/config-binaddons.site
+ 
+@@ -401,15 +397,7 @@
+ 
+ # /xbmc/addons/
+ /xbmc/addons/Makefile
+-/xbmc/addons/test/Makefile
+ /xbmc/addons/binary/interfaces/Makefile
+-/xbmc/addons/binary/interfaces/api1/Addon/Makefile
+-/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile
+-/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile
+-/xbmc/addons/binary/interfaces/api1/Codec/Makefile
+-/xbmc/addons/binary/interfaces/api1/GUI/Makefile
+-/xbmc/addons/binary/interfaces/api1/InputStream/Makefile
+-/xbmc/addons/binary/interfaces/api1/PVR/Makefile
+ 
+ # /xbmc/platform/android
+ /xbmc/platform/android/Makefile
+@@ -420,44 +408,28 @@
+ # /xbmc/cdrip/
+ /xbmc/cdrip/Makefile
+ 
+-/xbmc/commons/Makefile
+-/xbmc/contrib/kissfft/Makefile
+-
+ # /xbmc/cores/
+ /xbmc/cores/AudioEngine/Makefile
+-/xbmc/cores/AudioEngine/Sinks/test/Makefile
+ /xbmc/cores/DllLoader/exports/build_wrapper.sh
+ /xbmc/cores/DllLoader/exports/wrapper.def
+ /xbmc/cores/DllLoader/Makefile
+ /xbmc/cores/DllLoader/exports/Makefile
+-/xbmc/cores/DllLoader/exports/util/Makefile
+-/xbmc/cores/ExternalPlayer/Makefile
+ /xbmc/cores/VideoPlayer/Makefile
+ /xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile
+ /xbmc/cores/VideoPlayer/DVDCodecs/Makefile
+ /xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile
+ /xbmc/cores/VideoPlayer/DVDCodecs/Video/Makefile
+ /xbmc/cores/VideoPlayer/DVDDemuxers/Makefile
+-/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile
+ /xbmc/cores/VideoPlayer/DVDSubtitles/Makefile
+ /xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile
+-/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile
+ /xbmc/cores/omxplayer/Makefile
+ /xbmc/cores/paplayer/Makefile
+ /xbmc/cores/playercorefactory/Makefile
+ /xbmc/cores/Makefile
+ /xbmc/cores/VideoPlayer/VideoRenderers/Makefile
+ 
+-/xbmc/dbwrappers/Makefile
+-/xbmc/dialogs/Makefile
+-/xbmc/epg/Makefile
+-/xbmc/events/Makefile
+-
+ # /xbmc/filesystem/
+ /xbmc/filesystem/Makefile
+-xbmc/filesystem/MusicDatabaseDirectory/Makefile
+-xbmc/filesystem/VideoDatabaseDirectory/Makefile
+-xbmc/filesystem/test/Makefile
+ 
+ # /xbmc/freebsd/
+ /xbmc/freebsd/Makefile
+@@ -477,20 +449,12 @@
+ /xbmc/guilib/Profile_FastCap
+ 
+ # /xbmc/input
+-/xbmc/input/Makefile
+ /xbmc/input/linux/Makefile
+-/xbmc/input/touch/Makefile
+-/xbmc/input/touch/generic/Makefile
+ 
+ # /xbmc/interfaces/
+ /xbmc/interfaces/Makefile
+ /xbmc/interfaces/builtins/Makefile
+-/xbmc/interfaces/generic/Makefile
+-/xbmc/interfaces/info/Makefile
+-/xbmc/interfaces/json-rpc/Makefile
+ /xbmc/interfaces/json-rpc/ServiceDescription.h
+-/xbmc/interfaces/legacy/Makefile
+-/xbmc/interfaces/legacy/wsgi/Makefile
+ /xbmc/interfaces/python/Makefile
+ /xbmc/interfaces/python/generated/
+ /xbmc/interfaces/python/test/Makefile
+@@ -499,17 +463,6 @@
+ /xbmc/linux/Makefile
+ /xbmc/linux/sse4/Makefile
+ 
+-/xbmc/listproviders/Makefile
+-/xbmc/media/Makefile
+-
+-# /xbmc/music/
+-/xbmc/music/Makefile
+-/xbmc/music/dialogs/Makefile
+-/xbmc/music/infoscanner/Makefile
+-/xbmc/music/tags/Makefile
+-/xbmc/music/tags/test/Makefile
+-/xbmc/music/windows/Makefile
+-
+ # /xbmc/platform/posix
+ /xbmc/platform/posix/Makefile
+ 
+@@ -522,15 +475,8 @@
+ 
+ # /xbmc/network/
+ /xbmc/network/Makefile
+-/xbmc/network/dacp/Makefile
+-/xbmc/network/httprequesthandler/Makefile
+ /xbmc/network/httprequesthandler/python/Makefile
+-/xbmc/network/linux/Makefile
+-/xbmc/network/mdns/Makefile
+-/xbmc/network/osx/Makefile
+-/xbmc/network/test/Makefile
+ /xbmc/network/upnp/Makefile
+-/xbmc/network/websocket/Makefile
+ 
+ # /xbmc/platform/darwin/osx/
+ /xbmc/platform/darwin/osx/Info.plist
+@@ -540,49 +486,8 @@
+ /xbmc/platform/darwin/osx/ios/IOS-Info.plist
+ 
+ # /xbmc/peripherals/
+-/xbmc/peripherals/Makefile
+ /xbmc/peripherals/bus/Makefile
+ /xbmc/peripherals/devices/Makefile
+-/xbmc/peripherals/dialogs/Makefile
+-
+-/xbmc/pictures/Makefile
+-/xbmc/playlists/Makefile
+-/xbmc/profiles/dialogs/Makefile
+-xbmc/profiles/Makefile
+-xbmc/profiles/windows/Makefile
+-xbmc/powermanagement/android/Makefile
+-xbmc/powermanagement/linux/Makefile
+-xbmc/powermanagement/Makefile
+-xbmc/powermanagement/osx/Makefile
+-xbmc/programs/Makefile
+-xbmc/pvr/addons/Makefile
+-xbmc/pvr/channels/Makefile
+-xbmc/pvr/dialogs/Makefile
+-xbmc/pvr/Makefile
+-xbmc/pvr/recordings/Makefile
+-xbmc/pvr/timers/Makefile
+-xbmc/pvr/windows/Makefile
+-xbmc/rendering/gles/Makefile
+-xbmc/rendering/gl/Makefile
+-xbmc/rendering/Makefile
+-xbmc/settings/dialogs/Makefile
+-xbmc/settings/lib/Makefile
+-xbmc/settings/Makefile
+-xbmc/settings/windows/Makefile
+-xbmc/storage/android/Makefile
+-xbmc/storage/linux/Makefile
+-xbmc/storage/Makefile
+-xbmc/storage/osx/Makefile
+-xbmc/threads/Makefile
+-xbmc/threads/test/Makefile
+-xbmc/video/dialogs/Makefile
+-xbmc/video/jobs/Makefile
+-xbmc/video/Makefile
+-xbmc/video/test/Makefile
+-xbmc/video/videosync/Makefile
+-xbmc/video/windows/Makefile
+-xbmc/view/Makefile
+-xbmc/windows/Makefile
+ 
+ #/xbmc/utils
+ /xbmc/utils/Makefile
+@@ -599,9 +504,6 @@
+ /xbmc/windowing/tests/wayland/xbmc_wayland_test_protocol.c
+ /xbmc/windowing/tests/wayland/xbmc_wayland_test_server_protocol.h
+ /xbmc/windowing/tests/wayland/Makefile
+-/xbmc/windowing/X11/Makefile
+-/xbmc/windowing/android/Makefile
+-/xbmc/windowing/osx/Makefile
+ 
+ # /lib/libdvd/
+ /lib/libdvd/bin
+diff -Naur a/lib/addons/library.kodi.adsp/Makefile.in b/lib/addons/library.kodi.adsp/Makefile.in
+--- a/lib/addons/library.kodi.adsp/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.kodi.adsp/Makefile.in	2016-03-10 10:16:15.868505483 +0100
+@@ -3,7 +3,7 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libKODI_adsp
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.kodi.adsp/$(LIBNAME)-$(ARCH).dylib
+@@ -11,8 +11,6 @@
+ LIB_SHARED=../../../addons/library.kodi.adsp/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -28,3 +26,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.kodi.audioengine/Makefile.in b/lib/addons/library.kodi.audioengine/Makefile.in
+--- a/lib/addons/library.kodi.audioengine/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.kodi.audioengine/Makefile.in	2016-03-10 10:16:15.868505483 +0100
+@@ -3,7 +3,7 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libKODI_audioengine
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.kodi.audioengine/$(LIBNAME)-$(ARCH).dylib
+@@ -11,8 +11,6 @@
+ LIB_SHARED=../../../addons/library.kodi.audioengine/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -28,3 +26,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.kodi.guilib/Makefile.in b/lib/addons/library.kodi.guilib/Makefile.in
+--- a/lib/addons/library.kodi.guilib/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.kodi.guilib/Makefile.in	2016-03-10 10:16:15.868505483 +0100
+@@ -3,9 +3,9 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libKODI_guilib
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+-LIB_INTERFACE=@top_srcdir@/xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h
++LIB_INTERFACE=../../../xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.kodi.guilib/$(LIBNAME)-$(ARCH).dylib
+@@ -17,8 +17,6 @@
+ LIB_VERSION := $(shell sed -n 's/.*KODI_GUILIB_API_VERSION\s*"\(.*\)"/\1/p' $(LIB_INTERFACE))
+ LIB_VERSION_MIN := $(shell sed -n 's/.*KODI_GUILIB_MIN_API_VERSION\s*"\(.*\)"/\1/p' $(LIB_INTERFACE))
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED) $(GENERATED_ADDON_GUILIB)
+ 
+ $(LIB_SHARED): $(OBJS) $(LIB_INTERFACE)
+@@ -36,3 +34,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.kodi.inputstream/Makefile.in b/lib/addons/library.kodi.inputstream/Makefile.in
+--- a/lib/addons/library.kodi.inputstream/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.kodi.inputstream/Makefile.in	2016-03-10 10:15:28.600413713 +0100
+@@ -3,20 +3,17 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libKODI_inputstream
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+-LIB_SHARED=@top_builddir@/addons/library.kodi.inputstream/$(LIBNAME)-$(ARCH).dylib
++LIB_SHARED=../../../addons/library.kodi.inputstream/$(LIBNAME)-$(ARCH).dylib
+ else
+-LIB_SHARED=@top_builddir@/addons/library.kodi.inputstream/$(LIBNAME)-$(ARCH).so
++LIB_SHARED=../../../addons/library.kodi.inputstream/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+-	@mkdir -p $(@D)
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -dynamiclib -o $@ $(OBJS)
+ else
+@@ -28,3 +25,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.xbmc.addon/Makefile.in b/lib/addons/library.xbmc.addon/Makefile.in
+--- a/lib/addons/library.xbmc.addon/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.xbmc.addon/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -3,7 +3,7 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libXBMC_addon
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.xbmc.addon/$(LIBNAME)-$(ARCH).dylib
+@@ -11,8 +11,6 @@
+ LIB_SHARED=../../../addons/library.xbmc.addon/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -28,3 +26,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.xbmc.codec/Makefile.in b/lib/addons/library.xbmc.codec/Makefile.in
+--- a/lib/addons/library.xbmc.codec/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.xbmc.codec/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -3,7 +3,7 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libXBMC_codec
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.xbmc.codec/$(LIBNAME)-$(ARCH).dylib
+@@ -11,8 +11,6 @@
+ LIB_SHARED=../../../addons/library.xbmc.codec/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -28,3 +26,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/addons/library.xbmc.pvr/Makefile.in b/lib/addons/library.xbmc.pvr/Makefile.in
+--- a/lib/addons/library.xbmc.pvr/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/addons/library.xbmc.pvr/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -1,9 +1,9 @@
+ ARCH=@ARCH@
+-INCLUDES=-I. -I@top_srcdir@/xbmc/addons/kodi-addon-dev-kit/include -I@top_srcdir@/xbmc/addons/kodi-addon-dev-kit/include -I@top_srcdir@/xbmc -I@top_srcdir@/xbmc/cores/VideoPlayer/DVDDemuxers
++INCLUDES=-I. -I../../../xbmc/addons/kodi-addon-dev-kit/include -I../../../xbmc/addons/kodi-addon-dev-kit/include -I../../../xbmc -I../../../xbmc/cores/VideoPlayer/DVDDemuxers
+ DEFINES+=
+ CXXFLAGS=-fPIC
+ LIBNAME=libXBMC_pvr
+-SRCS=$(LIBNAME).cpp
++OBJS=$(LIBNAME).o
+ 
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ LIB_SHARED=../../../addons/library.xbmc.pvr/$(LIBNAME)-$(ARCH).dylib
+@@ -11,8 +11,6 @@
+ LIB_SHARED=../../../addons/library.xbmc.pvr/$(LIBNAME)-$(ARCH).so
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -28,3 +26,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/lib/libdvd/Makefile.in b/lib/libdvd/Makefile.in
+--- a/lib/libdvd/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/libdvd/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -4,21 +4,21 @@
+ CXX=@CXX@
+ 
+ ifeq (@CROSS_COMPILING@,yes)
+-  DEPENDS_DIR = $(shell grep "^PREFIX=/" @top_builddir@/tools/depends/Makefile.include | sed 's/PREFIX=//g')
++  DEPENDS_DIR = $(shell grep "^PREFIX=/" @abs_top_srcdir@/tools/depends/Makefile.include | sed 's/PREFIX=//g')
+   DVDNAV_A = $(DEPENDS_DIR)/lib/libdvdnav.a
+   DVDREAD_A = $(DEPENDS_DIR)/lib/libdvdread.a
+   DVDCSS_A = $(DEPENDS_DIR)/lib/libdvdcss.a
+ else
+-  DVDNAV_A = @abs_top_builddir@/tools/depends/target/libdvdnav/dvdnav-install/lib/libdvdnav.a
+-  DVDREAD_A = @abs_top_builddir@/tools/depends/target/libdvdread/dvdread-install/lib/libdvdread.a
+-  DVDCSS_A = @abs_top_builddir@/tools/depends/target/libdvdcss/dvdcss-install/lib/libdvdcss.a
++  DVDNAV_A = @abs_top_srcdir@/tools/depends/target/libdvdnav/dvdnav-install/lib/libdvdnav.a
++  DVDREAD_A = @abs_top_srcdir@/tools/depends/target/libdvdread/dvdread-install/lib/libdvdread.a
++  DVDCSS_A = @abs_top_srcdir@/tools/depends/target/libdvdcss/dvdcss-install/lib/libdvdcss.a
+ endif
+ 
+-SYSDIR = @abs_top_builddir@/system/players/VideoPlayer
++SYSDIR = @abs_top_srcdir@/system/players/VideoPlayer
+ SOS = libdvdnav-$(ARCH).so
+ 
+-WRAPPER = @abs_top_builddir@/xbmc/cores/DllLoader/exports/wrapper.o
+-WRAPPER_DEF = @abs_top_builddir@/xbmc/cores/DllLoader/exports/wrapper.def
++WRAPPER = @abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper.o
++WRAPPER_DEF = @abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper.def
+ WRAPPER_MACH_ALIAS = @abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper_mach_alias
+ 
+ ifeq ($(findstring osx,$(ARCH)),osx)
+@@ -82,24 +82,23 @@
+ 	[ $(BUILD_DVDCSS) -eq 1 ] && { cd libdvdcss && ar x $(DVDCSS_A); } || :
+ 	cd libdvdnav; ar x $(DVDNAV_A)
+ 	cd libdvdread; ar x $(DVDREAD_A)
+-	@mkdir -p $(@D)
+ 	$(CC) -o $@ $(SO_LDFLAGS) -Wl,--soname,$@ libdvdread/*.o libdvdnav/*.o $(DVDCSS_OBJS) -lm -Wl,--unresolved-symbols=ignore-all \
+                 `cat  $(WRAPPER_DEF)` $(WRAPPER)
+ endif
+ 
+ $(WRAPPER_DEF):
+-	$(MAKE) -C @abs_top_builddir@/xbmc/cores/DllLoader/exports wrapper.def
++	$(MAKE) -C @abs_top_srcdir@/xbmc/cores/DllLoader/exports wrapper.def
+ 
+ $(DVDNAV_A): $(DVDREAD_A)
+-	$(MAKE) -C @abs_top_builddir@/tools/depends/target/libdvdnav
++	$(MAKE) -C @abs_top_srcdir@/tools/depends/target/libdvdnav
+ 
+ $(DVDREAD_A): $(DVDREAD_DEPS)
+-	$(MAKE) -C @abs_top_builddir@/tools/depends/target/libdvdread
++	$(MAKE) -C @abs_top_srcdir@/tools/depends/target/libdvdread
+ 
+ ifeq ($(BUILD_DVDCSS),1)
+ $(DVDCSS_A):
+-	$(MAKE) -C @abs_top_builddir@/tools/depends/target/libdvdcss
++	$(MAKE) -C @abs_top_srcdir@/tools/depends/target/libdvdcss
+ endif
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ 
+diff -Naur a/lib/libexif/Makefile.in b/lib/libexif/Makefile.in
+--- a/lib/libexif/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/libexif/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -1,17 +1,14 @@
+ ARCH=@ARCH@
+ 
+-SRCS=libexif.cpp ExifParse.cpp IptcParse.cpp JpegParse.cpp
++OBJS +=libexif.o ExifParse.o IptcParse.o JpegParse.o
+ CFLAGS +=-D_LINUX -D_DLL -fPIC -O2
+ CXXFLAGS +=-D_LINUX -D_DLL -fPIC -O2
+ 
+ SYSDIR=@abs_top_srcdir@/system
+ SO=libexif-$(ARCH).so
+-SLIB=@abs_top_builddir@/system/$(SO)
+-
+-include @abs_top_builddir@/Makefile.include
++SLIB=@abs_top_srcdir@/system/$(SO)
+ 
+ $(SLIB): $(OBJS)
+-	@mkdir -p $(@D)
+ ifeq ($(findstring osx,$(ARCH)), osx)
+ 	$(CXX) $(LDFLAGS) -Wl,-alias_list,@abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper_mach_alias \
+ 		-bundle -undefined dynamic_lookup -read_only_relocs suppress -o $@ \
+@@ -20,3 +17,5 @@
+ 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -o $@ $(OBJS) -Wl,--unresolved-symbols=ignore-all \
+ 		`cat @abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper.def` @abs_top_srcdir@/xbmc/cores/DllLoader/exports/wrapper.o
+ endif
++
++include @abs_top_srcdir@/Makefile.include
+diff -Naur a/lib/libUPnP/Makefile.in b/lib/libUPnP/Makefile.in
+--- a/lib/libUPnP/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/lib/libUPnP/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -102,7 +102,7 @@
+ 
+ LIB=libupnp.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../Makefile.include
+ -include $(filter %.P, $(OBJS:.o=.P))
+ 
+ endif
+diff -Naur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2016-03-10 10:12:02.586013742 +0100
++++ b/Makefile.in	2016-03-10 10:16:15.868505483 +0100
+@@ -1,6 +1,4 @@
+-srcdir = @srcdir@
+-
+-include $(srcdir)/bootstrap.mk
++include bootstrap.mk
+ 
+ null :=
+ space := ${null} ${null}
+@@ -286,19 +284,19 @@
+ 	@echo '@APP_NAME@ built successfully'
+ 	@echo '-----------------------'
+ 
+-include @abs_top_builddir@/Makefile.include
++include Makefile.include
+ 
+ .PHONY : dllloader exports eventclients \
+ 	dvdpcodecs dvdpextcodecs codecs externals force skins libaddon check \
+ 	testframework testsuite
+ 
+ # hack targets to keep build system up to date
+-Makefile : config.status $(addprefix $(srcdir)/, $(addsuffix .in, $(AUTOGENERATED_MAKEFILES)))
++Makefile : config.status $(addsuffix .in, $(AUTOGENERATED_MAKEFILES))
+ 	@echo "Regenerating Makefiles..."
+ 	@./config.status &> /dev/null
+ 	@echo "done"
+ 
+-config.status: $(srcdir)/configure
++config.status: configure
+ 
+ # skin textures
+ ifeq (@USE_TEXTUREPACKER@,1)
+@@ -316,7 +314,6 @@
+ lib/cpluff/libcpluff/.libs/libcpluff.a: force
+ 	$(MAKE) -C lib/cpluff/libcpluff
+ system/libcpluff-@ARCH@.so: lib/cpluff/libcpluff/.libs/libcpluff.a exports
+-	@mkdir -p $(@D)
+ ifeq ($(findstring osx,@ARCH@), osx)
+   ifeq (@ARCH@, arm-osx)
+ 	$(CXX) $(LDFLAGS) -all_load -bundle -flat_namespace -undefined dynamic_lookup -read_only_relocs suppress -o $@ $<
+@@ -418,7 +415,7 @@
+ 	@$(MAKE) $(if $(V),,-s) -C $(@D) $(@F)
+ 
+ # Binary Addon bindings
+-include $(srcdir)/xbmc/addons/addon-bindings.mk
++include xbmc/addons/addon-bindings.mk
+ 
+ lib@APP_NAME_LC@.so: $(OBJSXBMC) $(DYNOBJSXBMC) $(NWAOBJSXBMC) $(MAINOBJS)
+ ifeq ($(findstring osx,@ARCH@), osx)
+@@ -435,12 +432,12 @@
+ 	$(SILENT_LD) $(CXX) $(CXXFLAGS) $(LDFLAGS) -o @APP_NAME_LC@.bin $(MAINOBJS) -Wl,--start-group $(MAINOBJS) $(DYNOBJSXBMC) $(OBJSXBMC) -Wl,--end-group $(NWAOBJSXBMC) $(LIBS) -rdynamic
+ endif
+ 
+-@APP_NAME_LC@-xrandr: $(srcdir)/xbmc-xrandr.c
++@APP_NAME_LC@-xrandr: xbmc-xrandr.c
+ ifneq (1,@USE_X11@)
+ 	# xbmc-xrandr.c gets picked up by the default make rules
+ 	@echo "excluding @APP_NAME_LC@-xrandr"
+ else
+-	$(SILENT_LD) $(CC) $(CFLAGS) $(LDFLAGS) -o @APP_NAME_LC@-xrandr $< -lXrandr -lX11 -lm
++	$(SILENT_LD) $(CC) $(CFLAGS) $(LDFLAGS) -o @APP_NAME_LC@-xrandr xbmc-xrandr.c -lXrandr -lX11 -lm
+ endif
+ 
+ 
+@@ -512,7 +509,7 @@
+ install-datas: install-scripts
+ 	@echo "Copying support and legal files..."
+ 	@install -d $(DESTDIR)$(docdir)
+-	@install -m 0644 $(srcdir)/docs/README.linux $(srcdir)/LICENSE.GPL $(srcdir)/*.txt $(DESTDIR)$(docdir)
++	@install -m 0644 docs/README.linux LICENSE.GPL *.txt $(DESTDIR)$(docdir)
+ 	@echo "Done!"
+ 	@echo "Copying system files to $(DESTDIR)$(datarootdir)/@APP_NAME_LC@"
+ 	@install -d $(DESTDIR)$(datarootdir)/@APP_NAME_LC@
+@@ -533,40 +530,37 @@
+ 		-exec install -m 0644 "{}" $(DESTDIR)$(datarootdir)/xbmc/"{}" \; \
+ 		-exec printf " -- %-75.75s\r" "{}" \;
+ else
+-	@cd $(srcdir) && find addons media userdata system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+-ifneq (@srcdir@,@builddir@)
+-	@find addons system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+-endif
++	@find addons media userdata system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+ endif
+ endif
+ 	@# Icons and links
+ 	@install -d $(DESTDIR)$(datarootdir)/applications
+-	@install -m 0644 $(srcdir)/tools/Linux/kodi.desktop $(DESTDIR)$(datarootdir)/applications/@APP_NAME_LC@.desktop
++	@install -m 0644 tools/Linux/kodi.desktop $(DESTDIR)$(datarootdir)/applications/@APP_NAME_LC@.desktop
+ 
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon16x16.png $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon16x16.png $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon22x22.png $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon22x22.png $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon24x24.png $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon24x24.png $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon256x256.png $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon256x256.png $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps/@APP_NAME_LC@.png
+ 
+ 	@test -z "$(DESTDIR)" && gtk-update-icon-cache -f -q -t $(datadir)/icons/hicolor || :
+ 
+ 	@echo "Copying bindings to $(DESTDIR)$(includedir)/@APP_NAME_LC@"
+ 	@install -d $(DESTDIR)$(includedir)/@APP_NAME_LC@
+-	@install -m 0644 $(addprefix $(srcdir)/,$(BINDINGS)) $(DESTDIR)$(includedir)/@APP_NAME_LC@
++	@install -m 0644 $(BINDINGS) $(DESTDIR)$(includedir)/@APP_NAME_LC@
+ 	@install -d $(DESTDIR)$(libdir)/@APP_NAME_LC@
+-	@install -m 0644 project/cmake/*.cmake $(srcdir)/project/cmake/scripts/common/*.cmake $(DESTDIR)$(libdir)/@APP_NAME_LC@
++	@install -m 0644 project/cmake/*.cmake project/cmake/scripts/common/*.cmake $(DESTDIR)$(libdir)/@APP_NAME_LC@
+ 	@cd $(DESTDIR)$(includedir); [ -L xbmc ] || [ -d xbmc ] || ln -s @APP_NAME_LC@ xbmc
+ 
+ uninstall:
+diff -Naur a/Makefile.include.in b/Makefile.include.in
+--- a/Makefile.include.in	2016-03-10 09:58:06.000000000 +0100
++++ b/Makefile.include.in	2016-03-10 10:15:28.599413711 +0100
+@@ -3,10 +3,8 @@
+ RM=rm -rf
+ SHELL=@SHELL@
+ ARCH=@ARCH@
+-abs_top_builddir=@abs_top_builddir@
+ abs_top_srcdir=@abs_top_srcdir@
+-rel_top_srcdir=$(subst $(abspath $(abs_top_builddir))/,,$(abspath $(CURDIR))/)
+-srcdir?=$(abs_top_srcdir)/$(rel_top_srcdir)
++rel_top_srcdir=$(subst $(abspath $(abs_top_srcdir))/,,$(abspath $(CURDIR))/)
+ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+ bindir=@bindir@
+@@ -40,11 +38,9 @@
+ LDFLAGS+=@LDFLAGS@
+ LDFLAGS_FOR_BUILD+=@LDFLAGS_FOR_BUILD@
+ INCLUDES+=-I@abs_top_srcdir@
+-INCLUDES+=-I@abs_top_builddir@
+ INCLUDES+=-I@abs_top_builddir@/lib/cpluff/libcpluff
+ INCLUDES+=-I@abs_top_srcdir@/lib
+ INCLUDES+=-I@abs_top_srcdir@/xbmc
+-INCLUDES+=-I@abs_top_builddir@/xbmc
+ INCLUDES+=-I@abs_top_srcdir@/xbmc/addons/kodi-addon-dev-kit/include
+ INCLUDES+=-I@abs_top_srcdir@/addons/library.kodi.guilib
+ INCLUDES+=-I@abs_top_srcdir@/addons/library.xbmc.addon
+@@ -83,7 +79,6 @@
+ 	SILENT_LD =@echo "LD      $(rel_top_srcdir)$@";
+ endif
+ 
+-OBJS+=$(filter %.o,$(GENERATED:.cpp=.o))
+ OBJS+=$(filter %.o,$(SRCS:.cpp=.o))
+ OBJS+=$(filter %.o,$(SRCS:.c=.o))
+ OBJS+=$(filter %.o,$(SRCS:.S=.o))
+@@ -99,46 +94,41 @@
+   && rm -f $*.d \
+   || ( rm -f $*.P $@ && exit 1 )
+ 
+-$(filter %.o,$(GENERATED:.cpp=.o)): %.o: %.cpp
++%.o: %.cpp
+ 	@rm -f $@
+ 	$(SILENT_CPP) $(CXX) -MF $*.d -MD -c $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(CPPFLAGS) $< -o $@ \
+ 	&& $(GEN_DEPS)
+ 
+-$(filter %.o,$(SRCS:.cpp=.o)): %.o: $(srcdir)/%.cpp
++%.o: %.cc
+ 	@rm -f $@
+ 	@mkdir -p $(@D)
+ 	$(SILENT_CPP) $(CXX) -MF $*.d -MD -c $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(CPPFLAGS) $< -o $@ \
+ 	&& $(GEN_DEPS)
+ 
+-$(filter %.o,$(SRCS:.cc=.o)): %.o: $(srcdir)/%.cc
+-	@rm -f $@
+-	$(SILENT_CPP) $(CXX) -MF $*.d -MD -c $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(CPPFLAGS) $< -o $@ \
+-	&& $(GEN_DEPS)
+-
+-$(filter %.o,$(SRCS:.c=.o)): %.o: $(srcdir)/%.c
++%.o: %.c
+ 	@rm -f $@
+ 	$(SILENT_CC) $(CC) -MF $*.d -MD -c $(CFLAGS) $(DEFINES) $(INCLUDES) $(CPPFLAGS) $< -o $@ \
+ 	&& $(GEN_DEPS)
+ 
+-$(filter %.o,$(SRCS:.C=.o)): %.o: $(srcdir)/%.C
++%.o: %.C
+ 	@rm -f $@
+ 	$(SILENT_CPP) $(CXX) -MF $*.d -MD -c $(CFLAGS) $(DEFINES) $(INCLUDES) $(CPPFLAGS) $< -o $@ \
+ 	&& $(GEN_DEPS)
+ 
+-$(filter %.o,$(SRCS:.S=.o)): %.o: $(srcdir)/%.S
++%.o: %.S
+ 	@rm -f $@
+ 	$(SILENT_CC) $(CC) -c $(CFLAGS) $(DEFINES) $(INCLUDES) $< -o $@
+ 
+ 
+-%.h.gch : $(srcdir)/%.h
++%.h.gch : %.h
+ 	$(SILENT_GCH) $(CXX) -c $(CFLAGS) $(DEFINES) $(INCLUDES) $< -o $@
+ 
+-$(filter %.o,$(SRCS:.m=.o)): %.o: $(srcdir)/%.m
++%.o: %.m
+ 	@rm -f $@
+ 	$(SILENT_MM) $(CC) -MF $*.d -MD -c $(CFLAGS) $(DEFINES) $(INCLUDES) $< -o $@ \
+ 	&& $(GEN_DEPS)
+ 
+-$(filter %.o,$(SRCS:.mm=.o)): %.o: $(srcdir)/%.mm
++%.o: %.mm
+ 	@rm -f $@
+ 	$(SILENT_MM) $(CXX) -MF $*.d -MD -c $(CXXFLAGS) $(DEFINES) $(INCLUDES) $< -o $@ \
+ 	&& $(GEN_DEPS)
+diff -Naur a/Makefile.in.orig b/Makefile.in.orig
+--- a/Makefile.in.orig	2016-03-10 09:58:06.000000000 +0100
++++ b/Makefile.in.orig	2016-03-10 10:15:28.599413711 +0100
+@@ -1,6 +1,4 @@
+-srcdir = @srcdir@
+-
+-include $(srcdir)/bootstrap.mk
++include bootstrap.mk
+ 
+ null :=
+ space := ${null} ${null}
+@@ -13,7 +11,6 @@
+ 
+ DVDPCODECS_DIRS= \
+ 	lib \
+-	lib/libdvd 
+ 
+ VideoPlayer_ARCHIVES=xbmc/cores/VideoPlayer/VideoPlayer.a \
+                    xbmc/cores/VideoPlayer/DVDCodecs/DVDCodecs.a \
+@@ -294,12 +291,12 @@
+ 	testframework testsuite
+ 
+ # hack targets to keep build system up to date
+-Makefile : config.status $(addprefix $(srcdir)/, $(addsuffix .in, $(AUTOGENERATED_MAKEFILES)))
++Makefile : config.status $(addsuffix .in, $(AUTOGENERATED_MAKEFILES))
+ 	@echo "Regenerating Makefiles..."
+ 	@./config.status &> /dev/null
+ 	@echo "done"
+ 
+-config.status: $(srcdir)/configure
++config.status: configure
+ 
+ # skin textures
+ ifeq (@USE_TEXTUREPACKER@,1)
+@@ -317,7 +314,6 @@
+ lib/cpluff/libcpluff/.libs/libcpluff.a: force
+ 	$(MAKE) -C lib/cpluff/libcpluff
+ system/libcpluff-@ARCH@.so: lib/cpluff/libcpluff/.libs/libcpluff.a exports
+-	@mkdir -p $(@D)
+ ifeq ($(findstring osx,@ARCH@), osx)
+   ifeq (@ARCH@, arm-osx)
+ 	$(CXX) $(LDFLAGS) -all_load -bundle -flat_namespace -undefined dynamic_lookup -read_only_relocs suppress -o $@ $<
+@@ -343,7 +339,6 @@
+ 	$(MAKE) -C lib/addons/library.xbmc.pvr
+ 	$(MAKE) -C lib/addons/library.kodi.inputstream
+ dvdpcodecs: dllloader
+-	$(MAKE) -C lib/libdvd
+ 
+ dvdpextcodecs:
+ 
+@@ -420,7 +415,7 @@
+ 	@$(MAKE) $(if $(V),,-s) -C $(@D) $(@F)
+ 
+ # Binary Addon bindings
+-include $(srcdir)/xbmc/addons/addon-bindings.mk
++include xbmc/addons/addon-bindings.mk
+ 
+ lib@APP_NAME_LC@.so: $(OBJSXBMC) $(DYNOBJSXBMC) $(NWAOBJSXBMC) $(MAINOBJS)
+ ifeq ($(findstring osx,@ARCH@), osx)
+@@ -437,12 +432,12 @@
+ 	$(SILENT_LD) $(CXX) $(CXXFLAGS) $(LDFLAGS) -o @APP_NAME_LC@.bin $(MAINOBJS) -Wl,--start-group $(MAINOBJS) $(DYNOBJSXBMC) $(OBJSXBMC) -Wl,--end-group $(NWAOBJSXBMC) $(LIBS) -rdynamic
+ endif
+ 
+-@APP_NAME_LC@-xrandr: $(srcdir)/xbmc-xrandr.c
++@APP_NAME_LC@-xrandr: xbmc-xrandr.c
+ ifneq (1,@USE_X11@)
+ 	# xbmc-xrandr.c gets picked up by the default make rules
+ 	@echo "excluding @APP_NAME_LC@-xrandr"
+ else
+-	$(SILENT_LD) $(CC) $(CFLAGS) $(LDFLAGS) -o @APP_NAME_LC@-xrandr $< -lXrandr -lX11 -lm
++	$(SILENT_LD) $(CC) $(CFLAGS) $(LDFLAGS) -o @APP_NAME_LC@-xrandr xbmc-xrandr.c -lXrandr -lX11 -lm
+ endif
+ 
+ 
+@@ -514,7 +509,7 @@
+ install-datas: install-scripts
+ 	@echo "Copying support and legal files..."
+ 	@install -d $(DESTDIR)$(docdir)
+-	@install -m 0644 $(srcdir)/docs/README.linux $(srcdir)/LICENSE.GPL $(srcdir)/*.txt $(DESTDIR)$(docdir)
++	@install -m 0644 docs/README.linux LICENSE.GPL *.txt $(DESTDIR)$(docdir)
+ 	@echo "Done!"
+ 	@echo "Copying system files to $(DESTDIR)$(datarootdir)/@APP_NAME_LC@"
+ 	@install -d $(DESTDIR)$(datarootdir)/@APP_NAME_LC@
+@@ -535,40 +530,37 @@
+ 		-exec install -m 0644 "{}" $(DESTDIR)$(datarootdir)/xbmc/"{}" \; \
+ 		-exec printf " -- %-75.75s\r" "{}" \;
+ else
+-	@cd $(srcdir) && find addons media userdata system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+-ifneq (@srcdir@,@builddir@)
+-	@find addons system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+-endif
++	@find addons media userdata system -regextype posix-extended -type f -not -iregex ".*-@ARCH@.*|.*\.vis|.*\.xbs|.*\.git.*|.*\.so|.*\.so\.[0-9].*|.*\.dll|$(subst ${space},|,$(INSTALL_FILTER))" -exec install -D -m 0644 "{}" $(DESTDIR)$(datarootdir)/@APP_NAME_LC@/"{}" \; -printf " -- %-75.75f\r"
+ endif
+ endif
+ 	@# Icons and links
+ 	@install -d $(DESTDIR)$(datarootdir)/applications
+-	@install -m 0644 $(srcdir)/tools/Linux/kodi.desktop $(DESTDIR)$(datarootdir)/applications/@APP_NAME_LC@.desktop
++	@install -m 0644 tools/Linux/kodi.desktop $(DESTDIR)$(datarootdir)/applications/@APP_NAME_LC@.desktop
+ 
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon16x16.png $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon16x16.png $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon22x22.png $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon22x22.png $(DESTDIR)$(datadir)/icons/hicolor/22x22/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon24x24.png $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon24x24.png $(DESTDIR)$(datadir)/icons/hicolor/24x24/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon32x32.png $(DESTDIR)$(datadir)/icons/hicolor/32x32/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon48x48.png $(DESTDIR)$(datadir)/icons/hicolor/48x48/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon64x64.png $(DESTDIR)$(datadir)/icons/hicolor/64x64/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon128x128.png $(DESTDIR)$(datadir)/icons/hicolor/128x128/apps/@APP_NAME_LC@.png
+ 	@install -d $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps
+-	@install -m 0644 $(srcdir)/tools/Linux/packaging/media/icon256x256.png $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps/@APP_NAME_LC@.png
++	@install -m 0644 tools/Linux/packaging/media/icon256x256.png $(DESTDIR)$(datadir)/icons/hicolor/256x256/apps/@APP_NAME_LC@.png
+ 
+ 	@test -z "$(DESTDIR)" && gtk-update-icon-cache -f -q -t $(datadir)/icons/hicolor || :
+ 
+ 	@echo "Copying bindings to $(DESTDIR)$(includedir)/@APP_NAME_LC@"
+ 	@install -d $(DESTDIR)$(includedir)/@APP_NAME_LC@
+-	@install -m 0644 $(addprefix $(srcdir)/,$(BINDINGS)) $(DESTDIR)$(includedir)/@APP_NAME_LC@
++	@install -m 0644 $(BINDINGS) $(DESTDIR)$(includedir)/@APP_NAME_LC@
+ 	@install -d $(DESTDIR)$(libdir)/@APP_NAME_LC@
+-	@install -m 0644 project/cmake/*.cmake $(srcdir)/project/cmake/scripts/common/*.cmake $(DESTDIR)$(libdir)/@APP_NAME_LC@
++	@install -m 0644 project/cmake/*.cmake project/cmake/scripts/common/*.cmake $(DESTDIR)$(libdir)/@APP_NAME_LC@
+ 	@cd $(DESTDIR)$(includedir); [ -L xbmc ] || [ -d xbmc ] || ln -s @APP_NAME_LC@ xbmc
+ 
+ uninstall:
+diff -Naur a/tools/depends/native/JsonSchemaBuilder/Makefile b/tools/depends/native/JsonSchemaBuilder/Makefile
+--- a/tools/depends/native/JsonSchemaBuilder/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/tools/depends/native/JsonSchemaBuilder/Makefile	2016-03-10 10:15:48.850453022 +0100
+@@ -0,0 +1,42 @@
++ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++-include ../../Makefile.include
++
++ifeq ($(NATIVEPREFIX),)
++  PREFIX = $(ROOT_DIR)
++else
++  PREFIX = $(NATIVEPREFIX)
++endif
++
++ifeq ($(NATIVEPLATFORM),)
++  PLATFORM = native
++else
++  PLATFORM = $(NATIVEPLATFORM)
++endif
++
++SOURCE=$(ROOT_DIR)/src
++
++CONFIGURE=$(SOURCE)/configure --prefix=$(PREFIX)
++APP=$(PREFIX)/bin/JsonSchemaBuilder
++
++all: $(APP)
++
++$(SOURCE)/configure: $(SOURCE)/configure.ac
++	cd $(SOURCE) && ./autogen.sh
++
++$(PLATFORM)/config.log: $(SOURCE)/configure
++	rm -rf $(PLATFORM)
++	mkdir -p $(PLATFORM)
++	cd $(PLATFORM) && $(CONFIGURE)
++
++$(PLATFORM)/JsonSchemaBuilder: $(PLATFORM)/config.log
++	$(MAKE) -C $(PLATFORM)
++
++$(APP): $(PLATFORM)/JsonSchemaBuilder
++	$(MAKE) -C $(PLATFORM) install
++
++clean:
++	$(MAKE) -C $(PLATFORM) clean
++
++distclean::
++	rm -rf $(PLATFORM)
++	-rm -rf bin
+diff -Naur a/tools/depends/native/JsonSchemaBuilder/Makefile.in b/tools/depends/native/JsonSchemaBuilder/Makefile.in
+--- a/tools/depends/native/JsonSchemaBuilder/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/tools/depends/native/JsonSchemaBuilder/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,41 +0,0 @@
+--include ../../Makefile.include
+-
+-ifeq ($(NATIVEPREFIX),)
+-  PREFIX = @abs_builddir@
+-else
+-  PREFIX = $(NATIVEPREFIX)
+-endif
+-
+-ifeq ($(NATIVEPLATFORM),)
+-  PLATFORM = native
+-else
+-  PLATFORM = $(NATIVEPLATFORM)
+-endif
+-
+-SOURCE=@abs_srcdir@/src
+-
+-CONFIGURE=$(SOURCE)/configure --prefix=$(PREFIX)
+-APP=$(PREFIX)/bin/JsonSchemaBuilder
+-
+-all: $(APP)
+-
+-$(SOURCE)/configure: $(SOURCE)/configure.ac
+-	cd $(SOURCE) && ./autogen.sh
+-
+-$(PLATFORM)/config.log: $(SOURCE)/configure
+-	rm -rf $(PLATFORM)
+-	mkdir -p $(PLATFORM)
+-	cd $(PLATFORM) && $(CONFIGURE)
+-
+-$(PLATFORM)/JsonSchemaBuilder: $(PLATFORM)/config.log
+-	$(MAKE) -C $(PLATFORM)
+-
+-$(APP): $(PLATFORM)/JsonSchemaBuilder
+-	$(MAKE) -C $(PLATFORM) install
+-
+-clean:
+-	$(MAKE) -C $(PLATFORM) clean
+-
+-distclean::
+-	rm -rf $(PLATFORM)
+-	-rm -rf bin
+diff -Naur a/tools/depends/target/libdvdcss/Makefile b/tools/depends/target/libdvdcss/Makefile
+--- a/tools/depends/target/libdvdcss/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/tools/depends/target/libdvdcss/Makefile	2016-03-10 10:15:48.851453024 +0100
+@@ -0,0 +1,60 @@
++-include ../../Makefile.include
++include DVDCSS-VERSION
++DEPS= DVDCSS-VERSION Makefile
++
++ifeq ($(CROSS_COMPILING), yes)
++  DEPS += ../../Makefile.include
++else
++  ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++  PREFIX := $(ROOT_DIR)/dvdcss-install
++  AUTORECONF := autoreconf
++
++  ifeq ($(PLATFORM),)
++    PLATFORM = native
++    TARBALLS_LOCATION = $(ROOT_DIR)
++  endif
++endif
++
++RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
++ARCHIVE_TOOL := tar --strip-components=1 -xf
++
++# configuration settings
++config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
++
++CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
++
++GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
++ifeq ($(GITREV),)
++  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
++else
++  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
++endif
++
++
++all: .installed-$(PLATFORM)
++
++download: $(TARBALLS_LOCATION)/$(ARCHIVE)
++
++$(TARBALLS_LOCATION)/$(ARCHIVE):
++	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
++
++$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
++	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
++	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
++	cd $(PLATFORM); $(AUTORECONF) -vif && ac_cv_path_GIT= ./configure $(config)
++
++$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
++	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
++	$(MAKE) -C $(PLATFORM)
++
++.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
++	$(MAKE) -C $(PLATFORM) install
++	touch $@
++
++clean:
++	$(MAKE) -C $(PLATFORM) clean
++	rm -f .installed-$(PLATFORM)
++
++distclean::
++	rm -rf $(PLATFORM) .installed-$(PLATFORM)
++
+diff -Naur a/tools/depends/target/libdvdcss/Makefile.in b/tools/depends/target/libdvdcss/Makefile.in
+--- a/tools/depends/target/libdvdcss/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/tools/depends/target/libdvdcss/Makefile.in	2016-03-10 10:15:28.600413713 +0100
+@@ -1,11 +1,11 @@
+ -include ../../Makefile.include
+-include @srcdir@/DVDCSS-VERSION
+-DEPS= @srcdir@/DVDCSS-VERSION Makefile
++include DVDCSS-VERSION
++DEPS= DVDCSS-VERSION Makefile
+ 
+ ifeq ($(CROSS_COMPILING), yes)
+   DEPS += ../../Makefile.include
+ else
+-  ROOT_DIR := @abs_builddir@
++  ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+   PREFIX := $(ROOT_DIR)/dvdcss-install
+   AUTORECONF := autoreconf
+ 
+diff -Naur a/tools/depends/target/libdvdcss/Makefile.in.rej b/tools/depends/target/libdvdcss/Makefile.in.rej
+--- a/tools/depends/target/libdvdcss/Makefile.in.rej	1970-01-01 01:00:00.000000000 +0100
++++ b/tools/depends/target/libdvdcss/Makefile.in.rej	2016-03-10 10:15:53.292461652 +0100
+@@ -0,0 +1,63 @@
++--- tools/depends/target/libdvdcss/Makefile.in
+++++ tools/depends/target/libdvdcss/Makefile.in
++@@ -1,60 +0,0 @@
++--include ../../Makefile.include
++-include DVDCSS-VERSION
++-DEPS= DVDCSS-VERSION Makefile
++-
++-ifeq ($(CROSS_COMPILING), yes)
++-  DEPS += ../../Makefile.include
++-else
++-  ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++-  PREFIX := $(ROOT_DIR)/dvdcss-install
++-  AUTORECONF := autoreconf
++-
++-  ifeq ($(PLATFORM),)
++-    PLATFORM = native
++-    TARBALLS_LOCATION = $(ROOT_DIR)
++-  endif
++-endif
++-
++-RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
++-ARCHIVE_TOOL := tar --strip-components=1 -xf
++-
++-# configuration settings
++-config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
++-
++-CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
++-
++-GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
++-ifeq ($(GITREV),)
++-  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
++-else
++-  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
++-endif
++-
++-
++-all: .installed-$(PLATFORM)
++-
++-download: $(TARBALLS_LOCATION)/$(ARCHIVE)
++-
++-$(TARBALLS_LOCATION)/$(ARCHIVE):
++-	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
++-
++-$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
++-	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
++-	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
++-	cd $(PLATFORM); $(AUTORECONF) -vif && ac_cv_path_GIT= ./configure $(config)
++-
++-$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
++-	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
++-	$(MAKE) -C $(PLATFORM)
++-
++-.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
++-	$(MAKE) -C $(PLATFORM) install
++-	touch $@
++-
++-clean:
++-	$(MAKE) -C $(PLATFORM) clean
++-	rm -f .installed-$(PLATFORM)
++-
++-distclean::
++-	rm -rf $(PLATFORM) .installed-$(PLATFORM)
++-
+diff -Naur a/tools/depends/target/libdvdnav/Makefile b/tools/depends/target/libdvdnav/Makefile
+--- a/tools/depends/target/libdvdnav/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/tools/depends/target/libdvdnav/Makefile	2016-03-10 10:15:53.292461652 +0100
+@@ -0,0 +1,74 @@
++-include ../../Makefile.include
++include DVDNAV-VERSION
++DEPS = DVDNAV-VERSION Makefile
++
++# configuration settings
++config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
++EXTRA_CFLAGS = -D_XBMC -DHAVE_DVDCSS_DVDCSS_H
++
++ifeq ($(CROSS_COMPILING), yes)
++  DEPS += ../../Makefile.include
++else
++  ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++  PREFIX := $(ROOT_DIR)/dvdnav-install
++  AUTORECONF := autoreconf
++
++  ifeq ($(PLATFORM),)
++    PLATFORM = native
++    TARBALLS_LOCATION = $(ROOT_DIR)
++    PKGCONFIGPATH = PKG_CONFIG_PATH="$(ROOT_DIR)/../libdvdread/dvdread-install/lib/pkgconfig:$(ROOT_DIR)/../libdvdcss/dvdcss-install/lib/pkgconfig"
++    EXTRA_CFLAGS += -I$(ROOT_DIR)/../libdvdread/dvdread-install/include -I$(ROOT_DIR)/../libdvdcss/dvdcss-install/include
++  endif
++endif
++
++
++ifeq ($(OS),android)
++  EXTRA_CFLAGS +=  -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64
++endif
++ifeq ($(OS),osx)
++  EXTRA_CFLAGS +=  -D__DARWIN__
++endif
++ifeq ($(OS),ios)
++  EXTRA_CFLAGS +=  -D__DARWIN__
++endif
++
++RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
++ARCHIVE_TOOL := tar --strip-components=1 -xf
++
++GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
++ifeq ($(GITREV),)
++  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
++else
++  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
++endif
++
++
++CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
++
++all: .installed-$(PLATFORM)
++
++download: $(TARBALLS_LOCATION)/$(ARCHIVE)
++
++$(TARBALLS_LOCATION)/$(ARCHIVE):
++	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
++
++$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
++	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
++	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
++	cd $(PLATFORM); $(AUTORECONF) -vif && $(PKGCONFIGPATH) CFLAGS="$(CFLAGS) $(EXTRA_CFLAGS)" ac_cv_path_GIT= ./configure $(config)
++
++$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
++	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
++	$(MAKE) -C $(PLATFORM)
++
++.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
++	$(MAKE) -C $(PLATFORM) install
++	touch $@
++
++clean:
++	$(MAKE) -C $(PLATFORM) clean
++	rm -f .installed-$(PLATFORM)
++
++distclean::
++	rm -rf $(PLATFORM) .installed-$(PLATFORM)
++
+diff -Naur a/tools/depends/target/libdvdnav/Makefile.in b/tools/depends/target/libdvdnav/Makefile.in
+--- a/tools/depends/target/libdvdnav/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/tools/depends/target/libdvdnav/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,74 +0,0 @@
+--include ../../Makefile.include
+-include @srcdir@/DVDNAV-VERSION
+-DEPS = @srcdir@/DVDNAV-VERSION Makefile
+-
+-# configuration settings
+-config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
+-EXTRA_CFLAGS = -D_XBMC -DHAVE_DVDCSS_DVDCSS_H
+-
+-ifeq ($(CROSS_COMPILING), yes)
+-  DEPS += ../../Makefile.include
+-else
+-  ROOT_DIR := @abs_builddir@
+-  PREFIX := $(ROOT_DIR)/dvdnav-install
+-  AUTORECONF := autoreconf
+-
+-  ifeq ($(PLATFORM),)
+-    PLATFORM = native
+-    TARBALLS_LOCATION = $(ROOT_DIR)
+-    PKGCONFIGPATH = PKG_CONFIG_PATH="$(ROOT_DIR)/../libdvdread/dvdread-install/lib/pkgconfig:$(ROOT_DIR)/../libdvdcss/dvdcss-install/lib/pkgconfig"
+-    EXTRA_CFLAGS += -I$(ROOT_DIR)/../libdvdread/dvdread-install/include -I$(ROOT_DIR)/../libdvdcss/dvdcss-install/include
+-  endif
+-endif
+-
+-
+-ifeq ($(OS),android)
+-  EXTRA_CFLAGS +=  -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64
+-endif
+-ifeq ($(OS),osx)
+-  EXTRA_CFLAGS +=  -D__DARWIN__
+-endif
+-ifeq ($(OS),ios)
+-  EXTRA_CFLAGS +=  -D__DARWIN__
+-endif
+-
+-RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
+-ARCHIVE_TOOL := tar --strip-components=1 -xf
+-
+-GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
+-ifeq ($(GITREV),)
+-  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
+-else
+-  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
+-endif
+-
+-
+-CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
+-
+-all: .installed-$(PLATFORM)
+-
+-download: $(TARBALLS_LOCATION)/$(ARCHIVE)
+-
+-$(TARBALLS_LOCATION)/$(ARCHIVE):
+-	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
+-
+-$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
+-	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
+-	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
+-	cd $(PLATFORM); $(AUTORECONF) -vif && $(PKGCONFIGPATH) CFLAGS="$(CFLAGS) $(EXTRA_CFLAGS)" ac_cv_path_GIT= ./configure $(config)
+-
+-$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
+-	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
+-	$(MAKE) -C $(PLATFORM)
+-
+-.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
+-	$(MAKE) -C $(PLATFORM) install
+-	touch $@
+-
+-clean:
+-	$(MAKE) -C $(PLATFORM) clean
+-	rm -f .installed-$(PLATFORM)
+-
+-distclean::
+-	rm -rf $(PLATFORM) .installed-$(PLATFORM)
+-
+diff -Naur a/tools/depends/target/libdvdread/Makefile b/tools/depends/target/libdvdread/Makefile
+--- a/tools/depends/target/libdvdread/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/tools/depends/target/libdvdread/Makefile	2016-03-10 10:15:53.292461652 +0100
+@@ -0,0 +1,77 @@
++-include ../../Makefile.include
++include DVDREAD-VERSION
++DEPS = DVDREAD-VERSION Makefile
++
++# configuration settings
++config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
++EXTRA_CFLAGS = -D_XBMC
++
++ifeq ($(CROSS_COMPILING), yes)
++  DEPS += ../../Makefile.include
++else
++  ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
++  PREFIX := $(ROOT_DIR)/dvdread-install
++  AUTORECONF := autoreconf
++
++  ifeq ($(PLATFORM),)
++    PLATFORM = native
++    TARBALLS_LOCATION = $(ROOT_DIR)
++    PKGCONFIGPATH = PKG_CONFIG_PATH="$(ROOT_DIR)/../libdvdcss/dvdcss-install/lib/pkgconfig"
++    EXTRA_CFLAGS += -I$(ROOT_DIR)/../libdvdcss/dvdcss-install/include
++  endif
++endif
++
++ifneq ($(OS),ios)
++  config += --with-libdvdcss
++  EXTRA_CFLAGS += -DHAVE_DVDCSS_DVDCSS_H
++endif
++ifeq ($(OS),android)
++  EXTRA_CFLAGS +=  -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64
++endif
++ifeq ($(OS),osx)
++  EXTRA_CFLAGS +=  -D__DARWIN__
++endif
++ifeq ($(OS),ios)
++  EXTRA_CFLAGS +=  -D__DARWIN__ -UHAVE_DVDCSS_DVDCSS_H
++endif
++
++RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
++ARCHIVE_TOOL := tar --strip-components=1 -xf
++
++GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
++ifeq ($(GITREV),)
++  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
++else
++  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
++endif
++
++
++CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
++
++all: .installed-$(PLATFORM)
++
++download: $(TARBALLS_LOCATION)/$(ARCHIVE)
++
++$(TARBALLS_LOCATION)/$(ARCHIVE):
++	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
++
++$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
++	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
++	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
++	cd $(PLATFORM); $(AUTORECONF) -vif && $(PKGCONFIGPATH) CFLAGS="$(CFLAGS) $(EXTRA_CFLAGS)" ac_cv_path_GIT= ./configure $(config)
++
++$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
++	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
++	$(MAKE) -C $(PLATFORM)
++
++.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
++	$(MAKE) -C $(PLATFORM) install
++	touch $@
++
++clean:
++	$(MAKE) -C $(PLATFORM) clean
++	rm -f .installed-$(PLATFORM)
++
++distclean::
++	rm -rf $(PLATFORM) .installed-$(PLATFORM)
++
+diff -Naur a/tools/depends/target/libdvdread/Makefile.in b/tools/depends/target/libdvdread/Makefile.in
+--- a/tools/depends/target/libdvdread/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/tools/depends/target/libdvdread/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,77 +0,0 @@
+--include ../../Makefile.include
+-include @srcdir@/DVDREAD-VERSION
+-DEPS = @srcdir@/DVDREAD-VERSION Makefile
+-
+-# configuration settings
+-config = --prefix=$(PREFIX) --disable-shared --enable-static --with-pic
+-EXTRA_CFLAGS = -D_XBMC
+-
+-ifeq ($(CROSS_COMPILING), yes)
+-  DEPS += ../../Makefile.include
+-else
+-  ROOT_DIR := @abs_builddir@
+-  PREFIX := $(ROOT_DIR)/dvdread-install
+-  AUTORECONF := autoreconf
+-
+-  ifeq ($(PLATFORM),)
+-    PLATFORM = native
+-    TARBALLS_LOCATION = $(ROOT_DIR)
+-    PKGCONFIGPATH = PKG_CONFIG_PATH="$(ROOT_DIR)/../libdvdcss/dvdcss-install/lib/pkgconfig"
+-    EXTRA_CFLAGS += -I$(ROOT_DIR)/../libdvdcss/dvdcss-install/include
+-  endif
+-endif
+-
+-ifneq ($(OS),ios)
+-  config += --with-libdvdcss
+-  EXTRA_CFLAGS += -DHAVE_DVDCSS_DVDCSS_H
+-endif
+-ifeq ($(OS),android)
+-  EXTRA_CFLAGS +=  -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64
+-endif
+-ifeq ($(OS),osx)
+-  EXTRA_CFLAGS +=  -D__DARWIN__
+-endif
+-ifeq ($(OS),ios)
+-  EXTRA_CFLAGS +=  -D__DARWIN__ -UHAVE_DVDCSS_DVDCSS_H
+-endif
+-
+-RETRIEVE_TOOL := curl -Ls --create-dirs --retry 10 --retry-delay 3
+-ARCHIVE_TOOL := tar --strip-components=1 -xf
+-
+-GITREV=$(shell git ls-remote $(BASE_URL) $(VERSION) | awk '{print $$1}')
+-ifeq ($(GITREV),)
+-  ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
+-else
+-  ARCHIVE=$(LIBNAME)-$(GITREV).tar.gz
+-endif
+-
+-
+-CLEAN_FILES=$(ARCHIVE) $(PLATFORM)
+-
+-all: .installed-$(PLATFORM)
+-
+-download: $(TARBALLS_LOCATION)/$(ARCHIVE)
+-
+-$(TARBALLS_LOCATION)/$(ARCHIVE):
+-	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) -o $(TARBALLS_LOCATION)/$(ARCHIVE) $(BASE_URL)/archive/$(VERSION).tar.gz
+-
+-$(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
+-	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
+-	cd $(PLATFORM); $(ARCHIVE_TOOL) $(TARBALLS_LOCATION)/$(ARCHIVE)
+-	cd $(PLATFORM); $(AUTORECONF) -vif && $(PKGCONFIGPATH) CFLAGS="$(CFLAGS) $(EXTRA_CFLAGS)" ac_cv_path_GIT= ./configure $(config)
+-
+-$(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
+-	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
+-	$(MAKE) -C $(PLATFORM)
+-
+-.installed-$(PLATFORM): $(PLATFORM)/.libs/$(LIBNAME).a
+-	$(MAKE) -C $(PLATFORM) install
+-	touch $@
+-
+-clean:
+-	$(MAKE) -C $(PLATFORM) clean
+-	rm -f .installed-$(PLATFORM)
+-
+-distclean::
+-	rm -rf $(PLATFORM) .installed-$(PLATFORM)
+-
+diff -Naur a/tools/EventClients/Makefile.in b/tools/EventClients/Makefile.in
+--- a/tools/EventClients/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/tools/EventClients/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -30,4 +30,4 @@
+ 	mkdir -p $(DESTDIR)$(datarootdir)/pixmaps/@APP_NAME_LC@
+ 	cp -a icons/* $(DESTDIR)$(datarootdir)/pixmaps/@APP_NAME_LC@/
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../Makefile.include
+diff -Naur a/xbmc/addons/binary/interfaces/api1/Addon/Makefile b/xbmc/addons/binary/interfaces/api1/Addon/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/Addon/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/Addon/Makefile	2016-03-10 10:15:53.292461652 +0100
+@@ -0,0 +1,7 @@
++SRCS=AddonCallbacksAddon.cpp \
++
++LIB=addon-callbacks-addon.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/binary/interfaces/api1/Addon/Makefile.in b/xbmc/addons/binary/interfaces/api1/Addon/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/Addon/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/Addon/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=AddonCallbacksAddon.cpp \
+-
+-LIB=addon-callbacks-addon.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile b/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,7 @@
++SRCS=AddonCallbacksAudioDSP.cpp \
++
++LIB=addon-callbacks-audiodsp.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile.in b/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/AudioDSP/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=AddonCallbacksAudioDSP.cpp \
+-
+-LIB=addon-callbacks-audiodsp.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile b/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,6 @@
++SRCS=AddonCallbacksAudioEngine.cpp \
++
++LIB=addon-callbacks-audioengine.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile.in b/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/AudioEngine/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=AddonCallbacksAudioEngine.cpp \
+-
+-LIB=addon-callbacks-audioengine.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/binary/interfaces/api1/Codec/Makefile b/xbmc/addons/binary/interfaces/api1/Codec/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/Codec/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/Codec/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,7 @@
++SRCS=AddonCallbacksCodec.cpp \
++
++LIB=addon-callbacks-codec.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/binary/interfaces/api1/Codec/Makefile.in b/xbmc/addons/binary/interfaces/api1/Codec/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/Codec/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/Codec/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=AddonCallbacksCodec.cpp \
+-
+-LIB=addon-callbacks-codec.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/binary/interfaces/api1/GUI/Makefile b/xbmc/addons/binary/interfaces/api1/GUI/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/GUI/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/GUI/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,9 @@
++SRCS=AddonCallbacksGUI.cpp \
++     AddonGUIRenderingControl.cpp \
++     AddonGUIWindow.cpp \
++
++LIB=addon-callbacks-gui.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/binary/interfaces/api1/GUI/Makefile.in b/xbmc/addons/binary/interfaces/api1/GUI/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/GUI/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/GUI/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=AddonCallbacksGUI.cpp \
+-     AddonGUIRenderingControl.cpp \
+-     AddonGUIWindow.cpp \
+-
+-LIB=addon-callbacks-gui.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/binary/interfaces/api1/InputStream/Makefile b/xbmc/addons/binary/interfaces/api1/InputStream/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/InputStream/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/InputStream/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,7 @@
++SRCS=AddonCallbacksInputStream.cpp \
++
++LIB=addon-callbacks-inputstream.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/binary/interfaces/api1/InputStream/Makefile.in b/xbmc/addons/binary/interfaces/api1/InputStream/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/InputStream/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/InputStream/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=AddonCallbacksInputStream.cpp \
+-
+-LIB=addon-callbacks-inputstream.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/binary/interfaces/api1/PVR/Makefile b/xbmc/addons/binary/interfaces/api1/PVR/Makefile
+--- a/xbmc/addons/binary/interfaces/api1/PVR/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/PVR/Makefile	2016-03-10 10:15:53.293461654 +0100
+@@ -0,0 +1,6 @@
++SRCS=AddonCallbacksPVR.cpp \
++
++LIB=addon-callbacks-pvr.a
++
++include ../../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/binary/interfaces/api1/PVR/Makefile.in b/xbmc/addons/binary/interfaces/api1/PVR/Makefile.in
+--- a/xbmc/addons/binary/interfaces/api1/PVR/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/api1/PVR/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=AddonCallbacksPVR.cpp \
+-
+-LIB=addon-callbacks-pvr.a
+-
+-include @top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/binary/interfaces/Makefile.in b/xbmc/addons/binary/interfaces/Makefile.in
+--- a/xbmc/addons/binary/interfaces/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/binary/interfaces/Makefile.in	2016-03-10 10:15:28.600413713 +0100
+@@ -2,5 +2,5 @@
+ 
+ LIB=addon-interfaces.a
+ 
+-include @top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/Makefile b/xbmc/addons/Makefile
+--- a/xbmc/addons/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/Makefile	2016-03-10 10:16:15.869505485 +0100
+@@ -0,0 +1,34 @@
++SRCS=Addon.cpp \
++     AddonBuilder.cpp \
++     AddonDatabase.cpp \
++     AddonInstaller.cpp \
++     AddonManager.cpp \
++     AddonStatusHandler.cpp \
++     AddonSystemSettings.cpp \
++     AddonVersion.cpp \
++     AudioEncoder.cpp \
++     ContextMenuAddon.cpp \
++     AudioDecoder.cpp \
++     GUIDialogAddonInfo.cpp \
++     GUIDialogAddonSettings.cpp \
++     GUIViewStateAddonBrowser.cpp \
++     GUIWindowAddonBrowser.cpp \
++     ImageResource.cpp \
++     InputStream.cpp \
++     LanguageResource.cpp \
++     PluginSource.cpp \
++     Repository.cpp \
++     RepositoryUpdater.cpp \
++     Scraper.cpp \
++     ScreenSaver.cpp \
++     Service.cpp \
++     Skin.cpp \
++     UISoundsResource.cpp \
++     Visualisation.cpp \
++     Webinterface.cpp \
++
++LIB=addons.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/addons/Makefile.in b/xbmc/addons/Makefile.in
+--- a/xbmc/addons/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,34 +0,0 @@
+-SRCS=Addon.cpp \
+-     AddonBuilder.cpp \
+-     AddonDatabase.cpp \
+-     AddonInstaller.cpp \
+-     AddonManager.cpp \
+-     AddonStatusHandler.cpp \
+-     AddonSystemSettings.cpp \
+-     AddonVersion.cpp \
+-     AudioEncoder.cpp \
+-     ContextMenuAddon.cpp \
+-     AudioDecoder.cpp \
+-     GUIDialogAddonInfo.cpp \
+-     GUIDialogAddonSettings.cpp \
+-     GUIViewStateAddonBrowser.cpp \
+-     GUIWindowAddonBrowser.cpp \
+-     ImageResource.cpp \
+-     InputStream.cpp \
+-     LanguageResource.cpp \
+-     PluginSource.cpp \
+-     Repository.cpp \
+-     RepositoryUpdater.cpp \
+-     Scraper.cpp \
+-     ScreenSaver.cpp \
+-     Service.cpp \
+-     Skin.cpp \
+-     UISoundsResource.cpp \
+-     Visualisation.cpp \
+-     Webinterface.cpp \
+-
+-LIB=addons.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/addons/test/Makefile b/xbmc/addons/test/Makefile
+--- a/xbmc/addons/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/addons/test/Makefile	2016-03-10 10:16:15.869505485 +0100
+@@ -0,0 +1,11 @@
++SRCS=	\
++  TestAddonBuilder.cpp \
++  TestAddonFactory.cpp \
++  TestAddonVersion.cpp
++
++LIB=addonsTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/addons/test/Makefile.in b/xbmc/addons/test/Makefile.in
+--- a/xbmc/addons/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/addons/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=	\
+-  TestAddonBuilder.cpp \
+-  TestAddonFactory.cpp \
+-  TestAddonVersion.cpp
+-
+-LIB=addonsTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cdrip/Makefile.in b/xbmc/cdrip/Makefile.in
+--- a/xbmc/cdrip/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cdrip/Makefile.in	2016-03-10 10:16:15.870505487 +0100
+@@ -5,5 +5,5 @@
+ 
+ LIB=cdrip.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/commons/Makefile b/xbmc/commons/Makefile
+--- a/xbmc/commons/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/commons/Makefile	2016-03-10 10:16:15.870505487 +0100
+@@ -0,0 +1,8 @@
++SRCS= \
++	Exception.cpp \
++	ilog.cpp
++
++LIB=commons.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(patsubst %.S,,$(SRCS))))
+diff -Naur a/xbmc/commons/Makefile.in b/xbmc/commons/Makefile.in
+--- a/xbmc/commons/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/commons/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS= \
+-	Exception.cpp \
+-	ilog.cpp
+-
+-LIB=commons.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(patsubst %.S,,$(SRCS))))
+diff -Naur a/xbmc/contrib/kissfft/Makefile b/xbmc/contrib/kissfft/Makefile
+--- a/xbmc/contrib/kissfft/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/contrib/kissfft/Makefile	2016-03-10 10:16:15.870505487 +0100
+@@ -0,0 +1,6 @@
++SRCS=kiss_fft.c kiss_fftr.c
++
++LIB=kissfft.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/contrib/kissfft/Makefile.in b/xbmc/contrib/kissfft/Makefile.in
+--- a/xbmc/contrib/kissfft/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/contrib/kissfft/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=kiss_fft.c kiss_fftr.c
+-
+-LIB=kissfft.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/AudioEngine/Makefile.in b/xbmc/cores/AudioEngine/Makefile.in
+--- a/xbmc/cores/AudioEngine/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/AudioEngine/Makefile.in	2016-03-10 10:16:15.870505487 +0100
+@@ -1,6 +1,6 @@
+ ARCH=@ARCH@
+ 
+-INCLUDES  = -I@srcdir@
++INCLUDES  = -I.
+ INCLUDES += -I@abs_top_srcdir@/xbmc
+ INCLUDES += -I@abs_top_srcdir@/xbmc/linux
+ INCLUDES += -I@abs_top_srcdir@/xbmc/utils
+@@ -77,5 +77,5 @@
+ 
+ LIB   = audioengine.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/AudioEngine/Sinks/test/Makefile b/xbmc/cores/AudioEngine/Sinks/test/Makefile
+--- a/xbmc/cores/AudioEngine/Sinks/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/AudioEngine/Sinks/test/Makefile	2016-03-10 10:16:15.870505487 +0100
+@@ -0,0 +1,9 @@
++SRCS=TestAESinkDARWINOSX.cpp
++
++#move this out of the if block if needed
++LIB=AESinkTest.a
++
++INCLUDES += -I../../../../../lib/gtest/include
++
++include ../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/AudioEngine/Sinks/test/Makefile.in b/xbmc/cores/AudioEngine/Sinks/test/Makefile.in
+--- a/xbmc/cores/AudioEngine/Sinks/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/AudioEngine/Sinks/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=TestAESinkDARWINOSX.cpp
+-
+-#move this out of the if block if needed
+-LIB=AESinkTest.a
+-
+-INCLUDES += -I../../../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/DllLoader/exports/Makefile.in b/xbmc/cores/DllLoader/exports/Makefile.in
+--- a/xbmc/cores/DllLoader/exports/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/DllLoader/exports/Makefile.in	2016-03-10 10:16:15.870505487 +0100
+@@ -7,10 +7,10 @@
+ 
+ CLEAN_FILES = wrapper.def
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+-wrapper.o : @srcdir@/wrapper.c
++wrapper.o : wrapper.c
+ 	$(CC) $(CFLAGS) $(DEFINES) -c $(INCLUDES) $< -o $@
+ 
+ exports_python_linux.o : exports_python_linux.cpp
+diff -Naur a/xbmc/cores/DllLoader/exports/util/Makefile b/xbmc/cores/DllLoader/exports/util/Makefile
+--- a/xbmc/cores/DllLoader/exports/util/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/DllLoader/exports/util/Makefile	2016-03-10 10:16:15.870505487 +0100
+@@ -0,0 +1,6 @@
++SRCS=EmuFileWrapper.cpp
++
++LIB=exports_utils.a
++
++include ../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/DllLoader/exports/util/Makefile.in b/xbmc/cores/DllLoader/exports/util/Makefile.in
+--- a/xbmc/cores/DllLoader/exports/util/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/DllLoader/exports/util/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=EmuFileWrapper.cpp
+-
+-LIB=exports_utils.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/DllLoader/Makefile.in b/xbmc/cores/DllLoader/Makefile.in
+--- a/xbmc/cores/DllLoader/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/DllLoader/Makefile.in	2016-03-10 10:16:15.870505487 +0100
+@@ -19,5 +19,5 @@
+ 
+ LIB = dllloader.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/ExternalPlayer/Makefile b/xbmc/cores/ExternalPlayer/Makefile
+--- a/xbmc/cores/ExternalPlayer/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/ExternalPlayer/Makefile	2016-03-10 10:16:15.870505487 +0100
+@@ -0,0 +1,6 @@
++SRCS=ExternalPlayer.cpp
++
++LIB=ExternalPlayer.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/ExternalPlayer/Makefile.in b/xbmc/cores/ExternalPlayer/Makefile.in
+--- a/xbmc/cores/ExternalPlayer/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/ExternalPlayer/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=ExternalPlayer.cpp
+-
+-LIB=ExternalPlayer.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/Makefile.in b/xbmc/cores/Makefile.in
+--- a/xbmc/cores/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/Makefile.in	2016-03-10 10:16:15.870505487 +0100
+@@ -3,5 +3,5 @@
+ 
+ LIB = cores.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/omxplayer/Makefile.in b/xbmc/cores/omxplayer/Makefile.in
+--- a/xbmc/cores/omxplayer/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/omxplayer/Makefile.in	2016-03-10 10:16:15.872505490 +0100
+@@ -13,6 +13,6 @@
+ @abs_top_srcdir@/system/advancedsettings.xml: $(LIB)
+ 	cp -f omxplayer_advancedsettings.xml $@
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/paplayer/Makefile.in b/xbmc/cores/paplayer/Makefile.in
+--- a/xbmc/cores/paplayer/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/paplayer/Makefile.in	2016-03-10 10:16:15.872505490 +0100
+@@ -14,5 +14,5 @@
+ 
+ LIB = paplayer.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/playercorefactory/Makefile.in b/xbmc/cores/playercorefactory/Makefile.in
+--- a/xbmc/cores/playercorefactory/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/playercorefactory/Makefile.in	2016-03-10 10:16:15.872505490 +0100
+@@ -3,6 +3,6 @@
+ 
+ LIB = playercorefactory.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile.in b/xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Audio/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -7,6 +7,6 @@
+ 
+ LIB=Audio.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDCodecs/Makefile.in b/xbmc/cores/VideoPlayer/DVDCodecs/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -5,6 +5,6 @@
+ 
+ LIB=	DVDCodecs.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile.in b/xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Overlay/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -10,6 +10,6 @@
+ 
+ LIB = Overlay.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDCodecs/Video/Makefile.in b/xbmc/cores/VideoPlayer/DVDCodecs/Video/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -38,6 +38,6 @@
+ 
+ LIB=Video.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDDemuxers/Makefile.in b/xbmc/cores/VideoPlayer/DVDDemuxers/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -12,6 +12,6 @@
+ 
+ LIB = DVDDemuxers.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile b/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile	2016-03-10 10:16:15.871505489 +0100
+@@ -0,0 +1,21 @@
++CXXFLAGS += -D__STDC_FORMAT_MACROS \
++          -DENABLE_DVDINPUTSTREAM_STACK \
++
++SRCS=	DVDFactoryInputStream.cpp \
++	DVDInputStream.cpp \
++	DVDInputStreamBluray.cpp \
++	DVDInputStreamFFmpeg.cpp \
++	DVDInputStreamFile.cpp \
++	DVDInputStreamMemory.cpp \
++	DVDInputStreamNavigator.cpp \
++	DVDInputStreamRTMP.cpp \
++	DVDInputStreamPVRManager.cpp \
++	DVDInputStreamStack.cpp \
++	InputStreamAddon.cpp \
++	DVDStateSerializer.cpp \
++
++LIB=	DVDInputStreams.a
++
++include ../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile.in b/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,21 +0,0 @@
+-CXXFLAGS += -D__STDC_FORMAT_MACROS \
+-          -DENABLE_DVDINPUTSTREAM_STACK \
+-
+-SRCS=	DVDFactoryInputStream.cpp \
+-	DVDInputStream.cpp \
+-	DVDInputStreamBluray.cpp \
+-	DVDInputStreamFFmpeg.cpp \
+-	DVDInputStreamFile.cpp \
+-	DVDInputStreamMemory.cpp \
+-	DVDInputStreamNavigator.cpp \
+-	DVDInputStreamRTMP.cpp \
+-	DVDInputStreamPVRManager.cpp \
+-	DVDInputStreamStack.cpp \
+-	InputStreamAddon.cpp \
+-	DVDStateSerializer.cpp \
+-
+-LIB=	DVDInputStreams.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/cores/VideoPlayer/DVDSubtitles/Makefile.in b/xbmc/cores/VideoPlayer/DVDSubtitles/Makefile.in
+--- a/xbmc/cores/VideoPlayer/DVDSubtitles/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/DVDSubtitles/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -15,6 +15,6 @@
+ 
+ LIB = DVDSubtitles.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/Makefile.in b/xbmc/cores/VideoPlayer/Makefile.in
+--- a/xbmc/cores/VideoPlayer/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -19,6 +19,6 @@
+ 
+ LIB = VideoPlayer.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/cores/VideoPlayer/Process/Makefile.in b/xbmc/cores/VideoPlayer/Process/Makefile.in
+--- a/xbmc/cores/VideoPlayer/Process/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/Process/Makefile.in	2016-03-10 10:15:28.601413715 +0100
+@@ -14,5 +14,5 @@
+ SRCS  = ProcessInfo.cpp $(OVERRIDES)
+ LIB = Process.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in	2016-03-10 10:16:15.871505489 +0100
+@@ -32,5 +32,5 @@
+ 
+ LIB=HwDecRender.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in.orig b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in.orig
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in.orig	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/Makefile.in.orig	2016-03-10 09:58:06.000000000 +0100
+@@ -0,0 +1,36 @@
++SRCS=
++
++ifeq (@USE_OPENGL@,1)
++SRCS += RendererVAAPI.cpp
++SRCS += RendererVDPAU.cpp
++SRCS += RendererMediaCodec.cpp
++endif
++
++ifeq (@USE_OPENGLES@,1)
++SRCS += RendererVAAPI.cpp
++endif
++
++ifeq (@USE_MMAL@,1)
++SRCS += MMALRenderer.cpp
++endif
++
++ifeq (@USE_OPENGLES@,1)
++SRCS += RendererVTB.cpp
++SRCS += RendererIMX.cpp
++SRCS += RendererOpenMax.cpp
++SRCS += RendererMediaCodec.cpp
++SRCS += RendererMediaCodecSurface.cpp
++endif
++
++ifeq (@USE_LIBAMCODEC@,1)
++SRCS += RendererAML.cpp
++endif
++
++ifeq ($(findstring osx,@ARCH@),osx)
++SRCS += RendererVDA.cpp
++endif
++
++LIB=HwDecRender.a
++
++include @abs_top_builddir@/Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/VideoPlayer/VideoRenderers/Makefile.in b/xbmc/cores/VideoPlayer/VideoRenderers/Makefile.in
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/Makefile.in	2016-03-10 10:16:15.872505490 +0100
+@@ -23,5 +23,5 @@
+ 
+ LIB = VideoRenderer.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(patsubst %.S,,$(SRCS)))) 
+diff -Naur a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile	2016-03-10 10:16:15.872505490 +0100
+@@ -0,0 +1,6 @@
++SRCS=YUV2RGBShader.cpp VideoFilterShader.cpp ConvolutionKernels.cpp GLSLOutput.cpp
++
++LIB=VideoShaders.a
++
++include ../../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile.in b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile.in
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=YUV2RGBShader.cpp VideoFilterShader.cpp ConvolutionKernels.cpp GLSLOutput.cpp
+-
+-LIB=VideoShaders.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/dbwrappers/Makefile b/xbmc/dbwrappers/Makefile
+--- a/xbmc/dbwrappers/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/dbwrappers/Makefile	2016-03-10 10:16:15.872505490 +0100
+@@ -0,0 +1,11 @@
++SRCS=Database.cpp \
++     DatabaseQuery.cpp \
++     dataset.cpp \
++     mysqldataset.cpp \
++     qry_dat.cpp \
++     sqlitedataset.cpp \
++
++LIB=dbwrappers.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/dbwrappers/Makefile.in b/xbmc/dbwrappers/Makefile.in
+--- a/xbmc/dbwrappers/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/dbwrappers/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=Database.cpp \
+-     DatabaseQuery.cpp \
+-     dataset.cpp \
+-     mysqldataset.cpp \
+-     qry_dat.cpp \
+-     sqlitedataset.cpp \
+-
+-LIB=dbwrappers.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/dialogs/Makefile b/xbmc/dialogs/Makefile
+--- a/xbmc/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/dialogs/Makefile	2016-03-10 10:16:15.872505490 +0100
+@@ -0,0 +1,33 @@
++SRCS=GUIDialogBoxBase.cpp \
++     GUIDialogBusy.cpp \
++     GUIDialogButtonMenu.cpp \
++     GUIDialogCache.cpp \
++     GUIDialogContextMenu.cpp \
++     GUIDialogExtendedProgressBar.cpp \
++     GUIDialogFavourites.cpp \
++     GUIDialogFileBrowser.cpp \
++     GUIDialogGamepad.cpp \
++     GUIDialogKaiToast.cpp \
++     GUIDialogKeyboardGeneric.cpp \
++     GUIDialogMediaFilter.cpp \
++     GUIDialogMediaSource.cpp \
++     GUIDialogNumeric.cpp \
++     GUIDialogOK.cpp \
++     GUIDialogPlayEject.cpp \
++     GUIDialogPlayerControls.cpp \
++     GUIDialogProgress.cpp \
++     GUIDialogSeekBar.cpp \
++     GUIDialogSelect.cpp \
++     GUIDialogSimpleMenu.cpp \
++     GUIDialogSlider.cpp \
++     GUIDialogSmartPlaylistEditor.cpp \
++     GUIDialogSmartPlaylistRule.cpp \
++     GUIDialogSubMenu.cpp \
++     GUIDialogTextViewer.cpp \
++     GUIDialogVolumeBar.cpp \
++     GUIDialogYesNo.cpp \
++
++LIB=dialogs.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/dialogs/Makefile.in b/xbmc/dialogs/Makefile.in
+--- a/xbmc/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,33 +0,0 @@
+-SRCS=GUIDialogBoxBase.cpp \
+-     GUIDialogBusy.cpp \
+-     GUIDialogButtonMenu.cpp \
+-     GUIDialogCache.cpp \
+-     GUIDialogContextMenu.cpp \
+-     GUIDialogExtendedProgressBar.cpp \
+-     GUIDialogFavourites.cpp \
+-     GUIDialogFileBrowser.cpp \
+-     GUIDialogGamepad.cpp \
+-     GUIDialogKaiToast.cpp \
+-     GUIDialogKeyboardGeneric.cpp \
+-     GUIDialogMediaFilter.cpp \
+-     GUIDialogMediaSource.cpp \
+-     GUIDialogNumeric.cpp \
+-     GUIDialogOK.cpp \
+-     GUIDialogPlayEject.cpp \
+-     GUIDialogPlayerControls.cpp \
+-     GUIDialogProgress.cpp \
+-     GUIDialogSeekBar.cpp \
+-     GUIDialogSelect.cpp \
+-     GUIDialogSimpleMenu.cpp \
+-     GUIDialogSlider.cpp \
+-     GUIDialogSmartPlaylistEditor.cpp \
+-     GUIDialogSmartPlaylistRule.cpp \
+-     GUIDialogSubMenu.cpp \
+-     GUIDialogTextViewer.cpp \
+-     GUIDialogVolumeBar.cpp \
+-     GUIDialogYesNo.cpp \
+-
+-LIB=dialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/epg/Makefile b/xbmc/epg/Makefile
+--- a/xbmc/epg/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/epg/Makefile	2016-03-10 10:16:15.872505490 +0100
+@@ -0,0 +1,13 @@
++INCLUDES=-I. -I.. -I../../ -I../linux -I../cores -I../../guilib -I../posix -I../utils
++
++SRCS=EpgInfoTag.cpp \
++	EpgSearchFilter.cpp \
++	Epg.cpp \
++	EpgContainer.cpp \
++	EpgDatabase.cpp \
++	GUIEPGGridContainer.cpp
++
++LIB=epg.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/epg/Makefile.in b/xbmc/epg/Makefile.in
+--- a/xbmc/epg/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/epg/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-INCLUDES=-I. -I.. -I../../ -I../linux -I../cores -I../../guilib -I../posix -I../utils
+-
+-SRCS=EpgInfoTag.cpp \
+-	EpgSearchFilter.cpp \
+-	Epg.cpp \
+-	EpgContainer.cpp \
+-	EpgDatabase.cpp \
+-	GUIEPGGridContainer.cpp
+-
+-LIB=epg.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/events/Makefile b/xbmc/events/Makefile
+--- a/xbmc/events/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/events/Makefile	2016-03-10 10:16:15.872505490 +0100
+@@ -0,0 +1,13 @@
++SRCS=AddonEvent.cpp \
++     AddonManagementEvent.cpp \
++     BaseEvent.cpp \
++     EventLog.cpp \
++     MediaLibraryEvent.cpp \
++     windows/GUIViewStateEventLog.cpp \
++     windows/GUIWindowEventLog.cpp \
++
++LIB=events.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/events/Makefile.in b/xbmc/events/Makefile.in
+--- a/xbmc/events/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/events/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-SRCS=AddonEvent.cpp \
+-     AddonManagementEvent.cpp \
+-     BaseEvent.cpp \
+-     EventLog.cpp \
+-     MediaLibraryEvent.cpp \
+-     windows/GUIViewStateEventLog.cpp \
+-     windows/GUIWindowEventLog.cpp \
+-
+-LIB=events.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/filesystem/Makefile.in b/xbmc/filesystem/Makefile.in
+--- a/xbmc/filesystem/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/filesystem/Makefile.in	2016-03-10 10:16:15.872505490 +0100
+@@ -120,5 +120,5 @@
+ 
+ LIB = filesystem.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/MusicDatabaseDirectory/Makefile b/xbmc/filesystem/MusicDatabaseDirectory/Makefile
+--- a/xbmc/filesystem/MusicDatabaseDirectory/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/filesystem/MusicDatabaseDirectory/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,26 @@
++SRCS=DirectoryNode.cpp \
++     DirectoryNodeAlbum.cpp \
++     DirectoryNodeAlbumCompilations.cpp \
++     DirectoryNodeAlbumCompilationsSongs.cpp \
++     DirectoryNodeAlbumRecentlyAdded.cpp \
++     DirectoryNodeAlbumRecentlyAddedSong.cpp \
++     DirectoryNodeAlbumRecentlyPlayed.cpp \
++     DirectoryNodeAlbumRecentlyPlayedSong.cpp \
++     DirectoryNodeAlbumTop100.cpp \
++     DirectoryNodeAlbumTop100Song.cpp \
++     DirectoryNodeArtist.cpp \
++     DirectoryNodeGrouped.cpp \
++     DirectoryNodeOverview.cpp \
++     DirectoryNodeRoot.cpp \
++     DirectoryNodeSingles.cpp \
++     DirectoryNodeSong.cpp \
++     DirectoryNodeSongTop100.cpp \
++     DirectoryNodeTop100.cpp \
++     DirectoryNodeYearAlbum.cpp \
++     DirectoryNodeYearSong.cpp \
++     QueryParams.cpp \
++
++LIB=musicdatabasedirectory.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/MusicDatabaseDirectory/Makefile.in b/xbmc/filesystem/MusicDatabaseDirectory/Makefile.in
+--- a/xbmc/filesystem/MusicDatabaseDirectory/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/filesystem/MusicDatabaseDirectory/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,26 +0,0 @@
+-SRCS=DirectoryNode.cpp \
+-     DirectoryNodeAlbum.cpp \
+-     DirectoryNodeAlbumCompilations.cpp \
+-     DirectoryNodeAlbumCompilationsSongs.cpp \
+-     DirectoryNodeAlbumRecentlyAdded.cpp \
+-     DirectoryNodeAlbumRecentlyAddedSong.cpp \
+-     DirectoryNodeAlbumRecentlyPlayed.cpp \
+-     DirectoryNodeAlbumRecentlyPlayedSong.cpp \
+-     DirectoryNodeAlbumTop100.cpp \
+-     DirectoryNodeAlbumTop100Song.cpp \
+-     DirectoryNodeArtist.cpp \
+-     DirectoryNodeGrouped.cpp \
+-     DirectoryNodeOverview.cpp \
+-     DirectoryNodeRoot.cpp \
+-     DirectoryNodeSingles.cpp \
+-     DirectoryNodeSong.cpp \
+-     DirectoryNodeSongTop100.cpp \
+-     DirectoryNodeTop100.cpp \
+-     DirectoryNodeYearAlbum.cpp \
+-     DirectoryNodeYearSong.cpp \
+-     QueryParams.cpp \
+-
+-LIB=musicdatabasedirectory.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/test/Makefile b/xbmc/filesystem/test/Makefile
+--- a/xbmc/filesystem/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/filesystem/test/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,14 @@
++SRCS= \
++  TestDirectory.cpp \
++  TestFile.cpp \
++  TestFileFactory.cpp \
++  TestNfsFile.cpp \
++  TestRarFile.cpp \
++  TestZipFile.cpp
++
++LIB=filesystemTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/test/Makefile.in b/xbmc/filesystem/test/Makefile.in
+--- a/xbmc/filesystem/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/filesystem/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-SRCS= \
+-  TestDirectory.cpp \
+-  TestFile.cpp \
+-  TestFileFactory.cpp \
+-  TestNfsFile.cpp \
+-  TestRarFile.cpp \
+-  TestZipFile.cpp
+-
+-LIB=filesystemTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/VideoDatabaseDirectory/Makefile b/xbmc/filesystem/VideoDatabaseDirectory/Makefile
+--- a/xbmc/filesystem/VideoDatabaseDirectory/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/filesystem/VideoDatabaseDirectory/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,22 @@
++SRCS=DirectoryNode.cpp \
++     DirectoryNodeEpisodes.cpp \
++     DirectoryNodeGrouped.cpp \
++     DirectoryNodeInProgressTvShows.cpp \
++     DirectoryNodeMoviesOverview.cpp \
++     DirectoryNodeMusicVideosOverview.cpp \
++     DirectoryNodeOverview.cpp \
++     DirectoryNodeRecentlyAddedEpisodes.cpp \
++     DirectoryNodeRecentlyAddedMovies.cpp \
++     DirectoryNodeRecentlyAddedMusicVideos.cpp \
++     DirectoryNodeRoot.cpp \
++     DirectoryNodeSeasons.cpp \
++     DirectoryNodeTitleMovies.cpp \
++     DirectoryNodeTitleMusicVideos.cpp \
++     DirectoryNodeTitleTvShows.cpp \
++     DirectoryNodeTvShowsOverview.cpp \
++     QueryParams.cpp \
++
++LIB=videodatabasedirectory.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/filesystem/VideoDatabaseDirectory/Makefile.in b/xbmc/filesystem/VideoDatabaseDirectory/Makefile.in
+--- a/xbmc/filesystem/VideoDatabaseDirectory/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/filesystem/VideoDatabaseDirectory/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,22 +0,0 @@
+-SRCS=DirectoryNode.cpp \
+-     DirectoryNodeEpisodes.cpp \
+-     DirectoryNodeGrouped.cpp \
+-     DirectoryNodeInProgressTvShows.cpp \
+-     DirectoryNodeMoviesOverview.cpp \
+-     DirectoryNodeMusicVideosOverview.cpp \
+-     DirectoryNodeOverview.cpp \
+-     DirectoryNodeRecentlyAddedEpisodes.cpp \
+-     DirectoryNodeRecentlyAddedMovies.cpp \
+-     DirectoryNodeRecentlyAddedMusicVideos.cpp \
+-     DirectoryNodeRoot.cpp \
+-     DirectoryNodeSeasons.cpp \
+-     DirectoryNodeTitleMovies.cpp \
+-     DirectoryNodeTitleMusicVideos.cpp \
+-     DirectoryNodeTitleTvShows.cpp \
+-     DirectoryNodeTvShowsOverview.cpp \
+-     QueryParams.cpp \
+-
+-LIB=videodatabasedirectory.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/freebsd/Makefile.in b/xbmc/freebsd/Makefile.in
+--- a/xbmc/freebsd/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/freebsd/Makefile.in	2016-03-10 10:16:15.873505492 +0100
+@@ -4,5 +4,5 @@
+ 
+ LIB = freebsd.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ 
+diff -Naur a/xbmc/guilib/Makefile.in b/xbmc/guilib/Makefile.in
+--- a/xbmc/guilib/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/guilib/Makefile.in	2016-03-10 10:16:15.873505492 +0100
+@@ -94,7 +94,7 @@
+ 
+ LIB = guilib.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+ try : try.o TextureBundle.o DirectXGraphics.o GUIFontTTF.o
+diff -Naur a/xbmc/input/linux/Makefile.in b/xbmc/input/linux/Makefile.in
+--- a/xbmc/input/linux/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/input/linux/Makefile.in	2016-03-10 10:16:15.873505492 +0100
+@@ -8,5 +8,5 @@
+ 
+ LIB=input_linux.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/Makefile b/xbmc/input/Makefile
+--- a/xbmc/input/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/input/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,19 @@
++SRCS=ButtonTranslator.cpp \
++     InertialScrollingHandler.cpp \
++     InputCodingTableBaiduPY.cpp \
++     InputCodingTableBasePY.cpp \
++     InputCodingTableFactory.cpp \
++     InputCodingTableKorean.cpp \
++     KeyboardLayout.cpp \
++     KeyboardLayoutManager.cpp \
++     KeyboardStat.cpp \
++     MouseStat.cpp \
++     SDLJoystick.cpp \
++     XBMC_keytable.cpp \
++     InputManager.cpp \
++     Key.cpp
++     
++LIB=input.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/Makefile.in b/xbmc/input/Makefile.in
+--- a/xbmc/input/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/input/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,19 +0,0 @@
+-SRCS=ButtonTranslator.cpp \
+-     InertialScrollingHandler.cpp \
+-     InputCodingTableBaiduPY.cpp \
+-     InputCodingTableBasePY.cpp \
+-     InputCodingTableFactory.cpp \
+-     InputCodingTableKorean.cpp \
+-     KeyboardLayout.cpp \
+-     KeyboardLayoutManager.cpp \
+-     KeyboardStat.cpp \
+-     MouseStat.cpp \
+-     SDLJoystick.cpp \
+-     XBMC_keytable.cpp \
+-     InputManager.cpp \
+-     Key.cpp
+-     
+-LIB=input.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/touch/generic/Makefile b/xbmc/input/touch/generic/Makefile
+--- a/xbmc/input/touch/generic/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/input/touch/generic/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,10 @@
++SRCS=GenericTouchActionHandler.cpp \
++     GenericTouchInputHandler.cpp \
++     GenericTouchPinchDetector.cpp \
++     GenericTouchRotateDetector.cpp \
++     GenericTouchSwipeDetector.cpp \
++
++LIB=input_touch_generic.a
++
++include ../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/touch/generic/Makefile.in b/xbmc/input/touch/generic/Makefile.in
+--- a/xbmc/input/touch/generic/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/input/touch/generic/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS=GenericTouchActionHandler.cpp \
+-     GenericTouchInputHandler.cpp \
+-     GenericTouchPinchDetector.cpp \
+-     GenericTouchRotateDetector.cpp \
+-     GenericTouchSwipeDetector.cpp \
+-
+-LIB=input_touch_generic.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/touch/Makefile b/xbmc/input/touch/Makefile
+--- a/xbmc/input/touch/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/input/touch/Makefile	2016-03-10 10:16:15.873505492 +0100
+@@ -0,0 +1,6 @@
++SRCS=ITouchInputHandling.cpp \
++
++LIB=input_touch.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/input/touch/Makefile.in b/xbmc/input/touch/Makefile.in
+--- a/xbmc/input/touch/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/input/touch/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=ITouchInputHandling.cpp \
+-
+-LIB=input_touch.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/builtins/Makefile.in b/xbmc/interfaces/builtins/Makefile.in
+--- a/xbmc/interfaces/builtins/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/builtins/Makefile.in	2016-03-10 10:16:15.874505494 +0100
+@@ -21,5 +21,5 @@
+ 
+ LIB=builtins.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/generic/Makefile b/xbmc/interfaces/generic/Makefile
+--- a/xbmc/interfaces/generic/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/interfaces/generic/Makefile	2016-03-10 10:16:15.874505494 +0100
+@@ -0,0 +1,8 @@
++SRCS=ILanguageInvoker.cpp \
++     LanguageInvokerThread.cpp \
++     ScriptInvocationManager.cpp \
++
++LIB=interfaces-generic.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/generic/Makefile.in b/xbmc/interfaces/generic/Makefile.in
+--- a/xbmc/interfaces/generic/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/generic/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=ILanguageInvoker.cpp \
+-     LanguageInvokerThread.cpp \
+-     ScriptInvocationManager.cpp \
+-
+-LIB=interfaces-generic.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/info/Makefile b/xbmc/interfaces/info/Makefile
+--- a/xbmc/interfaces/info/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/interfaces/info/Makefile	2016-03-10 10:16:15.874505494 +0100
+@@ -0,0 +1,8 @@
++SRCS=InfoBool.cpp \
++     InfoExpression.cpp \
++     SkinVariable.cpp \
++     
++LIB=info.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/info/Makefile.in b/xbmc/interfaces/info/Makefile.in
+--- a/xbmc/interfaces/info/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/info/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=InfoBool.cpp \
+-     InfoExpression.cpp \
+-     SkinVariable.cpp \
+-     
+-LIB=info.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/json-rpc/Makefile b/xbmc/interfaces/json-rpc/Makefile
+--- a/xbmc/interfaces/json-rpc/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/interfaces/json-rpc/Makefile	2016-03-10 10:16:15.874505494 +0100
+@@ -0,0 +1,54 @@
++SRCS=AddonsOperations.cpp \
++     ApplicationOperations.cpp \
++     AudioLibrary.cpp \
++     FavouritesOperations.cpp \
++     FileItemHandler.cpp \
++     FileOperations.cpp \
++     GUIOperations.cpp \
++     InputOperations.cpp \
++     JSONRPC.cpp \
++     JSONServiceDescription.cpp \
++     PlayerOperations.cpp \
++     PlaylistOperations.cpp \
++     ProfilesOperations.cpp \
++     PVROperations.cpp \
++     SettingsOperations.cpp \
++     SystemOperations.cpp \
++     TextureOperations.cpp \
++     VideoLibrary.cpp \
++     XBMCOperations.cpp \
++
++LIB=json-rpc.a
++
++GENERATED_JSON = ServiceDescription.h
++GENERATED_ADDON_JSON = ../../../addons/xbmc.json/addon.xml
++JSON_VERSION_SRC = schema/version.txt
++JSON_SRC =  $(JSON_VERSION_SRC) schema/license.txt schema/methods.json schema/types.json schema/notifications.json
++
++all: $(GENERATED_JSON) $(GENERATED_ADDON_JSON) $(LIB)
++
++-include ../../../Makefile.include
++ifeq ($(wildcard $(JSON_BUILDER)),)
++  JSON_BUILDER = $(shell which JsonSchemaBuilder)
++ifeq ($(JSON_BUILDER),)
++  JSON_BUILDER = ../../../tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder
++endif
++endif
++
++$(JSON_BUILDER):
++#build json builder - ".." because makefile is in the parent dir of "bin"
++	$(MAKE) -C $(abspath $(@D)/..)
++
++$(GENERATED_JSON): $(JSON_SRC) $(JSON_BUILDER)
++	$(JSON_BUILDER) $(JSON_SRC)
++
++$(OBJS): $(GENERATED_JSON)
++
++.PHONY: $(notdir $(GENERATED_ADDON_JSON))
++$(notdir $(GENERATED_ADDON_JSON)): $(GENERATED_ADDON_JSON)
++
++$(GENERATED_ADDON_JSON): $(JSON_VERSION_SRC)
++	mkdir -p $(@D)
++	sed s/@jsonrpc_version@/`cat $(JSON_VERSION_SRC)`/g $@.in > $@
++
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/json-rpc/Makefile.in b/xbmc/interfaces/json-rpc/Makefile.in
+--- a/xbmc/interfaces/json-rpc/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/json-rpc/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,56 +0,0 @@
+-SRCS=AddonsOperations.cpp \
+-     ApplicationOperations.cpp \
+-     AudioLibrary.cpp \
+-     FavouritesOperations.cpp \
+-     FileItemHandler.cpp \
+-     FileOperations.cpp \
+-     GUIOperations.cpp \
+-     InputOperations.cpp \
+-     JSONRPC.cpp \
+-     JSONServiceDescription.cpp \
+-     PlayerOperations.cpp \
+-     PlaylistOperations.cpp \
+-     ProfilesOperations.cpp \
+-     PVROperations.cpp \
+-     SettingsOperations.cpp \
+-     SystemOperations.cpp \
+-     TextureOperations.cpp \
+-     VideoLibrary.cpp \
+-     XBMCOperations.cpp \
+-
+-LIB=json-rpc.a
+-
+-INCLUDES+=-I@builddir@
+-
+-GENERATED_JSON = ServiceDescription.h
+-GENERATED_ADDON_JSON = ../../../addons/xbmc.json/addon.xml
+-JSON_VERSION_SRC = @srcdir@/schema/version.txt
+-JSON_SRC =  $(JSON_VERSION_SRC) @srcdir@/schema/license.txt @srcdir@/schema/methods.json @srcdir@/schema/types.json @srcdir@/schema/notifications.json
+-
+-all: $(GENERATED_JSON) $(GENERATED_ADDON_JSON) $(LIB)
+-
+--include @abs_top_builddir@/Makefile.include
+-ifeq ($(wildcard $(JSON_BUILDER)),)
+-  JSON_BUILDER = $(shell which JsonSchemaBuilder)
+-ifeq ($(JSON_BUILDER),)
+-  JSON_BUILDER = ../../../tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder
+-endif
+-endif
+-
+-$(JSON_BUILDER):
+-#build json builder - ".." because makefile is in the parent dir of "bin"
+-	$(MAKE) -C $(abspath $(@D)/..)
+-
+-$(GENERATED_JSON): $(JSON_SRC) $(JSON_BUILDER)
+-	$(JSON_BUILDER) $(JSON_SRC)
+-
+-$(OBJS): $(GENERATED_JSON)
+-
+-.PHONY: $(notdir $(GENERATED_ADDON_JSON))
+-$(notdir $(GENERATED_ADDON_JSON)): $(GENERATED_ADDON_JSON)
+-
+-$(GENERATED_ADDON_JSON): $(JSON_VERSION_SRC)
+-	mkdir -p $(@D)
+-	sed s/@jsonrpc_version@/`cat $(JSON_VERSION_SRC)`/g @srcdir@/$@.in > $@
+-
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/legacy/Makefile b/xbmc/interfaces/legacy/Makefile
+--- a/xbmc/interfaces/legacy/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/interfaces/legacy/Makefile	2016-03-10 10:16:15.874505494 +0100
+@@ -0,0 +1,37 @@
++INCLUDES=-I../../.. -I. -I../../ -I../../linux -I../../../guilib -I.
++SRCS=	\
++	Addon.cpp \
++	AddonCallback.cpp \
++	AddonClass.cpp \
++	AddonUtils.cpp \
++	CallbackFunction.cpp \
++	CallbackHandler.cpp \
++	Control.cpp \
++	Dialog.cpp \
++	File.cpp \
++	InfoTagMusic.cpp \
++	InfoTagRadioRDS.cpp \
++	InfoTagVideo.cpp \
++	Keyboard.cpp \
++	LanguageHook.cpp \
++	ListItem.cpp \
++	ModuleXbmc.cpp \
++	ModuleXbmcgui.cpp \
++	ModuleXbmcplugin.cpp \
++	ModuleXbmcvfs.cpp \
++	Monitor.cpp \
++	Player.cpp \
++	PlayList.cpp \
++	String.cpp \
++	Window.cpp \
++	WindowDialog.cpp \
++	WindowDialogMixin.cpp \
++	WindowXML.cpp \
++
++LIB=legacy.a
++
++CXXFLAGS+= -DSWIGRUNTIME_DEBUG -DSTATIC_LINKED
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/interfaces/legacy/Makefile.in b/xbmc/interfaces/legacy/Makefile.in
+--- a/xbmc/interfaces/legacy/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/legacy/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,37 +0,0 @@
+-INCLUDES=-I../../.. -I. -I../../ -I../../linux -I../../../guilib -I.
+-SRCS=	\
+-	Addon.cpp \
+-	AddonCallback.cpp \
+-	AddonClass.cpp \
+-	AddonUtils.cpp \
+-	CallbackFunction.cpp \
+-	CallbackHandler.cpp \
+-	Control.cpp \
+-	Dialog.cpp \
+-	File.cpp \
+-	InfoTagMusic.cpp \
+-	InfoTagRadioRDS.cpp \
+-	InfoTagVideo.cpp \
+-	Keyboard.cpp \
+-	LanguageHook.cpp \
+-	ListItem.cpp \
+-	ModuleXbmc.cpp \
+-	ModuleXbmcgui.cpp \
+-	ModuleXbmcplugin.cpp \
+-	ModuleXbmcvfs.cpp \
+-	Monitor.cpp \
+-	Player.cpp \
+-	PlayList.cpp \
+-	String.cpp \
+-	Window.cpp \
+-	WindowDialog.cpp \
+-	WindowDialogMixin.cpp \
+-	WindowXML.cpp \
+-
+-LIB=legacy.a
+-
+-CXXFLAGS+= -DSWIGRUNTIME_DEBUG -DSTATIC_LINKED
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/interfaces/legacy/wsgi/Makefile b/xbmc/interfaces/legacy/wsgi/Makefile
+--- a/xbmc/interfaces/legacy/wsgi/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/interfaces/legacy/wsgi/Makefile	2016-03-10 10:16:15.874505494 +0100
+@@ -0,0 +1,12 @@
++SRCS = WsgiErrorStream.cpp \
++       WsgiInputStream.cpp \
++       WsgiResponse.cpp \
++       WsgiResponseBody.cpp \
++
++LIB=legacy-wsgi.a
++
++CXXFLAGS+= -DSWIGRUNTIME_DEBUG -DSTATIC_LINKED
++
++include ../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++
+diff -Naur a/xbmc/interfaces/legacy/wsgi/Makefile.in b/xbmc/interfaces/legacy/wsgi/Makefile.in
+--- a/xbmc/interfaces/legacy/wsgi/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/legacy/wsgi/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-SRCS = WsgiErrorStream.cpp \
+-       WsgiInputStream.cpp \
+-       WsgiResponse.cpp \
+-       WsgiResponseBody.cpp \
+-
+-LIB=legacy-wsgi.a
+-
+-CXXFLAGS+= -DSWIGRUNTIME_DEBUG -DSTATIC_LINKED
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+-
+diff -Naur a/xbmc/interfaces/Makefile.in b/xbmc/interfaces/Makefile.in
+--- a/xbmc/interfaces/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/Makefile.in	2016-03-10 10:16:15.873505492 +0100
+@@ -2,5 +2,5 @@
+ 
+ LIB = interfaces.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/interfaces/python/Makefile.in b/xbmc/interfaces/python/Makefile.in
+--- a/xbmc/interfaces/python/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/python/Makefile.in	2016-03-10 10:16:15.874505494 +0100
+@@ -9,7 +9,7 @@
+ LIB=python_binding.a
+ all: $(LIB)
+ 
+-include $(TOPDIR)/codegenerator.mk
++include ../../../codegenerator.mk
+ 
+ SRCS =	AddonPythonInvoker.cpp \
+ 	CallbackHandler.cpp \
+@@ -18,11 +18,12 @@
+ 	PythonInvoker.cpp \
+ 	XBPython.cpp \
+ 	swig.cpp \
+-	PyContext.cpp
++	PyContext.cpp \
++	$(GENERATED)
+ 
+ INCLUDES += @PYTHON_CPPFLAGS@
+ .SECONDARY: $(GENERATED)
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+diff -Naur a/xbmc/interfaces/python/test/Makefile.in b/xbmc/interfaces/python/test/Makefile.in
+--- a/xbmc/interfaces/python/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/interfaces/python/test/Makefile.in	2016-03-10 10:16:15.875505496 +0100
+@@ -6,5 +6,5 @@
+ INCLUDES += -I../../../../lib/gtest/include
+ INCLUDES += @PYTHON_CPPFLAGS@
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/linux/Makefile.in b/xbmc/linux/Makefile.in
+--- a/xbmc/linux/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/linux/Makefile.in	2016-03-10 10:16:15.875505496 +0100
+@@ -22,5 +22,5 @@
+ 
+ LIB = linux.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/linux/sse4/Makefile.in b/xbmc/linux/sse4/Makefile.in
+--- a/xbmc/linux/sse4/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/linux/sse4/Makefile.in	2016-03-10 10:16:15.875505496 +0100
+@@ -2,12 +2,10 @@
+ DEFINES+=
+ CXXFLAGS=-fPIC -msse4.1
+ LIBNAME=libsse4
+-SRCS=CopyFrame.cpp
++OBJS=CopyFrame.o
+ 
+ LIB_SHARED=@abs_top_srcdir@/system/$(LIBNAME)-$(ARCH).so
+ 
+-include @abs_top_builddir@/Makefile.include
+-
+ all: $(LIB_SHARED)
+ 
+ $(LIB_SHARED): $(OBJS)
+@@ -18,3 +16,5 @@
+ 
+ DISTCLEAN_FILES= \
+ 	Makefile \
++
++include ../../../Makefile.include
+diff -Naur a/xbmc/listproviders/Makefile b/xbmc/listproviders/Makefile
+--- a/xbmc/listproviders/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/listproviders/Makefile	2016-03-10 10:16:15.875505496 +0100
+@@ -0,0 +1,8 @@
++SRCS  = DirectoryProvider.cpp
++SRCS += IListProvider.cpp
++SRCS += StaticProvider.cpp
++     
++LIB=listproviders.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/listproviders/Makefile.in b/xbmc/listproviders/Makefile.in
+--- a/xbmc/listproviders/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/listproviders/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS  = DirectoryProvider.cpp
+-SRCS += IListProvider.cpp
+-SRCS += StaticProvider.cpp
+-     
+-LIB=listproviders.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/Makefile.in b/xbmc/Makefile.in
+--- a/xbmc/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/Makefile.in	2016-03-10 10:16:15.869505485 +0100
+@@ -1,5 +1,3 @@
+-srcdir = @srcdir@
+-
+ SRCS=Application.cpp \
+      ApplicationPlayer.cpp \
+      AppParamParser.cpp \
+@@ -15,6 +13,7 @@
+      DynamicDll.cpp \
+      FileItem.cpp \
+      FileItemListModification.cpp \
++     GitRevision \
+      GUIInfoManager.cpp \
+      GUILargeTextureManager.cpp \
+      GUIPassword.cpp \
+@@ -43,15 +42,15 @@
+ 
+ .PHONY: .GitRevision
+ 
+-all: $(LIB)
++all: $(SRCS) $(LIB)
+ 
+-@srcdir@/CompileInfo.cpp: @top_srcdir@/version.txt @srcdir@/CompileInfo.cpp.in @srcdir@/GitRevision
+-	$(MAKE) -f @srcdir@/gen-compileinfo.mk
++CompileInfo.cpp: ../version.txt CompileInfo.cpp.in GitRevision
++	$(MAKE) -f gen-compileinfo.mk
+ 
+-@srcdir@/GitRevision:
+-	$(MAKE) -f @srcdir@/gen-compileinfo.mk @srcdir@/GitRevision
++GitRevision:
++	$(MAKE) -f gen-compileinfo.mk GitRevision
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+ 
+diff -Naur a/xbmc/media/Makefile b/xbmc/media/Makefile
+--- a/xbmc/media/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/media/Makefile	2016-03-10 10:16:15.875505496 +0100
+@@ -0,0 +1,6 @@
++SRCS=MediaType.cpp \
++
++LIB=media.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/media/Makefile.in b/xbmc/media/Makefile.in
+--- a/xbmc/media/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/media/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=MediaType.cpp \
+-
+-LIB=media.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/messaging/helpers/Makefile.in b/xbmc/messaging/helpers/Makefile.in
+--- a/xbmc/messaging/helpers/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/messaging/helpers/Makefile.in	2016-03-10 10:16:15.875505496 +0100
+@@ -2,5 +2,5 @@
+ 
+ LIB = messagingHelpers.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %c,%.P,$(patsubst %.S,,$(SRCS))))
+diff -Naur a/xbmc/messaging/Makefile.in b/xbmc/messaging/Makefile.in
+--- a/xbmc/messaging/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/messaging/Makefile.in	2016-03-10 10:16:15.875505496 +0100
+@@ -2,6 +2,6 @@
+ 
+ LIB = messaging.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %c,%.P,$(patsubst %.S,,$(SRCS))))
+ 
+diff -Naur a/xbmc/music/dialogs/Makefile b/xbmc/music/dialogs/Makefile
+--- a/xbmc/music/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/dialogs/Makefile	2016-03-10 10:16:15.875505496 +0100
+@@ -0,0 +1,9 @@
++SRCS=GUIDialogMusicInfo.cpp \
++     GUIDialogMusicOSD.cpp \
++     GUIDialogSongInfo.cpp \
++     GUIDialogVisualisationPresetList.cpp \
++
++LIB=musicdialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/dialogs/Makefile.in b/xbmc/music/dialogs/Makefile.in
+--- a/xbmc/music/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=GUIDialogMusicInfo.cpp \
+-     GUIDialogMusicOSD.cpp \
+-     GUIDialogSongInfo.cpp \
+-     GUIDialogVisualisationPresetList.cpp \
+-
+-LIB=musicdialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/infoscanner/Makefile b/xbmc/music/infoscanner/Makefile
+--- a/xbmc/music/infoscanner/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/infoscanner/Makefile	2016-03-10 10:16:15.875505496 +0100
+@@ -0,0 +1,9 @@
++SRCS=MusicAlbumInfo.cpp \
++     MusicArtistInfo.cpp \
++     MusicInfoScanner.cpp \
++     MusicInfoScraper.cpp \
++
++LIB=musicscanner.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/infoscanner/Makefile.in b/xbmc/music/infoscanner/Makefile.in
+--- a/xbmc/music/infoscanner/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/infoscanner/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=MusicAlbumInfo.cpp \
+-     MusicArtistInfo.cpp \
+-     MusicInfoScanner.cpp \
+-     MusicInfoScraper.cpp \
+-
+-LIB=musicscanner.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/Makefile b/xbmc/music/Makefile
+--- a/xbmc/music/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/Makefile	2016-03-10 10:16:15.875505496 +0100
+@@ -0,0 +1,14 @@
++SRCS=Album.cpp \
++     Artist.cpp \
++     GUIViewStateMusic.cpp \
++     MusicDatabase.cpp \
++     MusicDbUrl.cpp \
++     MusicInfoLoader.cpp \
++     MusicThumbLoader.cpp \
++     Song.cpp \
++     CueInfoLoader.cpp \
++
++LIB=music.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/Makefile.in b/xbmc/music/Makefile.in
+--- a/xbmc/music/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-SRCS=Album.cpp \
+-     Artist.cpp \
+-     GUIViewStateMusic.cpp \
+-     MusicDatabase.cpp \
+-     MusicDbUrl.cpp \
+-     MusicInfoLoader.cpp \
+-     MusicThumbLoader.cpp \
+-     Song.cpp \
+-     CueInfoLoader.cpp \
+-
+-LIB=music.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/tags/Makefile b/xbmc/music/tags/Makefile
+--- a/xbmc/music/tags/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/tags/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,15 @@
++SRCS=\
++     MusicInfoTag.cpp \
++     MusicInfoTagLoaderCDDA.cpp \
++     MusicInfoTagLoaderDatabase.cpp \
++     MusicInfoTagLoaderFactory.cpp \
++     MusicInfoTagLoaderFFmpeg.cpp \
++     MusicInfoTagLoaderShn.cpp \
++     TagLoaderTagLib.cpp \
++     TagLibVFSStream.cpp \
++     ReplayGain.cpp \
++
++LIB=musictags.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/tags/Makefile.in b/xbmc/music/tags/Makefile.in
+--- a/xbmc/music/tags/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/tags/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,15 +0,0 @@
+-SRCS=\
+-     MusicInfoTag.cpp \
+-     MusicInfoTagLoaderCDDA.cpp \
+-     MusicInfoTagLoaderDatabase.cpp \
+-     MusicInfoTagLoaderFactory.cpp \
+-     MusicInfoTagLoaderFFmpeg.cpp \
+-     MusicInfoTagLoaderShn.cpp \
+-     TagLoaderTagLib.cpp \
+-     TagLibVFSStream.cpp \
+-     ReplayGain.cpp \
+-
+-LIB=musictags.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/tags/test/Makefile b/xbmc/music/tags/test/Makefile
+--- a/xbmc/music/tags/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/tags/test/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,9 @@
++SRCS= \
++  TestTagLoaderTagLib.cpp
++
++LIB=tagsTest.a
++
++INCLUDES += -I../../../../lib/gtest/include
++
++include ../../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/tags/test/Makefile.in b/xbmc/music/tags/test/Makefile.in
+--- a/xbmc/music/tags/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/tags/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS= \
+-  TestTagLoaderTagLib.cpp
+-
+-LIB=tagsTest.a
+-
+-INCLUDES += -I../../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/windows/Makefile b/xbmc/music/windows/Makefile
+--- a/xbmc/music/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/music/windows/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,11 @@
++SRCS=GUIWindowMusicBase.cpp \
++     GUIWindowMusicNav.cpp \
++     GUIWindowMusicPlaylist.cpp \
++     GUIWindowMusicPlaylistEditor.cpp \
++     GUIWindowVisualisation.cpp \
++     MusicFileItemListModifier.cpp \
++
++LIB=musicwindows.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/music/windows/Makefile.in b/xbmc/music/windows/Makefile.in
+--- a/xbmc/music/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/music/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=GUIWindowMusicBase.cpp \
+-     GUIWindowMusicNav.cpp \
+-     GUIWindowMusicPlaylist.cpp \
+-     GUIWindowMusicPlaylistEditor.cpp \
+-     GUIWindowVisualisation.cpp \
+-     MusicFileItemListModifier.cpp \
+-
+-LIB=musicwindows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/dacp/Makefile b/xbmc/network/dacp/Makefile
+--- a/xbmc/network/dacp/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/dacp/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,6 @@
++SRCS=dacp.cpp
++
++LIB=dacp.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/dacp/Makefile.in b/xbmc/network/dacp/Makefile.in
+--- a/xbmc/network/dacp/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/dacp/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=dacp.cpp
+-
+-LIB=dacp.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/httprequesthandler/Makefile b/xbmc/network/httprequesthandler/Makefile
+--- a/xbmc/network/httprequesthandler/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/httprequesthandler/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,14 @@
++SRCS=HTTPFileHandler.cpp \
++     HTTPImageHandler.cpp \
++     HTTPImageTransformationHandler.cpp \
++     HTTPJsonRpcHandler.cpp \
++     HTTPPythonHandler.cpp \
++     HTTPVfsHandler.cpp \
++     HTTPWebinterfaceAddonsHandler.cpp \
++     HTTPWebinterfaceHandler.cpp \
++     IHTTPRequestHandler.cpp \
++
++LIB=httprequesthandlers.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/httprequesthandler/Makefile.in b/xbmc/network/httprequesthandler/Makefile.in
+--- a/xbmc/network/httprequesthandler/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/httprequesthandler/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-SRCS=HTTPFileHandler.cpp \
+-     HTTPImageHandler.cpp \
+-     HTTPImageTransformationHandler.cpp \
+-     HTTPJsonRpcHandler.cpp \
+-     HTTPPythonHandler.cpp \
+-     HTTPVfsHandler.cpp \
+-     HTTPWebinterfaceAddonsHandler.cpp \
+-     HTTPWebinterfaceHandler.cpp \
+-     IHTTPRequestHandler.cpp \
+-
+-LIB=httprequesthandlers.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/httprequesthandler/python/Makefile.in b/xbmc/network/httprequesthandler/python/Makefile.in
+--- a/xbmc/network/httprequesthandler/python/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/httprequesthandler/python/Makefile.in	2016-03-10 10:16:15.876505498 +0100
+@@ -5,5 +5,5 @@
+ 
+ INCLUDES += @PYTHON_CPPFLAGS@
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/linux/Makefile b/xbmc/network/linux/Makefile
+--- a/xbmc/network/linux/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/linux/Makefile	2016-03-10 10:16:15.876505498 +0100
+@@ -0,0 +1,8 @@
++SRCS=NetworkLinux.cpp \
++     ZeroconfAvahi.cpp \
++     ZeroconfBrowserAvahi.cpp \
++
++LIB=network_linux.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/linux/Makefile.in b/xbmc/network/linux/Makefile.in
+--- a/xbmc/network/linux/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/linux/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=NetworkLinux.cpp \
+-     ZeroconfAvahi.cpp \
+-     ZeroconfBrowserAvahi.cpp \
+-
+-LIB=network_linux.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/Makefile.in b/xbmc/network/Makefile.in
+--- a/xbmc/network/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/Makefile.in	2016-03-10 10:16:15.876505498 +0100
+@@ -25,5 +25,5 @@
+ 
+ LIB = network.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/mdns/Makefile b/xbmc/network/mdns/Makefile
+--- a/xbmc/network/mdns/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/mdns/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,7 @@
++SRCS=ZeroconfMDNS.cpp \
++     ZeroconfBrowserMDNS.cpp \
++
++LIB=mdns.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/mdns/Makefile.in b/xbmc/network/mdns/Makefile.in
+--- a/xbmc/network/mdns/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/mdns/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=ZeroconfMDNS.cpp \
+-     ZeroconfBrowserMDNS.cpp \
+-
+-LIB=mdns.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/osx/Makefile b/xbmc/network/osx/Makefile
+--- a/xbmc/network/osx/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/osx/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,7 @@
++SRCS=ZeroconfBrowserOSX.cpp \
++     ZeroconfOSX.cpp
++
++LIB=network.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/osx/Makefile.in b/xbmc/network/osx/Makefile.in
+--- a/xbmc/network/osx/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/osx/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=ZeroconfBrowserOSX.cpp \
+-     ZeroconfOSX.cpp
+-
+-LIB=network.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/test/Makefile b/xbmc/network/test/Makefile
+--- a/xbmc/network/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/test/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,9 @@
++SRCS= \
++  TestWebServer.cpp
++
++LIB=networkTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/test/Makefile.in b/xbmc/network/test/Makefile.in
+--- a/xbmc/network/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS= \
+-  TestWebServer.cpp
+-
+-LIB=networkTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/upnp/Makefile.in b/xbmc/network/upnp/Makefile.in
+--- a/xbmc/network/upnp/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/upnp/Makefile.in	2016-03-10 10:16:15.877505500 +0100
+@@ -18,7 +18,7 @@
+ 
+ LIB=upnp.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+ 
+ endif
+diff -Naur a/xbmc/network/websocket/Makefile b/xbmc/network/websocket/Makefile
+--- a/xbmc/network/websocket/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/network/websocket/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,9 @@
++SRCS=WebSocket.cpp \
++     WebSocketManager.cpp \
++     WebSocketV8.cpp \
++     WebSocketV13.cpp \
++
++LIB=websocket.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/network/websocket/Makefile.in b/xbmc/network/websocket/Makefile.in
+--- a/xbmc/network/websocket/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/network/websocket/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=WebSocket.cpp \
+-     WebSocketManager.cpp \
+-     WebSocketV8.cpp \
+-     WebSocketV13.cpp \
+-
+-LIB=websocket.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/bus/Makefile.in b/xbmc/peripherals/bus/Makefile.in
+--- a/xbmc/peripherals/bus/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/peripherals/bus/Makefile.in	2016-03-10 10:16:15.877505500 +0100
+@@ -18,5 +18,5 @@
+ 
+ LIB = peripheral-bus.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/devices/Makefile.in b/xbmc/peripherals/devices/Makefile.in
+--- a/xbmc/peripherals/devices/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/peripherals/devices/Makefile.in	2016-03-10 10:16:15.877505500 +0100
+@@ -13,5 +13,5 @@
+ 
+ LIB = peripheral-devices.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/dialogs/Makefile b/xbmc/peripherals/dialogs/Makefile
+--- a/xbmc/peripherals/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/peripherals/dialogs/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,6 @@
++SRCS=GUIDialogPeripheralSettings.cpp
++
++LIB=peripheral-dialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/dialogs/Makefile.in b/xbmc/peripherals/dialogs/Makefile.in
+--- a/xbmc/peripherals/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/peripherals/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=GUIDialogPeripheralSettings.cpp
+-
+-LIB=peripheral-dialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/Makefile b/xbmc/peripherals/Makefile
+--- a/xbmc/peripherals/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/peripherals/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,6 @@
++SRCS=Peripherals.cpp
++
++LIB=peripherals.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/peripherals/Makefile.in b/xbmc/peripherals/Makefile.in
+--- a/xbmc/peripherals/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/peripherals/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=Peripherals.cpp
+-
+-LIB=peripherals.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pictures/Makefile b/xbmc/pictures/Makefile
+--- a/xbmc/pictures/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pictures/Makefile	2016-03-10 10:16:15.877505500 +0100
+@@ -0,0 +1,15 @@
++SRCS=GUIDialogPictureInfo.cpp \
++     GUIViewStatePictures.cpp \
++     GUIWindowPictures.cpp \
++     GUIWindowSlideShow.cpp \
++     Picture.cpp \
++     PictureInfoLoader.cpp \
++     PictureInfoTag.cpp \
++     PictureScalingAlgorithm.cpp \
++     PictureThumbLoader.cpp \
++     SlideShowPicture.cpp \
++     
++LIB=pictures.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pictures/Makefile.in b/xbmc/pictures/Makefile.in
+--- a/xbmc/pictures/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pictures/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,15 +0,0 @@
+-SRCS=GUIDialogPictureInfo.cpp \
+-     GUIViewStatePictures.cpp \
+-     GUIWindowPictures.cpp \
+-     GUIWindowSlideShow.cpp \
+-     Picture.cpp \
+-     PictureInfoLoader.cpp \
+-     PictureInfoTag.cpp \
+-     PictureScalingAlgorithm.cpp \
+-     PictureThumbLoader.cpp \
+-     SlideShowPicture.cpp \
+-     
+-LIB=pictures.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/platform/android/activity/Makefile.in b/xbmc/platform/android/activity/Makefile.in
+--- a/xbmc/platform/android/activity/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/android/activity/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -1,4 +1,4 @@
+-include ../../../tools/depends/Makefile.include
++include @abs_top_srcdir@/tools/depends/Makefile.include
+ 
+ GLUEPATH   = $(NDKROOT)/sources/android/native_app_glue
+ APP_GLUE   = android_native_app_glue.o
+@@ -31,5 +31,5 @@
+ $(CPU_OBJ):
+ 	$(CC) -c -I$(CPUPATH) -o $@ $(CPUPATH)/$(CPU_OBJ:.o=.c)
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/platform/android/jni/Makefile.in b/xbmc/platform/android/jni/Makefile.in
+--- a/xbmc/platform/android/jni/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/android/jni/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -62,5 +62,5 @@
+ LIB        = jni.a
+ 
+ CXXFLAGS+=-std=gnu++0x -Wextra
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/platform/android/loader/Makefile.in b/xbmc/platform/android/loader/Makefile.in
+--- a/xbmc/platform/android/loader/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/android/loader/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -1,5 +1,5 @@
+ SRCS     = AndroidDyload.cpp
+ LIB      = AndroidDyload.a
+ 
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
++include @abs_top_srcdir@/Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+\ No newline at end of file
+diff -Naur a/xbmc/platform/darwin/osx/Makefile.in b/xbmc/platform/darwin/osx/Makefile.in
+--- a/xbmc/platform/darwin/osx/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/darwin/osx/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -4,5 +4,5 @@
+ 
+ LIB=sdlmain.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.m,%.P,$(patsubst %.mm,%.P,$(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))))
+diff -Naur a/xbmc/platform/Makefile.in b/xbmc/platform/Makefile.in
+--- a/xbmc/platform/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -19,5 +19,5 @@
+ 
+ LIB=platform.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.m,%.P,$(patsubst %.mm,%.P,$(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))))
+diff -Naur a/xbmc/platform/posix/Makefile.in b/xbmc/platform/posix/Makefile.in
+--- a/xbmc/platform/posix/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/platform/posix/Makefile.in	2016-03-10 10:16:15.878505502 +0100
+@@ -4,5 +4,5 @@
+ 
+ LIB=posix.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.mm,%.P,$(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS))))
+diff -Naur a/xbmc/playlists/Makefile b/xbmc/playlists/Makefile
+--- a/xbmc/playlists/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/playlists/Makefile	2016-03-10 10:16:15.878505502 +0100
+@@ -0,0 +1,15 @@
++SRCS=PlayListB4S.cpp \
++     PlayList.cpp \
++     PlayListFactory.cpp \
++     PlayListM3U.cpp \
++     PlayListPLS.cpp \
++     PlayListURL.cpp \
++     PlayListWPL.cpp \
++     PlayListXML.cpp \
++     SmartPlayList.cpp \
++     SmartPlaylistFileItemListModifier.cpp
++
++LIB=playlists.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/playlists/Makefile.in b/xbmc/playlists/Makefile.in
+--- a/xbmc/playlists/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/playlists/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,15 +0,0 @@
+-SRCS=PlayListB4S.cpp \
+-     PlayList.cpp \
+-     PlayListFactory.cpp \
+-     PlayListM3U.cpp \
+-     PlayListPLS.cpp \
+-     PlayListURL.cpp \
+-     PlayListWPL.cpp \
+-     PlayListXML.cpp \
+-     SmartPlayList.cpp \
+-     SmartPlaylistFileItemListModifier.cpp
+-
+-LIB=playlists.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/android/Makefile b/xbmc/powermanagement/android/Makefile
+--- a/xbmc/powermanagement/android/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/powermanagement/android/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,6 @@
++SRCS=AndroidPowerSyscall.cpp
++     
++LIB=powermanagement_android.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/android/Makefile.in b/xbmc/powermanagement/android/Makefile.in
+--- a/xbmc/powermanagement/android/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/powermanagement/android/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=AndroidPowerSyscall.cpp
+-     
+-LIB=powermanagement_android.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/linux/Makefile b/xbmc/powermanagement/linux/Makefile
+--- a/xbmc/powermanagement/linux/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/powermanagement/linux/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,9 @@
++SRCS=ConsoleDeviceKitPowerSyscall.cpp \
++     ConsoleUPowerSyscall.cpp \
++     UPowerSyscall.cpp \
++     LogindUPowerSyscall.cpp
++
++LIB=powermanagement_linux.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/linux/Makefile.in b/xbmc/powermanagement/linux/Makefile.in
+--- a/xbmc/powermanagement/linux/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/powermanagement/linux/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=ConsoleDeviceKitPowerSyscall.cpp \
+-     ConsoleUPowerSyscall.cpp \
+-     UPowerSyscall.cpp \
+-     LogindUPowerSyscall.cpp
+-
+-LIB=powermanagement_linux.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/Makefile b/xbmc/powermanagement/Makefile
+--- a/xbmc/powermanagement/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/powermanagement/Makefile	2016-03-10 10:16:15.878505502 +0100
+@@ -0,0 +1,8 @@
++SRCS=DPMSSupport.cpp \
++     PowerManager.cpp \
++     IPowerSyscall.cpp \
++
++LIB=powermanagement.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/Makefile.in b/xbmc/powermanagement/Makefile.in
+--- a/xbmc/powermanagement/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/powermanagement/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=DPMSSupport.cpp \
+-     PowerManager.cpp \
+-     IPowerSyscall.cpp \
+-
+-LIB=powermanagement.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/osx/Makefile b/xbmc/powermanagement/osx/Makefile
+--- a/xbmc/powermanagement/osx/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/powermanagement/osx/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,6 @@
++SRCS=CocoaPowerSyscall.cpp
++     
++LIB=powermanagement.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/powermanagement/osx/Makefile.in b/xbmc/powermanagement/osx/Makefile.in
+--- a/xbmc/powermanagement/osx/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/powermanagement/osx/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=CocoaPowerSyscall.cpp
+-     
+-LIB=powermanagement.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/dialogs/Makefile b/xbmc/profiles/dialogs/Makefile
+--- a/xbmc/profiles/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/profiles/dialogs/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,7 @@
++SRCS=GUIDialogLockSettings.cpp \
++     GUIDialogProfileSettings.cpp \
++
++LIB=profiles_dialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/dialogs/Makefile.in b/xbmc/profiles/dialogs/Makefile.in
+--- a/xbmc/profiles/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/profiles/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=GUIDialogLockSettings.cpp \
+-     GUIDialogProfileSettings.cpp \
+-
+-LIB=profiles_dialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/Makefile b/xbmc/profiles/Makefile
+--- a/xbmc/profiles/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/profiles/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,7 @@
++SRCS=Profile.cpp \
++     ProfilesManager.cpp \
++
++LIB=profiles.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/Makefile.in b/xbmc/profiles/Makefile.in
+--- a/xbmc/profiles/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/profiles/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=Profile.cpp \
+-     ProfilesManager.cpp \
+-
+-LIB=profiles.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/windows/Makefile b/xbmc/profiles/windows/Makefile
+--- a/xbmc/profiles/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/profiles/windows/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,6 @@
++SRCS=GUIWindowSettingsProfile.cpp \
++
++LIB=profiles_windows.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/profiles/windows/Makefile.in b/xbmc/profiles/windows/Makefile.in
+--- a/xbmc/profiles/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/profiles/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=GUIWindowSettingsProfile.cpp \
+-
+-LIB=profiles_windows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/programs/Makefile b/xbmc/programs/Makefile
+--- a/xbmc/programs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/programs/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,7 @@
++SRCS=GUIViewStatePrograms.cpp \
++     GUIWindowPrograms.cpp \
++     
++LIB=programs.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/programs/Makefile.in b/xbmc/programs/Makefile.in
+--- a/xbmc/programs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/programs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=GUIViewStatePrograms.cpp \
+-     GUIWindowPrograms.cpp \
+-     
+-LIB=programs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/addons/Makefile b/xbmc/pvr/addons/Makefile
+--- a/xbmc/pvr/addons/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/addons/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,7 @@
++SRCS=PVRClient.cpp \
++     PVRClients.cpp
++
++LIB=pvraddons.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/addons/Makefile.in b/xbmc/pvr/addons/Makefile.in
+--- a/xbmc/pvr/addons/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/addons/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=PVRClient.cpp \
+-     PVRClients.cpp
+-
+-LIB=pvraddons.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/channels/Makefile b/xbmc/pvr/channels/Makefile
+--- a/xbmc/pvr/channels/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/channels/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,11 @@
++SRCS=PVRChannel.cpp \
++     PVRChannelGroup.cpp \
++     PVRChannelGroupInternal.cpp \
++     PVRChannelGroups.cpp \
++     PVRChannelGroupsContainer.cpp \
++     PVRRadioRDSInfoTag.cpp
++
++LIB=pvrchannels.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/channels/Makefile.in b/xbmc/pvr/channels/Makefile.in
+--- a/xbmc/pvr/channels/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/channels/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=PVRChannel.cpp \
+-     PVRChannelGroup.cpp \
+-     PVRChannelGroupInternal.cpp \
+-     PVRChannelGroups.cpp \
+-     PVRChannelGroupsContainer.cpp \
+-     PVRRadioRDSInfoTag.cpp
+-
+-LIB=pvrchannels.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/dialogs/Makefile b/xbmc/pvr/dialogs/Makefile
+--- a/xbmc/pvr/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/dialogs/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,14 @@
++SRCS=GUIDialogPVRChannelManager.cpp \
++     GUIDialogPVRChannelsOSD.cpp \
++     GUIDialogPVRGroupManager.cpp \
++     GUIDialogPVRGuideInfo.cpp \
++     GUIDialogPVRGuideOSD.cpp \
++     GUIDialogPVRGuideSearch.cpp \
++     GUIDialogPVRRadioRDSInfo.cpp \
++     GUIDialogPVRRecordingInfo.cpp \
++     GUIDialogPVRTimerSettings.cpp
++
++LIB=pvrdialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/dialogs/Makefile.in b/xbmc/pvr/dialogs/Makefile.in
+--- a/xbmc/pvr/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-SRCS=GUIDialogPVRChannelManager.cpp \
+-     GUIDialogPVRChannelsOSD.cpp \
+-     GUIDialogPVRGroupManager.cpp \
+-     GUIDialogPVRGuideInfo.cpp \
+-     GUIDialogPVRGuideOSD.cpp \
+-     GUIDialogPVRGuideSearch.cpp \
+-     GUIDialogPVRRadioRDSInfo.cpp \
+-     GUIDialogPVRRecordingInfo.cpp \
+-     GUIDialogPVRTimerSettings.cpp
+-
+-LIB=pvrdialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/Makefile b/xbmc/pvr/Makefile
+--- a/xbmc/pvr/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/Makefile	2016-03-10 10:16:15.879505504 +0100
+@@ -0,0 +1,10 @@
++SRCS=PVRGUIInfo.cpp \
++     PVRManager.cpp \
++     PVRDatabase.cpp \
++     PVRActionListener.cpp \
++     PVRSettings.cpp
++
++LIB=pvr.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/Makefile.in b/xbmc/pvr/Makefile.in
+--- a/xbmc/pvr/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS=PVRGUIInfo.cpp \
+-     PVRManager.cpp \
+-     PVRDatabase.cpp \
+-     PVRActionListener.cpp \
+-     PVRSettings.cpp
+-
+-LIB=pvr.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/recordings/Makefile b/xbmc/pvr/recordings/Makefile
+--- a/xbmc/pvr/recordings/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/recordings/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,8 @@
++SRCS=PVRRecording.cpp \
++     PVRRecordings.cpp \
++     PVRRecordingsPath.cpp
++
++LIB=pvrrecordings.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/recordings/Makefile.in b/xbmc/pvr/recordings/Makefile.in
+--- a/xbmc/pvr/recordings/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/recordings/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=PVRRecording.cpp \
+-     PVRRecordings.cpp \
+-     PVRRecordingsPath.cpp
+-
+-LIB=pvrrecordings.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/timers/Makefile b/xbmc/pvr/timers/Makefile
+--- a/xbmc/pvr/timers/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/timers/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,8 @@
++SRCS=PVRTimerInfoTag.cpp \
++     PVRTimerType.cpp \
++     PVRTimers.cpp
++
++LIB=pvrtimers.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/timers/Makefile.in b/xbmc/pvr/timers/Makefile.in
+--- a/xbmc/pvr/timers/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/timers/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS=PVRTimerInfoTag.cpp \
+-     PVRTimerType.cpp \
+-     PVRTimers.cpp
+-
+-LIB=pvrtimers.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/windows/Makefile b/xbmc/pvr/windows/Makefile
+--- a/xbmc/pvr/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/pvr/windows/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,14 @@
++SRCS=GUIViewStatePVR.cpp \
++     GUIWindowPVRBase.cpp \
++     GUIWindowPVRChannels.cpp \
++     GUIWindowPVRGuide.cpp \
++     GUIWindowPVRRecordings.cpp \
++     GUIWindowPVRSearch.cpp \
++     GUIWindowPVRTimersBase.cpp \
++     GUIWindowPVRTimers.cpp \
++     GUIWindowPVRTimerRules.cpp
++
++LIB=pvrwindows.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/pvr/windows/Makefile.in b/xbmc/pvr/windows/Makefile.in
+--- a/xbmc/pvr/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/pvr/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-SRCS=GUIViewStatePVR.cpp \
+-     GUIWindowPVRBase.cpp \
+-     GUIWindowPVRChannels.cpp \
+-     GUIWindowPVRGuide.cpp \
+-     GUIWindowPVRRecordings.cpp \
+-     GUIWindowPVRSearch.cpp \
+-     GUIWindowPVRTimersBase.cpp \
+-     GUIWindowPVRTimers.cpp \
+-     GUIWindowPVRTimerRules.cpp
+-
+-LIB=pvrwindows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/gl/Makefile b/xbmc/rendering/gl/Makefile
+--- a/xbmc/rendering/gl/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/rendering/gl/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,7 @@
++SRCS=GUIWindowTestPatternGL.cpp \
++     RenderSystemGL.cpp \
++     
++LIB=rendering_gl.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/gl/Makefile.in b/xbmc/rendering/gl/Makefile.in
+--- a/xbmc/rendering/gl/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/rendering/gl/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS=GUIWindowTestPatternGL.cpp \
+-     RenderSystemGL.cpp \
+-     
+-LIB=rendering_gl.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/gles/Makefile b/xbmc/rendering/gles/Makefile
+--- a/xbmc/rendering/gles/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/rendering/gles/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,6 @@
++SRCS=RenderSystemGLES.cpp \
++     
++LIB=rendering_gles.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/gles/Makefile.in b/xbmc/rendering/gles/Makefile.in
+--- a/xbmc/rendering/gles/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/rendering/gles/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=RenderSystemGLES.cpp \
+-     
+-LIB=rendering_gles.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/Makefile b/xbmc/rendering/Makefile
+--- a/xbmc/rendering/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/rendering/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,6 @@
++SRCS=RenderSystem.cpp
++     
++LIB=rendering.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/rendering/Makefile.in b/xbmc/rendering/Makefile.in
+--- a/xbmc/rendering/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/rendering/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=RenderSystem.cpp
+-     
+-LIB=rendering.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/dialogs/Makefile b/xbmc/settings/dialogs/Makefile
+--- a/xbmc/settings/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/settings/dialogs/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,11 @@
++SRCS=GUIDialogAudioDSPManager.cpp \
++     GUIDialogAudioDSPSettings.cpp \
++     GUIDialogContentSettings.cpp \
++     GUIDialogSettingsBase.cpp \
++     GUIDialogSettingsManagerBase.cpp \
++     GUIDialogSettingsManualBase.cpp \
++
++LIB=settings_dialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/dialogs/Makefile.in b/xbmc/settings/dialogs/Makefile.in
+--- a/xbmc/settings/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/settings/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=GUIDialogAudioDSPManager.cpp \
+-     GUIDialogAudioDSPSettings.cpp \
+-     GUIDialogContentSettings.cpp \
+-     GUIDialogSettingsBase.cpp \
+-     GUIDialogSettingsManagerBase.cpp \
+-     GUIDialogSettingsManualBase.cpp \
+-
+-LIB=settings_dialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/lib/Makefile b/xbmc/settings/lib/Makefile
+--- a/xbmc/settings/lib/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/settings/lib/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,15 @@
++SRCS=ISetting.cpp \
++     ISettingControl.cpp \
++     Setting.cpp \
++     SettingCategoryAccess.cpp \
++     SettingConditions.cpp \
++     SettingDependency.cpp \
++     SettingSection.cpp \
++     SettingsManager.cpp \
++     SettingRequirement.cpp \
++     SettingUpdate.cpp \
++
++LIB=settings_lib.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/lib/Makefile.in b/xbmc/settings/lib/Makefile.in
+--- a/xbmc/settings/lib/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/settings/lib/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,15 +0,0 @@
+-SRCS=ISetting.cpp \
+-     ISettingControl.cpp \
+-     Setting.cpp \
+-     SettingCategoryAccess.cpp \
+-     SettingConditions.cpp \
+-     SettingDependency.cpp \
+-     SettingSection.cpp \
+-     SettingsManager.cpp \
+-     SettingRequirement.cpp \
+-     SettingUpdate.cpp \
+-
+-LIB=settings_lib.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/Makefile b/xbmc/settings/Makefile
+--- a/xbmc/settings/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/settings/Makefile	2016-03-10 10:16:15.880505506 +0100
+@@ -0,0 +1,19 @@
++SRCS=AdvancedSettings.cpp \
++     AudioDSPSettings.cpp \
++     DisplaySettings.cpp \
++     MediaSettings.cpp \
++     MediaSourceSettings.cpp \
++     SettingAddon.cpp \
++     SettingConditions.cpp \
++     SettingControl.cpp \
++     SettingCreator.cpp \
++     SettingPath.cpp \
++     Settings.cpp \
++     SettingUtils.cpp \
++     SkinSettings.cpp \
++     VideoSettings.cpp \
++
++LIB=settings.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/Makefile.in b/xbmc/settings/Makefile.in
+--- a/xbmc/settings/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/settings/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,19 +0,0 @@
+-SRCS=AdvancedSettings.cpp \
+-     AudioDSPSettings.cpp \
+-     DisplaySettings.cpp \
+-     MediaSettings.cpp \
+-     MediaSourceSettings.cpp \
+-     SettingAddon.cpp \
+-     SettingConditions.cpp \
+-     SettingControl.cpp \
+-     SettingCreator.cpp \
+-     SettingPath.cpp \
+-     Settings.cpp \
+-     SettingUtils.cpp \
+-     SkinSettings.cpp \
+-     VideoSettings.cpp \
+-
+-LIB=settings.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/windows/Makefile b/xbmc/settings/windows/Makefile
+--- a/xbmc/settings/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/settings/windows/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,10 @@
++SRCS=GUIControlSettings.cpp \
++     GUIWindowSettings.cpp \
++     GUIWindowSettingsCategory.cpp \
++     GUIWindowSettingsScreenCalibration.cpp \
++     GUIWindowTestPattern.cpp \
++
++LIB=settings_windows.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/settings/windows/Makefile.in b/xbmc/settings/windows/Makefile.in
+--- a/xbmc/settings/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/settings/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS=GUIControlSettings.cpp \
+-     GUIWindowSettings.cpp \
+-     GUIWindowSettingsCategory.cpp \
+-     GUIWindowSettingsScreenCalibration.cpp \
+-     GUIWindowTestPattern.cpp \
+-
+-LIB=settings_windows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/android/Makefile b/xbmc/storage/android/Makefile
+--- a/xbmc/storage/android/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/storage/android/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,6 @@
++SRCS=AndroidStorageProvider.cpp
++     
++LIB=storage_android.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/android/Makefile.in b/xbmc/storage/android/Makefile.in
+--- a/xbmc/storage/android/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/storage/android/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=AndroidStorageProvider.cpp
+-     
+-LIB=storage_android.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/linux/Makefile b/xbmc/storage/linux/Makefile
+--- a/xbmc/storage/linux/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/storage/linux/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,8 @@
++SRCS  = DeviceKitDisksProvider.cpp
++SRCS += UDisksProvider.cpp
++SRCS += UDevProvider.cpp
++     
++LIB = storage_linux.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/linux/Makefile.in b/xbmc/storage/linux/Makefile.in
+--- a/xbmc/storage/linux/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/storage/linux/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-SRCS  = DeviceKitDisksProvider.cpp
+-SRCS += UDisksProvider.cpp
+-SRCS += UDevProvider.cpp
+-     
+-LIB = storage_linux.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/Makefile b/xbmc/storage/Makefile
+--- a/xbmc/storage/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/storage/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,10 @@
++SRCS=AutorunMediaJob.cpp \
++     cdioSupport.cpp \
++     DetectDVDType.cpp \
++     IoSupport.cpp \
++     MediaManager.cpp \
++     
++LIB=storage.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/Makefile.in b/xbmc/storage/Makefile.in
+--- a/xbmc/storage/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/storage/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS=AutorunMediaJob.cpp \
+-     cdioSupport.cpp \
+-     DetectDVDType.cpp \
+-     IoSupport.cpp \
+-     MediaManager.cpp \
+-     
+-LIB=storage.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/osx/Makefile b/xbmc/storage/osx/Makefile
+--- a/xbmc/storage/osx/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/storage/osx/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,6 @@
++SRCS=DarwinStorageProvider.cpp
++     
++LIB=storage.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/storage/osx/Makefile.in b/xbmc/storage/osx/Makefile.in
+--- a/xbmc/storage/osx/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/storage/osx/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-SRCS=DarwinStorageProvider.cpp
+-     
+-LIB=storage.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/threads/Makefile b/xbmc/threads/Makefile
+--- a/xbmc/threads/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/threads/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,11 @@
++SRCS=Atomics.cpp \
++     Event.cpp \
++     Thread.cpp \
++     Timer.cpp \
++     SystemClock.cpp \
++     platform/Implementation.cpp
++
++LIB=threads.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/threads/Makefile.in b/xbmc/threads/Makefile.in
+--- a/xbmc/threads/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/threads/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=Atomics.cpp \
+-     Event.cpp \
+-     Thread.cpp \
+-     Timer.cpp \
+-     SystemClock.cpp \
+-     platform/Implementation.cpp
+-
+-LIB=threads.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/threads/test/Makefile b/xbmc/threads/test/Makefile
+--- a/xbmc/threads/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/threads/test/Makefile	2016-03-10 10:16:15.881505508 +0100
+@@ -0,0 +1,12 @@
++SRCS=	\
++	TestEvent.cpp \
++	TestSharedSection.cpp \
++	TestAtomics.cpp \
++	TestThreadLocal.cpp
++
++LIB=threadTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/threads/test/Makefile.in b/xbmc/threads/test/Makefile.in
+--- a/xbmc/threads/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/threads/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-SRCS=	\
+-	TestEvent.cpp \
+-	TestSharedSection.cpp \
+-	TestAtomics.cpp \
+-	TestThreadLocal.cpp
+-
+-LIB=threadTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/utils/Makefile.in b/xbmc/utils/Makefile.in
+--- a/xbmc/utils/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/utils/Makefile.in	2016-03-10 10:16:15.881505508 +0100
+@@ -88,5 +88,5 @@
+ 
+ LIB   = utils.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(patsubst %.S,,$(SRCS))))
+diff -Naur a/xbmc/utils/test/Makefile b/xbmc/utils/test/Makefile
+--- a/xbmc/utils/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/utils/test/Makefile	2016-03-10 10:15:53.301461669 +0100
+@@ -0,0 +1,57 @@
++SRCS=	\
++	TestAlarmClock.cpp \
++	TestAliasShortcutUtils.cpp \
++	TestArchive.cpp \
++	TestAsyncFileCopy.cpp \
++	TestBase64.cpp \
++	TestBitstreamStats.cpp \
++	TestCharsetConverter.cpp \
++	TestCPUInfo.cpp \
++	TestCrc32.cpp \
++	TestCryptThreading.cpp \
++	TestDatabaseUtils.cpp \
++	TestEndianSwap.cpp \
++	TestFileOperationJob.cpp \
++	TestFileUtils.cpp \
++	Testfstrcmp.cpp \
++	TestGlobalsHandling.cpp \
++	TestHTMLUtil.cpp \
++	TestHttpHeader.cpp \
++	TestHttpParser.cpp \
++	TestHttpRangeUtils.cpp \
++	TestHttpResponse.cpp \
++	TestJobManager.cpp \
++	TestJSONVariantParser.cpp \
++	TestJSONVariantWriter.cpp \
++	TestLabelFormatter.cpp \
++	TestLangCodeExpander.cpp \
++	TestLocale.cpp \
++	Testlog.cpp \
++	TestMathUtils.cpp \
++	Testmd5.cpp \
++	TestMime.cpp \
++	TestPerformanceSample.cpp \
++	TestPOUtils.cpp \
++	TestRegExp.cpp \
++        Testrfft.cpp \
++	TestRingBuffer.cpp \
++	TestScraperParser.cpp \
++	TestScraperUrl.cpp \
++	TestSortUtils.cpp \
++	TestStopwatch.cpp \
++	TestStreamDetails.cpp \
++	TestStreamUtils.cpp \
++	TestStringUtils.cpp \
++	TestSystemInfo.cpp \
++	TestURIUtils.cpp \
++	TestUrlOptions.cpp \
++	TestVariant.cpp \
++	TestXBMCTinyXML.cpp \
++	TestXMLUtils.cpp
++
++LIB=utilsTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/utils/test/Makefile.in b/xbmc/utils/test/Makefile.in
+--- a/xbmc/utils/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/utils/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,57 +0,0 @@
+-SRCS=	\
+-	TestAlarmClock.cpp \
+-	TestAliasShortcutUtils.cpp \
+-	TestArchive.cpp \
+-	TestAsyncFileCopy.cpp \
+-	TestBase64.cpp \
+-	TestBitstreamStats.cpp \
+-	TestCharsetConverter.cpp \
+-	TestCPUInfo.cpp \
+-	TestCrc32.cpp \
+-	TestCryptThreading.cpp \
+-	TestDatabaseUtils.cpp \
+-	TestEndianSwap.cpp \
+-	TestFileOperationJob.cpp \
+-	TestFileUtils.cpp \
+-	Testfstrcmp.cpp \
+-	TestGlobalsHandling.cpp \
+-	TestHTMLUtil.cpp \
+-	TestHttpHeader.cpp \
+-	TestHttpParser.cpp \
+-	TestHttpRangeUtils.cpp \
+-	TestHttpResponse.cpp \
+-	TestJobManager.cpp \
+-	TestJSONVariantParser.cpp \
+-	TestJSONVariantWriter.cpp \
+-	TestLabelFormatter.cpp \
+-	TestLangCodeExpander.cpp \
+-	TestLocale.cpp \
+-	Testlog.cpp \
+-	TestMathUtils.cpp \
+-	Testmd5.cpp \
+-	TestMime.cpp \
+-	TestPerformanceSample.cpp \
+-	TestPOUtils.cpp \
+-	TestRegExp.cpp \
+-        Testrfft.cpp \
+-	TestRingBuffer.cpp \
+-	TestScraperParser.cpp \
+-	TestScraperUrl.cpp \
+-	TestSortUtils.cpp \
+-	TestStopwatch.cpp \
+-	TestStreamDetails.cpp \
+-	TestStreamUtils.cpp \
+-	TestStringUtils.cpp \
+-	TestSystemInfo.cpp \
+-	TestURIUtils.cpp \
+-	TestUrlOptions.cpp \
+-	TestVariant.cpp \
+-	TestXBMCTinyXML.cpp \
+-	TestXMLUtils.cpp
+-
+-LIB=utilsTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/dialogs/Makefile b/xbmc/video/dialogs/Makefile
+--- a/xbmc/video/dialogs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/dialogs/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,13 @@
++SRCS=GUIDialogAudioSubtitleSettings.cpp \
++     GUIDialogFullScreenInfo.cpp \
++     GUIDialogSubtitles.cpp \
++     GUIDialogTeletext.cpp \
++     GUIDialogVideoBookmarks.cpp \
++     GUIDialogVideoInfo.cpp \
++     GUIDialogVideoOSD.cpp \
++     GUIDialogVideoSettings.cpp \
++
++LIB=videodialogs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/dialogs/Makefile.in b/xbmc/video/dialogs/Makefile.in
+--- a/xbmc/video/dialogs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/dialogs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-SRCS=GUIDialogAudioSubtitleSettings.cpp \
+-     GUIDialogFullScreenInfo.cpp \
+-     GUIDialogSubtitles.cpp \
+-     GUIDialogTeletext.cpp \
+-     GUIDialogVideoBookmarks.cpp \
+-     GUIDialogVideoInfo.cpp \
+-     GUIDialogVideoOSD.cpp \
+-     GUIDialogVideoSettings.cpp \
+-
+-LIB=videodialogs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/jobs/Makefile b/xbmc/video/jobs/Makefile
+--- a/xbmc/video/jobs/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/jobs/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,11 @@
++SRCS=VideoLibraryCleaningJob.cpp \
++     VideoLibraryJob.cpp \
++     VideoLibraryMarkWatchedJob.cpp \
++     VideoLibraryProgressJob.cpp \
++     VideoLibraryRefreshingJob.cpp \
++     VideoLibraryScanningJob.cpp \
++     
++LIB=video-jobs.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/jobs/Makefile.in b/xbmc/video/jobs/Makefile.in
+--- a/xbmc/video/jobs/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/jobs/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=VideoLibraryCleaningJob.cpp \
+-     VideoLibraryJob.cpp \
+-     VideoLibraryMarkWatchedJob.cpp \
+-     VideoLibraryProgressJob.cpp \
+-     VideoLibraryRefreshingJob.cpp \
+-     VideoLibraryScanningJob.cpp \
+-     
+-LIB=video-jobs.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/Makefile b/xbmc/video/Makefile
+--- a/xbmc/video/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,18 @@
++SRCS=Bookmark.cpp \
++     FFmpegVideoDecoder.cpp \
++     GUIViewStateVideo.cpp \
++     PlayerController.cpp \
++     Teletext.cpp \
++     VideoDatabase.cpp \
++     VideoDbUrl.cpp \
++     VideoInfoDownloader.cpp \
++     VideoInfoScanner.cpp \
++     VideoInfoTag.cpp \
++     VideoLibraryQueue.cpp \
++     VideoReferenceClock.cpp \
++     VideoThumbLoader.cpp \
++     
++LIB=video.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/Makefile.in b/xbmc/video/Makefile.in
+--- a/xbmc/video/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,18 +0,0 @@
+-SRCS=Bookmark.cpp \
+-     FFmpegVideoDecoder.cpp \
+-     GUIViewStateVideo.cpp \
+-     PlayerController.cpp \
+-     Teletext.cpp \
+-     VideoDatabase.cpp \
+-     VideoDbUrl.cpp \
+-     VideoInfoDownloader.cpp \
+-     VideoInfoScanner.cpp \
+-     VideoInfoTag.cpp \
+-     VideoLibraryQueue.cpp \
+-     VideoReferenceClock.cpp \
+-     VideoThumbLoader.cpp \
+-     
+-LIB=video.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/test/Makefile b/xbmc/video/test/Makefile
+--- a/xbmc/video/test/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/test/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,9 @@
++SRCS= \
++  TestVideoInfoScanner.cpp
++
++LIB=videoTest.a
++
++INCLUDES += -I../../../lib/gtest/include
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/test/Makefile.in b/xbmc/video/test/Makefile.in
+--- a/xbmc/video/test/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/test/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS= \
+-  TestVideoInfoScanner.cpp
+-
+-LIB=videoTest.a
+-
+-INCLUDES += -I../../../lib/gtest/include
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/videosync/Makefile b/xbmc/video/videosync/Makefile
+--- a/xbmc/video/videosync/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/videosync/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,11 @@
++SRCS=VideoSyncGLX.cpp \
++     VideoSyncOsx.cpp \
++     VideoSyncIos.cpp \
++     VideoSyncDRM.cpp \
++     VideoSyncPi.cpp \
++     VideoSyncIMX.cpp \
++
++LIB=videosync.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/videosync/Makefile.in b/xbmc/video/videosync/Makefile.in
+--- a/xbmc/video/videosync/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/videosync/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=VideoSyncGLX.cpp \
+-     VideoSyncOsx.cpp \
+-     VideoSyncIos.cpp \
+-     VideoSyncDRM.cpp \
+-     VideoSyncPi.cpp \
+-     VideoSyncIMX.cpp \
+-
+-LIB=videosync.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+\ No newline at end of file
+diff -Naur a/xbmc/video/windows/Makefile b/xbmc/video/windows/Makefile
+--- a/xbmc/video/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/video/windows/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,10 @@
++SRCS=GUIWindowFullScreen.cpp \
++     GUIWindowVideoBase.cpp \
++     GUIWindowVideoNav.cpp \
++     GUIWindowVideoPlaylist.cpp \
++     VideoFileItemListModifier.cpp \
++
++LIB=videowindows.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/video/windows/Makefile.in b/xbmc/video/windows/Makefile.in
+--- a/xbmc/video/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/video/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS=GUIWindowFullScreen.cpp \
+-     GUIWindowVideoBase.cpp \
+-     GUIWindowVideoNav.cpp \
+-     GUIWindowVideoPlaylist.cpp \
+-     VideoFileItemListModifier.cpp \
+-
+-LIB=videowindows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/view/Makefile b/xbmc/view/Makefile
+--- a/xbmc/view/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/view/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,9 @@
++SRCS=GUIViewControl.cpp \
++     GUIViewState.cpp \
++     ViewDatabase.cpp \
++     ViewStateSettings.cpp \
++
++LIB=view.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+\ No newline at end of file
+diff -Naur a/xbmc/view/Makefile.in b/xbmc/view/Makefile.in
+--- a/xbmc/view/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/view/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-SRCS=GUIViewControl.cpp \
+-     GUIViewState.cpp \
+-     ViewDatabase.cpp \
+-     ViewStateSettings.cpp \
+-
+-LIB=view.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+\ No newline at end of file
+diff -Naur a/xbmc/windowing/android/Makefile b/xbmc/windowing/android/Makefile
+--- a/xbmc/windowing/android/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/android/Makefile	2016-03-10 10:16:15.883505512 +0100
+@@ -0,0 +1,7 @@
++SRCS= \
++      WinEventsAndroid.cpp \
++     
++LIB=windowing_android.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/android/Makefile.in b/xbmc/windowing/android/Makefile.in
+--- a/xbmc/windowing/android/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/android/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-SRCS= \
+-      WinEventsAndroid.cpp \
+-     
+-LIB=windowing_android.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/egl/Makefile.in b/xbmc/windowing/egl/Makefile.in
+--- a/xbmc/windowing/egl/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/egl/Makefile.in	2016-03-10 10:16:15.883505512 +0100
+@@ -20,5 +20,5 @@
+ 
+ LIB = windowing_egl.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/egl/Makefile.in.orig b/xbmc/windowing/egl/Makefile.in.orig
+--- a/xbmc/windowing/egl/Makefile.in.orig	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/egl/Makefile.in.orig	2016-03-10 09:58:06.000000000 +0100
+@@ -0,0 +1,24 @@
++INCLUDES=-I.
++
++SRCS = WinSystemEGL.cpp
++SRCS+= EGLNativeTypeAmlogic.cpp
++ifeq (@USE_ANDROID@,1)
++SRCS+= EGLNativeTypeAndroid.cpp
++SRCS+= EGLNativeTypeAmlAndroid.cpp
++SRCS+= EGLNativeTypeRKAndroid.cpp
++endif
++ifeq (@USE_MMAL@,1)
++SRCS+= EGLNativeTypeRaspberryPI.cpp
++endif
++ifeq (@USE_SUNXI_MALI@,1)
++SRCS+= EGLNativeTypeSunxiMali.cpp
++endif
++ifeq (@USE_IMXVPU@,1)
++SRCS+= EGLNativeTypeIMX.cpp
++endif
++SRCS+= EGLWrapper.cpp
++
++LIB = windowing_egl.a
++
++include @abs_top_builddir@/Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/Makefile.in b/xbmc/windowing/Makefile.in
+--- a/xbmc/windowing/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/Makefile.in	2016-03-10 10:16:15.882505510 +0100
+@@ -35,5 +35,5 @@
+ 
+ LIB=windowing.a
+ 
+-include @abs_top_builddir@/Makefile.include
++include ../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/Makefile.in.orig b/xbmc/windowing/Makefile.in.orig
+--- a/xbmc/windowing/Makefile.in.orig	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/Makefile.in.orig	2016-03-10 09:58:06.000000000 +0100
+@@ -0,0 +1,39 @@
++SRCS=WinEventsSDL.cpp \
++     WinEventsLinux.cpp \
++     WinEventsX11.cpp \
++     WinSystem.cpp \
++     WinEvents.cpp
++
++# Wayland implementation detail
++ifeq (@USE_WAYLAND@,1)
++SRCS += wayland/EventLoop.cpp \
++        wayland/Seat.cpp \
++        wayland/Pointer.cpp \
++        wayland/PointerProcessor.cpp \
++        wayland/InputFactory.cpp \
++        wayland/Keyboard.cpp \
++        wayland/KeyboardProcessor.cpp \
++        wayland/PollThread.cpp \
++        wayland/Wayland11EventQueueStrategy.cpp \
++        wayland/Wayland12EventQueueStrategy.cpp
++SRCS+= wayland/Callback.cpp \
++       wayland/Compositor.cpp \
++       wayland/Display.cpp \
++       wayland/OpenGLSurface.cpp \
++       wayland/Output.cpp \
++       wayland/Region.cpp \
++       wayland/Registry.cpp \
++       wayland/Shell.cpp \
++       wayland/ShellSurface.cpp \
++       wayland/Surface.cpp \
++       wayland/WaylandLibraries.cpp \
++       wayland/XBMCConnection.cpp \
++       wayland/XBMCSurface.cpp
++SRCS+= wayland/EGLNativeTypeWayland.cpp \
++     wayland/WinEventsWayland.cpp
++endif
++
++LIB=windowing.a
++
++include @abs_top_builddir@/Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/osx/Makefile b/xbmc/windowing/osx/Makefile
+--- a/xbmc/windowing/osx/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/osx/Makefile	2016-03-10 10:16:15.883505512 +0100
+@@ -0,0 +1,10 @@
++SRCS= \
++      WinEventsOSX.mm \
++      WinSystemOSX.mm \
++      WinSystemOSXGL.mm
++     
++.SUFFIXES : .m .mm
++LIB=windowing_osx.a
++
++include ../../../Makefile.include
++-include $(patsubst %.mm,%.P,$(SRCS))
+diff -Naur a/xbmc/windowing/osx/Makefile.in b/xbmc/windowing/osx/Makefile.in
+--- a/xbmc/windowing/osx/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/osx/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-SRCS= \
+-      WinEventsOSX.mm \
+-      WinSystemOSX.mm \
+-      WinSystemOSXGL.mm
+-     
+-.SUFFIXES : .m .mm
+-LIB=windowing_osx.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.mm,%.P,$(SRCS))
+diff -Naur a/xbmc/windowing/tests/wayland/Makefile.in b/xbmc/windowing/tests/wayland/Makefile.in
+--- a/xbmc/windowing/tests/wayland/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/tests/wayland/Makefile.in	2016-03-10 10:15:28.602413717 +0100
+@@ -9,14 +9,13 @@
+        WestonTest.cpp \
+        XBMCWayland.cpp
+ 
+-WAYLAND_TEST_MODULE_PROTOCOL = @srcdir@/protocol.xml
++WAYLAND_TEST_MODULE_PROTOCOL = protocol.xml
+ WAYLAND_TEST_MODULE_PROTOCOL_SRCS = xbmc_wayland_test_protocol.c
+ WAYLAND_TEST_MODULE_PROTOCOL_GENERATED_SRCS = $(WAYLAND_TEST_MODULE_PROTOCOL_SRCS)
+ WAYLAND_TEST_MODULE_PROTOCOL_GENERATED_SRCS += xbmc_wayland_test_server_protocol.h
+ WAYLAND_TEST_MODULE_PROTOCOL_GENERATED_SRCS += xbmc_wayland_test_client_protocol.h
+ WAYLAND_TEST_MODULE_SRCS = XBMCWaylandTestExtension.cpp
+ 
+-INCLUDES += -I@builddir@
+ INCLUDES += -I@abs_top_srcdir@/lib/gtest/include -I@WAYLAND_TEST_INCLUDES@
+ LIB = test_wayland.a
+ 
+@@ -26,7 +25,7 @@
+ 
+ CLEAN_FILES += $(WAYLAND_TEST_MODULE_PROTOCOL_GENERATED_SRCS) xbmc-wayland-test-extension.so
+ 
+-include @abs_top_builddir@/Makefile.include
++include @abs_top_srcdir@/Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(patsubst %.h,%.P,$(SRCS))))
+ 
+ ifneq (,@WAYLAND_SCANNER@)
+diff -Naur a/xbmc/windowing/X11/Makefile b/xbmc/windowing/X11/Makefile
+--- a/xbmc/windowing/X11/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windowing/X11/Makefile	2016-03-10 10:16:15.882505510 +0100
+@@ -0,0 +1,11 @@
++SRCS=WinSystemX11.cpp \
++     WinSystemX11GLContext.cpp \
++     WinSystemX11GLESContext.cpp \
++     GLContextEGL.cpp \
++     GLContextGLX.cpp \
++     XRandR.cpp \
++     
++LIB=windowing_X11.a
++
++include ../../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windowing/X11/Makefile.in b/xbmc/windowing/X11/Makefile.in
+--- a/xbmc/windowing/X11/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windowing/X11/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-SRCS=WinSystemX11.cpp \
+-     WinSystemX11GLContext.cpp \
+-     WinSystemX11GLESContext.cpp \
+-     GLContextEGL.cpp \
+-     GLContextGLX.cpp \
+-     XRandR.cpp \
+-     
+-LIB=windowing_X11.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windows/Makefile b/xbmc/windows/Makefile
+--- a/xbmc/windows/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/xbmc/windows/Makefile	2016-03-10 10:16:15.883505512 +0100
+@@ -0,0 +1,17 @@
++SRCS=GUIMediaWindow.cpp \
++     GUIWindowDebugInfo.cpp \
++     GUIWindowFileManager.cpp \
++     GUIWindowHome.cpp \
++     GUIWindowLoginScreen.cpp \
++     GUIWindowPointer.cpp \
++     GUIWindowScreensaver.cpp \
++     GUIWindowScreensaverDim.cpp \
++     GUIWindowSplash.cpp \
++     GUIWindowStartup.cpp \
++     GUIWindowSystemInfo.cpp \
++     GUIWindowWeather.cpp \
++
++LIB=windows.a
++
++include ../../Makefile.include
++-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff -Naur a/xbmc/windows/Makefile.in b/xbmc/windows/Makefile.in
+--- a/xbmc/windows/Makefile.in	2016-03-10 09:58:06.000000000 +0100
++++ b/xbmc/windows/Makefile.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,17 +0,0 @@
+-SRCS=GUIMediaWindow.cpp \
+-     GUIWindowDebugInfo.cpp \
+-     GUIWindowFileManager.cpp \
+-     GUIWindowHome.cpp \
+-     GUIWindowLoginScreen.cpp \
+-     GUIWindowPointer.cpp \
+-     GUIWindowScreensaver.cpp \
+-     GUIWindowScreensaverDim.cpp \
+-     GUIWindowSplash.cpp \
+-     GUIWindowStartup.cpp \
+-     GUIWindowSystemInfo.cpp \
+-     GUIWindowWeather.cpp \
+-
+-LIB=windows.a
+-
+-include @abs_top_builddir@/Makefile.include
+--include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
