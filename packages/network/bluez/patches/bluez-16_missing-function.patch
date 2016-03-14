@@ -1,0 +1,51 @@
+diff --git a/src/device.c b/src/device.c
+index 3ef0340..859aa3c 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -4250,6 +4250,46 @@
+ 	browse_gatt_client(device->browse);
+ }
+ 
++
++static void browse_request_exit(DBusConnection *conn, void *user_data)
++{
++	struct browse_req *req = user_data;
++
++	DBG("Requestor exited");
++
++	browse_request_cancel(req);
++}
++
++static struct browse_req *browse_request_new(struct btd_device *device,
++							DBusMessage *msg)
++{
++	struct browse_req *req;
++
++	if (device->browse)
++		return NULL;
++
++	req = g_new0(struct browse_req, 1);
++	req->device = device;
++
++	device->browse = req;
++
++	if (!msg)
++		return req;
++
++	req->msg = dbus_message_ref(msg);
++
++	/*
++	 * Track the request owner to cancel it automatically if the owner
++	 * exits
++	 */
++	req->listener_id = g_dbus_add_disconnect_watch(dbus_conn,
++						dbus_message_get_sender(msg),
++						browse_request_exit,
++						req, NULL);
++
++	return req;
++}
++
+ static int device_browse_gatt(struct btd_device *device, DBusMessage *msg)
+ {
+ 	struct btd_adapter *adapter = device->adapter;
