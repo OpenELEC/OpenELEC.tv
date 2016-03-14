@@ -163,10 +163,8 @@ post_makeinstall_target() {
   fi
 
   mkdir -p $INSTALL/etc/X11
-    if [ -f $PROJECT_DIR/$PROJECT/xorg/xorg.conf ]; then
-      cp $PROJECT_DIR/$PROJECT/xorg/xorg.conf $INSTALL/etc/X11
-    elif [ -f $PKG_DIR/config/xorg.conf ]; then
-      cp $PKG_DIR/config/xorg.conf $INSTALL/etc/X11
+    if [ -n "$(get_project_file xorg/xorg.conf)" ]; then
+      cp $(get_project_file xorg/xorg.conf) $INSTALL/etc/X11
     fi
 
   if [ ! "$DEVTOOLS" = yes ]; then
