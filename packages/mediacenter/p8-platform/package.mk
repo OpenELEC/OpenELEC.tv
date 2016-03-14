@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2014 Stefan Saraev (stefan@sarae.va)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,33 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libsquish"
-PKG_VERSION="1.10-openelec"
+PKG_NAME="p8-platform"
+PKG_VERSION="38343e0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE=""
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_HOST="toolchain"
+PKG_SITE="http://www.kodi.tv"
+PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION=""
-PKG_SHORTDESC="libsquish"
-PKG_LONGDESC="libsquish"
+PKG_SECTION="multimedia"
+PKG_SHORTDESC="Platform support library used by libCEC and binary add-ons for Kodi"
+PKG_LONGDESC="Platform support library used by libCEC and binary add-ons for Kodi"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_TARGET="PREFIX=/usr INSTALL_DIR=$SYSROOT_PREFIX/usr"
-PKG_MAKEINSTALL_OPTS_TARGET="$PKG_MAKE_OPTS_TARGET"
+configure_target() {
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+        -DCMAKE_INSTALL_LIBDIR_NOARCH=/usr/lib \
+        -DCMAKE_INSTALL_PREFIX_TOOLCHAIN=$SYSROOT_PREFIX/usr \
+        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
+        -DBUILD_SHARED_LIBS=0 \
+        ..
+}
+
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr
+}

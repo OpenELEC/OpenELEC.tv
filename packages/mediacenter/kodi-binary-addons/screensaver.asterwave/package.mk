@@ -16,33 +16,37 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="platform"
-PKG_VERSION="081032f"
+PKG_NAME="screensaver.asterwave"
+PKG_VERSION="0dc2c48"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.kodi.tv"
+PKG_SITE="https://github.com/notspiff/screensaver.asterwave"
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain kodi-platform soil"
 PKG_PRIORITY="optional"
-PKG_SECTION="multimedia"
-PKG_SHORTDESC="platform:"
-PKG_LONGDESC="platform:"
-
-PKG_IS_ADDON="no"
+PKG_SECTION=""
+PKG_SHORTDESC="screensaver.asterwave"
+PKG_LONGDESC="screensaver.asterwave"
 PKG_AUTORECONF="no"
+
+PKG_IS_ADDON="yes"
+PKG_ADDON_TYPE="xbmc.ui.screensaver"
+
+if [ "$OPENGL" = "no" ] ; then
+  exit 0
+fi
 
 configure_target() {
   cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
-        -DCMAKE_INSTALL_LIBDIR_NOARCH=/usr/lib \
-        -DCMAKE_INSTALL_PREFIX_TOOLCHAIN=$SYSROOT_PREFIX/usr \
+        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
         -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
-        -DBUILD_SHARED_LIBS=0 \
         ..
 }
 
-post_makeinstall_target() {
-  rm -rf $INSTALL/usr
+addon() {
+  mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/
+  cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME/* $ADDON_BUILD/$PKG_ADDON_ID/
+  cp -PL $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$PKG_NAME/*.so $ADDON_BUILD/$PKG_ADDON_ID/
 }
