@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="eventlircd"
-PKG_VERSION="42"
+PKG_VERSION="7faaf9d"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://code.google.com/p/eventlircd"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_GIT_URL="https://github.com/OpenELEC/eventlircd.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain systemd lirc"
 PKG_PRIORITY="optional"
 PKG_SECTION="system/remote"
