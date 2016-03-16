@@ -23,9 +23,12 @@
 # Skins to install (Confluence)
 # Space separated list is supported,
 # e.g. SKINS="Confluence"
-  SKINS="Confluence"
+  SKINS=""
 
-# Default Skin (Confluence)
+# remove default skin included in Kodi (yes/no)
+  SKIN_REMOVE_SHIPPED="no"
+
+# Default Skin (Confluence, or any from above)
   SKIN_DEFAULT="Confluence"
 
 # install extra subtitle Fonts for KODI (yes / no)

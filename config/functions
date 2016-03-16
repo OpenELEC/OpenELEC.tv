@@ -446,12 +446,12 @@ show_config() {
   config_message="$config_message\n - Kodi UPNP support:\t\t\t $KODI_UPNP_SUPPORT"
   config_message="$config_message\n - Kodi Webserver support:\t\t $KODI_WEBSERVER_SUPPORT"
 
-
   for config_skin in $SKINS; do
     config_message="$config_message\n - Include Skin:\t\t\t $config_skin"
   done
 
   config_message="$config_message\n - Default Skin:\t\t\t $SKIN_DEFAULT"
+  config_message="$config_message\n - Remove shipped skins:\t\t $SKIN_REMOVE_SHIPPED"
   config_message="$config_message\n - Include extra fonts:\t\t\t $KODI_EXTRA_FONTS"
 
   config_message="$config_message\n"
