@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="16.0-a5f3a99"
+PKG_VERSION="16.0-Jarvis"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg crossguid giflib"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
