@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="bcm2835-firmware"
-PKG_VERSION="b48c36f"
+PKG_VERSION="c230b2b"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -49,6 +49,7 @@ make_target() {
     cp -PRv $FLOAT/opt/vc/lib/libGLESv2.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libbcm_host.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libcontainers.so $SYSROOT_PREFIX/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libdtovl.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libopenmaxil.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libvchiq_arm.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libvcos.so $SYSROOT_PREFIX/usr/lib
@@ -69,6 +70,7 @@ makeinstall_target() {
     cp -PRv $FLOAT/opt/vc/lib/libGLESv2.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libbcm_host.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libcontainers.so $INSTALL/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libdtovl.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libopenmaxil.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libvchiq_arm.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libvcos.so $INSTALL/usr/lib
@@ -83,9 +85,11 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/vcdbg $INSTALL/usr/bin
       cp -PRv $FLOAT/opt/vc/lib/libdebug_sym.so $INSTALL/usr/lib
+
     cp -PRv $FLOAT/opt/vc/bin/vcgencmd $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/tvservice $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/edidparser $INSTALL/usr/bin
+    cp -PRv $FLOAT/opt/vc/bin/dtoverlay $INSTALL/usr/bin
 
   mkdir -p $INSTALL/opt/vc
     ln -sf /usr/lib $INSTALL/opt/vc/lib
