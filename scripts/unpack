@@ -82,6 +82,8 @@ else
     $SCRIPTS/extract $1 "$1*.tgz"     $BUILD
     $SCRIPTS/extract $1 "$1*.7z"      $BUILD
     $SCRIPTS/extract $1 "$1*.zip"     $BUILD
+  elif [ -n "$PKG_GIT_URL" ]; then
+    $SCRIPTS/extract $1 "$1*.tar.xz"  $BUILD
   fi
 fi
 
@@ -94,7 +96,7 @@ if [ -d "$PKG_DIR/sources" ]; then
   cp -PRf $PKG_DIR/sources/* $BUILD/${PKG_NAME}-${PKG_VERSION}
 fi
 
-if [ -z "$PKG_URL" ]; then
+if [ -z "$PKG_URL" -o -z "$PKG_GIT_URL" ]; then
   mkdir -p "${BUILD}/${PKG_NAME}-${PKG_VERSION}"
 fi
 
@@ -117,7 +119,9 @@ for i in $PKG_DIR/patches/$PKG_NAME-*.patch \
          $PKG_DIR/patches/$PKG_VERSION/*.patch \
          $PKG_DIR/patches/$PKG_VERSION/$PATCH_ARCH/*.patch \
          $PROJECT_DIR/$PROJECT/patches/$PKG_NAME/*.patch \
-         $PROJECT_DIR/$PROJECT/devices/$DEVICE/patches/$PKG_NAME/*.patch; do
+         $PROJECT_DIR/$PROJECT/devices/$DEVICE/patches/$PKG_NAME/*.patch \
+         $HOME/.openelec/patches/$PKG_NAME/*.patch \
+         $HOME/.openelec/projects/$PROJECT/patches/$PKG_NAME/*.patch; do
 
   if [ $(dirname $i) = "$PKG_DIR/patches" ]; then
     PATCH_DESC="(common)"
@@ -127,6 +131,10 @@ for i in $PKG_DIR/patches/$PKG_NAME-*.patch \
     PATCH_DESC="($PKG_VERSION - $PATCH_ARCH)"
   elif [ $(dirname $i) = "$PROJECT_DIR/$PROJECT/patches/$PKG_NAME" ]; then
     PATCH_DESC="(project)"
+  elif [ $(dirname $i) = "$HOME/.openelec/patches/$PKG_NAME" ]; then
+    PATCH_DESC="(vendor)"
+  elif [ $(dirname $i) = "$HOME/.openelec/projects/$PROJECT/patches/$PKG_NAME" ]; then
+    PATCH_DESC="(vendor - $PROJECT)"
   fi
 
   if [ -f "$i" ]; then

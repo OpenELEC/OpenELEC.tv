@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="atvclient"
-PKG_VERSION="50faf80"
+PKG_VERSION="b8a000a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://github.com/Evinyatar/atvclient/wiki"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_GIT_URL="https://github.com/mantheman/atvclient.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain libusb-compat"
 PKG_PRIORITY="optional"
 PKG_SECTION="system/remote"

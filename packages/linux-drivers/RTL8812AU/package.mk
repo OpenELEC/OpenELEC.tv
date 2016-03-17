@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="RTL8812AU"
-PKG_VERSION="3f015f0"
+PKG_VERSION="928e27f"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="git@github.com:abperiasamy/rtl8812AU_8821AU_linux.git"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_SITE="https://github.com/Grawp/rtl8812au_rtl8821au"
+PKG_GIT_URL="https://github.com/Grawp/rtl8812au_rtl8821au.git"
+PKG_GIT_BRANCH="4.3.22_beta"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"

@@ -23,9 +23,12 @@
 # Skins to install (Confluence)
 # Space separated list is supported,
 # e.g. SKINS="Confluence"
-  SKINS="Confluence"
+  SKINS=""
 
-# Default Skin (Confluence)
+# remove default skin included in Kodi (yes/no)
+  SKIN_REMOVE_SHIPPED="no"
+
+# Default Skin (Confluence, or any from above)
   SKIN_DEFAULT="Confluence"
 
 # install extra subtitle Fonts for KODI (yes / no)
@@ -61,7 +64,7 @@
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
 #  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU RTL8812AU dvbhdhomerun"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU RTL8812AU mt7601"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU mt7601"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"

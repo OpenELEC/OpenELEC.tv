@@ -263,21 +263,34 @@ fi
       # remove n previous created release image
         rm -rf $TARGET_IMG/$IMAGE_NAME.img.gz
         if [ -n "$BOOTLOADER" ]; then
-          if [ -d $ROOT/projects/$PROJECT/packages ]; then
-          	BOOTLOADER_DIR=`find $ROOT/projects/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
-          else
-          	BOOTLOADER_DIR=""
+
+          BOOTLOADER_DIR=""
+
+          if [ -z "$BOOTLOADER_DIR" -a -d $HOME/.openelec/projects/$PROJECT/packages ]; then
+            BOOTLOADER_DIR=`find $HOME/.openelec/projects/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
+          fi
+
+          if [ -z "$BOOTLOADER_DIR" -a -d $HOME/.openelec/packages ]; then
+            BOOTLOADER_DIR=`find $HOME/.openelec/packages -type d -name $BOOTLOADER 2>/dev/null`
+          fi
+
+          if [ -z "$BOOTLOADER_DIR" -a -d $PROJECT_DIR/$PROJECT/packages ]; then
+            BOOTLOADER_DIR=`find $PROJECT_DIR/$PROJECT/packages -type d -name $BOOTLOADER 2>/dev/null`
           fi
 
           if [ -z "$BOOTLOADER_DIR" -o ! -d "$BOOTLOADER_DIR" ]; then
-          	BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
+            BOOTLOADER_DIR=`find $PACKAGES -type d -name $BOOTLOADER 2>/dev/null`
           fi
 
           if [ -d "$BOOTLOADER_DIR"/files ]; then
             cp -R $BOOTLOADER_DIR/files/* $RELEASE_DIR
           fi
 
-          if [ -f $PROJECT_DIR/$PROJECT/bootloader/release ]; then
+          if [ -f $HOME/.openelec/projects/$PROJECT/bootloader/release ]; then
+            . $HOME/.openelec/projects/$PROJECT/bootloader/release
+          elif [ -f $HOME/.openelec/bootloader/release ]; then
+            . $HOME/.openelec/bootloader/release
+          elif [ -f $PROJECT_DIR/$PROJECT/bootloader/release ]; then
             . $PROJECT_DIR/$PROJECT/bootloader/release
           elif [ -f "$BOOTLOADER_DIR"/release ]; then
             . $BOOTLOADER_DIR/release
