@@ -1,6 +1,8 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,26 +18,12 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libc"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain glibc timezone-data"
-PKG_DEPENDS_INIT="toolchain glibc:init"
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="libc: Metapackage"
-PKG_LONGDESC=""
-PKG_SHORTDESC="libc: Meta package for installing various tools and libs needed for libc"
-PKG_LONGDESC="Meta package for installing various tools and libs needed for libc"
+. config/options $1
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
-
-if [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET arm-mem"
-  PKG_DEPENDS_INIT="$PKG_DEPENDS_INIT arm-mem:init"
-fi
+mkdir -p $RELEASE_DIR/3rdparty/bootloader
+  cp -PR $BUILD/bcm2835-firmware-*/boot/LICENCE* $RELEASE_DIR/3rdparty/bootloader/
+  cp -PR $BUILD/bcm2835-firmware-*/boot/bootcode.bin $RELEASE_DIR/3rdparty/bootloader/
+  cp -PR $BUILD/bcm2835-firmware-*/boot/fixup_x.dat $RELEASE_DIR/3rdparty/bootloader/fixup.dat
+  cp -PR $BUILD/bcm2835-firmware-*/boot/start_x.elf $RELEASE_DIR/3rdparty/bootloader/start.elf
+  cp -PR $INSTALL/usr/share/bootloader/*.dtb $RELEASE_DIR/3rdparty/bootloader/
+  cp -PR $INSTALL/usr/share/bootloader/overlays $RELEASE_DIR/3rdparty/bootloader/

@@ -218,7 +218,7 @@ fi
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
 
 # copy kernel to target dir
-  if [ "$BOOTLOADER" = "bcm2835-bootloader" ]; then
+  if [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
     echo "injecting DeviceTreeBlobs to kernel..."
     perl $BUILD/linux-$(kernel_version)/scripts/mkknlimg $BUILD/linux-$(kernel_version)/arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET $TARGET_IMG/$IMAGE_NAME.kernel
     echo "...done"
@@ -463,10 +463,10 @@ fi
         fi
 
       # copy Bootloader
-        cp -PR $BUILD/bcm2835-bootloader-*/LICENCE* $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/
-        cp -PR $BUILD/bcm2835-bootloader-*/bootcode.bin $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/
-        cp -PR $BUILD/bcm2835-bootloader-*/fixup_x.dat $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/fixup.dat
-        cp -PR $BUILD/bcm2835-bootloader-*/start_x.elf $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/start.elf
+        cp -PR $BUILD/bcm2835-firmware-*/LICENCE* $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/
+        cp -PR $BUILD/bcm2835-firmware-*/bootcode.bin $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/
+        cp -PR $BUILD/bcm2835-firmware-*/fixup_x.dat $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/fixup.dat
+        cp -PR $BUILD/bcm2835-firmware-*/start_x.elf $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/start.elf
 
       # copy system files
         cp $TARGET_IMG/$IMAGE_NAME.system $RELEASE_DIR/${DISTRONAME}_${PROJECT}/System/SYSTEM

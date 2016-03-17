@@ -193,7 +193,7 @@ fi
 if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $KODIPLAYER_DRIVER"
 
-  if [ "$KODIPLAYER_DRIVER" = bcm2835-driver ]; then
+  if [ "$KODIPLAYER_DRIVER" = bcm2835-firmware ]; then
     KODI_OPENMAX="--enable-openmax"
     KODI_PLAYER="--enable-player=omxplayer"
     KODI_CODEC="--with-platform=raspberry-pi"

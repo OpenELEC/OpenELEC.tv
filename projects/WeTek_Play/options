@@ -35,7 +35,7 @@
         ;;
     esac
 
-  # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
+  # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-firmware)
     BOOTLOADER="u-boot"
 
   # u-boot version to use (default)
@@ -90,7 +90,7 @@
   # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
-  # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q / opengl-meson6)
+  # OpenGL-ES implementation to use (no / bcm2835-firmware / gpu-viv-bin-mx6q / opengl-meson6)
     OPENGLES="opengl-meson6"
 
   # include uvesafb support (yes / no)
@@ -107,7 +107,7 @@
   # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
     GRAPHIC_DRIVERS=""
 
-  # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap / libamcodec)
+  # KODI Player implementation to use (default / bcm2835-firmware / libfslvpuwrap / libamcodec)
     KODIPLAYER_DRIVER="libamcodec"
 
   # Modules to install in initramfs for early boot

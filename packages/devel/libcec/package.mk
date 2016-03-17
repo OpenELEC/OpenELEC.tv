@@ -33,8 +33,8 @@ PKG_LONGDESC="libCEC is an open-source dual licensed library designed for commun
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$KODIPLAYER_DRIVER" = "bcm2835-driver" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-driver"
+if [ "$KODIPLAYER_DRIVER" = "bcm2835-firmware" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bcm2835-firmware"
 fi
 
 if [ "$KODIPLAYER_DRIVER" = "libfslvpuwrap" ]; then
@@ -50,7 +50,7 @@ else
 fi
 
 configure_target() {
-  if [ "$KODIPLAYER_DRIVER" = "bcm2835-driver" ]; then
+  if [ "$KODIPLAYER_DRIVER" = "bcm2835-firmware" ]; then
     export CXXFLAGS="$CXXFLAGS \
       -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads/ \
       -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
