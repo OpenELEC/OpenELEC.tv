@@ -17,14 +17,10 @@
 ################################################################################
 
 PKG_NAME="kodi"
-PKG_VERSION="16.0-Jarvis"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
-PKG_GIT_BRANCH="master"
-PKG_KEEP_CHECKOUT="yes"
 PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg crossguid giflib"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
@@ -34,6 +30,21 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+case "$KODIPLAYER_DRIVER" in
+  bcm2835-firmware)
+    PKG_VERSION="4c58ea8"
+    PKG_GIT_URL="https://github.com/popcornmix/xbmc.git"
+    PKG_GIT_BRANCH="jarvis_rbp_backports"
+    PKG_KEEP_CHECKOUT="yes"
+    ;;
+  *)
+    PKG_VERSION="a7caa16"
+    PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
+    PKG_GIT_BRANCH="Jarvis"
+    PKG_KEEP_CHECKOUT="yes"
+    ;;
+esac
 
 # configure GPU drivers and dependencies:
   get_graphicdrivers
