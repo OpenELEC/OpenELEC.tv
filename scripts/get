@@ -83,10 +83,10 @@ if [ -n "$PKG_URL" -o -n "$PKG_GIT_URL" ]; then
     [ "$VERBOSE" = "yes" ] && GIT_OPT=-v
     [ -z "$PKG_GIT_BRANCH" ] && PKG_GIT_BRANCH=master
 
-    if [ "$PKG_KEEP_CHECKOUT" = "yes" -a -d $SOURCES/${1}/${1}.git ]; then
+    if [ "$PKG_KEEP_CHECKOUT" = "yes" -a -d $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git ]; then
       GIT_CLONE_CMD="git fetch -v origin $PKG_GIT_BRANCH:$PKG_GIT_BRANCH"
     else
-      GIT_CLONE_CMD="git clone -v --bare -b "$PKG_GIT_BRANCH" "$PKG_GIT_URL" $SOURCES/${1}/${1}.git"
+      GIT_CLONE_CMD="git clone -v --bare -b "$PKG_GIT_BRANCH" "$PKG_GIT_URL" $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git"
     fi
 
     NBGIT="1"
@@ -104,10 +104,10 @@ if [ -n "$PKG_URL" -o -n "$PKG_GIT_URL" ]; then
     printf "%${BUILD_INDENT}c ${boldcyan}CHECKOUT${endcolor}      $1\n" ' '>&$SILENT_OUT
     export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
-    if [ "$PKG_KEEP_CHECKOUT" = "yes" -a -d $SOURCES/${1}/${1}.git ]; then
-      cd $SOURCES/${1}/${1}.git
+    if [ "$PKG_KEEP_CHECKOUT" = "yes" -a -d $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git ]; then
+      cd $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git
     else
-      rm -rf $SOURCES/${1}/${1}.git
+      rm -rf $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git
     fi
 
     until [ -f "$STAMP" ] || $GIT_CLONE_CMD; do
@@ -122,7 +122,7 @@ if [ -n "$PKG_URL" -o -n "$PKG_GIT_URL" ]; then
       cd $ROOT
     fi
 
-    pushd $ROOT/$SOURCES/${1}/${1}.git > /dev/null
+    pushd $ROOT/$SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git > /dev/null
       git archive --format=tar --prefix=${PKG_NAME}-${PKG_VERSION}/ ${PKG_VERSION} | \
         xz > $ROOT/$SOURCES/$1/${PKG_NAME}-${PKG_VERSION}.tar.xz
     popd > /dev/null
@@ -131,7 +131,7 @@ if [ -n "$PKG_URL" -o -n "$PKG_GIT_URL" ]; then
     md5sum -t $PACKAGE > $MD5SUM
 
     if [ ! "$PKG_KEEP_CHECKOUT" = "yes" ]; then
-      rm -rf $SOURCES/${1}/${1}.git
+      rm -rf $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git
     fi
 
     rm -f $BUILD_BASE*/$STAMPS_NOARCH/$1/unpack
