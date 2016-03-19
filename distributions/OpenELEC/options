@@ -20,16 +20,16 @@
 # Mediacenter to use (kodi / no)
   MEDIACENTER="kodi"
 
-# Skins to install (Confluence)
+# Skins to install (Estuary)
 # Space separated list is supported,
-# e.g. SKINS="Confluence"
+# e.g. SKINS="Estuary"
   SKINS=""
 
 # remove default skin included in Kodi (yes/no)
   SKIN_REMOVE_SHIPPED="no"
 
 # Default Skin (Confluence, or any from above)
-  SKIN_DEFAULT="Confluence"
+  SKIN_DEFAULT="Estuary"
 
 # install extra subtitle Fonts for KODI (yes / no)
   KODI_EXTRA_FONTS="yes"
@@ -149,9 +149,6 @@
 
 # build and install IRServer IR/LCD support (yes / no)
   IRSERVER_SUPPORT="yes"
-
-# build and install Joystick support (yes / no)
-  JOYSTICK_SUPPORT="yes"
 
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"

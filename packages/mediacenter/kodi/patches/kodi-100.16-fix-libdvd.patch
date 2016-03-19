@@ -1,0 +1,19 @@
+diff -Naur kodi-aea2d0b/Makefile.in kodi-aea2d0b.patch/Makefile.in
+--- kodi-aea2d0b/Makefile.in	2016-03-19 11:02:59.000000000 +0100
++++ kodi-aea2d0b.patch/Makefile.in	2016-03-19 13:14:22.004475763 +0100
+@@ -11,7 +11,6 @@
+ 
+ DVDPCODECS_DIRS= \
+ 	lib \
+-	lib/libdvd
+ 
+ VideoPlayer_ARCHIVES=xbmc/cores/VideoPlayer/VideoPlayer.a \
+                    xbmc/cores/VideoPlayer/DVDCodecs/DVDCodecs.a \
+@@ -339,7 +338,6 @@
+ 	$(MAKE) -C lib/addons/library.xbmc.pvr
+ 	$(MAKE) -C lib/addons/library.kodi.inputstream
+ dvdpcodecs: dllloader
+-	$(MAKE) -C lib/libdvd
+ 
+ dvdpextcodecs:
+ 

@@ -1,0 +1,16 @@
+diff -Naur kodi-aea2d0b/addons/skin.estuary/1080i/Settings.xml kodi-aea2d0b.patch/addons/skin.estuary/1080i/Settings.xml
+--- kodi-aea2d0b/addons/skin.estuary/1080i/Settings.xml	2016-03-19 11:02:59.000000000 +0100
++++ kodi-aea2d0b.patch/addons/skin.estuary/1080i/Settings.xml	2016-03-19 17:31:16.529119950 +0100
+@@ -127,6 +127,12 @@
+ 					<icon>icons/settings/network.png</icon>
+ 				</item>
+ 				<item>
++					<label>@DISTRONAME@</label>
++					<onclick>RunAddon(service.openelec.settings)</onclick>
++					<thumb>icons/settings/openelec.png</thumb>
++					<property name="id">openelec</property>
++				</item>
++				<item>
+ 					<label>$LOCALIZE[13000]</label>
+ 					<onclick>ActivateWindow(SystemSettings)</onclick>
+ 					<icon>icons/settings/system.png</icon>
