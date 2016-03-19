@@ -4,7 +4,7 @@ diff -Naur kodi-platform-15edaf7.orig/CMakeLists.txt kodi-platform-15edaf7/CMake
 @@ -9,7 +9,6 @@
  find_package(TinyXML REQUIRED)
  find_package(Threads REQUIRED)
- find_package(platform REQUIRED)
+ find_package(p8-platform REQUIRED)
 -include(UseMultiArch.cmake)
  include(CheckAtomic.cmake)
  
