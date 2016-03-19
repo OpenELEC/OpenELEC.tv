@@ -102,7 +102,7 @@ makeinstall_target() {
     cp $ROOT/$PKG_BUILD/audio/audio_filters/*.dsp $INSTALL/usr/share/audio_filters
   
   # General configuration
-  sed -i -e "s/# libretro_directory = \"\"/libretro_directory = \"\/tmp\/cores\"/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# libretro_directory =/libretro_directory = \"\/tmp\/cores\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# libretro_info_path =/libretro_info_path = \"\/tmp\/cores\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# rgui_browser_directory =/rgui_browser_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# core_assets_directory =/core_assets_directory =\/storage\/roms/" $INSTALL/etc/retroarch.cfg
