@@ -16,7 +16,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="vdr-epgsearch"
+PKG_NAME="vdr-plugin-epgsearch"
 PKG_VERSION="0b09f90"
 PKG_REV="1"
 PKG_ARCH="any"
@@ -27,8 +27,8 @@ PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain vdr"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="vdr-epgsearch"
-PKG_LONGDESC="vdr-epgsearch"
+PKG_SHORTDESC="vdr-plugin-epgsearch"
+PKG_LONGDESC="vdr-plugin-epgsearch"
 
 PKG_IS_ADDON="no"
 
