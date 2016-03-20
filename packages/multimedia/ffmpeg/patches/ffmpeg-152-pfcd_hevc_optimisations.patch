@@ -36670,3 +36670,1469 @@ index 5aa0432..ffd13ca 100644
 -- 
 2.5.0
 
+From 6cf5fc5f6384350149e237d0e08823fe6c7ef387 Mon Sep 17 00:00:00 2001
+From: John Cox <jc@kynesim.co.uk>
+Date: Tue, 9 Feb 2016 11:57:40 +0000
+Subject: [PATCH 1/2] Zero copy code v6
+
+This version has GPU buffer pooling code
+---
+ ffmpeg.c                 | 123 +++++++++-----
+ libavcodec/Makefile      |   2 +
+ libavcodec/avcodec.h     |   7 +
+ libavcodec/hevc.c        |  92 ++++++-----
+ libavcodec/hevc_filter.c |  83 +++++-----
+ libavcodec/rpi_qpu.c     |   2 +-
+ libavcodec/rpi_qpu.h     | 109 ++++++++++++-
+ libavcodec/rpi_zc.c      | 406 +++++++++++++++++++++++++++++++++++++++++++++++
+ libavcodec/rpi_zc.h      |  83 ++++++++++
+ 9 files changed, 780 insertions(+), 127 deletions(-)
+ create mode 100644 libavcodec/rpi_zc.c
+ create mode 100644 libavcodec/rpi_zc.h
+
+diff --git a/ffmpeg.c b/ffmpeg.c
+index 026ffa9..c4c4dd6 100644
+--- a/ffmpeg.c
++++ b/ffmpeg.c
+@@ -25,7 +25,7 @@
+ 
+ #ifdef RPI
+ #define RPI_DISPLAY
+-//#define RPI_ZERO_COPY
++#define RPI_ZERO_COPY
+ #endif
+ 
+ #include "config.h"
+@@ -83,9 +83,7 @@
+ #include <interface/mmal/util/mmal_default_components.h>
+ #include <interface/mmal/util/mmal_connection.h>
+ #include <interface/mmal/util/mmal_util_params.h>
+-#ifdef RPI_ZERO_COPY
+-#include "libavcodec/rpi_qpu.h"
+-#endif
++#include "libavcodec/rpi_zc.h"
+ #endif
+ 
+ #if HAVE_SYS_RESOURCE_H
+@@ -186,13 +184,7 @@ static void free_input_threads(void);
+ 
+ static MMAL_COMPONENT_T* rpi_display = NULL;
+ static MMAL_POOL_T *rpi_pool = NULL;
+-
+-#ifdef RPI_ZERO_COPY
+-static uint8_t *get_vc_handle(AVBufferRef *bref) {
+-  GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
+-  return (uint8_t *)p->vc_handle;
+-}
+-#endif
++static volatile int rpi_display_count = 0;
+ 
+ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
+ {
+@@ -209,7 +201,7 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
+     for (i = 0; i < NUM_BUFFERS; ++i)
+     {
+        MMAL_BUFFER_HEADER_T* buffer = pool->header[i];
+-       void* bufPtr = buffer->data;
++       char * bufPtr = buffer->data;
+        memset(bufPtr, i*30, w*h);
+        memset(bufPtr+w*h, 128, (w*h)/2);
+     }
+@@ -218,23 +210,31 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
+     return pool;
+ }
+ 
+-static void display_cb_input(MMAL_PORT_T *port,MMAL_BUFFER_HEADER_T *buffer) {
++static void display_cb_input(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer) {
++#ifdef RPI_ZERO_COPY
++    av_rpi_zc_unref(buffer->user_data);
++    --rpi_display_count;
++#endif
++    mmal_buffer_header_release(buffer);
++}
++
++static void display_cb_control(MMAL_PORT_T *port,MMAL_BUFFER_HEADER_T *buffer) {
+   mmal_buffer_header_release(buffer);
+ }
+ 
+ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
+ {
+     MMAL_COMPONENT_T* display;
+-    int w2 = (w+31)&~31;
+-    int h2 = (h+15)&~15;
+     MMAL_DISPLAYREGION_T region =
+     {
+-        {MMAL_PARAMETER_DISPLAYREGION, sizeof(region)},
++        .hdr = {MMAL_PARAMETER_DISPLAYREGION, sizeof(region)},
+         .set = MMAL_DISPLAY_SET_LAYER | MMAL_DISPLAY_SET_FULLSCREEN | MMAL_DISPLAY_SET_DEST_RECT,
+         .layer = 2,
+         .fullscreen = 0,
+         .dest_rect = {x, y, w, h}
+     };
++    const AVRpiZcFrameGeometry geo = av_rpi_zc_frame_geometry(w, h);
++
+     bcm_host_init();  // TODO is this needed?
+     mmal_component_create(MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &display);
+     assert(display);
+@@ -243,8 +243,8 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
+ 
+     MMAL_ES_FORMAT_T* format = display->input[0]->format;
+     format->encoding = MMAL_ENCODING_I420;
+-    format->es->video.width = w2;
+-    format->es->video.height = h2;
++    format->es->video.width = geo.stride_y;
++    format->es->video.height = geo.height_y;
+     format->es->video.crop.x = 0;
+     format->es->video.crop.y = 0;
+     format->es->video.crop.width = w;
+@@ -253,46 +253,75 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
+ 
+     mmal_component_enable(display);
+ 
+-    rpi_pool = display_alloc_pool(display->input[0], w2, h2);
++    rpi_pool = display_alloc_pool(display->input[0], geo.stride_y, geo.height_y);
+ 
+     mmal_port_enable(display->input[0],display_cb_input);
+-    mmal_port_enable(display->control,display_cb_input);
++    mmal_port_enable(display->control,display_cb_control);
+ 
+-    printf("Allocated display %d %d\n",w,h);
++    printf("Allocated display %dx%d in %dx%d\n", w, h, geo.stride_y, geo.height_y);
+ 
+     return display;
+ }
+ 
+-static void display_frame(MMAL_COMPONENT_T* display,AVFrame* fr)
++static void display_frame(struct AVCodecContext * const s, MMAL_COMPONENT_T* const display, const AVFrame* const fr)
+ {
+-    int w = fr->width;
+-    int h = fr->height;
+-    int w2 = (w+31)&~31;
+-    int h2 = (h+15)&~15;
+     if (!display || !rpi_pool)
+         return;
++
++    if (rpi_display_count >= 3) {
++        av_log(s, AV_LOG_VERBOSE, "Frame dropped\n");
++        return;
++    }
++
+     MMAL_BUFFER_HEADER_T* buf = mmal_queue_get(rpi_pool->queue);
+     if (!buf) {
+-      // Running too fast so drop the frame
+-      return;
++        // Running too fast so drop the frame
++        printf("Q alloc failure\n");
++        return;
+     }
+     assert(buf);
+     buf->cmd = 0;
+-    buf->length = (w2 * h2 * 3)/2;
+     buf->offset = 0; // Offset to valid data
+     buf->flags = 0;
+ #ifdef RPI_ZERO_COPY
+-    buf->data = get_vc_handle(fr->buf[0]);
+-    buf->alloc_size = (w2*h2*3)/2;
++{
++    const AVRpiZcRefPtr fr_buf = av_rpi_zc_ref(s, fr, 1);
++
++    buf->user_data = fr_buf;
++    buf->data = av_rpi_zc_vc_handle(fr_buf);
++    buf->alloc_size =
++        buf->length = av_rpi_zc_numbytes(fr_buf);
++
++    ++rpi_display_count;
++}
+ #else
++{
++#error YYY
++    int w = fr->width;
++    int h = fr->height;
++    int w2 = (w+31)&~31;
++    int h2 = (h+15)&~15;
++
++    buf->length = (w2 * h2 * 3)/2;
++    buf->user_data = NULL;
++
+     //mmal_buffer_header_mem_lock(buf);
+     memcpy(buf->data, fr->data[0], w2 * h);
+     memcpy(buf->data+w2*h2, fr->data[1], w2 * h / 4);
+     memcpy(buf->data+w2*h2*5/4, fr->data[2], w2 * h / 4);
+     //mmal_buffer_header_mem_unlock(buf);
++}
+ #endif
+ 
+-    mmal_port_send_buffer(display->input[0], buf);  // I assume this will automatically get released
++    while (rpi_display_count >= 3) {
++        usleep(5000);
++    }
++
++    if (mmal_port_send_buffer(display->input[0], buf) != MMAL_SUCCESS)
++    {
++        printf("** send failed: depth=%d\n", rpi_display_count);
++        display_cb_input(NULL, buf);
++    }
+ }
+ 
+ static void display_exit(MMAL_COMPONENT_T* display)
+@@ -692,6 +721,11 @@ static void ffmpeg_cleanup(int ret)
+         avformat_close_input(&input_files[i]->ctx);
+         av_freep(&input_files[i]);
+     }
++
++#ifdef RPI_DISPLAY
++    display_exit(rpi_display);
++#endif
++
+     for (i = 0; i < nb_input_streams; i++) {
+         InputStream *ist = input_streams[i];
+ 
+@@ -703,6 +737,9 @@ static void ffmpeg_cleanup(int ret)
+         av_freep(&ist->filters);
+         av_freep(&ist->hwaccel_device);
+ 
++#ifdef RPI_ZERO_COPY
++        av_rpi_zc_uninit(ist->dec_ctx);
++#endif
+         avcodec_free_context(&ist->dec_ctx);
+ 
+         av_freep(&input_streams[i]);
+@@ -730,9 +767,6 @@ static void ffmpeg_cleanup(int ret)
+     term_exit();
+     ffmpeg_exited = 1;
+ 
+-#ifdef RPI_DISPLAY
+-    display_exit(rpi_display);
+-#endif
+ }
+ 
+ void remove_avoptions(AVDictionary **a, AVDictionary *b)
+@@ -1116,18 +1150,19 @@ static void do_video_out(AVFormatContext *s,
+     int frame_size = 0;
+     InputStream *ist = NULL;
+     AVFilterContext *filter = ost->filter->filter;
++
++    if (ost->source_index >= 0)
++        ist = input_streams[ost->source_index];
++
+ #ifdef RPI_DISPLAY
+-    if (next_picture)
++    if (next_picture && ist != NULL)
+     {
+-	if (!rpi_display)
++        if (!rpi_display)
+            rpi_display = display_init(0,0,next_picture->width,next_picture->height);
+-        display_frame(rpi_display,next_picture);
++        display_frame(ist->dec_ctx, rpi_display, next_picture);
+     }
+ #endif
+ 
+-    if (ost->source_index >= 0)
+-        ist = input_streams[ost->source_index];
+-
+     if (filter->inputs[0]->frame_rate.num > 0 &&
+         filter->inputs[0]->frame_rate.den > 0)
+         duration = 1/(av_q2d(filter->inputs[0]->frame_rate) * av_q2d(enc->time_base));
+@@ -2701,6 +2736,12 @@ static int init_input_stream(int ist_index, char *error, int error_len)
+         ist->dec_ctx->opaque                = ist;
+         ist->dec_ctx->get_format            = get_format;
+         ist->dec_ctx->get_buffer2           = get_buffer;
++
++#ifdef RPI_ZERO_COPY
++        // Overrides the above get_buffer2
++        av_rpi_zc_init(ist->dec_ctx);
++#endif
++
+         ist->dec_ctx->thread_safe_callbacks = 1;
+ 
+         av_opt_set_int(ist->dec_ctx, "refcounted_frames", 1, 0);
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 54e14b4..0ae4d41 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -8,6 +8,7 @@ HEADERS = avcodec.h                                                     \
+           rpi_shader.h                                                  \
+           rpi_mailbox.h                                                 \
+           rpi_hevc_transform.h                                          \
++          rpi_zc.h                                                      \
+           dv_profile.h                                                  \
+           d3d11va.h                                                     \
+           dxva2.h                                                       \
+@@ -42,6 +43,7 @@ OBJS = allcodecs.o                                                      \
+        rpi_qpu.o                                                        \
+        rpi_shader.o                                                     \
+        rpi_mailbox.o                                                    \
++       rpi_zc.o                                                         \
+        vorbis_parser.o                                                  \
+        xiph.o                                                           \
+ 
+diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
+index bc1b1b9..26bf9e0 100644
+--- a/libavcodec/avcodec.h
++++ b/libavcodec/avcodec.h
+@@ -3439,6 +3439,13 @@ typedef struct AVCodecContext {
+     unsigned properties;
+ #define FF_CODEC_PROPERTY_LOSSLESS        0x00000001
+ #define FF_CODEC_PROPERTY_CLOSED_CAPTIONS 0x00000002
++
++    /**
++     * Opaque pointer for use by replacement get_buffer2 code
++     *
++     * @author jc (08/02/2016)
++     */
++    void * get_buffer_context;
+ } AVCodecContext;
+ 
+ AVRational av_codec_get_pkt_timebase         (const AVCodecContext *avctx);
+diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
+index d56f777..2ebd8ce 100644
+--- a/libavcodec/hevc.c
++++ b/libavcodec/hevc.c
+@@ -112,10 +112,6 @@ static uint32_t rpi_filter_coefs[8][1] = {
+         { ENCODE_COEFFS(  -2,  10,  58,  -2) }
+ };
+ 
+-static uint32_t get_vc_address(AVBufferRef *bref) {
+-  GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
+-  return p->vc;
+-}
+ #endif
+ 
+ 
+@@ -2184,9 +2180,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                   int bw = nPbW-start_x;
+                   int bh = nPbH-start_y;
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref0->frame);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + 8 + start_x) & 0xffff);
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref0->frame);
+                   *y++ = ( (bw<16 ? bw : 16) << 16 ) + (bh<16 ? bh : 16);
+                   *y++ = my2_mx2_my_mx;
+                   if (weight_flag) {
+@@ -2194,7 +2190,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                   } else {
+                       *y++ = 1; // Weight of 1 and offset of 0
+                   }
+-                  *y++ = (get_vc_address(s->frame->buf[0]) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
++                  *y++ = (get_vc_address_y(s->frame) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
+                 }
+             }
+@@ -2233,8 +2229,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[1]);
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[2]);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_u(ref0->frame);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_v(ref0->frame);
+                       *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
+                       *u++ = rpi_filter_coefs[_mx][0];
+                       *u++ = rpi_filter_coefs[_my][0];
+@@ -2245,8 +2241,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                           *u++ = 1; // Weight of 1 and offset of 0
+                           *u++ = 1;
+                       }
+-                      *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
+-                      *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
++                      *u++ = (get_vc_address_u(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
++                      *u++ = (get_vc_address_v(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
+                     }
+                 }
+                 s->curr_u_mvs = u;
+@@ -2284,9 +2280,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                   int bw = nPbW-start_x;
+                   int bh = nPbH-start_y;
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref1->frame);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + 8 + start_x) & 0xffff);
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref1->frame);
+                   *y++ = ( (bw<16 ? bw : 16) << 16 ) + (bh<16 ? bh : 16);
+                   *y++ = my2_mx2_my_mx;
+                   if (weight_flag) {
+@@ -2294,7 +2290,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                   } else {
+                       *y++ = 1; // Weight of 1 and offset of 0
+                   }
+-                  *y++ = (get_vc_address(s->frame->buf[0]) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
++                  *y++ = (get_vc_address_y(s->frame) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
+                 }
+             }
+@@ -2334,8 +2330,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[1]);
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[2]);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_u(ref1->frame);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_v(ref1->frame);
+                       *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
+                       // TODO chroma weight and offset... s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]
+                       *u++ = rpi_filter_coefs[_mx][0];
+@@ -2347,8 +2343,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                           *u++ = 1; // Weight of 1 and offset of 0
+                           *u++ = 1;
+                       }
+-                      *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
+-                      *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
++                      *u++ = (get_vc_address_u(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
++                      *u++ = (get_vc_address_v(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
+                     }
+                 }
+                 s->curr_u_mvs = u;
+@@ -2390,13 +2386,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                   int bw = nPbW-start_x;
+                   int bh = nPbH-start_y;
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref0->frame);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = ((y2 - 3 + start_y) << 16) + ( (x2 - 3 + start_x) & 0xffff); // Second fetch is for ref1
+-                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[0]);
++                  y++[-RPI_LUMA_COMMAND_WORDS] = get_vc_address_y(ref1->frame);
+                   *y++ = ( (bw<8 ? bw : 8) << 16 ) + (bh<16 ? bh : 16);
+                   *y++ = my2_mx2_my_mx;
+                   *y++ = 1; // B frame weighted prediction not supported
+-                  *y++ = (get_vc_address(s->frame->buf[0]) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
++                  *y++ = (get_vc_address_y(s->frame) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
+                   y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter_b;
+                 }
+             }
+@@ -2440,8 +2436,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b0;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[1]);
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[2]);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_u(ref0->frame);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_v(ref0->frame);
+                       *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
+                       *u++ = rpi_filter_coefs[_mx][0];
+                       *u++ = rpi_filter_coefs[_my][0];
+@@ -2451,14 +2447,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = x2_c - 1 + start_x;
+                       u++[-RPI_CHROMA_COMMAND_WORDS] = y2_c - 1 + start_y;
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[1]);
+-                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[2]);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_u(ref1->frame);
++                      u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address_v(ref1->frame);
+                       *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
+                       *u++ = rpi_filter_coefs[_mx2][0];
+                       *u++ = rpi_filter_coefs[_my2][0];
+                       u+=2; // Weights not supported in B slices
+-                      *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
+-                      *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
++                      *u++ = (get_vc_address_u(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
++                      *u++ = (get_vc_address_v(s->frame) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
+                     }
+                 }
+                 s->curr_u_mvs = u;
+@@ -3257,12 +3253,13 @@ static int32_t filter8_luma(uint8_t *data, int x0, int y0, int pitch, int my_mx,
+    return vsum;
+ }
+ 
+-static uint8_t *test_frame(HEVCContext *s,uint32_t p, AVFrame *frame, int cIdx)
++static uint8_t *test_frame(HEVCContext *s,uint32_t p, AVFrame *frame, const int cIdx)
+ {
+   //int pic_width        = s->ps.sps->width >> s->ps.sps->hshift[cIdx];
+   int pic_height       = s->ps.sps->height >> s->ps.sps->vshift[cIdx];
+   int pitch = frame->linesize[cIdx];
+-  uint32_t base = get_vc_address(frame->buf[cIdx]);
++  uint32_t base = c_idx == 0 ? get_vc_address_y(frame);
++    c_idx == 1 ? get_vc_address_u(frame) : get_vc_address_v(frame);
+   if (p>=base && p<base+pitch*pic_height) {
+     return frame->data[cIdx] + (p-base);
+   }
+@@ -3549,6 +3546,7 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+ #ifdef RPI
+ 
+ #ifndef RPI_FAST_CACHEFLUSH
++#error RPI_FAST_CACHEFLUSH is broken
+ static void flush_buffer(AVBufferRef *bref) {
+     GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
+     gpu_cache_flush(p);
+@@ -3559,7 +3557,7 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+ {
+ #ifdef RPI_FAST_CACHEFLUSH
+     struct vcsm_user_clean_invalid_s iocache = {};
+-    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(frame->buf[1]);
++    GPU_MEM_PTR_T p = get_gpu_mem_ptr_u(s->frame);
+     int n = s->ps.sps->height;
+     int curr_y = 0;
+     int curr_uv = 0;
+@@ -3567,21 +3565,21 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+     int sz,base;
+     sz = s->frame->linesize[1] * (n_uv-curr_uv);
+     base = s->frame->linesize[1] * curr_uv;
+-    iocache.s[0].handle = p->vcsm_handle;
++    iocache.s[0].handle = p.vcsm_handle;
+     iocache.s[0].cmd = 3; // clean+invalidate
+-    iocache.s[0].addr = (int)(p->arm) + base;
++    iocache.s[0].addr = (int)(p.arm) + base;
+     iocache.s[0].size  = sz;
+-    p = av_buffer_pool_opaque(frame->buf[2]);
+-    iocache.s[1].handle = p->vcsm_handle;
++    p = get_gpu_mem_ptr_v(s->frame);
++    iocache.s[1].handle = p.vcsm_handle;
+     iocache.s[1].cmd = 3; // clean+invalidate
+-    iocache.s[1].addr = (int)(p->arm) + base;
++    iocache.s[1].addr = (int)(p.arm) + base;
+     iocache.s[1].size  = sz;
+-    p = av_buffer_pool_opaque(frame->buf[0]);
++    p = get_gpu_mem_ptr_y(s->frame);
+     sz = s->frame->linesize[0] * (n-curr_y);
+     base = s->frame->linesize[0] * curr_y;
+-    iocache.s[2].handle = p->vcsm_handle;
++    iocache.s[2].handle = p.vcsm_handle;
+     iocache.s[2].cmd = 3; // clean+invalidate
+-    iocache.s[2].addr = (int)(p->arm) + base;
++    iocache.s[2].addr = (int)(p.arm) + base;
+     iocache.s[2].size  = sz;
+     vcsm_clean_invalid( &iocache );
+ #else
+@@ -3599,7 +3597,7 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
+     int curr_y;
+     int curr_uv;
+     int n_uv;
+-    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(frame->buf[1]);
++    GPU_MEM_PTR_T p = get_gpu_mem_ptr_u(s->frame);
+     int sz,base;
+     int (*d)[2] = s->dblk_cmds[job];
+     int low=(*d)[1];
+@@ -3616,21 +3614,21 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
+ 
+     sz = s->frame->linesize[1] * (n_uv-curr_uv);
+     base = s->frame->linesize[1] * curr_uv;
+-    iocache.s[0].handle = p->vcsm_handle;
++    iocache.s[0].handle = p.vcsm_handle;
+     iocache.s[0].cmd = 3; // clean+invalidate
+-    iocache.s[0].addr = (int)(p->arm) + base;
++    iocache.s[0].addr = (int)(p.arm) + base;
+     iocache.s[0].size  = sz;
+-    p = av_buffer_pool_opaque(frame->buf[2]);
+-    iocache.s[1].handle = p->vcsm_handle;
++    p = get_gpu_mem_ptr_v(s->frame);
++    iocache.s[1].handle = p.vcsm_handle;
+     iocache.s[1].cmd = 3; // clean+invalidate
+-    iocache.s[1].addr = (int)(p->arm) + base;
++    iocache.s[1].addr = (int)(p.arm) + base;
+     iocache.s[1].size  = sz;
+-    p = av_buffer_pool_opaque(frame->buf[0]);
++    p = get_gpu_mem_ptr_y(s->frame);
+     sz = s->frame->linesize[0] * (n-curr_y);
+     base = s->frame->linesize[0] * curr_y;
+-    iocache.s[2].handle = p->vcsm_handle;
++    iocache.s[2].handle = p.vcsm_handle;
+     iocache.s[2].cmd = 3; // clean+invalidate
+-    iocache.s[2].addr = (int)(p->arm) + base;
++    iocache.s[2].addr = (int)(p.arm) + base;
+     iocache.s[2].size  = sz;
+ 
+     iocache.s[3].handle = p0->vcsm_handle;
+diff --git a/libavcodec/hevc_filter.c b/libavcodec/hevc_filter.c
+index 826a82f..c4fa305 100644
+--- a/libavcodec/hevc_filter.c
++++ b/libavcodec/hevc_filter.c
+@@ -879,17 +879,25 @@ void ff_hevc_deblocking_boundary_strengths(HEVCContext *s, int x0, int y0,
+ #undef CR
+ 
+ #ifdef RPI_INTER_QPU
+-static void flush_buffer(AVBufferRef *bref) {
+-    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
+-    gpu_cache_flush(p);
++static void flush_buffer_y(const AVFrame * const frame) {
++    GPU_MEM_PTR_T p = get_gpu_mem_ptr_y(frame);
++    gpu_cache_flush(&p);
+ }
+ 
+-// Return Physical address for this image
+-static uint32_t get_vc_address(AVBufferRef *bref) {
+-  GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
+-  return p->vc;
++static void flush_buffer_u(const AVFrame * const frame) {
++    GPU_MEM_PTR_T p = get_gpu_mem_ptr_u(frame);
++    gpu_cache_flush(&p);
+ }
+ 
++static void flush_buffer_v(const AVFrame * const frame) {
++    GPU_MEM_PTR_T p = get_gpu_mem_ptr_v(frame);
++    gpu_cache_flush(&p);
++}
++
++
++#ifdef RPI_DEBLOCK_VPU
++#error Not fixed yet
++
+ // ff_hevc_flush_buffer_lines
+ // flushes and invalidates all pixel rows in [start,end-1]
+ static void ff_hevc_flush_buffer_lines(HEVCContext *s, int start, int end, int flush_luma, int flush_chroma)
+@@ -901,44 +909,44 @@ static void ff_hevc_flush_buffer_lines(HEVCContext *s, int start, int end, int f
+         int curr_uv = curr_y >> s->ps.sps->vshift[1];
+         int n_uv = n >> s->ps.sps->vshift[1];
+         int sz,base;
+-        GPU_MEM_PTR_T *p;
++        GPU_MEM_PTR_T p;
+         if (curr_uv < 0) curr_uv = 0;
+         if (n_uv<=curr_uv) { return; }
+         sz = s->frame->linesize[1] * (n_uv-curr_uv);
+         base = s->frame->linesize[1] * curr_uv;
+         if (flush_chroma) {
+-          p = av_buffer_pool_opaque(s->frame->buf[1]);
+-          iocache.s[0].handle = p->vcsm_handle;
++          p = get_gpu_mem_ptr_u(s->frame);
++          iocache.s[0].handle = p.vcsm_handle;
+           iocache.s[0].cmd = 3; // clean+invalidate
+-          iocache.s[0].addr = (int)p->arm + base;
++          iocache.s[0].addr = (int)p.arm + base;
+           iocache.s[0].size  = sz;
+-          p = av_buffer_pool_opaque(s->frame->buf[2]);
+-          iocache.s[1].handle = p->vcsm_handle;
++          p = get_gpu_mem_ptr_v(s->frame);
++          iocache.s[1].handle = p.vcsm_handle;
+           iocache.s[1].cmd = 3; // clean+invalidate
+-          iocache.s[1].addr = (int)p->arm + base;
++          iocache.s[1].addr = (int)p.arm + base;
+           iocache.s[1].size  = sz;
+         }
+         if (flush_luma) {
+-          p = av_buffer_pool_opaque(s->frame->buf[0]);
++          p = get_gpu_mem_ptr_y(s->frame);
+           sz = s->frame->linesize[0] * (n-curr_y);
+           base = s->frame->linesize[0] * curr_y;
+-          iocache.s[2].handle = p->vcsm_handle;
++          iocache.s[2].handle = p.vcsm_handle;
+           iocache.s[2].cmd = 3; // clean+invalidate
+-          iocache.s[2].addr = (int)p->arm + base;
++          iocache.s[2].addr = (int)p.arm + base;
+           iocache.s[2].size  = sz;
+         }
+         vcsm_clean_invalid( &iocache );
+ #else
+         if (flush_chroma) {
+-          flush_buffer(s->frame->buf[1]);
+-          flush_buffer(s->frame->buf[2]);
++          flush_buffer_u(s->frame);
++          flush_buffer_v(s->frame);
+         }
+         if (flush_luma) {
+-          flush_buffer(s->frame->buf[0]);
++          flush_buffer_y(s->frame);
+         }
+ #endif
+ }
+-
++#endif
+ 
+ void ff_hevc_flush_buffer(HEVCContext *s, ThreadFrame *f, int n)
+ {
+@@ -950,37 +958,37 @@ void ff_hevc_flush_buffer(HEVCContext *s, ThreadFrame *f, int n)
+         int curr_uv = curr_y >> s->ps.sps->vshift[1];
+         int n_uv = n >> s->ps.sps->vshift[1];
+         int sz,base;
+-        GPU_MEM_PTR_T *p;
++        GPU_MEM_PTR_T p;
+         if (curr_uv < 0) curr_uv = 0;
+         if (n_uv<=curr_uv) { return; }
+         sz = s->frame->linesize[1] * (n_uv-curr_uv);
+         base = s->frame->linesize[1] * curr_uv;
+-        p = av_buffer_pool_opaque(s->frame->buf[1]);
+-        iocache.s[0].handle = p->vcsm_handle;
++        p = get_gpu_mem_ptr_u(s->frame);
++        iocache.s[0].handle = p.vcsm_handle;
+         iocache.s[0].cmd = 3; // clean+invalidate
+-        iocache.s[0].addr = (int)p->arm + base;
++        iocache.s[0].addr = (int)p.arm + base;
+         iocache.s[0].size  = sz;
+-        p = av_buffer_pool_opaque(s->frame->buf[2]);
+-        iocache.s[1].handle = p->vcsm_handle;
++        p = get_gpu_mem_ptr_v(s->frame);
++        iocache.s[1].handle = p.vcsm_handle;
+         iocache.s[1].cmd = 3; // clean+invalidate
+-        iocache.s[1].addr = (int)p->arm + base;
++        iocache.s[1].addr = (int)p.arm + base;
+         iocache.s[1].size  = sz;
+ 
+ #ifdef RPI_LUMA_QPU
+-        p = av_buffer_pool_opaque(s->frame->buf[0]);
++        p = get_gpu_mem_ptr_y(s->frame);
+         sz = s->frame->linesize[0] * (n-curr_y);
+         base = s->frame->linesize[0] * curr_y;
+-        iocache.s[2].handle = p->vcsm_handle;
++        iocache.s[2].handle = p.vcsm_handle;
+         iocache.s[2].cmd = 3; // clean+invalidate
+-        iocache.s[2].addr = (int)p->arm + base;
++        iocache.s[2].addr = (int)p.arm + base;
+         iocache.s[2].size  = sz;
+ #endif
+         vcsm_clean_invalid( &iocache );
+ #else
+-        flush_buffer(s->frame->buf[1]);
+-        flush_buffer(s->frame->buf[2]);
++        flush_buffer_u(s->frame);
++        flush_buffer_v(s->frame);
+ #ifdef RPI_LUMA_QPU
+-        flush_buffer(s->frame->buf[0]);
++        flush_buffer_y(s->frame);
+ #endif
+ 
+ #endif
+@@ -992,6 +1000,7 @@ void ff_hevc_flush_buffer(HEVCContext *s, ThreadFrame *f, int n)
+ #endif
+ 
+ #ifdef RPI_DEBLOCK_VPU
++#error XXX
+ /* rpi_deblock deblocks an entire row of ctbs using the VPU */
+ static void rpi_deblock(HEVCContext *s, int y, int ctb_size)
+ {
+@@ -1000,21 +1009,21 @@ static void rpi_deblock(HEVCContext *s, int y, int ctb_size)
+   // TODO flush buffer of beta/tc setup when it becomes cached
+ 
+   // Prepare three commands at once to avoid calling overhead
+-  s->vpu_cmds_arm[0][0] = get_vc_address(s->frame->buf[0]) + s->frame->linesize[0] * y;
++  s->vpu_cmds_arm[0][0] = get_vc_address_y(s->frame) + s->frame->linesize[0] * y;
+   s->vpu_cmds_arm[0][1] = s->frame->linesize[0];
+   s->vpu_cmds_arm[0][2] = s->setup_width;
+   s->vpu_cmds_arm[0][3] = (int) ( s->y_setup_vc + s->setup_width * (y>>4) );
+   s->vpu_cmds_arm[0][4] = ctb_size>>4;
+   s->vpu_cmds_arm[0][5] = 2;
+ 
+-  s->vpu_cmds_arm[1][0] = get_vc_address(s->frame->buf[1]) + s->frame->linesize[1] * (y>> s->ps.sps->vshift[1]);
++  s->vpu_cmds_arm[1][0] = get_vc_address_u(s->frame) + s->frame->linesize[1] * (y>> s->ps.sps->vshift[1]);
+   s->vpu_cmds_arm[1][1] = s->frame->linesize[1];
+   s->vpu_cmds_arm[1][2] = s->uv_setup_width;
+   s->vpu_cmds_arm[1][3] = (int) ( s->uv_setup_vc + s->uv_setup_width * ((y>>4)>> s->ps.sps->vshift[1]) );
+   s->vpu_cmds_arm[1][4] = (ctb_size>>4)>> s->ps.sps->vshift[1];
+   s->vpu_cmds_arm[1][5] = 3;
+ 
+-  s->vpu_cmds_arm[2][0] = get_vc_address(s->frame->buf[2]) + s->frame->linesize[2] * (y>> s->ps.sps->vshift[2]);
++  s->vpu_cmds_arm[2][0] = get_vc_address_v(s->frame) + s->frame->linesize[2] * (y>> s->ps.sps->vshift[2]);
+   s->vpu_cmds_arm[2][1] = s->frame->linesize[2];
+   s->vpu_cmds_arm[2][2] = s->uv_setup_width;
+   s->vpu_cmds_arm[2][3] = (int) ( s->uv_setup_vc + s->uv_setup_width * ((y>>4)>> s->ps.sps->vshift[1]) );
+diff --git a/libavcodec/rpi_qpu.c b/libavcodec/rpi_qpu.c
+index ffd13ca..b0c9bc5 100644
+--- a/libavcodec/rpi_qpu.c
++++ b/libavcodec/rpi_qpu.c
+@@ -250,7 +250,7 @@ int gpu_get_mailbox(void)
+ }
+ 
+ // Call this to clean and invalidate a region of memory
+-void gpu_cache_flush(GPU_MEM_PTR_T *p)
++void gpu_cache_flush(const GPU_MEM_PTR_T * const p)
+ {
+ #ifdef RPI_FAST_CACHEFLUSH
+     struct vcsm_user_clean_invalid_s iocache = {};
+diff --git a/libavcodec/rpi_qpu.h b/libavcodec/rpi_qpu.h
+index 81c2bb1..b913f79 100644
+--- a/libavcodec/rpi_qpu.h
++++ b/libavcodec/rpi_qpu.h
+@@ -2,8 +2,11 @@
+ #define RPI_QPU_H
+ 
+ // Define RPI_FAST_CACHEFLUSH to use the VCSM cache flush code
++// *** N.B. Code has rotted & crashes if this is unset (before this set of changes)
+ #define RPI_FAST_CACHEFLUSH
+ 
++#define RPI_ONE_BUF 1
++
+ typedef struct gpu_mem_ptr_s {
+   unsigned char *arm; // Pointer to memory mapped on ARM side
+   int vc_handle;   // Videocore handle of relocatable memory
+@@ -16,9 +19,113 @@ typedef struct gpu_mem_ptr_s {
+ extern int gpu_malloc_cached(int numbytes, GPU_MEM_PTR_T *p);
+ extern int gpu_malloc_uncached(int numbytes, GPU_MEM_PTR_T *p);
+ extern void gpu_free(GPU_MEM_PTR_T *p);
+-extern void gpu_cache_flush(GPU_MEM_PTR_T *p);
++extern void gpu_cache_flush(const GPU_MEM_PTR_T * const p);
+ extern void gpu_cache_flush3(GPU_MEM_PTR_T *p0,GPU_MEM_PTR_T *p1,GPU_MEM_PTR_T *p2);
+ 
++#include "libavutil/frame.h"
++#if !RPI_ONE_BUF
++static inline uint32_t get_vc_address_y(const AVFrame * const frame) {
++    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(frame->buf[0]);
++    return p->vc;
++}
++
++static inline uint32_t get_vc_address_u(const AVFrame * const frame) {
++    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(frame->buf[1]);
++    return p->vc;
++}
++
++static inline uint32_t get_vc_address_v(const AVFrame * const frame) {
++    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(frame->buf[2]);
++    return p->vc;
++}
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_y(const AVFrame * const frame) {
++    return *(GPU_MEM_PTR_T *)av_buffer_pool_opaque(frame->buf[0]);
++}
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_u(const AVFrame * const frame) {
++    return *(GPU_MEM_PTR_T *)av_buffer_pool_opaque(frame->buf[1]);
++}
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_v(const AVFrame * const frame) {
++    return *(GPU_MEM_PTR_T *)av_buffer_pool_opaque(frame->buf[2]);
++}
++
++#else
++
++static inline int gpu_is_buf1(const AVFrame * const frame)
++{
++    return frame->buf[1] == NULL;
++}
++
++static inline GPU_MEM_PTR_T * gpu_buf1_gmem(const AVFrame * const frame)
++{
++    return av_buffer_get_opaque(frame->buf[0]);
++}
++
++static inline GPU_MEM_PTR_T * gpu_buf3_gmem(const AVFrame * const frame, const int n)
++{
++    return av_buffer_pool_opaque(frame->buf[n]);
++}
++
++
++static inline uint32_t get_vc_address_y(const AVFrame * const frame) {
++    return gpu_is_buf1(frame) ? gpu_buf1_gmem(frame)->vc : gpu_buf3_gmem(frame, 0)->vc;
++}
++
++static inline uint32_t get_vc_address_u(const AVFrame * const frame) {
++    return gpu_is_buf1(frame) ?
++        gpu_buf1_gmem(frame)->vc + frame->data[1] - frame->data[0] :
++        gpu_buf3_gmem(frame, 1)->vc;
++}
++
++static inline uint32_t get_vc_address_v(const AVFrame * const frame) {
++    return gpu_is_buf1(frame) ?
++        gpu_buf1_gmem(frame)->vc + frame->data[2] - frame->data[0] :
++        gpu_buf3_gmem(frame, 2)->vc;
++}
++
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_y(const AVFrame * const frame) {
++    if (gpu_is_buf1(frame))
++    {
++        GPU_MEM_PTR_T g = *gpu_buf1_gmem(frame);
++        g.numbytes = frame->data[1] - frame->data[0];
++        return g;
++    }
++    else
++        return *gpu_buf3_gmem(frame, 0);
++}
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_u(const AVFrame * const frame) {
++    if (gpu_is_buf1(frame))
++    {
++        GPU_MEM_PTR_T g = *gpu_buf1_gmem(frame);
++        g.arm += frame->data[1] - frame->data[0];
++        g.vc += frame->data[1] - frame->data[0];
++        g.numbytes = frame->data[2] - frame->data[1];  // chroma size
++        return g;
++    }
++    else
++        return *gpu_buf3_gmem(frame, 1);
++}
++
++static inline GPU_MEM_PTR_T get_gpu_mem_ptr_v(const AVFrame * const frame) {
++    if (gpu_is_buf1(frame))
++    {
++        GPU_MEM_PTR_T g = *gpu_buf1_gmem(frame);
++        g.arm += frame->data[2] - frame->data[0];
++        g.vc += frame->data[2] - frame->data[0];
++        g.numbytes = frame->data[2] - frame->data[1];  // chroma size
++        return g;
++    }
++    else
++        return *gpu_buf3_gmem(frame, 2);
++}
++
++#endif
++
++
+ // QPU specific functions
+ extern void qpu_run_shader8(int code, int unifs1, int unifs2, int unifs3, int unifs4, int unifs5, int unifs6, int unifs7, int unifs8);
+ extern void qpu_run_shader12(int code, int num, int code2, int num2, int unifs1, int unifs2, int unifs3, int unifs4, int unifs5, int unifs6, int unifs7, int unifs8, int unifs9, int unifs10, int unifs11, int unifs12);
+diff --git a/libavcodec/rpi_zc.c b/libavcodec/rpi_zc.c
+new file mode 100644
+index 0000000..9580165
+--- /dev/null
++++ b/libavcodec/rpi_zc.c
+@@ -0,0 +1,406 @@
++#include "config.h"
++#ifdef RPI
++#include "rpi_qpu.h"
++#include "rpi_zc.h"
++
++#include "libavutil/buffer_internal.h"
++
++struct ZcPoolEnt;
++
++typedef struct ZcPool
++{
++    int numbytes;
++    struct ZcPoolEnt * head;
++    pthread_mutex_t lock;
++} ZcPool;
++
++typedef struct ZcPoolEnt
++{
++    // It is important that we start with gmem as other bits of code will expect to see that
++    GPU_MEM_PTR_T gmem;
++    struct ZcPoolEnt * next;
++    struct ZcPool * pool;
++} ZcPoolEnt;
++
++static ZcPoolEnt * zc_pool_ent_alloc(ZcPool * const pool, const int size)
++{
++    ZcPoolEnt * const zp = av_malloc(sizeof(ZcPoolEnt));
++
++    if (zp == NULL) {
++        av_log(NULL, AV_LOG_ERROR, "av_malloc(ZcPoolEnt) failed\n");
++        goto fail0;
++    }
++
++    if (gpu_malloc_cached(size, &zp->gmem) != 0)
++    {
++        av_log(NULL, AV_LOG_ERROR, "av_gpu_malloc_cached(%d) failed\n", size);
++        goto fail1;
++    }
++
++    zp->next = NULL;
++    zp->pool = pool;
++    return zp;
++
++fail1:
++    av_free(zp);
++fail0:
++    return NULL;
++}
++
++static void zc_pool_ent_free(ZcPoolEnt * const zp)
++{
++    gpu_free(&zp->gmem);
++    av_free(zp);
++}
++
++static void zc_pool_flush(ZcPool * const pool)
++{
++    ZcPoolEnt * p = pool->head;
++    pool->head = NULL;
++    while (p != NULL)
++    {
++        ZcPoolEnt * const zp = p;
++        p = p->next;
++        zc_pool_ent_free(zp);
++    }
++}
++
++static ZcPoolEnt * zc_pool_alloc(ZcPool * const pool, const int numbytes)
++{
++    ZcPoolEnt * zp;
++    pthread_mutex_lock(&pool->lock);
++
++    if (numbytes != pool->numbytes)
++    {
++        zc_pool_flush(pool);
++        pool->numbytes = numbytes;
++    }
++
++    if (pool->head != NULL)
++    {
++        zp = pool->head;
++        pool->head = zp->next;
++    }
++    else
++    {
++        zp = zc_pool_ent_alloc(pool, numbytes);
++    }
++
++    pthread_mutex_unlock(&pool->lock);
++    return zp;
++}
++
++static void zc_pool_free(ZcPoolEnt * const zp)
++{
++    ZcPool * const pool = zp == NULL ? NULL : zp->pool;
++    if (zp != NULL)
++    {
++        pthread_mutex_lock(&pool->lock);
++        if (pool->numbytes == zp->gmem.numbytes)
++        {
++            zp->next = pool->head;
++            pool->head = zp;
++            pthread_mutex_unlock(&pool->lock);
++        }
++        else
++        {
++            pthread_mutex_unlock(&pool->lock);
++            zc_pool_ent_free(zp);
++        }
++    }
++}
++
++static void
++zc_pool_init(ZcPool * const pool)
++{
++    pool->numbytes = -1;
++    pool->head = NULL;
++    pthread_mutex_init(&pool->lock, NULL);
++}
++
++static void
++zc_pool_destroy(ZcPool * const pool)
++{
++    pool->numbytes = -1;
++    zc_pool_flush(pool);
++    pthread_mutex_destroy(&pool->lock);
++}
++
++
++typedef struct AVZcEnv
++{
++    ZcPool pool;
++} ZcEnv;
++
++// Callback when buffer unrefed to zero
++static void rpi_free_display_buffer(void *opaque, uint8_t *data)
++{
++    ZcPoolEnt *const zp = opaque;
++//    printf("%s: data=%p\n", __func__, data);
++    zc_pool_free(zp);
++}
++
++static inline GPU_MEM_PTR_T * pic_gm_ptr(AVBufferRef * const buf)
++{
++    // Kludge where we check the free fn to check this is really
++    // one of our buffers - can't think of a better way
++    return buf == NULL || buf->buffer->free != rpi_free_display_buffer ? NULL :
++        av_buffer_get_opaque(buf);
++}
++
++AVRpiZcFrameGeometry av_rpi_zc_frame_geometry(
++    const unsigned int video_width, const unsigned int video_height)
++{
++    AVRpiZcFrameGeometry geo;
++    geo.stride_y = (video_width + 32 + 31) & ~31;
++    geo.stride_c = geo.stride_y / 2;
++//    geo.height_y = (video_height + 15) & ~15;
++    geo.height_y = (video_height + 32 + 31) & ~31;
++    geo.height_c = geo.height_y / 2;
++    return geo;
++}
++
++static AVBufferRef * rpi_buf_pool_alloc(ZcPool * const pool, int size)
++{
++    ZcPoolEnt *const zp = zc_pool_alloc(pool, size);
++    AVBufferRef * buf;
++
++    if (zp == NULL) {
++        av_log(NULL, AV_LOG_ERROR, "zc_pool_alloc(%d) failed\n", size);
++        goto fail0;
++    }
++
++    if ((buf = av_buffer_create(zp->gmem.arm, size, rpi_free_display_buffer, zp, AV_BUFFER_FLAG_READONLY)) == NULL)
++    {
++        av_log(NULL, AV_LOG_ERROR, "av_buffer_create() failed\n");
++        goto fail2;
++    }
++
++    return buf;
++
++fail2:
++    zc_pool_free(zp);
++fail0:
++    return NULL;
++}
++
++static int rpi_get_display_buffer(struct AVCodecContext * const s, AVFrame * const frame)
++{
++    ZcEnv *const zc = s->get_buffer_context;
++    const AVRpiZcFrameGeometry geo = av_rpi_zc_frame_geometry(frame->width, frame->height);
++    const unsigned int size_y = geo.stride_y * geo.height_y;
++    const unsigned int size_c = geo.stride_c * geo.height_c;
++    const unsigned int size_pic = size_y + size_c * 2;
++    AVBufferRef * buf;
++    unsigned int i;
++
++//    printf("Do local alloc: format=%#x, %dx%d: %u\n", frame->format, frame->width, frame->height, size_pic);
++
++    if ((buf = rpi_buf_pool_alloc(&zc->pool, size_pic)) == NULL)
++    {
++        av_log(s, AV_LOG_ERROR, "rpi_get_display_buffer: Failed to get buffer from pool\n");
++        return AVERROR(ENOMEM);
++    }
++
++    for (i = 0; i < AV_NUM_DATA_POINTERS; i++) {
++        frame->buf[i] = NULL;
++        frame->data[i] = NULL;
++        frame->linesize[i] = 0;
++    }
++
++    frame->buf[0] = buf;
++    frame->linesize[0] = geo.stride_y;
++    frame->linesize[1] = geo.stride_c;
++    frame->linesize[2] = geo.stride_c;
++    frame->data[0] = buf->data;
++    frame->data[1] = frame->data[0] + size_y;
++    frame->data[2] = frame->data[1] + size_c;
++    frame->extended_data = frame->data;
++    // Leave extended buf alone
++
++    return 0;
++}
++
++
++#define RPI_GET_BUFFER2 1
++
++int av_rpi_zc_get_buffer2(struct AVCodecContext *s, AVFrame *frame, int flags)
++{
++#if !RPI_GET_BUFFER2
++    return avcodec_default_get_buffer2(s, frame, flags);
++#else
++    int rv;
++
++    if ((s->codec->capabilities & AV_CODEC_CAP_DR1) == 0 ||
++        frame->format != AV_PIX_FMT_YUV420P)
++    {
++//        printf("Do default alloc: format=%#x\n", frame->format);
++        rv = avcodec_default_get_buffer2(s, frame, flags);
++    }
++    else
++    {
++        rv = rpi_get_display_buffer(s, frame);
++    }
++
++#if 0
++    printf("%s: %dx%d lsize=%d/%d/%d data=%p/%p/%p bref=%p/%p/%p opaque[0]=%p\n", __func__,
++        frame->width, frame->height,
++        frame->linesize[0], frame->linesize[1], frame->linesize[2],
++        frame->data[0], frame->data[1], frame->data[2],
++        frame->buf[0], frame->buf[1], frame->buf[2],
++        av_buffer_get_opaque(frame->buf[0]));
++#endif
++    return rv;
++#endif
++}
++
++
++static AVBufferRef * zc_copy(struct AVCodecContext * const s,
++    const AVFrame * const src)
++{
++    AVFrame dest_frame;
++    AVFrame * const dest = &dest_frame;
++    unsigned int i;
++    uint8_t * psrc, * pdest;
++
++    dest->width = src->width;
++    dest->height = src->height;
++
++    if (rpi_get_display_buffer(s, dest) != 0)
++    {
++        return NULL;
++    }
++
++    for (i = 0, psrc = src->data[0], pdest = dest->data[0];
++         i != dest->height;
++         ++i, psrc += src->linesize[0], pdest += dest->linesize[0])
++    {
++        memcpy(pdest, psrc, dest->width);
++    }
++    for (i = 0, psrc = src->data[1], pdest = dest->data[1];
++         i != dest->height / 2;
++         ++i, psrc += src->linesize[1], pdest += dest->linesize[1])
++    {
++        memcpy(pdest, psrc, dest->width / 2);
++    }
++    for (i = 0, psrc = src->data[2], pdest = dest->data[2];
++         i != dest->height / 2;
++         ++i, psrc += src->linesize[2], pdest += dest->linesize[2])
++    {
++        memcpy(pdest, psrc, dest->width / 2);
++    }
++
++    return dest->buf[0];
++}
++
++
++AVRpiZcRefPtr av_rpi_zc_ref(struct AVCodecContext * const s,
++    const AVFrame * const frame, const int maycopy)
++{
++    assert(s != NULL);
++
++    if (frame->format != AV_PIX_FMT_YUV420P)
++    {
++        av_log(s, AV_LOG_WARNING, "%s: *** Format not YUV420P: %d\n", __func__, frame->format);
++        return NULL;
++    }
++
++    if (frame->buf[1] != NULL)
++    {
++        if (maycopy)
++        {
++            av_log(s, AV_LOG_INFO, "%s: *** Not a single buf frame: copying\n", __func__);
++            return zc_copy(s, frame);
++        }
++        else
++        {
++            av_log(s, AV_LOG_WARNING, "%s: *** Not a single buf frame: NULL\n", __func__);
++            return NULL;
++        }
++    }
++
++    if (pic_gm_ptr(frame->buf[0]) == NULL)
++    {
++        if (maycopy)
++        {
++            av_log(s, AV_LOG_INFO, "%s: *** Not one of our buffers: copying\n", __func__);
++            return zc_copy(s, frame);
++        }
++        else
++        {
++            av_log(s, AV_LOG_WARNING, "%s: *** Not one of our buffers: NULL\n", __func__);
++            return NULL;
++        }
++    }
++
++    return av_buffer_ref(frame->buf[0]);
++}
++
++int av_rpi_zc_vc_handle(const AVRpiZcRefPtr fr_ref)
++{
++    const GPU_MEM_PTR_T * const p = pic_gm_ptr(fr_ref);
++    return p == NULL ? -1 : p->vc_handle;
++}
++
++int av_rpi_zc_numbytes(const AVRpiZcRefPtr fr_ref)
++{
++    const GPU_MEM_PTR_T * const p = pic_gm_ptr(fr_ref);
++    return p == NULL ? 0 : p->numbytes;
++}
++
++void av_rpi_zc_unref(AVRpiZcRefPtr fr_ref)
++{
++    if (fr_ref != NULL)
++    {
++        av_buffer_unref(&fr_ref);
++    }
++}
++
++AVZcEnvPtr av_rpi_zc_env_alloc(void)
++{
++    ZcEnv * const zc = av_mallocz(sizeof(ZcEnv));
++    if (zc == NULL)
++    {
++        av_log(NULL, AV_LOG_ERROR, "av_rpi_zc_env_alloc: Context allocation failed\n");
++        return NULL;
++    }
++
++    zc_pool_init(&zc->pool);
++    return zc;
++}
++
++void av_rpi_zc_env_free(AVZcEnvPtr zc)
++{
++    if (zc != NULL)
++    {
++        zc_pool_destroy(&zc->pool); ;
++        av_free(zc);
++    }
++}
++
++int av_rpi_zc_init(struct AVCodecContext * const s)
++{
++    ZcEnv * const zc = av_rpi_zc_env_alloc();
++    if (zc == NULL)
++    {
++        return AVERROR(ENOMEM);
++    }
++
++    s->get_buffer_context = zc;
++    s->get_buffer2 = av_rpi_zc_get_buffer2;
++    return 0;
++}
++
++void av_rpi_zc_uninit(struct AVCodecContext * const s)
++{
++    if (s->get_buffer2 == av_rpi_zc_get_buffer2)
++    {
++        ZcEnv * const zc = s->get_buffer_context;
++        s->get_buffer2 = avcodec_default_get_buffer2;
++        s->get_buffer_context = NULL;
++        av_rpi_zc_env_free(zc);
++    }
++}
++
++#endif  // RPI
++
+diff --git a/libavcodec/rpi_zc.h b/libavcodec/rpi_zc.h
+new file mode 100644
+index 0000000..f0109f4
+--- /dev/null
++++ b/libavcodec/rpi_zc.h
+@@ -0,0 +1,83 @@
++#ifndef LIBAVCODEC_RPI_ZC_H
++#define LIBAVCODEC_RPI_ZC_H
++
++// Zero-Copy frame code for RPi
++// RPi needs Y/U/V planes to be contiguous for display.  By default
++// ffmpeg will allocate separated planes so a memcpy is needed before
++// display.  This code prodes a method a making ffmpeg allocate a single
++// bit of memory for the frame when can then be refrence counted until
++// display ahs finsihed with it.
++
++#include "libavutil/frame.h"
++#include "libavcodec/avcodec.h"
++
++// "Opaque" pointer to whatever we are using as a buffer reference
++typedef AVBufferRef * AVRpiZcRefPtr;
++
++struct AVZcEnv;
++typedef struct AVZcEnv * AVZcEnvPtr;
++
++typedef struct AVRpiZcFrameGeometry
++{
++    unsigned int stride_y;
++    unsigned int height_y;
++    unsigned int stride_c;
++    unsigned int height_c;
++} AVRpiZcFrameGeometry;
++
++
++AVRpiZcFrameGeometry av_rpi_zc_frame_geometry(
++    const unsigned int video_width, const unsigned int video_height);
++
++// Replacement fn for avctx->get_buffer2
++// Should be set before calling avcodec_decode_open2
++//
++// N.B. in addition to to setting avctx->get_buffer2, avctx->refcounted_frames
++// must be set to 1 as otherwise the buffer info is killed before being returned
++// by avcodec_decode_video2.  Note also that this means that the AVFrame that is
++// return must be manually derefed with av_frame_unref.  This should be done
++// after av_rpi_zc_ref has been called.
++int av_rpi_zc_get_buffer2(struct AVCodecContext *s, AVFrame *frame, int flags);
++
++// Generate a ZC reference to the buffer(s) in this frame
++// If the buffer doesn't appear to be one allocated by _get_buffer_2
++// then the behaviour depends on maycopy:
++//   If maycopy=0 then return NULL
++//   If maycopy=1 && the src frame is in a form where we can easily copy
++//     the data, then allocate a new buffer and copy the data into it
++//   Otherwise return NULL
++AVRpiZcRefPtr av_rpi_zc_ref(struct AVCodecContext * const s,
++    const AVFrame * const frame, const int maycopy);
++
++// Get the vc_handle from the frame ref
++// Returns -1 if ref doesn't look valid
++int av_rpi_zc_vc_handle(const AVRpiZcRefPtr fr_ref);
++// Get the number of bytes allocated from the frame ref
++// Returns 0 if ref doesn't look valid
++int av_rpi_zc_numbytes(const AVRpiZcRefPtr fr_ref);
++
++// Unreference the buffer refed/allocated by _zc_ref
++// If fr_ref is NULL then this will NOP
++void av_rpi_zc_unref(AVRpiZcRefPtr fr_ref);
++
++// Allocate an environment for the buffer pool used by the ZC code
++// This should be put in avctx->get_buffer_context so it can be found by
++// av_rpi_zc_get_buffer2 when it is called from ffmpeg
++AVZcEnvPtr av_rpi_zc_env_alloc(void);
++
++// Allocate the environment used by the ZC code
++void av_rpi_zc_env_free(AVZcEnvPtr);
++
++
++// Init ZC into a context
++// There is nothing magic in this fn - it just packages setting
++// get_buffer2 & get_buffer_context
++int av_rpi_zc_init(struct AVCodecContext * const s);
++
++// Free ZC from a context
++// There is nothing magic in this fn - it just packages unsetting
++// get_buffer2 & get_buffer_context
++void av_rpi_zc_uninit(struct AVCodecContext * const s);
++
++#endif
++
+-- 
+2.5.0
+
+
+From c78c48e76e161f3c8a7d5a73f713359efe65fabd Mon Sep 17 00:00:00 2001
+From: John Cox <jc@kynesim.co.uk>
+Date: Tue, 1 Mar 2016 14:21:25 +0000
+Subject: [PATCH 2/2] Set VPU scheduling thread to high priority after creation
+
+---
+ libavcodec/rpi_qpu.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/rpi_qpu.c b/libavcodec/rpi_qpu.c
+index b0c9bc5..ee19231 100644
+--- a/libavcodec/rpi_qpu.c
++++ b/libavcodec/rpi_qpu.c
+@@ -182,9 +182,55 @@ static int gpu_init(volatile struct GPU **gpu) {
+     err = pthread_create(&vpu_thread, NULL, vpu_start, NULL);
+     //printf("Created thread\n");
+     if (err) {
+-        printf("Failed to create vpu thread\n");
++        av_log(NULL, AV_LOG_FATAL, "Failed to create vpu thread\n");
+         return -4;
+     }
++
++    {
++      struct sched_param param = {0};
++      int policy = 0;
++
++      if (pthread_getschedparam(vpu_thread, &policy, &param) != 0)
++      {
++        av_log(NULL, AV_LOG_ERROR, "Unable to get VPU thread scheduling parameters\n");
++      }
++      else
++      {
++        av_log(NULL, AV_LOG_INFO, "VPU thread: policy=%d (%s), pri=%d\n",
++            policy,
++            policy == SCHED_RR ? "RR" : policy == SCHED_FIFO ? "FIFO" : "???" ,
++            param.sched_priority);
++
++        policy = SCHED_FIFO;
++        param.sched_priority = sched_get_priority_max(SCHED_FIFO);
++
++        av_log(NULL, AV_LOG_INFO, "Attempt to set: policy=%d (%s), pri=%d\n",
++            policy,
++            policy == SCHED_RR ? "RR" : policy == SCHED_FIFO ? "FIFO" : "???" ,
++            param.sched_priority);
++
++        if (pthread_setschedparam(vpu_thread, policy, &param) != 0)
++        {
++          av_log(NULL, AV_LOG_ERROR, "Unable to set VPU thread scheduling parameters\n");
++        }
++        else
++        {
++          if (pthread_getschedparam(vpu_thread, &policy, &param) != 0)
++          {
++            av_log(NULL, AV_LOG_ERROR, "Unable to get VPU thread scheduling parameters\n");
++          }
++          else
++          {
++            av_log(NULL, AV_LOG_INFO, "VPU thread (after): policy=%d (%s), pri=%d\n",
++                policy,
++                policy == SCHED_RR ? "RR" : policy == SCHED_FIFO ? "FIFO" : "???" ,
++                param.sched_priority);
++          }
++        }
++      }
++
++    }
++
+   }
+ #endif
+ 
+-- 
+2.5.0
+
