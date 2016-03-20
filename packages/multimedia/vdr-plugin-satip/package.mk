@@ -16,7 +16,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="vdr-satip"
+PKG_NAME="vdr-plugin-satip"
 PKG_VERSION="2.2.3"
 PKG_REV="1"
 PKG_ARCH="any"
@@ -27,8 +27,8 @@ PKG_SOURCE_DIR="satip-${PKG_VERSION}"
 PKG_DEPENDS_TARGET="toolchain vdr curl tinyxml"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="vdr-satip: SAT>IP plugin for VDR"
-PKG_LONGDESC="vdr-satip is a SAT>IP plugin for VDR"
+PKG_SHORTDESC="vdr-plugin-satip: SAT>IP plugin for VDR"
+PKG_LONGDESC="vdr-plugin-satip is a SAT>IP plugin for VDR"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
