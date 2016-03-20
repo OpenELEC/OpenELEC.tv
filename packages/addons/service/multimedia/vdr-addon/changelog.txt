@@ -1,3 +1,8 @@
+7.0.3 (unreleased)
+- update to vdr-plugin-vnsiserver-c63d8e8
+- udate to vdr-plugin-satip-18c9b79
+- update to vdr-plugin-dvbapi-c76c24e
+
 7.0.2
 - update to vdr-plugin-restfulapi-0.2.6.0
 - update to vdr-plugin-vnsiserver-00b5779
