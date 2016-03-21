@@ -35,8 +35,9 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   imx6)
-    PKG_VERSION="cuboxi-3.14-ea83bda"
-    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_VERSION="4386797"
+    PKG_GIT_URL="https://github.com/SolidRun/linux-fslc.git"
+    PKG_GIT_BRANCH="3.14-1.0.x-mx6-sr"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   *)
