@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="lakka-update"
-PKG_VERSION="d90932e"
+PKG_VERSION="cfbe9db"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
