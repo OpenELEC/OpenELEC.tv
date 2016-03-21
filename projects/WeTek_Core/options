@@ -96,7 +96,7 @@
   # OpenGL(X) implementation to use (no / Mesa)
     OPENGL="no"
 
-  # OpenGL-ES implementation to use (no / bcm2835-firmware / gpu-viv-bin-mx6q / opengl-meson6)
+  # OpenGL-ES implementation to use (no / bcm2835-firmware / imx-gpu-viv / opengl-meson6)
     OPENGLES="opengl-meson8"
 
   # include uvesafb support (yes / no)
