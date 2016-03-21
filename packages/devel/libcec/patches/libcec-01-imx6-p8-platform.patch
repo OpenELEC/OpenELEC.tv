@@ -1,0 +1,112 @@
+diff -Naur libcec-6d68d21/src/libcec/adapter/IMX/AdapterMessageQueue.h libcec-6d68d21.patch/src/libcec/adapter/IMX/AdapterMessageQueue.h
+--- libcec-6d68d21/src/libcec/adapter/IMX/AdapterMessageQueue.h	2016-03-21 19:48:07.357954953 +0100
++++ libcec-6d68d21.patch/src/libcec/adapter/IMX/AdapterMessageQueue.h	2016-03-21 19:54:47.964765801 +0100
+@@ -31,11 +31,11 @@
+  *     http://www.pulse-eight.net/
+  */
+ 
+-#include "platform/threads/mutex.h"
++#include <p8-platform/threads/mutex.h>
+ 
+ namespace CEC
+ {
+-  using namespace PLATFORM;
++  using namespace P8PLATFORM;
+   
+   class CAdapterMessageQueueEntry
+   {
+@@ -124,8 +124,8 @@
+     
+   private:    
+     bool                         m_bWaiting;     /**< true while a thread is waiting or when it hasn't started waiting yet */
+-    PLATFORM::CCondition<bool>   m_condition;    /**< the condition to wait on */
+-    PLATFORM::CMutex             m_mutex;        /**< mutex for changes to this class */
++    P8PLATFORM::CCondition<bool>   m_condition;    /**< the condition to wait on */
++    P8PLATFORM::CMutex             m_mutex;        /**< mutex for changes to this class */
+     uint32_t                  	 m_hash;
+     uint32_t                     m_retval;
+     bool                         m_bSucceeded;
+diff -Naur libcec-6d68d21/src/libcec/adapter/IMX/IMXCECAdapterCommunication.cpp libcec-6d68d21.patch/src/libcec/adapter/IMX/IMXCECAdapterCommunication.cpp
+--- libcec-6d68d21/src/libcec/adapter/IMX/IMXCECAdapterCommunication.cpp	2016-03-21 19:48:07.358954955 +0100
++++ libcec-6d68d21.patch/src/libcec/adapter/IMX/IMXCECAdapterCommunication.cpp	2016-03-21 19:53:53.102656012 +0100
+@@ -32,9 +32,9 @@
+ 
+ #include "CECTypeUtils.h"
+ #include "LibCEC.h"
+-#include "platform/sockets/cdevsocket.h"
+-#include "platform/util/StdString.h"
+-#include "platform/util/buffer.h"
++#include <p8-platform/sockets/cdevsocket.h>
++#include <p8-platform/util/StdString.h>
++#include <p8-platform/util/buffer.h>
+ 
+ /*
+  * Ioctl definitions from kernel header
+@@ -62,7 +62,7 @@
+ 
+ using namespace std;
+ using namespace CEC;
+-using namespace PLATFORM;
++using namespace P8PLATFORM;
+ 
+ #include "AdapterMessageQueue.h"
+ 
+diff -Naur libcec-6d68d21/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h libcec-6d68d21.patch/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h
+--- libcec-6d68d21/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h	2016-03-21 19:48:07.359954957 +0100
++++ libcec-6d68d21.patch/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h	2016-03-21 19:55:26.171842221 +0100
+@@ -28,9 +28,9 @@
+ 
+ #if defined(HAVE_IMX_API)
+ 
+-#include "platform/threads/mutex.h"
+-#include "platform/threads/threads.h"
+-#include "platform/sockets/socket.h"
++#include <p8-platform/threads/mutex.h>
++#include <p8-platform/threads/threads.h>
++#include <p8-platform/sockets/socket.h>
+ #include "adapter/AdapterCommunication.h"
+ #include <map>
+ 
+@@ -39,7 +39,7 @@
+ 
+ 
+ 
+-namespace PLATFORM
++namespace P8PLATFORM
+ {
+   class CCDevSocket;
+ };
+@@ -49,7 +49,7 @@
+ {
+   class CAdapterMessageQueueEntry;
+ 
+-  class CIMXCECAdapterCommunication : public IAdapterCommunication, public PLATFORM::CThread
++  class CIMXCECAdapterCommunication : public IAdapterCommunication, public P8PLATFORM::CThread
+   {
+   public:
+     /*!
+@@ -90,7 +90,7 @@
+     bool RegisterLogicalAddress(const cec_logical_address address);
+     ///}
+ 
+-    /** @name PLATFORM::CThread implementation */
++    /** @name P8PLATFORM::CThread implementation */
+     ///{
+     void *Process(void);
+     ///}
+@@ -104,12 +104,12 @@
+     //cec_logical_addresses       m_logicalAddresses;
+     cec_logical_address         m_logicalAddress;
+ 
+-    PLATFORM::CMutex            m_mutex;
+-    PLATFORM::CCDevSocket       *m_dev;	/**< the device connection */
++    P8PLATFORM::CMutex            m_mutex;
++    P8PLATFORM::CCDevSocket       *m_dev;	/**< the device connection */
+     bool                        m_bLogicalAddressRegistered;
+     bool                        m_bInitialised;
+ 
+-    PLATFORM::CMutex            m_messageMutex;
++    P8PLATFORM::CMutex            m_messageMutex;
+     uint32_t                    m_iNextMessage;
+     std::map<uint32_t, CAdapterMessageQueueEntry *> m_messages;
+   };
