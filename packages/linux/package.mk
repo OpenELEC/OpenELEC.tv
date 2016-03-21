@@ -39,6 +39,10 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
+  awh3)
+    PKG_VERSION="awh3-3.4"
+    PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/7de19646f7a8bf77df6f2f40fff7aa978f9beb67/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
+    ;;
   *)
     PKG_VERSION="4.4.6"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -55,7 +59,9 @@ if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
 fi
 
 post_patch() {
-  if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+  if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
+    KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/devices/$DEVICE/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
+  elif [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
     KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
   else
     KERNEL_CFG_FILE=$PKG_DIR/config/$PKG_NAME.$TARGET_ARCH.conf
@@ -125,6 +131,31 @@ pre_make_target() {
 make_target() {
   LDFLAGS="" make modules
   LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
+  
+  if [ "$LINUX" = "awh3" ]; then
+    LDFLAGS="" make -C modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump \
+         V=1 \
+         ARCH=$TARGET_ARCH \
+         CONFIG=ca8-virtex820-m400-1 \
+         BUILD=release \
+         KDIR=$(kernel_path) \
+         CROSS_COMPILE=$TARGET_PREFIX
+    LDFLAGS="" make -C modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali \
+         V=1 \
+         ARCH=$TARGET_ARCH \
+         USING_MMU=1 \
+         USING_UMP=1 \
+         USING_PMM=1 \
+         BUILD=release \
+         KDIR=$(kernel_path) \
+         CROSS_COMPILE=$TARGET_PREFIX
+    mkdir -p $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump/ump.ko \
+      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali/mali.ko \
+      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+  fi
+  
   rm -f $INSTALL/lib/modules/*/build
   rm -f $INSTALL/lib/modules/*/source
 

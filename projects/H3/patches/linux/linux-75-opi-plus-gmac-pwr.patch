@@ -1,0 +1,45 @@
+diff -Nur a/drivers/net/ethernet/sunxi/eth/sunxi_geth.c b/drivers/net/ethernet/sunxi/eth/sunxi_geth.c
+--- a/drivers/net/ethernet/sunxi/eth/sunxi_geth.c	2015-01-27 03:29:28.000000000 +0100
++++ b/drivers/net/ethernet/sunxi/eth/sunxi_geth.c	2016-02-19 16:36:47.864586020 +0100
+@@ -154,6 +154,7 @@
+ 
+ 	spinlock_t lock;
+ 	spinlock_t tx_lock;
++	int gpio_power_hd;
+ };
+ 
+ #ifdef CONFIG_GETH_PHY_POWER
+@@ -195,6 +196,8 @@
+ static int geth_power_on(struct geth_priv *priv)
+ {
+ 	int value;
++	if (gpio_is_valid(priv->gpio_power_hd))
++		gpio_set_value(priv->gpio_power_hd, 1);
+ #ifdef CONFIG_GETH_PHY_POWER
+ 	struct regulator **regu;
+ 	int ret = 0, i = 0;
+@@ -258,6 +261,8 @@
+ static void geth_power_off(struct geth_priv *priv)
+ {
+ 	int value;
++	if (gpio_is_valid(priv->gpio_power_hd))
++		gpio_set_value(priv->gpio_power_hd, 0);
+ #ifdef CONFIG_GETH_PHY_POWER
+ 	struct regulator **regu = priv->power;
+ 	int i = 0;
+@@ -1562,6 +1567,15 @@
+ 		break;
+ 	}
+ 
++	priv->gpio_power_hd = -1;
++	type = script_get_item("gmac_phy_power", "gmac_phy_power_en", &item);
++	if (SCIRPT_ITEM_VALUE_TYPE_PIO == type) {
++		if (!gpio_request(item.gpio.gpio, NULL)) {
++			gpio_direction_output(item.gpio.gpio, 1);
++			priv->gpio_power_hd = item.gpio.gpio;
++		}
++	}
++
+ #ifdef CONFIG_GETH_PHY_POWER
+ 	memset(power_tb, 0, sizeof(power_tb));
+ 	for (cnt = 0; cnt < ARRAY_SIZE(power_tb); cnt++) {
