@@ -84,7 +84,7 @@ pre_configure_target() {
 }
 
 make_target() {
-  make V=1 HAVE_LAKKA=1
+  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
