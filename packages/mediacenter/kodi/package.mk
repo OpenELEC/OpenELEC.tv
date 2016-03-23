@@ -386,15 +386,15 @@ post_makeinstall_target() {
 
   # update addon manifest
   xmlstarlet ed -L -d "/addons/addon[text()='service.xbmc.versioncheck']" \
-    $INSTALL/usr/share/kodi/system/addon-manifest.xml || :
+    $INSTALL/usr/share/kodi/system/addon-manifest.xml
   xmlstarlet ed -L -d "/addons/addon[text()='skin.estouchy']" \
-    $INSTALL/usr/share/kodi/system/addon-manifest.xml || :
+    $INSTALL/usr/share/kodi/system/addon-manifest.xml
   xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "os.openelec.tv" \
-    $INSTALL/usr/share/kodi/system/addon-manifest.xml || :
+    $INSTALL/usr/share/kodi/system/addon-manifest.xml
   xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "repository.openelec.tv" \
-    $INSTALL/usr/share/kodi/system/addon-manifest.xml || :
+    $INSTALL/usr/share/kodi/system/addon-manifest.xml
   xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "service.openelec.settings" \
-    $INSTALL/usr/share/kodi/system/addon-manifest.xml || :
+    $INSTALL/usr/share/kodi/system/addon-manifest.xml
 
   if [ ! "$SKIN_REMOVE_SHIPPED" = "yes" ]; then
     # Rebrand
