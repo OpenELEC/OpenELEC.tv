@@ -104,5 +104,10 @@ if [ "$OEM" = yes -o "$OEM" = no ]; then
   OEM_SUPPORT=$OEM
 fi
 
+# overwrite REPO_DIR via commandline
+if [ -n "$REPO" ]; then
+  REPO_DIR=$REPO
+fi
+
 . config/graphic
 . config/path $1
