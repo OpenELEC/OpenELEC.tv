@@ -20,10 +20,30 @@
 
 . config/options $1
 
+ADDON_REPO_BASE="packages/addons"
+
 if [ -z "$1" ]; then
-  echo "usage: $0 package_name"
+  echo "usage: $0 [<package_name>|<repo_name>]"
   exit 1
 fi
+
+for repo_base in $( ls -d $ADDON_REPO_BASE/*); do
+  REPO=$(basename $repo_base)
+  if [ "$1" = $REPO ]; then
+    for addon in $(find packages/addons/$1 -iname package.mk) ; do
+      PKG_NAME=`grep ^PKG_NAME= $addon | sed -e "s,\",,g" -e "s,PKG_NAME=,,"`
+      PKG_IS_ADDON=`grep ^PKG_IS_ADDON= $addon | sed -e "s,\",,g" -e "s,PKG_IS_ADDON=,,"`
+      if [ "$PKG_IS_ADDON" = "yes" ] ; then
+        REPO=$REPO PROJECT=$PROJECT ARCH=$ARCH ./scripts/create_addon $PKG_NAME
+      fi
+    done
+  fi
+done
+
+for repo_base in $( ls -d $ADDON_REPO_BASE/*); do
+  REPO=$(basename $repo_base)
+  [ "$1" = $REPO ] && exit 0
+done
 
 if [ -n "$PKG_ARCH" -a ! "$PKG_ARCH" = "any" ]; then
   echo "$PKG_ARCH" | grep -q "$TARGET_ARCH" || exit 0
