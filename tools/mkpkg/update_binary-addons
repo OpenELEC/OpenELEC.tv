@@ -105,14 +105,14 @@ for addontxt in $KODI_DIR/project/cmake/addons/bootstrap/repositories/*-addons.t
       continue
     fi
 
-    if [ -f ../../packages/mediacenter/kodi-binary-addons/$ADDON/package.mk ] ; then
+    if [ -f ../../packages/addons/official/kodi-addons/$ADDON/package.mk ] ; then
       git_clone $REPO master $PKG_NAME.git $GIT_HASH
 
       # update package.mk
       RESOLVED_HASH=$(resolve_hash $PKG_NAME.git $GIT_HASH)
       sed -e "s|PKG_VERSION=.*|PKG_VERSION=\"$RESOLVED_HASH\"|g" \
           -e "s|PKG_GIT_URL=.*|PKG_GIT_URL=\"$REPO\"|g" \
-          -i ../../packages/mediacenter/kodi-binary-addons/$ADDON/package.mk
+          -i ../../packages/addons/official/kodi-addons/$ADDON/package.mk
 
       rm -rf $PKG_NAME.git
 
