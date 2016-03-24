@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="a3007b1"
+PKG_VERSION="e411274"
 PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -65,8 +65,6 @@ if [[ "$TARGET_FPU" =~ "neon" ]]; then
   RETROARCH_NEON="--enable-neon"
 fi
 
-CFLAGS="$CFLAGS -DLAKKA_PROJECT='\"$PROJECT.$ARCH\"'"
-
 TARGET_CONFIGURE_OPTS=""
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --disable-sdl \
@@ -84,7 +82,7 @@ pre_configure_target() {
 }
 
 make_target() {
-  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0
+  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 LAKKA_PROJECT='\"$PROJECT.$ARCH\"'
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
