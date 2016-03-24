@@ -36,13 +36,10 @@ for repo_base in $( ls -d $ADDON_REPO_BASE/*); do
       if [ "$PKG_IS_ADDON" = "yes" ] ; then
         REPO=$REPO PROJECT=$PROJECT ARCH=$ARCH ./scripts/create_addon $PKG_NAME
       fi
+      unset PKG_NAME
+      unset PKG_IS_ADDON
     done
   fi
-done
-
-for repo_base in $( ls -d $ADDON_REPO_BASE/*); do
-  REPO=$(basename $repo_base)
-  [ "$1" = $REPO ] && exit 0
 done
 
 if [ -n "$PKG_ARCH" -a ! "$PKG_ARCH" = "any" ]; then
