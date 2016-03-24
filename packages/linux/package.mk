@@ -233,4 +233,8 @@ post_install() {
     ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
 
   enable_service cpufreq-threshold.service
+
+
+  # bluez looks in /etc/firmware/
+  ln -sf /lib/firmware/ $INSTALL/etc/firmware
 }
