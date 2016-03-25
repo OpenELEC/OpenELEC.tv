@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/notspiff/visualization.shadertoy"
 PKG_GIT_URL="https://github.com/notspiff/visualization.shadertoy"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain kodi-platform $OPENGL glew"
+PKG_DEPENDS_TARGET="toolchain kodi-platform glew"
 PKG_PRIORITY="optional"
 PKG_SECTION=""
 PKG_SHORTDESC="visualization.shadertoy"
@@ -33,6 +33,10 @@ PKG_AUTORECONF="no"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.player.musicviz"
+
+if [ "$OPENGL" = "no" ] ; then
+  exit 0
+fi
 
 configure_target() {
   cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
