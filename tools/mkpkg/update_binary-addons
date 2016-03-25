@@ -54,10 +54,8 @@ resolve_hash() {
   fi
 }
 
-if [ ! -d $KODI_DIR ] ; then
-  echo "meh.. $KODI_DIR does not exist"
-  exit 127
-fi
+rm -rf $KODI_DIR
+git clone --depth=1 https://github.com/xbmc/xbmc.git -b $1 $KODI_DIR
 
 # p8-platform
 REPO=$(cat $KODI_DIR/project/cmake/addons/depends/common/p8-platform/p8-platform.txt | awk '{print $2}')
@@ -124,3 +122,5 @@ for addontxt in $KODI_DIR/project/cmake/addons/bootstrap/repositories/*-addons.t
   echo "followed addons was skipped, please add packages for this:"
   echo "$SKIPPED_ADDONS"
 done
+
+rm -rf $KODI_DIR
