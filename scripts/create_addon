@@ -39,6 +39,33 @@ for repo_base in $( ls -d $ADDON_REPO_BASE/*); do
       unset PKG_NAME
       unset PKG_IS_ADDON
     done
+
+    ADDONS_XML_DIR="$TARGET/repository/$REPO/$ADDON_VERSION/$PROJECT/$TARGET_ARCH"
+
+    echo "updating $ADDONS_XML_DIR/addons.xml..."
+    echo '<?xml version="1.0" encoding="UTF-8"?>
+<addons>
+' > $ADDONS_XML_DIR/addons.xml.tmp
+
+    for zip in $ADDONS_XML_DIR/*/*.zip ; do
+      mkdir -p $BUILD/.addons/$ADDONS_XML_DIR
+      unzip -o $zip "*/addon.xml" -d $BUILD/.addons/$ADDONS_XML_DIR &>/dev/null
+    done
+
+    find $BUILD/.addons/$ADDONS_XML_DIR -iname addon.xml | grep -v resources/ | while read xml ; do
+      cat $xml | grep -v "<?" >> $ADDONS_XML_DIR/addons.xml.tmp
+    done
+
+    echo '
+</addons>' >> $ADDONS_XML_DIR/addons.xml.tmp
+
+    mv $ADDONS_XML_DIR/addons.xml.tmp $ADDONS_XML_DIR/addons.xml
+
+    cd $ADDONS_XML_DIR
+      md5sum addons.xml > addons.xml.md5
+    cd $ROOT
+
+    rm -rf $BUILD/.addons
   fi
 done
 
