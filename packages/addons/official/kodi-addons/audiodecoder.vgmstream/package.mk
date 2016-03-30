@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="audiodecoder.vgmstream"
-PKG_VERSION="da7fbce"
+PKG_VERSION="6695178"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
