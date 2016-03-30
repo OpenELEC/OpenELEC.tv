@@ -81,12 +81,13 @@ if [ -n "$PKG_URL" -o -n "$PKG_GIT_URL" ]; then
     SOURCE_NAME="${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PACKAGE="$SOURCES/$1/$SOURCE_NAME"
     [ "$VERBOSE" = "yes" ] && GIT_OPT=-v
+    [ "$PKG_KEEP_CHECKOUT" = "yes" ] || GIT_OPT="$GIT_OPT --depth=1"
     [ -z "$PKG_GIT_BRANCH" ] && PKG_GIT_BRANCH=master
 
     if [ "$PKG_KEEP_CHECKOUT" = "yes" -a -d $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git ]; then
       GIT_CLONE_CMD="git fetch -v origin $PKG_GIT_BRANCH:$PKG_GIT_BRANCH"
     else
-      GIT_CLONE_CMD="git clone -v --bare -b "$PKG_GIT_BRANCH" "$PKG_GIT_URL" $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git"
+      GIT_CLONE_CMD="git clone -v --bare $GIT_OPT -b "$PKG_GIT_BRANCH" "$PKG_GIT_URL" $SOURCES/${1}/${1}-${PKG_GIT_BRANCH}.git"
     fi
 
     NBGIT="1"
