@@ -39,8 +39,8 @@ case "$KODIPLAYER_DRIVER" in
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="2331b6e"
-    PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
+    PKG_VERSION="eceb0d6"
+    PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="master"
     PKG_KEEP_CHECKOUT="no"
     ;;

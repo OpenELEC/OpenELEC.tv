@@ -1,7 +1,7 @@
-diff -Naur kodi-16.0-beta5-19fc4fa/system/keymaps/keyboard.xml kodi-16.0-beta5-19fc4fa.patch/system/keymaps/keyboard.xml
---- kodi-16.0-beta5-19fc4fa/system/keymaps/keyboard.xml	2015-12-15 00:07:12.000000000 +0100
-+++ kodi-16.0-beta5-19fc4fa.patch/system/keymaps/keyboard.xml	2016-01-05 06:41:50.857902588 +0100
-@@ -113,6 +113,7 @@
+diff -Naur kodi-eceb0d6/system/keymaps/keyboard.xml kodi-eceb0d6.patch/system/keymaps/keyboard.xml
+--- kodi-eceb0d6/system/keymaps/keyboard.xml	2016-03-29 21:36:04.000000000 +0200
++++ kodi-eceb0d6.patch/system/keymaps/keyboard.xml	2016-03-30 09:49:49.388585853 +0200
+@@ -95,6 +95,7 @@
        <sleep>ActivateWindow(shutdownmenu)</sleep>
        <!-- PVR windows -->
        <e>ActivateWindow(TVGuide)</e>
@@ -9,18 +9,18 @@ diff -Naur kodi-16.0-beta5-19fc4fa/system/keymaps/keyboard.xml kodi-16.0-beta5-1
        <h>ActivateWindow(TVChannels)</h>
        <j>ActivateWindow(RadioChannels)</j>
        <k>ActivateWindow(TVRecordings)</k>
-@@ -268,6 +269,7 @@
-   <TVGuide>
+@@ -221,6 +222,7 @@
      <keyboard>
        <e>PreviousMenu</e>
+       <t>ShowTimerRule</t>
 +      <epg>PreviousMenu</epg>
      </keyboard>
    </TVGuide>
-   <MyFiles>
-diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/linux/LinuxInputDevices.cpp kodi-16.0-beta5-19fc4fa.patch/xbmc/input/linux/LinuxInputDevices.cpp
---- kodi-16.0-beta5-19fc4fa/xbmc/input/linux/LinuxInputDevices.cpp	2015-12-15 00:07:12.000000000 +0100
-+++ kodi-16.0-beta5-19fc4fa.patch/xbmc/input/linux/LinuxInputDevices.cpp	2016-01-05 06:41:13.847846527 +0100
-@@ -268,6 +268,7 @@
+   <MyRadioChannels>
+diff -Naur kodi-eceb0d6/xbmc/input/linux/LinuxInputDevices.cpp kodi-eceb0d6.patch/xbmc/input/linux/LinuxInputDevices.cpp
+--- kodi-eceb0d6/xbmc/input/linux/LinuxInputDevices.cpp	2016-03-29 21:36:04.000000000 +0200
++++ kodi-eceb0d6.patch/xbmc/input/linux/LinuxInputDevices.cpp	2016-03-30 09:48:10.182063910 +0200
+@@ -273,6 +273,7 @@
    { KEY_FILE          , XBMCK_LAUNCH_FILE_BROWSER},
    { KEY_SELECT        , XBMCK_RETURN      },
    { KEY_CONFIG        , XBMCK_CONFIG      },
@@ -28,9 +28,9 @@ diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/linux/LinuxInputDevices.cpp kodi-1
    // The Little Black Box Remote Additions
    { 384               , XBMCK_LEFT        }, // Red
    { 378               , XBMCK_RIGHT       }, // Green
-diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keysym.h kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_keysym.h
---- kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keysym.h	2015-12-15 00:07:12.000000000 +0100
-+++ kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_keysym.h	2016-01-05 06:41:13.847846527 +0100
+diff -Naur kodi-eceb0d6/xbmc/input/XBMC_keysym.h kodi-eceb0d6.patch/xbmc/input/XBMC_keysym.h
+--- kodi-eceb0d6/xbmc/input/XBMC_keysym.h	2016-03-29 21:36:04.000000000 +0200
++++ kodi-eceb0d6.patch/xbmc/input/XBMC_keysym.h	2016-03-30 09:48:10.183063895 +0200
 @@ -229,6 +229,7 @@
    XBMCK_FAVORITES   = 0x14d,
    XBMCK_HOMEPAGE    = 0x14e,
@@ -39,9 +39,9 @@ diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keysym.h kodi-16.0-beta5-19fc
  
    // Add any other keys here
  
-diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keytable.cpp kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_keytable.cpp
---- kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keytable.cpp	2015-12-15 00:07:12.000000000 +0100
-+++ kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_keytable.cpp	2016-01-05 06:41:13.848846528 +0100
+diff -Naur kodi-eceb0d6/xbmc/input/XBMC_keytable.cpp kodi-eceb0d6.patch/xbmc/input/XBMC_keytable.cpp
+--- kodi-eceb0d6/xbmc/input/XBMC_keytable.cpp	2016-03-29 21:36:04.000000000 +0200
++++ kodi-eceb0d6.patch/xbmc/input/XBMC_keytable.cpp	2016-03-30 09:48:10.183063895 +0200
 @@ -243,6 +243,7 @@
  , { XBMCK_FAVORITES,              0,    0, XBMCVK_FAVORITES,     "favorites" }
  , { XBMCK_HOMEPAGE ,              0,    0, XBMCVK_HOMEPAGE,      "homepage" }
@@ -50,9 +50,9 @@ diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_keytable.cpp kodi-16.0-beta5-
  };
  
  static int XBMCKeyTableSize = sizeof(XBMCKeyTable)/sizeof(XBMCKEYTABLE);
-diff -Naur kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_vkeys.h kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_vkeys.h
---- kodi-16.0-beta5-19fc4fa/xbmc/input/XBMC_vkeys.h	2015-12-15 00:07:12.000000000 +0100
-+++ kodi-16.0-beta5-19fc4fa.patch/xbmc/input/XBMC_vkeys.h	2016-01-05 06:41:13.848846528 +0100
+diff -Naur kodi-eceb0d6/xbmc/input/XBMC_vkeys.h kodi-eceb0d6.patch/xbmc/input/XBMC_vkeys.h
+--- kodi-eceb0d6/xbmc/input/XBMC_vkeys.h	2016-03-29 21:36:04.000000000 +0200
++++ kodi-eceb0d6.patch/xbmc/input/XBMC_vkeys.h	2016-03-30 09:48:10.184063881 +0200
 @@ -221,6 +221,7 @@
    XBMCVK_FAVORITES      = 0xE9,
    XBMCVK_HOMEPAGE       = 0xEA,
