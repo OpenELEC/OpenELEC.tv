@@ -1,6 +1,55 @@
 diff -Naur lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.c
 --- lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c	2015-07-30 22:29:22.874956699 +0200
 +++ lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.c	2015-07-30 22:30:00.039228818 +0200
+@@ -412,7 +412,7 @@
+  * \param string   String that gets written.
+  */
+ MODULE_EXPORT void
+-NoritakeVFD_string (Driver *drvthis, int x, int y, const char string[])
++NoritakeVFD_string (Driver *drvthis, int x, int y, unsigned char string[])
+ {
+ 	PrivateData *p = drvthis->private_data;
+ 	int i;
+@@ -636,9 +636,8 @@
+  * \param y        Vertical cursor position (row).
+  * \param state    New cursor state.
+  */
+-/*
+ MODULE_EXPORT void
+-CFontzPacket_cursor (Driver *drvthis, int x, int y, int state)
++NoritakeVFD_cursor (Driver *drvthis, int x, int y, int state)
+ {
+ 	PrivateData *p = drvthis->private_data;
+ 	char out[2] = { 0x15 };
+@@ -659,9 +658,8 @@
+ 	}
+ 	write(p->fd, out, 1);
+ 
+-	NoritakeVFD_cursor_goto(x, y);
++	NoritakeVFD_cursor_goto(drvthis, x, y);
+ }
+-*/
+ 
+ 
+ /**
+ @@ -747,7 +745,7 @@
+ 	else {
+ 		p->offbrightness = promille;
+ 	}
+-	//Noritake_backlight(drvthis, state);
++	NoritakeVFD_backlight(drvthis, state);
+ }
+ 
+ 
+@@ -832,7 +830,7 @@
+ NoritakeVFD_cursor_goto(Driver *drvthis, int x, int y)
+ {
+ 	PrivateData *p = drvthis->private_data;
+-	unsigned char out[4] = { 0x1B, 0x48, 0 };
++	unsigned char out[3] = { 0x1B, 0x48, 0 };
+ 
+ 	/* set cursor position */
+ 	if ((x > 0) && (x <= p->width) && (y > 0) && (y <= p->height))
 @@ -836,7 +836,7 @@
  
  	/* set cursor position */
