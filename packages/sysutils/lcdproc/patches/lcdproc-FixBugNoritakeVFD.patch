@@ -1,0 +1,11 @@
+diff -Naur lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.c
+--- lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c	2015-07-30 22:29:22.874956699 +0200
++++ lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.c	2015-07-30 22:30:00.039228818 +0200
+@@ -836,7 +836,7 @@
+ 
+ 	/* set cursor position */
+ 	if ((x > 0) && (x <= p->width) && (y > 0) && (y <= p->height))
+-		out[2] = (x-1) * p->width + (y-1);
++		out[2] = (y-1) * p->width + (x-1);
+ 	write(p->fd, out, 3);
+ }
