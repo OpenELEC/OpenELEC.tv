@@ -1,4 +1,4 @@
-From 9421229d7f8e6ef6cfb8a1b30f731f91c6586aca Mon Sep 17 00:00:00 2001
+From ccb1eff2e6dd1259c6a8ca262076553875c5abe2 Mon Sep 17 00:00:00 2001
 From: John Cox <jc@kynesim.co.uk>
 Date: Wed, 13 Jan 2016 16:13:33 +0000
 Subject: [PATCH] H.265 residual decode rework (v2)
@@ -12,11 +12,9 @@ Simplify the code flow and variable usage where possible
  libavcodec/arm/hevc_cabac.h           |  491 +++++++++++++++
  libavcodec/arm/hevcdsp_deblock_neon.S |   13 +-
  libavcodec/arm/hevcdsp_epel_neon.S    |    9 +-
- libavcodec/cabac.c                    |   11 +-
  libavcodec/cabac.h                    |    9 +-
- libavcodec/cabac_functions.h          |   15 +-
  libavcodec/hevc_cabac.c               | 1098 +++++++++++++++++++++++++--------
- 8 files changed, 1534 insertions(+), 267 deletions(-)
+ 6 files changed, 1510 insertions(+), 265 deletions(-)
  create mode 100644 libavcodec/arm/hevc_cabac.h
 
 diff --git a/libavcodec/arm/cabac.h b/libavcodec/arm/cabac.h
@@ -782,36 +780,11 @@ index 516ae5b..00eab9e 100644
          sub    r6, #1
          lsl    r6, #2
          add    r6, r12 // mx epel coeff offset
-diff --git a/libavcodec/cabac.c b/libavcodec/cabac.c
-index f298336..91f5ef5 100644
---- a/libavcodec/cabac.c
-+++ b/libavcodec/cabac.c
-@@ -59,10 +59,19 @@ int ff_init_cabac_decoder(CABACContext *c, const uint8_t *buf, int buf_size){
- #if CABAC_BITS == 16
-     c->low =  (*c->bytestream++)<<18;
-     c->low+=  (*c->bytestream++)<<10;
-+    // Keep our fetches on a 2-byte boundry as this should avoid ever having to
-+    // do unaligned loads if the compiler (or asm) optimises the double byte
-+    // load into a single instruction
-+    if(((uintptr_t)c->bytestream & 1) == 0) {
-+        c->low += (1 << 9);
-+    }
-+    else {
-+        c->low += ((*c->bytestream++) << 2) + 2;
-+    }
- #else
-     c->low =  (*c->bytestream++)<<10;
--#endif
-     c->low+= ((*c->bytestream++)<<2) + 2;
-+#endif
-     c->range= 0x1FE;
-     if ((c->range<<(CABAC_BITS+1)) < c->low)
-         return AVERROR_INVALIDDATA;
 diff --git a/libavcodec/cabac.h b/libavcodec/cabac.h
-index 857211c..857a1de 100644
+index 1bf1c62..ccfa991 100644
 --- a/libavcodec/cabac.h
 +++ b/libavcodec/cabac.h
-@@ -48,7 +48,14 @@ extern CABAC_TABLE_CONST uint8_t ff_h264_cabac_tables[512 + 4*2*64 + 4*64 + 63];
+@@ -43,7 +43,14 @@ extern const uint8_t ff_h264_cabac_tables[512 + 4*2*64 + 4*64 + 63];
  typedef struct CABACContext{
      int low;
      int range;
@@ -827,87 +800,6 @@ index 857211c..857a1de 100644
      const uint8_t *bytestream_start;
      const uint8_t *bytestream;
      const uint8_t *bytestream_end;
-diff --git a/libavcodec/cabac_functions.h b/libavcodec/cabac_functions.h
-index 2d1d2a6..d3518cb 100644
---- a/libavcodec/cabac_functions.h
-+++ b/libavcodec/cabac_functions.h
-@@ -51,6 +51,7 @@ static CABAC_TABLE_CONST uint8_t * const ff_h264_lps_range = ff_h264_cabac_table
- static CABAC_TABLE_CONST uint8_t * const ff_h264_mlps_state = ff_h264_cabac_tables + H264_MLPS_STATE_OFFSET;
- static CABAC_TABLE_CONST uint8_t * const ff_h264_last_coeff_flag_offset_8x8 = ff_h264_cabac_tables + H264_LAST_COEFF_FLAG_OFFSET_8x8_OFFSET;
- 
-+#if !defined(get_cabac_bypass) || !defined(get_cabac_terminate)
- static void refill(CABACContext *c){
- #if CABAC_BITS == 16
-         c->low+= (c->bytestream[0]<<9) + (c->bytestream[1]<<1);
-@@ -63,7 +64,9 @@ static void refill(CABACContext *c){
- #endif
-         c->bytestream += CABAC_BITS / 8;
- }
-+#endif
- 
-+#ifndef get_cabac_terminate
- static inline void renorm_cabac_decoder_once(CABACContext *c){
-     int shift= (uint32_t)(c->range - 0x100)>>31;
-     c->range<<= shift;
-@@ -71,14 +74,18 @@ static inline void renorm_cabac_decoder_once(CABACContext *c){
-     if(!(c->low & CABAC_MASK))
-         refill(c);
- }
-+#endif
- 
- #ifndef get_cabac_inline
- static void refill2(CABACContext *c){
-     int i;
-     unsigned x;
--
-+#if !HAVE_FAST_CLZ
-     x= c->low ^ (c->low-1);
-     i= 7 - ff_h264_norm_shift[x>>(CABAC_BITS-1)];
-+#else
-+    i = ff_ctz(c->low) - CABAC_BITS;
-+#endif
- 
-     x= -CABAC_MASK;
- 
-@@ -94,7 +101,9 @@ static void refill2(CABACContext *c){
- #endif
-         c->bytestream += CABAC_BITS/8;
- }
-+#endif
- 
-+#ifndef get_cabac_inline
- static av_always_inline int get_cabac_inline(CABACContext *c, uint8_t * const state){
-     int s = *state;
-     int RangeLPS= ff_h264_lps_range[2*(c->range&0xC0) + s];
-@@ -166,6 +175,7 @@ static av_always_inline int get_cabac_bypass_sign(CABACContext *c, int val){
-  *
-  * @return the number of bytes read or 0 if no end
-  */
-+#ifndef get_cabac_terminate
- static int av_unused get_cabac_terminate(CABACContext *c){
-     c->range -= 2;
-     if(c->low < c->range<<(CABAC_BITS+1)){
-@@ -175,11 +185,13 @@ static int av_unused get_cabac_terminate(CABACContext *c){
-         return c->bytestream - c->bytestream_start;
-     }
- }
-+#endif
- 
- /**
-  * Skip @p n bytes and reset the decoder.
-  * @return the address of the first skipped byte or NULL if there's less than @p n bytes left
-  */
-+#ifndef skip_bytes
- static av_unused const uint8_t* skip_bytes(CABACContext *c, int n) {
-     const uint8_t *ptr = c->bytestream;
- 
-@@ -196,5 +208,6 @@ static av_unused const uint8_t* skip_bytes(CABACContext *c, int n) {
- 
-     return ptr;
- }
-+#endif
- 
- #endif /* AVCODEC_CABAC_FUNCTIONS_H */
 diff --git a/libavcodec/hevc_cabac.c b/libavcodec/hevc_cabac.c
 index 271e17a..4caf720 100644
 --- a/libavcodec/hevc_cabac.c

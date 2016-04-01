@@ -1,4 +1,4 @@
-From 5a8f38083c6d9afec5029408c8680b2676752035 Mon Sep 17 00:00:00 2001
+From 4c05fa1631b5e8839a7763417c5220291308c707 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 28 Apr 2015 16:18:40 +0100
 Subject: [PATCH 01/68] Added display output
@@ -8,7 +8,7 @@ Subject: [PATCH 01/68] Added display output
  1 file changed, 159 insertions(+)
 
 diff --git a/ffmpeg.c b/ffmpeg.c
-index ce54374..026ffa9 100644
+index a5ec3c3..8828f48 100644
 --- a/ffmpeg.c
 +++ b/ffmpeg.c
 @@ -23,6 +23,11 @@
@@ -23,7 +23,7 @@ index ce54374..026ffa9 100644
  #include "config.h"
  #include <ctype.h>
  #include <string.h>
-@@ -69,6 +74,20 @@
+@@ -66,6 +71,20 @@
  # include "libavfilter/buffersrc.h"
  # include "libavfilter/buffersink.h"
  
@@ -44,7 +44,7 @@ index ce54374..026ffa9 100644
  #if HAVE_SYS_RESOURCE_H
  #include <sys/time.h>
  #include <sys/types.h>
-@@ -161,6 +180,134 @@ static int restore_tty;
+@@ -158,6 +177,134 @@ static int restore_tty;
  static void free_input_threads(void);
  #endif
  
@@ -179,7 +179,7 @@ index ce54374..026ffa9 100644
  /* sub2video hack:
     Convert subtitles to video with alpha to insert them in filter graphs.
     This is a temporary solution until libavfilter gets real subtitles support.
-@@ -582,6 +729,10 @@ static void ffmpeg_cleanup(int ret)
+@@ -581,6 +728,10 @@ static void ffmpeg_cleanup(int ret)
      }
      term_exit();
      ffmpeg_exited = 1;
@@ -190,7 +190,7 @@ index ce54374..026ffa9 100644
  }
  
  void remove_avoptions(AVDictionary **a, AVDictionary *b)
-@@ -965,6 +1116,14 @@ static void do_video_out(AVFormatContext *s,
+@@ -928,6 +1079,14 @@ static void do_video_out(AVFormatContext *s,
      int frame_size = 0;
      InputStream *ist = NULL;
      AVFilterContext *filter = ost->filter->filter;
@@ -209,7 +209,7 @@ index ce54374..026ffa9 100644
 2.5.0
 
 
-From a72c0e18e722b541d4bb10f1f5c966f95eccbec1 Mon Sep 17 00:00:00 2001
+From 90f7867ad638d03e8d1a9902990dfd7edd13fe0d Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 29 Apr 2015 16:49:43 +0100
 Subject: [PATCH 02/68] Split transform and intra prediction into commands
@@ -221,10 +221,10 @@ Subject: [PATCH 02/68] Split transform and intra prediction into commands
  3 files changed, 191 insertions(+), 1 deletion(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 5f77761..5566ace 100644
+index 203f90a..2eebd31 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -918,6 +918,25 @@ static int hls_cross_component_pred(HEVCContext *s, int idx) {
+@@ -920,6 +920,25 @@ static int hls_cross_component_pred(HEVCContext *s, int idx) {
      return 0;
  }
  
@@ -250,7 +250,7 @@ index 5f77761..5566ace 100644
  static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                                int xBase, int yBase, int cb_xBase, int cb_yBase,
                                int log2_cb_size, int log2_trafo_size,
-@@ -930,8 +949,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -932,8 +951,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
      if (lc->cu.pred_mode == MODE_INTRA) {
          int trafo_size = 1 << log2_trafo_size;
          ff_hevc_set_neighbour_available(s, x0, y0, trafo_size, trafo_size);
@@ -263,7 +263,7 @@ index 5f77761..5566ace 100644
      }
  
      if (cbf_luma || cbf_cb[0] || cbf_cr[0] ||
-@@ -1017,7 +1039,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1019,7 +1041,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
              for (i = 0; i < (s->ps.sps->chroma_format_idc == 2 ? 2 : 1); i++) {
                  if (lc->cu.pred_mode == MODE_INTRA) {
                      ff_hevc_set_neighbour_available(s, x0, y0 + (i << log2_trafo_size_c), trafo_size_h, trafo_size_v);
@@ -275,7 +275,7 @@ index 5f77761..5566ace 100644
                  }
                  if (cbf_cb[i])
                      ff_hevc_hls_residual_coding(s, x0, y0 + (i << log2_trafo_size_c),
-@@ -1046,7 +1072,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1048,7 +1074,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
              for (i = 0; i < (s->ps.sps->chroma_format_idc == 2 ? 2 : 1); i++) {
                  if (lc->cu.pred_mode == MODE_INTRA) {
                      ff_hevc_set_neighbour_available(s, x0, y0 + (i << log2_trafo_size_c), trafo_size_h, trafo_size_v);
@@ -287,7 +287,7 @@ index 5f77761..5566ace 100644
                  }
                  if (cbf_cr[i])
                      ff_hevc_hls_residual_coding(s, x0, y0 + (i << log2_trafo_size_c),
-@@ -1075,7 +1105,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1077,7 +1107,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                  if (lc->cu.pred_mode == MODE_INTRA) {
                      ff_hevc_set_neighbour_available(s, xBase, yBase + (i << log2_trafo_size),
                                                      trafo_size_h, trafo_size_v);
@@ -299,7 +299,7 @@ index 5f77761..5566ace 100644
                  }
                  if (cbf_cb[i])
                      ff_hevc_hls_residual_coding(s, xBase, yBase + (i << log2_trafo_size),
-@@ -1085,7 +1119,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1087,7 +1121,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                  if (lc->cu.pred_mode == MODE_INTRA) {
                      ff_hevc_set_neighbour_available(s, xBase, yBase + (i << log2_trafo_size),
                                                  trafo_size_h, trafo_size_v);
@@ -311,7 +311,7 @@ index 5f77761..5566ace 100644
                  }
                  if (cbf_cr[i])
                      ff_hevc_hls_residual_coding(s, xBase, yBase + (i << log2_trafo_size),
-@@ -1097,26 +1135,46 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1099,26 +1137,46 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
              int trafo_size_h = 1 << (log2_trafo_size_c + s->ps.sps->hshift[1]);
              int trafo_size_v = 1 << (log2_trafo_size_c + s->ps.sps->vshift[1]);
              ff_hevc_set_neighbour_available(s, x0, y0, trafo_size_h, trafo_size_v);
@@ -358,7 +358,7 @@ index 5f77761..5566ace 100644
              }
          }
      }
-@@ -2291,6 +2349,31 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
+@@ -2293,6 +2351,31 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
      lc->ctb_up_left_flag = ((x_ctb > 0) && (y_ctb > 0)  && (ctb_addr_in_slice-1 >= s->ps.sps->ctb_width) && (s->ps.pps->tile_id[ctb_addr_ts] == s->ps.pps->tile_id[s->ps.pps->ctb_addr_rs_to_ts[ctb_addr_rs-1 - s->ps.sps->ctb_width]]));
  }
  
@@ -390,7 +390,7 @@ index 5f77761..5566ace 100644
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  {
      HEVCContext *s  = avctxt->priv_data;
-@@ -2300,6 +2383,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2302,6 +2385,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      int y_ctb       = 0;
      int ctb_addr_ts = s->ps.pps->ctb_addr_rs_to_ts[s->sh.slice_ctb_addr_rs];
  
@@ -401,7 +401,7 @@ index 5f77761..5566ace 100644
      if (!ctb_addr_ts && s->sh.dependent_slice_segment_flag) {
          av_log(s->avctx, AV_LOG_ERROR, "Impossible initial tile.\n");
          return AVERROR_INVALIDDATA;
-@@ -2329,6 +2416,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2331,6 +2418,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          s->filter_slice_edges[ctb_addr_rs]  = s->sh.slice_loop_filter_across_slices_enabled_flag;
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
@@ -411,7 +411,7 @@ index 5f77761..5566ace 100644
          if (more_data < 0) {
              s->tab_slice_address[ctb_addr_rs] = -1;
              return more_data;
-@@ -2374,6 +2464,10 @@ static int hls_decode_entry_wpp(AVCodecContext *avctxt, void *input_ctb_row, int
+@@ -2376,6 +2466,10 @@ static int hls_decode_entry_wpp(AVCodecContext *avctxt, void *input_ctb_row, int
      s = s1->sList[self_id];
      lc = s->HEVClc;
  
@@ -422,7 +422,7 @@ index 5f77761..5566ace 100644
      if(ctb_row) {
          ret = init_get_bits8(&lc->gb, s->data + s->sh.offset[ctb_row - 1], s->sh.size[ctb_row - 1]);
  
-@@ -2998,6 +3092,13 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3064,6 +3158,13 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
  
      av_freep(&s->cabac_state);
  
@@ -436,7 +436,7 @@ index 5f77761..5566ace 100644
      for (i = 0; i < 3; i++) {
          av_freep(&s->sao_pixel_buffer_h[i]);
          av_freep(&s->sao_pixel_buffer_v[i]);
-@@ -3057,6 +3158,22 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3123,6 +3224,22 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->HEVClcList[0] = s->HEVClc;
      s->sList[0] = s;
  
@@ -460,7 +460,7 @@ index 5f77761..5566ace 100644
      if (!s->cabac_state)
          goto fail;
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index d84e661..aa66b00 100644
+index c91f815..71174af 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -23,6 +23,9 @@
@@ -572,7 +572,7 @@ index d1bef83..c0fdfad 100644
 2.5.0
 
 
-From f4cf5194f103463ebd84eb36f571be06ca2aa49d Mon Sep 17 00:00:00 2001
+From 18fe64824d85a2ac9832bd5b600db8e52b5581fe Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 30 Apr 2015 15:23:22 +0100
 Subject: [PATCH 03/68] Added simple VPU test code
@@ -603,12 +603,12 @@ Subject: [PATCH 03/68] Added simple VPU test code
  create mode 100644 libavcodec/rpi_user_vcsm.h
 
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 5088304..54e14b4 100644
+index f6a4fbb..0fd6767 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -4,6 +4,10 @@ NAME = avcodec
- 
+@@ -5,6 +5,10 @@ NAME = avcodec
  HEADERS = avcodec.h                                                     \
+           avdct.h                                                       \
            avfft.h                                                       \
 +          rpi_qpu.h                                                     \
 +          rpi_shader.h                                                  \
@@ -616,8 +616,8 @@ index 5088304..54e14b4 100644
 +          rpi_hevc_transform.h                                          \
            dv_profile.h                                                  \
            d3d11va.h                                                     \
-           dxva2.h                                                       \
-@@ -35,6 +39,9 @@ OBJS = allcodecs.o                                                      \
+           dirac.h                                                       \
+@@ -39,6 +43,9 @@ OBJS = allcodecs.o                                                      \
         resample.o                                                       \
         resample2.o                                                      \
         utils.o                                                          \
@@ -628,12 +628,12 @@ index 5088304..54e14b4 100644
         xiph.o                                                           \
  
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 5566ace..e58a3d0 100644
+index 2eebd31..681e9fd 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -39,6 +39,10 @@
- #include "golomb.h"
+@@ -41,6 +41,10 @@
  #include "hevc.h"
+ #include "profiles.h"
  
 +#ifdef RPI
 +#include "rpi_qpu.h"
@@ -642,7 +642,7 @@ index 5566ace..e58a3d0 100644
  const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12] = 4, [16] = 5, [24] = 6, [32] = 7, [48] = 8, [64] = 9 };
  
  /**
-@@ -2417,7 +2421,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2419,7 +2423,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
  #ifdef RPI
@@ -653,7 +653,7 @@ index 5566ace..e58a3d0 100644
  #endif
          if (more_data < 0) {
              s->tab_slice_address[ctb_addr_rs] = -1;
-@@ -3172,6 +3178,31 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3238,6 +3244,31 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      if (!s->coeffs_buf)
          goto fail;
      s->enable_rpi = 0;
@@ -4794,7 +4794,7 @@ index 0000000..fbebbbe
 2.5.0
 
 
-From 603cf327694d2f986538f13e6b8a1d92b2a9e0b2 Mon Sep 17 00:00:00 2001
+From 9018000735949ecb6640187dd2571753881edcfa Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@argondesign.com>
 Date: Sat, 2 May 2015 21:15:37 +0100
 Subject: [PATCH 04/68] First working version with uncached memory
@@ -4812,10 +4812,10 @@ Subject: [PATCH 04/68] First working version with uncached memory
  9 files changed, 736 insertions(+), 46 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index e58a3d0..4aacb60 100644
+index 681e9fd..79678ea 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -43,6 +43,8 @@
+@@ -45,6 +45,8 @@
  #include "rpi_qpu.h"
  #endif
  
@@ -4824,7 +4824,7 @@ index e58a3d0..4aacb60 100644
  const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12] = 4, [16] = 5, [24] = 6, [32] = 7, [48] = 8, [64] = 9 };
  
  /**
-@@ -1066,11 +1068,15 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1068,11 +1070,15 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                          for (i = 0; i < (size * size); i++) {
                              coeffs[i] = ((lc->tu.res_scale_val * coeffs_y[i]) >> 3);
                          }
@@ -4840,7 +4840,7 @@ index e58a3d0..4aacb60 100644
                  hls_cross_component_pred(s, 1);
              }
              for (i = 0; i < (s->ps.sps->chroma_format_idc == 2 ? 2 : 1); i++) {
-@@ -1099,6 +1105,8 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1101,6 +1107,8 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                          for (i = 0; i < (size * size); i++) {
                              coeffs[i] = ((lc->tu.res_scale_val * coeffs_y[i]) >> 3);
                          }
@@ -4849,7 +4849,7 @@ index e58a3d0..4aacb60 100644
                          s->hevcdsp.transform_add[log2_trafo_size_c-2](dst, coeffs, stride);
                      }
              }
-@@ -1396,6 +1404,10 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1398,6 +1406,10 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                             (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
      int idx              = ff_hevc_pel_weight[block_w];
  
@@ -4860,7 +4860,7 @@ index e58a3d0..4aacb60 100644
      x_off += mv->x >> 2;
      y_off += mv->y >> 2;
      src   += y_off * srcstride + (x_off * (1 << s->ps.sps->pixel_shift));
-@@ -1466,6 +1478,10 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1468,6 +1480,10 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
      uint8_t *src0  = ref0->data[0] + y_off0 * src0stride + (int)((unsigned)x_off0 << s->ps.sps->pixel_shift);
      uint8_t *src1  = ref1->data[0] + y_off1 * src1stride + (int)((unsigned)x_off1 << s->ps.sps->pixel_shift);
  
@@ -4871,7 +4871,7 @@ index e58a3d0..4aacb60 100644
      if (x_off0 < QPEL_EXTRA_BEFORE || y_off0 < QPEL_EXTRA_AFTER ||
          x_off0 >= pic_width - block_w - QPEL_EXTRA_AFTER ||
          y_off0 >= pic_height - block_h - QPEL_EXTRA_AFTER) {
-@@ -1551,6 +1567,10 @@ static void chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
+@@ -1553,6 +1569,10 @@ static void chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
      intptr_t _mx         = mx << (1 - hshift);
      intptr_t _my         = my << (1 - vshift);
  
@@ -4882,7 +4882,7 @@ index e58a3d0..4aacb60 100644
      x_off += mv->x >> (2 + hshift);
      y_off += mv->y >> (2 + vshift);
      src0  += y_off * srcstride + (x_off * (1 << s->ps.sps->pixel_shift));
-@@ -1615,6 +1635,10 @@ static void chroma_mc_bi(HEVCContext *s, uint8_t *dst0, ptrdiff_t dststride, AVF
+@@ -1617,6 +1637,10 @@ static void chroma_mc_bi(HEVCContext *s, uint8_t *dst0, ptrdiff_t dststride, AVF
      int hshift = s->ps.sps->hshift[1];
      int vshift = s->ps.sps->vshift[1];
  
@@ -4893,7 +4893,7 @@ index e58a3d0..4aacb60 100644
      intptr_t mx0 = av_mod_uintp2(mv0->x, 2 + hshift);
      intptr_t my0 = av_mod_uintp2(mv0->y, 2 + vshift);
      intptr_t mx1 = av_mod_uintp2(mv1->x, 2 + hshift);
-@@ -2354,6 +2378,22 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
+@@ -2356,6 +2380,22 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
  }
  
  #ifdef RPI
@@ -4916,7 +4916,7 @@ index e58a3d0..4aacb60 100644
  static void rpi_execute_pred_cmds(HEVCContext *s)
  {
    int i;
-@@ -2374,7 +2414,6 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2376,7 +2416,6 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
        }
    }
    s->num_pred_cmds = 0;
@@ -4924,7 +4924,7 @@ index e58a3d0..4aacb60 100644
  }
  #endif
  
-@@ -2421,7 +2460,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2423,7 +2462,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
  #ifdef RPI
@@ -4934,7 +4934,7 @@ index e58a3d0..4aacb60 100644
              rpi_execute_pred_cmds(s);
          }
  #endif
-@@ -3102,7 +3142,9 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3168,7 +3208,9 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      av_freep(&s->unif_mv_cmds);
      av_freep(&s->unif_xfm_cmds);
      av_freep(&s->univ_pred_cmds);
@@ -4945,7 +4945,7 @@ index e58a3d0..4aacb60 100644
  #endif
  
      for (i = 0; i < 3; i++) {
-@@ -3174,13 +3216,16 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3240,13 +3282,16 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->univ_pred_cmds = av_mallocz(sizeof(HEVCPredCmd)*RPI_MAX_PRED_CMDS);
      if (!s->univ_pred_cmds)
          goto fail;
@@ -4966,7 +4966,7 @@ index e58a3d0..4aacb60 100644
        GPU_MEM_PTR_T p;
        int err = gpu_malloc_cached(16, &p);
        short *q = (short *)p.arm;
-@@ -3201,7 +3246,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3267,7 +3312,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
        printf(")\n");
        gpu_free(&p);
        goto fail; // Early out
@@ -4976,7 +4976,7 @@ index e58a3d0..4aacb60 100644
  #endif
  
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index aa66b00..f201817 100644
+index 71174af..1e4c34c 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -39,6 +39,11 @@
@@ -5985,7 +5985,7 @@ index 4e3c35c..814fc3c 100644
 2.5.0
 
 
-From 1f1b223bd911a88726aa2c2f56334b15b421d7fa Mon Sep 17 00:00:00 2001
+From 4732d45788d56c44bda51c0cb12be912df89dab7 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 5 May 2015 09:41:23 +0100
 Subject: [PATCH 05/68] Fixed deblocking
@@ -5995,10 +5995,10 @@ Subject: [PATCH 05/68] Fixed deblocking
  1 file changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 4aacb60..94fdda6 100644
+index 79678ea..862f915 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2387,8 +2387,9 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2389,8 +2389,9 @@ static void rpi_execute_transform(HEVCContext *s)
      //    s->hevcdsp.idct[4-2](coeffs, 16);
      //}
  
@@ -6009,7 +6009,7 @@ index 4aacb60..94fdda6 100644
  
      for(i=0;i<4;i++)
          s->num_coeffs[i] = 0;
-@@ -2427,6 +2428,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2429,6 +2430,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      int ctb_addr_ts = s->ps.pps->ctb_addr_rs_to_ts[s->sh.slice_ctb_addr_rs];
  
  #ifdef RPI
@@ -6017,7 +6017,7 @@ index 4aacb60..94fdda6 100644
      s->enable_rpi = 1; // TODO this should depend on cross component and frame width etc.
  #endif
  
-@@ -2460,9 +2462,17 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2462,9 +2464,17 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
  #ifdef RPI
@@ -6036,7 +6036,7 @@ index 4aacb60..94fdda6 100644
          }
  #endif
          if (more_data < 0) {
-@@ -2473,6 +2483,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2475,6 +2485,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
          ctb_addr_ts++;
          ff_hevc_save_states(s, ctb_addr_ts);
@@ -6047,7 +6047,7 @@ index 4aacb60..94fdda6 100644
          ff_hevc_hls_filters(s, x_ctb, y_ctb, ctb_size);
      }
  
-@@ -3217,7 +3231,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3283,7 +3297,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      if (!s->univ_pred_cmds)
          goto fail;
      for(i = 0; i < 4; i++) {
@@ -6060,7 +6060,7 @@ index 4aacb60..94fdda6 100644
 2.5.0
 
 
-From a32f8972fedc38dcf887f8f2899e8843efd6324a Mon Sep 17 00:00:00 2001
+From ddb4cf90d99f2e213de85244cd8e751570d794a8 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 5 May 2015 11:32:30 +0100
 Subject: [PATCH 06/68] Added 32x32 transform
@@ -6074,10 +6074,10 @@ Subject: [PATCH 06/68] Added 32x32 transform
  5 files changed, 148 insertions(+), 170 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 94fdda6..fbbd30f 100644
+index 862f915..fe71e03 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2387,9 +2387,11 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2389,9 +2389,11 @@ static void rpi_execute_transform(HEVCContext *s)
      //    s->hevcdsp.idct[4-2](coeffs, 16);
      //}
  
@@ -6785,7 +6785,7 @@ index d720546..12ad5fb 100644
 2.5.0
 
 
-From 223fee0c814602a2aa5611c21fe052e6b6e063c1 Mon Sep 17 00:00:00 2001
+From cb4444b27d7e1d38d42375f52cd3741c2ebbe4ec Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 5 May 2015 16:57:03 +0100
 Subject: [PATCH 07/68] Clear coefficients in advance
@@ -6799,10 +6799,10 @@ Subject: [PATCH 07/68] Clear coefficients in advance
  5 files changed, 168 insertions(+), 40 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index fbbd30f..12e66a6 100644
+index fe71e03..8b93ca2 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -41,6 +41,8 @@
+@@ -43,6 +43,8 @@
  
  #ifdef RPI
  #include "rpi_qpu.h"
@@ -6811,7 +6811,7 @@ index fbbd30f..12e66a6 100644
  #endif
  
  // #define DISABLE_MC
-@@ -59,6 +61,20 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -61,6 +63,20 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  /* free everything allocated  by pic_arrays_init() */
  static void pic_arrays_free(HEVCContext *s)
  {
@@ -6832,7 +6832,7 @@ index fbbd30f..12e66a6 100644
      av_freep(&s->sao);
      av_freep(&s->deblock);
  
-@@ -95,6 +111,28 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -97,6 +113,28 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
      int ctb_count        = sps->ctb_width * sps->ctb_height;
      int min_pu_size      = sps->min_pu_width * sps->min_pu_height;
  
@@ -6861,7 +6861,7 @@ index fbbd30f..12e66a6 100644
      s->bs_width  = (width  >> 2) + 1;
      s->bs_height = (height >> 2) + 1;
  
-@@ -2387,11 +2425,10 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2389,11 +2427,10 @@ static void rpi_execute_transform(HEVCContext *s)
      //    s->hevcdsp.idct[4-2](coeffs, 16);
      //}
  
@@ -6877,7 +6877,7 @@ index fbbd30f..12e66a6 100644
  
      for(i=0;i<4;i++)
          s->num_coeffs[i] = 0;
-@@ -2413,7 +2450,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2415,7 +2452,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
            lc->na.cand_up_right     = (cmd->na >> 0) & 1;
            s->hpc.intra_pred[cmd->size - 2](s, cmd->x, cmd->y, cmd->c_idx);
        } else {
@@ -6887,7 +6887,7 @@ index fbbd30f..12e66a6 100644
        }
    }
    s->num_pred_cmds = 0;
-@@ -3158,10 +3197,18 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3224,10 +3263,18 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      av_freep(&s->unif_mv_cmds);
      av_freep(&s->unif_xfm_cmds);
      av_freep(&s->univ_pred_cmds);
@@ -6908,7 +6908,7 @@ index fbbd30f..12e66a6 100644
  
      for (i = 0; i < 3; i++) {
          av_freep(&s->sao_pixel_buffer_h[i]);
-@@ -3209,6 +3256,16 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3275,6 +3322,16 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      return 0;
  }
  
@@ -6925,7 +6925,7 @@ index fbbd30f..12e66a6 100644
  static av_cold int hevc_init_context(AVCodecContext *avctx)
  {
      HEVCContext *s = avctx->priv_data;
-@@ -3232,37 +3289,35 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3298,37 +3355,35 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->univ_pred_cmds = av_mallocz(sizeof(HEVCPredCmd)*RPI_MAX_PRED_CMDS);
      if (!s->univ_pred_cmds)
          goto fail;
@@ -6992,7 +6992,7 @@ index fbbd30f..12e66a6 100644
  #endif
  
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index f201817..ca7c2aa 100644
+index 1e4c34c..e240b5c 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -887,8 +887,12 @@ typedef struct HEVCContext {
@@ -7137,7 +7137,7 @@ index afdb32a..fd159bc 100644
 2.5.0
 
 
-From dffd0d9fc1ada2b61c61c73cba53538e564ced02 Mon Sep 17 00:00:00 2001
+From 3328a46c648542e5281088576dffac413de7a19d Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 6 May 2015 09:56:43 +0100
 Subject: [PATCH 08/68] Prepared inter offload
@@ -7149,10 +7149,10 @@ Subject: [PATCH 08/68] Prepared inter offload
  3 files changed, 137 insertions(+), 13 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 12e66a6..7453b63 100644
+index 8b93ca2..59f5d15 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -43,6 +43,8 @@
+@@ -45,6 +45,8 @@
  #include "rpi_qpu.h"
  // For some unknown reason, the code seems to crash if I do a late malloc
  #define EARLY_MALLOC
@@ -7161,7 +7161,7 @@ index 12e66a6..7453b63 100644
  #endif
  
  // #define DISABLE_MC
-@@ -1427,6 +1429,95 @@ static int hls_pcm_sample(HEVCContext *s, int x0, int y0, int log2_cb_size)
+@@ -1429,6 +1431,95 @@ static int hls_pcm_sample(HEVCContext *s, int x0, int y0, int log2_cb_size)
   * @param luma_offset additive offset applied to the luma prediction value
   */
  
@@ -7257,7 +7257,7 @@ index 12e66a6..7453b63 100644
  static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                          AVFrame *ref, const Mv *mv, int x_off, int y_off,
                          int block_w, int block_h, int luma_weight, int luma_offset)
-@@ -1492,7 +1583,7 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1494,7 +1585,7 @@ static void luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
   * @param mv1 motion vector1 (relative to block position) to get pixel data from
   * @param current_mv current motion vector structure
   */
@@ -7266,7 +7266,7 @@ index 12e66a6..7453b63 100644
                         AVFrame *ref0, const Mv *mv0, int x_off, int y_off,
                         int block_w, int block_h, AVFrame *ref1, const Mv *mv1, struct MvField *current_mv)
  {
-@@ -1874,16 +1965,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -1876,16 +1967,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -7286,7 +7286,7 @@ index 12e66a6..7453b63 100644
                            0, x0_c, y0_c, nPbW_c, nPbH_c, &current_mv,
                            s->sh.chroma_weight_l0[current_mv.ref_idx[0]][1], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][1]);
          }
-@@ -1893,17 +1984,17 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -1895,17 +1986,17 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -7307,7 +7307,7 @@ index 12e66a6..7453b63 100644
                            1, x0_c, y0_c, nPbW_c, nPbH_c, &current_mv,
                            s->sh.chroma_weight_l1[current_mv.ref_idx[1]][1], s->sh.chroma_offset_l1[current_mv.ref_idx[1]][1]);
          }
-@@ -1913,15 +2004,15 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -1915,15 +2006,15 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -7326,7 +7326,7 @@ index 12e66a6..7453b63 100644
                           x0_c, y0_c, nPbW_c, nPbH_c, &current_mv, 1);
          }
      }
-@@ -2452,7 +2543,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2454,7 +2545,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
        } else {
            int trafo_size = 1 << cmd->size;
            s->hevcdsp.transform_add[cmd->size-2](cmd->dst, cmd->buf, cmd->stride);
@@ -7336,7 +7336,7 @@ index 12e66a6..7453b63 100644
        }
    }
    s->num_pred_cmds = 0;
-@@ -3309,6 +3402,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3375,6 +3468,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->coeffs_buf_arm[3] = coefs_per_row + s->coeffs_buf_arm[2];
      s->coeffs_buf_vc[3] = sizeof(int16_t) * coefs_per_row + s->coeffs_buf_vc[2];
      printf("Done\n");
@@ -7344,7 +7344,7 @@ index 12e66a6..7453b63 100644
      //memset(s->coeffs_buf_arm[0],0, sizeof(int16_t) * coefs_per_row);
      memclear16(s->coeffs_buf_arm[0], coefs_per_row);
      //memset(s->coeffs_buf_arm[2],0, sizeof(int16_t) * coefs_per_row);
-@@ -3317,6 +3411,8 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3383,6 +3477,8 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      memclear16(s->coeffs_buf_arm[3], coefs_per_row);
  #endif
  
@@ -7354,7 +7354,7 @@ index 12e66a6..7453b63 100644
  
  #endif
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index ca7c2aa..8ef6f51 100644
+index e240b5c..a35ee4a 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -829,14 +829,39 @@ typedef struct HEVCLocalContext {
@@ -7419,7 +7419,7 @@ index a295d3e..f28759b 100644
 2.5.0
 
 
-From fa1aa086848e704e43a90d09ddf35a5e7d99aae2 Mon Sep 17 00:00:00 2001
+From 191028358f7153c8598981673e6bd165acaa699d Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 6 May 2015 11:08:50 +0100
 Subject: [PATCH 09/68] Inter prediction in separate pass
@@ -7430,10 +7430,10 @@ Subject: [PATCH 09/68] Inter prediction in separate pass
  2 files changed, 77 insertions(+), 18 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 7453b63..83fdb57 100644
+index 59f5d15..f60709e 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -44,7 +44,7 @@
+@@ -46,7 +46,7 @@
  // For some unknown reason, the code seems to crash if I do a late malloc
  #define EARLY_MALLOC
  // Move Inter prediction into separate pass
@@ -7442,7 +7442,7 @@ index 7453b63..83fdb57 100644
  #endif
  
  // #define DISABLE_MC
-@@ -1435,7 +1435,7 @@ static void rpi_luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1437,7 +1437,7 @@ static void rpi_luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                          AVFrame *ref, const Mv *mv, int x_off, int y_off,
                          int block_w, int block_h, int luma_weight, int luma_offset)
  {
@@ -7451,7 +7451,7 @@ index 7453b63..83fdb57 100644
      cmd->cmd = RPI_CMD_LUMA_UNI;
      cmd->dst = dst;
      cmd->dststride = dststride;
-@@ -1454,31 +1454,29 @@ static void rpi_luma_mc_bi(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1456,31 +1456,29 @@ static void rpi_luma_mc_bi(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                         AVFrame *ref0, const Mv *mv0, int x_off, int y_off,
                         int block_w, int block_h, AVFrame *ref1, const Mv *mv1, struct MvField *current_mv)
  {
@@ -7490,7 +7490,7 @@ index 7453b63..83fdb57 100644
      cmd->cmd = RPI_CMD_CHROMA_UNI;
      cmd->dst = dst0;
      cmd->dststride = dststride;
-@@ -1493,27 +1491,27 @@ static void chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
+@@ -1495,27 +1493,27 @@ static void chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
      cmd->offset = chroma_offset;
  }
  
@@ -7524,7 +7524,7 @@ index 7453b63..83fdb57 100644
  #else
  #define RPI_REDIRECT(fn) fn
  #endif
-@@ -2541,7 +2539,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2543,7 +2541,9 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
            lc->na.cand_up_right     = (cmd->na >> 0) & 1;
            s->hpc.intra_pred[cmd->size - 2](s, cmd->x, cmd->y, cmd->c_idx);
        } else {
@@ -7534,7 +7534,7 @@ index 7453b63..83fdb57 100644
            s->hevcdsp.transform_add[cmd->size-2](cmd->dst, cmd->buf, cmd->stride);
  #ifdef RPI_PRECLEAR
            memset(cmd->buf, 0, trafo_size * trafo_size * sizeof(int16_t)); // Clear coefficients here while they are in the cache
-@@ -2550,6 +2550,61 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2552,6 +2552,61 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
    }
    s->num_pred_cmds = 0;
  }
@@ -7596,7 +7596,7 @@ index 7453b63..83fdb57 100644
  #endif
  
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
-@@ -2598,6 +2653,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2600,6 +2655,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI
          if (s->enable_rpi && x_ctb + ctb_size >= s->ps.sps->width) {
              int x;
@@ -7605,7 +7605,7 @@ index 7453b63..83fdb57 100644
              // Transform all blocks
              rpi_execute_transform(s);
              // Perform intra prediction and residual reconstruction
-@@ -3350,6 +3407,7 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3416,6 +3473,7 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
  }
  
  #ifdef RPI
@@ -7613,7 +7613,7 @@ index 7453b63..83fdb57 100644
  static av_cold void memclear16(int16_t *p, int n)
  {
    vpu_execute_code( vpu_get_fn(), p, n, 0, 0, 0, 1);
-@@ -3358,6 +3416,7 @@ static av_cold void memclear16(int16_t *p, int n)
+@@ -3424,6 +3482,7 @@ static av_cold void memclear16(int16_t *p, int n)
    //  p[i] = 0;
  }
  #endif
@@ -7622,7 +7622,7 @@ index 7453b63..83fdb57 100644
  static av_cold int hevc_init_context(AVCodecContext *avctx)
  {
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 8ef6f51..8115d04 100644
+index a35ee4a..e3046a2 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -838,7 +838,7 @@ typedef struct HEVCLocalContext {
@@ -7638,7 +7638,7 @@ index 8ef6f51..8115d04 100644
 2.5.0
 
 
-From eba684df008749ec0f5751ea2343198006682a1c Mon Sep 17 00:00:00 2001
+From cf8758aad96c2c71abd5f2feb8ff85b5ac191b60 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 6 May 2015 13:03:50 +0100
 Subject: [PATCH 10/68] Added VPU thread
@@ -7651,10 +7651,10 @@ Subject: [PATCH 10/68] Added VPU thread
  4 files changed, 133 insertions(+), 6 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 83fdb57..9b3edf2 100644
+index f60709e..7b0d951 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2516,8 +2516,10 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2518,8 +2518,10 @@ static void rpi_execute_transform(HEVCContext *s)
  
  
      gpu_cache_flush(&s->coeffs_buf_accelerated);
@@ -7666,7 +7666,7 @@ index 83fdb57..9b3edf2 100644
  
      for(i=0;i<4;i++)
          s->num_coeffs[i] = 0;
-@@ -2653,10 +2655,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2655,10 +2657,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI
          if (s->enable_rpi && x_ctb + ctb_size >= s->ps.sps->width) {
              int x;
@@ -7681,7 +7681,7 @@ index 83fdb57..9b3edf2 100644
              // Perform intra prediction and residual reconstruction
              rpi_execute_pred_cmds(s);
              // Perform deblocking for CTBs in this row
-@@ -3349,6 +3353,7 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3415,6 +3419,7 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      av_freep(&s->univ_pred_cmds);
  
  #ifdef EARLY_MALLOC
@@ -7690,7 +7690,7 @@ index 83fdb57..9b3edf2 100644
        gpu_free(&s->coeffs_buf_default);
        s->coeffs_buf_arm[0] = 0;
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 8115d04..d5d3302 100644
+index e3046a2..89636e4 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -922,6 +922,7 @@ typedef struct HEVCContext {
@@ -7904,7 +7904,7 @@ index 814fc3c..3526fce 100644
 2.5.0
 
 
-From d0d2aad80a05a30b2aca1d96dec3856c3a8d0ab9 Mon Sep 17 00:00:00 2001
+From 6914dc93330c6d8494712589cdaeb0927ce9118d Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 6 May 2015 15:03:37 +0100
 Subject: [PATCH 11/68] Added different signal when tail moves
@@ -7967,7 +7967,7 @@ index 378dd74..d1c3e20 100644
 2.5.0
 
 
-From dcb7e7134ab80be7971979f9893a83814d7ea962 Mon Sep 17 00:00:00 2001
+From 0f997c095dc4aa3ddc5818c8188803ade60c8c72 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 7 May 2015 08:57:11 +0100
 Subject: [PATCH 12/68] Add option to test for gpu_idle
@@ -7978,10 +7978,10 @@ Subject: [PATCH 12/68] Add option to test for gpu_idle
  2 files changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 9b3edf2..84cc636 100644
+index 7b0d951..b703200 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2514,7 +2514,6 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2516,7 +2516,6 @@ static void rpi_execute_transform(HEVCContext *s)
      //    s->hevcdsp.idct[4-2](coeffs, 16);
      //}
  
@@ -7989,7 +7989,7 @@ index 9b3edf2..84cc636 100644
      gpu_cache_flush(&s->coeffs_buf_accelerated);
      s->vpu_id = vpu_post_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[2], s->num_coeffs[2] >> 8, s->coeffs_buf_vc[3], s->num_coeffs[3] >> 10, 0, &s->coeffs_buf_accelerated);
      //vpu_execute_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[2], s->num_coeffs[2] >> 8, s->coeffs_buf_vc[3], s->num_coeffs[3] >> 10, 0);
-@@ -2656,6 +2655,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2658,6 +2657,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          if (s->enable_rpi && x_ctb + ctb_size >= s->ps.sps->width) {
              int x;
              // Transform all blocks
@@ -8038,7 +8038,7 @@ index d1c3e20..85f49db 100644
 2.5.0
 
 
-From 44d05d44ab3f81fec1ba75082ca2fe9340cb229c Mon Sep 17 00:00:00 2001
+From 3b7183a57c0936f10db7ae806db01ff6c977e095 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 7 May 2015 11:01:35 +0100
 Subject: [PATCH 13/68] Added deblocking pass
@@ -8051,10 +8051,10 @@ Subject: [PATCH 13/68] Added deblocking pass
  4 files changed, 39 insertions(+), 9 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 84cc636..57b0b63 100644
+index b703200..c12693b 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2505,6 +2505,17 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
+@@ -2507,6 +2507,17 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
  }
  
  #ifdef RPI
@@ -8072,7 +8072,7 @@ index 84cc636..57b0b63 100644
  static void rpi_execute_transform(HEVCContext *s)
  {
      int i=2;
-@@ -2618,7 +2629,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2620,7 +2631,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      int ctb_addr_ts = s->ps.pps->ctb_addr_rs_to_ts[s->sh.slice_ctb_addr_rs];
  
  #ifdef RPI
@@ -8080,7 +8080,7 @@ index 84cc636..57b0b63 100644
      s->enable_rpi = 1; // TODO this should depend on cross component and frame width etc.
  #endif
  
-@@ -2652,7 +2662,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2654,7 +2664,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
  #ifdef RPI
@@ -8092,7 +8092,7 @@ index 84cc636..57b0b63 100644
              int x;
              // Transform all blocks
              //printf("%d %d %d : %d %d %d %d\n",s->poc, x_ctb, y_ctb, s->num_pred_cmds,s->num_mv_cmds,s->num_coeffs[2] >> 8,s->num_coeffs[3] >> 10);
-@@ -2665,10 +2678,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2667,10 +2680,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
              // Perform intra prediction and residual reconstruction
              rpi_execute_pred_cmds(s);
              // Perform deblocking for CTBs in this row
@@ -8105,7 +8105,7 @@ index 84cc636..57b0b63 100644
          }
  #endif
          if (more_data < 0) {
-@@ -2686,6 +2697,16 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2688,6 +2699,16 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          ff_hevc_hls_filters(s, x_ctb, y_ctb, ctb_size);
      }
  
@@ -8123,7 +8123,7 @@ index 84cc636..57b0b63 100644
          y_ctb + ctb_size >= s->ps.sps->height)
          ff_hevc_hls_filter(s, x_ctb, y_ctb, ctb_size);
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index d5d3302..0b4c175 100644
+index 89636e4..1fcf8b9 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -834,6 +834,8 @@ typedef struct HEVCLocalContext {
@@ -8193,7 +8193,7 @@ index 85f49db..3b6dae7 100644
 2.5.0
 
 
-From c4e1242d732ea2a14ce7cee5fb36e79bd2d8db35 Mon Sep 17 00:00:00 2001
+From 2e30016cc84d7b30f26bdeb1fbed69c3f495cded Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 7 May 2015 16:47:47 +0100
 Subject: [PATCH 14/68] Added option to disable deblocking for non-ref frames
@@ -8234,7 +8234,7 @@ index ea0af91..2cdd621 100644
 2.5.0
 
 
-From 8b2f1cd9b31d0c1ded0b00d4106b18897c1450e5 Mon Sep 17 00:00:00 2001
+From f5895e368e97fbd1ec04501b4be89a20f5cc5f29 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 11 May 2015 10:00:27 +0100
 Subject: [PATCH 15/68] Moved buffers to VPU memory
@@ -8284,7 +8284,7 @@ index 2cdd621..e1b32d4 100644
      }
  }
 diff --git a/libavcodec/utils.c b/libavcodec/utils.c
-index 892ddb9..df750a8 100644
+index f532824..b32047a 100644
 --- a/libavcodec/utils.c
 +++ b/libavcodec/utils.c
 @@ -26,6 +26,12 @@
@@ -8300,7 +8300,7 @@ index 892ddb9..df750a8 100644
  #include "libavutil/atomic.h"
  #include "libavutil/attributes.h"
  #include "libavutil/avassert.h"
-@@ -70,6 +76,10 @@
+@@ -63,6 +69,10 @@
  #include "libavutil/ffversion.h"
  const char av_codec_ffversion[] = "FFmpeg version " FFMPEG_VERSION;
  
@@ -8311,7 +8311,7 @@ index 892ddb9..df750a8 100644
  #if HAVE_PTHREADS || HAVE_W32THREADS || HAVE_OS2THREADS
  static int default_lockmgr_cb(void **arg, enum AVLockOp op)
  {
-@@ -505,6 +515,47 @@ int avcodec_fill_audio_frame(AVFrame *frame, int nb_channels,
+@@ -500,6 +510,47 @@ int avcodec_fill_audio_frame(AVFrame *frame, int nb_channels,
      return ret;
  }
  
@@ -8359,9 +8359,9 @@ index 892ddb9..df750a8 100644
  static int update_frame_pool(AVCodecContext *avctx, AVFrame *frame)
  {
      FramePool *pool = avctx->internal->pool;
-@@ -549,6 +600,14 @@ static int update_frame_pool(AVCodecContext *avctx, AVFrame *frame)
+@@ -547,6 +598,14 @@ static int update_frame_pool(AVCodecContext *avctx, AVFrame *frame)
              av_buffer_pool_uninit(&pool->pools[i]);
-             pool->linesize[i] = picture.linesize[i];
+             pool->linesize[i] = linesize[i];
              if (size[i]) {
 +#ifdef RPI_GPU_BUFFERS
 +                if (avctx->codec_id == AV_CODEC_ID_HEVC)
@@ -8406,7 +8406,7 @@ index b4399fd..0489002 100644
 2.5.0
 
 
-From a51c8db9d5ed7d90ad83d7791dd8924911a88bd7 Mon Sep 17 00:00:00 2001
+From 969972796afe03290f6c2dd3251bce367b4c6847 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 11 May 2015 14:04:37 +0100
 Subject: [PATCH 16/68] Prepared QPU execute code
@@ -8420,11 +8420,11 @@ Subject: [PATCH 16/68] Prepared QPU execute code
  5 files changed, 276 insertions(+), 37 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 57b0b63..d055b47 100644
+index c12693b..3b10ea0 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -40,17 +40,45 @@
- #include "hevc.h"
+@@ -42,17 +42,45 @@
+ #include "profiles.h"
  
  #ifdef RPI
 -#include "rpi_qpu.h"
@@ -8474,7 +8474,7 @@ index 57b0b63..d055b47 100644
  /**
   * NOTE: Each function hls_foo correspond to the function foo in the
   * specification (HLS stands for High Level Syntax).
-@@ -64,6 +92,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -66,6 +94,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  static void pic_arrays_free(HEVCContext *s)
  {
  #ifdef RPI
@@ -8482,7 +8482,7 @@ index 57b0b63..d055b47 100644
  #ifdef EARLY_MALLOC
  #else
      printf("pic_arrays_free\n");
-@@ -1969,6 +1998,43 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -1971,6 +2000,43 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                      s->sh.luma_offset_l0[current_mv.ref_idx[0]]);
  
          if (s->ps.sps->chroma_format_idc) {
@@ -8526,7 +8526,7 @@ index 57b0b63..d055b47 100644
              RPI_REDIRECT(chroma_mc_uni)(s, dst1, s->frame->linesize[1], ref0->frame->data[1], ref0->frame->linesize[1],
                            0, x0_c, y0_c, nPbW_c, nPbH_c, &current_mv,
                            s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]);
-@@ -2619,6 +2685,54 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
+@@ -2621,6 +2687,54 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
  
  #endif
  
@@ -8581,7 +8581,7 @@ index 57b0b63..d055b47 100644
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  {
      HEVCContext *s  = avctxt->priv_data;
-@@ -2645,6 +2759,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2647,6 +2761,10 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          }
      }
  
@@ -8592,7 +8592,7 @@ index 57b0b63..d055b47 100644
      while (more_data && ctb_addr_ts < s->ps.sps->ctb_size) {
          int ctb_addr_rs = s->ps.pps->ctb_addr_ts_to_rs[ctb_addr_ts];
  
-@@ -2666,19 +2784,30 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2668,19 +2786,30 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
            s->dblk_cmds[s->num_dblk_cmds][0] = x_ctb;
            s->dblk_cmds[s->num_dblk_cmds++][1] = y_ctb;
            if ( (((y_ctb + ctb_size)&63) == 0) && x_ctb + ctb_size >= s->ps.sps->width) {
@@ -8625,7 +8625,7 @@ index 57b0b63..d055b47 100644
            }
          }
  #endif
-@@ -2699,6 +2828,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2701,6 +2830,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  
  #ifdef RPI
      if (s->enable_rpi && s->num_dblk_cmds) {
@@ -8635,7 +8635,7 @@ index 57b0b63..d055b47 100644
          rpi_execute_transform(s);
          rpi_execute_inter_cmds(s);
          vpu_wait(s->vpu_id);
-@@ -3374,6 +3506,14 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3440,6 +3572,14 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      av_freep(&s->unif_xfm_cmds);
      av_freep(&s->univ_pred_cmds);
  
@@ -8650,7 +8650,7 @@ index 57b0b63..d055b47 100644
  #ifdef EARLY_MALLOC
      printf("hevc_decode_free\n");
      if (s->coeffs_buf_arm[0]) {
-@@ -3469,34 +3609,59 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3535,34 +3675,59 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      if (!s->univ_pred_cmds)
          goto fail;
  
@@ -8735,7 +8735,7 @@ index 57b0b63..d055b47 100644
  
      s->enable_rpi = 0;
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 0b4c175..8923a25 100644
+index 1fcf8b9..a19d3ab 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -41,7 +41,11 @@
@@ -8910,7 +8910,7 @@ index 3526fce..2b22d98 100644
 2.5.0
 
 
-From 5fc9797992781c83747eadba05b8092cd85ebba7 Mon Sep 17 00:00:00 2001
+From 90df0cacf3bed37328d465a925e446c7d3e9583b Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 13 May 2015 11:47:23 +0100
 Subject: [PATCH 17/68] Drafted chroma interpolation on QPUs
@@ -8926,10 +8926,10 @@ Subject: [PATCH 17/68] Drafted chroma interpolation on QPUs
  7 files changed, 149 insertions(+), 50 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index d055b47..7897fdd 100644
+index 3b10ea0..a5e1524 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -58,11 +58,11 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -60,11 +60,11 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  // The QPU code for UV blocks only works up to a block width of 8
  #define RPI_CHROMA_BLOCK_WIDTH 8
  
@@ -8943,7 +8943,7 @@ index d055b47..7897fdd 100644
          { ENCODE_COEFFS(  0,  0, -2,  58), ENCODE_COEFFS(  10,  -2,  0,  0 ) },
          { ENCODE_COEFFS(  0,  0, -4,  54), ENCODE_COEFFS(  16,  -2,  0,  0 ) },
          { ENCODE_COEFFS(  0,  0, -6,  46), ENCODE_COEFFS(  28,  -4,  0,  0 ) },
-@@ -2716,6 +2716,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2718,6 +2718,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
      for(k=0;k<8;k++) {
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+3] = qpu_get_fn(QPU_MC_SETUP); // A dummy texture location (maps to our code) - this is needed as the texture requests are pipelined
@@ -8952,7 +8952,7 @@ index d055b47..7897fdd 100644
  
      s->u_mvs[8-1][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_INTERRUPT_EXIT8); // This QPU will signal interrupt when all others are done and have acquired a semaphore
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 8923a25..a0d4631 100644
+index a19d3ab..40470f5 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -44,7 +44,7 @@
@@ -9275,7 +9275,7 @@ index 6851e83..02fdcb2 100644
 2.5.0
 
 
-From 41380ff18142eef6a80ffae43f0c3d810c9384d8 Mon Sep 17 00:00:00 2001
+From 552770488305e7574028fe760aa16d00c1020afa Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 13 May 2015 13:54:11 +0100
 Subject: [PATCH 18/68] Fixed chroma inter prediction
@@ -9289,10 +9289,10 @@ Subject: [PATCH 18/68] Fixed chroma inter prediction
  5 files changed, 617 insertions(+), 609 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 7897fdd..bcc831e 100644
+index a5e1524..d4d272a 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -55,9 +55,11 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -57,9 +57,11 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  #ifdef RPI_INTER_QPU
  
  #define RPI_CHROMA_COMMAND_WORDS 12
@@ -9304,7 +9304,7 @@ index 7897fdd..bcc831e 100644
  #define ENCODE_COEFFS(c0, c1, c2, c3) (((c0) & 0xff) | ((c1) & 0xff) << 8 | ((c2) & 0xff) << 16 | ((c3) & 0xff) << 24)
  
  // TODO Chroma only needs 4 taps
-@@ -2011,7 +2013,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2013,7 +2015,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
  
                  int x1_c = x0_c + (mv->x >> (2 + hshift));
                  int y1_c = y0_c + (mv->y >> (2 + hshift));
@@ -9314,7 +9314,7 @@ index 7897fdd..bcc831e 100644
  
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
-@@ -2717,6 +2720,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2719,6 +2722,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+3] = qpu_get_fn(QPU_MC_SETUP); // A dummy texture location (maps to our code) - this is needed as the texture requests are pipelined
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+4] = qpu_get_fn(QPU_MC_SETUP); // Also need a dummy for V
@@ -9322,7 +9322,7 @@ index 7897fdd..bcc831e 100644
      }
  
      s->u_mvs[8-1][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_INTERRUPT_EXIT8); // This QPU will signal interrupt when all others are done and have acquired a semaphore
-@@ -3617,7 +3621,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3683,7 +3687,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      // Also add space for the startup command for each stream.
  
      {
@@ -9332,7 +9332,7 @@ index 7897fdd..bcc831e 100644
          gpu_malloc_uncached( 8 * uv_commands_per_qpu * sizeof(uint32_t), &s->unif_mvs_ptr );
          s->unif_mvs = (uint32_t *) s->unif_mvs_ptr.arm; // TODO support this allocation in non EARLY_MALLOC
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index a0d4631..cae6659 100644
+index 40470f5..442516d 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -44,7 +44,7 @@
@@ -10695,7 +10695,7 @@ index 02fdcb2..4809e1d 100644
 2.5.0
 
 
-From b558abbe8e70ebb5d75988e2cd21976474a2d4eb Mon Sep 17 00:00:00 2001
+From 436c31805d8a53ace0fea63976a464c0e2d2a93c Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 13 May 2015 14:37:32 +0100
 Subject: [PATCH 19/68] Removed unused luma functions
@@ -10709,10 +10709,10 @@ Subject: [PATCH 19/68] Removed unused luma functions
  5 files changed, 396 insertions(+), 1726 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index bcc831e..3967361 100644
+index d4d272a..b4a3707 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2718,8 +2718,8 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2720,8 +2720,8 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
          return;
      for(k=0;k<8;k++) {
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
@@ -13044,7 +13044,7 @@ index 4809e1d..cd7346d 100644
 2.5.0
 
 
-From f91f17a1cce2b0f6996569ee7cccf0c9768afd87 Mon Sep 17 00:00:00 2001
+From b0d344c931394c7f734b12ab63b7067857f1a2b3 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 13 May 2015 14:54:25 +0100
 Subject: [PATCH 20/68] Moved chroma P1 to QPUs
@@ -13054,10 +13054,10 @@ Subject: [PATCH 20/68] Moved chroma P1 to QPUs
  1 file changed, 38 insertions(+)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 3967361..4dad0e0 100644
+index b4a3707..4e9ac54 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2057,6 +2057,44 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2059,6 +2059,44 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                      s->sh.luma_offset_l1[current_mv.ref_idx[1]]);
  
          if (s->ps.sps->chroma_format_idc) {
@@ -13106,7 +13106,7 @@ index 3967361..4dad0e0 100644
 2.5.0
 
 
-From 36aba6ea897093f6528658e78bf4deeba7eeecd2 Mon Sep 17 00:00:00 2001
+From 9e0a56b87c843033556835e00b562a76fa806f6e Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 13 May 2015 15:13:47 +0100
 Subject: [PATCH 21/68] Added B prediction - not quite right
@@ -13119,10 +13119,10 @@ Subject: [PATCH 21/68] Added B prediction - not quite right
  4 files changed, 141 insertions(+), 79 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 4dad0e0..eee617d 100644
+index 4e9ac54..9a13fd4 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2114,6 +2114,64 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2116,6 +2116,64 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                     ref1->frame, &current_mv.mv[1], &current_mv);
  
          if (s->ps.sps->chroma_format_idc) {
@@ -13429,7 +13429,7 @@ index cd7346d..870437d2 100644
 2.5.0
 
 
-From 5dec9ecc623e90c6e14b72a34a6bffdd2a005edb Mon Sep 17 00:00:00 2001
+From 9bd4040dfa0e8146dd0a9d7ca191f98078e0d400 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 08:15:55 +0100
 Subject: [PATCH 22/68] Added flush for SAO
@@ -13440,10 +13440,10 @@ Subject: [PATCH 22/68] Added flush for SAO
  2 files changed, 27 insertions(+), 14 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index eee617d..58da57d 100644
+index 9a13fd4..96b3568 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2890,7 +2890,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2892,7 +2892,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
              rpi_execute_inter_qpu(s);
  #endif
              // Transform all blocks
@@ -13525,7 +13525,7 @@ index 9b6e26d..92a8271 100644
 2.5.0
 
 
-From 015b41d06a02e23c7937f6c91c4270b2bc2e48c9 Mon Sep 17 00:00:00 2001
+From d9e8153a94d637578cd0cdb6a0b737957abb8b8f Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 09:17:28 +0100
 Subject: [PATCH 23/68] Stopped using acceleration in unsupported cases
@@ -13536,10 +13536,10 @@ Subject: [PATCH 23/68] Stopped using acceleration in unsupported cases
  2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 58da57d..c59ee63 100644
+index 96b3568..b9ae06a 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -1139,15 +1139,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1141,15 +1141,11 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                          for (i = 0; i < (size * size); i++) {
                              coeffs[i] = ((lc->tu.res_scale_val * coeffs_y[i]) >> 3);
                          }
@@ -13555,7 +13555,7 @@ index 58da57d..c59ee63 100644
                  hls_cross_component_pred(s, 1);
              }
              for (i = 0; i < (s->ps.sps->chroma_format_idc == 2 ? 2 : 1); i++) {
-@@ -1176,8 +1172,6 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
+@@ -1178,8 +1174,6 @@ static int hls_transform_unit(HEVCContext *s, int x0, int y0,
                          for (i = 0; i < (size * size); i++) {
                              coeffs[i] = ((lc->tu.res_scale_val * coeffs_y[i]) >> 3);
                          }
@@ -13564,7 +13564,7 @@ index 58da57d..c59ee63 100644
                          s->hevcdsp.transform_add[log2_trafo_size_c-2](dst, coeffs, stride);
                      }
              }
-@@ -2844,7 +2838,13 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2846,7 +2840,13 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      int ctb_addr_ts = s->ps.pps->ctb_addr_rs_to_ts[s->sh.slice_ctb_addr_rs];
  
  #ifdef RPI
@@ -13599,7 +13599,7 @@ index f28759b..ca76cb0 100644
 2.5.0
 
 
-From 3b96ec07ff377691a80df9b15de202fcff660599 Mon Sep 17 00:00:00 2001
+From 0e326aaea2fd684025bfbd676bb7fa6f08acca22 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 09:42:16 +0100
 Subject: [PATCH 24/68] Split B prediction into two passes
@@ -13615,10 +13615,10 @@ Subject: [PATCH 24/68] Split B prediction into two passes
  7 files changed, 531 insertions(+), 241 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index c59ee63..7e82602 100644
+index b9ae06a..3994f2e 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3729,6 +3729,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3795,6 +3795,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
              p += uv_commands_per_qpu;
          }
          s->mc_filter_uv = qpu_get_fn(QPU_MC_FILTER_UV);
@@ -13627,7 +13627,7 @@ index c59ee63..7e82602 100644
  
      }
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index cae6659..3511982 100644
+index 442516d..d33ab74 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -943,6 +943,7 @@ typedef struct HEVCContext {
@@ -14541,7 +14541,7 @@ index 870437d2..635b894 100644
 2.5.0
 
 
-From 6ddd4f127ca17be70a2e60a7b2ff127de89b559c Mon Sep 17 00:00:00 2001
+From 2949df95e5f5008ac156336d9089e7b3e9e67841 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 10:04:55 +0100
 Subject: [PATCH 25/68] Switch to using 16bit temp buffers
@@ -14553,10 +14553,10 @@ Subject: [PATCH 25/68] Switch to using 16bit temp buffers
  3 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 7e82602..753f85c 100644
+index 3994f2e..68cd237 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2134,7 +2134,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2136,7 +2136,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
@@ -14626,7 +14626,7 @@ index 635b894..9577121 100644
 2.5.0
 
 
-From b516e30ff4a9354497d3b6ecee77bfaeb69ca4d6 Mon Sep 17 00:00:00 2001
+From 7a3732950264ea60ac26aeca55d3ac269798d0c3 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 10:30:44 +0100
 Subject: [PATCH 26/68] Corrected B prediction: matching md5 sum for hobbit50
@@ -15603,7 +15603,7 @@ index 9577121..562dc35 100644
 2.5.0
 
 
-From 5a589f03af71ff87e50d46520ed652571357c9cc Mon Sep 17 00:00:00 2001
+From 7f612d9e21849e339ef0ad0e2e5d8a2acaad2552 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 10:55:07 +0100
 Subject: [PATCH 27/68] P prediction uses 4 tap filters
@@ -15616,10 +15616,10 @@ Subject: [PATCH 27/68] P prediction uses 4 tap filters
  4 files changed, 344 insertions(+), 390 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 753f85c..16f2200 100644
+index 68cd237..8984585 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -63,15 +63,15 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -65,15 +65,15 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  #define ENCODE_COEFFS(c0, c1, c2, c3) (((c0) & 0xff) | ((c1) & 0xff) << 8 | ((c2) & 0xff) << 16 | ((c3) & 0xff) << 24)
  
  // TODO Chroma only needs 4 taps
@@ -15644,7 +15644,7 @@ index 753f85c..16f2200 100644
  };
  
  static uint32_t get_vc_address(AVBufferRef *bref) {
-@@ -2014,16 +2014,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2016,16 +2016,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
@@ -15665,7 +15665,7 @@ index 753f85c..16f2200 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2071,16 +2071,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2073,16 +2073,16 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
@@ -15686,7 +15686,7 @@ index 753f85c..16f2200 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2135,29 +2135,29 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2137,29 +2137,29 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b0;
@@ -16497,7 +16497,7 @@ index 562dc35..8e4f18f 100644
 2.5.0
 
 
-From b267b33e74268586aacdcc31ca02c35aba69a230 Mon Sep 17 00:00:00 2001
+From b7f5bb6522a31aeb9e69f18f3b5cc9c73636685c Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:03:51 +0100
 Subject: [PATCH 28/68] Optimised B0 pass
@@ -17067,7 +17067,7 @@ index 8e4f18f..faa5755 100644
 2.5.0
 
 
-From 7941c95bd5e968d6e1ea0462cb27c475aa4ee5e1 Mon Sep 17 00:00:00 2001
+From 6e69afcdf13d39d3f108824ae4496df799f7a6bd Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:12:43 +0100
 Subject: [PATCH 29/68] Optimised B pass
@@ -17412,7 +17412,7 @@ index faa5755..f38c926 100644
 2.5.0
 
 
-From 3c9637fbe9311db205c5e3a1ab178771dab22856 Mon Sep 17 00:00:00 2001
+From 75ce019e80ff7f2234d56949c191413ab1d9ad7e Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:17:09 +0100
 Subject: [PATCH 30/68] Used P delay slots more efficiently
@@ -17946,7 +17946,7 @@ index f38c926..02e95dd 100644
 2.5.0
 
 
-From 07f733af90de9d5823f62c0b7276bb1c7187ec6f Mon Sep 17 00:00:00 2001
+From a92dda80bf8043b39fa85752d9a9592e90370d77 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:22:25 +0100
 Subject: [PATCH 31/68] Improved use of delay slots
@@ -18580,7 +18580,7 @@ index 02e95dd..10f5113 100644
 2.5.0
 
 
-From 29956c5549eb94e418c42e838d0bfceeb95730b0 Mon Sep 17 00:00:00 2001
+From 70bf426922557224722d0b6c3ca5d688b4e91f00 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:31:23 +0100
 Subject: [PATCH 32/68] Avoid writeback of first B results
@@ -18892,7 +18892,7 @@ index 10f5113..e138c95 100644
 2.5.0
 
 
-From c184ce179f16ca497ed003805193651fa3b30817 Mon Sep 17 00:00:00 2001
+From fb7061693c79444c178f700799776ffd736f3561 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 14 May 2015 11:36:24 +0100
 Subject: [PATCH 33/68] Cutdown size of chroma prediction commands
@@ -18905,10 +18905,10 @@ Subject: [PATCH 33/68] Cutdown size of chroma prediction commands
  4 files changed, 281 insertions(+), 302 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 16f2200..da81a54 100644
+index 8984585..c65af74 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -54,7 +54,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -56,7 +56,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  
  #ifdef RPI_INTER_QPU
  
@@ -18917,7 +18917,7 @@ index 16f2200..da81a54 100644
  #define UV_COMMANDS_PER_QPU ((1 + (256*64*2)/(4*4)) * RPI_CHROMA_COMMAND_WORDS)
  // The QPU code for UV blocks only works up to a block width of 8
  #define RPI_CHROMA_BLOCK_WIDTH 8
-@@ -2019,11 +2019,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2021,11 +2021,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[1]);
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[2]);
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
@@ -18929,7 +18929,7 @@ index 16f2200..da81a54 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2078,9 +2075,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2080,9 +2077,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
                        // TODO chroma weight and offset... s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]
                        *u++ = rpi_filter_coefs[_mx][0];
@@ -18939,7 +18939,7 @@ index 16f2200..da81a54 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2141,11 +2136,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2143,11 +2138,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref0->frame->buf[2]);
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
                        *u++ = rpi_filter_coefs[_mx][0];
@@ -18952,7 +18952,7 @@ index 16f2200..da81a54 100644
  
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = x2_c - 1 + start_x;
-@@ -2153,11 +2145,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2155,11 +2147,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[1]);
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[2]);
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
@@ -18964,7 +18964,7 @@ index 16f2200..da81a54 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2795,7 +2784,7 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2797,7 +2786,7 @@ static void rpi_inter_clear(HEVCContext *s)
          *s->u_mvs[i]++ = pic_height;
          *s->u_mvs[i]++ = s->frame->linesize[1];
          *s->u_mvs[i]++ = s->frame->linesize[2];
@@ -19616,7 +19616,7 @@ index e138c95..d9ffcda 100644
 2.5.0
 
 
-From 5edce4e2a69b82aceb72f331737b5b00bf3af912 Mon Sep 17 00:00:00 2001
+From 87ea97549920ec537d6bb03b6848be12b7b4e252 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 14 May 2015 15:21:49 +0100
 Subject: [PATCH 34/68] hevc: don't redirect when not rpi_enabled
@@ -19626,10 +19626,10 @@ Subject: [PATCH 34/68] hevc: don't redirect when not rpi_enabled
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index da81a54..60b3d97 100644
+index c65af74..e2f8a87 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -1455,7 +1455,7 @@ static int hls_pcm_sample(HEVCContext *s, int x0, int y0, int log2_cb_size)
+@@ -1457,7 +1457,7 @@ static int hls_pcm_sample(HEVCContext *s, int x0, int y0, int log2_cb_size)
   */
  
  #ifdef RPI_INTER
@@ -19642,7 +19642,7 @@ index da81a54..60b3d97 100644
 2.5.0
 
 
-From 86652e6a111a593a8c14c8eecaa7e26a068febcf Mon Sep 17 00:00:00 2001
+From d922347fd57c0320b6c6983a6c0b7c3200dae393 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 14 May 2015 15:22:02 +0100
 Subject: [PATCH 35/68] Use /dev/vcio for mailbox access
@@ -19668,7 +19668,7 @@ index 536896f..77a56dd 100644
 2.5.0
 
 
-From 05eb83c2f257c17a02abc01a6be6ae9df2d8e653 Mon Sep 17 00:00:00 2001
+From 70688cd4e7a3bb073fe32a1dbdded4c4dfee3a42 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 14 May 2015 15:25:25 +0100
 Subject: [PATCH 36/68] Use vcsm for all memory allocations
@@ -19976,7 +19976,7 @@ index 60bf079..f62051f 100644
 2.5.0
 
 
-From 72b441dc9a9965ce3e5812be87081ffae1e166de Mon Sep 17 00:00:00 2001
+From a98ba0c30ea93bdf25308e679ed5a38f09b63f9d Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 14 May 2015 15:43:17 +0100
 Subject: [PATCH 37/68] Enable EARLY_MALLOC and fix sps access bug
@@ -19986,10 +19986,10 @@ Subject: [PATCH 37/68] Enable EARLY_MALLOC and fix sps access bug
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 60b3d97..eee22eb 100644
+index e2f8a87..61f6dfb 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -42,7 +42,7 @@
+@@ -44,7 +44,7 @@
  #ifdef RPI
    #include "rpi_qpu.h"
    // For some unknown reason, the code seems to crash if I do a late malloc
@@ -19998,7 +19998,7 @@ index 60b3d97..eee22eb 100644
    // Move Inter prediction into separate pass
    #define RPI_INTER
  #endif
-@@ -147,7 +147,8 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -149,7 +149,8 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
  #ifdef RPI
  #ifdef EARLY_MALLOC
  #else
@@ -20012,7 +20012,7 @@ index 60b3d97..eee22eb 100644
 2.5.0
 
 
-From 6a0001e44872f9333caf6c6e7e5046cd56a3a21a Mon Sep 17 00:00:00 2001
+From 3e7256195852455e030586a1945cccc3fc7eb44a Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 14 May 2015 16:40:51 +0100
 Subject: [PATCH 38/68] Add copy of av_mod_uintp2 for use with stable ffmpeg
@@ -20022,10 +20022,10 @@ Subject: [PATCH 38/68] Add copy of av_mod_uintp2 for use with stable ffmpeg
  1 file changed, 8 insertions(+)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index eee22eb..cfdf6c2 100644
+index 61f6dfb..d27c7f3 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -49,6 +49,14 @@
+@@ -51,6 +51,14 @@
  
  // #define DISABLE_MC
  
@@ -20044,7 +20044,7 @@ index eee22eb..cfdf6c2 100644
 2.5.0
 
 
-From 6fbc046c87e413d38c789e82f73dfece27a64ff4 Mon Sep 17 00:00:00 2001
+From ba9624fdc6073af3392753925bcb712dba984be8 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 18 May 2015 11:11:02 +0100
 Subject: [PATCH 39/68] Added support for weighted prediction in P frames
@@ -20057,10 +20057,10 @@ Subject: [PATCH 39/68] Added support for weighted prediction in P frames
  4 files changed, 384 insertions(+), 285 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index cfdf6c2..0906ac2 100644
+index d27c7f3..98f8461 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -62,7 +62,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -64,7 +64,7 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  
  #ifdef RPI_INTER_QPU
  
@@ -20069,7 +20069,7 @@ index cfdf6c2..0906ac2 100644
  #define UV_COMMANDS_PER_QPU ((1 + (256*64*2)/(4*4)) * RPI_CHROMA_COMMAND_WORDS)
  // The QPU code for UV blocks only works up to a block width of 8
  #define RPI_CHROMA_BLOCK_WIDTH 8
-@@ -2018,6 +2018,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2020,6 +2020,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  int y1_c = y0_c + (mv->y >> (2 + hshift));
                  //int chan = x0>>8; // Allocate commands for the first 256 luma pixels across to the first QPU.  This is optimised for images around 1920 width
                  int chan = x0>>8;
@@ -20078,7 +20078,7 @@ index cfdf6c2..0906ac2 100644
  
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
-@@ -2030,6 +2032,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2032,6 +2034,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
@@ -20092,7 +20092,7 @@ index cfdf6c2..0906ac2 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2072,6 +2081,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2074,6 +2083,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  int y1_c = y0_c + (mv->y >> (2 + hshift));
                  //int chan = x0>>8; // Allocate commands for the first 256 luma pixels across to the first QPU.  This is optimised for images around 1920 width
                  int chan = x0>>8;
@@ -20101,7 +20101,7 @@ index cfdf6c2..0906ac2 100644
  
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
-@@ -2085,6 +2096,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2087,6 +2098,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        // TODO chroma weight and offset... s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
@@ -20115,7 +20115,7 @@ index cfdf6c2..0906ac2 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2146,6 +2164,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2148,6 +2166,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
@@ -20123,7 +20123,7 @@ index cfdf6c2..0906ac2 100644
                        u+=2; // Intermediate results are not written back in first pass of B filtering
  
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b;
-@@ -2156,6 +2175,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2158,6 +2177,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = ( (nPbW_c<RPI_CHROMA_BLOCK_WIDTH ? nPbW_c : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (nPbH_c<16 ? nPbH_c : 16);
                        *u++ = rpi_filter_coefs[_mx2][0];
                        *u++ = rpi_filter_coefs[_my2][0];
@@ -20131,7 +20131,7 @@ index cfdf6c2..0906ac2 100644
                        *u++ = (get_vc_address(s->frame->buf[1]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[1]);
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
-@@ -2782,6 +2802,9 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2784,6 +2804,9 @@ static void rpi_inter_clear(HEVCContext *s)
      int i;
      int pic_width        = s->ps.sps->width >> s->ps.sps->hshift[1];
      int pic_height       = s->ps.sps->height >> s->ps.sps->vshift[1];
@@ -20141,7 +20141,7 @@ index cfdf6c2..0906ac2 100644
      for(i=0;i<8;i++) {
          s->u_mvs[i] = s->mvs_base[i];
          *s->u_mvs[i]++ = 0;
-@@ -2793,6 +2816,13 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2795,6 +2818,13 @@ static void rpi_inter_clear(HEVCContext *s)
          *s->u_mvs[i]++ = pic_height;
          *s->u_mvs[i]++ = s->frame->linesize[1];
          *s->u_mvs[i]++ = s->frame->linesize[2];
@@ -20155,7 +20155,7 @@ index cfdf6c2..0906ac2 100644
          s->u_mvs[i] += 1;  // Padding words
      }
  }
-@@ -2836,12 +2866,29 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2838,12 +2868,29 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      int ctb_addr_ts = s->ps.pps->ctb_addr_rs_to_ts[s->sh.slice_ctb_addr_rs];
  
  #ifdef RPI
@@ -20186,7 +20186,7 @@ index cfdf6c2..0906ac2 100644
  
  #endif
  
-@@ -2974,6 +3021,7 @@ static int hls_decode_entry_wpp(AVCodecContext *avctxt, void *input_ctb_row, int
+@@ -2976,6 +3023,7 @@ static int hls_decode_entry_wpp(AVCodecContext *avctxt, void *input_ctb_row, int
  
  #ifdef RPI
      s->enable_rpi = 0;
@@ -20902,7 +20902,7 @@ index d9ffcda..97c4c02 100644
 2.5.0
 
 
-From 21506fa30a0953a1caa467ea31f9ee2ebbdf5b79 Mon Sep 17 00:00:00 2001
+From b789dfe8032e13b13384315c6e40d59891c1d248 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 19 May 2015 08:43:30 +0100
 Subject: [PATCH 40/68] Improved ordering of tasks
@@ -20912,10 +20912,10 @@ Subject: [PATCH 40/68] Improved ordering of tasks
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 0906ac2..1cc7900 100644
+index 98f8461..01898fd 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2930,15 +2930,15 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2932,15 +2932,15 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
            s->dblk_cmds[s->num_dblk_cmds][0] = x_ctb;
            s->dblk_cmds[s->num_dblk_cmds++][1] = y_ctb;
            if ( (((y_ctb + ctb_size)&63) == 0) && x_ctb + ctb_size >= s->ps.sps->width) {
@@ -20939,7 +20939,7 @@ index 0906ac2..1cc7900 100644
 2.5.0
 
 
-From c0437176b4799453c7731e8372c622c03d65db1b Mon Sep 17 00:00:00 2001
+From 005310ce2e038c9d9d8d6761b11718d218983975 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 20 May 2015 19:58:19 +0100
 Subject: [PATCH 41/68] Drafted Luma inter prediction
@@ -21706,7 +21706,7 @@ index 97c4c02..9cfc0d9 100644
 2.5.0
 
 
-From 3a5492970d13bf5ffe94898d59b3e882e7c8a1f5 Mon Sep 17 00:00:00 2001
+From e6e832826a1f27e07c1c9ff48e0690fe4a732dd3 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 20 May 2015 19:58:30 +0100
 Subject: [PATCH 42/68] Added support for fast cache flush in deblocker
@@ -22967,7 +22967,7 @@ index fbebbbe..95e6de1 100644
 2.5.0
 
 
-From 855a757b894c53ddeadeb94c74bd11d3b2fa1fd3 Mon Sep 17 00:00:00 2001
+From b3e42f057641ce7855d21f7c45f533df8c6c462d Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 20 May 2015 21:12:55 +0100
 Subject: [PATCH 43/68] Added multi mailbox - not working
@@ -22981,10 +22981,10 @@ Subject: [PATCH 43/68] Added multi mailbox - not working
  5 files changed, 147 insertions(+), 8 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 1cc7900..9bf0d28 100644
+index 01898fd..2ca783a 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -45,6 +45,11 @@
+@@ -47,6 +47,11 @@
    //#define EARLY_MALLOC
    // Move Inter prediction into separate pass
    #define RPI_INTER
@@ -22996,7 +22996,7 @@ index 1cc7900..9bf0d28 100644
  #endif
  
  // #define DISABLE_MC
-@@ -2830,10 +2835,14 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2832,10 +2837,14 @@ static void rpi_inter_clear(HEVCContext *s)
  static void rpi_execute_inter_qpu(HEVCContext *s)
  {
      int k;
@@ -23014,7 +23014,7 @@ index 1cc7900..9bf0d28 100644
      for(k=0;k<8;k++) {
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+3] = qpu_get_fn(QPU_MC_SETUP_UV); // A dummy texture location (maps to our code) - this is needed as the texture requests are pipelined
-@@ -2843,6 +2852,22 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2845,6 +2854,22 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  
      s->u_mvs[8-1][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_INTERRUPT_EXIT8); // This QPU will signal interrupt when all others are done and have acquired a semaphore
  
@@ -23037,7 +23037,7 @@ index 1cc7900..9bf0d28 100644
      qpu_run_shader8(qpu_get_fn(QPU_MC_SETUP_UV),
        (uint32_t)(unif_vc+(s->mvs_base[0 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
        (uint32_t)(unif_vc+(s->mvs_base[1 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
-@@ -2853,6 +2878,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2855,6 +2880,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
        (uint32_t)(unif_vc+(s->mvs_base[6 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
        (uint32_t)(unif_vc+(s->mvs_base[7 ] - (uint32_t*)s->unif_mvs_ptr.arm))
        );
@@ -23045,7 +23045,7 @@ index 1cc7900..9bf0d28 100644
  }
  #endif
  
-@@ -2932,6 +2958,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2934,6 +2960,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
            if ( (((y_ctb + ctb_size)&63) == 0) && x_ctb + ctb_size >= s->ps.sps->width) {
              // Transform all blocks
              // printf("%d %d %d : %d %d %d %d\n",s->poc, x_ctb, y_ctb, s->num_pred_cmds,s->num_mv_cmds,s->num_coeffs[2] >> 8,s->num_coeffs[3] >> 10);
@@ -23058,7 +23058,7 @@ index 1cc7900..9bf0d28 100644
              rpi_execute_transform(s);
              // Perform inter prediction
              rpi_execute_inter_cmds(s);
-@@ -2939,6 +2971,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -2941,6 +2973,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
              // Kick off inter prediction on QPUs
              rpi_execute_inter_qpu(s);
  #endif
@@ -23261,7 +23261,7 @@ index 88965e5..2f08f03 100644
 2.5.0
 
 
-From e576989224bf22d2b945e9ded8b27bafe1bd5417 Mon Sep 17 00:00:00 2001
+From 71b8a1d77652d1cc298df2a1441ef3c913c2926b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 21 May 2015 16:50:02 +0100
 Subject: [PATCH 44/68] Pass qpu number in as uniform
@@ -23274,10 +23274,10 @@ Subject: [PATCH 44/68] Pass qpu number in as uniform
  4 files changed, 657 insertions(+), 663 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 9bf0d28..25e1cbd 100644
+index 2ca783a..9605459 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -2821,6 +2821,7 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2823,6 +2823,7 @@ static void rpi_inter_clear(HEVCContext *s)
          *s->u_mvs[i]++ = pic_height;
          *s->u_mvs[i]++ = s->frame->linesize[1];
          *s->u_mvs[i]++ = s->frame->linesize[2];
@@ -23285,7 +23285,7 @@ index 9bf0d28..25e1cbd 100644
          if (weight_flag) {
              *s->u_mvs[i]++ = 1 << (s->sh.chroma_log2_weight_denom + 6 - 1);
              *s->u_mvs[i]++ = s->sh.chroma_log2_weight_denom + 6;
-@@ -2828,7 +2829,6 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2830,7 +2831,6 @@ static void rpi_inter_clear(HEVCContext *s)
              *s->u_mvs[i]++ = 1 << 5;
              *s->u_mvs[i]++ = 6;
          }
@@ -24700,7 +24700,7 @@ index 9cfc0d9..a0b8e5a 100644
 2.5.0
 
 
-From 2372b3e0797cfce130103357085d21baecb0d5a8 Mon Sep 17 00:00:00 2001
+From f9771d28dc02023eb3d051fb9104b6e051f0a58b Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 23 May 2015 13:20:21 +0100
 Subject: [PATCH 45/68] Add new cache flushing routine
@@ -24714,10 +24714,10 @@ Subject: [PATCH 45/68] Add new cache flushing routine
  5 files changed, 91 insertions(+), 61 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 25e1cbd..31bbf67 100644
+index 9605459..52293bf 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3498,9 +3498,13 @@ static int decode_nal_units(HEVCContext *s, const uint8_t *buf, int length)
+@@ -3564,9 +3564,13 @@ static int decode_nal_units(HEVCContext *s, const uint8_t *buf, int length)
      }
  
  fail:
@@ -24955,7 +24955,7 @@ index 95e6de1..db41a4d 100644
 2.5.0
 
 
-From 7ddf50b155ce8417e8b27735098b3651567f07e5 Mon Sep 17 00:00:00 2001
+From b91ec9a8437e65c59dddf323de875e62ee227403 Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Sat, 23 May 2015 21:10:10 +0100
 Subject: [PATCH 46/68] Fix multi mailbox extra transform call
@@ -24965,10 +24965,10 @@ Subject: [PATCH 46/68] Fix multi mailbox extra transform call
  1 file changed, 2 insertions(+)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 31bbf67..f479707 100644
+index 52293bf..fa6d788 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3011,7 +3011,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3013,7 +3013,9 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI_INTER_QPU
          rpi_execute_inter_qpu(s);
  #endif
@@ -24982,7 +24982,7 @@ index 31bbf67..f479707 100644
 2.5.0
 
 
-From 9d16a24e225841b0ba09006edcd052ac2ccaf335 Mon Sep 17 00:00:00 2001
+From 03bbcfdda2db59b9603018b1cf0ca340d9ffc088 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 27 May 2015 16:44:29 +0100
 Subject: [PATCH 47/68] Added support for running luma prediction on QPUs
@@ -24999,10 +24999,10 @@ Subject: [PATCH 47/68] Added support for running luma prediction on QPUs
  8 files changed, 1464 insertions(+), 1203 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index f479707..c6b619b 100644
+index fa6d788..11b9e60 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -50,6 +50,11 @@
+@@ -52,6 +52,11 @@
      // Define RPI_MULTI_MAILBOX to use the updated mailbox that can launch both QPU and VPU
      #define RPI_MULTI_MAILBOX
    #endif
@@ -25014,7 +25014,7 @@ index f479707..c6b619b 100644
  #endif
  
  // #define DISABLE_MC
-@@ -72,6 +77,13 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -74,6 +79,13 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  // The QPU code for UV blocks only works up to a block width of 8
  #define RPI_CHROMA_BLOCK_WIDTH 8
  
@@ -25028,7 +25028,7 @@ index f479707..c6b619b 100644
  
  #define ENCODE_COEFFS(c0, c1, c2, c3) (((c0) & 0xff) | ((c1) & 0xff) << 8 | ((c2) & 0xff) << 16 | ((c3) & 0xff) << 24)
  
-@@ -2002,10 +2014,46 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2004,10 +2016,46 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -25076,7 +25076,7 @@ index f479707..c6b619b 100644
  
          if (s->ps.sps->chroma_format_idc) {
  #ifdef RPI_INTER_QPU
-@@ -2065,10 +2113,47 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2067,10 +2115,47 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -25125,7 +25125,7 @@ index f479707..c6b619b 100644
  
          if (s->ps.sps->chroma_format_idc) {
  #ifdef RPI_INTER_QPU
-@@ -2102,8 +2187,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2104,8 +2189,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
                        if (weight_flag) {
@@ -25136,7 +25136,7 @@ index f479707..c6b619b 100644
                        } else {
                            *u++ = 1; // Weight of 1 and offset of 0
                            *u++ = 1;
-@@ -2130,9 +2215,44 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2132,9 +2217,44 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
          int nPbW_c = nPbW >> s->ps.sps->hshift[1];
          int nPbH_c = nPbH >> s->ps.sps->vshift[1];
  
@@ -25182,7 +25182,7 @@ index f479707..c6b619b 100644
  
          if (s->ps.sps->chroma_format_idc) {
  #ifdef RPI_INTER_QPU
-@@ -2821,7 +2941,6 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2823,7 +2943,6 @@ static void rpi_inter_clear(HEVCContext *s)
          *s->u_mvs[i]++ = pic_height;
          *s->u_mvs[i]++ = s->frame->linesize[1];
          *s->u_mvs[i]++ = s->frame->linesize[2];
@@ -25190,7 +25190,7 @@ index f479707..c6b619b 100644
          if (weight_flag) {
              *s->u_mvs[i]++ = 1 << (s->sh.chroma_log2_weight_denom + 6 - 1);
              *s->u_mvs[i]++ = s->sh.chroma_log2_weight_denom + 6;
-@@ -2829,7 +2948,31 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2831,7 +2950,31 @@ static void rpi_inter_clear(HEVCContext *s)
              *s->u_mvs[i]++ = 1 << 5;
              *s->u_mvs[i]++ = 6;
          }
@@ -25222,7 +25222,7 @@ index f479707..c6b619b 100644
  }
  
  static void rpi_execute_inter_qpu(HEVCContext *s)
-@@ -2837,6 +2980,9 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2839,6 +2982,9 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
      int k;
      int i;
      uint32_t *unif_vc = (uint32_t *)s->unif_mvs_ptr.vc;
@@ -25232,7 +25232,7 @@ index f479707..c6b619b 100644
      if (s->sh.slice_type == I_SLICE) {
  #ifdef RPI_MULTI_MAILBOX
        rpi_execute_transform(s);
-@@ -2852,8 +2998,23 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2854,8 +3000,23 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  
      s->u_mvs[8-1][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_INTERRUPT_EXIT8); // This QPU will signal interrupt when all others are done and have acquired a semaphore
  
@@ -25256,7 +25256,7 @@ index f479707..c6b619b 100644
      s->vpu_id = vpu_qpu_post_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[2], s->num_coeffs[2] >> 8, s->coeffs_buf_vc[3], s->num_coeffs[3] >> 10, 0,
                                     qpu_get_fn(QPU_MC_SETUP_UV),
                                     (uint32_t)(unif_vc+(s->mvs_base[0 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
-@@ -2863,7 +3024,27 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2865,7 +3026,27 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
                                     (uint32_t)(unif_vc+(s->mvs_base[4 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
                                     (uint32_t)(unif_vc+(s->mvs_base[5 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
                                     (uint32_t)(unif_vc+(s->mvs_base[6 ] - (uint32_t*)s->unif_mvs_ptr.arm)),
@@ -25285,7 +25285,7 @@ index f479707..c6b619b 100644
                                   );
      for(i=0;i<4;i++)
          s->num_coeffs[i] = 0;
-@@ -2879,6 +3060,8 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2881,6 +3062,8 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
        (uint32_t)(unif_vc+(s->mvs_base[7 ] - (uint32_t*)s->unif_mvs_ptr.arm))
        );
  #endif
@@ -25294,7 +25294,7 @@ index f479707..c6b619b 100644
  }
  #endif
  
-@@ -3502,8 +3685,7 @@ static int decode_nal_units(HEVCContext *s, const uint8_t *buf, int length)
+@@ -3568,8 +3751,7 @@ static int decode_nal_units(HEVCContext *s, const uint8_t *buf, int length)
  fail:
      if (s->ref && s->threads_type == FF_THREAD_FRAME) {
  #ifdef RPI_INTER_QPU
@@ -25304,7 +25304,7 @@ index f479707..c6b619b 100644
  #endif
          ff_thread_report_progress(&s->ref->tf, INT_MAX, 0);
      }
-@@ -3690,7 +3872,6 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3756,7 +3938,6 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
  
  #ifdef RPI
      av_freep(&s->unif_mv_cmds);
@@ -25312,7 +25312,7 @@ index f479707..c6b619b 100644
      av_freep(&s->univ_pred_cmds);
  
  #ifdef RPI_INTER_QPU
-@@ -3699,7 +3880,12 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -3765,7 +3946,12 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
          s->unif_mvs = 0;
      }
  #endif
@@ -25326,7 +25326,7 @@ index f479707..c6b619b 100644
  
  #ifdef EARLY_MALLOC
      printf("hevc_decode_free\n");
-@@ -3789,9 +3975,6 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3855,9 +4041,6 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->unif_mv_cmds = av_mallocz(sizeof(HEVCMvCmd)*RPI_MAX_MV_CMDS);
      if (!s->unif_mv_cmds)
          goto fail;
@@ -25336,7 +25336,7 @@ index f479707..c6b619b 100644
      s->univ_pred_cmds = av_mallocz(sizeof(HEVCPredCmd)*RPI_MAX_PRED_CMDS);
      if (!s->univ_pred_cmds)
          goto fail;
-@@ -3805,7 +3988,11 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3871,7 +4054,11 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      {
          int uv_commands_per_qpu = UV_COMMANDS_PER_QPU;
          uint32_t *p;
@@ -25348,7 +25348,7 @@ index f479707..c6b619b 100644
          s->unif_mvs = (uint32_t *) s->unif_mvs_ptr.arm; // TODO support this allocation in non EARLY_MALLOC
  
          // Set up initial locations for uniform streams
-@@ -3820,6 +4007,28 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -3886,6 +4073,28 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
  
      }
  #endif
@@ -25378,7 +25378,7 @@ index f479707..c6b619b 100644
  
  #ifdef EARLY_MALLOC
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 3511982..33dedf7 100644
+index d33ab74..a3668a2 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -43,9 +43,13 @@
@@ -25440,7 +25440,7 @@ index 3511982..33dedf7 100644
  
  #endif
  
-@@ -1181,6 +1189,10 @@ void ff_hevc_hls_residual_coding(HEVCContext *s, int x0, int y0,
+@@ -1192,6 +1200,10 @@ void ff_hevc_hls_residual_coding(HEVCContext *s, int x0, int y0,
                                   int log2_trafo_size, enum ScanType scan_idx,
                                   int c_idx);
  
@@ -28301,7 +28301,7 @@ index a0b8e5a..60d1ec2 100644
 2.5.0
 
 
-From 2be17e0759404007c938bdd478e1e76445d9ecbe Mon Sep 17 00:00:00 2001
+From e5b20751b9a026e127ff0cdd8768b1d37ca5aa27 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 2 Jun 2015 10:58:25 +0100
 Subject: [PATCH 48/68] Added option to simulate QPUs
@@ -28313,10 +28313,10 @@ Subject: [PATCH 48/68] Added option to simulate QPUs
  3 files changed, 295 insertions(+), 23 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index c6b619b..7914afb 100644
+index 11b9e60..9be5276 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -54,6 +54,8 @@
+@@ -56,6 +56,8 @@
    // Define RPI_CACHE_UNIF_MVS to write motion vector uniform stream to cached memory
    // RPI_CACHE_UNIF_MVS doesn't seem to make much difference, so left undefined.
  
@@ -28325,7 +28325,7 @@ index c6b619b..7914afb 100644
  
  #endif
  
-@@ -122,7 +124,6 @@ static void pic_arrays_free(HEVCContext *s)
+@@ -124,7 +126,6 @@ static void pic_arrays_free(HEVCContext *s)
  
  #ifdef EARLY_MALLOC
  #else
@@ -28333,7 +28333,7 @@ index c6b619b..7914afb 100644
      if (s->coeffs_buf_arm[0]) {
        gpu_free(&s->coeffs_buf_default);
        s->coeffs_buf_arm[0] = 0;
-@@ -172,11 +173,9 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -174,11 +175,9 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
  #ifdef RPI
  #ifdef EARLY_MALLOC
  #else
@@ -28346,7 +28346,7 @@ index c6b619b..7914afb 100644
      gpu_malloc_cached(sizeof(int16_t) * coefs_per_row, &s->coeffs_buf_default);
      s->coeffs_buf_arm[0] = (int16_t*) s->coeffs_buf_default.arm;
      if (!s->coeffs_buf_arm[0])
-@@ -2975,6 +2974,274 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2977,6 +2976,274 @@ static void rpi_inter_clear(HEVCContext *s)
  #endif
  }
  
@@ -28621,7 +28621,7 @@ index c6b619b..7914afb 100644
  static void rpi_execute_inter_qpu(HEVCContext *s)
  {
      int k;
-@@ -2993,7 +3260,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -2995,7 +3262,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+3] = qpu_get_fn(QPU_MC_SETUP_UV); // A dummy texture location (maps to our code) - this is needed as the texture requests are pipelined
          s->u_mvs[k][-RPI_CHROMA_COMMAND_WORDS+4] = qpu_get_fn(QPU_MC_SETUP_UV); // Also need a dummy for V
@@ -28630,7 +28630,7 @@ index c6b619b..7914afb 100644
      }
  
      s->u_mvs[8-1][-RPI_CHROMA_COMMAND_WORDS] = qpu_get_fn(QPU_MC_INTERRUPT_EXIT8); // This QPU will signal interrupt when all others are done and have acquired a semaphore
-@@ -3003,11 +3270,16 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3005,11 +3272,16 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
          s->y_mvs[k][-RPI_LUMA_COMMAND_WORDS+1] = qpu_get_fn(QPU_MC_SETUP_UV); // A dummy texture location (maps to our code) - this is needed as the texture requests are pipelined
          s->y_mvs[k][-RPI_LUMA_COMMAND_WORDS+3] = qpu_get_fn(QPU_MC_SETUP_UV); // Also need a dummy for second request
          s->y_mvs[k][-RPI_LUMA_COMMAND_WORDS+8] = qpu_get_fn(QPU_MC_EXIT); // Add exit command
@@ -28648,7 +28648,7 @@ index c6b619b..7914afb 100644
  
  #ifdef RPI_MULTI_MAILBOX
  #ifdef RPI_CACHE_UNIF_MVS
-@@ -3088,7 +3360,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3090,7 +3362,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
                      && s->ps.pps->num_tile_rows <= 1 && s->ps.pps->num_tile_columns <= 1;
  #endif
  
@@ -28657,7 +28657,7 @@ index c6b619b..7914afb 100644
        if (s->ps.pps->cross_component_prediction_enabled_flag)
          printf("Cross component\n");
        if (s->ps.pps->num_tile_rows > 1 || s->ps.pps->num_tile_columns > 1)
-@@ -3097,7 +3369,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3099,7 +3371,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          printf("Weighted P slice\n");
        if (s->ps.pps->weighted_bipred_flag && s->sh.slice_type == B_SLICE)
          printf("Weighted B slice\n");
@@ -28768,7 +28768,7 @@ index 60d1ec2..0686249 100644
 2.5.0
 
 
-From 70805b593a428f11dcaf1e558214884601f6c44a Mon Sep 17 00:00:00 2001
+From 1c4e1f07dbed84272a36cd8c25cf9d40be5cfd7c Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 2 Jun 2015 13:17:50 +0100
 Subject: [PATCH 49/68] Increased motion vector memory and fixed block size
@@ -28779,10 +28779,10 @@ Subject: [PATCH 49/68] Increased motion vector memory and fixed block size
  1 file changed, 31 insertions(+), 19 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 7914afb..0d947ea 100644
+index 9be5276..c864ddb 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -81,11 +81,9 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -83,11 +83,9 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  
  // Split image of 2048 into parts 64 wide
  // So some QPUs will have 3 blocks of 64 to do, and others 2 blocks for an image 2048 wide with 32 blocks across
@@ -28796,7 +28796,7 @@ index 7914afb..0d947ea 100644
  
  #define ENCODE_COEFFS(c0, c1, c2, c3) (((c0) & 0xff) | ((c1) & 0xff) << 8 | ((c2) & 0xff) << 16 | ((c3) & 0xff) << 24)
  
-@@ -2029,11 +2027,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2031,11 +2029,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              uint32_t *y = s->y_mvs[chan % 12];
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
@@ -28811,7 +28811,7 @@ index 7914afb..0d947ea 100644
                    *y++ = my2_mx2_my_mx;
                    if (weight_flag) {
                        *y++ = (s->sh.luma_offset_l0[current_mv.ref_idx[reflist]] << 16) + (s->sh.luma_weight_l0[current_mv.ref_idx[reflist]] & 0xffff);
-@@ -2076,12 +2076,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2078,12 +2078,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
@@ -28827,7 +28827,7 @@ index 7914afb..0d947ea 100644
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
                        if (weight_flag) {
-@@ -2128,11 +2130,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2130,11 +2132,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              uint32_t *y = s->y_mvs[chan % 12];
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
@@ -28842,7 +28842,7 @@ index 7914afb..0d947ea 100644
                    *y++ = my2_mx2_my_mx;
                    if (weight_flag) {
                        *y++ = (s->sh.luma_offset_l0[current_mv.ref_idx[reflist]] << 16) + (s->sh.luma_weight_l0[current_mv.ref_idx[reflist]] & 0xffff);
-@@ -2176,12 +2180,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2178,12 +2182,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
@@ -28858,7 +28858,7 @@ index 7914afb..0d947ea 100644
                        // TODO chroma weight and offset... s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
-@@ -2233,11 +2239,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2235,11 +2241,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              uint32_t *y = s->y_mvs[chan % 12];
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=8) { // B blocks work 8 at a time
@@ -28873,7 +28873,7 @@ index 7914afb..0d947ea 100644
                    *y++ = my2_mx2_my_mx;
                    *y++ = 1; // B frame weighted prediction not supported
                    *y++ = (get_vc_address(s->frame->buf[0]) + x0 + start_x + (start_y + y0) * s->frame->linesize[0]);
-@@ -2280,12 +2288,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2282,12 +2290,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  uint32_t *u = s->u_mvs[chan & 7];
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
@@ -28889,7 +28889,7 @@ index 7914afb..0d947ea 100644
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
                        u+=2; // Weights not supported in B slices
-@@ -2296,7 +2306,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2298,7 +2308,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = y2_c - 1 + start_y;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[1]);
                        u++[-RPI_CHROMA_COMMAND_WORDS] = get_vc_address(ref1->frame->buf[2]);
@@ -28898,7 +28898,7 @@ index 7914afb..0d947ea 100644
                        *u++ = rpi_filter_coefs[_mx2][0];
                        *u++ = rpi_filter_coefs[_my2][0];
                        u+=2; // Weights not supported in B slices
-@@ -3165,14 +3175,15 @@ static void rpi_simulate_inter_chroma(HEVCContext *s,uint32_t *p)
+@@ -3167,14 +3177,15 @@ static void rpi_simulate_inter_chroma(HEVCContext *s,uint32_t *p)
  }
  
  // mc_setup(y_x, ref_y_base, y2_x2, ref_y2_base, frame_width_height, pitch, dst_pitch, offset_shift, next_kernel)
@@ -28919,7 +28919,7 @@ index 7914afb..0d947ea 100644
    uint8_t *ref_y_base;
    uint8_t *ref_y2_base;
    uint32_t frame_width_height = p[4];
-@@ -3202,13 +3213,15 @@ static void rpi_simulate_inter_luma(HEVCContext *s,uint32_t *p)
+@@ -3204,13 +3215,15 @@ static void rpi_simulate_inter_luma(HEVCContext *s,uint32_t *p)
        uint8_t *this_dst = compute_arm_addr(s,p[7],0);
        uint32_t width = width_height >> 16;
        uint32_t height = (width_height << 16) >> 16;
@@ -28936,7 +28936,7 @@ index 7914afb..0d947ea 100644
            }
            else {
              int32_t refa = filter8_luma(ref_y_base, x+x0, y+y0, pitch, my2_mx2_my_mx, 1, 0, 0, frame_width, frame_height);
-@@ -3235,7 +3248,7 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
+@@ -3237,7 +3250,7 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
    }
    for(i=0;i<12;i++)
    {
@@ -28945,7 +28945,7 @@ index 7914afb..0d947ea 100644
    }
  }
  
-@@ -3277,7 +3290,6 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3279,7 +3292,6 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  
  #ifdef RPI_SIMULATE_QPUS
      rpi_simulate_inter_qpu(s);
@@ -28957,7 +28957,7 @@ index 7914afb..0d947ea 100644
 2.5.0
 
 
-From 1bd38623db52970590df65f4a7338d924c63a781 Mon Sep 17 00:00:00 2001
+From e6447ea51d299460471d5ac7e2fb6efe374574ee Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 2 Jun 2015 14:36:54 +0100
 Subject: [PATCH 50/68] Added support for skip deblock
@@ -28969,10 +28969,10 @@ Subject: [PATCH 50/68] Added support for skip deblock
  3 files changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 0d947ea..1812801 100644
+index c864ddb..7acd243 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3384,6 +3384,11 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3386,6 +3386,11 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      }
  
  #endif
@@ -28985,7 +28985,7 @@ index 0d947ea..1812801 100644
      if (!ctb_addr_ts && s->sh.dependent_slice_segment_flag) {
          av_log(s->avctx, AV_LOG_ERROR, "Impossible initial tile.\n");
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 33dedf7..aa4d218 100644
+index a3668a2..520d16f 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -916,6 +916,8 @@ typedef struct HEVCContext {
@@ -29038,7 +29038,7 @@ index 11629e4..14a0952 100644
 2.5.0
 
 
-From 691cba7253bc997f6e8020542203c5733930d997 Mon Sep 17 00:00:00 2001
+From 0b1f5a86b7b99b237d1eae321ed4083365f4103b Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Tue, 2 Jun 2015 15:22:52 +0100
 Subject: [PATCH 51/68] Added support for skip_frame
@@ -29048,10 +29048,10 @@ Subject: [PATCH 51/68] Added support for skip_frame
  1 file changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 1812801..94ff677 100644
+index 7acd243..0324968 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3384,11 +3384,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3386,11 +3386,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      }
  
  #endif
@@ -29063,7 +29063,7 @@ index 1812801..94ff677 100644
  
      if (!ctb_addr_ts && s->sh.dependent_slice_segment_flag) {
          av_log(s->avctx, AV_LOG_ERROR, "Impossible initial tile.\n");
-@@ -3848,6 +3843,16 @@ static int decode_nal_unit(HEVCContext *s, const HEVCNAL *nal)
+@@ -3914,6 +3909,16 @@ static int decode_nal_unit(HEVCContext *s, const HEVCNAL *nal)
          if (ret < 0)
              return ret;
  
@@ -29084,7 +29084,7 @@ index 1812801..94ff677 100644
 2.5.0
 
 
-From b489872a14709b7e04285e039dff80b75823eb72 Mon Sep 17 00:00:00 2001
+From 04e23231d9f7c40c6b6d124a048fac976f302a52 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 3 Jun 2015 09:15:38 +0100
 Subject: [PATCH 52/68] Fixed cache flushing of luma when using old method
@@ -29110,7 +29110,7 @@ index 14a0952..b286bbf 100644
 2.5.0
 
 
-From 6a4811cba68b1c27326300b37e43cdbad45ec45e Mon Sep 17 00:00:00 2001
+From 26eae6b28ba1027063a48258f47d4702ccba53cc Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 3 Jun 2015 11:37:27 +0100
 Subject: [PATCH 53/68] Option to parallelise coefficient decode and inter
@@ -29124,10 +29124,10 @@ Subject: [PATCH 53/68] Option to parallelise coefficient decode and inter
  4 files changed, 522 insertions(+), 270 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 94ff677..594340a 100644
+index 0324968..6f67872 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -41,8 +41,6 @@
+@@ -43,8 +43,6 @@
  
  #ifdef RPI
    #include "rpi_qpu.h"
@@ -29136,7 +29136,7 @@ index 94ff677..594340a 100644
    // Move Inter prediction into separate pass
    #define RPI_INTER
  
-@@ -56,6 +54,21 @@
+@@ -58,6 +56,21 @@
  
    // Define RPI_SIMULATE_QPUS for debugging to run QPU code on the ARMs
    //#define RPI_SIMULATE_QPUS
@@ -29158,7 +29158,7 @@ index 94ff677..594340a 100644
  
  #endif
  
-@@ -103,6 +116,143 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
+@@ -105,6 +118,143 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
    GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
    return p->vc;
  }
@@ -29302,7 +29302,7 @@ index 94ff677..594340a 100644
  
  #endif
  
-@@ -119,19 +269,18 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
+@@ -121,19 +271,18 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
  static void pic_arrays_free(HEVCContext *s)
  {
  #ifdef RPI
@@ -29332,7 +29332,7 @@ index 94ff677..594340a 100644
      av_freep(&s->sao);
      av_freep(&s->deblock);
  
-@@ -169,24 +318,26 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -171,24 +320,26 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
      int min_pu_size      = sps->min_pu_width * sps->min_pu_height;
  
  #ifdef RPI
@@ -29374,7 +29374,7 @@ index 94ff677..594340a 100644
  #endif
  
      s->bs_width  = (width  >> 2) + 1;
-@@ -1023,7 +1174,7 @@ static void rpi_intra_pred(HEVCContext *s, int log2_trafo_size, int x0, int y0,
+@@ -1025,7 +1176,7 @@ static void rpi_intra_pred(HEVCContext *s, int log2_trafo_size, int x0, int y0,
  {
      if (s->enable_rpi) {
          HEVCLocalContext *lc = s->HEVClc;
@@ -29383,7 +29383,7 @@ index 94ff677..594340a 100644
          cmd->type = RPI_PRED_INTRA;
          cmd->size = log2_trafo_size;
          cmd->c_idx = c_idx;
-@@ -1483,7 +1634,7 @@ static void rpi_luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1485,7 +1636,7 @@ static void rpi_luma_mc_uni(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                          AVFrame *ref, const Mv *mv, int x_off, int y_off,
                          int block_w, int block_h, int luma_weight, int luma_offset)
  {
@@ -29392,7 +29392,7 @@ index 94ff677..594340a 100644
      cmd->cmd = RPI_CMD_LUMA_UNI;
      cmd->dst = dst;
      cmd->dststride = dststride;
-@@ -1502,7 +1653,7 @@ static void rpi_luma_mc_bi(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
+@@ -1504,7 +1655,7 @@ static void rpi_luma_mc_bi(HEVCContext *s, uint8_t *dst, ptrdiff_t dststride,
                         AVFrame *ref0, const Mv *mv0, int x_off, int y_off,
                         int block_w, int block_h, AVFrame *ref1, const Mv *mv1, struct MvField *current_mv)
  {
@@ -29401,7 +29401,7 @@ index 94ff677..594340a 100644
      cmd->cmd = RPI_CMD_LUMA_BI;
      cmd->dst = dst;
      cmd->dststride = dststride;
-@@ -1524,7 +1675,7 @@ static void rpi_chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
+@@ -1526,7 +1677,7 @@ static void rpi_chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
                            ptrdiff_t dststride, uint8_t *src0, ptrdiff_t srcstride, int reflist,
                            int x_off, int y_off, int block_w, int block_h, struct MvField *current_mv, int chroma_weight, int chroma_offset)
  {
@@ -29410,7 +29410,7 @@ index 94ff677..594340a 100644
      cmd->cmd = RPI_CMD_CHROMA_UNI;
      cmd->dst = dst0;
      cmd->dststride = dststride;
-@@ -1542,7 +1693,7 @@ static void rpi_chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
+@@ -1544,7 +1695,7 @@ static void rpi_chroma_mc_uni(HEVCContext *s, uint8_t *dst0,
  static void rpi_chroma_mc_bi(HEVCContext *s, uint8_t *dst0, ptrdiff_t dststride, AVFrame *ref0, AVFrame *ref1,
                           int x_off, int y_off, int block_w, int block_h, struct MvField *current_mv, int cidx)
  {
@@ -29419,7 +29419,7 @@ index 94ff677..594340a 100644
      cmd->cmd = RPI_CMD_CHROMA_BI+cidx;
      cmd->dst = dst0;
      cmd->dststride = dststride;
-@@ -2024,7 +2175,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2026,7 +2177,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int chan = x0>>6; // 64 wide blocks per QPU
              int weight_flag = (s->sh.slice_type == P_SLICE && s->ps.pps->weighted_pred_flag) ||
                                (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
@@ -29428,7 +29428,7 @@ index 94ff677..594340a 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
                    int bw = nPbW-start_x;
-@@ -2044,7 +2195,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2046,7 +2197,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
@@ -29437,7 +29437,7 @@ index 94ff677..594340a 100644
          } else
  #endif
          {
-@@ -2073,7 +2224,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2075,7 +2226,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  int weight_flag      = (s->sh.slice_type == P_SLICE && s->ps.pps->weighted_pred_flag) ||
                                         (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
  
@@ -29446,7 +29446,7 @@ index 94ff677..594340a 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2097,7 +2248,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2099,7 +2250,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -29455,7 +29455,7 @@ index 94ff677..594340a 100644
                  return;
              }
  #endif
-@@ -2127,7 +2278,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2129,7 +2280,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int chan = x0>>6; // 64 wide blocks per QPU
              int weight_flag = (s->sh.slice_type == P_SLICE && s->ps.pps->weighted_pred_flag) ||
                                (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
@@ -29464,7 +29464,7 @@ index 94ff677..594340a 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
                    int bw = nPbW-start_x;
-@@ -2147,7 +2298,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2149,7 +2300,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
@@ -29473,7 +29473,7 @@ index 94ff677..594340a 100644
          } else
  #endif
  
-@@ -2177,7 +2328,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2179,7 +2330,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  int weight_flag      = (s->sh.slice_type == P_SLICE && s->ps.pps->weighted_pred_flag) ||
                                         (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
  
@@ -29482,7 +29482,7 @@ index 94ff677..594340a 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2202,7 +2353,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2204,7 +2355,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -29491,7 +29491,7 @@ index 94ff677..594340a 100644
                  return;
              }
  #endif
-@@ -2236,7 +2387,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2238,7 +2389,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int x2 = x0 + (mv2->x >> 2);
              int y2 = y0 + (mv2->y >> 2);
              int chan = x0>>6; // 64 wide blocks per QPU
@@ -29500,7 +29500,7 @@ index 94ff677..594340a 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=8) { // B blocks work 8 at a time
                    int bw = nPbW-start_x;
-@@ -2252,7 +2403,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2254,7 +2405,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter_b;
                  }
              }
@@ -29509,7 +29509,7 @@ index 94ff677..594340a 100644
          } else
  #endif
          {
-@@ -2285,7 +2436,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2287,7 +2438,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
  
                  int chan = x0>>8; // Allocate commands for the first 256 luma pixels across to the first QPU.  This is optimised for images around 1920 width
  
@@ -29518,7 +29518,7 @@ index 94ff677..594340a 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2314,7 +2465,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2316,7 +2467,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -29527,7 +29527,7 @@ index 94ff677..594340a 100644
                  return;
              }
  #endif
-@@ -2819,40 +2970,54 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
+@@ -2821,40 +2972,54 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
  static void rpi_execute_dblk_cmds(HEVCContext *s)
  {
      int n;
@@ -29590,7 +29590,7 @@ index 94ff677..594340a 100644
        if (cmd->type == RPI_PRED_INTRA) {
            lc->tu.intra_pred_mode_c = lc->tu.intra_pred_mode = cmd->mode;
            lc->na.cand_bottom_left  = (cmd->na >> 4) & 1;
-@@ -2871,21 +3036,26 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -2873,21 +3038,26 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
  #endif
        }
    }
@@ -29621,7 +29621,7 @@ index 94ff677..594340a 100644
          switch(cmd->cmd) {
          case RPI_CMD_LUMA_UNI:
              myref.data[0] = cmd->src;
-@@ -2925,7 +3095,28 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
+@@ -2927,7 +3097,28 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
              break;
          }
      }
@@ -29651,7 +29651,7 @@ index 94ff677..594340a 100644
  }
  
  #endif
-@@ -2933,6 +3124,7 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
+@@ -2935,6 +3126,7 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
  #ifdef RPI_INTER_QPU
  static void rpi_inter_clear(HEVCContext *s)
  {
@@ -29659,7 +29659,7 @@ index 94ff677..594340a 100644
      int i;
      int pic_width        = s->ps.sps->width >> s->ps.sps->hshift[1];
      int pic_height       = s->ps.sps->height >> s->ps.sps->vshift[1];
-@@ -2940,51 +3132,50 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -2942,51 +3134,50 @@ static void rpi_inter_clear(HEVCContext *s)
                             (s->sh.slice_type == B_SLICE && s->ps.pps->weighted_bipred_flag);
  
      for(i=0;i<8;i++) {
@@ -29737,7 +29737,7 @@ index 94ff677..594340a 100644
  #ifdef RPI_SIMULATE_QPUS
  
  static int32_t clipx(int x,int FRAME_WIDTH)
-@@ -3258,10 +3449,15 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
+@@ -3260,10 +3451,15 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
  static void rpi_execute_inter_qpu(HEVCContext *s)
  {
      int k;
@@ -29755,7 +29755,7 @@ index 94ff677..594340a 100644
  #endif
      if (s->sh.slice_type == I_SLICE) {
  #ifdef RPI_MULTI_MAILBOX
-@@ -3270,22 +3466,22 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3272,22 +3468,22 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  #endif
      }
      for(k=0;k<8;k++) {
@@ -29788,7 +29788,7 @@ index 94ff677..594340a 100644
  #endif
  
  #ifdef RPI_SIMULATE_QPUS
-@@ -3295,34 +3491,34 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3297,34 +3493,34 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  
  #ifdef RPI_MULTI_MAILBOX
  #ifdef RPI_CACHE_UNIF_MVS
@@ -29846,7 +29846,7 @@ index 94ff677..594340a 100644
  #else
                                     0,
                                     0,0,0,0,
-@@ -3331,17 +3527,17 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3333,17 +3529,17 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  #endif
                                   );
      for(i=0;i<4;i++)
@@ -29873,7 +29873,7 @@ index 94ff677..594340a 100644
        );
  #endif
  
-@@ -3398,6 +3594,11 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3400,6 +3596,11 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          }
      }
  
@@ -29885,7 +29885,7 @@ index 94ff677..594340a 100644
  #ifdef RPI_INTER_QPU
      rpi_inter_clear(s);
  #endif
-@@ -3418,46 +3619,42 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3420,46 +3621,42 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          s->filter_slice_edges[ctb_addr_rs]  = s->sh.slice_loop_filter_across_slices_enabled_flag;
  
          more_data = hls_coding_quadtree(s, x_ctb, y_ctb, s->ps.sps->log2_ctb_size, 0);
@@ -29959,7 +29959,7 @@ index 94ff677..594340a 100644
          if (more_data < 0) {
              s->tab_slice_address[ctb_addr_rs] = -1;
              return more_data;
-@@ -3474,18 +3671,21 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3476,18 +3673,21 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      }
  
  #ifdef RPI
@@ -29991,7 +29991,7 @@ index 94ff677..594340a 100644
  #endif
  
      if (x_ctb + ctb_size >= s->ps.sps->width &&
-@@ -4153,6 +4353,48 @@ fail:
+@@ -4219,6 +4419,48 @@ fail:
      return AVERROR(ENOMEM);
  }
  
@@ -30040,7 +30040,7 @@ index 94ff677..594340a 100644
  static av_cold int hevc_decode_free(AVCodecContext *avctx)
  {
      HEVCContext       *s = avctx->priv_data;
-@@ -4165,33 +4407,29 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
+@@ -4231,33 +4473,29 @@ static av_cold int hevc_decode_free(AVCodecContext *avctx)
      av_freep(&s->cabac_state);
  
  #ifdef RPI
@@ -30091,7 +30091,7 @@ index 94ff677..594340a 100644
  #endif
  
      for (i = 0; i < 3; i++) {
-@@ -4256,6 +4494,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -4322,6 +4560,7 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
  {
      HEVCContext *s = avctx->priv_data;
      int i;
@@ -30099,7 +30099,7 @@ index 94ff677..594340a 100644
  
      s->avctx = avctx;
  
-@@ -4266,12 +4505,14 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -4332,12 +4571,14 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      s->sList[0] = s;
  
  #ifdef RPI
@@ -30120,7 +30120,7 @@ index 94ff677..594340a 100644
  
  #ifdef RPI_INTER_QPU
      // We divide the image into blocks 256 wide and 64 high
-@@ -4282,18 +4523,20 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -4348,18 +4589,20 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      {
          int uv_commands_per_qpu = UV_COMMANDS_PER_QPU;
          uint32_t *p;
@@ -30148,7 +30148,7 @@ index 94ff677..594340a 100644
          }
          s->mc_filter_uv = qpu_get_fn(QPU_MC_FILTER_UV);
          s->mc_filter_uv_b0 = qpu_get_fn(QPU_MC_FILTER_UV_B0);
-@@ -4302,61 +4545,35 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
+@@ -4368,61 +4611,35 @@ static av_cold int hevc_init_context(AVCodecContext *avctx)
      }
  #endif
  #ifdef RPI_LUMA_QPU
@@ -30223,7 +30223,7 @@ index 94ff677..594340a 100644
  
      s->cabac_state = av_malloc(HEVC_CONTEXTS);
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index aa4d218..8d72344 100644
+index 520d16f..b540ca5 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -50,6 +50,12 @@
@@ -30412,7 +30412,7 @@ index 71c6d52..344e021 100644
 2.5.0
 
 
-From e3604dee43bae2083ecea8b578da9878a7877f1f Mon Sep 17 00:00:00 2001
+From ec8c58875a457dcda45e8bbe1edc0efec41e4707 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 3 Jun 2015 13:43:48 +0100
 Subject: [PATCH 54/68] Avoid lockup bug with RPI_WORKER enabled
@@ -30423,10 +30423,10 @@ Subject: [PATCH 54/68] Avoid lockup bug with RPI_WORKER enabled
  2 files changed, 11 insertions(+), 12 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 594340a..323d5f9 100644
+index 6f67872..865f5ec 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -131,11 +131,11 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
+@@ -133,11 +133,11 @@ static uint32_t get_vc_address(AVBufferRef *bref) {
  static void worker_submit_job(HEVCContext *s)
  {
    LOG_ENTER
@@ -30441,7 +30441,7 @@ index 594340a..323d5f9 100644
    LOG_EXIT
  }
  
-@@ -143,11 +143,11 @@ static void worker_submit_job(HEVCContext *s)
+@@ -145,11 +145,11 @@ static void worker_submit_job(HEVCContext *s)
  static void worker_complete_middle_job(HEVCContext *s)
  {
    LOG_ENTER
@@ -30457,7 +30457,7 @@ index 594340a..323d5f9 100644
    LOG_EXIT
  }
  
-@@ -155,11 +155,11 @@ static void worker_complete_middle_job(HEVCContext *s)
+@@ -157,11 +157,11 @@ static void worker_complete_middle_job(HEVCContext *s)
  static void worker_complete_job(HEVCContext *s)
  {
    LOG_ENTER
@@ -30489,7 +30489,7 @@ index b9f773b..16e7ac3 100644
 2.5.0
 
 
-From 38c4114cd6d6335dde5a4ba86f0f6e1a1529ad6a Mon Sep 17 00:00:00 2001
+From d9e7ab6809af47b65372b9fd99e2d519c3d44b10 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 3 Jun 2015 15:37:19 +0100
 Subject: [PATCH 55/68] Added code to flush buffers at start of frame
@@ -30499,10 +30499,10 @@ Subject: [PATCH 55/68] Added code to flush buffers at start of frame
  1 file changed, 72 insertions(+)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 323d5f9..aa72f97 100644
+index 865f5ec..3a94830 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -41,6 +41,7 @@
+@@ -43,6 +43,7 @@
  
  #ifdef RPI
    #include "rpi_qpu.h"
@@ -30510,7 +30510,7 @@ index 323d5f9..aa72f97 100644
    // Move Inter prediction into separate pass
    #define RPI_INTER
  
-@@ -3495,6 +3496,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3497,6 +3498,7 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  #else
      gpu_cache_flush(&s->coeffs_buf_accelerated[job]);
  #endif
@@ -30518,7 +30518,7 @@ index 323d5f9..aa72f97 100644
      s->vpu_id = vpu_qpu_post_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[job][2], s->num_coeffs[job][2] >> 8, s->coeffs_buf_vc[job][3], s->num_coeffs[job][3] >> 10, 0,
                                     qpu_get_fn(QPU_MC_SETUP_UV),
                                     (uint32_t)(unif_vc+(s->mvs_base[job][0 ] - (uint32_t*)s->unif_mvs_ptr[job].arm)),
-@@ -3545,6 +3547,71 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3547,6 +3549,71 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  }
  #endif
  
@@ -30590,7 +30590,7 @@ index 323d5f9..aa72f97 100644
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  {
      HEVCContext *s  = avctxt->priv_data;
-@@ -3579,8 +3646,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3581,8 +3648,12 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          printf("Weighted B slice\n");
      }
  
@@ -30603,7 +30603,7 @@ index 323d5f9..aa72f97 100644
      if (!ctb_addr_ts && s->sh.dependent_slice_segment_flag) {
          av_log(s->avctx, AV_LOG_ERROR, "Impossible initial tile.\n");
          return AVERROR_INVALIDDATA;
-@@ -3651,6 +3722,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3653,6 +3724,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
              rpi_do_all_passes(s);
  #endif
            }
@@ -30615,7 +30615,7 @@ index 323d5f9..aa72f97 100644
 2.5.0
 
 
-From b279851bb85b1fe15355603dcd53c3f1b6f06724 Mon Sep 17 00:00:00 2001
+From 2e0fc42393a67cc61d84311640d1e44b32f2bffb Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 3 Jun 2015 16:42:24 +0100
 Subject: [PATCH 56/68] Reduce the amount that needs to be flushed
@@ -30625,10 +30625,10 @@ Subject: [PATCH 56/68] Reduce the amount that needs to be flushed
  1 file changed, 11 insertions(+), 24 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index aa72f97..a2ba177 100644
+index 3a94830..3fcbc57 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3556,7 +3556,7 @@ static void flush_buffer(AVBufferRef *bref) {
+@@ -3558,7 +3558,7 @@ static void flush_buffer(AVBufferRef *bref) {
  
  static void flush_frame(HEVCContext *s,AVFrame *frame)
  {
@@ -30637,7 +30637,7 @@ index aa72f97..a2ba177 100644
      struct vcsm_user_clean_invalid_s iocache = {};
      int n = s->ps.sps->height;
      int curr_y = 0;
-@@ -3590,26 +3590,6 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3592,26 +3592,6 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
  #endif
  }
  
@@ -30664,7 +30664,7 @@ index aa72f97..a2ba177 100644
  #endif
  
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
-@@ -3645,9 +3625,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3647,9 +3627,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
        if (s->ps.pps->weighted_bipred_flag && s->sh.slice_type == B_SLICE)
          printf("Weighted B slice\n");
      }
@@ -30674,7 +30674,7 @@ index aa72f97..a2ba177 100644
  #endif
  
      //printf("L0=%d L1=%d\n",s->sh.nb_refs[L1],s->sh.nb_refs[L1]);
-@@ -4053,6 +4030,11 @@ static int hevc_frame_start(HEVCContext *s)
+@@ -4119,6 +4096,11 @@ static int hevc_frame_start(HEVCContext *s)
      if (!s->avctx->hwaccel)
          ff_thread_finish_setup(s->avctx);
  
@@ -30686,7 +30686,7 @@ index aa72f97..a2ba177 100644
      return 0;
  
  fail:
-@@ -4254,6 +4236,11 @@ fail:
+@@ -4320,6 +4302,11 @@ fail:
          ff_hevc_flush_buffer(s, &s->ref->tf, s->ps.sps->height);
  #endif
          ff_thread_report_progress(&s->ref->tf, INT_MAX, 0);
@@ -30702,7 +30702,7 @@ index aa72f97..a2ba177 100644
 2.5.0
 
 
-From 7475c16d1b6b4ce94bb65f42bf3ae26969d4abf4 Mon Sep 17 00:00:00 2001
+From 0cc4754dcc1c36647d92c3f42be39f24d24c48a2 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 4 Jun 2015 07:59:28 +0100
 Subject: [PATCH 57/68] Corrected support for disabled rpi when using
@@ -30714,7 +30714,7 @@ Subject: [PATCH 57/68] Corrected support for disabled rpi when using
  2 files changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 8d72344..83b0e58 100644
+index b540ca5..c48d0cd 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -795,7 +795,17 @@ typedef struct HEVCPacket {
@@ -30781,23 +30781,23 @@ index 344e021..325b60e 100644
 2.5.0
 
 
-From 665b1e12a132f7ea798472d46200ad930abe2a82 Mon Sep 17 00:00:00 2001
+From b1ca5230c3a2e5e74945c6f06f75c5dcec62d9d0 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 4 Jun 2015 11:52:55 +0100
 Subject: [PATCH 58/68] Draft support for tiles
 
 ---
  libavcodec/hevc.c              | 140 +++++++++++++++++++++++------------------
- libavcodec/hevc.h              |  22 +++++--
+ libavcodec/hevc.h              |  21 +++++--
  libavcodec/hevc_filter.c       |   2 +-
  libavcodec/hevcpred_template.c |   2 +-
- 4 files changed, 100 insertions(+), 66 deletions(-)
+ 4 files changed, 99 insertions(+), 66 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index a2ba177..f3f5fdb 100644
+index 3fcbc57..23c4e17 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -61,10 +61,10 @@
+@@ -63,10 +63,10 @@
  
    static void rpi_execute_dblk_cmds(HEVCContext *s);
    static void rpi_execute_transform(HEVCContext *s);
@@ -30810,7 +30810,7 @@ index a2ba177..f3f5fdb 100644
  
    // Define INTER_PASS0 to do inter prediction in first pass
    //#define INTER_PASS0
-@@ -88,16 +88,18 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
+@@ -90,16 +90,18 @@ const uint8_t ff_hevc_pel_weight[65] = { [2] = 0, [4] = 1, [6] = 2, [8] = 3, [12
  
  #ifdef RPI_INTER_QPU
  
@@ -30834,7 +30834,7 @@ index a2ba177..f3f5fdb 100644
  
  #define ENCODE_COEFFS(c0, c1, c2, c3) (((c0) & 0xff) | ((c1) & 0xff) << 8 | ((c2) & 0xff) << 16 | ((c3) & 0xff) << 24)
  
-@@ -214,7 +216,7 @@ static void *worker_start(void *arg)
+@@ -216,7 +218,7 @@ static void *worker_start(void *arg)
      LOG_ENTER
      // printf("%d %d %d : %d %d %d %d\n",s->poc, x_ctb, y_ctb, s->num_pred_cmds,s->num_mv_cmds,s->num_coeffs[2] >> 8,s->num_coeffs[3] >> 10);
  #ifndef LAUNCH_PASS0
@@ -30843,7 +30843,7 @@ index a2ba177..f3f5fdb 100644
  #endif
  #ifndef INTER_PASS0
      // Perform inter prediction
-@@ -320,9 +322,14 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -322,9 +324,14 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
  
  #ifdef RPI
      av_assert0(sps);
@@ -30860,7 +30860,7 @@ index a2ba177..f3f5fdb 100644
      for(job=0;job<RPI_MAX_JOBS;job++) {
        printf("Allocated %d\n",coefs_per_row);
        for(job=0;job<RPI_MAX_JOBS;job++) {
-@@ -2173,10 +2180,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2175,10 +2182,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int my2_mx2_my_mx = (my_mx << 16) + my_mx;
              int x1 = x0 + (mv->x >> 2);
              int y1 = y0 + (mv->y >> 2);
@@ -30872,7 +30872,7 @@ index a2ba177..f3f5fdb 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
                    int bw = nPbW-start_x;
-@@ -2196,7 +2202,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2198,7 +2204,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
@@ -30881,7 +30881,7 @@ index a2ba177..f3f5fdb 100644
          } else
  #endif
          {
-@@ -2220,12 +2226,10 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2222,12 +2228,10 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
  
                  int x1_c = x0_c + (mv->x >> (2 + hshift));
                  int y1_c = y0_c + (mv->y >> (2 + hshift));
@@ -30895,7 +30895,7 @@ index a2ba177..f3f5fdb 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2249,7 +2253,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2251,7 +2255,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -30904,7 +30904,7 @@ index a2ba177..f3f5fdb 100644
                  return;
              }
  #endif
-@@ -2276,10 +2280,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2278,10 +2282,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int my2_mx2_my_mx = (my_mx << 16) + my_mx;
              int x1 = x0 + (mv->x >> 2);
              int y1 = y0 + (mv->y >> 2);
@@ -30916,7 +30916,7 @@ index a2ba177..f3f5fdb 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=16) {
                    int bw = nPbW-start_x;
-@@ -2299,7 +2302,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2301,7 +2304,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
@@ -30925,7 +30925,7 @@ index a2ba177..f3f5fdb 100644
          } else
  #endif
  
-@@ -2324,12 +2327,10 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2326,12 +2329,10 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
  
                  int x1_c = x0_c + (mv->x >> (2 + hshift));
                  int y1_c = y0_c + (mv->y >> (2 + hshift));
@@ -30939,7 +30939,7 @@ index a2ba177..f3f5fdb 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2354,7 +2355,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2356,7 +2357,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -30948,7 +30948,7 @@ index a2ba177..f3f5fdb 100644
                  return;
              }
  #endif
-@@ -2387,8 +2388,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2389,8 +2390,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
              int y1 = y0 + (mv->y >> 2);
              int x2 = x0 + (mv2->x >> 2);
              int y2 = y0 + (mv2->y >> 2);
@@ -30958,7 +30958,7 @@ index a2ba177..f3f5fdb 100644
              for(int start_y=0;start_y < nPbH;start_y+=16) {  // Potentially we could change the assembly code to support taller sizes in one go
                for(int start_x=0;start_x < nPbW;start_x+=8) { // B blocks work 8 at a time
                    int bw = nPbW-start_x;
-@@ -2404,7 +2404,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2406,7 +2406,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter_b;
                  }
              }
@@ -30967,7 +30967,7 @@ index a2ba177..f3f5fdb 100644
          } else
  #endif
          {
-@@ -2435,9 +2435,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2437,9 +2437,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                  int x2_c = x0_c + (mv2->x >> (2 + hshift));
                  int y2_c = y0_c + (mv2->y >> (2 + hshift));
  
@@ -30978,7 +30978,7 @@ index a2ba177..f3f5fdb 100644
                  for(int start_y=0;start_y < nPbH_c;start_y+=16) {
                    for(int start_x=0;start_x < nPbW_c;start_x+=RPI_CHROMA_BLOCK_WIDTH) {
                        int bw = nPbW_c-start_x;
-@@ -2466,7 +2465,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2468,7 +2467,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        *u++ = (get_vc_address(s->frame->buf[2]) + x0_c + start_x + (start_y + y0_c) * s->frame->linesize[2]);
                      }
                  }
@@ -30987,7 +30987,7 @@ index a2ba177..f3f5fdb 100644
                  return;
              }
  #endif
-@@ -3101,12 +3100,8 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
+@@ -3103,12 +3102,8 @@ static void rpi_execute_inter_cmds(HEVCContext *s)
  
  static void rpi_do_all_passes(HEVCContext *s)
  {
@@ -31002,7 +31002,7 @@ index a2ba177..f3f5fdb 100644
      // Perform luma inter prediction
      rpi_execute_inter_cmds(s);
      // Wait for transform completion
-@@ -3115,18 +3110,18 @@ static void rpi_do_all_passes(HEVCContext *s)
+@@ -3117,18 +3112,18 @@ static void rpi_do_all_passes(HEVCContext *s)
      rpi_execute_pred_cmds(s);
      // Perform deblocking for CTBs in this row
      rpi_execute_dblk_cmds(s);
@@ -31026,7 +31026,7 @@ index a2ba177..f3f5fdb 100644
      int pic_width        = s->ps.sps->width >> s->ps.sps->hshift[1];
      int pic_height       = s->ps.sps->height >> s->ps.sps->vshift[1];
      int weight_flag      = (s->sh.slice_type == P_SLICE && s->ps.pps->weighted_pred_flag) ||
-@@ -3152,6 +3147,8 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -3154,6 +3149,8 @@ static void rpi_inter_clear(HEVCContext *s)
          }
          *s->u_mvs[job][i]++ = i;  // Select section of VPM (avoid collisions with 3d unit)
      }
@@ -31035,7 +31035,7 @@ index a2ba177..f3f5fdb 100644
  
  #ifdef RPI_LUMA_QPU
      for(i=0;i<12;i++) {
-@@ -3174,8 +3171,11 @@ static void rpi_inter_clear(HEVCContext *s)
+@@ -3176,8 +3173,11 @@ static void rpi_inter_clear(HEVCContext *s)
          }
          *s->y_mvs[job][i]++ = 0; // Next kernel
      }
@@ -31047,7 +31047,7 @@ index a2ba177..f3f5fdb 100644
  
  #ifdef RPI_SIMULATE_QPUS
  
-@@ -3446,8 +3446,9 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
+@@ -3448,8 +3448,9 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
  
  #endif
  
@@ -31058,7 +31058,7 @@ index a2ba177..f3f5fdb 100644
  {
      int k;
  #ifdef LAUNCH_PASS0
-@@ -3545,6 +3546,15 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
+@@ -3547,6 +3548,15 @@ static void rpi_execute_inter_qpu(HEVCContext *s)
  
  
  }
@@ -31074,7 +31074,7 @@ index a2ba177..f3f5fdb 100644
  #endif
  
  #ifdef RPI
-@@ -3604,29 +3614,20 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3606,29 +3616,20 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI
  #ifdef RPI_INTER_QPU
      s->enable_rpi = s->ps.sps->bit_depth == 8
@@ -31105,7 +31105,7 @@ index a2ba177..f3f5fdb 100644
      //printf("L0=%d L1=%d\n",s->sh.nb_refs[L1],s->sh.nb_refs[L1]);
  
      if (!ctb_addr_ts && s->sh.dependent_slice_segment_flag) {
-@@ -3647,8 +3648,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3649,8 +3650,8 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      s->pass1_job = 0;
      s->pass2_job = 0;
  #endif
@@ -31116,7 +31116,7 @@ index a2ba177..f3f5fdb 100644
  #endif
  
      while (more_data && ctb_addr_ts < s->ps.sps->ctb_size) {
-@@ -3666,13 +3667,34 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3668,13 +3669,34 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          s->deblock[ctb_addr_rs].tc_offset   = s->sh.tc_offset;
          s->filter_slice_edges[ctb_addr_rs]  = s->sh.slice_loop_filter_across_slices_enabled_flag;
  
@@ -31152,7 +31152,7 @@ index a2ba177..f3f5fdb 100644
  #ifdef RPI_WORKER
              if (s->used_for_ref) {
                // Split work load onto separate threads so we make as rapid progress as possible with this frame
-@@ -3680,7 +3702,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3682,7 +3704,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
                rpi_execute_inter_cmds(s);
    #endif
    #ifdef LAUNCH_PASS0
@@ -31161,7 +31161,7 @@ index a2ba177..f3f5fdb 100644
    #endif
                // Pass on this job to worker thread
                worker_submit_job(s);
-@@ -3688,9 +3710,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3690,9 +3712,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
                worker_pass0_ready(s);
  
                // Prepare the next batch of commands
@@ -31172,7 +31172,7 @@ index a2ba177..f3f5fdb 100644
              } else {
                // Non-ref frame so do it all on this thread
                rpi_do_all_passes(s);
-@@ -3731,7 +3751,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3733,7 +3753,7 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #endif
  
      // Finish off any half-completed rows
@@ -31182,7 +31182,7 @@ index a2ba177..f3f5fdb 100644
      }
  
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 83b0e58..c62540d 100644
+index c48d0cd..3aea745 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -849,8 +849,15 @@ typedef struct HEVCLocalContext {
@@ -31239,11 +31239,10 @@ index 83b0e58..c62540d 100644
      // Function pointers
      uint32_t mc_filter;
      uint32_t mc_filter_b;
-@@ -1099,6 +1109,10 @@ typedef struct HEVCContext {
-     int sei_hflip, sei_vflip;
+@@ -1110,6 +1120,9 @@ typedef struct HEVCContext {
+     uint32_t max_mastering_luminance;
+     uint32_t min_mastering_luminance;
  
-     int picture_struct;
-+
 +#ifdef RPI
 +    int dblk_cmds[RPI_MAX_JOBS][RPI_MAX_DEBLOCK_CMDS][2];
 +#endif
@@ -31280,7 +31279,7 @@ index 325b60e..28d2653 100644
 2.5.0
 
 
-From e8bf19f86fefd76f1f48d7b96bb47ec23c2802fc Mon Sep 17 00:00:00 2001
+From eaaaee12acbb4d4c27191ceafadaa778d3ba0f2f Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 4 Jun 2015 15:48:10 +0100
 Subject: [PATCH 59/68] Move deblocker into second pass
@@ -31290,10 +31289,10 @@ Subject: [PATCH 59/68] Move deblocker into second pass
  1 file changed, 65 insertions(+), 14 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index f3f5fdb..bd59f02 100644
+index 23c4e17..dde932f 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -65,6 +65,8 @@
+@@ -67,6 +67,8 @@
    static void rpi_execute_pred_cmds(HEVCContext *s);
    static void rpi_execute_inter_cmds(HEVCContext *s);
    static void rpi_begin(HEVCContext *s);
@@ -31302,7 +31301,7 @@ index f3f5fdb..bd59f02 100644
  
    // Define INTER_PASS0 to do inter prediction in first pass
    //#define INTER_PASS0
-@@ -225,6 +227,11 @@ static void *worker_start(void *arg)
+@@ -227,6 +229,11 @@ static void *worker_start(void *arg)
      // Wait for transform completion
      vpu_wait(s->vpu_id);
  
@@ -31314,7 +31313,7 @@ index f3f5fdb..bd59f02 100644
      worker_complete_middle_job(s);
      LOG_EXIT
    }
-@@ -246,10 +253,6 @@ static void *worker_deblock_start(void *arg)
+@@ -248,10 +255,6 @@ static void *worker_deblock_start(void *arg)
        break;
      }
      LOG_ENTER
@@ -31325,7 +31324,7 @@ index f3f5fdb..bd59f02 100644
  
      worker_complete_job(s);
      LOG_EXIT
-@@ -2970,7 +2973,7 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
+@@ -2972,7 +2975,7 @@ static void hls_decode_neighbour(HEVCContext *s, int x_ctb, int y_ctb,
  static void rpi_execute_dblk_cmds(HEVCContext *s)
  {
      int n;
@@ -31334,7 +31333,7 @@ index f3f5fdb..bd59f02 100644
      int ctb_size    = 1 << s->ps.sps->log2_ctb_size;
      int (*p)[2] = s->dblk_cmds[job];
      for(n = s->num_dblk_cmds[job]; n>0 ;n--,p++) {
-@@ -3008,7 +3011,7 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -3010,7 +3013,7 @@ static void rpi_execute_transform(HEVCContext *s)
  static void rpi_execute_pred_cmds(HEVCContext *s)
  {
    int i;
@@ -31343,7 +31342,7 @@ index f3f5fdb..bd59f02 100644
    HEVCPredCmd *cmd = s->univ_pred_cmds[job];
  #ifdef RPI_WORKER
    HEVCLocalContextIntra *lc = &s->HEVClcIntra;
-@@ -3493,11 +3496,10 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+@@ -3495,11 +3498,10 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
  
  #ifdef RPI_MULTI_MAILBOX
  #ifdef RPI_CACHE_UNIF_MVS
@@ -31357,7 +31356,7 @@ index f3f5fdb..bd59f02 100644
      s->vpu_id = vpu_qpu_post_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[job][2], s->num_coeffs[job][2] >> 8, s->coeffs_buf_vc[job][3], s->num_coeffs[job][3] >> 10, 0,
                                     qpu_get_fn(QPU_MC_SETUP_UV),
                                     (uint32_t)(unif_vc+(s->mvs_base[job][0 ] - (uint32_t*)s->unif_mvs_ptr[job].arm)),
-@@ -3600,6 +3602,60 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3602,6 +3604,60 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
  #endif
  }
  
@@ -31418,7 +31417,7 @@ index f3f5fdb..bd59f02 100644
  #endif
  
  static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
-@@ -4050,11 +4106,6 @@ static int hevc_frame_start(HEVCContext *s)
+@@ -4116,11 +4172,6 @@ static int hevc_frame_start(HEVCContext *s)
      if (!s->avctx->hwaccel)
          ff_thread_finish_setup(s->avctx);
  
@@ -31434,7 +31433,7 @@ index f3f5fdb..bd59f02 100644
 2.5.0
 
 
-From bd42b24c8f7e1f0d2bcfa476d2e1aea20aa3723e Mon Sep 17 00:00:00 2001
+From f45417c35888b74a36a5ecc6959480787e727b0c Mon Sep 17 00:00:00 2001
 From: popcornmix <popcornmix@gmail.com>
 Date: Thu, 4 Jun 2015 16:10:23 +0100
 Subject: [PATCH 60/68] Change order of ctu accesses to improve qpu performance
@@ -31444,10 +31443,10 @@ Subject: [PATCH 60/68] Change order of ctu accesses to improve qpu performance
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index bd59f02..ff93f6c 100644
+index dde932f..e247444 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -3724,19 +3724,19 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3726,19 +3726,19 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
          s->filter_slice_edges[ctb_addr_rs]  = s->sh.slice_loop_filter_across_slices_enabled_flag;
  
  #ifdef RPI_INTER_QPU
@@ -31475,7 +31474,7 @@ index bd59f02..ff93f6c 100644
 2.5.0
 
 
-From 3ba78b5fe86fccfb132068603ad1db87ce44ab6c Mon Sep 17 00:00:00 2001
+From 8d8b31eeffebf0a40c3b267d1b16401ef267bbf5 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 8 Jun 2015 09:36:59 +0100
 Subject: [PATCH 61/68] Removed deblocker thread
@@ -31486,10 +31485,10 @@ Subject: [PATCH 61/68] Removed deblocker thread
  2 files changed, 4 insertions(+), 77 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index ff93f6c..43f7ce5 100644
+index e247444..bbb7ad3 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -68,11 +68,6 @@
+@@ -70,11 +70,6 @@
    static void flush_frame(HEVCContext *s,AVFrame *frame);
    static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM_PTR_T *p1,GPU_MEM_PTR_T *p2);
  
@@ -31501,7 +31500,7 @@ index ff93f6c..43f7ce5 100644
  #endif
  
  // #define DISABLE_MC
-@@ -145,24 +140,12 @@ static void worker_submit_job(HEVCContext *s)
+@@ -147,24 +142,12 @@ static void worker_submit_job(HEVCContext *s)
  }
  
  // Call this to say we have completed pass1
@@ -31527,7 +31526,7 @@ index ff93f6c..43f7ce5 100644
    pthread_cond_broadcast(&s->worker_cond_head); // Let people know that the head has moved
    pthread_mutex_unlock(&s->worker_mutex);
    LOG_EXIT
-@@ -206,7 +189,7 @@ static void *worker_start(void *arg)
+@@ -208,7 +191,7 @@ static void *worker_start(void *arg)
    while(1) {
      pthread_mutex_lock(&s->worker_mutex);
  
@@ -31536,7 +31535,7 @@ index ff93f6c..43f7ce5 100644
      {
        pthread_cond_wait(&s->worker_cond_tail, &s->worker_mutex);
      }
-@@ -217,13 +200,9 @@ static void *worker_start(void *arg)
+@@ -219,13 +202,9 @@ static void *worker_start(void *arg)
      }
      LOG_ENTER
      // printf("%d %d %d : %d %d %d %d\n",s->poc, x_ctb, y_ctb, s->num_pred_cmds,s->num_mv_cmds,s->num_coeffs[2] >> 8,s->num_coeffs[3] >> 10);
@@ -31550,7 +31549,7 @@ index ff93f6c..43f7ce5 100644
      // Wait for transform completion
      vpu_wait(s->vpu_id);
  
-@@ -232,28 +211,6 @@ static void *worker_start(void *arg)
+@@ -234,28 +213,6 @@ static void *worker_start(void *arg)
      // Perform deblocking for CTBs in this row
      rpi_execute_dblk_cmds(s);
  
@@ -31579,7 +31578,7 @@ index ff93f6c..43f7ce5 100644
      worker_complete_job(s);
      LOG_EXIT
    }
-@@ -2985,11 +2942,7 @@ static void rpi_execute_dblk_cmds(HEVCContext *s)
+@@ -2987,11 +2944,7 @@ static void rpi_execute_dblk_cmds(HEVCContext *s)
  static void rpi_execute_transform(HEVCContext *s)
  {
      int i=2;
@@ -31591,7 +31590,7 @@ index ff93f6c..43f7ce5 100644
      //int j;
      //int16_t *coeffs = s->coeffs_buf_arm[i];
      //for(j=s->num_coeffs[i]; j > 0; j-= 16*16, coeffs+=16*16) {
-@@ -3044,11 +2997,7 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
+@@ -3046,11 +2999,7 @@ static void rpi_execute_pred_cmds(HEVCContext *s)
  
  static void rpi_execute_inter_cmds(HEVCContext *s)
  {
@@ -31603,7 +31602,7 @@ index ff93f6c..43f7ce5 100644
      HEVCMvCmd *cmd = s->unif_mv_cmds[job];
      int n,cidx;
      AVFrame myref;
-@@ -3454,11 +3403,7 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
+@@ -3456,11 +3405,7 @@ static void rpi_simulate_inter_qpu(HEVCContext *s)
  static void rpi_launch_vpu_qpu(HEVCContext *s)
  {
      int k;
@@ -31615,7 +31614,7 @@ index ff93f6c..43f7ce5 100644
      int i;
      uint32_t *unif_vc = (uint32_t *)s->unif_mvs_ptr[job].vc;
  #ifdef RPI_LUMA_QPU
-@@ -3561,10 +3506,12 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+@@ -3563,10 +3508,12 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
  
  #ifdef RPI
  
@@ -31628,7 +31627,7 @@ index ff93f6c..43f7ce5 100644
  
  static void flush_frame(HEVCContext *s,AVFrame *frame)
  {
-@@ -3702,7 +3649,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3704,7 +3651,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI_WORKER
      s->pass0_job = 0;
      s->pass1_job = 0;
@@ -31636,7 +31635,7 @@ index ff93f6c..43f7ce5 100644
  #endif
  #ifdef RPI
      rpi_begin(s);
-@@ -3754,12 +3700,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3756,12 +3702,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
  #ifdef RPI_WORKER
              if (s->used_for_ref) {
                // Split work load onto separate threads so we make as rapid progress as possible with this frame
@@ -31649,7 +31648,7 @@ index ff93f6c..43f7ce5 100644
                // Pass on this job to worker thread
                worker_submit_job(s);
                // Make sure we have space to prepare the next job
-@@ -3801,8 +3741,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
+@@ -3803,8 +3743,6 @@ static int hls_decode_entry(AVCodecContext *avctxt, void *isFilterThread)
      // Wait for the worker to finish all its jobs
      if (s->enable_rpi) {
          worker_wait(s);
@@ -31658,7 +31657,7 @@ index ff93f6c..43f7ce5 100644
      }
  #endif
  
-@@ -4488,16 +4426,13 @@ static av_cold void hevc_init_worker(HEVCContext *s)
+@@ -4554,16 +4492,13 @@ static av_cold void hevc_init_worker(HEVCContext *s)
  {
      int err;
      pthread_cond_init(&s->worker_cond_head, NULL);
@@ -31675,7 +31674,7 @@ index ff93f6c..43f7ce5 100644
      if (err) {
          printf("Failed to create worker thread\n");
          exit(-1);
-@@ -4509,17 +4444,13 @@ static av_cold void hevc_exit_worker(HEVCContext *s)
+@@ -4575,17 +4510,13 @@ static av_cold void hevc_exit_worker(HEVCContext *s)
      void *res;
      s->kill_worker=1;
      pthread_cond_broadcast(&s->worker_cond_tail);
@@ -31694,7 +31693,7 @@ index ff93f6c..43f7ce5 100644
      s->kill_worker=0;
  }
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index c62540d..6c0d0b6 100644
+index 3aea745..a577fcb 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -957,7 +957,6 @@ typedef struct HEVCContext {
@@ -31725,7 +31724,7 @@ index c62540d..6c0d0b6 100644
 2.5.0
 
 
-From d0720e2a6f21bbdf2ad1d52227ae272db4cf9dc0 Mon Sep 17 00:00:00 2001
+From 9ad14cb77eeec547db386bd2c3a6e25f41ae5b31 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 8 Jun 2015 11:04:43 +0100
 Subject: [PATCH 62/68] Reduced amount of output frame that is invalidated
@@ -31735,10 +31734,10 @@ Subject: [PATCH 62/68] Reduced amount of output frame that is invalidated
  1 file changed, 29 insertions(+), 16 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 43f7ce5..ef61788 100644
+index bbb7ad3..2374c2b 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -66,7 +66,7 @@
+@@ -68,7 +68,7 @@
    static void rpi_execute_inter_cmds(HEVCContext *s);
    static void rpi_begin(HEVCContext *s);
    static void flush_frame(HEVCContext *s,AVFrame *frame);
@@ -31747,7 +31746,7 @@ index 43f7ce5..ef61788 100644
  
  #endif
  
-@@ -3441,9 +3441,9 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+@@ -3443,9 +3443,9 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
  
  #ifdef RPI_MULTI_MAILBOX
  #ifdef RPI_CACHE_UNIF_MVS
@@ -31759,7 +31758,7 @@ index 43f7ce5..ef61788 100644
  #endif
      s->vpu_id = vpu_qpu_post_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[job][2], s->num_coeffs[job][2] >> 8, s->coeffs_buf_vc[job][3], s->num_coeffs[job][3] >> 10, 0,
                                     qpu_get_fn(QPU_MC_SETUP_UV),
-@@ -3517,6 +3517,7 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3519,6 +3519,7 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
  {
  #ifdef RPI_FAST_CACHEFLUSH
      struct vcsm_user_clean_invalid_s iocache = {};
@@ -31767,7 +31766,7 @@ index 43f7ce5..ef61788 100644
      int n = s->ps.sps->height;
      int curr_y = 0;
      int curr_uv = 0;
-@@ -3524,22 +3525,21 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3526,22 +3527,21 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
      int sz,base;
      sz = s->frame->linesize[1] * (n_uv-curr_uv);
      base = s->frame->linesize[1] * curr_uv;
@@ -31793,7 +31792,7 @@ index 43f7ce5..ef61788 100644
      iocache.s[2].size  = sz;
      vcsm_clean_invalid( &iocache );
  #else
-@@ -3549,33 +3549,46 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3551,33 +3551,46 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
  #endif
  }
  
@@ -31853,7 +31852,7 @@ index 43f7ce5..ef61788 100644
 2.5.0
 
 
-From 980ce082dd1c0101e2aec64121c9de1d03a287f4 Mon Sep 17 00:00:00 2001
+From e5e5d6e39c9361a4c842656103b7411b75098c0c Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Mon, 8 Jun 2015 11:55:29 +0100
 Subject: [PATCH 63/68] Packed 16x16 and 32x32 into the same buffer
@@ -31865,10 +31864,10 @@ Subject: [PATCH 63/68] Packed 16x16 and 32x32 into the same buffer
  3 files changed, 24 insertions(+), 11 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index ef61788..8c6db35 100644
+index 2374c2b..3df6308 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -297,12 +297,12 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -299,12 +299,12 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
          s->coeffs_buf_arm[job][0] = (int16_t*) s->coeffs_buf_default[job].arm;
          if (!s->coeffs_buf_arm[job][0])
              goto fail;
@@ -31883,7 +31882,7 @@ index ef61788..8c6db35 100644
          s->coeffs_buf_vc[job][3] = sizeof(int16_t) * coefs_per_row + s->coeffs_buf_vc[job][2];
        }
      }
-@@ -2943,15 +2943,20 @@ static void rpi_execute_transform(HEVCContext *s)
+@@ -2945,15 +2945,20 @@ static void rpi_execute_transform(HEVCContext *s)
  {
      int i=2;
      int job = s->pass1_job;
@@ -31910,7 +31909,7 @@ index ef61788..8c6db35 100644
                                 s->num_coeffs[job][3] >> 10, 0, &s->coeffs_buf_accelerated[job]);
      //vpu_execute_code( vpu_get_fn(), vpu_get_constants(), s->coeffs_buf_vc[2], s->num_coeffs[2] >> 8, s->coeffs_buf_vc[3], s->num_coeffs[3] >> 10, 0);
      //gpu_cache_flush(&s->coeffs_buf_accelerated);
-@@ -3445,7 +3450,8 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+@@ -3447,7 +3452,8 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
  #else
      flush_frame3(s, s->frame,&s->coeffs_buf_accelerated[job],NULL,NULL, job);
  #endif
@@ -31957,7 +31956,7 @@ index 4480f72..0121fca 100644
 2.5.0
 
 
-From dd561eb52a075c09da89bf20f8d18fb92123ec2c Mon Sep 17 00:00:00 2001
+From a1c0980a8ce8b0059637e9fdc61b1cbd64c58e43 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Thu, 25 Jun 2015 09:02:47 +0100
 Subject: [PATCH 64/68] Moved luma deblock to VPU
@@ -31973,10 +31972,10 @@ Subject: [PATCH 64/68] Moved luma deblock to VPU
  7 files changed, 2378 insertions(+), 13 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index 8c6db35..da4bebb 100644
+index 3df6308..0ecaf05 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -244,6 +244,12 @@ static void pic_arrays_free(HEVCContext *s)
+@@ -246,6 +246,12 @@ static void pic_arrays_free(HEVCContext *s)
        }
      }
  #endif
@@ -31989,7 +31988,7 @@ index 8c6db35..da4bebb 100644
      av_freep(&s->sao);
      av_freep(&s->deblock);
  
-@@ -281,12 +287,12 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -283,12 +289,12 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
      int min_pu_size      = sps->min_pu_width * sps->min_pu_height;
  
  #ifdef RPI
@@ -32003,7 +32002,7 @@ index 8c6db35..da4bebb 100644
      s->max_ctu_count = coefs_per_luma / coefs_in_ctb;
      s->ctu_per_y_chan = s->max_ctu_count / 12;
      s->ctu_per_uv_chan = s->max_ctu_count / 8;
-@@ -307,6 +313,16 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -309,6 +315,16 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
        }
      }
  #endif
@@ -32021,7 +32020,7 @@ index 8c6db35..da4bebb 100644
      s->bs_width  = (width  >> 2) + 1;
      s->bs_height = (height >> 2) + 1;
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 6c0d0b6..c933757 100644
+index a577fcb..b1d3ee0 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -56,6 +56,8 @@
@@ -34564,7 +34563,7 @@ index e86eb30..c5d8b29 100644
 2.5.0
 
 
-From 8864ce029b80325be328e0b2493f5ba18b10c906 Mon Sep 17 00:00:00 2001
+From 1c7aae12a916196defd7ca1d5e8f052551535034 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 1 Jul 2015 09:21:17 +0100
 Subject: [PATCH 65/68] Added ability to combine jobs
@@ -34717,7 +34716,7 @@ index 05b2169..91777be 100644
 2.5.0
 
 
-From 8289de8799cb666404d8d1a01c211a7be17bae61 Mon Sep 17 00:00:00 2001
+From 3b056ce7d9bc16ac6d62fc84cb26e0991741ec26 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 1 Jul 2015 12:53:10 +0100
 Subject: [PATCH 66/68] Added chroma deblocking
@@ -34733,10 +34732,10 @@ Subject: [PATCH 66/68] Added chroma deblocking
  7 files changed, 988 insertions(+), 25 deletions(-)
 
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index da4bebb..d56f777 100644
+index 0ecaf05..35a1394 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -249,6 +249,14 @@ static void pic_arrays_free(HEVCContext *s)
+@@ -251,6 +251,14 @@ static void pic_arrays_free(HEVCContext *s)
        gpu_free(&s->y_setup_ptr);
        s->y_setup_arm = 0;
      }
@@ -34751,7 +34750,7 @@ index da4bebb..d56f777 100644
  #endif
      av_freep(&s->sao);
      av_freep(&s->deblock);
-@@ -322,6 +330,18 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
+@@ -324,6 +332,18 @@ static int pic_arrays_init(HEVCContext *s, const HEVCSPS *sps)
      s->y_setup_vc = (void*)s->y_setup_ptr.vc;
      memset(s->y_setup_arm, 0, s->y_setup_ptr.numbytes);
      printf("Setup %d by %d by %d\n",s->setup_width,s->setup_height,sizeof(*s->y_setup_arm));
@@ -34771,7 +34770,7 @@ index da4bebb..d56f777 100644
  
      s->bs_width  = (width  >> 2) + 1;
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index c933757..6675a4f 100644
+index b1d3ee0..aa7cdc3 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -55,7 +55,7 @@
@@ -35945,7 +35944,7 @@ index 0686249..64bf5b0 100644
 2.5.0
 
 
-From f7a8b294a317dc015d19a342aa20a994a299676d Mon Sep 17 00:00:00 2001
+From 9f07110097a85bc056c338f9bd1891ca2027f580 Mon Sep 17 00:00:00 2001
 From: Ben Avison <bavison@riscosopen.org>
 Date: Tue, 23 Jun 2015 23:42:03 +0100
 Subject: [PATCH 67/68] armv7/hevc: Optimise deblocking boundary strength
@@ -36109,7 +36108,7 @@ index e5da7e9..49c70dd 100644
 +    c->hevc_deblocking_boundary_strengths = ff_hevc_deblocking_boundary_strengths_neon;
  }
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 6675a4f..10fbccc 100644
+index aa7cdc3..cfa7c61 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -683,17 +683,6 @@ typedef struct CodingUnit {
@@ -36575,7 +36574,7 @@ index 9f1f6dd..e221e54 100644
 2.5.0
 
 
-From 95c6d1107c1dc60fd40abeb9eadb69b3937ce9f5 Mon Sep 17 00:00:00 2001
+From 50c89ce45ad633db0a48f084d5ecae0ae989e704 Mon Sep 17 00:00:00 2001
 From: Peter de Rivaz <peter.derivaz@gmail.com>
 Date: Wed, 15 Jul 2015 09:09:11 +0100
 Subject: [PATCH 68/68] Only enable qpu when needed
@@ -36586,7 +36585,7 @@ Subject: [PATCH 68/68] Only enable qpu when needed
  2 files changed, 17 insertions(+), 6 deletions(-)
 
 diff --git a/libavcodec/hevc.h b/libavcodec/hevc.h
-index 10fbccc..a8ff7b8 100644
+index cfa7c61..cb4350d 100644
 --- a/libavcodec/hevc.h
 +++ b/libavcodec/hevc.h
 @@ -56,7 +56,7 @@
@@ -36670,28 +36669,28 @@ index 5aa0432..ffd13ca 100644
 -- 
 2.5.0
 
-From 6cf5fc5f6384350149e237d0e08823fe6c7ef387 Mon Sep 17 00:00:00 2001
+From ea0f86b00014267bc0917c828fec16e3ff8a25cf Mon Sep 17 00:00:00 2001
 From: John Cox <jc@kynesim.co.uk>
 Date: Tue, 9 Feb 2016 11:57:40 +0000
 Subject: [PATCH 1/2] Zero copy code v6
 
 This version has GPU buffer pooling code
 ---
- ffmpeg.c                 | 123 +++++++++-----
+ ffmpeg.c                 | 121 +++++++++-----
  libavcodec/Makefile      |   2 +
- libavcodec/avcodec.h     |   7 +
+ libavcodec/avcodec.h     |   6 +
  libavcodec/hevc.c        |  92 ++++++-----
  libavcodec/hevc_filter.c |  83 +++++-----
  libavcodec/rpi_qpu.c     |   2 +-
  libavcodec/rpi_qpu.h     | 109 ++++++++++++-
  libavcodec/rpi_zc.c      | 406 +++++++++++++++++++++++++++++++++++++++++++++++
  libavcodec/rpi_zc.h      |  83 ++++++++++
- 9 files changed, 780 insertions(+), 127 deletions(-)
+ 9 files changed, 777 insertions(+), 127 deletions(-)
  create mode 100644 libavcodec/rpi_zc.c
  create mode 100644 libavcodec/rpi_zc.h
 
 diff --git a/ffmpeg.c b/ffmpeg.c
-index 026ffa9..c4c4dd6 100644
+index 8828f48..7fe5b07 100644
 --- a/ffmpeg.c
 +++ b/ffmpeg.c
 @@ -25,7 +25,7 @@
@@ -36703,7 +36702,7 @@ index 026ffa9..c4c4dd6 100644
  #endif
  
  #include "config.h"
-@@ -83,9 +83,7 @@
+@@ -80,9 +80,7 @@
  #include <interface/mmal/util/mmal_default_components.h>
  #include <interface/mmal/util/mmal_connection.h>
  #include <interface/mmal/util/mmal_util_params.h>
@@ -36714,7 +36713,7 @@ index 026ffa9..c4c4dd6 100644
  #endif
  
  #if HAVE_SYS_RESOURCE_H
-@@ -186,13 +184,7 @@ static void free_input_threads(void);
+@@ -183,13 +181,7 @@ static void free_input_threads(void);
  
  static MMAL_COMPONENT_T* rpi_display = NULL;
  static MMAL_POOL_T *rpi_pool = NULL;
@@ -36729,7 +36728,7 @@ index 026ffa9..c4c4dd6 100644
  
  static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
  {
-@@ -209,7 +201,7 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
+@@ -206,7 +198,7 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
      for (i = 0; i < NUM_BUFFERS; ++i)
      {
         MMAL_BUFFER_HEADER_T* buffer = pool->header[i];
@@ -36738,7 +36737,7 @@ index 026ffa9..c4c4dd6 100644
         memset(bufPtr, i*30, w*h);
         memset(bufPtr+w*h, 128, (w*h)/2);
      }
-@@ -218,23 +210,31 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
+@@ -215,23 +207,31 @@ static MMAL_POOL_T* display_alloc_pool(MMAL_PORT_T* port, size_t w, size_t h)
      return pool;
  }
  
@@ -36774,7 +36773,7 @@ index 026ffa9..c4c4dd6 100644
      bcm_host_init();  // TODO is this needed?
      mmal_component_create(MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &display);
      assert(display);
-@@ -243,8 +243,8 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
+@@ -240,8 +240,8 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
  
      MMAL_ES_FORMAT_T* format = display->input[0]->format;
      format->encoding = MMAL_ENCODING_I420;
@@ -36785,7 +36784,7 @@ index 026ffa9..c4c4dd6 100644
      format->es->video.crop.x = 0;
      format->es->video.crop.y = 0;
      format->es->video.crop.width = w;
-@@ -253,46 +253,75 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
+@@ -250,46 +250,75 @@ static MMAL_COMPONENT_T* display_init(size_t x, size_t y, size_t w, size_t h)
  
      mmal_component_enable(display);
  
@@ -36875,7 +36874,7 @@ index 026ffa9..c4c4dd6 100644
  }
  
  static void display_exit(MMAL_COMPONENT_T* display)
-@@ -692,6 +721,11 @@ static void ffmpeg_cleanup(int ret)
+@@ -687,6 +716,11 @@ static void ffmpeg_cleanup(int ret)
          avformat_close_input(&input_files[i]->ctx);
          av_freep(&input_files[i]);
      }
@@ -36887,17 +36886,15 @@ index 026ffa9..c4c4dd6 100644
      for (i = 0; i < nb_input_streams; i++) {
          InputStream *ist = input_streams[i];
  
-@@ -703,6 +737,9 @@ static void ffmpeg_cleanup(int ret)
+@@ -698,6 +732,7 @@ static void ffmpeg_cleanup(int ret)
          av_freep(&ist->filters);
          av_freep(&ist->hwaccel_device);
  
-+#ifdef RPI_ZERO_COPY
 +        av_rpi_zc_uninit(ist->dec_ctx);
-+#endif
          avcodec_free_context(&ist->dec_ctx);
  
          av_freep(&input_streams[i]);
-@@ -730,9 +767,6 @@ static void ffmpeg_cleanup(int ret)
+@@ -729,9 +764,6 @@ static void ffmpeg_cleanup(int ret)
      term_exit();
      ffmpeg_exited = 1;
  
@@ -36907,7 +36904,7 @@ index 026ffa9..c4c4dd6 100644
  }
  
  void remove_avoptions(AVDictionary **a, AVDictionary *b)
-@@ -1116,18 +1150,19 @@ static void do_video_out(AVFormatContext *s,
+@@ -1079,18 +1111,19 @@ static void do_video_out(AVFormatContext *s,
      int frame_size = 0;
      InputStream *ist = NULL;
      AVFilterContext *filter = ost->filter->filter;
@@ -36933,7 +36930,7 @@ index 026ffa9..c4c4dd6 100644
      if (filter->inputs[0]->frame_rate.num > 0 &&
          filter->inputs[0]->frame_rate.den > 0)
          duration = 1/(av_q2d(filter->inputs[0]->frame_rate) * av_q2d(enc->time_base));
-@@ -2701,6 +2736,12 @@ static int init_input_stream(int ist_index, char *error, int error_len)
+@@ -2692,6 +2725,12 @@ static int init_input_stream(int ist_index, char *error, int error_len)
          ist->dec_ctx->opaque                = ist;
          ist->dec_ctx->get_format            = get_format;
          ist->dec_ctx->get_buffer2           = get_buffer;
@@ -36947,18 +36944,18 @@ index 026ffa9..c4c4dd6 100644
  
          av_opt_set_int(ist->dec_ctx, "refcounted_frames", 1, 0);
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
-index 54e14b4..0ae4d41 100644
+index 0fd6767..bae3f2d 100644
 --- a/libavcodec/Makefile
 +++ b/libavcodec/Makefile
-@@ -8,6 +8,7 @@ HEADERS = avcodec.h                                                     \
+@@ -9,6 +9,7 @@ HEADERS = avcodec.h                                                     \
            rpi_shader.h                                                  \
            rpi_mailbox.h                                                 \
            rpi_hevc_transform.h                                          \
 +          rpi_zc.h                                                      \
            dv_profile.h                                                  \
            d3d11va.h                                                     \
-           dxva2.h                                                       \
-@@ -42,6 +43,7 @@ OBJS = allcodecs.o                                                      \
+           dirac.h                                                       \
+@@ -46,6 +47,7 @@ OBJS = allcodecs.o                                                      \
         rpi_qpu.o                                                        \
         rpi_shader.o                                                     \
         rpi_mailbox.o                                                    \
@@ -36967,14 +36964,13 @@ index 54e14b4..0ae4d41 100644
         xiph.o                                                           \
  
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
-index bc1b1b9..26bf9e0 100644
+index d849765..b934740 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -3439,6 +3439,13 @@ typedef struct AVCodecContext {
-     unsigned properties;
- #define FF_CODEC_PROPERTY_LOSSLESS        0x00000001
- #define FF_CODEC_PROPERTY_CLOSED_CAPTIONS 0x00000002
-+
+@@ -3355,6 +3355,12 @@ typedef struct AVCodecContext {
+     AVPacketSideData *coded_side_data;
+     int            nb_coded_side_data;
+ 
 +    /**
 +     * Opaque pointer for use by replacement get_buffer2 code
 +     *
@@ -36985,10 +36981,10 @@ index bc1b1b9..26bf9e0 100644
  
  AVRational av_codec_get_pkt_timebase         (const AVCodecContext *avctx);
 diff --git a/libavcodec/hevc.c b/libavcodec/hevc.c
-index d56f777..2ebd8ce 100644
+index 35a1394..001c9e8 100644
 --- a/libavcodec/hevc.c
 +++ b/libavcodec/hevc.c
-@@ -112,10 +112,6 @@ static uint32_t rpi_filter_coefs[8][1] = {
+@@ -114,10 +114,6 @@ static uint32_t rpi_filter_coefs[8][1] = {
          { ENCODE_COEFFS(  -2,  10,  58,  -2) }
  };
  
@@ -36999,7 +36995,7 @@ index d56f777..2ebd8ce 100644
  #endif
  
  
-@@ -2184,9 +2180,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2186,9 +2182,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    int bw = nPbW-start_x;
                    int bh = nPbH-start_y;
                    y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
@@ -37011,7 +37007,7 @@ index d56f777..2ebd8ce 100644
                    *y++ = ( (bw<16 ? bw : 16) << 16 ) + (bh<16 ? bh : 16);
                    *y++ = my2_mx2_my_mx;
                    if (weight_flag) {
-@@ -2194,7 +2190,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2196,7 +2192,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    } else {
                        *y++ = 1; // Weight of 1 and offset of 0
                    }
@@ -37020,7 +37016,7 @@ index d56f777..2ebd8ce 100644
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
-@@ -2233,8 +2229,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2235,8 +2231,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
@@ -37031,7 +37027,7 @@ index d56f777..2ebd8ce 100644
                        *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
-@@ -2245,8 +2241,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2247,8 +2243,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                            *u++ = 1; // Weight of 1 and offset of 0
                            *u++ = 1;
                        }
@@ -37042,7 +37038,7 @@ index d56f777..2ebd8ce 100644
                      }
                  }
                  s->curr_u_mvs = u;
-@@ -2284,9 +2280,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2286,9 +2282,9 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    int bw = nPbW-start_x;
                    int bh = nPbH-start_y;
                    y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
@@ -37054,7 +37050,7 @@ index d56f777..2ebd8ce 100644
                    *y++ = ( (bw<16 ? bw : 16) << 16 ) + (bh<16 ? bh : 16);
                    *y++ = my2_mx2_my_mx;
                    if (weight_flag) {
-@@ -2294,7 +2290,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2296,7 +2292,7 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    } else {
                        *y++ = 1; // Weight of 1 and offset of 0
                    }
@@ -37063,7 +37059,7 @@ index d56f777..2ebd8ce 100644
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter;
                  }
              }
-@@ -2334,8 +2330,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2336,8 +2332,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
@@ -37074,7 +37070,7 @@ index d56f777..2ebd8ce 100644
                        *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
                        // TODO chroma weight and offset... s->sh.chroma_weight_l0[current_mv.ref_idx[0]][0], s->sh.chroma_offset_l0[current_mv.ref_idx[0]][0]
                        *u++ = rpi_filter_coefs[_mx][0];
-@@ -2347,8 +2343,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2349,8 +2345,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                            *u++ = 1; // Weight of 1 and offset of 0
                            *u++ = 1;
                        }
@@ -37085,7 +37081,7 @@ index d56f777..2ebd8ce 100644
                      }
                  }
                  s->curr_u_mvs = u;
-@@ -2390,13 +2386,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2392,13 +2388,13 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                    int bw = nPbW-start_x;
                    int bh = nPbH-start_y;
                    y++[-RPI_LUMA_COMMAND_WORDS] = ((y1 - 3 + start_y) << 16) + ( (x1 - 3 + start_x) & 0xffff);
@@ -37102,7 +37098,7 @@ index d56f777..2ebd8ce 100644
                    y++[-RPI_LUMA_COMMAND_WORDS] = s->mc_filter_b;
                  }
              }
-@@ -2440,8 +2436,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2442,8 +2438,8 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b0;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = x1_c - 1 + start_x;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = y1_c - 1 + start_y;
@@ -37113,7 +37109,7 @@ index d56f777..2ebd8ce 100644
                        *u++ = ( (bw<RPI_CHROMA_BLOCK_WIDTH ? bw : RPI_CHROMA_BLOCK_WIDTH) << 16 ) + (bh<16 ? bh : 16);
                        *u++ = rpi_filter_coefs[_mx][0];
                        *u++ = rpi_filter_coefs[_my][0];
-@@ -2451,14 +2447,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
+@@ -2453,14 +2449,14 @@ static void hls_prediction_unit(HEVCContext *s, int x0, int y0,
                        u++[-RPI_CHROMA_COMMAND_WORDS] = s->mc_filter_uv_b;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = x2_c - 1 + start_x;
                        u++[-RPI_CHROMA_COMMAND_WORDS] = y2_c - 1 + start_y;
@@ -37132,7 +37128,7 @@ index d56f777..2ebd8ce 100644
                      }
                  }
                  s->curr_u_mvs = u;
-@@ -3257,12 +3253,13 @@ static int32_t filter8_luma(uint8_t *data, int x0, int y0, int pitch, int my_mx,
+@@ -3259,12 +3255,13 @@ static int32_t filter8_luma(uint8_t *data, int x0, int y0, int pitch, int my_mx,
     return vsum;
  }
  
@@ -37148,7 +37144,7 @@ index d56f777..2ebd8ce 100644
    if (p>=base && p<base+pitch*pic_height) {
      return frame->data[cIdx] + (p-base);
    }
-@@ -3549,6 +3546,7 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
+@@ -3551,6 +3548,7 @@ static void rpi_launch_vpu_qpu(HEVCContext *s)
  #ifdef RPI
  
  #ifndef RPI_FAST_CACHEFLUSH
@@ -37156,7 +37152,7 @@ index d56f777..2ebd8ce 100644
  static void flush_buffer(AVBufferRef *bref) {
      GPU_MEM_PTR_T *p = av_buffer_pool_opaque(bref);
      gpu_cache_flush(p);
-@@ -3559,7 +3557,7 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3561,7 +3559,7 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
  {
  #ifdef RPI_FAST_CACHEFLUSH
      struct vcsm_user_clean_invalid_s iocache = {};
@@ -37165,7 +37161,7 @@ index d56f777..2ebd8ce 100644
      int n = s->ps.sps->height;
      int curr_y = 0;
      int curr_uv = 0;
-@@ -3567,21 +3565,21 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
+@@ -3569,21 +3567,21 @@ static void flush_frame(HEVCContext *s,AVFrame *frame)
      int sz,base;
      sz = s->frame->linesize[1] * (n_uv-curr_uv);
      base = s->frame->linesize[1] * curr_uv;
@@ -37195,7 +37191,7 @@ index d56f777..2ebd8ce 100644
      iocache.s[2].size  = sz;
      vcsm_clean_invalid( &iocache );
  #else
-@@ -3599,7 +3597,7 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
+@@ -3601,7 +3599,7 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
      int curr_y;
      int curr_uv;
      int n_uv;
@@ -37204,7 +37200,7 @@ index d56f777..2ebd8ce 100644
      int sz,base;
      int (*d)[2] = s->dblk_cmds[job];
      int low=(*d)[1];
-@@ -3616,21 +3614,21 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
+@@ -3618,21 +3616,21 @@ static void flush_frame3(HEVCContext *s,AVFrame *frame,GPU_MEM_PTR_T *p0,GPU_MEM
  
      sz = s->frame->linesize[1] * (n_uv-curr_uv);
      base = s->frame->linesize[1] * curr_uv;
@@ -38063,7 +38059,7 @@ index 0000000..f0109f4
 2.5.0
 
 
-From c78c48e76e161f3c8a7d5a73f713359efe65fabd Mon Sep 17 00:00:00 2001
+From 18195ae285b6f3b13bea98342ee902a126ac2b7c Mon Sep 17 00:00:00 2001
 From: John Cox <jc@kynesim.co.uk>
 Date: Tue, 1 Mar 2016 14:21:25 +0000
 Subject: [PATCH 2/2] Set VPU scheduling thread to high priority after creation
