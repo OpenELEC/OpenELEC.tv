@@ -1,0 +1,13 @@
+diff -Naur ffmpeg-3.0.1/ffmpeg.c ffmpeg-3.0.1.patch/ffmpeg.c
+--- ffmpeg-3.0.1/ffmpeg.c	2016-04-01 18:41:27.920031022 +0200
++++ ffmpeg-3.0.1.patch/ffmpeg.c	2016-04-01 18:43:11.057262871 +0200
+@@ -732,7 +732,9 @@
+         av_freep(&ist->filters);
+         av_freep(&ist->hwaccel_device);
+ 
++#ifdef RPI_ZERO_COPY
+         av_rpi_zc_uninit(ist->dec_ctx);
++#endif
+         avcodec_free_context(&ist->dec_ctx);
+ 
+         av_freep(&input_streams[i]);
