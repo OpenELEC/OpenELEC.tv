@@ -32,7 +32,7 @@ diff -Naur lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c lcdproc-0
  
  
  /**
- @@ -747,7 +745,7 @@
+@@ -747,7 +745,7 @@
  	else {
  		p->offbrightness = promille;
  	}
@@ -58,3 +58,14 @@ diff -Naur lcdproc-0.5.7-cvs20140217.orig/server/drivers/NoritakeVFD.c lcdproc-0
 +		out[2] = (y-1) * p->width + (x-1);
  	write(p->fd, out, 3);
  }
+
+diff -Naur lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.h /home/lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.h
+--- lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.h	2014-02-17 22:36:35.000000000 +0100
++++ /home/lcdproc-0.5.7-cvs20140217/server/drivers/NoritakeVFD.h	2016-01-04 11:13:07.839044280 +0100
+@@ -39,7 +39,7 @@
+ MODULE_EXPORT int  NoritakeVFD_cellheight (Driver *drvthis);
+ MODULE_EXPORT void NoritakeVFD_clear (Driver *drvthis);
+ MODULE_EXPORT void NoritakeVFD_flush (Driver *drvthis);
+-MODULE_EXPORT void NoritakeVFD_string (Driver *drvthis, int x, int y, const char string[]);
++MODULE_EXPORT void NoritakeVFD_string (Driver *drvthis, int x, int y, unsigned char string[]);
+ MODULE_EXPORT void NoritakeVFD_chr (Driver *drvthis, int x, int y, char c);
