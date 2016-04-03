@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="odroidc1-mali"
-PKG_VERSION="0cb5ca4"
+PKG_VERSION="r5p1-01rel0-armhf"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -41,10 +41,10 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib
-    cp -PR fbdev/mali_libs/* $SYSROOT_PREFIX/usr/lib
+    cp -PR usr/lib/* $SYSROOT_PREFIX/usr/lib
   mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -PR fbdev/mali_headers/* $SYSROOT_PREFIX/usr/include
+    cp -PR usr/include/* $SYSROOT_PREFIX/usr/include
   mkdir -p $INSTALL/usr/lib
-    cp -PR fbdev/mali_libs/*.so* $INSTALL/usr/lib
+    cp -PR usr/lib/*.so* $INSTALL/usr/lib
 }
 
