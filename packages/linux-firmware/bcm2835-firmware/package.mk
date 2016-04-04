@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="bcm2835-firmware"
-PKG_VERSION="c230b2b"
+PKG_VERSION="046effa"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
 PKG_SITE="http://www.broadcom.com"
 PKG_GIT_URL="https://github.com/raspberrypi/firmware.git"
 PKG_GIT_BRANCH="master"
-PKG_KEEP_CHECKOUT="yes"
+PKG_KEEP_CHECKOUT="no"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
