@@ -1,13 +1,13 @@
 diff -Naur retroarch.git/gfx/drivers_context/drm_ctx.c retroarch.patch/gfx/drivers_context/drm_ctx.c
---- retroarch.git/gfx/drivers_context/drm_ctx.c	2016-03-24 04:10:29.393925997 +0100
-+++ retroarch.patch/gfx/drivers_context/drm_ctx.c	2016-03-24 04:22:49.928033924 +0100
+--- retroarch.git/gfx/drivers_context/drm_ctx.c	2016-04-08 12:00:23.808205458 +0200
++++ retroarch.patch/gfx/drivers_context/drm_ctx.c	2016-04-08 12:35:13.322971465 +0200
 @@ -324,7 +324,10 @@
     drm_free();
  
     if (g_drm_fd >= 0)
 +   {
 +      drmDropMaster(g_drm_fd);
-       filestream_fclose(drm->drm);
+       filestream_close(drm->drm);
 +   }
  
     g_gbm_surface      = NULL;

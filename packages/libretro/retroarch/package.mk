@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="e411274"
+PKG_VERSION="7086277"
 PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -140,7 +140,7 @@ makeinstall_target() {
 
   # Menu
   sed -i -e "s/# menu_core_enable = true/menu_core_enable = false/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# boxarts_directory =/boxarts_directory = \/storage\/boxarts/" $INSTALL/etc/retroarch.cfg
+  sed -i -e "s/# thumbnails_directory =/thumbnails_directory = \/storage\/thumbnails/" $INSTALL/etc/retroarch.cfg
 
   # Updater
   if [ "$ARCH" == "arm" ]; then
