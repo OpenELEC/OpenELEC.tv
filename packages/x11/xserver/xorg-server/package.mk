@@ -34,13 +34,6 @@ PKG_AUTORECONF="yes"
 
 get_graphicdrivers
 
-if [ "$COMPOSITE_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libXcomposite"
-  XORG_COMPOSITE="--enable-composite"
-else
-  XORG_COMPOSITE="--disable-composite"
-fi
-
 if [ ! "$OPENGL" = "no" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glproto $OPENGL libepoxy glu"
   XORG_MESA="--enable-glx --enable-dri --enable-glamor"
@@ -59,7 +52,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --disable-xselinux \
                            --enable-aiglx \
                            --enable-glx-tls \
-                           $XORG_COMPOSITE \
+                           --disable-composite \
                            --enable-mitshm \
                            --disable-xres \
                            --enable-record \
