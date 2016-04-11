@@ -32,12 +32,6 @@ PKG_LONGDESC=""
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ -n "$SKINS" ]; then
-  for i in $SKINS; do
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $MEDIACENTER-theme-$i"
-  done
-fi
-
 if [ "$MEDIACENTER" = "kodi" ]; then
 # some python stuff needed for various addons
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Pillow"
@@ -52,6 +46,12 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.mpd"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.rtmp"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.smoothstream"
+
+  if [ -n "$SKINS" ]; then
+    for i in $SKINS; do
+      PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $MEDIACENTER-theme-$i"
+    done
+  fi
 
   if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-language-addons"
