@@ -18,15 +18,11 @@ get_graphicdrivers() {
   for drv in $GRAPHIC_DRIVERS; do
     if [ "$drv" = "i915" ]; then
       DRI_DRIVERS="$DRI_DRIVERS,i915"
-      XORG_DRIVERS="$XORG_DRIVERS intel"
-      COMPOSITE_SUPPORT="yes"
       VAAPI_SUPPORT="yes"
     fi
 
     if [ "$drv" = "i965" ]; then
       DRI_DRIVERS="$DRI_DRIVERS,i965"
-      XORG_DRIVERS="$XORG_DRIVERS intel"
-      COMPOSITE_SUPPORT="yes"
       VAAPI_SUPPORT="yes"
     fi
 
@@ -42,31 +38,23 @@ get_graphicdrivers() {
 
     if [ "$drv" = "r200" ]; then
       DRI_DRIVERS="$DRI_DRIVERS,r200"
-      XORG_DRIVERS="$XORG_DRIVERS ati"
-      COMPOSITE_SUPPORT="yes"
     fi
 
     if [ "$drv" = "r300" ]; then
       GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300"
-      XORG_DRIVERS="$XORG_DRIVERS ati"
       LLVM_SUPPORT="yes"
-      COMPOSITE_SUPPORT="yes"
       VDPAU_SUPPORT="yes"
     fi
 
     if [ "$drv" = "r600" ]; then
       GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600"
-      XORG_DRIVERS="$XORG_DRIVERS ati"
       LLVM_SUPPORT="yes"
-      COMPOSITE_SUPPORT="yes"
       VDPAU_SUPPORT="yes"
     fi
 
     if [ "$drv" = "radeonsi" ]; then
       GALLIUM_DRIVERS="$GALLIUM_DRIVERS,radeonsi"
-      XORG_DRIVERS="$XORG_DRIVERS ati amdgpu"
       LLVM_SUPPORT="yes"
-      COMPOSITE_SUPPORT="yes"
       VDPAU_SUPPORT="yes"
     fi
 
