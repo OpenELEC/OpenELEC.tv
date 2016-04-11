@@ -77,6 +77,8 @@ pre_make_host() {
 }
 
 post_makeinstall_target() {
+  make -C lib/et DESTDIR=$SYSROOT_PREFIX install
+
   rm -rf $INSTALL/sbin/badblocks
   rm -rf $INSTALL/sbin/blkid
   rm -rf $INSTALL/sbin/dumpe2fs
