@@ -68,6 +68,12 @@ else
   BUSYBOX_CFG_FILE_INIT=$PKG_DIR/config/busybox-init.conf
 fi
 
+if [ -f $PROJECT_DIR/$PROJECT/busybox/init ]; then
+  BUSYBOX_INIT_FILE=$PROJECT_DIR/$PROJECT/busybox/init
+else
+  BUSYBOX_INIT_FILE=$PKG_DIR/scripts/init
+fi
+
 pre_build_target() {
   mkdir -p $PKG_BUILD/.$TARGET_NAME
   cp -RP $PKG_BUILD/* $PKG_BUILD/.$TARGET_NAME
@@ -247,6 +253,6 @@ makeinstall_init() {
     chmod 755 $INSTALL/platform_init
   fi
 
-  cp $PKG_DIR/scripts/init $INSTALL
+  cp $BUSYBOX_INIT_FILE $INSTALL
   chmod 755 $INSTALL/init
 }

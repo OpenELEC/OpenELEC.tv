@@ -21,7 +21,7 @@ PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_DEPENDS_TARGET="toolchain kodi:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg crossguid giflib"
+PKG_DEPENDS_TARGET="toolchain kodi:host xmlstarlet:host libsquish boost Python zlib bzip2 systemd pciutils lzo pcre swig:host libass curl rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libogg libcdio libmpeg2 taglib libxml2 libxslt yajl sqlite libvorbis ffmpeg crossguid giflib"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -33,16 +33,16 @@ PKG_AUTORECONF="no"
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="4c58ea8"
-    PKG_GIT_URL="https://github.com/popcornmix/xbmc.git"
+    PKG_VERSION="4cf382f"
+    PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
     PKG_GIT_BRANCH="jarvis_rbp_backports"
-    PKG_KEEP_CHECKOUT="yes"
+    PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="a7caa16"
+    PKG_VERSION="9809c3c"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="Jarvis"
-    PKG_KEEP_CHECKOUT="yes"
+    PKG_KEEP_CHECKOUT="no"
     ;;
 esac
 
@@ -224,7 +224,7 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   fi
 fi
 
-if [ "$VDPAU_SUPPORT" = yes ]; then
+if [ "$VDPAU_SUPPORT" = "yes" -a "$DISPLAYSERVER" = "x11" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
   KODI_VDPAU="--enable-vdpau"
 else

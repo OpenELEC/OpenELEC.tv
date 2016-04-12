@@ -1,3 +1,3 @@
-[submodule "packages/unofficial"]
-	path = packages/unofficial
+[submodule "packages/addons/unofficial"]
+	path = packages/addons/unofficial
 	url = https://github.com/OpenELEC/unofficial-addons.git
