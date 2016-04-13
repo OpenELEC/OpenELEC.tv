@@ -460,7 +460,7 @@
       if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
         # fubar
         echo "Forced fsck failed. Your system is broken beyond repair"
-        echo "Please re-install OpenELEC"
+        echo "Please re-install @DISTRONAME@"
         echo ""
         echo "Press enter to shutdown now"
         echo ""
