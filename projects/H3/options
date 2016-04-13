@@ -38,7 +38,7 @@
     BOOTLOADER="u-boot"
 
   # u-boot version to use (default)
-    UBOOT_VERSION="2016.03-rc2"
+    UBOOT_VERSION="awh3"
 
   # Configuration for u-boot
     UBOOT_CONFIG=""

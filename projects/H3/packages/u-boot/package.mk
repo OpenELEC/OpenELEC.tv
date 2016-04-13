@@ -17,10 +17,10 @@
 ################################################################################
 
 PKG_NAME="u-boot"
-if [ "$UBOOT_VERSION" = "2016.03-rc2" ]; then
-  PKG_VERSION="2016.03-rc2"
-  PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
-  PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+if [ "$UBOOT_VERSION" = "awh3" ]; then
+  PKG_VERSION="ec770db"
+  PKG_GIT_URL="git://git.denx.de/u-boot-sunxi.git"
+  PKG_GIT_BRANCH="master"
 fi
 PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
 PKG_REV="1"
