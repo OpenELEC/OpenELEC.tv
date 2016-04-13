@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="libump"
-PKG_VERSION="ec0680628744f30b8fac35e41a7bd8e23e59c39f"
+PKG_VERSION="ec06806"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/linux-sunxi/libump"
-PKG_URL="https://github.com/linux-sunxi/libump/archive/$PKG_VERSION.tar.gz"
+PKG_GIT_URL="https://github.com/linux-sunxi/libump.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
@@ -31,7 +32,3 @@ PKG_LONGDESC="ARMs Universal Memory Provider userspace library. This library is 
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
-
-unpack() {
-  tar xf $ROOT/$SOURCES/libump/$PKG_VERSION.tar.gz -C $ROOT/$BUILD
-}
