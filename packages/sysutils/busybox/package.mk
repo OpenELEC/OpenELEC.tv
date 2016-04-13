@@ -168,6 +168,7 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/usr/lib/openelec
     cp $PKG_DIR/scripts/fs-resize $INSTALL/usr/lib/openelec
+      sed -e "s/@DISTRONAME@/$DISTRONAME/g" -i $INSTALL/usr/lib/openelec/fs-resize
 
   mkdir -p $INSTALL/etc
     cp $PKG_DIR/config/profile $INSTALL/etc
@@ -249,5 +250,6 @@ makeinstall_init() {
   fi
 
   cp $BUSYBOX_INIT_FILE $INSTALL
+    sed -e "s/@DISTRONAME@/$DISTRONAME/g" -i $INSTALL/init
   chmod 755 $INSTALL/init
 }
