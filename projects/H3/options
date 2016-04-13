@@ -133,4 +133,5 @@
     INSTALLER_SUPPORT="no"
 
   # additional drivers
-    ADDITIONAL_DRIVERS+=" media_build"
+  # overwrite distribution variable
+    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU mt7601 mt7610u rtk8188eu media_build"
