@@ -19,11 +19,11 @@
 ################################################################################
 
 PKG_NAME="hatari"
-PKG_VERSION="a08e391"
+PKG_VERSION="204dc6e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
-PKG_SITE="https://github.com/libretro/libretro-hatari"
+PKG_SITE="https://github.com/libretro/hatari"
 PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
@@ -45,5 +45,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp ../libretro-hatari.so $INSTALL/usr/lib/libretro/
+  cp ../hatari_libretro.so $INSTALL/usr/lib/libretro/
 }
