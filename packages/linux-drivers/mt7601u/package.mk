@@ -16,41 +16,42 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="mt7601"
-PKG_VERSION="e35628dc0b4c8d35f668efce9bab6bd603a0a6f3"
+PKG_NAME="mt7601u"
+PKG_VERSION="e65aed5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/porjo/mt7601"
-PKG_URL="https://github.com/porjo/mt7601/archive/$PKG_VERSION.tar.gz"
+PKG_GIT_URL="https://github.com/porjo/mt7601.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
-PKG_SHORTDESC="Mediatek MT7601 Linux 3.x driver"
-PKG_LONGDESC="Mediatek MT7601 Linux 3.x driver"
+PKG_SHORTDESC="Mediatek MT7601U Linux 3.x driver"
+PKG_LONGDESC="Mediatek MT7601U Linux 3.x driver"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-unpack() {
-  tar xf $ROOT/$SOURCES/$PKG_NAME/$PKG_VERSION.tar.gz -C $ROOT/$BUILD
-}
 
 pre_make_target() {
   unset LDFLAGS
 }
 
 make_target() {
-  make -C src V=1 \
-       ARCH=$TARGET_KERNEL_ARCH \
-       LINUX_SRC=$(kernel_path) \
-       CROSS_COMPILE=$TARGET_PREFIX
+  sed -i '200s|.*LINUX_SRC.*|LINUX_SRC = '$(kernel_path)'|' src/Makefile
+  sed -i '203s|.*LINUX_SRC_MODULE.*|LINUX_SRC_MODULE = '$INSTALL'/lib/modules/'$(get_module_dir)'/kernel/drivers/net/wireless/|' src/Makefile
+  sed -i '204s|.*CROSS_COMPILE.*|CROSS_COMPILE = $(TARGET_PREFIX)|' src/Makefile
+  sed -i '205i ARCH = $(TARGET_ARCH)' src/Makefile
+  sed -i '206i export ARCH' src/Makefile
+  sed -i '207i export CROSS_COMPILE' src/Makefile
+  make -C src osdrv
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
     cp src/os/linux/mt7601Usta.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-  mkdir -p $INSTALL/etc/Wireless/RT2870STA
-    cp src/RT2870STA.dat $INSTALL/etc/Wireless/RT2870STA
+
+  mkdir -p $INSTALL/lib/firmware/mt7601u
+    cp src/RT2870STA.dat $INSTALL/lib/firmware/mt7601u/mt7601u_sta.dat
 }
