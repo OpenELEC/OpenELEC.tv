@@ -134,4 +134,4 @@
 
   # additional drivers
   # overwrite distribution variable
-    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU mt7601 mt7610u rtk8188eu media_build"
+    ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU mt7601 mt7610u rtk8188eu media_build RTL8189ES"

@@ -16,13 +16,14 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="rtk8189es"
-PKG_VERSION="2015-12-15-90ed86d42d"
+PKG_NAME="RTL8189ES"
+PKG_VERSION="080f2aa"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://openlinux.amlogic.com:8000/download/ARM/wifi/"
-PKG_URL="http://openlinux.amlogic.com:8000/download/ARM/wifi/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_SITE="https://github.com/jwrdegoede/rtl8189ES_linux"
+PKG_GIT_URL="https://github.com/jwrdegoede/rtl8189ES_linux.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
@@ -38,15 +39,13 @@ pre_make_target() {
 }
 
 make_target() {
-  cd rtl8189ES
   make V=1 \
        ARCH=$TARGET_KERNEL_ARCH \
        KSRC=$(kernel_path) \
        CROSS_COMPILE=$TARGET_PREFIX
-  cd ..
 }
 
 makeinstall_target() {
   mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp rtl8189ES/*.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
 }

@@ -3,6 +3,3 @@
 
   # Board Configuration
     FEXFILE="orange_pi2.fex"
-    
-  # additional drivers
-    ADDITIONAL_DRIVERS+=" rtk8189es"
