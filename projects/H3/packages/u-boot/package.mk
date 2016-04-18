@@ -18,8 +18,8 @@
 
 PKG_NAME="u-boot"
 if [ "$UBOOT_VERSION" = "awh3" ]; then
-  PKG_VERSION="ec770db"
-  PKG_GIT_URL="git://git.denx.de/u-boot-sunxi.git"
+  PKG_VERSION="108f841"
+  PKG_GIT_URL="git://git.denx.de/u-boot.git"
   PKG_GIT_BRANCH="master"
 fi
 PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
