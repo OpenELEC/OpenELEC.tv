@@ -1,0 +1,33 @@
+diff -Naur linux-4.5.1/drivers/char/broadcom/vc_sm/vmcs_sm.c linux-4.5.1.patch/drivers/char/broadcom/vc_sm/vmcs_sm.c
+--- linux-4.5.1/drivers/char/broadcom/vc_sm/vmcs_sm.c	2016-04-18 22:48:13.982440423 +0200
++++ linux-4.5.1.patch/drivers/char/broadcom/vc_sm/vmcs_sm.c	2016-04-18 22:49:47.079589872 +0200
+@@ -197,12 +197,12 @@
+ static struct SM_STATE_T *sm_state;
+ static int sm_inited;
+ 
+-static const char *const sm_cache_map_vector[] = {
+-	"(null)",
+-	"host",
+-	"videocore",
+-	"host+videocore",
+-};
++//static const char *const sm_cache_map_vector[] = {
++//	"(null)",
++//	"host",
++//	"videocore",
++//	"host+videocore",
++//};
+ 
+ /* ---- Private Function Prototypes -------------------------------------- */
+ 
+@@ -676,8 +676,8 @@
+ 				   resource->res_base_mem);
+ 			seq_printf(s, "VC-size (bytes):   %u\n",
+ 				   resource->res_size);
+-			seq_printf(s, "Cache:             %s\n",
+-				   sm_cache_map_vector[resource->res_cached]);
++//			seq_printf(s, "Cache:             %s\n",
++//				   sm_cache_map_vector[resource->res_cached]);
+ 		}
+ 	}
+ 
