@@ -40,8 +40,9 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   awh3)
-    PKG_VERSION="awh3-3.4"
-    PKG_URL="https://github.com/jernejsk/OpenELEC-OPi2/raw/7de19646f7a8bf77df6f2f40fff7aa978f9beb67/storage/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_VERSION="1bbb331"
+    PKG_GIT_URL="https://github.com/igorpecovnik/linux.git"
+    PKG_GIT_BRANCH="sun8i"
     ;;
   *)
     PKG_VERSION="4.4.6"

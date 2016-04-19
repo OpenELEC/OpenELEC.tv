@@ -131,9 +131,9 @@ Patch for generation of OrangePI 2 kernel with gcc-5.2.1
 --- linux-3.4/arch/arm/mach-sunxi/sunxi-platsmp.c.orig	2015-01-27 03:29:26.000000000 +0100
 +++ linux-3.4/arch/arm/mach-sunxi/sunxi-platsmp.c	2015-07-07 19:21:41.532586216 +0200
 @@ -65,7 +65,7 @@
- /* boot entry for each cpu */
- extern void *cpus_boot_entry[NR_CPUS];
- extern void secondary_startup(void);
+ }
+ #endif
+ 
 -void sunxi_set_cpus_boot_entry(int cpu, void *entry)
 +void __cpuinit sunxi_set_cpus_boot_entry(int cpu, void *entry)
  {

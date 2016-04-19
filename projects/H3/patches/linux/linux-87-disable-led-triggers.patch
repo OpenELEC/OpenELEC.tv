@@ -1,0 +1,18 @@
+diff -Nur a/drivers/leds/leds-sunxi.c b/drivers/leds/leds-sunxi.c
+--- a/drivers/leds/leds-sunxi.c	2016-04-12 12:21:19.000000000 +0200
++++ b/drivers/leds/leds-sunxi.c	2016-04-19 18:23:55.459868129 +0200
+@@ -17,12 +17,12 @@
+ struct gpio_led gpio_leds[] = {
+ {
+         .name                   = "default_led",
+-        .default_trigger        = "default-on",
++        .default_trigger        = "none",
+         .gpio                   = 0xffff,
+         .retain_state_suspended = 1,
+         }, {
+         .name                   = "default_led",
+-        .default_trigger        = "heartbeat",
++        .default_trigger        = "none",
+         .gpio                   = 0xffff,
+         .retain_state_suspended = 1,
+         }, {
