@@ -48,7 +48,7 @@ else
   PULSEAUDIO_AVAHI="--disable-avahi"
 fi
 
-if [ "$TARGET_FPU" = "neon" -o "$TARGET_FPU" = "neon-fp16" -o" $TARGET_FPU" = "neon-vfpv4" ]; then
+if [ "$TARGET_FPU" = "neon" -o "$TARGET_FPU" = "neon-fp16" -o "$TARGET_FPU" = "neon-vfpv4" ]; then
   PULSEAUDIO_NEON="--enable-neon-opt"
 else
   PULSEAUDIO_NEON="--disable-neon-opt" 
