@@ -17,13 +17,14 @@
 ################################################################################
 
 PKG_NAME="media_build"
-PKG_VERSION="66f4030"
-MEDIA_BUILD_VERSION="2014-10-21-1ef2496"
+PKG_VERSION="a9c762b"
+MEDIA_BUILD_VERSION="2016-03-29-d3f519301944"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://git.linuxtv.org/media_build.git"
-PKG_URL="$DISTRO_SRC/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_GIT_URL="git://linuxtv.org/media_build.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET=""
 PKG_BUILD_DEPENDS_TARGET="toolchain linux"
 PKG_PRIORITY="optional"
@@ -41,12 +42,10 @@ pre_make_target() {
 
 make_target() {
   $SED -i  -e "/^LATEST_TAR/s/-LATEST/-$MEDIA_BUILD_VERSION/g" linux/Makefile
+  sed -i '3i IR_SUNXI' v4l/versions.txt
 
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ download
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C linux/ untar
-
-  make VER=$KERNEL_VER SRCDIR=$(kernel_path) -C v4l/ Makefile.media
-  patch v4l/Makefile.media < $PROJECT_DIR/$PROJECT/packages/media_build/Makefile.media.H3.patch
 
   make VER=$KERNEL_VER SRCDIR=$(kernel_path) allyesconfig
   make VER=$KERNEL_VER SRCDIR=$(kernel_path)
