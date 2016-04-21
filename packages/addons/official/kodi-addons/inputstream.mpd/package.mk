@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="inputstream.mpd"
-PKG_VERSION="50bdebf"
+PKG_VERSION="6b058a0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
