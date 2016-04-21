@@ -99,10 +99,12 @@ diff -Nur -x .cproject -x .project -x .settings libcec-3.0.1/src/libcec/adapter/
    return NULL;
  #endif
  }
-diff -Nur -x .cproject -x .project -x .settings libcec-3.0.1/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp libcec-3.0.1-with-amlogic-adapter/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp
---- libcec-3.0.1/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ libcec-3.0.1-with-amlogic-adapter/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp	2016-02-28 12:31:26.771045268 +0100
-@@ -0,0 +1,298 @@
+diff --git a/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp b/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp
+new file mode 100644
+index 0000000..5aeddda
+--- /dev/null
++++ b/src/libcec/adapter/Amlogic/AmlogicCECAdapterCommunication.cpp
+@@ -0,0 +1,305 @@
 +/*
 + * This file is part of the libCEC(R) library.
 + *
@@ -346,6 +348,7 @@ diff -Nur -x .cproject -x .project -x .settings libcec-3.0.1/src/libcec/adapter/
 +  uint32_t size;
 +  fd_set rfds;
 +  cec_logical_address initiator, destination;
++  struct timeval tv;
 +
 +  if (!IsOpen())
 +    return 0;
@@ -362,8 +365,15 @@ diff -Nur -x .cproject -x .project -x .settings libcec-3.0.1/src/libcec/adapter/
 +    FD_ZERO(&rfds);
 +    FD_SET(fd, &rfds);
 +
-+    if (select(fd + 1, &rfds, NULL, NULL, NULL) >= 0 )
++    tv.tv_sec = 1;
++    tv.tv_usec = 0;
++
++    if (select(fd + 1, &rfds, NULL, NULL, &tv) >= 0 )
 +    {
++
++      if (!FD_ISSET(fd, &rfds))
++	  continue;
++
 +      size = read(fd, buffer, CEC_MAX_FRAME_SIZE);
 +
 +      if (size > 0)
@@ -394,7 +404,6 @@ diff -Nur -x .cproject -x .project -x .settings libcec-3.0.1/src/libcec/adapter/
 +            m_callback->OnCommandReceived(cmd);
 +      }
 +    }
-+
 +  }
 +
 +  return 0;
