@@ -103,6 +103,11 @@ for addontxt in $KODI_DIR/project/cmake/addons/bootstrap/repositories/*-addons.t
       continue
     fi
 
+# exclude addons:
+    if [ "$ADDON" = inputstream.mpd ]; then
+      continue
+    fi
+
     if [ -f ../../packages/addons/official/kodi-addons/$ADDON/package.mk ] ; then
       git_clone $REPO master $PKG_NAME.git $GIT_HASH
 
