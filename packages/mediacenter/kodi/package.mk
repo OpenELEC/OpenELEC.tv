@@ -403,8 +403,9 @@ post_makeinstall_target() {
     xmlstarlet ed -L -d "/addons/addon[text()='service.xbmc.versioncheck']" $KODI_ADDON_MANIFEST
     xmlstarlet ed -L -d "/addons/addon[text()='skin.estouchy']" $KODI_ADDON_MANIFEST
     xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "os.openelec.tv" $KODI_ADDON_MANIFEST
-    xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "repository.openelec.tv" $KODI_ADDON_MANIFEST
     xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "service.openelec.settings" $KODI_ADDON_MANIFEST
+    xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "repository.openelec.tv" $KODI_ADDON_MANIFEST
+    xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "repository.kodi.game" $KODI_ADDON_MANIFEST
 
   if [ ! "$SKIN_REMOVE_SHIPPED" = "yes" ]; then
     # Rebrand

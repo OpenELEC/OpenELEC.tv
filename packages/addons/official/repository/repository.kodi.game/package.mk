@@ -16,41 +16,28 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="mediacenter"
-PKG_VERSION=""
+PKG_NAME="repository.kodi.game"
+PKG_VERSION="7480ae2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain $MEDIACENTER"
+PKG_SITE="https://github.com/kodi-game/repository.kodi.game"
+PKG_GIT_URL="https://github.com/kodi-game/repository.kodi.game.git"
+PKG_GIT_BRANCH="master"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Mediacenter: Metapackage"
-PKG_LONGDESC=""
+PKG_SECTION=""
+PKG_SHORTDESC="repository.kodi.game: Kodi addon repository"
+PKG_LONGDESC="repository.kodi.game: Kodi addon repository"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ -n "$SKINS" ]; then
-  for i in $SKINS; do
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $MEDIACENTER-theme-$i"
-  done
-fi
+make_target() {
+  :
+}
 
-if [ "$MEDIACENTER" = "kodi" ]; then
-# some python stuff needed for various addons
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Pillow"
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET simplejson"
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xmlstarlet"
-
-# other packages
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET OpenELEC-settings"
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET peripheral.joystick"
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET repository.kodi.game"
-
-  if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-language-addons"
-  fi
-fi
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/share/kodi/addons/$PKG_NAME
+    cp -R addon.xml icon.png $INSTALL/usr/share/kodi/addons/$PKG_NAME
+}
