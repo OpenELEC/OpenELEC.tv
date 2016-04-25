@@ -18,7 +18,6 @@
 	<string id="1039">- listen on ip</string>
 	<string id="1040">- listen on port</string>
 	<string id="1044">Enable plugin: epgsearch</string>
-	<string id="1045">Enable plugin: xmltv2vdr</string>
 	<string id="1046">Enable plugin: extended EPG</string>
 	<string id="1047">Enable plugin: dummydevice</string>
 	<string id="1048">Enable plugin: satip</string>
