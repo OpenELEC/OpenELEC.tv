@@ -33,13 +33,13 @@ PKG_AUTORECONF="no"
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="8038846"
+    PKG_VERSION="60a76d9"
     PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
     PKG_GIT_BRANCH="jarvis_rbp_backports"
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="dd2daf6"
+    PKG_VERSION="c1c4b9e"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="Jarvis"
     PKG_KEEP_CHECKOUT="no"
