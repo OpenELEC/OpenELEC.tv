@@ -1,3 +1,7 @@
+8.0.0
+- rebuild for OpenELEC-8.0
+- remove vdr-plugin-xmltv2vdr support
+
 7.0.3
 - update to vdr-plugin-vnsiserver-c63d8e8
 - udate to vdr-plugin-satip-18c9b79
