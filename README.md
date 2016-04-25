@@ -15,6 +15,7 @@
 
 Any help appreciated via pull requests or [Orange Pi forum](http://www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=648)
 
+Latest prebuilt images can be found [here](http://www.orangepi.org/orangepibbsen/forum.php?mod=viewthread&tid=1075)
 
 
 [OpenELEC](http://www.openelec.tv)
