@@ -83,13 +83,40 @@ pre_configure_target() {
 }
 
 make_target() {
-  if [ "$UBOOT_VERSION" = "odroidc" ]; then
-    make CROSS_COMPILE="arm-none-eabi-" $UBOOT_CONFIG
-    make CROSS_COMPILE="arm-none-eabi-" HOSTCC="$HOST_CC" HOSTSTRIP="true"
-  else
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_CONFIG
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
-  fi
+  # get number of targets to build
+  UBOOT_TARGET_CNT=0
+  for UBOOT_TARGET in $UBOOT_CONFIG; do
+    UBOOT_TARGET_CNT=$((UBOOT_TARGET_CNT + 1))
+  done
+
+  for UBOOT_TARGET in $UBOOT_CONFIG; do
+    if [ "$UBOOT_VERSION" = "odroidc" ]; then
+      make CROSS_COMPILE="arm-none-eabi-" mrproper
+      make CROSS_COMPILE="arm-none-eabi-" $UBOOT_TARGET
+      make CROSS_COMPILE="arm-none-eabi-" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+    else
+      make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" mrproper
+      make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_TARGET
+      make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+    fi
+
+    # rename files in case of multiple targets
+    if [ $UBOOT_TARGET_CNT -gt 1 ]; then
+      if [ "$UBOOT_TARGET" = "mx6_cubox-i_config" ]; then
+        TARGET_NAME="cuboxi"
+      elif [ "$UBOOT_TARGET" = "matrix" ]; then
+        TARGET_NAME="matrix"
+      elif [ "$UBOOT_TARGET" = "udoo_config" ]; then
+        TARGET_NAME="udoo"
+      else
+        TARGET_NAME="undef"
+      fi
+
+      [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
+      [ -f u-boot.imx ] && mv u-boot.imx u-boot-$TARGET_NAME.imx || :
+      [ -f SPL ] && mv SPL SPL-$TARGET_NAME || :
+    fi
+  done
 }
 
 makeinstall_target() {
@@ -114,31 +141,16 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/usr/share/bootloader
 
-  if [ -f "./u-boot.imx" ]; then
-    cp ./u-boot.imx $INSTALL/usr/share/bootloader
-  fi
+  cp ./u-boot*.imx $INSTALL/usr/share/bootloader 2>/dev/null || :
+  cp ./u-boot*.img $INSTALL/usr/share/bootloader 2>/dev/null || :
+  cp ./u-boot*.bin $INSTALL/usr/share/bootloader 2>/dev/null || :
+  cp ./SPL* $INSTALL/usr/share/bootloader 2>/dev/null || :
 
-  if [ -f "./u-boot.img" ]; then
-    cp ./u-boot.img $INSTALL/usr/share/bootloader
-  fi
-
-  if [ -f "./u-boot.bin" ]; then
-    cp ./u-boot.bin $INSTALL/usr/share/bootloader
-  fi
-
-  if [ -f "./SPL" ]; then
-    cp ./SPL $INSTALL/usr/share/bootloader
-  fi
-
-  if [ -f "./$UBOOT_CONFIGFILE" ]; then
-    cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/bootloader
-  fi
+  cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/bootloader 2>/dev/null || :
 
   cp -PRv $PKG_DIR/scripts/update.sh $INSTALL/usr/share/bootloader
 
-  if [ -f "$PROJECT_DIR/$PROJECT/bootloader/uEnv.txt" ]; then
-    cp -PR  $PROJECT_DIR/$PROJECT/bootloader/uEnv.txt $INSTALL/usr/share/bootloader
-  fi 
+  cp -PR $PROJECT_DIR/$PROJECT/bootloader/uEnv*.txt $INSTALL/usr/share/bootloader 2>/dev/null || :
 
   if [ "$UBOOT_VERSION" = "sunxi" ]; then
     #cp -RP $PROJECT_DIR/$PROJECT/bootloader/*.bin $INSTALL/usr/share/bootloader

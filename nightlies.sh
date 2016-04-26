@@ -8,7 +8,8 @@ DISTRO=Lakka PROJECT=RPi ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=RPi ARCH=arm make noobs -j9
 DISTRO=Lakka PROJECT=RPi2 ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=RPi2 ARCH=arm make noobs -j9
-DISTRO=Lakka PROJECT=imx6 ARCH=arm make image -j9
+DISTRO=Lakka PROJECT=imx6 SYSTEM=cuboxi ARCH=arm make image -j9
+DISTRO=Lakka PROJECT=imx6 SYSTEM=udoo ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=a20 ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=a10 ARCH=arm make image -j9
 DISTRO=Lakka PROJECT=Bananapi ARCH=arm make image -j9
