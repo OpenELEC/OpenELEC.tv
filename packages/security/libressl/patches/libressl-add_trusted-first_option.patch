@@ -5,15 +5,15 @@ Subject: [PATCH] add -trusted_first option and verify flag (backport from
  HEAD)
 
 ---
- apps/apps.c            |  2 ++
+ apps/openssl/apps.c            |  2 ++
  crypto/x509/x509_vfy.c | 16 ++++++++++++++++
  include/openssl/x509_vfy.h |  2 ++
  4 files changed, 24 insertions(+)
 
-diff --git a/apps/apps.c b/apps/apps.c
+diff --git a/apps/openssl/apps.c b/apps/openssl/apps.c
 index 4e11915..d8d8a70 100644
---- a/apps/apps.c
-+++ b/apps/apps.c
+--- a/apps/openssl/apps.c
++++ b/apps/openssl/apps.c
 @@ -2358,6 +2358,8 @@ int args_verify(char ***pargs, int *pargc,
  		flags |= X509_V_FLAG_NOTIFY_POLICY;
  	else if (!strcmp(arg, "-check_ss_sig"))
@@ -54,12 +54,12 @@ diff --git a/include/openssl/x509_vfy.h b/include/openssl/x509_vfy.h
 index fe09b30..d53f3e3 100644
 --- a/include/openssl/x509_vfy.h
 +++ b/include/openssl/x509_vfy.h
-@@ -389,6 +389,8 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
+@@ -383,6 +383,8 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
  #define X509_V_FLAG_USE_DELTAS			0x2000
  /* Check selfsigned CA signature */
  #define X509_V_FLAG_CHECK_SS_SIGNATURE		0x4000
 +/* Use trusted store first */
 +#define X509_V_FLAG_TRUSTED_FIRST		0x8000
- 
- 
- #define X509_VP_FLAG_DEFAULT			0x1
+ /* Do not check certificate or CRL validity against current time. */
+ #define X509_V_FLAG_NO_CHECK_TIME		0x200000
+  
