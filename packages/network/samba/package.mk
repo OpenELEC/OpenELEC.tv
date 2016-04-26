@@ -186,7 +186,6 @@ makeinstall_target() {
 
 post_install() {
   if [ "$SAMBA_SERVER" = "yes" ]; then
-    enable_service samba-defaults.service
     enable_service nmbd.service
     enable_service smbd.service
   fi
