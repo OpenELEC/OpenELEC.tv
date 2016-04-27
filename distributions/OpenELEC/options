@@ -205,7 +205,7 @@
   DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url
-  ADDON_SERVER_URL="http://addons.openelec.tv"
+  ADDON_SERVER_URL="http://down.nu/repository/official"
 
 # set the addon dirs
   ADDON_PATH="$ADDON_VERSION/$PROJECT/$TARGET_ARCH"
