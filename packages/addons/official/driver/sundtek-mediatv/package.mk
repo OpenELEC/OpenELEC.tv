@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="sundtek-mediatv"
-PKG_VERSION="7.0"
+PKG_VERSION="8.0"
 PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -32,7 +32,7 @@ PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.service"
 PKG_ADDON_PROVIDES=""
 PKG_AUTORECONF="no"
-PKG_ADDON_REPOVERSION="7.0"
+PKG_ADDON_REPOVERSION="8.0"
 
 make_target() {
   mkdir -p $ROOT/$PKG_BUILD
