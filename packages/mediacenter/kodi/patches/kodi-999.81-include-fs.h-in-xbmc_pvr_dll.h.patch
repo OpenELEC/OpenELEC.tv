@@ -1,0 +1,14 @@
+diff -Naur kodi-18e1df6/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h kodi-18e1df6.patch/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
+--- kodi-18e1df6/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h	2016-04-21 06:50:21.000000000 +0200
++++ kodi-18e1df6.patch/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h	2016-04-27 10:37:48.730708919 +0200
+@@ -23,6 +23,10 @@
+ #include "xbmc_addon_dll.h"
+ #include "xbmc_pvr_types.h"
+ 
++#ifdef TARGET_POSIX
++#include <linux/fs.h>
++#endif
++
+ /*!
+  * Functions that the PVR client add-on must implement, but some can be empty.
+  *
