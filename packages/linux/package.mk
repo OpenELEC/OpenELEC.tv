@@ -17,6 +17,18 @@
 ################################################################################
 
 PKG_NAME="linux"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="http://www.kernel.org"
+PKG_DEPENDS_HOST="ccache:host"
+PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb keyutils"
+PKG_DEPENDS_INIT="toolchain"
+PKG_NEED_UNPACK="$LINUX_DEPENDS"
+PKG_PRIORITY="optional"
+PKG_SECTION="linux"
+PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
+PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 case "$LINUX" in
   linux-odroidxu3)
     PKG_VERSION="94d8551"
@@ -46,6 +58,7 @@ case "$LINUX" in
   imx6)
     PKG_VERSION="cuboxi-3.14-ea83bda"
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   rpi)
     PKG_VERSION="b39e1e3"
@@ -60,18 +73,6 @@ case "$LINUX" in
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.kernel.org"
-PKG_DEPENDS_HOST="ccache:host"
-PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb keyutils"
-PKG_DEPENDS_INIT="toolchain"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
-PKG_PRIORITY="optional"
-PKG_SECTION="linux"
-PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and modules"
-PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
