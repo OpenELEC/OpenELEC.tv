@@ -119,7 +119,6 @@ for i in $PKG_DIR/patches/$PKG_NAME-*.patch \
          $PKG_DIR/patches/$PKG_VERSION/*.patch \
          $PKG_DIR/patches/$PKG_VERSION/$PATCH_ARCH/*.patch \
          $PROJECT_DIR/$PROJECT/patches/$PKG_NAME/*.patch \
-         $PROJECT_DIR/$PROJECT/devices/$DEVICE/patches/$PKG_NAME/*.patch \
          $HOME/.openelec/patches/$PKG_NAME/*.patch \
          $HOME/.openelec/projects/$PROJECT/patches/$PKG_NAME/*.patch; do
 
