@@ -33,8 +33,13 @@ if [ -z "$BOOT_DISK" ]; then
 fi
 
 SYSTEM_TYPE=""
+PROJECT=""
 if [ -f $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type ]; then
   . $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type
+fi
+if [ -f $SYSTEM_ROOT/usr/lib/openelec/H3-system-type ]; then
+  PROJECT="H3"
+  . $SYSTEM_ROOT/usr/lib/openelec/H3-system-type
 fi
 
 # mount $BOOT_ROOT r/w
@@ -48,9 +53,20 @@ fi
       cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT
     fi
   done
+  
+# update Allwinner configuration files
+  for all_fex in /flash/*.fex; do
+    fex=$(basename $all_fex)
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/$fex ]; then
+      echo "*** updating Allwinner configuration file: $fex ..."
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/$fex $BOOT_ROOT
+    fi
+  done
 
 # update bootloader files
-  if [ "$SYSTEM_TYPE" = "matrix" ]; then
+  if [ "$PROJECT" = "H3" ]; then
+    dd if=/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
+  elif [ "$SYSTEM_TYPE" = "matrix" ]; then
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_TYPE.imx ]; then
       echo "*** updating u-boot image in eMMC ..."
       # clean up u-boot parameters

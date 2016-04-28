@@ -9,11 +9,18 @@ STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
 
 DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 4 ))
 
+. $SYSTEM_ROOT/usr/lib/openelec/H3-system-type
+
 echo ""
 echo -e "\033[36m==============================="
 echo "Installing OpenELEC to eMMC"
 echo -e "===============================\033[37m"
 echo ""
+
+if [ ! -b /dev/mmcblk1 ]; then
+    echo "Error: eMMC not found."
+    exit 1
+fi
 
 echo ""
 echo -n "WARNING: ALL DATA ON eMMC WILL BE ERASED !, Continue (y/N)?  "
@@ -56,7 +63,7 @@ mkfs.ext4 -L emmclinux ${DISK}p2 > /dev/null 2>&1
 sync
 
 echo "Installing bootloader"
-dd if=/usr/share/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1k seek=8 conv=notrunc > /dev/null 2>&1
+dd if=/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
 
 echo "Copying files on first partition"
 

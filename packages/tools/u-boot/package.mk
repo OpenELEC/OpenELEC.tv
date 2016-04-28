@@ -25,6 +25,11 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_VERSION="imx6-e817fa3"
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+elif [ "$UBOOT_VERSION" = "awh3" ]; then
+  PKG_VERSION="108f841"
+  PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
+  PKG_GIT_URL="git://git.denx.de/u-boot.git"
+  PKG_GIT_BRANCH="master"
 else
   exit 0
 fi
@@ -76,12 +81,21 @@ make_target() {
         TARGET_NAME="matrix"
       elif [ "$UBOOT_TARGET" = "udoo_config" ]; then
         TARGET_NAME="udoo"
+      elif [ "$UBOOT_TARGET" = "orangepi_2_defconfig" ]; then
+        TARGET_NAME="opi2"
+      elif [ "$UBOOT_TARGET" = "orangepi_pc_defconfig" ]; then
+        TARGET_NAME="opipc"
+      elif [ "$UBOOT_TARGET" = "orangepi_plus_defconfig" ]; then
+        TARGET_NAME="opiplus"
+      elif [ "$UBOOT_TARGET" = "orangepi_one_defconfig" ]; then
+        TARGET_NAME="opione"
       else
         TARGET_NAME="undef"
       fi
 
       [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
       [ -f u-boot.imx ] && mv u-boot.imx u-boot-$TARGET_NAME.imx || :
+      [ -f u-boot-sunxi-with-spl.bin ] && mv u-boot-sunxi-with-spl.bin uboot-sunxi-$TARGET_NAME.bin || :
       [ -f SPL ] && mv SPL SPL-$TARGET_NAME || :
     fi
   done
@@ -110,7 +124,12 @@ makeinstall_target() {
   mkdir -p $INSTALL/usr/share/bootloader
 
   cp ./u-boot*.imx $INSTALL/usr/share/bootloader 2>/dev/null || :
-  cp ./u-boot*.img $INSTALL/usr/share/bootloader 2>/dev/null || :
+  #NOTE: sunxi u-boot build folder contains intermediate .img files which are not needed
+  if [ -f ./uboot-sunxi-opi2.bin ]; then
+    cp ./uboot-sunxi-*.bin $INSTALL/usr/share/bootloader 2>/dev/null
+  else
+    cp ./u-boot*.img $INSTALL/usr/share/bootloader 2>/dev/null || :
+  fi
   cp ./SPL* $INSTALL/usr/share/bootloader 2>/dev/null || :
 
   cp ./$UBOOT_CONFIGFILE $INSTALL/usr/share/bootloader 2>/dev/null || :

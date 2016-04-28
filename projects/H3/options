@@ -41,7 +41,10 @@
     UBOOT_VERSION="awh3"
 
   # Configuration for u-boot
-    UBOOT_CONFIG=""
+    UBOOT_CONFIG="orangepi_2_defconfig"
+    UBOOT_CONFIG="$UBOOT_CONFIG orangepi_pc_defconfig"
+    UBOOT_CONFIG="$UBOOT_CONFIG orangepi_plus_defconfig"
+    UBOOT_CONFIG="$UBOOT_CONFIG orangepi_one_defconfig"
 
   # Target Configfile for u-boot
     UBOOT_CONFIGFILE="boot.scr"

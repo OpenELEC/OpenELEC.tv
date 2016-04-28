@@ -1,5 +1,0 @@
-  # Configuration for u-boot
-    UBOOT_CONFIG="orangepi_one_defconfig"
-
-  # Board Configuration
-    FEXFILE="orange_pi_one.fex"

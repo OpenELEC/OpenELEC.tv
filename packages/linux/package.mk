@@ -43,6 +43,7 @@ case "$LINUX" in
     PKG_VERSION="1bbb331"
     PKG_GIT_URL="https://github.com/igorpecovnik/linux.git"
     PKG_GIT_BRANCH="sun8i"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools"
     ;;
   *)
     PKG_VERSION="4.4.8"
@@ -155,6 +156,11 @@ make_target() {
       $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
     cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali/mali.ko \
       $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
+
+    for all_fex in $PROJECT_DIR/$PROJECT/sys_config/*.fex; do
+      fex=$(basename $all_fex)
+      fex2bin $all_fex $fex
+    done
   fi
   
   rm -f $INSTALL/lib/modules/*/build
@@ -185,6 +191,9 @@ makeinstall_target() {
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/$TARGET_KERNEL_ARCH/boot/dts/*.dtb; do
       cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
+    done
+    for fex in *.fex; do
+      cp $fex $INSTALL/usr/share/bootloader 2>/dev/null || :
     done
   elif [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
     mkdir -p $INSTALL/usr/share/bootloader/overlays
