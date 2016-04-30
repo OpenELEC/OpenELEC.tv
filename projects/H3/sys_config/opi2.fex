@@ -576,7 +576,8 @@ vip_dev1_af_pwdn         =
 ;DE-Interlace configuration
 ;----------------------------------------------------------------------------------
 [di_para]
-di_used           = 1
+di_used = 1
+di_by_pass = 0
 
 ;--------------------------------------------------------------------------------
 ;   SDMMC PINS MAPPING                                                          |
@@ -668,14 +669,14 @@ sdc_ddrmode       = 1
 ; sim card configuration
 ;--------------------------------------------------------------------------------
 [smc_para]
-smc_used            = 0
-smc_rst             = port:PA09<2><default><default><default>
-smc_vppen           = port:PA20<3><default><default><default>
-smc_vppp            = port:PA21<3><default><default><default>
-smc_det             = port:PA10<2><default><default><default>
-smc_vccen           = port:PA06<2><default><default><default>
-smc_sck             = port:PA07<2><default><default><default>
-smc_sda             = port:PA08<2><default><default><default>
+smc_used = 0
+smc_rst = port:PA09<2><default><default><default>
+smc_vppen = port:PA20<3><default><default><default>
+smc_vppp = port:PA21<3><default><default><default>
+smc_det = port:PA10<2><default><default><default>
+smc_vccen = port:PA06<2><default><default><default>
+smc_sck = port:PA07<2><default><default><default>
+smc_sda = port:PA08<2><default><default><default>
 
 
 ;--------------------------------
@@ -697,8 +698,8 @@ smc_sda             = port:PA08<2><default><default><default>
 usb_used            = 1
 usb_port_type       = 2
 usb_detect_type     = 1
-usb_id_gpio         =
-usb_det_vbus_gpio   =
+usb_id_gpio         = port:PG12<0><1><default><default>
+usb_det_vbus_gpio   = port:PG12<0><1><default><default>
 usb_drv_vbus_gpio   = port:PL02<1><0><default><0>
 usb_host_init_state = 1
 usb_restrict_gpio   =
