@@ -378,10 +378,10 @@ nand0_ndqs          = port:PC16<2><default><default><default>
 ;----------------------------------------------------------------------------------
 ;disp init configuration
 ;
-;disp_mode             (0:screen0<screen0,fb0>; 1:screen1<screen1,fb0>)
-;screenx_output_type  (0:none; 1:lcd; 3:hdmi;)
+;disp_mode            (0:screen0<screen0,fb0>; 1:screen1<screen1,fb0>)
+;screenx_output_type  (0:none; 1:lcd; 2:tv; 3:hdmi;)
 ;screenx_output_mode  (used for hdmi output, 0:480i 1:576i 2:480p 3:576p 4:720p50)
-;                     (5:720p60 6:1080i50 7:1080i60 8:1080p24 9:1080p50 10:1080p60)
+;                     (5:720p60 6:1080i50 7:1080i60 8:1080p24 9:1080p50 10:1080p60 11:PAL 14:NTSC)
 ;fbx format           (0:ARGB 1:ABGR 2:RGBA 3:BGRA 5:RGB565 8:RGB888 12:ARGB4444 16:ARGB1555 18:RGBA5551)
 ;fbx_width,fbx_height (framebuffer horizontal/vertical pixels, fix to output resolution while equal 0)
 ;lcdx_backlight       (lcd init backlight,the range:[0,256],default:197
