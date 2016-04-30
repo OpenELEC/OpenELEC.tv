@@ -133,14 +133,15 @@ make_target() {
   LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
   
   if [ "$LINUX" = "awh3" ]; then
-    LDFLAGS="" make -C modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump \
+    MALI_VERSION=DX910-SW-99002-r4p0-00rel1
+    LDFLAGS="" make -C modules/mali/${MALI_VERSION}/driver/src/devicedrv/ump \
          V=1 \
          ARCH=$TARGET_ARCH \
          CONFIG=ca8-virtex820-m400-1 \
          BUILD=release \
          KDIR=$(kernel_path) \
          CROSS_COMPILE=$TARGET_PREFIX
-    LDFLAGS="" make -C modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali \
+    LDFLAGS="" make -C modules/mali/${MALI_VERSION}/driver/src/devicedrv/mali \
          V=1 \
          ARCH=$TARGET_ARCH \
          USING_MMU=1 \
@@ -150,9 +151,9 @@ make_target() {
          KDIR=$(kernel_path) \
          CROSS_COMPILE=$TARGET_PREFIX
     mkdir -p $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/ump/ump.ko \
+    cp modules/mali/${MALI_VERSION}/driver/src/devicedrv/ump/ump.ko \
       $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/DX910-SW-99002-r4p0-00rel0/driver/src/devicedrv/mali/mali.ko \
+    cp modules/mali/${MALI_VERSION}/driver/src/devicedrv/mali/mali.ko \
       $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
 
     for all_fex in $PROJECT_DIR/$PROJECT/sys_config/*.fex; do
