@@ -1,12 +1,14 @@
-From c90b4c2ced393524e81c0ec321afa7ec94f3b806 Mon Sep 17 00:00:00 2001
+From 836bee21cad8c5259f24972fc2b55f93dc712486 Mon Sep 17 00:00:00 2001
 From: Alex Deryskyba <alex@codesnake.com>
 Date: Wed, 1 Jul 2015 23:37:11 +0200
-Subject: [PATCH] [aml] Add support for 4k resolutions
+Subject: [PATCH 3/6] [aml] Add support for 4k resolutions
 
+Conflicts:
+	xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
 ---
- xbmc/utils/AMLUtils.cpp                     | 16 +++---
- xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp | 81 ++++++++++++++++++++++-------
- xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |  2 +
+ xbmc/utils/AMLUtils.cpp                     |   16 +++---
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp |   81 +++++++++++++++++++++------
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.h   |    2 +
  3 files changed, 73 insertions(+), 26 deletions(-)
 
 diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
@@ -95,99 +97,6 @@ index 21256ef..2103f0b 100644
    m_nativeWindow = nativeWindow;
  
    SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
-@@ -142,48 +157,78 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
-   }
- #endif
- 
--  switch((int)(0.5 + res.fRefreshRate))
-+  switch((int)(res.fRefreshRate*10))
-   {
-     default:
--    case 60:
-+    case 600:
-       switch(res.iScreenWidth)
-       {
-         default:
-         case 1280:
--          SetDisplayResolution("720p");
-+          return SetDisplayResolution("720p");
-           break;
-         case 1920:
-           if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
--            SetDisplayResolution("1080i");
-+            return SetDisplayResolution("1080i");
-           else
--            SetDisplayResolution("1080p");
-+            return SetDisplayResolution("1080p");
-           break;
-       }
-       break;
--    case 50:
-+    case 500:
-       switch(res.iScreenWidth)
-       {
-         default:
-         case 1280:
--          SetDisplayResolution("720p50hz");
-+          return SetDisplayResolution("720p50hz");
-           break;
-         case 1920:
-           if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
--            SetDisplayResolution("1080i50hz");
-+            return SetDisplayResolution("1080i50hz");
-           else
--            SetDisplayResolution("1080p50hz");
-+            return SetDisplayResolution("1080p50hz");
-           break;
-       }
-       break;
--    case 30:
--      SetDisplayResolution("1080p30hz");
-+    case 300:
-+      switch(res.iScreenWidth)
-+      {
-+        case 3840:
-+          return SetDisplayResolution("4k2k30hz");
-+          break;
-+        default:
-+          return SetDisplayResolution("1080p30hz");
-+          break;
-+      }
-       break;
--    case 24:
--      SetDisplayResolution("1080p24hz");
-+    case 250:
-+      switch(res.iScreenWidth)
-+      {
-+        case 3840:
-+          return SetDisplayResolution("4k2k25hz");
-+          break;
-+        default:
-+          return SetDisplayResolution("1080p25hz");
-+          break;
-+      }
-+      break;
-+    case 240:
-+      switch(res.iScreenWidth)
-+      {
-+        case 3840:
-+          return SetDisplayResolution("4k2k24hz");
-+          break;
-+        case 4096:
-+          return SetDisplayResolution("4k2ksmpte");
-+          break;
-+        default:
-+          return SetDisplayResolution("1080p24hz");
-+          break;
-+      }
-       break;
-   }
- 
--  return true;
-+  return false;
- }
- 
- bool CEGLNativeTypeAmlogic::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
 @@ -280,8 +325,8 @@ void CEGLNativeTypeAmlogic::SetFramebufferResolution(int width, int height) cons
      {
        vinfo.xres = width;
@@ -203,7 +112,7 @@ diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h b/xbmc/windowing/egl/EGLN
 index 6867c38..9ca41d4 100644
 --- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
 +++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
-@@ -55,6 +55,8 @@ class CEGLNativeTypeAmlogic : public CEGLNativeType
+@@ -55,6 +55,8 @@ protected:
  private:
    void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
    void SetFramebufferResolution(int width, int height) const;
@@ -212,3 +121,6 @@ index 6867c38..9ca41d4 100644
    std::string m_framebuffer_name;
 +  RESOLUTION_INFO m_maxResolution;
  };
+-- 
+1.7.10.4
+
