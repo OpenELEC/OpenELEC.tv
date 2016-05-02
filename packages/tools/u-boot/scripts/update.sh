@@ -66,7 +66,7 @@ fi
 # update bootloader files
   if [ "$PROJECT" = "H3" ]; then
     echo "*** updating u-boot image for board  $SYSTEM_TYPE ..."
-    dd if=/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
+    dd if=$SYSTEM_ROOT/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
   elif [ "$SYSTEM_TYPE" = "matrix" ]; then
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_TYPE.imx ]; then
       echo "*** updating u-boot image in eMMC ..."
@@ -106,7 +106,8 @@ fi
     cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv-$SYSTEM_TYPE.txt $BOOT_ROOT/uEnv.txt
   elif [ -f $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt -a ! -f $BOOT_ROOT/uEnv.txt ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt $BOOT_ROOT
-  elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr -a ! -f $BOOT_ROOT/boot.scr ]; then
+  #elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr -a ! -f $BOOT_ROOT/boot.scr ]; then
+  elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/boot.scr $BOOT_ROOT
   fi
 
