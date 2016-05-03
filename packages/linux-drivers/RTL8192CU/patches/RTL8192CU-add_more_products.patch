@@ -20,3 +20,11 @@ diff -Naur RTL8192CU-v4.0.2_9000.20130911/os_dep/linux/usb_intf.c RTL8192CU-v4.0
  	{USB_DEVICE(0x20F4, 0x624D)},/* TRENDnet */ \
  	{USB_DEVICE(0x0DF6, 0x0061)},/* Sitecom - Edimax */ \
  	{USB_DEVICE(0x0B05, 0x17AB)},/* ASUS - Edimax */ \
+@@ -154,6 +154,7 @@
+ 	{USB_DEVICE(0x0DF6, 0x0061)},/* Sitecom - Edimax */ \
+ 	{USB_DEVICE(0x0B05, 0x17AB)},/* ASUS - Edimax */ \
+ 	{USB_DEVICE(0x0846, 0x9021)},/* Netgear - Sercomm */ \
++	{USB_DEVICE(0x0846, 0x9043)},/* Netgear - WNA1000Mv2 */ \
+ 	{USB_DEVICE(0x0846, 0xF001)}, /* Netgear - Sercomm */ \
+ 	{USB_DEVICE(0x0E66, 0x0019)},/* Hawking,Edimax */ \
+ 	{USB_DEVICE(0x0E66, 0x0020)}, /* Hawking  - Edimax */ \
