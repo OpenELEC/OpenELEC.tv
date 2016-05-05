@@ -1,6 +1,6 @@
 diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
 --- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-05-05 18:50:52.036588088 +0200
++++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-05-05 20:37:40.566410339 +0200
 @@ -0,0 +1,578 @@
 +/*
 + *      Copyright (C) 2011-2013 Team XBMC
@@ -103,7 +103,7 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +  m_disp = -1;
 +  
 +  // assume HDMI at first
-+  m_screenid = 1;
++  m_screenid = 0;
 +}
 +
 +CEGLNativeTypeSunxi::~CEGLNativeTypeSunxi()
@@ -233,7 +233,10 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +      switch(res.iScreenHeight)
 +      {
 +        case 480:
-+          SetDisplayResolution(DISP_TV_MOD_480I);
++	  if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++	    SetDisplayResolution(DISP_TV_MOD_480I);
++	  else
++	    SetDisplayResolution(DISP_TV_MOD_480P);
 +          break;
 +        default:
 +        case 720:
@@ -252,7 +255,10 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +      switch(res.iScreenHeight)
 +      {
 +        case 576:
-+          SetDisplayResolution(DISP_TV_MOD_576I);
++	  if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution(DISP_TV_MOD_576I);
++	  else
++	    SetDisplayResolution(DISP_TV_MOD_576P);
 +          break;
 +        case 720:
 +          SetDisplayResolution(DISP_TV_MOD_720P_50HZ);
@@ -269,9 +275,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +    case 30:
 +      switch(res.iScreenHeight)
 +      {
-+        case 480:
-+          SetDisplayResolution(DISP_TV_MOD_480P);
-+          break;
 +        default:
 +        case 1080:
 +          SetDisplayResolution(DISP_TV_MOD_1080P_30HZ);
@@ -284,9 +287,6 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +    case 25:
 +      switch(res.iScreenHeight)
 +      {
-+        case 576:
-+          SetDisplayResolution(DISP_TV_MOD_576P);
-+          break;
 +        default:
 +        case 1080:
 +          SetDisplayResolution(DISP_TV_MOD_1080P_25HZ);
