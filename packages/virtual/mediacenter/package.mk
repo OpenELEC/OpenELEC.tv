@@ -49,6 +49,8 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET OpenELEC-settings"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET peripheral.joystick"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET repository.kodi.game"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.mpd"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.smoothstream"
 
   if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-language-addons"
