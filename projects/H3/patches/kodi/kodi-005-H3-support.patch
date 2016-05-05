@@ -1,7 +1,7 @@
-diff -Nur a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
---- a/addons/resource.language.en_gb/resources/strings.po	2016-01-12 22:00:22.000000000 +0100
-+++ b/addons/resource.language.en_gb/resources/strings.po	2016-01-14 23:03:50.027524901 +0100
-@@ -8329,7 +8329,13 @@
+diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/resource.language.en_gb/resources/strings.po
+--- a/addons/resource.language.en_gb/resources/strings.po	2016-04-15 18:52:10.000000000 +0200
++++ codec/addons/resource.language.en_gb/resources/strings.po	2016-05-03 21:53:55.762853622 +0200
+@@ -8333,7 +8333,13 @@
  msgid "IMX - Fast motion (double)"
  msgstr ""
  
@@ -16,9 +16,9 @@ diff -Nur a/addons/resource.language.en_gb/resources/strings.po b/addons/resourc
  
  #: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
  msgctxt "#16400"
-diff -Nur a/configure.ac b/configure.ac
---- a/configure.ac	2016-01-12 22:00:19.000000000 +0100
-+++ b/configure.ac	2016-01-14 23:03:50.027524901 +0100
+diff -Nur a/configure.ac codec/configure.ac
+--- a/configure.ac	2016-04-15 18:52:10.000000000 +0200
++++ codec/configure.ac	2016-05-03 21:53:55.762853622 +0200
 @@ -513,7 +513,7 @@
  
  AC_ARG_ENABLE([codec],
@@ -39,9 +39,9 @@ diff -Nur a/configure.ac b/configure.ac
      *imxvpu*)
        AC_CHECK_HEADER([imx-mm/vpu/vpu_wrapper.h],, AC_MSG_ERROR($missing_headers))
        AC_CHECK_LIB([vpu], main, LIBS="$LIBS -lfslvpuwrap -lvpu -lg2d", AC_MSG_ERROR($missing_library))
-diff -Nur a/system/settings/sunxi.xml b/system/settings/sunxi.xml
+diff -Nur a/system/settings/sunxi.xml codec/system/settings/sunxi.xml
 --- a/system/settings/sunxi.xml	1970-01-01 01:00:00.000000000 +0100
-+++ b/system/settings/sunxi.xml	2016-01-14 23:03:50.027524901 +0100
++++ codec/system/settings/sunxi.xml	2016-05-03 21:53:55.762853622 +0200
 @@ -0,0 +1,17 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<settings>
@@ -60,9 +60,9 @@ diff -Nur a/system/settings/sunxi.xml b/system/settings/sunxi.xml
 +    </category>
 +  </section>
 +</settings>
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
---- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-01-14 23:03:50.027524901 +0100
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+--- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-05-03 21:53:55.762853622 +0200
 @@ -40,6 +40,7 @@
  #if defined(HAS_IMXVPU)
  #include "Video/DVDVideoCodecIMX.h"
@@ -97,10 +97,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp b/xbmc/cores/dvdp
  #if defined(TARGET_DARWIN_OSX)
    if (!hint.software && CSettings::GetInstance().GetBool(CSettings::SETTING_VIDEOPLAYER_USEVDA) && !g_advancedSettings.m_useFfmpegVda)
    {
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-02-14 21:54:27.470067718 +0100
-@@ -0,0 +1,824 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-05-05 19:59:11.516474383 +0200
+@@ -0,0 +1,859 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -134,9 +134,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +#include "utils/log.h"
 +#include "threads/Atomics.h"
 +#include "windowing/WindowingFactory.h"
-+
-+//FIXME: find better way
-+#include "windowing/egl/EGLNativeTypeSunxi.h"
 +
 +#define _4CC(c1,c2,c3,c4) (((uint32_t)(c4)<<24)|((uint32_t)(c3)<<16)|((uint32_t)(c2)<<8)|(uint32_t)(c1))
 +
@@ -621,13 +618,46 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  m_paused(false),
 +  m_instances(0),
 +  m_vsync(false),
-+  m_fbHandle(-1)
++  m_fbHandle(-1),
++  m_screenid(0)
 +{
++  unsigned long args[4];
++  disp_output para;
++  
 +  m_difd = open("/dev/deinterlace", O_RDWR);
 +  if (m_difd == -1)
 +  {
 +      CLog::Log(LOGERROR, "Can't open HW deinterlacer!");
 +  }
++  
++  m_disp = open("/dev/disp", O_RDWR);
++  if (m_disp == -1)
++  {
++    CLog::Log(LOGERROR, "%s - Can't open display. Nothing will work!\n", __FUNCTION__);
++    return;
++  }
++  
++  args[0] = 0;
++  args[1] = (unsigned long)(&para);
++  ioctl(m_disp, DISP_GET_OUTPUT, args);
++  
++  m_screenid = (para.type == 0) ? 1 : 0;
++  
++  args[0] = m_screenid;
++  args[1] = (unsigned long)(&video_config);
++  args[2] = 1;
++  args[3] = 0;
++  
++  // framebuffer is always at layer(1,0)
++  video_config.channel = 1;
++  video_config.layer_id = 0;
++
++  ioctl(m_disp, DISP_LAYER_GET_CONFIG, args);
++  
++  video_config.info.alpha_mode = 0;
++  video_config.info.zorder = 1; // highest number is on top
++  
++  ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +}
 +
 +CSunxiContext::~CSunxiContext()
@@ -635,6 +665,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  if (m_difd != -1)
 +  {
 +    close(m_difd);
++  }
++  
++  if (m_disp != -1)
++  {
++    close(m_disp);
 +  }
 +}
 +
@@ -644,7 +679,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  if(m_instances == 0)
 +  {
-+    unsigned long args[4] = { 0, (unsigned long)(&video_config), 1, 0 };
++    unsigned long args[4] = { m_screenid, (unsigned long)(&video_config), 1, 0 };
 +
 +    video_config.info.mode = LAYER_MODE_BUFFER;
 +    video_config.info.alpha_mode = 1;
@@ -655,7 +690,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    video_config.layer_id = 0;
 +    video_config.info.zorder = 0;
 +
-+    ioctl(g_disp, DISP_LAYER_SET_CONFIG, args);
++    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +    
 +    m_fbHandle  = open("/dev/fb0", O_RDWR);
 +    if (m_fbHandle == -1)
@@ -676,13 +711,13 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +  
 +  if (m_instances == 1)
 +  {
-+    unsigned long args[4] = { 0, (unsigned long)(&video_config), 1, 0 };
++    unsigned long args[4] = { m_screenid, (unsigned long)(&video_config), 1, 0 };
 +    
 +    SAFE_RELEASE(m_last);
 +
 +    video_config.enable = 0;
 +
-+    ioctl(g_disp, DISP_LAYER_SET_CONFIG, args);
++    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +    
 +    if (m_fbHandle != -1)
 +    {
@@ -707,11 +742,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +{
 +  unsigned long args[4] = { 0, (unsigned long)(&video_config), 1, 0 };
 +  
-+  args[0] = 0; //SCREENID; FIXME: this should be define
++  args[0] = m_screenid;
 +  args[1] = enabled ? 1 : 0;
 +  args[2] = 0;
 +  args[3] = 0;
-+  ioctl(g_disp, DISP_VSYNC_EVENT_EN, args);
++  ioctl(m_disp, DISP_VSYNC_EVENT_EN, args);
 +  
 +  m_vsync = enabled && (m_fbHandle != -1);
 +}
@@ -719,7 +754,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +void CSunxiContext::Render(CCedarXBuffer *buffer, CRect &srcRect, CRect &dstRect)
 +{
 +  CSingleLock lk(m_renderLock);
-+  unsigned long args[4] = { 0, (unsigned long)(&video_config), 1, 0 };
++  unsigned long args[4] = { m_screenid, (unsigned long)(&video_config), 1, 0 };
 +  int numOfPasses = 1;
 +  
 +  // sanity check
@@ -836,7 +871,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    //NOTE: Height calculation is strictly speaking incorrect, but will do.
 +    video_config.info.fb.color_space = ((srcRect.y2 - srcRect.y1) < 720) ? DISP_BT601 : DISP_BT709;
 +
-+    ioctl(g_disp, DISP_LAYER_SET_CONFIG, args);
++    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +    
 +    renderbuf->Lock();
 +    SAFE_RELEASE(m_last);
@@ -925,10 +960,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp b/xbmc/
 +    ReturnPicture(decoder, picture);
 +  }
 +}
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-02-14 21:38:43.077719060 +0100
-@@ -0,0 +1,120 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-05-05 19:42:09.826502722 +0200
+@@ -0,0 +1,122 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -951,7 +986,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 + */
 +
 +#include <cedarx/vdecoder.h>
-+#include "windowing/egl/sunxi_display2.h"
++#include "sunxi_display2.h"
 +#include <linux/fb.h>
 +#include <set>
 +
@@ -1043,16 +1078,18 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h b/xbmc/co
 +  unsigned int      m_instances;
 +  bool              m_vsync;
 +  int               m_fbHandle;
++  unsigned long     m_screenid;
++  int               m_disp;
 +  // ugly hack
 +  std::set<VideoDecoder*> m_decoders;
 +  CCriticalSection  m_decodersLock;
 +};
 +
 +extern CSunxiContext g_SunxiContext;
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-01-14 23:03:50.031524959 +0100
-@@ -57,6 +57,7 @@
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-05-03 21:53:55.766186955 +0200
+@@ -52,6 +52,7 @@
  class CDVDMediaCodecInfo;
  class CDVDVideoCodecIMXBuffer;
  class CMMALVideoBuffer;
@@ -1060,7 +1097,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  typedef void* EGLImageKHR;
  
  
-@@ -107,6 +108,10 @@
+@@ -102,6 +103,10 @@
      struct {
        CMMALVideoBuffer *MMALBuffer;
      };
@@ -1071,9 +1108,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h b/xbmc/cores/dv
  
    };
  
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in b/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-01-14 23:03:50.031524959 +0100
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-05-03 21:53:55.766186955 +0200
 @@ -23,6 +23,9 @@
  ifeq (@USE_IMXVPU@,1)
  SRCS += DVDVideoCodecIMX.cpp
@@ -1084,1059 +1121,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in b/xbmc/cores/dvdpla
  ifeq (@USE_LIBAMCODEC@,1)
  SRCS += AMLCodec.cpp
  SRCS += DVDVideoCodecAmlogic.cpp
-diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
---- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-01-14 23:03:50.031524959 +0100
-@@ -931,6 +931,7 @@
-     case RENDER_FMT_MEDIACODECSURFACE:return "MEDIACODECSURFACE";
-     case RENDER_FMT_IMXMAP:    return "IMXMAP";
-     case RENDER_FMT_MMAL:      return "MMAL";
-+    case RENDER_FMT_DISP2:     return "DISP2";
-     case RENDER_FMT_NONE:      return "NONE";
-   }
-   return "UNKNOWN";
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp b/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
---- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-02-11 20:07:31.755610656 +0100
-@@ -93,6 +93,10 @@
- #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
- #endif
- 
-+#ifdef HAS_CEDARX
-+#include "DVDCodecs/Video/DVDVideoCodecCedarX.h"
-+#endif
-+
- using namespace Shaders;
- 
- CLinuxRendererGLES::YUVBUFFER::YUVBUFFER()
-@@ -116,6 +120,9 @@
- #ifdef HAS_IMXVPU
-   IMXBuffer = NULL;
- #endif
-+#ifdef HAS_CEDARX
-+  Disp2Buffer = NULL;
-+#endif
- }
- 
- CLinuxRendererGLES::YUVBUFFER::~YUVBUFFER()
-@@ -304,6 +311,11 @@
-   {
-     return source;
-   }
-+  
-+  if ( m_renderMethod & RENDER_DISP2 )
-+  {
-+    return source;
-+  }
- 
- #ifdef HAVE_VIDEOTOOLBOXDECODER
-   if (m_renderMethod & RENDER_CVREF )
-@@ -733,6 +745,52 @@
- #endif
-   }
- #endif
-+#ifdef HAS_CEDARX
-+  else if (m_renderMethod & RENDER_DISP2)
-+  {
-+    CCedarXBuffer *buffer = m_buffers[m_iYV12RenderBuffer].Disp2Buffer;
-+    if (buffer)
-+    {
-+      // this hack is needed to get the 2D mode of a 3D movie going
-+      RENDER_STEREO_MODE stereo_mode = g_graphicsContext.GetStereoMode();
-+      if (stereo_mode)
-+        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
-+
-+      ManageDisplay();
-+
-+      if (stereo_mode)
-+        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
-+
-+      CRect dstRect(m_destRect);
-+      CRect srcRect(m_sourceRect);
-+      switch (stereo_mode)
-+      {
-+        case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
-+          dstRect.y2 *= 2.0;
-+          srcRect.y2 *= 2.0;
-+        break;
-+
-+        case RENDER_STEREO_MODE_SPLIT_VERTICAL:
-+          dstRect.x2 *= 2.0;
-+          srcRect.x2 *= 2.0;
-+        break;
-+
-+        default:
-+        break;
-+      }
-+
-+      if (flags & RENDER_FLAG_FIELDMASK)
-+      {
-+        g_SunxiContext.SetDeinterlacing(true);
-+      }
-+      // Progressive
-+      else
-+        g_SunxiContext.SetDeinterlacing(false);
-+      
-+      g_SunxiContext.Render(buffer, srcRect, dstRect);
-+    }
-+  }
-+#endif
- }
- 
- void CLinuxRendererGLES::FlipPage(int source)
-@@ -780,6 +838,9 @@
- #ifdef HAS_IMXVPU
-   m_formats.push_back(RENDER_FMT_IMXMAP);
- #endif
-+#ifdef HAS_CEDARX
-+  m_formats.push_back(RENDER_FMT_DISP2);
-+#endif
- 
-   // setup the background colour
-   m_clearColour = (float)(g_advancedSettings.m_videoBlackBarColour & 0xff) / 0xff;
-@@ -894,6 +955,12 @@
-         m_renderMethod = RENDER_IMXMAP;
-         break;
-       }
-+      else if (m_format == RENDER_FMT_DISP2)
-+      {
-+        CLog::Log(LOGNOTICE, "GL: Using DISP2 render method");
-+        m_renderMethod = RENDER_DISP2;
-+        break;
-+      }
-       else if (m_format == RENDER_FMT_BYPASS)
-       {
-         CLog::Log(LOGNOTICE, "GL: Using BYPASS render method");
-@@ -992,6 +1059,12 @@
-     m_textureCreate = &CLinuxRendererGLES::CreateIMXMAPTexture;
-     m_textureDelete = &CLinuxRendererGLES::DeleteIMXMAPTexture;
-   }
-+  else if (m_format == RENDER_FMT_DISP2)
-+  {
-+    m_textureUpload = &CLinuxRendererGLES::UploadDisp2Texture;
-+    m_textureCreate = &CLinuxRendererGLES::CreateDisp2Texture;
-+    m_textureDelete = &CLinuxRendererGLES::DeleteDisp2Texture;
-+  }
-   else if (m_format == RENDER_FMT_OMXEGL)
-   {
-     m_textureUpload = &CLinuxRendererGLES::UploadOpenMaxTexture;
-@@ -1110,6 +1183,10 @@
-   if (m_renderMethod & RENDER_IMXMAP)
-     SAFE_RELEASE(buf.IMXBuffer);
- #endif
-+#ifdef HAS_CEDARX
-+  if (m_renderMethod & RENDER_DISP2)
-+    SAFE_RELEASE(buf.Disp2Buffer);
-+#endif
- }
- 
- void CLinuxRendererGLES::Render(DWORD flags, int index)
-@@ -1176,6 +1253,11 @@
-     RenderIMXMAPTexture(index, m_currentField);
-     VerifyGLState();
-   }
-+  else if (m_renderMethod & RENDER_DISP2)
-+  {
-+    RenderDisp2Texture(index, m_currentField);
-+    VerifyGLState();
-+  }
-   else
-   {
-     RenderSoftware(index, m_currentField);
-@@ -1892,6 +1974,10 @@
- {
- }
- 
-+void CLinuxRendererGLES::RenderDisp2Texture(int index, int field)
-+{
-+}
-+
- bool CLinuxRendererGLES::RenderCapture(CRenderCapture* capture)
- {
-   if (!m_bValidated)
-@@ -2889,7 +2975,32 @@
-   glDisable(m_textureTarget);
-   return true;
- }
-+//********************************************************************************************************
-+// DISP2 creation, deletion, copying + clearing
-+//********************************************************************************************************
-+void CLinuxRendererGLES::UploadDisp2Texture(int index)
-+{
-+}
-+
-+void CLinuxRendererGLES::DeleteDisp2Texture(int index)
-+{
-+#ifdef HAS_CEDARX
-+  YUVBUFFER &buf = m_buffers[index];
-+
-+  if(buf.Disp2Buffer != NULL)
-+  {
-+    SAFE_RELEASE(buf.Disp2Buffer);
-+  }
-+#endif
-+}
- 
-+bool CLinuxRendererGLES::CreateDisp2Texture(int index)
-+{
-+#ifdef HAS_CEDARX
-+  m_buffers[index].Disp2Buffer = 0;
-+#endif
-+  return true;
-+}
- 
- bool CLinuxRendererGLES::Supports(ERENDERFEATURE feature)
- {
-@@ -2996,6 +3107,14 @@
- 
-   if(m_renderMethod & RENDER_CVREF)
-     return false;
-+  
-+  if(m_renderMethod & RENDER_DISP2)
-+  {
-+    if(method == VS_INTERLACEMETHOD_SUNXI_NORMAL)
-+      return true;
-+    else
-+      return false;
-+  }
- 
-   if(method == VS_INTERLACEMETHOD_AUTO)
-     return true;
-@@ -3034,6 +3153,10 @@
- 
-   if(m_renderMethod & RENDER_IMXMAP)
-     return false;
-+  
-+  //FIXME: enable scaling
-+  if(m_renderMethod & RENDER_DISP2)
-+    return false;
- 
-   if (m_renderMethod & RENDER_MEDIACODECSURFACE)
-     return false;
-@@ -3073,6 +3196,9 @@
- 
-   if(m_renderMethod & RENDER_IMXMAP)
-     return VS_INTERLACEMETHOD_IMX_FASTMOTION;
-+  
-+  if(m_renderMethod & RENDER_DISP2)
-+    return VS_INTERLACEMETHOD_SUNXI_NORMAL;
- 
- #if !defined(TARGET_ANDROID) && (defined(__i386__) || defined(__x86_64__))
-   return VS_INTERLACEMETHOD_DEINTERLACE_HALF;
-@@ -3090,7 +3216,8 @@
-      m_format == RENDER_FMT_CVBREF ||
-      m_format == RENDER_FMT_EGLIMG ||
-      m_format == RENDER_FMT_MEDIACODEC ||
--    m_format == RENDER_FMT_MEDIACODECSURFACE)
-+     m_format == RENDER_FMT_MEDIACODECSURFACE ||
-+     m_format == RENDER_FMT_DISP2)
-     info.optimal_buffer_size = 2;
-   else if(m_format == RENDER_FMT_IMXMAP)
-   {
-@@ -3187,9 +3314,22 @@
- }
- #endif
- 
-+#ifdef HAS_CEDARX
-+void CLinuxRendererGLES::AddProcessor(CCedarXBuffer *buffer, int index)
-+{
-+  YUVBUFFER &buf = m_buffers[index];
-+
-+  SAFE_RELEASE(buf.Disp2Buffer);
-+  buf.Disp2Buffer = buffer;
-+
-+  if (buffer)
-+    buffer->Lock();
-+}
-+#endif
-+
- bool CLinuxRendererGLES::IsGuiLayer()
- {
--  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE)
-+  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE || m_format == RENDER_FMT_DISP2)
-     return false;
-   else
-     return true;
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h b/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
---- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-01-14 23:03:50.031524959 +0100
-@@ -45,6 +45,7 @@
- #ifdef HAS_IMXVPU
- class CDVDVideoCodecIMXBuffer;
- #endif
-+class CCedarXBuffer;
- typedef std::vector<int>     Features;
- 
- 
-@@ -94,7 +95,8 @@
-   RENDER_EGLIMG = 0x200,
-   RENDER_MEDIACODEC = 0x400,
-   RENDER_MEDIACODECSURFACE = 0x800,
--  RENDER_IMXMAP = 0x1000
-+  RENDER_IMXMAP = 0x1000,
-+  RENDER_DISP2  = 0x2000
- };
- 
- enum RenderQuality
-@@ -177,6 +179,9 @@
- #ifdef HAS_IMXVPU
-   virtual void         AddProcessor(CDVDVideoCodecIMXBuffer *codecinfo, int index);
- #endif
-+#ifdef HAS_CEDARX
-+  virtual void         AddProcessor(CCedarXBuffer *codecinfo, int index);
-+#endif
- 
- protected:
-   virtual void Render(DWORD flags, int index);
-@@ -225,6 +230,10 @@
-   void UploadIMXMAPTexture(int index);
-   void DeleteIMXMAPTexture(int index);
-   bool CreateIMXMAPTexture(int index);
-+  
-+  void UploadDisp2Texture(int index);
-+  void DeleteDisp2Texture(int index);
-+  bool CreateDisp2Texture(int index);
- 
-   void CalculateTextureSourceRects(int source, int num_planes);
- 
-@@ -237,6 +246,7 @@
-   void RenderCoreVideoRef(int index, int field);  // CoreVideo reference
-   void RenderSurfaceTexture(int index, int field);// MediaCodec rendering using SurfaceTexture
-   void RenderIMXMAPTexture(int index, int field); // IMXMAP rendering
-+  void RenderDisp2Texture(int index, int field); // Disp2 rendering
- 
-   CFrameBufferObject m_fbo;
- 
-@@ -306,6 +316,9 @@
- #ifdef HAS_IMXVPU
-     CDVDVideoCodecIMXBuffer *IMXBuffer;
- #endif
-+#ifdef HAS_CEDARX
-+    CCedarXBuffer *Disp2Buffer;
-+#endif
-   };
- 
-   typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];
-diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h b/xbmc/cores/VideoRenderers/RenderFormats.h
---- a/xbmc/cores/VideoRenderers/RenderFormats.h	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/VideoRenderers/RenderFormats.h	2016-01-14 23:03:50.031524959 +0100
-@@ -43,6 +43,7 @@
-   RENDER_FMT_MEDIACODECSURFACE,
-   RENDER_FMT_IMXMAP,
-   RENDER_FMT_MMAL,
-+  RENDER_FMT_DISP2,
- };
- 
- struct CRenderInfo
-diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp b/xbmc/cores/VideoRenderers/RenderManager.cpp
---- a/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-01-14 23:03:50.031524959 +0100
-@@ -1029,6 +1029,10 @@
-   else if(pic.format == RENDER_FMT_MMAL)
-     m_pRenderer->AddProcessor(pic.MMALBuffer, index);
- #endif
-+#ifdef HAS_CEDARX
-+  else if(pic.format == RENDER_FMT_DISP2)
-+    m_pRenderer->AddProcessor(pic.Disp2Buffer, index);
-+#endif
- 
-   m_pRenderer->ReleaseImage(index, false);
- 
-diff -Nur a/xbmc/settings/Settings.cpp b/xbmc/settings/Settings.cpp
---- a/xbmc/settings/Settings.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/settings/Settings.cpp	2016-01-14 23:03:50.031524959 +0100
-@@ -800,6 +800,9 @@
- #elif defined(HAS_IMXVPU)
-   if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
-     CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
-+#elif defined(HAS_CEDARX)
-+  if (CFile::Exists(SETTINGS_XML_FOLDER "sunxi.xml") && !Initialize(SETTINGS_XML_FOLDER "sunxi.xml"))
-+    CLog::Log(LOGFATAL, "Unable to load sunxi-specific settings definitions");
- #elif defined(TARGET_LINUX)
-   if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
-     CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
-diff -Nur a/xbmc/settings/VideoSettings.h b/xbmc/settings/VideoSettings.h
---- a/xbmc/settings/VideoSettings.h	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/settings/VideoSettings.h	2016-01-14 23:03:50.031524959 +0100
-@@ -74,6 +74,8 @@
- 
-   VS_INTERLACEMETHOD_IMX_FASTMOTION = 29,
-   VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE = 30,
-+  
-+  VS_INTERLACEMETHOD_SUNXI_NORMAL = 31,
- 
-   VS_INTERLACEMETHOD_MAX // do not use and keep as last enum value.
- };
-diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp b/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
---- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-01-14 23:03:50.031524959 +0100
-@@ -274,6 +274,7 @@
-   entries.push_back(std::make_pair(16333, VS_INTERLACEMETHOD_MMAL_BOB_HALF));
-   entries.push_back(std::make_pair(16334, VS_INTERLACEMETHOD_IMX_FASTMOTION));
-   entries.push_back(std::make_pair(16335, VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE));
-+  entries.push_back(std::make_pair(16336, VS_INTERLACEMETHOD_SUNXI_NORMAL));
- 
-   /* remove unsupported methods */
-   for (StaticIntegerSettingOptions::iterator it = entries.begin(); it != entries.end(); )
-diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
---- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-02-15 23:37:10.256174206 +0100
-@@ -0,0 +1,557 @@
-+/*
-+ *      Copyright (C) 2011-2013 Team XBMC
-+ *      http://xbmc.org
-+ *
-+ *  This Program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2, or (at your option)
-+ *  any later version.
-+ *
-+ *  This Program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with XBMC; see the file COPYING.  If not, see
-+ *  <http://www.gnu.org/licenses/>.
-+ *
-+ */
-+
-+#include "EGLNativeTypeSunxi.h"
-+#include "guilib/gui3d.h"
-+#include "utils/StringUtils.h"
-+#include "utils/SysfsUtils.h"
-+#include "utils/log.h"
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <linux/fb.h>
-+#include <sys/ioctl.h>
-+#include <EGL/egl.h>
-+#include "sunxi_display2.h"
-+
-+#define SCREENID 0
-+
-+int g_disp = -1;
-+
-+//fixme
-+#ifndef _FBDEV_WINDOW_H_
-+#define _FBDEV_WINDOW_H_
-+typedef struct fbdev_window
-+{
-+  unsigned short width;
-+  unsigned short height;
-+} fbdev_window;
-+#endif
-+
-+static const unsigned long supportedModes[] = 
-+{
-+  DISP_TV_MOD_480I,
-+  DISP_TV_MOD_576I,
-+  DISP_TV_MOD_480P,
-+  DISP_TV_MOD_576P,
-+  DISP_TV_MOD_720P_50HZ,
-+  DISP_TV_MOD_720P_60HZ,
-+  DISP_TV_MOD_1080I_50HZ,
-+  DISP_TV_MOD_1080I_60HZ,
-+  DISP_TV_MOD_1080P_24HZ,
-+  DISP_TV_MOD_1080P_50HZ,
-+  DISP_TV_MOD_1080P_60HZ,
-+  DISP_TV_MOD_1080P_25HZ,
-+  DISP_TV_MOD_1080P_30HZ,
-+  DISP_TV_MOD_3840_2160P_24HZ,
-+  DISP_TV_MOD_3840_2160P_25HZ,
-+  DISP_TV_MOD_3840_2160P_30HZ
-+};
-+
-+CEGLNativeTypeSunxi::CEGLNativeTypeSunxi()
-+{
-+  m_nativeWindow = NULL;
-+}
-+
-+CEGLNativeTypeSunxi::~CEGLNativeTypeSunxi()
-+{
-+}
-+
-+bool CEGLNativeTypeSunxi::CheckCompatibility()
-+{
-+  std::string name;
-+  std::string modalias = "/sys/class/graphics/fb0/device/modalias";
-+
-+  SysfsUtils::GetString(modalias, name);
-+  StringUtils::Trim(name);
-+  if (name == "platform:disp")
-+    return true;
-+  return false;
-+}
-+
-+void CEGLNativeTypeSunxi::Initialize()
-+{
-+  unsigned long args[4];
-+  disp_layer_config video_config;
-+  
-+  if((g_disp = open("/dev/disp", O_RDWR)) == -1)
-+  {
-+    CLog::Log(LOGERROR, "%s - Can't open display. Nothing will work!\n", __FUNCTION__);
-+    return;
-+  }
-+
-+  args[0] = 0;
-+  args[1] = (unsigned long)(&video_config);
-+  args[2] = 1;
-+  args[3] = 0;
-+  
-+  // framebuffer is always at layer(1,0)
-+  video_config.channel = 1;
-+  video_config.layer_id = 0;
-+
-+  ioctl(g_disp, DISP_LAYER_GET_CONFIG, args);
-+  
-+  video_config.info.alpha_mode = 0;
-+  video_config.info.zorder = 1; // highest number is on top
-+  
-+  ioctl(g_disp, DISP_LAYER_SET_CONFIG, args);
-+  
-+  
-+  args[0] = 0;
-+  args[1] = 0;
-+  args[2] = 0;
-+  args[3] = 0;
-+  
-+  ioctl(g_disp, DISP_ENHANCE_ENABLE, args);
-+}
-+void CEGLNativeTypeSunxi::Destroy()
-+{
-+  if(g_disp != -1)
-+  {
-+    close(g_disp);
-+    g_disp = -1;
-+  }
-+}
-+
-+bool CEGLNativeTypeSunxi::CreateNativeDisplay()
-+{
-+  m_nativeDisplay = EGL_DEFAULT_DISPLAY;
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::CreateNativeWindow()
-+{
-+  unsigned long args[4];
-+  fbdev_window *nativeWindow = new fbdev_window;
-+  
-+  if (!nativeWindow)
-+    return false;
-+  
-+  if (g_disp == -1)
-+    return false;
-+
-+  args[0] = SCREENID;
-+  args[1] = 0;
-+  args[2] = 0;
-+  args[3] = 0;
-+  nativeWindow->width = ioctl(g_disp, DISP_GET_SCN_WIDTH, args);
-+  nativeWindow->height = ioctl(g_disp, DISP_GET_SCN_HEIGHT, args);
-+  m_nativeWindow = nativeWindow;
-+
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const
-+{
-+  if (!nativeDisplay)
-+    return false;
-+  
-+  *nativeDisplay = (XBNativeDisplayType*) &m_nativeDisplay;
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::GetNativeWindow(XBNativeWindowType **nativeWindow) const
-+{
-+  if (!nativeWindow)
-+    return false;
-+  *nativeWindow = (XBNativeWindowType*) &m_nativeWindow;
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::DestroyNativeDisplay()
-+{
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::DestroyNativeWindow()
-+{
-+  delete (fbdev_window*)m_nativeWindow, m_nativeWindow = NULL;
-+
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::GetNativeResolution(RESOLUTION_INFO *res) const
-+{
-+  unsigned long args[4];
-+  disp_output para;
-+  
-+  args[0] = SCREENID;
-+  args[1] = (unsigned long)(&para);
-+  args[2] = 0;
-+  args[3] = 0;
-+  ioctl(g_disp, DISP_GET_OUTPUT, args);
-+  
-+  if(!ModeToResolution(para.mode, res))
-+    return false;
-+ 
-+  return res->iWidth > 0 && res->iHeight> 0;
-+}
-+
-+bool CEGLNativeTypeSunxi::SetNativeResolution(const RESOLUTION_INFO &res)
-+{
-+  if (m_nativeWindow)
-+  {
-+    ((fbdev_window *)m_nativeWindow)->width = res.iScreenWidth;
-+    ((fbdev_window *)m_nativeWindow)->height = res.iScreenHeight;
-+  }
-+
-+  switch((int)(0.5 + res.fRefreshRate))
-+  {
-+    case 60:
-+      switch(res.iScreenHeight)
-+      {
-+        case 480:
-+          SetDisplayResolution(DISP_TV_MOD_480I);
-+          break;
-+        default:
-+        case 720:
-+          SetDisplayResolution(DISP_TV_MOD_720P_60HZ);
-+          break;
-+        case 1080:
-+          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
-+            SetDisplayResolution(DISP_TV_MOD_1080I_60HZ);
-+          else
-+            SetDisplayResolution(DISP_TV_MOD_1080P_60HZ);
-+          break;
-+      }
-+      break;
-+    default:
-+    case 50:
-+      switch(res.iScreenHeight)
-+      {
-+        case 576:
-+          SetDisplayResolution(DISP_TV_MOD_576I);
-+          break;
-+        case 720:
-+          SetDisplayResolution(DISP_TV_MOD_720P_50HZ);
-+          break;
-+        default:
-+        case 1080:
-+          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
-+            SetDisplayResolution(DISP_TV_MOD_1080I_50HZ);
-+          else
-+            SetDisplayResolution(DISP_TV_MOD_1080P_50HZ);
-+          break;
-+      }
-+      break;
-+    case 30:
-+      switch(res.iScreenHeight)
-+      {
-+        case 480:
-+          SetDisplayResolution(DISP_TV_MOD_480P);
-+          break;
-+        default:
-+        case 1080:
-+          SetDisplayResolution(DISP_TV_MOD_1080P_30HZ);
-+          break;
-+        case 2160:
-+          SetDisplayResolution(DISP_TV_MOD_3840_2160P_30HZ);
-+          break;
-+      }
-+      break;
-+    case 25:
-+      switch(res.iScreenHeight)
-+      {
-+        case 576:
-+          SetDisplayResolution(DISP_TV_MOD_576P);
-+          break;
-+        default:
-+        case 1080:
-+          SetDisplayResolution(DISP_TV_MOD_1080P_25HZ);
-+          break;
-+        case 2160:
-+          SetDisplayResolution(DISP_TV_MOD_3840_2160P_25HZ);
-+          break;
-+      }
-+      break;
-+    case 24:
-+      switch(res.iScreenHeight)
-+      {
-+        default:
-+        case 1080:
-+          SetDisplayResolution(DISP_TV_MOD_1080P_24HZ);
-+          break;
-+        case 2160:
-+          SetDisplayResolution(DISP_TV_MOD_3840_2160P_24HZ);
-+          break;
-+      }
-+      break;
-+  }
-+  
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
-+{
-+  unsigned long args[4];
-+  
-+  args[0] = SCREENID;
-+  args[2] = 0;
-+  args[3] = 0;
-+
-+  for(unsigned int i = 0; i < sizeof(supportedModes) / sizeof(supportedModes[0]); i++)
-+  {
-+    args[1] = supportedModes[i];
-+    if(ioctl(g_disp, DISP_HDMI_SUPPORT_MODE, args))
-+    {
-+      RESOLUTION_INFO res;
-+
-+      ModeToResolution(supportedModes[i], &res);
-+      resolutions.push_back(res);
-+    }
-+  }
-+
-+  return resolutions.size() > 0;
-+}
-+
-+bool CEGLNativeTypeSunxi::GetPreferredResolution(RESOLUTION_INFO *res) const
-+{
-+  // check display/mode, it gets defaulted at boot
-+  if (!GetNativeResolution(res))
-+  {
-+    // put to 720p if we get nothing
-+    ModeToResolution(DISP_TV_MOD_720P_50HZ, res);
-+  }
-+
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::ShowWindow(bool show)
-+{
-+  std::string blank_framebuffer = "/sys/class/graphics/fb0/blank";
-+  SysfsUtils::SetInt(blank_framebuffer.c_str(), show ? 0 : 1);
-+  return true;
-+}
-+
-+bool CEGLNativeTypeSunxi::SetDisplayResolution(unsigned int mode)
-+{
-+  unsigned long args[4];
-+  disp_output para;
-+  
-+  args[0] = SCREENID;
-+  args[1] = (unsigned long)(&para);
-+  args[2] = 0;
-+  args[3] = 0;
-+  ioctl(g_disp, DISP_GET_OUTPUT, args);
-+  
-+  args[0] = SCREENID;
-+  args[1] = para.type;
-+  args[2] = mode;
-+  args[3] = 0;
-+  if(ioctl(g_disp, DISP_DEVICE_SWITCH, args) != 0)
-+    return false;
-+  
-+  RESOLUTION_INFO res;
-+  ModeToResolution(mode, &res);
-+  SetFramebufferResolution(res.iScreenWidth, res.iScreenHeight);
-+
-+  return true;
-+}
-+
-+void CEGLNativeTypeSunxi::SetFramebufferResolution(int width, int height) const
-+{
-+  int fd0;
-+  std::string framebuffer = "/dev/fb0";
-+
-+  if ((fd0 = open(framebuffer.c_str(), O_RDWR)) >= 0)
-+  {
-+    struct fb_var_screeninfo vinfo;
-+    if (ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0)
-+    {
-+      vinfo.xres = width;
-+      vinfo.yres = height;
-+      vinfo.xres_virtual = width;
-+      vinfo.yres_virtual = height * 2;
-+      vinfo.bits_per_pixel = 32;
-+      vinfo.activate = FB_ACTIVATE_ALL;
-+      ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
-+    }
-+    close(fd0);
-+  }
-+}
-+
-+bool CEGLNativeTypeSunxi::ModeToResolution(unsigned int mode, RESOLUTION_INFO *res) const
-+{
-+  
-+  if (!res)
-+    return false;
-+
-+  res->iWidth = 0;
-+  res->iHeight= 0;
-+  
-+  switch(mode)
-+  {
-+    case DISP_TV_MOD_480I:
-+      res->iWidth = 720;
-+      res->iHeight= 480;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 480;
-+      res->fRefreshRate = 60;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;
-+    case DISP_TV_MOD_576I:
-+      res->iWidth = 720;
-+      res->iHeight= 576;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 576;
-+      res->fRefreshRate = 50;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;
-+    case DISP_TV_MOD_480P:
-+      res->iWidth = 720;
-+      res->iHeight= 480;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 480;
-+      res->fRefreshRate = 30;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_576P:
-+      res->iWidth = 720;
-+      res->iHeight= 576;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 576;
-+      res->fRefreshRate = 25;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_720P_50HZ:
-+      res->iWidth = 1280;
-+      res->iHeight= 720;
-+      res->iScreenWidth = 1280;
-+      res->iScreenHeight= 720;
-+      res->fRefreshRate = 50;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_720P_60HZ:
-+      res->iWidth = 1280;
-+      res->iHeight= 720;
-+      res->iScreenWidth = 1280;
-+      res->iScreenHeight= 720;
-+      res->fRefreshRate = 60;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_1080I_50HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 50;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;
-+    case DISP_TV_MOD_1080I_60HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 60;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;
-+    case DISP_TV_MOD_1080P_24HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 24;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_1080P_50HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 50;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_1080P_60HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 60;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_1080P_25HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 25;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_1080P_30HZ:
-+      res->iWidth = 1920;
-+      res->iHeight= 1080;
-+      res->iScreenWidth = 1920;
-+      res->iScreenHeight= 1080;
-+      res->fRefreshRate = 30;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_3840_2160P_30HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 30;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_3840_2160P_25HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 25;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    case DISP_TV_MOD_3840_2160P_24HZ:
-+      res->iWidth = 3840;
-+      res->iHeight= 2160;
-+      res->iScreenWidth = 3840;
-+      res->iScreenHeight= 2160;
-+      res->fRefreshRate = 24;
-+      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
-+      break;
-+    /*case DISP_TV_MOD_PAL:
-+      res->iWidth = 720;
-+      res->iHeight= 576;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 576;
-+      res->fRefreshRate = 50;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;
-+    case DISP_TV_MOD_NTSC:
-+      res->iWidth = 720;
-+      res->iHeight= 480;
-+      res->iScreenWidth = 720;
-+      res->iScreenHeight= 480;
-+      res->fRefreshRate = 60;
-+      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
-+      break;*/
-+    default:
-+      return false;
-+  }
-+  
-+  res->iScreen       = 0;
-+  res->bFullScreen   = true;
-+  res->iSubtitles    = (int)(0.965 * res->iHeight);
-+  res->fPixelRatio   = 1.0f;
-+  res->strMode       = StringUtils::Format("%dx%d @ %.2f%s - Full Screen", res->iScreenWidth, res->iScreenHeight, res->fRefreshRate,
-+    res->dwFlags & D3DPRESENTFLAG_INTERLACED ? "i" : "");
-+  
-+  return true;
-+}
-diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.h b/xbmc/windowing/egl/EGLNativeTypeSunxi.h
---- a/xbmc/windowing/egl/EGLNativeTypeSunxi.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/windowing/egl/EGLNativeTypeSunxi.h	2016-01-14 23:03:50.035525018 +0100
-@@ -0,0 +1,59 @@
-+#pragma once
-+
-+/*
-+ *      Copyright (C) 2011-2013 Team XBMC
-+ *      http://xbmc.org
-+ *
-+ *  This Program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2, or (at your option)
-+ *  any later version.
-+ *
-+ *  This Program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with XBMC; see the file COPYING.  If not, see
-+ *  <http://www.gnu.org/licenses/>.
-+ *
-+ */
-+
-+#include "EGLNativeType.h"
-+
-+extern int g_disp;
-+
-+class CEGLNativeTypeSunxi : public CEGLNativeType
-+{
-+public:
-+  CEGLNativeTypeSunxi();
-+  virtual ~CEGLNativeTypeSunxi();
-+  virtual std::string GetNativeName() const { return "sunxi"; };
-+  virtual bool  CheckCompatibility();
-+  virtual void  Initialize();
-+  virtual void  Destroy();
-+  virtual int   GetQuirks() { return EGL_QUIRK_NONE; };
-+
-+  virtual bool  CreateNativeDisplay();
-+  virtual bool  CreateNativeWindow();
-+  virtual bool  GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const;
-+  virtual bool  GetNativeWindow(XBNativeWindowType **nativeWindow) const;
-+
-+  virtual bool  DestroyNativeWindow();
-+  virtual bool  DestroyNativeDisplay();
-+
-+  virtual bool  GetNativeResolution(RESOLUTION_INFO *res) const;
-+  virtual bool  SetNativeResolution(const RESOLUTION_INFO &res);
-+  virtual bool  ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions);
-+  virtual bool  GetPreferredResolution(RESOLUTION_INFO *res) const;
-+
-+  virtual bool  ShowWindow(bool show);
-+
-+protected:
-+  bool SetDisplayResolution(unsigned int mode);
-+
-+private:
-+  void SetFramebufferResolution(int width, int height) const;
-+  bool ModeToResolution(unsigned int mode, RESOLUTION_INFO *res) const;
-+};
-diff -Nur a/xbmc/windowing/egl/EGLWrapper.cpp b/xbmc/windowing/egl/EGLWrapper.cpp
---- a/xbmc/windowing/egl/EGLWrapper.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/windowing/egl/EGLWrapper.cpp	2016-01-14 23:03:50.035525018 +0100
-@@ -37,6 +37,7 @@
-   #include "EGLNativeTypeIMX.h"
- #endif
- #include "EGLNativeTypeAmlogic.h"
-+#include "EGLNativeTypeSunxi.h"
- #include "EGLWrapper.h"
- 
- #define CheckError() m_result = eglGetError(); if(m_result != EGL_SUCCESS) CLog::Log(LOGERROR, "EGL error in %s: %x",__FUNCTION__, m_result);
-@@ -105,7 +106,8 @@
- #if defined(HAS_IMXVPU)
-       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeIMX>(implementation)) ||
- #endif
--      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation))
-+      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation)) ||
-+      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeSunxi>(implementation))
-       )
-   {
-     m_nativeTypes = nativeGuess;
-diff -Nur a/xbmc/windowing/egl/Makefile.in b/xbmc/windowing/egl/Makefile.in
---- a/xbmc/windowing/egl/Makefile.in	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/windowing/egl/Makefile.in	2016-01-14 23:03:50.035525018 +0100
-@@ -2,6 +2,7 @@
- 
- SRCS = WinSystemEGL.cpp
- SRCS+= EGLNativeTypeAmlogic.cpp
-+SRCS+= EGLNativeTypeSunxi.cpp
- ifeq (@USE_ANDROID@,1)
- SRCS+= EGLNativeTypeAndroid.cpp
- SRCS+= EGLNativeTypeAmlAndroid.cpp
-diff -Nur a/xbmc/windowing/egl/sunxi_display2.h b/xbmc/windowing/egl/sunxi_display2.h
---- a/xbmc/windowing/egl/sunxi_display2.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/xbmc/windowing/egl/sunxi_display2.h	2016-01-14 23:03:50.035525018 +0100
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	1970-01-01 01:00:00.000000000 +0100
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	2016-05-05 19:33:02.000000000 +0200
 @@ -0,0 +1,388 @@
 +#ifndef __SUNXI_DISPLAY_H__
 +#define __SUNXI_DISPLAY_H__
@@ -2526,27 +1513,397 @@ diff -Nur a/xbmc/windowing/egl/sunxi_display2.h b/xbmc/windowing/egl/sunxi_displ
 +
 +#endif
 +
-diff -Nur a/xbmc/windowing/egl/WinSystemEGL.cpp b/xbmc/windowing/egl/WinSystemEGL.cpp
---- a/xbmc/windowing/egl/WinSystemEGL.cpp	2016-01-12 22:00:19.000000000 +0100
-+++ b/xbmc/windowing/egl/WinSystemEGL.cpp	2016-01-14 23:03:50.035525018 +0100
-@@ -35,6 +35,10 @@
- // This has to go into another header file
- #include "cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecIMX.h"
+diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
+--- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-05-03 21:53:55.766186955 +0200
+@@ -931,6 +931,7 @@
+     case RENDER_FMT_MEDIACODECSURFACE:return "MEDIACODECSURFACE";
+     case RENDER_FMT_IMXMAP:    return "IMXMAP";
+     case RENDER_FMT_MMAL:      return "MMAL";
++    case RENDER_FMT_DISP2:     return "DISP2";
+     case RENDER_FMT_NONE:      return "NONE";
+   }
+   return "UNKNOWN";
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
+--- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-05-03 21:53:55.769520288 +0200
+@@ -93,6 +93,10 @@
+ #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
  #endif
+ 
 +#ifdef HAS_CEDARX
-+// This has to go into another header file
-+#include "cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h"
++#include "DVDCodecs/Video/DVDVideoCodecCedarX.h"
 +#endif
- #include "utils/log.h"
- #include "EGLWrapper.h"
- #include "EGLQuirks.h"
-@@ -461,6 +465,9 @@
++
+ using namespace Shaders;
+ 
+ CLinuxRendererGLES::YUVBUFFER::YUVBUFFER()
+@@ -116,6 +120,9 @@
  #ifdef HAS_IMXVPU
-   g_IMXContext.SetVSync(enable);
+   IMXBuffer = NULL;
  #endif
 +#ifdef HAS_CEDARX
-+  g_SunxiContext.SetVSync(enable);
++  Disp2Buffer = NULL;
 +#endif
  }
  
- void CWinSystemEGL::ShowOSMouse(bool show)
+ CLinuxRendererGLES::YUVBUFFER::~YUVBUFFER()
+@@ -304,6 +311,11 @@
+   {
+     return source;
+   }
++  
++  if ( m_renderMethod & RENDER_DISP2 )
++  {
++    return source;
++  }
+ 
+ #ifdef HAVE_VIDEOTOOLBOXDECODER
+   if (m_renderMethod & RENDER_CVREF )
+@@ -733,6 +745,52 @@
+ #endif
+   }
+ #endif
++#ifdef HAS_CEDARX
++  else if (m_renderMethod & RENDER_DISP2)
++  {
++    CCedarXBuffer *buffer = m_buffers[m_iYV12RenderBuffer].Disp2Buffer;
++    if (buffer)
++    {
++      // this hack is needed to get the 2D mode of a 3D movie going
++      RENDER_STEREO_MODE stereo_mode = g_graphicsContext.GetStereoMode();
++      if (stereo_mode)
++        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
++
++      ManageDisplay();
++
++      if (stereo_mode)
++        g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
++
++      CRect dstRect(m_destRect);
++      CRect srcRect(m_sourceRect);
++      switch (stereo_mode)
++      {
++        case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
++          dstRect.y2 *= 2.0;
++          srcRect.y2 *= 2.0;
++        break;
++
++        case RENDER_STEREO_MODE_SPLIT_VERTICAL:
++          dstRect.x2 *= 2.0;
++          srcRect.x2 *= 2.0;
++        break;
++
++        default:
++        break;
++      }
++
++      if (flags & RENDER_FLAG_FIELDMASK)
++      {
++        g_SunxiContext.SetDeinterlacing(true);
++      }
++      // Progressive
++      else
++        g_SunxiContext.SetDeinterlacing(false);
++      
++      g_SunxiContext.Render(buffer, srcRect, dstRect);
++    }
++  }
++#endif
+ }
+ 
+ void CLinuxRendererGLES::FlipPage(int source)
+@@ -780,6 +838,9 @@
+ #ifdef HAS_IMXVPU
+   m_formats.push_back(RENDER_FMT_IMXMAP);
+ #endif
++#ifdef HAS_CEDARX
++  m_formats.push_back(RENDER_FMT_DISP2);
++#endif
+ 
+   // setup the background colour
+   m_clearColour = (float)(g_advancedSettings.m_videoBlackBarColour & 0xff) / 0xff;
+@@ -894,6 +955,12 @@
+         m_renderMethod = RENDER_IMXMAP;
+         break;
+       }
++      else if (m_format == RENDER_FMT_DISP2)
++      {
++        CLog::Log(LOGNOTICE, "GL: Using DISP2 render method");
++        m_renderMethod = RENDER_DISP2;
++        break;
++      }
+       else if (m_format == RENDER_FMT_BYPASS)
+       {
+         CLog::Log(LOGNOTICE, "GL: Using BYPASS render method");
+@@ -992,6 +1059,12 @@
+     m_textureCreate = &CLinuxRendererGLES::CreateIMXMAPTexture;
+     m_textureDelete = &CLinuxRendererGLES::DeleteIMXMAPTexture;
+   }
++  else if (m_format == RENDER_FMT_DISP2)
++  {
++    m_textureUpload = &CLinuxRendererGLES::UploadDisp2Texture;
++    m_textureCreate = &CLinuxRendererGLES::CreateDisp2Texture;
++    m_textureDelete = &CLinuxRendererGLES::DeleteDisp2Texture;
++  }
+   else if (m_format == RENDER_FMT_OMXEGL)
+   {
+     m_textureUpload = &CLinuxRendererGLES::UploadOpenMaxTexture;
+@@ -1110,6 +1183,10 @@
+   if (m_renderMethod & RENDER_IMXMAP)
+     SAFE_RELEASE(buf.IMXBuffer);
+ #endif
++#ifdef HAS_CEDARX
++  if (m_renderMethod & RENDER_DISP2)
++    SAFE_RELEASE(buf.Disp2Buffer);
++#endif
+ }
+ 
+ void CLinuxRendererGLES::Render(DWORD flags, int index)
+@@ -1176,6 +1253,11 @@
+     RenderIMXMAPTexture(index, m_currentField);
+     VerifyGLState();
+   }
++  else if (m_renderMethod & RENDER_DISP2)
++  {
++    RenderDisp2Texture(index, m_currentField);
++    VerifyGLState();
++  }
+   else
+   {
+     RenderSoftware(index, m_currentField);
+@@ -1892,6 +1974,10 @@
+ {
+ }
+ 
++void CLinuxRendererGLES::RenderDisp2Texture(int index, int field)
++{
++}
++
+ bool CLinuxRendererGLES::RenderCapture(CRenderCapture* capture)
+ {
+   if (!m_bValidated)
+@@ -2889,7 +2975,32 @@
+   glDisable(m_textureTarget);
+   return true;
+ }
++//********************************************************************************************************
++// DISP2 creation, deletion, copying + clearing
++//********************************************************************************************************
++void CLinuxRendererGLES::UploadDisp2Texture(int index)
++{
++}
++
++void CLinuxRendererGLES::DeleteDisp2Texture(int index)
++{
++#ifdef HAS_CEDARX
++  YUVBUFFER &buf = m_buffers[index];
++
++  if(buf.Disp2Buffer != NULL)
++  {
++    SAFE_RELEASE(buf.Disp2Buffer);
++  }
++#endif
++}
+ 
++bool CLinuxRendererGLES::CreateDisp2Texture(int index)
++{
++#ifdef HAS_CEDARX
++  m_buffers[index].Disp2Buffer = 0;
++#endif
++  return true;
++}
+ 
+ bool CLinuxRendererGLES::Supports(ERENDERFEATURE feature)
+ {
+@@ -2996,6 +3107,14 @@
+ 
+   if(m_renderMethod & RENDER_CVREF)
+     return false;
++  
++  if(m_renderMethod & RENDER_DISP2)
++  {
++    if(method == VS_INTERLACEMETHOD_SUNXI_NORMAL)
++      return true;
++    else
++      return false;
++  }
+ 
+   if(method == VS_INTERLACEMETHOD_AUTO)
+     return true;
+@@ -3034,6 +3153,10 @@
+ 
+   if(m_renderMethod & RENDER_IMXMAP)
+     return false;
++  
++  //FIXME: enable scaling
++  if(m_renderMethod & RENDER_DISP2)
++    return false;
+ 
+   if (m_renderMethod & RENDER_MEDIACODECSURFACE)
+     return false;
+@@ -3073,6 +3196,9 @@
+ 
+   if(m_renderMethod & RENDER_IMXMAP)
+     return VS_INTERLACEMETHOD_IMX_FASTMOTION;
++  
++  if(m_renderMethod & RENDER_DISP2)
++    return VS_INTERLACEMETHOD_SUNXI_NORMAL;
+ 
+ #if !defined(TARGET_ANDROID) && (defined(__i386__) || defined(__x86_64__))
+   return VS_INTERLACEMETHOD_DEINTERLACE_HALF;
+@@ -3090,7 +3216,8 @@
+      m_format == RENDER_FMT_CVBREF ||
+      m_format == RENDER_FMT_EGLIMG ||
+      m_format == RENDER_FMT_MEDIACODEC ||
+-    m_format == RENDER_FMT_MEDIACODECSURFACE)
++     m_format == RENDER_FMT_MEDIACODECSURFACE ||
++     m_format == RENDER_FMT_DISP2)
+     info.optimal_buffer_size = 2;
+   else if(m_format == RENDER_FMT_IMXMAP)
+   {
+@@ -3187,9 +3314,22 @@
+ }
+ #endif
+ 
++#ifdef HAS_CEDARX
++void CLinuxRendererGLES::AddProcessor(CCedarXBuffer *buffer, int index)
++{
++  YUVBUFFER &buf = m_buffers[index];
++
++  SAFE_RELEASE(buf.Disp2Buffer);
++  buf.Disp2Buffer = buffer;
++
++  if (buffer)
++    buffer->Lock();
++}
++#endif
++
+ bool CLinuxRendererGLES::IsGuiLayer()
+ {
+-  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE)
++  if (m_format == RENDER_FMT_BYPASS || m_format == RENDER_FMT_IMXMAP || m_format == RENDER_FMT_MEDIACODECSURFACE || m_format == RENDER_FMT_DISP2)
+     return false;
+   else
+     return true;
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
+--- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-05-03 21:53:55.769520288 +0200
+@@ -45,6 +45,7 @@
+ #ifdef HAS_IMXVPU
+ class CDVDVideoCodecIMXBuffer;
+ #endif
++class CCedarXBuffer;
+ typedef std::vector<int>     Features;
+ 
+ 
+@@ -94,7 +95,8 @@
+   RENDER_EGLIMG = 0x200,
+   RENDER_MEDIACODEC = 0x400,
+   RENDER_MEDIACODECSURFACE = 0x800,
+-  RENDER_IMXMAP = 0x1000
++  RENDER_IMXMAP = 0x1000,
++  RENDER_DISP2  = 0x2000
+ };
+ 
+ enum RenderQuality
+@@ -177,6 +179,9 @@
+ #ifdef HAS_IMXVPU
+   virtual void         AddProcessor(CDVDVideoCodecIMXBuffer *codecinfo, int index);
+ #endif
++#ifdef HAS_CEDARX
++  virtual void         AddProcessor(CCedarXBuffer *codecinfo, int index);
++#endif
+ 
+ protected:
+   virtual void Render(DWORD flags, int index);
+@@ -225,6 +230,10 @@
+   void UploadIMXMAPTexture(int index);
+   void DeleteIMXMAPTexture(int index);
+   bool CreateIMXMAPTexture(int index);
++  
++  void UploadDisp2Texture(int index);
++  void DeleteDisp2Texture(int index);
++  bool CreateDisp2Texture(int index);
+ 
+   void CalculateTextureSourceRects(int source, int num_planes);
+ 
+@@ -237,6 +246,7 @@
+   void RenderCoreVideoRef(int index, int field);  // CoreVideo reference
+   void RenderSurfaceTexture(int index, int field);// MediaCodec rendering using SurfaceTexture
+   void RenderIMXMAPTexture(int index, int field); // IMXMAP rendering
++  void RenderDisp2Texture(int index, int field); // Disp2 rendering
+ 
+   CFrameBufferObject m_fbo;
+ 
+@@ -306,6 +316,9 @@
+ #ifdef HAS_IMXVPU
+     CDVDVideoCodecIMXBuffer *IMXBuffer;
+ #endif
++#ifdef HAS_CEDARX
++    CCedarXBuffer *Disp2Buffer;
++#endif
+   };
+ 
+   typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];
+diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec/xbmc/cores/VideoRenderers/RenderFormats.h
+--- a/xbmc/cores/VideoRenderers/RenderFormats.h	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/VideoRenderers/RenderFormats.h	2016-05-03 21:53:55.769520288 +0200
+@@ -43,6 +43,7 @@
+   RENDER_FMT_MEDIACODECSURFACE,
+   RENDER_FMT_IMXMAP,
+   RENDER_FMT_MMAL,
++  RENDER_FMT_DISP2,
+ };
+ 
+ struct CRenderInfo
+diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec/xbmc/cores/VideoRenderers/RenderManager.cpp
+--- a/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-05-03 21:53:55.769520288 +0200
+@@ -1029,6 +1029,10 @@
+   else if(pic.format == RENDER_FMT_MMAL)
+     m_pRenderer->AddProcessor(pic.MMALBuffer, index);
+ #endif
++#ifdef HAS_CEDARX
++  else if(pic.format == RENDER_FMT_DISP2)
++    m_pRenderer->AddProcessor(pic.Disp2Buffer, index);
++#endif
+ 
+   m_pRenderer->ReleaseImage(index, false);
+ 
+diff -Nur a/xbmc/settings/Settings.cpp codec/xbmc/settings/Settings.cpp
+--- a/xbmc/settings/Settings.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/settings/Settings.cpp	2016-05-03 21:53:55.769520288 +0200
+@@ -800,6 +800,9 @@
+ #elif defined(HAS_IMXVPU)
+   if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
+     CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
++#elif defined(HAS_CEDARX)
++  if (CFile::Exists(SETTINGS_XML_FOLDER "sunxi.xml") && !Initialize(SETTINGS_XML_FOLDER "sunxi.xml"))
++    CLog::Log(LOGFATAL, "Unable to load sunxi-specific settings definitions");
+ #elif defined(TARGET_LINUX)
+   if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
+     CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
+diff -Nur a/xbmc/settings/VideoSettings.h codec/xbmc/settings/VideoSettings.h
+--- a/xbmc/settings/VideoSettings.h	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/settings/VideoSettings.h	2016-05-03 21:53:55.769520288 +0200
+@@ -74,6 +74,8 @@
+ 
+   VS_INTERLACEMETHOD_IMX_FASTMOTION = 29,
+   VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE = 30,
++  
++  VS_INTERLACEMETHOD_SUNXI_NORMAL = 31,
+ 
+   VS_INTERLACEMETHOD_MAX // do not use and keep as last enum value.
+ };
+diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
+--- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-04-15 18:52:10.000000000 +0200
++++ codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-05-03 21:53:55.769520288 +0200
+@@ -274,6 +274,7 @@
+   entries.push_back(std::make_pair(16333, VS_INTERLACEMETHOD_MMAL_BOB_HALF));
+   entries.push_back(std::make_pair(16334, VS_INTERLACEMETHOD_IMX_FASTMOTION));
+   entries.push_back(std::make_pair(16335, VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE));
++  entries.push_back(std::make_pair(16336, VS_INTERLACEMETHOD_SUNXI_NORMAL));
+ 
+   /* remove unsupported methods */
+   for (StaticIntegerSettingOptions::iterator it = entries.begin(); it != entries.end(); )
