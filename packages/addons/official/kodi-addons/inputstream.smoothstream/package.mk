@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="inputstream.smoothstream"
-PKG_VERSION="e30e1d1"
+PKG_VERSION="352b14e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
