@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="mgba"
-PKG_VERSION="68c8e39"
+PKG_VERSION="608b8e7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MPLv2.0"
@@ -36,7 +36,11 @@ PKG_AUTORECONF="no"
 
 make_target() {
   cd $ROOT/$PKG_BUILD
-  make -f Makefile.libretro
+  if [[ "$ARCH" =~ "arm" ]]; then
+    make -f Makefile.libretro
+  else
+    make -f Makefile.libretro platform=unix-armv HAVE_NEON=1
+  fi
 }
 
 makeinstall_target() {
