@@ -1,0 +1,169 @@
+diff -Nur a/drivers/char/sunxi-di/sunxi-di.c b/drivers/char/sunxi-di/sunxi-di.c
+--- a/drivers/char/sunxi-di/sunxi-di.c	2016-04-12 12:21:19.000000000 +0200
++++ b/drivers/char/sunxi-di/sunxi-di.c	2016-05-06 20:14:28.846445168 +0200
+@@ -137,7 +137,6 @@
+ 		printk(KERN_ERR "di_clk handle is invalid, just return!\n");
+ 		return;
+ 	} else {
+-		clk_disable_unprepare(di_clk);
+ 		clk_put(di_clk);
+ 		di_clk = NULL;
+ 	}
+@@ -202,36 +201,72 @@
+ 
+ static void sunxi_di_params_exit(void)
+ {
+-	di_clk_uncfg();
+-	free_irq(SW_INT_IRQNO_DI, di_device);
+-	return ;
++  di_clk_uncfg();
++  free_irq(SW_INT_IRQNO_DI, di_device);
+ }
+ 
++static void sunxi_di_disabledrv(void)
++{
++  di_irq_enable(0);
++  di_reset();
++  di_internal_clk_disable();
++  di_clk_disable();
++  if (NULL != di_data.in_flag)
++    sunxi_buf_free(di_data.in_flag, di_data.in_flag_phy, di_data.flag_size);
++  if (NULL != di_data.out_flag)
++    sunxi_buf_free(di_data.out_flag, di_data.out_flag_phy, di_data.flag_size);
++}
++
++static int sunxi_di_enabledrv(void)
++{
++  int ret;
++  
++  di_data.flag_size = (FLAG_WIDTH*FLAG_HIGH)/4;
++
++  di_data.in_flag = sunxi_buf_alloc(di_data.flag_size, &(di_data.in_flag_phy));
++  if (!di_data.in_flag) {
++    printk(KERN_ERR "%s: request in_flag mem failed\n", __func__);
++    return -1;
++  }
++
++  di_data.out_flag = sunxi_buf_alloc(di_data.flag_size, &(di_data.out_flag_phy));
++  if (!di_data.out_flag) {
++    printk(KERN_ERR "%s: request out_flag mem failed\n", __func__);
++    sunxi_buf_free(di_data.in_flag, di_data.in_flag_phy, di_data.flag_size);
++    return -1;
++  }
++
++  ret = di_clk_enable();
++  if (ret) {
++    printk(KERN_ERR "%s: enable clk failed.\n", __func__);
++    return ret;
++  }
++  
++  di_internal_clk_enable();
++  di_set_init(di_data.mode);
++  
++  return 0;
++}
+ 
+ #ifdef CONFIG_PM
+ static int sunxi_di_suspend(struct device *dev)
+ {
+-	dprintk(DEBUG_SUSPEND, "enter: sunxi_di_suspend. \n");
++  dprintk(DEBUG_SUSPEND, "enter: sunxi_di_suspend. \n");
+ 
+-	if (atomic_read(&di_data.enable)) {
+-		di_irq_enable(0);
+-		di_reset();
+-		di_internal_clk_disable();
+-		di_clk_disable();
+-		if (NULL != di_data.in_flag)
+-		sunxi_buf_free(di_data.in_flag, di_data.in_flag_phy, di_data.flag_size);
+-		if (NULL != di_data.out_flag)
+-		sunxi_buf_free(di_data.out_flag, di_data.out_flag_phy, di_data.flag_size);
+-	}
++  if (atomic_read(&di_data.enable))
++    sunxi_di_disabledrv();
+ 
+-	return 0;
++  return 0;
+ }
+ 
+ static int sunxi_di_resume(struct device *dev)
+ {
+-	dprintk(DEBUG_SUSPEND, "enter: sunxi_di_resume. \n");
++  dprintk(DEBUG_SUSPEND, "enter: sunxi_di_resume. \n");
++  
++  if (atomic_read(&di_data.enable))
++    return sunxi_di_enabledrv();
+ 
+-	return 0;
++  return 0;
+ }
+ #endif
+ 
+@@ -315,54 +350,27 @@
+ 
+ static int sunxi_di_open(struct inode *inode, struct file *file)
+ {
+-	int ret = 0;
+-
+-	dprintk(DEBUG_DATA_INFO, "%s: enter!!\n", __func__);
+-
+-	atomic_set(&di_data.enable, 1);
+-
+-	di_data.flag_size = (FLAG_WIDTH*FLAG_HIGH)/4;
++  int ret;
++  dprintk(DEBUG_DATA_INFO, "%s: enter!!\n", __func__);
+ 
+-	di_data.in_flag = sunxi_buf_alloc(di_data.flag_size, &(di_data.in_flag_phy));
+-	if (!(di_data.in_flag)) {
+-		printk(KERN_ERR "%s: request in_flag mem failed\n", __func__);
+-		return -1;
+-	}
+-
+-	di_data.out_flag = sunxi_buf_alloc(di_data.flag_size, &(di_data.out_flag_phy));
+-	if (!(di_data.out_flag)) {
+-		printk(KERN_ERR "%s: request out_flag mem failed\n", __func__);
+-		sunxi_buf_free(di_data.in_flag, di_data.in_flag_phy, di_data.flag_size);
+-		return -1;
+-	}
++  //FIXME: This variable should be counter!
++  atomic_set(&di_data.enable, 1);
+ 
+-	ret = di_clk_enable();
+-	if (ret) {
+-		printk(KERN_ERR "%s: enable clk failed.\n", __func__);
+-		return ret;
+-	}
+-	di_internal_clk_enable();
+-	di_set_init(di_data.mode);
+-
+-	return 0;
++  ret = sunxi_di_enabledrv();
++  if(ret)
++    return ret;
++  
++  return 0;
+ }
+ 
+ static int sunxi_di_release(struct inode *inode, struct file *file)
+ {
+-	dprintk(DEBUG_DATA_INFO, "%s: enter!!\n", __func__);
++  dprintk(DEBUG_DATA_INFO, "%s: enter!!\n", __func__);
+ 
+-	atomic_set(&di_data.enable, 0);
++  atomic_set(&di_data.enable, 0);
++  sunxi_di_disabledrv();
+ 
+-	di_irq_enable(0);
+-	di_reset();
+-	di_internal_clk_disable();
+-	di_clk_disable();
+-	if (NULL != di_data.in_flag)
+-		sunxi_buf_free(di_data.in_flag, di_data.in_flag_phy, di_data.flag_size);
+-	if (NULL != di_data.out_flag)
+-		sunxi_buf_free(di_data.out_flag, di_data.out_flag_phy, di_data.flag_size);
+-
+-	return 0;
++  return 0;
+ }
+ 
+ static const struct file_operations sunxi_di_fops = {
