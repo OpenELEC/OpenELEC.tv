@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DISK=/dev/mmcblk0
+DISK=/dev/mmcblk1
 TMP=/tmp/mnt/
 TMPCFG=/tmp/boot.cfg
 
@@ -69,19 +69,10 @@ echo "Copying files on first partition"
 
 mkdir ${TMP}
 
-# prepare boot.cfg
-dd if=/flash/boot.scr of=${TMPCFG} bs=72 skip=1 > /dev/null 2>&1
-sed -i 's/mmcblk1/mmcblk0/g' ${TMPCFG}
-
 mount -t vfat ${DISK}p1 ${TMP}
+
 cp /flash/* ${TMP}/
-mkimage -A arm \
-            -O u-boot \
-            -T script \
-            -C none \
-            -n "OpenELEC Boot" \
-            -d ${TMPCFG} \
-            ${TMP}/boot.scr > /dev/null 2>&1
+
 umount ${TMP}
 
 echo "Populating second partition"
