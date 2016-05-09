@@ -1,0 +1,65 @@
+From 9d2006d8ed733522014035ec0514e23a312083e8 Mon Sep 17 00:00:00 2001
+From: "Dr. Stephen Henson" <steve@openssl.org>
+Date: Wed, 26 Sep 2012 13:50:42 +0000
+Subject: [PATCH] add -trusted_first option and verify flag (backport from
+ HEAD)
+
+---
+ apps/apps.c            |  2 ++
+ crypto/x509/x509_vfy.c | 16 ++++++++++++++++
+ include/openssl/x509_vfy.h |  2 ++
+ 4 files changed, 24 insertions(+)
+
+diff --git a/apps/apps.c b/apps/apps.c
+index 4e11915..d8d8a70 100644
+--- a/apps/apps.c
++++ b/apps/apps.c
+@@ -2358,6 +2358,8 @@ int args_verify(char ***pargs, int *pargc,
+ 		flags |= X509_V_FLAG_NOTIFY_POLICY;
+ 	else if (!strcmp(arg, "-check_ss_sig"))
+ 		flags |= X509_V_FLAG_CHECK_SS_SIGNATURE;
++	else if (!strcmp(arg, "-trusted_first"))
++		flags |= X509_V_FLAG_TRUSTED_FIRST;
+ 	else
+ 		return 0;
+ 
+diff --git a/crypto/x509/x509_vfy.c b/crypto/x509/x509_vfy.c
+index b0779db..ba10811 100644
+--- a/crypto/x509/x509_vfy.c
++++ b/crypto/x509/x509_vfy.c
+@@ -206,6 +206,22 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
+ 		/* If we are self signed, we break */
+ 		if (ctx->check_issued(ctx, x,x)) break;
+ 
++		/* If asked see if we can find issuer in trusted store first */
++		if (ctx->param->flags & X509_V_FLAG_TRUSTED_FIRST)
++			{
++			ok = ctx->get_issuer(&xtmp, ctx, x);
++			if (ok < 0)
++				return ok;
++			/* If successful for now free up cert so it
++			 * will be picked up again later.
++			 */
++			if (ok > 0)
++				{
++				X509_free(xtmp);
++				break;
++				}
++			}
++
+ 		/* If we were passed a cert chain, use it first */
+ 		if (ctx->untrusted != NULL)
+ 			{
+diff --git a/include/openssl/x509_vfy.h b/include/openssl/x509_vfy.h
+index fe09b30..d53f3e3 100644
+--- a/include/openssl/x509_vfy.h
++++ b/include/openssl/x509_vfy.h
+@@ -389,6 +389,8 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
+ #define X509_V_FLAG_USE_DELTAS			0x2000
+ /* Check selfsigned CA signature */
+ #define X509_V_FLAG_CHECK_SS_SIGNATURE		0x4000
++/* Use trusted store first */
++#define X509_V_FLAG_TRUSTED_FIRST		0x8000
+ 
+ 
+ #define X509_VP_FLAG_DEFAULT			0x1

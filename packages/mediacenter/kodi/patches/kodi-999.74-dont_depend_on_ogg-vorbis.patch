@@ -1,0 +1,38 @@
+diff -Naur kodi-c1c4b9e/configure.ac kodi-c1c4b9e.patch/configure.ac
+--- kodi-c1c4b9e/configure.ac	2016-04-17 14:05:15.000000000 +0200
++++ kodi-c1c4b9e.patch/configure.ac	2016-05-01 12:08:13.173045134 +0200
+@@ -1050,8 +1050,6 @@
+   AC_INCLUDES_DEFAULT()
+   [#include <mpeg2dec/mpeg2.h>])
+ AC_CHECK_HEADER([jpeglib.h],,        AC_MSG_ERROR($missing_library))
+-AC_CHECK_HEADER([ogg/ogg.h],,        AC_MSG_ERROR($missing_library))
+-AC_CHECK_HEADER([vorbis/vorbisfile.h],, AC_MSG_ERROR($missing_library))
+ PKG_CHECK_MODULES([LIBDCADEC], [dcadec],, AC_MSG_ERROR([libdcadec not found]))
+ 
+ PKG_CHECK_MODULES([LIBCURL], [libcurl],, AC_MSG_ERROR([libcurl not found]))
+@@ -1713,7 +1711,6 @@
+   # get the libdir for static linking
+   FFMPEG_LIBDIR=${pkg_cfg_prefix}$(PKG_CONFIG_SYSROOT_DIR="" ${PKG_CONFIG} --static --variable=libdir libavcodec)
+   GNUTLS_ALL_LIBS=$(${PKG_CONFIG} --static --libs-only-l --silence-errors gnutls)
+-  VORBISENC_ALL_LIBS=$(${PKG_CONFIG} --static --libs-only-l --silence-errors vorbisenc)
+   DCADEC_ALL_LIBS=$(${PKG_CONFIG} --static --libs-only-l --silence-errors dcadec)
+ 
+   # check if static libs are available
+@@ -2488,7 +2485,6 @@
+ AC_SUBST(FFMPEG_LIBDIR)
+ AC_SUBST(USE_STATIC_FFMPEG)
+ AC_SUBST(GNUTLS_ALL_LIBS)
+-AC_SUBST(VORBISENC_ALL_LIBS)
+ AC_SUBST(DCADEC_ALL_LIBS)
+ AC_SUBST(USE_TOUCH_SKIN)
+ AC_SUBST(USE_LIBAV_HACKS)
+@@ -2497,9 +2493,6 @@
+ AC_SUBST(HAVE_XBMC_NONFREE)
+ AC_SUBST(USE_ASAP_CODEC)
+ AC_SUBST(LIBCURL_BASENAME)
+-AC_SUBST(LIBVORBISFILE_BASENAME)
+-AC_SUBST(LIBOGG_BASENAME)
+-AC_SUBST(LIBVORBIS_BASENAME)
+ AC_SUBST(LIBASS_BASENAME)
+ AC_SUBST(LIBMEPG2_BASENAME)
+ AC_SUBST_FILE(XBMC_STANDALONE_SH_PULSE)

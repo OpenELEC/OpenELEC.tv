@@ -39,12 +39,16 @@ case "$LINUX" in
     PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
+  rpi)
+    PKG_VERSION="f6f3129"
+    PKG_GIT_URL="https://github.com/raspberrypi/linux.git"
+    PKG_GIT_BRANCH="rpi-4.4.y"
+    ;;
   awh3)
     PKG_VERSION="1bbb331"
     PKG_GIT_URL="https://github.com/igorpecovnik/linux.git"
     PKG_GIT_BRANCH="sun8i"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools"
-    ;;
   *)
     PKG_VERSION="4.4.8"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
