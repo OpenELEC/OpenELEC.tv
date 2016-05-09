@@ -1,7 +1,7 @@
 diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
 --- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-05-05 20:37:40.566410339 +0200
-@@ -0,0 +1,578 @@
++++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-05-07 09:57:21.426679665 +0200
+@@ -0,0 +1,583 @@
 +/*
 + *      Copyright (C) 2011-2013 Team XBMC
 + *      http://xbmc.org
@@ -34,10 +34,11 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +#include <sys/ioctl.h>
 +#include <EGL/egl.h>
 +
-+#define DISP_HDMI_SUPPORT_MODE 0xc4
-+#define DISP_DEVICE_SWITCH     0x0f
 +#define DISP_GET_OUTPUT_TYPE   0x09
++#define DISP_BLANK             0x0C
++#define DISP_DEVICE_SWITCH     0x0F
 +#define DISP_GET_OUTPUT        0x10
++#define DISP_HDMI_SUPPORT_MODE 0xC4
 +
 +typedef enum
 +{
@@ -369,8 +370,12 @@ diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGL
 +
 +bool CEGLNativeTypeSunxi::ShowWindow(bool show)
 +{
-+  //TODO: Check if blanking really doesn't work with driver.
-+  return true;
++  unsigned long args[4];
++  
++  args[0] = m_screenid;
++  args[1] = show ? 0 : 1;
++  
++  return ioctl(m_disp, DISP_BLANK, args) == 0;
 +}
 +
 +bool CEGLNativeTypeSunxi::SetDisplayResolution(unsigned int mode)
