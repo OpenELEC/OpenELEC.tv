@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d linux-odroidxu3.git ]; then
-    git clone https://github.com/mihailescu2m/linux.git -b odroidxu3-3.10.y-memeka linux-odroidxu3.git
+    git clone https://github.com/hardkernel/linux.git -b odroidxu3-3.10.y linux-odroidxu3.git
   fi
 
   cd linux-odroidxu3.git
