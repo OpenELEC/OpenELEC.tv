@@ -104,5 +104,4 @@
 
   # override some playlist core assignation
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//pcsx_rearmed/mednafen_psx}"
-    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//gpsp/vbam}"
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//snes9x_next/snes9x}"
