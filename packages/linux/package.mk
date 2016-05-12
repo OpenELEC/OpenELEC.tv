@@ -138,7 +138,7 @@ make_target() {
   LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
   
   if [ "$LINUX" = "awh3" ]; then
-    MALI_VERSION=DX910-SW-99002-r4p0-00rel1
+    MALI_VERSION=DX910-SW-99002-r4p0-00rel0
     LDFLAGS="" make -C modules/mali/${MALI_VERSION}/driver/src/devicedrv/ump \
          V=1 \
          ARCH=$TARGET_ARCH \
