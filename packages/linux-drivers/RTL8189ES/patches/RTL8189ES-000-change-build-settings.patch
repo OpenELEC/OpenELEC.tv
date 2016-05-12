@@ -1,6 +1,15 @@
 diff -Nur a/Makefile b/Makefile
 --- a/Makefile	2016-03-18 12:09:19.000000000 +0100
-+++ b/Makefile	2016-04-15 23:22:37.243302449 +0200
++++ b/Makefile	2016-05-11 17:48:47.086770207 +0200
+@@ -39,7 +39,7 @@
+ CONFIG_GSPI_HCI = n
+ ########################## Features ###########################
+ CONFIG_MP_INCLUDED = y
+-CONFIG_POWER_SAVING = y
++CONFIG_POWER_SAVING = n
+ CONFIG_USB_AUTOSUSPEND = n
+ CONFIG_HW_PWRP_DETECTION = n
+ CONFIG_WIFI_TEST = n
 @@ -57,7 +57,7 @@
  CONFIG_SIGNAL_SCALE_MAPPING = n
  CONFIG_80211W = n
@@ -10,134 +19,91 @@ diff -Nur a/Makefile b/Makefile
  CONFIG_ANTENNA_DIVERSITY = n
  CONFIG_TDLS = n
  CONFIG_WIFI_MONITOR = n
-@@ -72,7 +72,7 @@
+@@ -70,9 +70,9 @@
+ CONFIG_PNO_SET_DEBUG = n
+ CONFIG_AP_WOWLAN = n
  ######### Notify SDIO Host Keep Power During Syspend ##########
- CONFIG_RTW_SDIO_PM_KEEP_POWER = y
+-CONFIG_RTW_SDIO_PM_KEEP_POWER = y
++CONFIG_RTW_SDIO_PM_KEEP_POWER = n
  ###################### Platform Related #######################
 -CONFIG_PLATFORM_I386_PC = y
 +CONFIG_PLATFORM_I386_PC = n
  CONFIG_PLATFORM_ANDROID_X86 = n
  CONFIG_PLATFORM_ARM_NV_TK1 = n
  CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
-@@ -108,7 +108,7 @@
+@@ -108,8 +108,7 @@
  CONFIG_PLATFORM_ARM_SUNxI = n
  CONFIG_PLATFORM_ARM_SUN6I = n
  CONFIG_PLATFORM_ARM_SUN7I = n
 -CONFIG_PLATFORM_ARM_SUN8I_W3P1 = n
-+CONFIG_PLATFORM_ARM_SUN8I_W3P1 = y
- CONFIG_PLATFORM_ARM_SUN8I_W5P1 = n
+-CONFIG_PLATFORM_ARM_SUN8I_W5P1 = n
++CONFIG_PLATFORM_ARM_SUN8I = y
  CONFIG_PLATFORM_ACTIONS_ATM702X = n
  CONFIG_PLATFORM_ACTIONS_ATV5201 = n
-@@ -1374,7 +1374,7 @@
- EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN8I_W3P1
+ CONFIG_PLATFORM_ACTIONS_ATM705X = n
+@@ -1368,13 +1367,11 @@
+ KSRC := /home/android_sdk/Allwinner/a20/kitkat-a20_v4.4/lichee/linux-3.4
+ endif
+ 
+-ifeq ($(CONFIG_PLATFORM_ARM_SUN8I_W3P1), y)
++ifeq ($(CONFIG_PLATFORM_ARM_SUN8I), y)
+ EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+ EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN8I
+-EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN8I_W3P1
  EXTRA_CFLAGS += -DCONFIG_TRAFFIC_PROTECT
  # default setting for Android 4.1, 4.2
 -EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
-+#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
  EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
  EXTRA_CFLAGS += -DCONFIG_P2P_IPS
  
 diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdio.c
 --- a/platform/platform_ARM_SUNnI_sdio.c	2016-03-18 12:09:19.000000000 +0100
-+++ b/platform/platform_ARM_SUNnI_sdio.c	2016-04-15 23:25:04.000000000 +0200
-@@ -1,135 +1,114 @@
--/******************************************************************************
-- *
-- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of version 2 of the GNU General Public License as
-- * published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful, but WITHOUT
-- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-- * more details.
-- *
-- * You should have received a copy of the GNU General Public License along with
-- * this program; if not, write to the Free Software Foundation, Inc.,
-- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-- *
-- *
-- ******************************************************************************/
--/*
-- * Description:
-- *	This file can be applied to following platforms:
-- *	CONFIG_PLATFORM_ARM_SUN6I
-- *	CONFIG_PLATFORM_ARM_SUN7I
-- *	CONFIG_PLATFORM_ARM_SUN8I
-- */
--#include <drv_types.h>
--#include <mach/sys_config.h>
--#ifdef CONFIG_GPIO_WAKEUP
--#include <linux/gpio.h>
--#endif
--
--#ifdef CONFIG_MMC
--static int sdc_id = -1;
--static signed int gpio_eint_wlan = -1;
--static u32 eint_wlan_handle = 0;
--
--#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
--extern void sw_mci_rescan_card(unsigned id, unsigned insert);
--#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
--extern void sunxi_mci_rescan_card(unsigned id, unsigned insert);
--#endif
--
++++ b/platform/platform_ARM_SUNnI_sdio.c	2016-05-11 17:46:48.340097578 +0200
+@@ -41,12 +41,6 @@
+ extern void sunxi_mci_rescan_card(unsigned id, unsigned insert);
+ #endif
+ 
 -#ifdef CONFIG_PLATFORM_ARM_SUN8I_W5P1
 -extern int get_rf_mod_type(void);
 -#else
 -extern int wifi_pm_get_mod_type(void);
 -#endif
 -
--extern void wifi_pm_power(int on);
--#ifdef CONFIG_GPIO_WAKEUP
--extern unsigned int oob_irq;
--#endif
--#endif // CONFIG_MMC
--
--/*
-- * Return:
-- *	0:	power on successfully
-- *	others: power on failed
-- */
--int platform_wifi_power_on(void)
--{
--	int ret = 0;
--
--#ifdef CONFIG_MMC
--{
--	script_item_u val;
--	script_item_value_type_e type;
--
+ extern void wifi_pm_power(int on);
+ #ifdef CONFIG_GPIO_WAKEUP
+ extern unsigned int oob_irq;
+@@ -67,11 +61,11 @@
+ 	script_item_u val;
+ 	script_item_value_type_e type;
+ 
 -#ifdef CONFIG_PLATFORM_ARM_SUN8I_W5P1
 -	unsigned int mod_sel = get_rf_mod_type();
 -#else
 -	unsigned int mod_sel = wifi_pm_get_mod_type();
 -#endif
--
--	type = script_get_item("wifi_para", "wifi_sdc_id", &val);
--	if (SCIRPT_ITEM_VALUE_TYPE_INT!=type) {
--		DBG_871X("get wifi_sdc_id failed\n");
--		ret = -1;
--	} else {
--		sdc_id = val.val;
++	type = script_get_item("wifi_para", "wifi_used", &val);
++	if ((SCIRPT_ITEM_VALUE_TYPE_INT != type) || (0 == val.val)) {
++		DBG_871X("wifi is not used\n");
++		return -1;
++	}
+ 
+ 	type = script_get_item("wifi_para", "wifi_sdc_id", &val);
+ 	if (SCIRPT_ITEM_VALUE_TYPE_INT!=type) {
+@@ -79,7 +73,7 @@
+ 		ret = -1;
+ 	} else {
+ 		sdc_id = val.val;
 -		DBG_871X("----- %s sdc_id: %d, mod_sel: %d\n", __FUNCTION__, sdc_id, mod_sel);
--
--#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
--		sw_mci_rescan_card(sdc_id, 1);
--#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
--		sunxi_mci_rescan_card(sdc_id, 1);
--#endif
--		mdelay(100);
--		wifi_pm_power(1);
--
--		DBG_871X("%s: power up, rescan card.\n", __FUNCTION__);
--	}
--
--#ifdef CONFIG_GPIO_WAKEUP
++		DBG_871X("----- %s sdc_id: %d\n", __FUNCTION__, sdc_id);
+ 
+ #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
+ 		sw_mci_rescan_card(sdc_id, 1);
+@@ -93,16 +87,7 @@
+ 	}
+ 
+ #ifdef CONFIG_GPIO_WAKEUP
 -#ifdef CONFIG_PLATFORM_ARM_SUN8I_W5P1
--	type = script_get_item("wifi_para", "wl_host_wake", &val);
+ 	type = script_get_item("wifi_para", "wl_host_wake", &val);
 -#else
 -#ifdef CONFIG_RTL8723B
 -	type = script_get_item("wifi_para", "rtl8723bs_wl_host_wake", &val);
@@ -146,147 +112,6 @@ diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdi
 -	type = script_get_item("wifi_para", "rtl8189es_host_wake", &val);
 -#endif
 -#endif /* CONFIG_PLATFORM_ARM_SUN8I_W5P1 */
--	if (SCIRPT_ITEM_VALUE_TYPE_PIO != type) {
--		DBG_871X("No definition of wake up host PIN\n");
--		ret = -1;
--	} else {
--		gpio_eint_wlan = val.gpio.gpio;
--#ifdef CONFIG_PLATFORM_ARM_SUN8I
--		oob_irq = gpio_to_irq(gpio_eint_wlan);
--#endif
--	}
--#endif // CONFIG_GPIO_WAKEUP
--}
--#endif // CONFIG_MMC
--
--	return ret;
--}
--
--void platform_wifi_power_off(void)
--{
--#ifdef CONFIG_MMC
--#if defined(CONFIG_PLATFORM_ARM_SUN6I) ||defined(CONFIG_PLATFORM_ARM_SUN7I)
--	sw_mci_rescan_card(sdc_id, 0);
--#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
--	sunxi_mci_rescan_card(sdc_id, 0);
--#endif
--	mdelay(100);
--	wifi_pm_power(0);
--
--	DBG_871X("%s: remove card, power off.\n", __FUNCTION__);
--#endif // CONFIG_MMC
--}
-+/******************************************************************************
-+ *
-+ * Copyright(c) 2013 Realtek Corporation. All rights reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of version 2 of the GNU General Public License as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-+ *
-+ *
-+ ******************************************************************************/
-+/*
-+ * Description:
-+ *	This file can be applied to following platforms:
-+ *	CONFIG_PLATFORM_ARM_SUN6I
-+ *	CONFIG_PLATFORM_ARM_SUN7I
-+ *	CONFIG_PLATFORM_ARM_SUN8I
-+ */
-+#include <drv_types.h>
-+#include <mach/sys_config.h>
-+#ifdef CONFIG_GPIO_WAKEUP
-+#include <linux/gpio.h>
-+#endif
-+
-+#ifdef CONFIG_MMC
-+static int sdc_id = -1;
-+static signed int gpio_eint_wlan = -1;
-+static u32 eint_wlan_handle = 0;
-+#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
-+extern void sw_mci_rescan_card(unsigned id, unsigned insert);
-+#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
-+extern void sunxi_mci_rescan_card(unsigned id, unsigned insert);
-+#endif
-+extern void wifi_pm_power(int on);
-+#ifdef CONFIG_GPIO_WAKEUP
-+extern unsigned int oob_irq;
-+#endif
-+#endif // CONFIG_MMC
-+
-+/*
-+ * Return:
-+ *	0:	power on successfully
-+ *	others: power on failed
-+ */
-+int platform_wifi_power_on(void)
-+{
-+	int ret = 0;
-+
-+#ifdef CONFIG_MMC
-+{
-+	script_item_u val;
-+	script_item_value_type_e type;
-+
-+	type = script_get_item("wifi_para", "wifi_sdc_id", &val);
-+	if (SCIRPT_ITEM_VALUE_TYPE_INT!=type) {
-+		DBG_871X("get wifi_sdc_id failed\n");
-+		ret = -1;
-+	} else {
-+		sdc_id = val.val;
-+		DBG_871X("----- %s sdc_id: %d\n", __FUNCTION__, sdc_id);
-+
-+		wifi_pm_power(0);
-+		mdelay(50);
-+#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
-+		sw_mci_rescan_card(sdc_id, 1);
-+#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
-+		sunxi_mci_rescan_card(sdc_id, 1);
-+#endif
-+		mdelay(100);
-+		wifi_pm_power(1);
-+
-+		DBG_871X("%s: power up, rescan card.\n", __FUNCTION__);
-+	}
-+
-+#ifdef CONFIG_GPIO_WAKEUP
-+	type = script_get_item("wifi_para", "wl_host_wake", &val);
-+	if (SCIRPT_ITEM_VALUE_TYPE_PIO != type) {
-+		DBG_871X("No definition of wake up host PIN\n");
-+		ret = -1;
-+	} else {
-+		gpio_eint_wlan = val.gpio.gpio;
-+#ifdef CONFIG_PLATFORM_ARM_SUN8I
-+		oob_irq = gpio_to_irq(gpio_eint_wlan);
-+#endif
-+	}
-+#endif // CONFIG_GPIO_WAKEUP
-+}
-+#endif // CONFIG_MMC
-+
-+	return ret;
-+}
-+
-+void platform_wifi_power_off(void)
-+{
-+#ifdef CONFIG_MMC
-+#if defined(CONFIG_PLATFORM_ARM_SUN6I) ||defined(CONFIG_PLATFORM_ARM_SUN7I)
-+	sw_mci_rescan_card(sdc_id, 0);
-+#elif defined(CONFIG_PLATFORM_ARM_SUN8I)
-+	sunxi_mci_rescan_card(sdc_id, 0);
-+#endif
-+	mdelay(100);
-+	wifi_pm_power(0);
-+
-+	DBG_871X("%s: remove card, power off.\n", __FUNCTION__);
-+#endif // CONFIG_MMC
-+}
+ 	if (SCIRPT_ITEM_VALUE_TYPE_PIO != type) {
+ 		DBG_871X("No definition of wake up host PIN\n");
+ 		ret = -1;
