@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-05-05 19:59:11.516474383 +0200
-@@ -0,0 +1,859 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-05-19 21:42:21.826620990 +0200
+@@ -0,0 +1,868 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -642,22 +642,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +  ioctl(m_disp, DISP_GET_OUTPUT, args);
 +  
 +  m_screenid = (para.type == 0) ? 1 : 0;
-+  
-+  args[0] = m_screenid;
-+  args[1] = (unsigned long)(&video_config);
-+  args[2] = 1;
-+  args[3] = 0;
-+  
-+  // framebuffer is always at layer(1,0)
-+  video_config.channel = 1;
-+  video_config.layer_id = 0;
-+
-+  ioctl(m_disp, DISP_LAYER_GET_CONFIG, args);
-+  
-+  video_config.info.alpha_mode = 0;
-+  video_config.info.zorder = 1; // highest number is on top
-+  
-+  ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +}
 +
 +CSunxiContext::~CSunxiContext()
@@ -680,6 +664,20 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +  if(m_instances == 0)
 +  {
 +    unsigned long args[4] = { m_screenid, (unsigned long)(&video_config), 1, 0 };
++  
++    // framebuffer is always at layer(1,0)
++    video_config.channel = 1;
++    video_config.layer_id = 0;
++
++    ioctl(m_disp, DISP_LAYER_GET_CONFIG, args);
++    
++    m_savedMode = video_config.info.alpha_mode;
++    m_savedZOrder = video_config.info.zorder;
++    
++    video_config.info.alpha_mode = 0;
++    video_config.info.zorder = 1; // highest number is on top
++    
++    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +
 +    video_config.info.mode = LAYER_MODE_BUFFER;
 +    video_config.info.alpha_mode = 1;
@@ -717,6 +715,17 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +
 +    video_config.enable = 0;
 +
++    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
++  
++    // framebuffer is always at layer(1,0)
++    video_config.channel = 1;
++    video_config.layer_id = 0;
++
++    ioctl(m_disp, DISP_LAYER_GET_CONFIG, args);
++    
++    video_config.info.alpha_mode = m_savedMode;
++    video_config.info.zorder = m_savedZOrder;
++    
 +    ioctl(m_disp, DISP_LAYER_SET_CONFIG, args);
 +    
 +    if (m_fbHandle != -1)
@@ -962,8 +971,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +}
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-05-05 19:42:09.826502722 +0200
-@@ -0,0 +1,122 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-05-19 21:39:50.743291847 +0200
+@@ -0,0 +1,124 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -1080,6 +1089,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbm
 +  int               m_fbHandle;
 +  unsigned long     m_screenid;
 +  int               m_disp;
++  unsigned char     m_savedMode;
++  unsigned char     m_savedZOrder;
 +  // ugly hack
 +  std::set<VideoDecoder*> m_decoders;
 +  CCriticalSection  m_decodersLock;
