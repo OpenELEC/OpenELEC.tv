@@ -1,0 +1,8 @@
+# Force the NVidia Shield Controller to be detected as a controller rather than a touchpad/mouse/js* input,
+# as it has a touchpad and messes up udev's auto-detect.
+# Also, /dev/js* does not produce any meaningful output
+
+# This file works as of controller firmware v1.95/98/3.71/0.32
+
+SUBSYSTEM=="input", ATTRS{idVendor}=="0955", ATTRS{idProduct}=="7210", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_MOUSE}=""
+
