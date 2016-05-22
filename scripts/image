@@ -45,6 +45,8 @@ if [ "$LIBREELEC_VERSION" = "devel" ]; then
   LIBREELEC_VERSION=$LIBREELEC_VERSION-$BUILD_DATE-r$GIT_BUILD-g$GIT_ABBREV
 fi
 
+LIBREELEC_VERSION=$LIBREELEC_VERSION-devel-$BUILD_DATE
+
 # Get origin url, fix git:// and git@github.com: urls if necessary
 ORIGIN_URL="$(git remote -v | awk '$1 == "origin" { print $2 }' | head -1 | sed 's#\.git$##;s#^git:#https:#;s#^git@github\.com:#https://github.com/#')"
 
