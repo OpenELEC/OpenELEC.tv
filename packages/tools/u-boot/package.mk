@@ -26,7 +26,7 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "awh3" ]; then
-  PKG_VERSION="108f841"
+  PKG_VERSION="f0a711e"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_GIT_URL="git://git.denx.de/u-boot.git"
   PKG_GIT_BRANCH="master"
