@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="reicast"
-PKG_VERSION="f39f030"
+PKG_VERSION="a4b2829"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
