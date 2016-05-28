@@ -1,6 +1,6 @@
 [product]
 version = "100"
-machine = "orangepi-pc"
+machine = "opipc"
 
 ;---------------------------------------------------------------------------------------------------------
 ; eraseflag - 1 erase data partition, 0 - do not erase data partition

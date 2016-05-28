@@ -1,6 +1,6 @@
 [product]
 version = "100"
-machine = "opiplus"
+machine = "opilite"
 
 ;---------------------------------------------------------------------------------------------------------
 ; eraseflag - 1 erase data partition, 0 - do not erase data partition
@@ -93,7 +93,7 @@ pll_de           = 864
 ;dram_para2 = 0x00001100  ;on behalf of a single channel is enabled dram
 ;*****************************************************************************
 [dram_para]
-dram_clk        = 672
+dram_clk        = 624
 dram_type       = 3
 dram_zq         = 0x3b3bfb
 dram_odt_en     = 0x1
@@ -138,7 +138,6 @@ dram_tpr13      = 0x800800
 [wakeup_src_para]
 cpu_en              = 0
 cpu_freq            = 48
-; (cpu:apb:ahb)
 pll_ratio           = 273
 dram_selfresh_en    = 1
 dram_freq           = 36
@@ -322,13 +321,11 @@ ths_trip2_0 = 105
 ;cooler_table  cooler_count <=32
 ;----------------------------------------------------------------------------------
 [cooler_table]
-cooler_count = 6
-cooler0 = "1296000 4 4294967295 0"
-cooler1 = "1200000 4 4294967295 0"
-cooler2 = "1008000 4 4294967295 0"
-cooler3 =  "816000 4 4294967295 0"
-cooler4 =  "648000 4 4294967295 0"
-cooler5 =  "480000 1 4294967295 0"
+cooler_count = 4
+cooler0 = "1200000 4 4294967295 0"
+cooler1 = "1008000 4 4294967295 0"
+cooler2 = "816000 4 4294967295 0"
+cooler3 = "648000 1 4294967295 0"
 
 [nand0_para]
 nand_support_2ch    = 0
@@ -419,29 +416,8 @@ pwm_positive        = port:PA05<3><0><default><default>
 ;   PD05  *                 PD11   *           *    PD17   *           *       ;
 ;------------------------------------------------------------------------------;
 [gmac0]
-gmac_used          = 1
-gmac_rxd3          = port:PD00<2><default><3><default>
-gmac_rxd2          = port:PD01<2><default><3><default>
-gmac_rxd1          = port:PD02<2><default><3><default>
-gmac_rxd0          = port:PD03<2><default><3><default>
-gmac_rxclk         = port:PD04<2><default><3><default>
-gmac_rxdv          = port:PD05<2><default><3><default>
-;gmac_rxerr         = port:PD06<2><default><3><default>
-gmac_txd3          = port:PD07<2><default><3><default>
-gmac_txd2          = port:PD08<2><default><3><default>
-gmac_txd1          = port:PD09<2><default><3><default>
-gmac_txd0          = port:PD10<2><default><3><default>
-;gmac_crs           = port:PD11<2><default><3><default>
-gmac_txclk         = port:PD12<2><default><3><default>
-gmac_txen          = port:PD13<2><default><3><default>
-;gmac_txerr         = port:PD14<2><default><3><default>
-gmac_col           = port:PD15<2><default><3><default>
-gmac_mdc           = port:PD16<2><default><3><default>
-gmac_mdio          = port:PD17<2><default><3><default>
+gmac_used = 2
 gmac_power1 =
-
-[gmac_phy_power]
-gmac_phy_power_en   = port:PD06<1><default><default><0>
 
 ;--------------------------------------------------------------------------------
 ;vip (video input port) configuration
@@ -587,7 +563,7 @@ di_by_pass = 0
 ;--------------------------------------------------------------------------------
 [mmc0_para]
 sdc_used          = 1
-sdc_detmode       = 1
+sdc_detmode       = 3
 sdc_buswidth      = 4
 sdc_clk           = port:PF02<2><1><2><default>
 sdc_cmd           = port:PF03<2><1><2><default>
@@ -622,8 +598,8 @@ sdc_2xmode        = 1
 sdc_ddrmode       = 1
 
 [mmc2_para]
-sdc_used          = 1
-sdc_detmode       = 1
+sdc_used          = 0
+sdc_detmode       = 3
 sdc_buswidth      = 8
 sdc_clk           = port:PC05<3><1><2><default>
 sdc_cmd           = port:PC06<3><1><2><default>
@@ -694,7 +670,7 @@ usb_not_suspend     = 0
 ;--------------------------------
 [usbc1]
 usb_used            = 1
-usb_drv_vbus_gpio   = port:PG13<1><0><default><0>
+usb_drv_vbus_gpio   =
 usb_restrict_gpio   =
 usb_host_init_state = 1
 usb_restric_flag    = 0
@@ -706,7 +682,7 @@ usb_not_suspend     = 0
 ; USB2 Host
 ;--------------------------------
 [usbc2]
-usb_used            = 0
+usb_used = 1
 usb_drv_vbus_gpio   = 
 usb_restrict_gpio   =
 usb_host_init_state = 1
@@ -720,7 +696,6 @@ usb_not_suspend     = 0
 ;--------------------------------
 [usbc3]
 usb_used            = 1
-;usb_drv_vbus_gpio   = port:PG11<1><default><default><1>
 usb_drv_vbus_gpio   = 
 usb_restrict_gpio   =
 usb_host_init_state = 1
@@ -761,13 +736,14 @@ serial_unique       = 0
 ;             5- ap6330(wifi+bt)
 ;             6- ap6335(wifi)
 ;             7- rtl8189etv(wifi)
+;             8- rtl8189ftv(wifi)
 ;module_power0: axp used by module, "axp22_dldo1" - use dldo1, not use keep it empty
 ;module_power0_vol: power0 voltage, mv;
 ;chip_en:       enable chip io
 ;lpo_use_apclk: ""- not use, "losc_out"- a23/33/H3, "ac10032k1"、"ac10032k2"、"ac10032k3"- a80
 ;--------------------------------------------------------------------------------
 [module_para]
-module_num          = 7
+module_num          = 8
 module_power0       = "vcc-wifi-33"
 module_power0_vol   = 0
 module_power1       =
@@ -777,7 +753,7 @@ module_power2_vol   =
 module_power3       =
 module_power3_vol   =
 chip_en             =
-lpo_use_apclk       =
+lpo_use_apclk       = "losc_out"
 
 ;--------------------------------------------------------------------------------
 ;wifi configuration
@@ -978,28 +954,23 @@ ir_tx               = port:PH07<2><default><default><default>
 ;
 ;----------------------------------------------------------------------------------
 [dvfs_table]
-pmuic_type = 2
+pmuic_type = 1
 pmu_gpio0 = port:PL06<1><1><2><1>
 pmu_level0 = 11300
-pmu_level1 = 01100
-extremity_freq = 1296000000
+pmu_level1 = 1100
 max_freq = 1200000000
 min_freq = 480000000
-LV_count = 7
-LV1_freq = 1296000000
-LV1_volt = 1320
-LV2_freq = 1200000000
-LV2_volt = 1240
-LV3_freq = 1104000000
-LV3_volt = 1180
-LV4_freq = 1008000000
-LV4_volt = 1140
-LV5_freq = 960000000
-LV5_volt = 1080
-LV6_freq = 816000000
-LV6_volt = 1020
-LV7_freq = 480000000
-LV7_volt = 980
+LV_count = 5
+LV1_freq = 1200000000
+LV1_volt = 1300
+LV2_freq = 1008000000
+LV2_volt = 1300
+LV3_freq = 816000000
+LV3_volt = 1100
+LV4_freq = 648000000
+LV4_volt = 1100
+LV5_freq = 480000000
+LV5_volt = 1100
 
 [gpu_dvfs_table]
 G_LV_count = 3
