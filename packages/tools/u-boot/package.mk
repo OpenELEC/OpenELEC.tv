@@ -26,9 +26,9 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_SITE="http://imx.solid-run.com/wiki/index.php?title=Building_the_kernel_and_u-boot_for_the_CuBox-i_and_the_HummingBoard"
   PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "awh3" ]; then
-  PKG_VERSION="f0a711e"
+  PKG_VERSION="0e6e34a"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
-  PKG_GIT_URL="git://git.denx.de/u-boot.git"
+  PKG_GIT_URL="git://git.denx.de/u-boot-sunxi.git"
   PKG_GIT_BRANCH="master"
 else
   exit 0
@@ -89,6 +89,10 @@ make_target() {
         TARGET_NAME="opiplus"
       elif [ "$UBOOT_TARGET" = "orangepi_one_defconfig" ]; then
         TARGET_NAME="opione"
+      elif [ "$UBOOT_TARGET" = "orangepi_lite_defconfig" ]; then
+        TARGET_NAME="opilite"
+      elif [ "$UBOOT_TARGET" = "Sinovoip_BPI_M2_plus_defconfig" ]; then
+        TARGET_NAME="bpim2p"
       else
         TARGET_NAME="undef"
       fi
