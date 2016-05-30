@@ -29,5 +29,5 @@ done
 
 # read script.bin setting (new way)
 if [ -z "$SYSTEM_TYPE" ]; then
-  SYSTEM_TYPE=`read_fex product machine`
+  SYSTEM_TYPE=`$SYSTEM_ROOT/usr/bin/read_fex product machine`
 fi
