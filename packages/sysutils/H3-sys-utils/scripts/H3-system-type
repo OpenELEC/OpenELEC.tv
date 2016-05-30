@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2015 Stephan Raue (stephan@openelec.tv)
@@ -16,7 +18,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-# parse command line arguments
+# parse command line arguments (old way)
 for arg in $(cat /proc/cmdline); do
   case $arg in
     board=*)
@@ -24,3 +26,8 @@ for arg in $(cat /proc/cmdline); do
       ;;
   esac
 done
+
+# read script.bin setting (new way)
+if [ -z "$SYSTEM_TYPE" ]; then
+  SYSTEM_TYPE=`read_fex product machine`
+fi

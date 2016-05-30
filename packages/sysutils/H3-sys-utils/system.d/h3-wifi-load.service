@@ -1,0 +1,12 @@
+[Unit]
+Description=wifi driver loader
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/storage
+ExecStart=-/bin/sh -c ". /etc/profile; exec /bin/sh /usr/lib/openelec/wifi_init"
+
+[Install]
+WantedBy=network.target

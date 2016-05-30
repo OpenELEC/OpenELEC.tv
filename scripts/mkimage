@@ -214,19 +214,13 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       mcopy "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" ::/u-boot.img
     elif [ -f $RELEASE_DIR/3rdparty/bootloader/u-boot.img ]; then
       mcopy $RELEASE_DIR/3rdparty/bootloader/u-boot.img ::
-    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/script.bin" ]; then
-      mcopy $RELEASE_DIR/3rdparty/bootloader/script.bin ::
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/$UBOOT_SYSTEM.fex" ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/$UBOOT_SYSTEM.fex ::/script.bin
     fi
 
     for dtb in $RELEASE_DIR/3rdparty/bootloader/*.dtb ; do
       if [ -f $dtb ] ; then
         mcopy "$dtb" ::/$(basename "$dtb")
-      fi
-    done
-    
-    for fex in $RELEASE_DIR/3rdparty/bootloader/*.fex ; do
-      if [ -f $fex ] ; then
-        mcopy "$fex" ::/$(basename "$fex")
       fi
     done
 fi # bootloader

@@ -48,7 +48,7 @@ case "$LINUX" in
     PKG_VERSION="1bbb331"
     PKG_GIT_URL="https://github.com/igorpecovnik/linux.git"
     PKG_GIT_BRANCH="sun8i"
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools H3-sys-utils"
     ;;
   *)
     PKG_VERSION="4.4.8"

@@ -53,18 +53,13 @@ fi
       cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT
     fi
   done
-  
-# update Allwinner configuration files
-  for all_fex in /flash/*.fex; do
-    fex=$(basename $all_fex)
-    if [ -f $SYSTEM_ROOT/usr/share/bootloader/$fex ]; then
-      echo "*** updating Allwinner configuration file: $fex ..."
-      cp -p $SYSTEM_ROOT/usr/share/bootloader/$fex $BOOT_ROOT
-    fi
-  done
 
 # update bootloader files
   if [ "$PROJECT" = "H3" ]; then
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex ]; then
+      echo "*** updating Allwinner configuration file ..."
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex $BOOT_ROOT/script.bin
+    fi
     echo "*** updating u-boot image for board  $SYSTEM_TYPE ..."
     dd if=$SYSTEM_ROOT/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
   elif [ "$SYSTEM_TYPE" = "matrix" ]; then

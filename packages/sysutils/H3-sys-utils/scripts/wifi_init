@@ -1,0 +1,50 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2016 Jernej Škrabec (jernej.skrabec@siol.net)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+# check if wifi is enabled
+value=`read_fex wifi_para wifi_used`
+if [ "$value" == "1" ]; then
+  # read out wifi module type from script.bin
+  value=`read_fex module_para module_num`
+
+  case $value in
+    "4")
+      modprobe bcmdhd
+      ;;
+    "7")
+      modprobe 8189es
+      ;;
+    "8")
+      mac_addr=""
+      if [ -f /storage/.config/mac.txt ]; then
+        mac_addr=`/storage/.config/mac.txt`
+      fi
+      
+      # check if mac is valid and if not, generate a random one and save it
+      output=`echo $mac_addr | egrep "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$"`
+      if [ -z "$output" ]; then
+        mac_addr=`echo '00 e0 4c'$(od -An -N3 -t xC /dev/urandom) | sed -e 's/ /:/g'`
+        echo "$mac_addr" > /storage/.config/mac.txt
+      fi
+      
+      modprobe 8189fs rtw_initmac=$mac_addr
+      ;;
+  esac
+fi
