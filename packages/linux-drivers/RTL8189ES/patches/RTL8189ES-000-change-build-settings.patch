@@ -1,6 +1,6 @@
 diff -Nur a/Makefile b/Makefile
 --- a/Makefile	2016-03-18 12:09:19.000000000 +0100
-+++ b/Makefile	2016-05-11 17:48:47.086770207 +0200
++++ b/Makefile	2016-05-27 22:43:17.416704270 +0200
 @@ -39,7 +39,7 @@
  CONFIG_GSPI_HCI = n
  ########################## Features ###########################
@@ -10,7 +10,7 @@ diff -Nur a/Makefile b/Makefile
  CONFIG_USB_AUTOSUSPEND = n
  CONFIG_HW_PWRP_DETECTION = n
  CONFIG_WIFI_TEST = n
-@@ -57,7 +57,7 @@
+@@ -57,10 +57,10 @@
  CONFIG_SIGNAL_SCALE_MAPPING = n
  CONFIG_80211W = n
  CONFIG_REDUCE_TX_CPU_LOADING = n
@@ -18,7 +18,11 @@ diff -Nur a/Makefile b/Makefile
 +CONFIG_BR_EXT = n
  CONFIG_ANTENNA_DIVERSITY = n
  CONFIG_TDLS = n
- CONFIG_WIFI_MONITOR = n
+-CONFIG_WIFI_MONITOR = n
++CONFIG_WIFI_MONITOR = y
+ ######################## Wake On Lan ##########################
+ CONFIG_WOWLAN = n
+ CONFIG_GPIO_WAKEUP = n
 @@ -70,9 +70,9 @@
  CONFIG_PNO_SET_DEBUG = n
  CONFIG_AP_WOWLAN = n
@@ -58,7 +62,7 @@ diff -Nur a/Makefile b/Makefile
  
 diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdio.c
 --- a/platform/platform_ARM_SUNnI_sdio.c	2016-03-18 12:09:19.000000000 +0100
-+++ b/platform/platform_ARM_SUNnI_sdio.c	2016-05-11 17:46:48.340097578 +0200
++++ b/platform/platform_ARM_SUNnI_sdio.c	2016-05-27 22:41:39.140036750 +0200
 @@ -41,12 +41,6 @@
  extern void sunxi_mci_rescan_card(unsigned id, unsigned insert);
  #endif
@@ -72,7 +76,7 @@ diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdi
  extern void wifi_pm_power(int on);
  #ifdef CONFIG_GPIO_WAKEUP
  extern unsigned int oob_irq;
-@@ -67,11 +61,11 @@
+@@ -67,19 +61,13 @@
  	script_item_u val;
  	script_item_value_type_e type;
  
@@ -81,15 +85,10 @@ diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdi
 -#else
 -	unsigned int mod_sel = wifi_pm_get_mod_type();
 -#endif
-+	type = script_get_item("wifi_para", "wifi_used", &val);
-+	if ((SCIRPT_ITEM_VALUE_TYPE_INT != type) || (0 == val.val)) {
-+		DBG_871X("wifi is not used\n");
-+		return -1;
-+	}
- 
+-
  	type = script_get_item("wifi_para", "wifi_sdc_id", &val);
  	if (SCIRPT_ITEM_VALUE_TYPE_INT!=type) {
-@@ -79,7 +73,7 @@
+ 		DBG_871X("get wifi_sdc_id failed\n");
  		ret = -1;
  	} else {
  		sdc_id = val.val;
@@ -98,7 +97,7 @@ diff -Nur a/platform/platform_ARM_SUNnI_sdio.c b/platform/platform_ARM_SUNnI_sdi
  
  #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
  		sw_mci_rescan_card(sdc_id, 1);
-@@ -93,16 +87,7 @@
+@@ -93,16 +81,7 @@
  	}
  
  #ifdef CONFIG_GPIO_WAKEUP
