@@ -33,8 +33,8 @@ if [ "$value" == "1" ]; then
       ;;
     "8")
       mac_addr=""
-      if [ -f /storage/.config/mac.txt ]; then
-        mac_addr=`/storage/.config/mac.txt`
+      if [ -f "/storage/.config/mac.txt" ]; then
+        mac_addr=`cat /storage/.config/mac.txt`
       fi
       
       # check if mac is valid and if not, generate a random one and save it
