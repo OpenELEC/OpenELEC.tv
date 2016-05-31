@@ -22,10 +22,14 @@
 echo "getting sources..."
   if [ ! -d retroarch.git ]; then
     git clone https://github.com/libretro/retroarch.git -b master retroarch.git
+    cd retroarch.git
+    git submodule update --init
+    cd ..
   fi
 
   cd retroarch.git
     git pull
+    git submodule foreach git pull origin master
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
