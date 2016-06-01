@@ -33,6 +33,9 @@ DISTRO=Lakka PROJECT=WeTek_Play ARCH=arm make image -j9
 >&2 echo "WeTek_Core.arm"
 DISTRO=Lakka PROJECT=WeTek_Core ARCH=arm make image -j9
 
+rm target/*.kernel
+rm target/*.system
+
 for f in target/*; do
   md5sum $f > $f.md5
   sha256sum $f > $f.sha256
