@@ -57,7 +57,7 @@
 ################################################################################
 
   # Build optimizations (size/normal)
-    OPTIMIZATIONS="size"
+    OPTIMIZATIONS="normal"
 
   # Project CFLAGS
     PROJECT_CFLAGS="-mmmx -msse -msse2 -mfpmath=sse"
