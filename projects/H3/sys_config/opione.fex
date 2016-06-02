@@ -365,8 +365,8 @@ disp_init_enable         = 1
 disp_mode                = 0
 screen0_output_type      = 3
 screen0_output_mode      = 10
-screen1_output_type      = 2
-screen1_output_mode      = 14
+screen1_output_type      = 0
+screen1_output_mode      = 0
 fb0_format               = 0
 fb0_width                = 0
 fb0_height               = 0
@@ -388,9 +388,9 @@ hdmi_cec_used = 1
 hdmi_cec_pin = port:PA21<0><0><default><default>
 
 [tv_para]
-tv_used				= 1
-tv_dac_used			= 1
-tv_dac_src0			= 0
+tv_used = 0
+tv_dac_used = 1
+tv_dac_src0 = 0
 
 ;----------------------------------------------------------------------------------
 ;pwm config
