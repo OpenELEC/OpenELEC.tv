@@ -1,6 +1,6 @@
 diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/resource.language.en_gb/resources/strings.po
 --- a/addons/resource.language.en_gb/resources/strings.po	2016-04-15 18:52:10.000000000 +0200
-+++ codec/addons/resource.language.en_gb/resources/strings.po	2016-05-03 21:53:55.762853622 +0200
++++ codec/addons/resource.language.en_gb/resources/strings.po	2016-05-22 11:15:24.342839404 +0200
 @@ -8333,7 +8333,13 @@
  msgid "IMX - Fast motion (double)"
  msgstr ""
@@ -9,7 +9,7 @@ diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/res
 +#. Description of OSD video settings for deinterlace method with label #16336
 +#: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
 +msgctxt "#16336"
-+msgid "SUNXI - NORMAL"
++msgid "Disp2 - BOB"
 +msgstr ""
 +
 +#empty strings from id 16337 to 16399
@@ -99,8 +99,8 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/
    {
 diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-05-19 21:42:21.826620990 +0200
-@@ -0,0 +1,868 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-06-02 22:32:11.767572151 +0200
+@@ -0,0 +1,882 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -202,7 +202,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +  memset(&m_streamInfo, 0, sizeof(m_streamInfo));
 +  memset(&vConfig, 0, sizeof(VConfig));
 +  vConfig.eOutputPixelFormat = PIXEL_FORMAT_NV21;
-+   
++
++  CLog::Log(LOGDEBUG, "Codec profile %d level %d", m_hints.profile, m_hints.level);
++
 +  switch (hints.codec)
 +  {
 +    case AV_CODEC_ID_MPEG1VIDEO:
@@ -276,6 +278,12 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_RX;
 +      break;
 +    case AV_CODEC_ID_H264:
++      // Test for VPU unsupported profiles to revert to sw decoding
++      if (m_hints.profile == 110) //hi10p
++      {
++	CLog::Log(LOGNOTICE, "CedarX is not able to decode AVC profile %d level %d", m_hints.profile, m_hints.level);
++	return false;
++      }
 +      m_pFormatName = "cedarx-h264";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_H264;
 +      // convert h264-avcC to h264-annex-b as h264-avcC
@@ -322,6 +330,12 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_AVS;
 +      break;
 +    case AV_CODEC_ID_HEVC:
++      // Test for VPU unsupported profiles to revert to sw decoding
++      if ((m_hints.profile == 2) && (m_hints.level == 120)) //Main 10 - 10 bit
++      {
++	CLog::Log(LOGNOTICE, "CedarX is not able to decode HEVC profile %d level %d", m_hints.profile, m_hints.level);
++	return false;
++      }
 +      m_pFormatName = "cedarx-h265";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_H265;
 +      m_vp9orhevccodec = true;
@@ -1537,7 +1551,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec/xbmc/cores/dvdplayer/D
    return "UNKNOWN";
 diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
 --- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-05-03 21:53:55.769520288 +0200
++++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-05-22 11:17:04.179506939 +0200
 @@ -93,6 +93,10 @@
  #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
  #endif
@@ -1734,7 +1748,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/Vid
 +  
 +  if(m_renderMethod & RENDER_DISP2)
 +  {
-+    if(method == VS_INTERLACEMETHOD_SUNXI_NORMAL)
++    if(method == VS_INTERLACEMETHOD_DISP2_BOB)
 +      return true;
 +    else
 +      return false;
@@ -1759,7 +1773,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/Vid
      return VS_INTERLACEMETHOD_IMX_FASTMOTION;
 +  
 +  if(m_renderMethod & RENDER_DISP2)
-+    return VS_INTERLACEMETHOD_SUNXI_NORMAL;
++    return VS_INTERLACEMETHOD_DISP2_BOB;
  
  #if !defined(TARGET_ANDROID) && (defined(__i386__) || defined(__x86_64__))
    return VS_INTERLACEMETHOD_DEINTERLACE_HALF;
@@ -1897,24 +1911,24 @@ diff -Nur a/xbmc/settings/Settings.cpp codec/xbmc/settings/Settings.cpp
      CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
 diff -Nur a/xbmc/settings/VideoSettings.h codec/xbmc/settings/VideoSettings.h
 --- a/xbmc/settings/VideoSettings.h	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/settings/VideoSettings.h	2016-05-03 21:53:55.769520288 +0200
++++ codec/xbmc/settings/VideoSettings.h	2016-05-22 11:16:08.506173121 +0200
 @@ -74,6 +74,8 @@
  
    VS_INTERLACEMETHOD_IMX_FASTMOTION = 29,
    VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE = 30,
 +  
-+  VS_INTERLACEMETHOD_SUNXI_NORMAL = 31,
++  VS_INTERLACEMETHOD_DISP2_BOB = 31,
  
    VS_INTERLACEMETHOD_MAX // do not use and keep as last enum value.
  };
 diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
 --- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-05-03 21:53:55.769520288 +0200
++++ codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-05-22 11:16:25.629506603 +0200
 @@ -274,6 +274,7 @@
    entries.push_back(std::make_pair(16333, VS_INTERLACEMETHOD_MMAL_BOB_HALF));
    entries.push_back(std::make_pair(16334, VS_INTERLACEMETHOD_IMX_FASTMOTION));
    entries.push_back(std::make_pair(16335, VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE));
-+  entries.push_back(std::make_pair(16336, VS_INTERLACEMETHOD_SUNXI_NORMAL));
++  entries.push_back(std::make_pair(16336, VS_INTERLACEMETHOD_DISP2_BOB));
  
    /* remove unsupported methods */
    for (StaticIntegerSettingOptions::iterator it = entries.begin(); it != entries.end(); )
