@@ -241,7 +241,7 @@ manual_cs     = 0
 ; ** COMMENT THE PINS USED IN OTHER INTERFACES (I2C, SPI, 1-WIRE...)
 ;----------------------------------------------------------------------------------
 [gpio_para]
-gpio_used   = 1
+gpio_used       = 1
 gpio_num    = 18
 gpio_pin_1  = port:PA06<1><default><default><0>
 gpio_pin_2  = port:PA13<1><default><default><0>
@@ -261,7 +261,7 @@ gpio_pin_15 = port:PA09<1><default><default><0>
 gpio_pin_16 = port:PA10<1><default><default><0>
 gpio_pin_17 = port:PL04<1><default><default><0>
 gpio_pin_18 = port:PL10<1><default><default><1>
-;gpio_pin_10 = port:PA15<1><default><default><0>
+;gpio_pin_10     = port:PA15<1><default><default><0>
 
 [led_assign]
 normal_led = "gpio_pin_2"
@@ -285,15 +285,15 @@ red_led_active_low = 1
 ;----------------------------------------------------------------------------------
 [ths_para]
 ths_used = 1
-ths_trip1_count = 6
-ths_trip1_0 = 60
-ths_trip1_1 = 75
-ths_trip1_2 = 85
-ths_trip1_3 = 90
-ths_trip1_4 = 95
-ths_trip1_5 = 100
-ths_trip1_6 = 0
-ths_trip1_7 = 0
+ths_trip1_count = 8
+ths_trip1_0 = 65
+ths_trip1_1 = 70
+ths_trip1_2 = 75
+ths_trip1_3 = 80
+ths_trip1_4 = 85
+ths_trip1_5 = 90
+ths_trip1_6 = 95
+ths_trip1_7 = 105
 ths_trip1_0_min = 0
 ths_trip1_0_max = 1
 ths_trip1_1_min = 1
@@ -303,11 +303,13 @@ ths_trip1_2_max = 3
 ths_trip1_3_min = 3
 ths_trip1_3_max = 4
 ths_trip1_4_min = 4
-ths_trip1_4_max = 5
-ths_trip1_5_min = 5
-ths_trip1_5_max = 5
-ths_trip1_6_min = 0
-ths_trip1_6_max = 0
+ths_trip1_4_max = 6
+ths_trip1_5_min = 6
+ths_trip1_5_max = 8
+ths_trip1_6_min = 8
+ths_trip1_6_max = 10
+ths_trip1_7_min = 0
+ths_trip1_7_max = 0
 ths_trip2_count = 1
 ths_trip2_0 = 105
 
@@ -315,13 +317,18 @@ ths_trip2_0 = 105
 ;cooler_table  cooler_count <=32
 ;----------------------------------------------------------------------------------
 [cooler_table]
-cooler_count = 6
+cooler_count = 11
 cooler0 = "1200000 4 4294967295 0"
-cooler1 = "912000 4 4294967295 0"
-cooler2 = "720000 4 4294967295 0"
-cooler3 = "648000 4 4294967295 0"
-cooler4 = "480000 2 4294967295 0"
-cooler5 = "240000 1 4294967295 0"
+cooler1 = "1008000 4 4294967295 0"
+cooler2 = "816000 4 4294967295 0"
+cooler3 = "720000 4 4294967295 0"
+cooler4 = "648000 4 4294967295 0"
+cooler5 = "480000 4 4294967295 0"
+cooler6 = "312000 4 4294967295 0"
+cooler7 = "240000 4 4294967295 0"
+cooler8 = "240000 3 4294967295 0"
+cooler9 = "240000 2 4294967295 0"
+cooler10 = "240000 1 4294967295 0"
 
 [nand0_para]
 nand_support_2ch    = 0
@@ -385,8 +392,8 @@ hdmi_cec_pin = port:PA21<0><0><default><default>
 
 [tv_para]
 tv_used = 0
-tv_dac_used = 1
-tv_dac_src0 = 0
+tv_dac_used			= 1
+tv_dac_src0			= 0
 
 ;----------------------------------------------------------------------------------
 ;pwm config
@@ -431,7 +438,7 @@ gmac_txen          = port:PD13<2><default><3><default>
 gmac_col           = port:PD15<2><default><3><default>
 gmac_mdc           = port:PD16<2><default><3><default>
 gmac_mdio          = port:PD17<2><default><3><default>
-gmac_power1 =
+gmac_power1        =
 
 [gmac_phy_power]
 gmac_phy_power_en   = port:PD06<1><default><default><0>
@@ -469,7 +476,9 @@ gmac_phy_power_en   = port:PD06<1><default><default><0>
 ;axp22_eldo2
 ;fill handle string "" when not using any pmu power supply
 ;--------------------------------------------------------------------------------
+
 [csi0]
+
 vip_used                 = 1
 vip_mode                 = 0
 vip_dev_qty              = 1
@@ -518,6 +527,7 @@ vip_dev0_af_pwdn         =
 vip_dev0_act_used        = 0
 vip_dev0_act_name        = "ad5820_act"
 vip_dev0_act_slave       = 0x18
+
 
 vip_dev1_mname           = ""
 vip_dev1_pos             = "front"
@@ -650,6 +660,7 @@ smc_vccen           = port:PA06<2><default><default><default>
 smc_sck             = port:PA07<2><default><default><default>
 smc_sda             = port:PA08<2><default><default><default>
 
+
 ;--------------------------------
 ; [usbc0]: Controller 0 configuration.
 ; usb used:          USB enable flag. Set, indicating that the system USB module is available, is set to 0, it means that the system USB is disabled.
@@ -686,7 +697,7 @@ usb_not_suspend     = 0
 ;--------------------------------
 [usbc1]
 usb_used            = 1
-usb_drv_vbus_gpio   =
+usb_drv_vbus_gpio   = 
 usb_restrict_gpio   =
 usb_host_init_state = 1
 usb_restric_flag    = 0
@@ -741,6 +752,7 @@ luns                = 3
 [serial_feature]
 serial_unique       = 0
 
+
 ;--------------------------------------------------------------------------------
 ;wifi/bt/fm/gps/nfc modules configuration
 ;module_num:
@@ -761,7 +773,7 @@ serial_unique       = 0
 module_num          = 4
 module_power0       = "vcc-wifi-33"
 module_power0_vol   = 0
-module_power1       =
+module_power1       = 
 module_power1_vol   = 1
 module_power2       =
 module_power2_vol   =
@@ -791,8 +803,8 @@ wl_host_wake_invert   = 0
 
 ;--------------------------------------------------------------------------------
 ;bluetooth configuration
-;bt_used:       0 - no used, 1- used
-;bt_uard_id:    0 - uart0, 1- uart1, 2- uart2
+;bt_used:       0- no used, 1- used
+;bt_uard_id:		0- uart0, 1- uart1, 2- uart2
 ;bt_rst_n:      bt function enable io
 ;bt_wake:       host wake-up bluetooth device
 ;bt_host_wake:  bt device wake-up host
@@ -836,74 +848,76 @@ bt_host_wake_invert   = 0
 ;rx_data_mode 		:0: 16bit linear PCM; 1: 8bit linear PCM; 2: 8bit u-law; 3: 8bit a-law
 ;--------------------------------------------------------------------------------
 [pcm0]
-daudio_used = 0
-daudio_master = 4
-daudio_select = 1
-audio_format = 1
-signal_inversion = 1
-mclk_fs = 128
-sample_resolution = 16
-slot_width_select = 32
-;pcm_sync_period = 256
-pcm_lrck_period = 32
-pcm_lrckr_period = 1
-msb_lsb_first = 0
-sign_extend = 0
-slot_index = 0
-slot_width = 32
-frame_width = 0
-tx_data_mode = 0
-rx_data_mode = 0
-i2s_mclk = port:PA18<2><1><default><default>
-i2s_bclk = port:PA19<2><1><default><default>
-i2s_dout0 = port:PA20<2><1><default><default>
-i2s_din = port:PA21<2><1><default><default>
+daudio_used         = 0
+daudio_master		= 4
+daudio_select  		= 1
+audio_format		= 1
+signal_inversion	= 1
+mclk_fs				= 128
+sample_resolution   = 16
+slot_width_select 	= 32
+;pcm_sync_period 	= 256
+pcm_lrck_period		= 32
+pcm_lrckr_period 	= 1
+msb_lsb_first 	    = 0
+sign_extend 		= 0
+slot_index 		    = 0
+slot_width 		    = 32
+frame_width 		= 0
+tx_data_mode 		= 0
+rx_data_mode 		= 0
+i2s_mclk            = port:PA18<2><1><default><default>
+i2s_bclk            = port:PA19<2><1><default><default>
+i2s_dout0           = port:PA20<2><1><default><default>
+i2s_din             = port:PA21<2><1><default><default>
+
 
 [pcm1]
-daudio_used = 0
-daudio_master = 4
-daudio_select = 1
-audio_format = 1
-signal_inversion = 1
-mclk_fs = 128
-sample_resolution = 16
-slot_width_select = 32
-;pcm_sync_period = 256
-pcm_lrck_period = 32
-pcm_lrckr_period = 1
-msb_lsb_first = 0
-sign_extend = 0
-slot_index = 0
-slot_width = 32
-frame_width = 0
-tx_data_mode = 0
-rx_data_mode = 0
-i2s_mclk = port:PG10<2><1><default><default>
-i2s_bclk = port:PG11<2><1><default><default>
-i2s_dout0 = port:PG12<2><1><default><default>
-i2s_din = port:PG13<2><1><default><default>
+daudio_used         = 0
+daudio_master		= 4
+daudio_select  		= 1
+audio_format		= 1
+signal_inversion	= 1
+mclk_fs				= 128
+sample_resolution   = 16
+slot_width_select 	= 32
+;pcm_sync_period 	= 256
+pcm_lrck_period		= 32
+pcm_lrckr_period 	= 1
+msb_lsb_first 	    = 0
+sign_extend 		= 0
+slot_index 		    = 0
+slot_width 		    = 32
+frame_width 		= 0
+tx_data_mode 		= 0
+rx_data_mode 		= 0
+i2s_mclk            = port:PG10<2><1><default><default>
+i2s_bclk            = port:PG11<2><1><default><default>
+i2s_dout0           = port:PG12<2><1><default><default>
+i2s_din             = port:PG13<2><1><default><default>
+
 
 [audio0]
-audio_used = 1
-lineout_vol = 0x1f
-cap_vol = 0x5
-audio_hp_ldo = "none"
-adcagc_used = 0
-adcdrc_used = 0
-dacdrc_used = 0
-adchpf_used = 0
-dachpf_used = 0
-audio_pa_ctrl = port:PA16<1><default><default><0>
+audio_used          	= 1
+lineout_vol		= 0x1f
+cap_vol			= 0x5
+audio_hp_ldo       	= "none"
+adcagc_used       	= 0
+adcdrc_used       	= 0
+dacdrc_used       	= 0
+adchpf_used       	= 0
+dachpf_used       	= 0
+audio_pa_ctrl          	= port:PA16<1><default><default><0>
 
 [spdif0]
-spdif_used = 0
-spdif_dout = port:PA17<2><1><default><default>
+spdif_used          = 0
+spdif_dout          = port:PA17<2><1><default><default>
 
 [audiohub]
 hub_used = 1
-codec_used = 1
+codec_used 	= 1
 spdif_used = 0
-hdmi_used = 1
+hdmi_used 	= 1
 
 ;----------------------------------------------------------------------------------
 ;ir rx --- infra remote configuration
@@ -931,12 +945,12 @@ ir_power_key_code8  = 0x45
 ir_addr_code8       = 0xbd02
 ir_power_key_code9  = 0x4d
 ir_addr_code9       = 0xde21
-ir_power_key_code10 = 0x18
-ir_addr_code10      = 0xfe01
-ir_power_key_code11 = 0x57
-ir_addr_code11      = 0xff00
-ir_power_key_code12 = 0x4d
-ir_addr_code12      = 0xff40
+ir_power_key_code10  = 0x18
+ir_addr_code10       = 0xfe01
+ir_power_key_code11  = 0x57
+ir_addr_code11       = 0xff00
+ir_power_key_code12  = 0x4d
+ir_addr_code12       = 0xff40
 
 ;----------------------------------------------------------------------------------
 ;ir tx--- infra remote configuration
@@ -944,6 +958,7 @@ ir_addr_code12      = 0xff40
 [cir]
 ir_used             = 1
 ir_tx               = port:PH07<2><default><default><default>
+
 
 ;----------------------------------------------------------------------------------
 ; dvfs voltage-frequency table configuration
@@ -971,7 +986,7 @@ ir_tx               = port:PH07<2><default><default><default>
 ;----------------------------------------------------------------------------------
 [dvfs_table]
 pmuic_type = 0
-pmu_gpio0 = port:PL06<1><1><2><1>
+pmu_gpio0         = port:PL06<1><1><2><1>
 pmu_level0 = 11300
 pmu_level1 = 1100
 ;extremity_freq = 1296000000
@@ -984,11 +999,15 @@ LV2_freq = 648000000
 LV2_volt = 1300
 
 [gpu_dvfs_table]
+
 G_LV_count = 3
+
 G_LV0_freq = 312000000
 G_LV0_volt = 1200000
+
 G_LV1_freq = 384000000
 G_LV1_volt = 1200000
+
 G_LV2_freq = 456000000
 G_LV2_volt = 1200000
 
@@ -1056,6 +1075,7 @@ scr_slk             = port:PA07<2><default><default><default>
 scr_sda             = port:PA08<2><default><default><default>
 scr_rst             = port:PA09<2><default><default><default>
 scr_det             = port:PA10<2><default><default><default>
+
 
 ;--------------------------------------------------------------------------------
 ;tsc configuration
