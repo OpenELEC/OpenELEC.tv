@@ -93,6 +93,8 @@ make_target() {
         TARGET_NAME="opilite"
       elif [ "$UBOOT_TARGET" = "Sinovoip_BPI_M2_plus_defconfig" ]; then
         TARGET_NAME="bpim2p"
+      elif [ "$UBOOT_TARGET" = "orangepi_plus2e_defconfig" ]; then
+        TARGET_NAME="opiplus2e"
       else
         TARGET_NAME="undef"
       fi
