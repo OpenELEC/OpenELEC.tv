@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.xbmc.lcdproc" name="XBMC LCDproc" version="2.6.0" provider-name="Team XBMC: Memphiz, Daniel 'herrnst' Scheller. TOSD-5711BB support by Blackeagle">
+  <requires>
+    <import addon="xbmc.python" version="2.19.0"/>
+    <import addon="xbmc.addon" version="12.0.0"/>
+  </requires>
+  <extension point="xbmc.service" library="lcdmain.py" start="login"></extension>
+  <extension point="xbmc.addon.metadata">
+    <language></language>
+    <summary>XBMC LCDproc</summary>
+    <description>Displays configurable information e.g. about playing media or XBMC status on any LC/VF-display driven by LCDproc, and acts as direct drop-in replacement to the LCD/VFD-feature previously available in XBMC's core. Supports additional display elements (icons, bars) on SoundGraph iMON LCD and Targa/Futaba mdm166a VFD hardware and Futaba TOSD-5711BB LED. Requires a properly configured and running LCDd either locally or somewhere on the network.</description>
+    <description lang="de">Zeigt konfigurierbare Informationen z.B. über aktuelle Wiedergabe oder XBMC Stati auf beliebigen von LCDproc angesteuerten LC/VF-Displays, ersetzt die zuvor im XBMC-Kern enthaltene LCD/VFD-Funktion. Unterstützt zusätzliche Elemente (Icons, Balken) von SoundGraph iMON LCD und Targa/Futaba mdm166a VFD Hardware und Futaba TOSD-5711BB LED. Benötigt einen konfigurierten, laufenden LCDd auf dem lokalen System oder im Netzwerk.</description>
+    <disclaimer>Works with LCDproc only. Other LCD services like LCD4Linux or iMON Manager on Win32 are not supported. No liability taken for damaged hardware and/or software caused by this addon.</disclaimer>
+    <disclaimer lang="de">Funktioniert ausschliesslich mit LCDproc. Andere LCD-Dienste wie LCD4Linux, iMON Manager unter Win32 u.a. sind nicht unterstützt. Keine Haftung für durch dieses Addon beschädigte Hard-/Software.</disclaimer>
+    <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+    <platform>all</platform>
+  </extension>
+</addon>

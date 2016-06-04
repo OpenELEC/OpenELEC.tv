@@ -1,0 +1,68 @@
+<lcd>
+   <!-- advanced configurables, XML-uncomment and set options as desired -->
+
+   <!-- scrollseparator: string to use as separator if text gets scrolled -->
+   <scrollseparator>-</scrollseparator>
+
+   <!-- progressbarsurroundings: put progress bars in square brackets (on/off) -->
+   <!--progressbarsurroundings>off</progressbarsurroundings-->
+
+   <!-- icontextoffset: offset for text displayed after any play/pause icons -->
+   <!--icontextoffset>2</icontextoffset-->
+
+   <!-- allowemptylines: show text lines without contents or filter them (on/off) -->
+   <!--allowemptylines>off</allowemptylines-->
+
+   <!-- centerbigdigits: (try to) align big numbers centered on the display (on/off) -->
+   <!--centerbigdigits>off</centerbigdigits-->
+
+   <!-- disableplayindicatoronpause: turn off any playing indicator (extra stuff) when pausing playback (on/off) --> 
+   <disableplayindicatoronpause>off</disableplayindicatoronpause>
+
+   <!-- Some commands -->
+   <!-- $INFO[System.CurrentWindow] -->
+   <!-- $INFO[LCD.PlayIcon] $INFO[Player.Time]/$INFO[Player.Duration] -->
+   <!-- $INFO[MusicPlayer.Artist] -->
+   <!-- $INFO[MusicPlayer.Album] ($INFO[MusicPlayer.Year]) -->
+   <!-- $INFO[Player.Duration] -->
+   <!-- $INFO[VideoPlayer.Title] -->
+   <!-- $INFO[VideoPlayer.Genre] -->
+   <!-- $INFO[LCD.ProgressBar] -->
+   <!-- $INFO[System.FreeMemory] -->
+   <!-- $INFO[VideoPlayer.TVShowTitle] -->
+   <!-- $INFO[System.Date] -->
+   <!-- $INFO[System.ScreenWidth]x$INFO[System.ScreenHeight] $INFO[System.ScreenMode] -->
+   <!-- $INFO[LCD.TimeWide21] -->
+   <!-- $INFO[LCD.TimeWide22] -->
+   <!-- $INFO[System.LaunchXBE] -->
+   <!-- $INFO[VideoPlayer.TimeRemaining] -->
+
+
+   <navigation>
+      <line>$INFO[System.CurrentControl]</line>
+   </navigation>
+   <music>
+      <line>$INFO[MusicPlayer.Title] $INFO[Player.TimeRemaining]</line>
+   </music>
+   <video>
+      <line>$INFO[Player.TimeRemaining]</line>
+   </video>
+   <tvshow>
+      <line>$INFO[Player.TimeRemaining]</line>
+   </tvshow> 
+   <general>
+      <line>$INFO[System.Time]</line>
+   </general>
+   <screensaver>
+      <line>$INFO[System.Time]</line>
+   </screensaver>
+   <xbelaunch>
+      <line>Playing</line>
+   </xbelaunch>
+   <pvrtv>
+      <line>$INFO[VideoPlayer.ChannelName]</line>
+   </pvrtv>
+   <pvrradio>
+      <line>$INFO[MusicPlayer.ChannelName]</line>
+   </pvrradio>
+</lcd>

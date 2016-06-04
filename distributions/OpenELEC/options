@@ -158,7 +158,7 @@
 
 # LCD driver to Use - Possible drivers are ( Comma seperated:
 # bayrad,CFontz,CFontz633,CFontzPacket,curses,CwLnx,dm140,
-# ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,
+# ea65,EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,
 # icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,
 # joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,
 # ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,
@@ -167,17 +167,17 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD,shuttleVFD"
+  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,futaba,hd44780,CFontz,SureElec,vlsys_m428,serialVFD,shuttleVFD"
 
 # Support for partitioning and formating disks in initramfs (yes / no)
 # This adds support for parted and mkfs.ext3/4 to initramfs for OEM usage
   INITRAMFS_PARTED_SUPPORT="no"
 
 # build with swap support (yes / no)
-  SWAP_SUPPORT="no"
+  SWAP_SUPPORT="yes"
 
 # swap support enabled per default (yes / no)
-  SWAP_ENABLED_DEFAULT="no"
+  SWAP_ENABLED_DEFAULT="yes"
 
 # swapfile size if SWAP_SUPPORT=yes in MB
   SWAPFILESIZE="256"
