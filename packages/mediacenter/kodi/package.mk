@@ -21,7 +21,7 @@ PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_DEPENDS_TARGET="toolchain kodi:host xmlstarlet:host Python libz systemd pciutils lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib opengl"
+PKG_DEPENDS_TARGET="toolchain kodi:host xmlstarlet:host Python libz systemd pciutils lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio libdvdnav taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib opengl"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -321,6 +321,10 @@ pre_configure_target() {
 # kodi fails to build in subdirs
   cd $ROOT/$PKG_BUILD
     rm -rf .$TARGET_NAME
+
+# libdvd
+  cp -P $PKG_DIR/libdvd/libdvd-makefile.in $ROOT/$PKG_BUILD/lib/libdvd/Makefile.in
+  export DVD_PREFIX="$SYSROOT_PREFIX"
 
 # kodi should never be built with lto
   strip_lto
