@@ -45,6 +45,7 @@ makeinstall_target() {
 }
 
 post_install() {
+  enable_service h3-bt-load.service
   enable_service h3-wifi-load.service
   enable_service h3-poweroff.service
   enable_service h3-suspend.service
