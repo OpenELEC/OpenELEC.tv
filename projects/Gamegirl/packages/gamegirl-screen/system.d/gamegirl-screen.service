@@ -1,0 +1,14 @@
+[Unit]
+Description=Gamegirl screen
+After=graphical.target
+Requires=graphical.target
+
+[Service]
+ExecStart=/usr/bin/enable_rgb565
+KillMode=process
+TimeoutStopSec=10
+Restart=no
+StartLimitInterval=0
+
+[Install]
+WantedBy=retroarch.target

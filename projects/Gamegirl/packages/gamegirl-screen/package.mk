@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="gamegirl-screen"
-PKG_VERSION="9a46588"
+PKG_VERSION="627ad10"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
@@ -41,4 +41,8 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin/
   cp enable_rgb565 $INSTALL/usr/bin/
+}
+
+post_install() {
+  enable_service gamegirl-screen.service
 }
