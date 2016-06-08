@@ -35,20 +35,27 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
+  mkdir -p $SYSROOT_PREFIX/usr/lib/
+  mkdir -p $INSTALL/usr/lib/
+  mkdir -p $INSTALL/usr/bin/
+
   make -C wiringPi CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1
-  #make -C devLib CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" INCLUDE="-I. -I$ROOT/$TOOLCHAIN/include" V=1
-  #make -C devLib install DESTDIR="$SYSROOT_PREFIX" PREFIX="/usr" LDCONFIG=""
-  #make -C gpio CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" INCLUDE="-I. -I$ROOT/$TOOLCHAIN/include" V=1
-  #make -C gpio install DESTDIR="$SYSROOT_PREFIX" PREFIX="/usr" LDCONFIG=""
+  cd wiringPi
+  ln -sfn libwiringPi.so.2.32 libwiringPi.so
+  cp libwiringPi.so* $SYSROOT_PREFIX/usr/lib/
+  cd ..
+
+  make -C devLib CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" INCLUDE="-I. -I$ROOT/$TOOLCHAIN/include" V=1
+  cd devLib
+  ln -sfn libwiringPiDev.so.2.32 libwiringPiDev.so
+  cp libwiringPiDev.so* $SYSROOT_PREFIX/usr/lib/
+  cd ..
+
+  make -C gpio CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" INCLUDE="-I. -I$ROOT/$TOOLCHAIN/include" V=1
 }
 
 makeinstall_target() {
-  #make -C wiringPi install DESTDIR="$SYSROOT_PREFIX" PREFIX="/usr" LDCONFIG=""
-  #make -C wiringPi install DESTDIR="$INSTALL" PREFIX="/usr" LDCONFIG=""
-  cd wiringPi
-  ln -sfn libwiringPi.so.2.32 libwiringPi.so
-  mkdir -p $SYSROOT_PREFIX/usr/lib/
-  cp libwiringPi.so* $SYSROOT_PREFIX/usr/lib/
-  mkdir -p $INSTALL/usr/lib/
-  cp libwiringPi.so* $INSTALL/usr/lib/
+  cp wiringPi/libwiringPi.so* $INSTALL/usr/lib/
+  cp devLib/libwiringPiDev.so* $INSTALL/usr/lib/
+  cp gpio/gpio $INSTALL/usr/bin/
 }
