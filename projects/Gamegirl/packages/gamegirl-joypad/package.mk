@@ -43,6 +43,6 @@ makeinstall_target() {
   cp gamegirl-joypad $INSTALL/usr/bin/
 }
 
-#post_install() {
-#  enable_service gamegirl-joypad.service
-#}
+post_install() {
+  enable_service gamegirl-joypad.service
+}

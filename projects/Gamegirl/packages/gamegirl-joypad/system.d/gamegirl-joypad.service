@@ -1,14 +1,10 @@
 [Unit]
 Description=Gamegirl joypad
-After=gamegirl-screen.service
-Requires=gamegirl-screen.service
+After=retroarch.target
+Requires=retroarch.target
 
 [Service]
 ExecStart=/usr/bin/gamegirl-joypad
-KillMode=process
-TimeoutStopSec=10
-Restart=no
-StartLimitInterval=0
 
 [Install]
 WantedBy=retroarch.target
