@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,19 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Gamegirl"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch scummvm dosbox mgba prosystem o2em genesis-plus-gx 81 fuse-libretro gw-libretro lutro gpsp 2048 vecx dinothawr prboom beetle-wswan beetle-ngp beetle-pce beetle-sgx handy picodrive pocketsnes nxengine fceumm gambatte stella fba libretro-ffmpeg gamegirl-screen gamegirl-joypad"
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Gamegirl"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d gamegirl-joypad.git ]; then
+    git clone https://github.com/lakkatv/gamegirl-joypad.git -b master gamegirl-joypad.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd gamegirl-joypad.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
+echo "copying sources..."
+  rm -rf gamegirl-joypad-$GIT_REV
+  cp -R gamegirl-joypad.git gamegirl-joypad-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf gamegirl-joypad-$GIT_REV/.git
+  rm gamegirl-joypad-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf gamegirl-joypad-$GIT_REV.tar.xz gamegirl-joypad-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf gamegirl-joypad-$GIT_REV

@@ -18,19 +18,31 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Gamegirl"
-PKG_VERSION=""
+PKG_NAME="gamegirl-joypad"
+PKG_VERSION="ced095c"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch scummvm dosbox mgba prosystem o2em genesis-plus-gx 81 fuse-libretro gw-libretro lutro gpsp 2048 vecx dinothawr prboom beetle-wswan beetle-ngp beetle-pce beetle-sgx handy picodrive pocketsnes nxengine fceumm gambatte stella fba libretro-ffmpeg gamegirl-screen gamegirl-joypad"
+PKG_LICENSE="GPLv3"
+PKG_SITE="https://github.com/lakkatv/gamegirl-joypad"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Gamegirl"
-PKG_LONGDESC=""
+PKG_SECTION="tools"
+PKG_SHORTDESC="Uinput joypad for Gamegirl"
+PKG_LONGDESC="Uinput joypad for Gamegirl"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  make gamegirl-joypad LDFLAGS="$LDFLAGS -lwiringPi"
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/bin/
+  cp gamegirl-joypad $INSTALL/usr/bin/
+}
+
+#post_install() {
+#  enable_service gamegirl-joypad.service
+#}
