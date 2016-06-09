@@ -1,7 +1,7 @@
-diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/Makefile linux-4.4.6/arch/arm/boot/dts/overlays/Makefile
---- linux-4.4.6-old/arch/arm/boot/dts/overlays/Makefile	2016-03-23 06:42:44.913652775 +0000
-+++ linux-4.4.6/arch/arm/boot/dts/overlays/Makefile	2016-03-23 06:45:38.097652775 +0000
-@@ -76,6 +76,8 @@
+diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/Makefile linux-4.6.1/arch/arm/boot/dts/overlays/Makefile
+--- linux-4.6.1-old/arch/arm/boot/dts/overlays/Makefile	2016-06-04 12:03:45.289652775 +0000
++++ linux-4.6.1/arch/arm/boot/dts/overlays/Makefile	2016-06-04 12:04:23.877652775 +0000
+@@ -89,6 +89,8 @@
  dtbo-$(RPI_DT_OVERLAYS) += w1-gpio.dtbo
  dtbo-$(RPI_DT_OVERLAYS) += w1-gpio-pullup.dtbo
  dtbo-$(RPI_DT_OVERLAYS) += wittypi.dtbo
@@ -10,10 +10,10 @@ diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/Makefile linux-4.4.6/arch/a
  
  targets += dtbs dtbs_install
  targets += $(dtbo-y)
-diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/README linux-4.4.6/arch/arm/boot/dts/overlays/README
---- linux-4.4.6-old/arch/arm/boot/dts/overlays/README	2016-03-23 06:42:44.913652775 +0000
-+++ linux-4.4.6/arch/arm/boot/dts/overlays/README	2016-03-23 06:43:33.469652775 +0000
-@@ -907,6 +907,11 @@
+diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/README linux-4.6.1/arch/arm/boot/dts/overlays/README
+--- linux-4.6.1-old/arch/arm/boot/dts/overlays/README	2016-06-04 12:03:45.289652775 +0000
++++ linux-4.6.1/arch/arm/boot/dts/overlays/README	2016-06-04 12:04:23.877652775 +0000
+@@ -1079,6 +1079,11 @@
              Old touch display:
                  dtoverlay=tinylcd35,touch,touchgpio=3
  
@@ -25,9 +25,9 @@ diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/README linux-4.4.6/arch/arm
  
  Name:   uart1
  Info:   Enable uart1 in place of uart0
-diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/slice-overlay.dts linux-4.4.6/arch/arm/boot/dts/overlays/slice-overlay.dts
---- linux-4.4.6-old/arch/arm/boot/dts/overlays/slice-overlay.dts	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.4.6/arch/arm/boot/dts/overlays/slice-overlay.dts	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/slice-overlay.dts linux-4.6.1/arch/arm/boot/dts/overlays/slice-overlay.dts
+--- linux-4.6.1-old/arch/arm/boot/dts/overlays/slice-overlay.dts	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.6.1/arch/arm/boot/dts/overlays/slice-overlay.dts	2016-06-04 12:04:23.877652775 +0000
 @@ -0,0 +1,171 @@
 +// Definitions for Slice hardware
 +/dts-v1/;
@@ -200,9 +200,9 @@ diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/slice-overlay.dts linux-4.4
 +    };
 +  };
 +};
-diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts linux-4.4.6/arch/arm/boot/dts/overlays/ws2812-overlay.dts
---- linux-4.4.6-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.4.6/arch/arm/boot/dts/overlays/ws2812-overlay.dts	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts linux-4.6.1/arch/arm/boot/dts/overlays/ws2812-overlay.dts
+--- linux-4.6.1-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.6.1/arch/arm/boot/dts/overlays/ws2812-overlay.dts	2016-06-04 12:04:23.877652775 +0000
 @@ -0,0 +1,33 @@
 +/dts-v1/;
 +/plugin/;
@@ -237,9 +237,9 @@ diff -ruN linux-4.4.6-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts linux-4.
 +        num_leds =      <&ws2812>,"rpi,num_leds:0";
 +	};
 +};
-diff -ruN linux-4.4.6-old/arch/arm/configs/slice2708_defconfig linux-4.4.6/arch/arm/configs/slice2708_defconfig
---- linux-4.4.6-old/arch/arm/configs/slice2708_defconfig	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.4.6/arch/arm/configs/slice2708_defconfig	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/arch/arm/configs/slice2708_defconfig linux-4.6.1/arch/arm/configs/slice2708_defconfig
+--- linux-4.6.1-old/arch/arm/configs/slice2708_defconfig	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.6.1/arch/arm/configs/slice2708_defconfig	2016-06-04 12:04:23.877652775 +0000
 @@ -0,0 +1,1201 @@
 +# CONFIG_ARM_PATCH_PHYS_VIRT is not set
 +CONFIG_PHYS_OFFSET=0
@@ -1442,9 +1442,9 @@ diff -ruN linux-4.4.6-old/arch/arm/configs/slice2708_defconfig linux-4.4.6/arch/
 +# CONFIG_CRYPTO_HW is not set
 +CONFIG_CRC_ITU_T=y
 +CONFIG_LIBCRC32C=y
-diff -ruN linux-4.4.6-old/drivers/misc/Kconfig linux-4.4.6/drivers/misc/Kconfig
---- linux-4.4.6-old/drivers/misc/Kconfig	2016-03-23 06:42:46.261652775 +0000
-+++ linux-4.4.6/drivers/misc/Kconfig	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/drivers/misc/Kconfig linux-4.6.1/drivers/misc/Kconfig
+--- linux-4.6.1-old/drivers/misc/Kconfig	2016-06-04 12:03:45.637652775 +0000
++++ linux-4.6.1/drivers/misc/Kconfig	2016-06-04 12:04:23.877652775 +0000
 @@ -4,6 +4,10 @@
  
  menu "Misc devices"
@@ -1456,9 +1456,9 @@ diff -ruN linux-4.4.6-old/drivers/misc/Kconfig linux-4.4.6/drivers/misc/Kconfig
  config SENSORS_LIS3LV02D
  	tristate
  	depends on INPUT
-diff -ruN linux-4.4.6-old/drivers/misc/Makefile linux-4.4.6/drivers/misc/Makefile
---- linux-4.4.6-old/drivers/misc/Makefile	2016-03-23 06:42:46.257652775 +0000
-+++ linux-4.4.6/drivers/misc/Makefile	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/drivers/misc/Makefile linux-4.6.1/drivers/misc/Makefile
+--- linux-4.6.1-old/drivers/misc/Makefile	2016-06-04 12:03:45.637652775 +0000
++++ linux-4.6.1/drivers/misc/Makefile	2016-06-04 12:04:23.877652775 +0000
 @@ -2,6 +2,7 @@
  # Makefile for misc devices that really don't fit anywhere else.
  #
@@ -1467,9 +1467,9 @@ diff -ruN linux-4.4.6-old/drivers/misc/Makefile linux-4.4.6/drivers/misc/Makefil
  obj-$(CONFIG_IBM_ASM)		+= ibmasm/
  obj-$(CONFIG_AD525X_DPOT)	+= ad525x_dpot.o
  obj-$(CONFIG_AD525X_DPOT_I2C)	+= ad525x_dpot-i2c.o
-diff -ruN linux-4.4.6-old/drivers/misc/ws2812.c linux-4.4.6/drivers/misc/ws2812.c
---- linux-4.4.6-old/drivers/misc/ws2812.c	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.4.6/drivers/misc/ws2812.c	2016-03-23 06:43:33.469652775 +0000
+diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.c
+--- linux-4.6.1-old/drivers/misc/ws2812.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.6.1/drivers/misc/ws2812.c	2016-06-04 12:04:23.877652775 +0000
 @@ -0,0 +1,524 @@
 +/*
 + * Raspberry Pi WS2812 PWM driver
@@ -1995,10 +1995,10 @@ diff -ruN linux-4.4.6-old/drivers/misc/ws2812.c linux-4.4.6/drivers/misc/ws2812.
 +MODULE_DESCRIPTION("WS2812 PWM driver");
 +MODULE_LICENSE("GPL v2");
 +MODULE_AUTHOR("Gordon Hollingworth");
-diff -ruN linux-4.4.6-old/drivers/rtc/rtc-pcf8523.c linux-4.4.6/drivers/rtc/rtc-pcf8523.c
---- linux-4.4.6-old/drivers/rtc/rtc-pcf8523.c	2016-03-23 06:42:52.869652775 +0000
-+++ linux-4.4.6/drivers/rtc/rtc-pcf8523.c	2016-03-23 06:43:33.469652775 +0000
-@@ -299,7 +299,13 @@
+diff -ruN linux-4.6.1-old/drivers/rtc/rtc-pcf8523.c linux-4.6.1/drivers/rtc/rtc-pcf8523.c
+--- linux-4.6.1-old/drivers/rtc/rtc-pcf8523.c	2016-06-04 12:03:53.241652775 +0000
++++ linux-4.6.1/drivers/rtc/rtc-pcf8523.c	2016-06-04 12:04:23.877652775 +0000
+@@ -291,7 +291,13 @@
  	if (!pcf)
  		return -ENOMEM;
  
@@ -2013,13 +2013,13 @@ diff -ruN linux-4.4.6-old/drivers/rtc/rtc-pcf8523.c linux-4.4.6/drivers/rtc/rtc-
  	if (err < 0)
  		return err;
  
-diff -ruN linux-4.4.6-old/sound/soc/bcm/Kconfig linux-4.4.6/sound/soc/bcm/Kconfig
---- linux-4.4.6-old/sound/soc/bcm/Kconfig	2016-03-23 06:43:02.549652775 +0000
-+++ linux-4.4.6/sound/soc/bcm/Kconfig	2016-03-23 06:43:33.469652775 +0000
-@@ -64,3 +64,10 @@
- 	select SND_SOC_TPA6130A2
- 	help
- 	  Say Y or M if you want to add support for RaspiDAC Rev.3x.
+diff -ruN linux-4.6.1-old/sound/soc/bcm/Kconfig linux-4.6.1/sound/soc/bcm/Kconfig
+--- linux-4.6.1-old/sound/soc/bcm/Kconfig	2016-06-04 12:04:04.309652775 +0000
++++ linux-4.6.1/sound/soc/bcm/Kconfig	2016-06-04 12:06:59.125652775 +0000
+@@ -100,3 +100,10 @@
+         select SND_SOC_WM8741
+         help
+          Say Y or M if you want to add support for Red Rocks Audio DigiDAC1 board.
 +
 +config SND_BCM2708_SOC_SLICE
 +	tristate "Support for Slice on-board sound"
@@ -2027,25 +2027,26 @@ diff -ruN linux-4.4.6-old/sound/soc/bcm/Kconfig linux-4.4.6/sound/soc/bcm/Kconfi
 +	select SND_SOC_CS4265
 +	help
 +	  Say Y or M if you want to add support for Slice on-board sound.
-diff -ruN linux-4.4.6-old/sound/soc/bcm/Makefile linux-4.4.6/sound/soc/bcm/Makefile
---- linux-4.4.6-old/sound/soc/bcm/Makefile	2016-03-23 06:43:02.549652775 +0000
-+++ linux-4.4.6/sound/soc/bcm/Makefile	2016-03-23 06:43:33.469652775 +0000
-@@ -12,6 +12,7 @@
- snd-soc-rpi-proto-objs := rpi-proto.o
- snd-soc-iqaudio-dac-objs := iqaudio-dac.o
+diff -ruN linux-4.6.1-old/sound/soc/bcm/Makefile linux-4.6.1/sound/soc/bcm/Makefile
+--- linux-4.6.1-old/sound/soc/bcm/Makefile	2016-06-04 12:04:04.309652775 +0000
++++ linux-4.6.1/sound/soc/bcm/Makefile	2016-06-04 12:07:33.209652775 +0000
+@@ -17,6 +17,7 @@
  snd-soc-raspidac3-objs := raspidac3.o
+ snd-soc-audioinjector-pi-soundcard-objs := audioinjector-pi-soundcard.o
+ snd-soc-digidac1-soundcard-objs := digidac1-soundcard.o
 +snd-soc-slice-objs := slice.o
  
+ obj-$(CONFIG_SND_BCM2708_SOC_ADAU1977_ADC) += snd-soc-adau1977-adc.o
  obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DAC) += snd-soc-hifiberry-dac.o
- obj-$(CONFIG_SND_BCM2708_SOC_HIFIBERRY_DACPLUS) += snd-soc-hifiberry-dacplus.o
-@@ -21,3 +22,4 @@
- obj-$(CONFIG_SND_BCM2708_SOC_RPI_PROTO) += snd-soc-rpi-proto.o
- obj-$(CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC) += snd-soc-iqaudio-dac.o
+@@ -31,4 +32,5 @@
  obj-$(CONFIG_SND_BCM2708_SOC_RASPIDAC3) += snd-soc-raspidac3.o
+ obj-$(CONFIG_SND_AUDIOINJECTOR_PI_SOUNDCARD) += snd-soc-audioinjector-pi-soundcard.o
+ obj-$(CONFIG_SND_DIGIDAC1_SOUNDCARD) += snd-soc-digidac1-soundcard.o
 +obj-$(CONFIG_SND_BCM2708_SOC_SLICE) += snd-soc-slice.o
-diff -ruN linux-4.4.6-old/sound/soc/bcm/slice.c linux-4.4.6/sound/soc/bcm/slice.c
---- linux-4.4.6-old/sound/soc/bcm/slice.c	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.4.6/sound/soc/bcm/slice.c	2016-03-23 06:43:33.469652775 +0000
+ 
+diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.c
+--- linux-4.6.1-old/sound/soc/bcm/slice.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.6.1/sound/soc/bcm/slice.c	2016-06-04 12:04:23.877652775 +0000
 @@ -0,0 +1,326 @@
 +/*
 + * ASoC Driver for Slice on-board sound
