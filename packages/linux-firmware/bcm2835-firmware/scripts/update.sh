@@ -24,6 +24,10 @@
 # mount $BOOT_ROOT r/w
   mount -o remount,rw $BOOT_ROOT
 
+# cleanup overlays and fsck files (if there)
+  rm -rf $BOOT_ROOT/overlays
+  rm -rf $BOOT_ROOT/FSCK*.REC
+
 # update bootloader files
   cp -p $SYSTEM_ROOT/usr/share/bootloader/LICENCE* $BOOT_ROOT
   cp -p $SYSTEM_ROOT/usr/share/bootloader/bootcode.bin $BOOT_ROOT
