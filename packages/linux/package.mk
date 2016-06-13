@@ -44,11 +44,10 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/raspberrypi/linux.git"
     PKG_GIT_BRANCH="rpi-4.4.y"
     ;;
-  awh3)
-    PKG_VERSION="e97a9fd"
+  sun8i)
+    PKG_VERSION="3753b95"
     PKG_GIT_URL="https://github.com/jernejsk/linux.git"
     PKG_GIT_BRANCH="master"
-    PKG_KEEP_CHECKOUT="yes"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools H3-sys-utils"
     ;;
   *)
@@ -138,30 +137,7 @@ make_target() {
   LDFLAGS="" make modules
   LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
   
-  if [ "$LINUX" = "awh3" ]; then
-    MALI_VERSION=DX910-SW-99002-r4p0-00rel1
-    LDFLAGS="" make -C modules/mali/${MALI_VERSION}/driver/src/devicedrv/ump \
-         V=1 \
-         ARCH=$TARGET_ARCH \
-         CONFIG=ca8-virtex820-m400-1 \
-         BUILD=release \
-         KDIR=$(kernel_path) \
-         CROSS_COMPILE=$TARGET_PREFIX
-    LDFLAGS="" make -C modules/mali/${MALI_VERSION}/driver/src/devicedrv/mali \
-         V=1 \
-         ARCH=$TARGET_ARCH \
-         USING_MMU=1 \
-         USING_UMP=1 \
-         USING_PMM=1 \
-         BUILD=release \
-         KDIR=$(kernel_path) \
-         CROSS_COMPILE=$TARGET_PREFIX
-    mkdir -p $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/${MALI_VERSION}/driver/src/devicedrv/ump/ump.ko \
-      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-    cp modules/mali/${MALI_VERSION}/driver/src/devicedrv/mali/mali.ko \
-      $INSTALL/lib/modules/$(get_module_dir)/kernel/drivers/video
-
+  if [ "$LINUX" = "sun8i" ]; then
     for all_fex in $PROJECT_DIR/$PROJECT/sys_config/*.fex; do
       fex=$(basename $all_fex)
       fex2bin $all_fex $fex

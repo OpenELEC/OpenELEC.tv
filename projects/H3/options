@@ -60,7 +60,7 @@
 
   # Kernel to use. values can be:
   # default:  default mainline kernel
-    LINUX="awh3"
+    LINUX="sun8i"
 
 ################################################################################
 # setup build defaults
@@ -139,4 +139,4 @@
     INSTALLER_SUPPORT="no"
 
   # additional drivers
-    ADDITIONAL_DRIVERS+=" mt7601u rtk8188eu media_build RTL8189ES RTL8189FS"
+    ADDITIONAL_DRIVERS+=" mt7601u rtk8188eu media_build"
