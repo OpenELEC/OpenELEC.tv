@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="gamegirl-joypad"
-PKG_VERSION="ced095c"
+PKG_VERSION="1bbcbc7"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
