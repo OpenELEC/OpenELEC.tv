@@ -46,8 +46,10 @@ case "$LINUX" in
     ;;
   sun8i)
     PKG_VERSION="3753b95"
-    PKG_GIT_URL="https://github.com/jernejsk/linux.git"
+    #PKG_GIT_URL="https://github.com/jernejsk/linux.git"
+    PKG_GIT_URL="file:///home/jernej/Repositories/linux-sun8i/"
     PKG_GIT_BRANCH="master"
+    PKG_KEEP_CHECKOUT="yes"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host u-boot-tools H3-sys-utils"
     ;;
   *)
