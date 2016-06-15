@@ -386,10 +386,6 @@ hdmi_used              = 1
 hdmi_power             = "vcc-hdmi-18"
 hdcp_enable = 0
 
-[hdmi_cec]
-hdmi_cec_used = 1
-hdmi_cec_pin = port:PA21<0><0><default><default>
-
 [tv_para]
 tv_used = 0
 tv_dac_used			= 1
