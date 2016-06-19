@@ -139,4 +139,4 @@
     INSTALLER_SUPPORT="no"
 
   # additional drivers
-    ADDITIONAL_DRIVERS+=" mt7601u rtk8188eu"
+    ADDITIONAL_DRIVERS+=" mt7601u"
