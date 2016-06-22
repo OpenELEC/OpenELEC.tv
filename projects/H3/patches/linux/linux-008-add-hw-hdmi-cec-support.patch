@@ -1,4 +1,4 @@
-From 817cda875d78d6447332be3d402897e0cf3a790a Mon Sep 17 00:00:00 2001
+From 9e2980af4c508f6a30b4d50b8cba9f10c254151f Mon Sep 17 00:00:00 2001
 From: Joachim Damm <dammj@gmx.de>
 Date: Mon, 13 Jun 2016 20:14:41 +0200
 Subject: [PATCH] add driver for H3 hdmi cec
@@ -6,17 +6,20 @@ Subject: [PATCH] add driver for H3 hdmi cec
 fix reconnect error H3 cec driver
 
 H3 cec driver wait for free cec line and fix wrong array size
+
+H3 cec driver fix for crash after resume
 ---
- drivers/video/sunxi/disp2/hdmi/Makefile       |    2 +-
- drivers/video/sunxi/disp2/hdmi/aw/dw_hdmi.h   | 1089 +++++++++++++++++++++++++
- drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c  |  873 ++++++++++++++++++++
- drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.h  |   39 +
- drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c |    8 +-
- drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.c |    5 +
- drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.h |   44 +-
- drivers/video/sunxi/disp2/hdmi/drv_hdmi.c     |   19 +
- drivers/video/sunxi/disp2/hdmi/drv_hdmi_i.h   |    3 +
- 9 files changed, 2058 insertions(+), 24 deletions(-)
+ drivers/video/sunxi/disp2/hdmi/Makefile            |    2 +-
+ drivers/video/sunxi/disp2/hdmi/aw/dw_hdmi.h        | 1089 ++++++++++++++++++++
+ .../video/sunxi/disp2/hdmi/aw/hdmi_bsp_sun8iw7.c   |    6 +-
+ drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c       |  840 +++++++++++++++
+ drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.h       |   39 +
+ drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c      |    7 +-
+ drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.c      |    5 +
+ drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.h      |   44 +-
+ drivers/video/sunxi/disp2/hdmi/drv_hdmi.c          |   19 +
+ drivers/video/sunxi/disp2/hdmi/drv_hdmi_i.h        |    3 +
+ 10 files changed, 2029 insertions(+), 25 deletions(-)
  create mode 100755 drivers/video/sunxi/disp2/hdmi/aw/dw_hdmi.h
  create mode 100644 drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c
  create mode 100644 drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.h
@@ -1128,12 +1131,46 @@ index 0000000..5e99e71
 +};
 +
 +#endif /* __DW_HDMI_H__ */
+diff --git a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_bsp_sun8iw7.c b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_bsp_sun8iw7.c
+index cd57651..777ca29 100755
+--- a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_bsp_sun8iw7.c
++++ b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_bsp_sun8iw7.c
+@@ -1,6 +1,7 @@
+ #include "hdmi_bsp_i.h"
+ #include "hdmi_bsp.h"
+ #include "hdmi_core.h"
++#include "dw_hdmi.h"
+ 
+ static unsigned int hdmi_base_addr;
+ static struct video_para glb_video;
+@@ -266,7 +267,6 @@ void bsp_hdmi_inner_init(void)
+ 	hdmi_write(0x10013,0x54);
+ 	hdmi_write(0x8080, 0x00);
+ 	hdmi_udelay(1);
+-	hdmi_write(0xF01F, 0x00);
+ 	hdmi_write(0x8403, 0xff);
+ 	hdmi_write(0x904C, 0xff);
+ 	hdmi_write(0x904E, 0xff);
+@@ -275,9 +275,13 @@ void bsp_hdmi_inner_init(void)
+ 	hdmi_write(0x8A50, 0xff);
+ 	hdmi_write(0x8272, 0xff);
+ 	hdmi_write(0x40C0, 0xff);
++	hdmi_write(HDMI_PHY_MASK0, 0xff);
++	hdmi_write(HDMI_IH_MUTE_PHY_STAT0, 0xff);
++	hdmi_write(HDMI_IH_MUTE_I2CM_STAT0, 0xff);
+ 	hdmi_write(0x86F0, 0xff);
+ 	hdmi_write(0x0EE3, 0xff);
+ 	hdmi_write(0x8EE2, 0xff);
++	hdmi_write(HDMI_IH_MUTE, 0x00);
+ 	hdmi_write(0xA049, 0xf0);
+ 	hdmi_write(0xB045, 0x1e);
+ 	hdmi_write(0x00C1, 0x00);
 diff --git a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c
 new file mode 100644
-index 0000000..09db0aa
+index 0000000..1ba8e6a
 --- /dev/null
 +++ b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_cec.c
-@@ -0,0 +1,873 @@
+@@ -0,0 +1,840 @@
 +/*
 + * Copyright (C) 2012 Freescale Semiconductor, Inc. All Rights Reserved.
 + * Copyright (C) 2016 Joachim Damm
@@ -1290,7 +1327,7 @@ index 0000000..09db0aa
 +    if (open_count) {
 +	switch (code) {
 +	    case 0x00: // Unplug
-+		pr_err("HDMI link disconnected\n");
++		pr_info("[CEC]HDMI link disconnected\n");
 +		event = vmalloc(sizeof(struct hdmi_cec_event));
 +		if (NULL == event) {
 +		    pr_err("%s: Not enough memory!\n", __func__);
@@ -1304,7 +1341,7 @@ index 0000000..09db0aa
 +		wake_up(&hdmi_cec_queue);
 +		break;
 +	    case 0x04: // Plug
-+		pr_err("HDMI link connected\n");
++		pr_info("[CEC]HDMI link connected\n");
 +		event = vmalloc(sizeof(struct hdmi_cec_event));
 +		if (NULL == event) {
 +		    pr_err("%s: Not enough memory\n", __func__);
@@ -1318,7 +1355,7 @@ index 0000000..09db0aa
 +		wake_up(&hdmi_cec_queue);
 +		break;
 +	    case 0x05: // reinit done
-+		pr_err("HDMI reinitialized\n");
++		pr_info("[CEC]HDMI reinitialized\n");
 +		val = hdmi_readb(HDMI_MC_CLKDIS);
 +		val &= ~HDMI_MC_CLKDIS_CECCLK_DISABLE;
 +		hdmi_writeb(val, HDMI_MC_CLKDIS);
@@ -1343,38 +1380,6 @@ index 0000000..09db0aa
 +static struct notifier_block sunxi_hdmi_nb = {
 +	.notifier_call = sunxi_hdmi_notify,
 +};
-+
-+static void initialize_hdmi_ih_mutes(void)
-+{
-+    u8 ih_mute;
-+
-+    /*
-+     * Boot up defaults are:
-+     * HDMI_IH_MUTE   = 0x03 (disabled)
-+     * HDMI_IH_MUTE_* = 0x00 (enabled)
-+     *
-+     * Disable top level interrupt bits in HDMI block
-+     */
-+
-+    ih_mute = hdmi_readb(HDMI_IH_MUTE) |
-+	  HDMI_IH_MUTE_MUTE_WAKEUP_INTERRUPT |
-+	  HDMI_IH_MUTE_MUTE_ALL_INTERRUPT;
-+
-+    hdmi_writeb(ih_mute, HDMI_IH_MUTE);
-+
-+    /* FIXME : should be done in HDMI init */
-+    /* by default mask all interrupts */
-+    hdmi_writeb(0xff, HDMI_PHY_MASK0);
-+
-+    /* Disable interrupts in the IH_MUTE_* registers */
-+    hdmi_writeb(0xff, HDMI_IH_MUTE_PHY_STAT0);
-+    hdmi_writeb(0xff, HDMI_IH_MUTE_I2CM_STAT0);
-+
-+    /* Enable top level interrupt bits in HDMI block */
-+    ih_mute &= ~(HDMI_IH_MUTE_MUTE_WAKEUP_INTERRUPT |
-+	    HDMI_IH_MUTE_MUTE_ALL_INTERRUPT);
-+    hdmi_writeb(ih_mute, HDMI_IH_MUTE);
-+}
 +
 +static int hdmi_cec_read_reg_bit(void)    /* 1bit */
 +{
@@ -1502,7 +1507,7 @@ index 0000000..09db0aa
 +static irqreturn_t hdmi_cec_isr(int irq, void *data)
 +{
 +    struct hdmi_cec_priv *hdmi_cec = data;
-+    u16 cec_stat = 0;
++    u8 cec_stat;
 +    unsigned long flags;
 +
 +    spin_lock_irqsave(&hdmi_cec->irq_lock, flags);
@@ -1513,7 +1518,7 @@ index 0000000..09db0aa
 +    hdmi_writeb(cec_stat, HDMI_IH_CEC_STAT0);
 +    if ((cec_stat & (HDMI_IH_CEC_STAT0_ERROR_INIT | \
 +	HDMI_IH_CEC_STAT0_NACK | HDMI_IH_CEC_STAT0_EOM | \
-+	HDMI_IH_CEC_STAT0_DONE | 0x180)) == 0) {
++	HDMI_IH_CEC_STAT0_DONE)) == 0) {
 +	spin_unlock_irqrestore(&hdmi_cec->irq_lock, flags);
 +	return IRQ_HANDLED;
 +    }
@@ -1722,10 +1727,10 @@ index 0000000..09db0aa
 +
 +    if (!open_count)
 +	return -ENODEV;
-+    /* wait for free line */
++    /* wait for free CEC line */
 +    ret = hdmi_wait_free_cecline();
 +    if (ret < 0) {
-+	pr_err("[CEC] no free cec line detected.\n");
++	pr_err("[CEC]No free cec line detected.\n");
 +	ret = -ERESTARTSYS;
 +	goto tx_out;
 +    }
@@ -1823,7 +1828,7 @@ index 0000000..09db0aa
 +	mutex_lock(&hdmi_cec_data.lock);
 +	if (false == hdmi_cec_data.cec_state) {
 +	    mutex_unlock(&hdmi_cec_data.lock);
-+	    pr_err("Trying to set logical address while not started\n");
++	    pr_err("[CEC]Trying to set logical address while not started.\n");
 +	    return -EACCES;
 +	}
 +	hdmi_cec_data.Logical_address = (u8)arg;
@@ -1937,7 +1942,6 @@ index 0000000..09db0aa
 +	goto out;
 +    }
 +
-+    initialize_hdmi_ih_mutes();
 +    spin_lock_init(&hdmi_cec_data.irq_lock);
 +    hdmi_cec_data.cec_irq = irqhdmi;
 +
@@ -2053,7 +2057,7 @@ index 0000000..0b10006
 +
 +#endif				/* !_HDMI_CEC_H_ */
 diff --git a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c
-index 2f3820c..b7f5f83 100755
+index 2f3820c..afa446d 100755
 --- a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c
 +++ b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_core.c
 @@ -1,4 +1,5 @@
@@ -2088,12 +2092,11 @@ index 2f3820c..b7f5f83 100755
  		case HDMI_State_HPD_Done:
  			//__inf("HDMI_State_HPD_Done\n");
  			if(video_on && hdcp_enable)
-@@ -518,6 +522,6 @@ __s32 video_enter_lp(void)
+@@ -518,6 +522,5 @@ __s32 video_enter_lp(void)
  __s32 video_exit_lp(void)
  {
  	bsp_hdmi_init();
 -
-+	sunxi_hdmi_notifier_call_chain(0x05);
  	return 0;
  }
 diff --git a/drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.c b/drivers/video/sunxi/disp2/hdmi/aw/hdmi_edid.c
