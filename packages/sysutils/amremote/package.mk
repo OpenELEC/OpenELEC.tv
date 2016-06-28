@@ -19,7 +19,7 @@
 PKG_NAME="amremote"
 PKG_VERSION="6431040"
 PKG_REV="1"
-PKG_ARCH="arm"
+PKG_ARCH="arm aarch64"
 PKG_LICENSE="other"
 PKG_SITE="http://www.amlogic.com"
 PKG_GIT_URL="https://github.com/codesnake/amremote.git"
