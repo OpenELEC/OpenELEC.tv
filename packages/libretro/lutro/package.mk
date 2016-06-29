@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="lutro"
-PKG_VERSION="66cf08a"
+PKG_VERSION="927b49a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
@@ -39,7 +39,7 @@ make_target() {
   if [ "$ARCH" == "x86_64" ]; then
     PTR_SIZE="-m64"
   fi  
-  make WANT_JIT=1 HOST_CC="$HOST_CC" PTR_SIZE="$PTR_SIZE" CROSS="$TARGET_PREFIX"
+  make WANT_JIT=1 HOST_CC="$HOST_CC" PTR_SIZE="$PTR_SIZE" CROSS="$TARGET_PREFIX" HAVE_COMPOSITION=1
 }
 
 makeinstall_target() {
