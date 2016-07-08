@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,36 +16,44 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="RTL8192CU"
-PKG_VERSION="v4.0.2_9000.20130911"
+PKG_NAME="vboxguest"
+PKG_VERSION="5.0.22"
 PKG_REV="1"
-PKG_ARCH="any"
+PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.realtek.com.tw/downloads/downloadsView.aspx?Langid=1&PFid=48&Level=5&Conn=4&ProdID=274&DownTypeID=3&GetDown=false&Downloads=true"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_SITE="http://www.virtualbox.org"
+PKG_URL="http://download.virtualbox.org/virtualbox/$PKG_VERSION/VirtualBox-$PKG_VERSION.tar.bz2"
+PKG_SOURCE_DIR="VirtualBox-$PKG_VERSION"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
-PKG_SHORTDESC="Realtek RTL81xxCU Linux 3.x driver"
-PKG_LONGDESC="Realtek RTL81xxCU Linux 3.x driver"
+PKG_SHORTDESC="vboxguest"
+PKG_LONGDESC="vboxguest"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_make_target() {
-  unset LDFLAGS
+pre_configure_target() {
+  # Create and unpack a tarball with the sources of the Linux guest
+  # kernel modules, to include all the needed files
+  mkdir -p $ROOT/$PKG_BUILD/vbox-kmod
+  $ROOT/$PKG_BUILD/src/VBox/Additions/linux/export_modules $ROOT/$PKG_BUILD/vbox-kmod/vbox-kmod.tar.gz
+  tar -xf $ROOT/$PKG_BUILD/vbox-kmod/vbox-kmod.tar.gz -C $ROOT/$PKG_BUILD/vbox-kmod
+}
+
+configure_target() {
+  :
 }
 
 make_target() {
-  make V=1 \
-       ARCH=$TARGET_ARCH \
-       KSRC=$(kernel_path) \
-       CROSS_COMPILE=$TARGET_PREFIX \
-       CONFIG_POWER_SAVING=n
+  cd $ROOT/$PKG_BUILD/vbox-kmod
+  make KERN_DIR=$(kernel_path)
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp *.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  for module in vboxguest vboxsf vboxvideo; do
+    mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$module
+      cp -P $ROOT/$PKG_BUILD/vbox-kmod/$module.ko $INSTALL/lib/modules/$(get_module_dir)/$module
+  done
 }

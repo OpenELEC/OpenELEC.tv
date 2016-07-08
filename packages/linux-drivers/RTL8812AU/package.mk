@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,19 +17,18 @@
 ################################################################################
 
 PKG_NAME="RTL8812AU"
-PKG_VERSION="3f015f0"
+PKG_VERSION="928e27f"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="git@github.com:abperiasamy/rtl8812AU_8821AU_linux.git"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_SITE="https://github.com/Grawp/rtl8812au_rtl8821au"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
 PKG_SHORTDESC="Realtek RTL8812AU Linux 3.x driver"
 PKG_LONGDESC="Realtek RTL8812AU Linux 3.x driver"
-
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
