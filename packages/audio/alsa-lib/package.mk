@@ -18,7 +18,7 @@
 
 PKG_NAME="alsa-lib"
 PKG_VERSION="1.1.0"
-PKG_REV="2"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.alsa-project.org/"
