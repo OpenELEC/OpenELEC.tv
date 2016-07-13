@@ -38,7 +38,7 @@
     BOOTLOADER="u-boot"
 
   # u-boot version to use (default)
-    UBOOT_VERSION="awh3"
+    UBOOT_VERSION="sunxi"
 
   # Configuration for u-boot
     UBOOT_CONFIG="orangepi_2_defconfig"
