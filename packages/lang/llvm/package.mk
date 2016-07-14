@@ -50,7 +50,8 @@ PKG_CONFIGURE_OPTS_HOST="--disable-polly \
                          --disable-debug-runtime \
                          --disable-debug-symbols \
                          --enable-keep-symbols \
-                         --enable-targets=r600"
+                         --enable-targets=r600 \
+                         --disable-bindings"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-polly \
                            --disable-libcpp \
@@ -80,7 +81,8 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-polly \
                            --enable-timestamps \
                            --disable-backtraces \
                            --disable-libffi \
-                           --disable-ltdl-install"
+                           --disable-ltdl-install \
+                           --disable-bindings"
 
 if [ "$TARGET_ARCH" = i386 ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-targets=x86,r600"
