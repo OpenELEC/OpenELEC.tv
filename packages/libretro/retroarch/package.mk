@@ -169,3 +169,8 @@ post_install() {
   enable_service tmp-database.mount
   enable_service tmp-assets.mount
 }
+
+post_makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/retroarch
+    cp $PKG_DIR/scripts/retroarch-config $INSTALL/usr/lib/retroarch
+}
