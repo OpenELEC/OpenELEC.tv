@@ -94,6 +94,8 @@ make_target() {
         TARGET_NAME="bpim2p"
       elif [ "$UBOOT_TARGET" = "orangepi_plus2e_defconfig" ]; then
         TARGET_NAME="opiplus2e"
+      elif [ "$UBOOT_TARGET" = "orangepi_pc_plus_defconfig" ]; then
+        TARGET_NAME="opipcplus"
       else
         TARGET_NAME="undef"
       fi

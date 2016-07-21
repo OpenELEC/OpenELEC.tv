@@ -48,6 +48,7 @@
     UBOOT_CONFIG="$UBOOT_CONFIG orangepi_lite_defconfig"
     UBOOT_CONFIG="$UBOOT_CONFIG Sinovoip_BPI_M2_plus_defconfig"
     UBOOT_CONFIG="$UBOOT_CONFIG orangepi_plus2e_defconfig"
+    UBOOT_CONFIG="$UBOOT_CONFIG orangepi_pc_plus_defconfig"
 
   # Target Configfile for u-boot
     UBOOT_CONFIGFILE="boot.scr"
