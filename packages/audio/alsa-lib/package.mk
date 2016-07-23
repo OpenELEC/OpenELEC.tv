@@ -40,6 +40,7 @@ fi
 
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--with-plugindir=/usr/lib/alsa \
+                           --enable-symbolic-functions \
                            --disable-python \
                            $ALSA_DEBUG \
                            --disable-dependency-tracking"
