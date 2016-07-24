@@ -1,5 +1,5 @@
 [Unit]
-Description=h3 poweroff service
+Description=sunxi poweroff service
 Before=systemd-poweroff.service
 After=kodi-poweroff.service
 DefaultDependencies=no

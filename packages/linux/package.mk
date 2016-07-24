@@ -49,7 +49,7 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/jernejsk/linux.git"
     PKG_GIT_BRANCH="master"
     PKG_KEEP_CHECKOUT="yes"
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host H3-sys-utils"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host sunxi-sys-utils"
     ;;
   *)
     PKG_VERSION="4.4.8"

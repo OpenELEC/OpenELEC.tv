@@ -1,5 +1,5 @@
 [Unit]
-Description=h3 suspend service
+Description=sunxi suspend service
 Before=sleep.target
 StopWhenUnneeded=yes
 

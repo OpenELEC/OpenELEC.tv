@@ -16,7 +16,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="H3-sys-utils"
+PKG_NAME="sunxi-sys-utils"
 PKG_VERSION="1.0"
 PKG_REV="1"
 PKG_ARCH="arm"
@@ -26,8 +26,8 @@ PKG_URL=""
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
-PKG_SHORTDESC="H3 system utilities"
-PKG_LONGDESC="H3 utilities for driver loading and eMMC installation"
+PKG_SHORTDESC="Sunxi system utilities"
+PKG_LONGDESC="Sunxi utilities for driver loading and eMMC installation"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
@@ -45,8 +45,8 @@ makeinstall_target() {
 }
 
 post_install() {
-  enable_service h3-bt-load.service
-  enable_service h3-wifi-load.service
-  enable_service h3-poweroff.service
-  enable_service h3-suspend.service
+  enable_service sunxi-bt-load.service
+  enable_service sunxi-wifi-load.service
+  enable_service sunxi-poweroff.service
+  enable_service sunxi-suspend.service
 }

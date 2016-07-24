@@ -9,7 +9,7 @@ STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
 
 DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 4 ))
 
-. $SYSTEM_ROOT/usr/lib/openelec/H3-system-type
+. $SYSTEM_ROOT/usr/lib/openelec/sunxi-system-type
 
 echo ""
 echo -e "\033[36m==============================="

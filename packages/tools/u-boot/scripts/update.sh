@@ -37,9 +37,9 @@ PROJECT=""
 if [ -f $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type ]; then
   . $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type
 fi
-if [ -f $SYSTEM_ROOT/usr/lib/openelec/H3-system-type ]; then
+if [ -f $SYSTEM_ROOT/usr/lib/openelec/sunxi-system-type ]; then
   PROJECT="sunxi"
-  . $SYSTEM_ROOT/usr/lib/openelec/H3-system-type
+  . $SYSTEM_ROOT/usr/lib/openelec/sunxi-system-type
 fi
 
 # mount $BOOT_ROOT r/w
