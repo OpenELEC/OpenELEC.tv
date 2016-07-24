@@ -50,7 +50,7 @@ if [ "$DEVEL_VERSION" = "devel" ] ; then
   IMAGE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$OS_VERSION-$OPENELEC_VERSION"
 fi
 
-if [ "$PROJECT" == "imx6" -o "$PROJECT" == "H3" ] && [ -n "$SYSTEM" ]; then
+if [ "$PROJECT" == "imx6" -o "$PROJECT" == "H3" -o "$PROJECT" == "A83T" ] && [ -n "$SYSTEM" ]; then
   IMAGE_NAME="$IMAGE_NAME-$SYSTEM"
 fi
 
@@ -345,6 +345,12 @@ fi
             UBOOT_SYSTEM="$SYSTEM"
           else
             UBOOT_SYSTEM="opi2"
+          fi
+        elif [ "$PROJECT" == "A83T" ]; then
+          if [ -n "$SYSTEM" ]; then
+            UBOOT_SYSTEM="$SYSTEM"
+          else
+            UBOOT_SYSTEM="bpim3"
           fi
         fi
 
