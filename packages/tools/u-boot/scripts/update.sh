@@ -38,7 +38,7 @@ if [ -f $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type ]; then
   . $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type
 fi
 if [ -f $SYSTEM_ROOT/usr/lib/openelec/H3-system-type ]; then
-  PROJECT="H3"
+  PROJECT="sunxi"
   . $SYSTEM_ROOT/usr/lib/openelec/H3-system-type
 fi
 
@@ -55,7 +55,7 @@ fi
   done
 
 # update bootloader files
-  if [ "$PROJECT" = "H3" ]; then
+  if [ "$PROJECT" = "sunxi" ]; then
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex ]; then
       echo "*** updating Allwinner configuration file ..."
       cp -p $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex $BOOT_ROOT/script.bin

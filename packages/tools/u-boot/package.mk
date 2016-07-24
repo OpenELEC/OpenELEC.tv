@@ -96,6 +96,8 @@ make_target() {
         TARGET_NAME="opiplus2e"
       elif [ "$UBOOT_TARGET" = "orangepi_pc_plus_defconfig" ]; then
         TARGET_NAME="opipcplus"
+      elif [ "$UBOOT_TARGET" = "Sinovoip_BPI_M3_defconfig" ]; then
+        TARGET_NAME="bpim3"
       else
         TARGET_NAME="undef"
       fi
@@ -105,6 +107,8 @@ make_target() {
       [ -f u-boot-sunxi-with-spl.bin ] && mv u-boot-sunxi-with-spl.bin uboot-sunxi-$TARGET_NAME.bin || :
       [ -f SPL ] && mv SPL SPL-$TARGET_NAME || :
     fi
+    
+    [ -f u-boot-sunxi-with-spl.bin ] && mv u-boot-sunxi-with-spl.bin uboot-sunxi-bpim3.bin || :
   done
 }
 
@@ -132,7 +136,7 @@ makeinstall_target() {
 
   cp ./u-boot*.imx $INSTALL/usr/share/bootloader 2>/dev/null || :
   #NOTE: sunxi u-boot build folder contains intermediate .img files which are not needed
-  if [ -f ./uboot-sunxi-opi2.bin ]; then
+  if [ -f ./uboot-sunxi-opi2.bin -o -f ./uboot-sunxi-bpim3.bin ]; then
     cp ./uboot-sunxi-*.bin $INSTALL/usr/share/bootloader 2>/dev/null
   else
     cp ./u-boot*.img $INSTALL/usr/share/bootloader 2>/dev/null || :
