@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="mesa"
-PKG_VERSION="11.2.1"
+PKG_VERSION="12.0.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -81,8 +81,6 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --disable-va \
                            --disable-opencl \
                            --enable-opencl-icd \
-                           --disable-xlib-glx \
-                           --disable-r600-llvm-compiler \
                            --disable-gallium-tests \
                            --enable-shared-glapi \
                            --enable-shader-cache \
