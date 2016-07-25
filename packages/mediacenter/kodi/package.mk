@@ -139,7 +139,7 @@ else
 fi
 
 if [ "$KODI_MYSQL_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mysql"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mariadb"
   KODI_MYSQL="--enable-mysql"
 else
   KODI_MYSQL="--disable-mysql"
