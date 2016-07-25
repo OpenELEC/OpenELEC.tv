@@ -1,0 +1,37 @@
+From f4599b4b9426dec14dce40fe8d66de1662cf43e3 Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Tue, 16 Feb 2016 16:04:45 +0100
+Subject: [PATCH 7/9] Export the clip id in BLURAY_CLIP_INFO
+
+---
+ src/libbluray/bluray.c | 1 +
+ src/libbluray/bluray.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/libbluray/bluray.c b/src/libbluray/bluray.c
+index e0c096a..0c04d23 100644
+--- a/src/libbluray/bluray.c
++++ b/src/libbluray/bluray.c
+@@ -2633,6 +2633,7 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
+         BLURAY_CLIP_INFO *ci = &title_info->clips[ii];
+         NAV_CLIP *nc = &title->clip_list.clip[ii];
+ 
++        ci->idx = nc->clip_id;
+         ci->pkt_count = nc->end_pkt - nc->start_pkt;
+         ci->start_time = (uint64_t)nc->title_time * 2;
+         ci->in_time = (uint64_t)pi->in_time * 2;
+diff --git a/src/libbluray/bluray.h b/src/libbluray/bluray.h
+index e277ad0..16ef380 100644
+--- a/src/libbluray/bluray.h
++++ b/src/libbluray/bluray.h
+@@ -220,6 +220,7 @@ typedef struct bd_stream_info {
+ } BLURAY_STREAM_INFO;
+ 
+ typedef struct bd_clip {
++    uint32_t           idx;
+     uint32_t           pkt_count;
+     uint8_t            still_mode;
+     uint16_t           still_time;  /* seconds */
+-- 
+1.9.3
+

@@ -1,0 +1,189 @@
+From 7a32216f915b51148bcae8e3d0f78913ab6206c9 Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Thu, 17 Mar 2011 17:22:00 +0100
+Subject: [PATCH 2/9] Optimized file I/O for chained usage with libavformat
+
+---
+ libbluray.def             |  1 +
+ src/file/dir_win32.c      |  4 ++--
+ src/file/dirs_win32.c     |  6 +++---
+ src/file/dl_win32.c       |  4 ++--
+ src/file/file_win32.c     |  7 +++++--
+ src/libbluray/bluray.c    | 19 +++++++++++++++++++
+ src/libbluray/bluray.h    | 10 ++++++++++
+ src/libbluray/disc/disc.c |  2 +-
+ 8 files changed, 43 insertions(+), 10 deletions(-)
+
+diff --git a/libbluray.def b/libbluray.def
+index 1b10823..5a6b960 100644
+--- a/libbluray.def
++++ b/libbluray.def
+@@ -13,6 +13,7 @@ EXPORTS
+                 bd_close
+                 bd_seek
+                 bd_seek_time
++                bd_find_seek_point
+                 bd_read
+                 bd_read_skip_still
+                 bd_seek_chapter
+diff --git a/src/file/dir_win32.c b/src/file/dir_win32.c
+index 2690658..f42114d 100644
+--- a/src/file/dir_win32.c
++++ b/src/file/dir_win32.c
+@@ -86,8 +86,8 @@ static BD_DIR_H *_dir_open_win32(const char* dirname)
+ 
+     dir->internal = priv;
+ 
+-    wchar_t wfilespec[MAX_PATH];
+-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, MAX_PATH))
++    wchar_t wfilespec[4096 + 1] = {0};
++    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, 4096))
+         priv->handle = _wfindfirst(wfilespec, &priv->info);
+     else
+         priv->handle = -1;
+diff --git a/src/file/dirs_win32.c b/src/file/dirs_win32.c
+index e165fea..3d07251 100644
+--- a/src/file/dirs_win32.c
++++ b/src/file/dirs_win32.c
+@@ -36,7 +36,7 @@
+ 
+ char *win32_get_font_dir(const char *font_file)
+ {
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+     if (S_OK != SHGetFolderPathW(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT, wdir)) {
+         int lenght = GetWindowsDirectoryW(wdir, MAX_PATH);
+         if (lenght == 0 || lenght > (MAX_PATH - 8)) {
+@@ -67,7 +67,7 @@ char *file_get_config_home(void)
+ 
+ char *file_get_data_home(void)
+ {
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+ 
+     /* Get the "Application Data" folder for the user */
+     if (S_OK == SHGetFolderPathW(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE,
+@@ -92,7 +92,7 @@ char *file_get_cache_home(void)
+ const char *file_get_config_system(const char *dir)
+ {
+     static char *appdir = NULL;
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+ 
+     if (!dir) {
+         // first call
+diff --git a/src/file/dl_win32.c b/src/file/dl_win32.c
+index e4492e1..7f6ae73 100644
+--- a/src/file/dl_win32.c
++++ b/src/file/dl_win32.c
+@@ -57,7 +57,7 @@ void *dl_dlopen(const char *path, const char *version)
+ {
+     (void)version;
+ 
+-    wchar_t wname[MAX_PATH];
++    wchar_t wname[MAX_PATH+1] = {0};
+     char *name;
+     void *result;
+ 
+@@ -109,7 +109,7 @@ const char *dl_get_path(void)
+     if (!initialized) {
+         initialized = 1;
+ 
+-        static char path[MAX_PATH];
++        static char path[MAX_PATH + 1];
+         HMODULE hModule;
+         wchar_t wpath[MAX_PATH];
+ 
+diff --git a/src/file/file_win32.c b/src/file/file_win32.c
+index 5eb52d7..c0f48e4 100644
+--- a/src/file/file_win32.c
++++ b/src/file/file_win32.c
+@@ -97,9 +97,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+ {
+     BD_FILE_H *file;
+     FILE *fp;
+-    wchar_t wfilename[MAX_PATH], wmode[8];
++    wchar_t wfilename[4096 + 1] = {0}, wmode[8] = {0};
+ 
+-    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, MAX_PATH) ||
++    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, 4096) ||
+         !MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, mode, -1, wmode, 8)) {
+ 
+         BD_DEBUG(DBG_FILE, "Error opening file %s\n", filename);
+@@ -112,6 +112,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+         return NULL;
+     }
+ 
++    // Set file buffer
++    setvbuf(fp, NULL, _IOFBF, 6144 * 10);
++
+     file = calloc(1, sizeof(BD_FILE_H));
+     if (!file) {
+         BD_DEBUG(DBG_FILE | DBG_CRIT, "Error opening file %s (out of memory)\n", filename);
+diff --git a/src/libbluray/bluray.c b/src/libbluray/bluray.c
+index aad7a85..58a42f3 100644
+--- a/src/libbluray/bluray.c
++++ b/src/libbluray/bluray.c
+@@ -1642,6 +1642,25 @@ int64_t bd_seek_time(BLURAY *bd, uint64_t tick)
+     return bd->s_pos;
+ }
+ 
++int64_t bd_find_seek_point(BLURAY *bd, uint64_t tick)
++{
++  uint32_t clip_pkt, out_pkt;
++  NAV_CLIP *clip;
++
++  tick /= 2;
++
++  if (bd->title &&
++    tick < bd->title->duration) {
++
++      // Find the closest access unit to the requested position
++      clip = nav_time_search(bd->title, (uint32_t)tick, &clip_pkt, &out_pkt);
++
++      return (int64_t)out_pkt * 192;
++  }
++
++  return bd->s_pos;
++}
++
+ uint64_t bd_tell_time(BLURAY *bd)
+ {
+     uint32_t clip_pkt = 0, out_pkt = 0, out_time = 0;
+diff --git a/src/libbluray/bluray.h b/src/libbluray/bluray.h
+index 11e2eb6..ef357c9 100644
+--- a/src/libbluray/bluray.h
++++ b/src/libbluray/bluray.h
+@@ -461,6 +461,16 @@ uint32_t bd_get_current_title(BLURAY *bd);
+ 
+ /**
+  *
++ * Find the byte position to specific time in 90Khz ticks
++ *
++ * @param bd    BLURAY ojbect
++ * @param tick  tick count
++ * @return byte position
++ */
++int64_t bd_find_seek_point(BLURAY *bd, uint64_t tick);
++
++/**
++ *
+  *  Read from currently selected title file, decrypt if possible
+  *
+  * @param bd  BLURAY object
+diff --git a/src/libbluray/disc/disc.c b/src/libbluray/disc/disc.c
+index 0880fa9..757b6ed 100644
+--- a/src/libbluray/disc/disc.c
++++ b/src/libbluray/disc/disc.c
+@@ -69,7 +69,7 @@ static BD_FILE_H *_bdrom_open_path(void *p, const char *rel_path)
+         return NULL;
+     }
+ 
+-    fp = file_open(abs_path, "rb");
++    fp = file_open(abs_path, "rbS");
+     X_FREE(abs_path);
+ 
+     return fp;
+-- 
+1.9.3
+

@@ -1,0 +1,68 @@
+From e2d8f4b80d0a1386c2a132a6321d40d9a5663e14 Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Tue, 16 Feb 2016 15:37:09 +0100
+Subject: [PATCH 6/9] Export the MPLS MVC_Base_View_R_flag
+
+---
+ src/libbluray/bdnav/mpls_parse.c | 3 ++-
+ src/libbluray/bdnav/mpls_parse.h | 1 +
+ src/libbluray/bluray.c           | 2 ++
+ src/libbluray/bluray.h           | 2 ++
+ 4 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/libbluray/bdnav/mpls_parse.c b/src/libbluray/bdnav/mpls_parse.c
+index 98780e5..6da23ed 100644
+--- a/src/libbluray/bdnav/mpls_parse.c
++++ b/src/libbluray/bdnav/mpls_parse.c
+@@ -138,8 +138,9 @@ _parse_appinfo(BITSTREAM *bits, MPLS_AI *ai)
+     ai->random_access_flag = bs_read(bits, 1);
+     ai->audio_mix_flag = bs_read(bits, 1);
+     ai->lossless_bypass_flag = bs_read(bits, 1);
++    ai->mvc_base_view_r_flag = bs_read(bits, 1);
+     // Reserved
+-    bs_skip(bits, 13);
++    bs_skip(bits, 12);
+     bs_seek_byte(bits, pos + len);
+     return 1;
+ }
+diff --git a/src/libbluray/bdnav/mpls_parse.h b/src/libbluray/bdnav/mpls_parse.h
+index f9f7a18..0f72a19 100644
+--- a/src/libbluray/bdnav/mpls_parse.h
++++ b/src/libbluray/bdnav/mpls_parse.h
+@@ -110,6 +110,7 @@ typedef struct
+     uint8_t         random_access_flag;
+     uint8_t         audio_mix_flag;
+     uint8_t         lossless_bypass_flag;
++    uint8_t         mvc_base_view_r_flag;
+ } MPLS_AI;
+ 
+ typedef struct
+diff --git a/src/libbluray/bluray.c b/src/libbluray/bluray.c
+index 63f3c87..e0c096a 100644
+--- a/src/libbluray/bluray.c
++++ b/src/libbluray/bluray.c
+@@ -2659,6 +2659,8 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
+         _copy_streams(nc, ci->sec_audio_streams, pi->stn.secondary_audio, ci->sec_audio_stream_count);
+     }
+ 
++    title_info->mvc_base_view_r_flag = title->pl->app_info.mvc_base_view_r_flag;
++
+     return title_info;
+ }
+ 
+diff --git a/src/libbluray/bluray.h b/src/libbluray/bluray.h
+index cd65bf6..e277ad0 100644
+--- a/src/libbluray/bluray.h
++++ b/src/libbluray/bluray.h
+@@ -270,6 +270,8 @@ typedef struct bd_title_info {
+ 
+     uint32_t             mark_count;
+     BLURAY_TITLE_MARK    *marks;
++
++    uint8_t              mvc_base_view_r_flag;
+ } BLURAY_TITLE_INFO;
+ 
+ /*
+-- 
+1.9.3
+
