@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="taglib"
-PKG_VERSION="1.9.1"
+PKG_VERSION="1.11"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -34,7 +34,13 @@ PKG_AUTORECONF="no"
 
 # package specific configure options
 configure_target() {
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_STATIC=1 ..
+  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DWITH_MP4=ON \
+        -DWITH_ASF=ON \
+        ..
 }
 
 post_makeinstall_target() {
