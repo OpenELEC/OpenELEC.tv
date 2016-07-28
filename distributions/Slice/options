@@ -23,10 +23,10 @@
 # Skins to install (Confluence)
 # Space separated list is supported,
 # e.g. SKINS="Confluence"
-  SKINS="Confluence slice"
+  SKINS="Estuary"
 
 # Default Skin (Confluence)
-  SKIN_DEFAULT="slice"
+  SKIN_DEFAULT="Estuary"
 
 # install extra subtitle Fonts for KODI (yes / no)
   KODI_EXTRA_FONTS="yes"
@@ -60,7 +60,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU RTL8812AU dvbhdhomerun"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8188EU RTL8812AU"
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"

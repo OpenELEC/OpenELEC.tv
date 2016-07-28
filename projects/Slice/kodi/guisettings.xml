@@ -112,7 +112,7 @@
         <enablerssfeeds>false</enablerssfeeds>
         <font default="true">Default</font>
         <rssedit default="true"></rssedit>
-        <skin default="true">skin.slice</skin>
+        <skin default="true">skin.estuary</skin>
         <skincolors default="true">SKINDEFAULT</skincolors>
         <skintheme default="true">SKINDEFAULT</skintheme>
         <skinzoom default="true">0</skinzoom>
