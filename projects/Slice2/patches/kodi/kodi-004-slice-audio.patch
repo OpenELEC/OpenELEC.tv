@@ -1,0 +1,20 @@
+diff -ur kodi-15.0-rc3-284f66a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp kodi-15.0-rc3-284f66a-new/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp
+--- kodi-15.0-rc3-284f66a/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp	2015-07-18 09:08:17.000000000 +0000
++++ kodi-15.0-rc3-284f66a-new/xbmc/cores/AudioEngine/Sinks/AESinkPi.cpp	2015-07-23 21:11:39.501652775 +0000
+@@ -520,7 +520,7 @@
+   m_info.m_dataFormats.push_back(AE_FMT_EAC3);
+ 
+   list.push_back(m_info);
+-
++#if 0
+   m_info.m_channels.Reset();
+   m_info.m_dataFormats.clear();
+   m_info.m_sampleRates.clear();
+@@ -560,6 +560,7 @@
+   m_info.m_dataFormats.push_back(AE_FMT_S16NEP);
+ 
+   list.push_back(m_info);
++#endif
+ }
+ 
+ #endif

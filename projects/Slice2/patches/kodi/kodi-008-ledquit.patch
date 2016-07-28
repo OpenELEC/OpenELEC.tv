@@ -1,0 +1,62 @@
+diff -ru kodi-15.2-02e7013/xbmc/windows/GUIWindowHome.cpp kodi-15.2-02e7013-new/xbmc/windows/GUIWindowHome.cpp
+--- kodi-15.2-02e7013/xbmc/windows/GUIWindowHome.cpp	2015-11-04 20:19:49.941652775 +0000
++++ kodi-15.2-02e7013-new/xbmc/windows/GUIWindowHome.cpp	2015-12-09 07:00:38.613652775 +0000
+@@ -44,11 +44,11 @@
+ int g_repeat = 0;
+  
+ enum pattern_e {
+-  PAT_PLAY, PAT_PAUSE, PAT_STOP, PAT_SLEEP, PAT_WAKE, PAT_FFWD, PAT_REW, PAT_SKIPF, PAT_SKIPR, PAT_STARTUP, PAT_NONE
++  PAT_PLAY, PAT_PAUSE, PAT_STOP, PAT_SLEEP, PAT_WAKE, PAT_FFWD, PAT_REW, PAT_SKIPF, PAT_SKIPR, PAT_STARTUP, PAT_QUIT, PAT_NONE
+ };
+-#define NUM_PATTERNS 10
++#define NUM_PATTERNS 11
+ const char *patterns[NUM_PATTERNS] = {
+-  "play" ,  "pause",   "stop",   "sleep",   "wake",   "ffwd",   "rew",   "skipf",   "skipr",   "startup"
++  "play" ,  "pause",   "stop",   "sleep",   "wake",   "ffwd",   "rew",   "skipf",   "skipr",   "startup", "quit"
+ };
+ 
+ void on_speed_changed(const char *message, const CVariant &data)
+@@ -100,7 +100,7 @@
+ }
+ 
+ enum action_e {
+-  ACTION_DO, ACTION_FN
++  ACTION_DO, ACTION_REPEAT, ACTION_FN
+  };
+  
+ enum led_state_e {
+@@ -125,6 +125,7 @@
+     { "OnSeek",                   ACTION_FN, PAT_NONE,  on_seek, LED_STATE_INVALID },
+     { "OnScreensaverActivated",   ACTION_DO, PAT_SLEEP, NULL, LED_STATE_SLEEP },
+     { "OnScreensaverDeactivated", ACTION_DO, PAT_WAKE,  NULL, LED_STATE_IDLE },
++    { "OnQuit",                   ACTION_REPEAT, PAT_QUIT,  NULL, LED_STATE_IDLE },
+ };
+ 
+ int zeroes[25] = { 0,};
+@@ -231,7 +232,8 @@
+         while(g_repeat);
+         g_pattern_playing = 0;
+ 
+-        write(fd, zeroes, sizeof(zeroes)); 
++        if(pat != PAT_QUIT)
++          write(fd, zeroes, sizeof(zeroes)); 
+       }
+       else
+       {
+@@ -327,12 +329,13 @@
+     {
+       switch(led_actions[i].action) { 
+         case ACTION_DO:
++        case ACTION_REPEAT:
+         {
+           g_halt = 1;
+           while(g_pattern_playing) 
+             usleep(10);
+           g_halt = 0;
+-          g_repeat = 0;
++          g_repeat = (led_actions[i].action == ACTION_DO) ? 0 : 1;
+           g_speed = 30000;
+           g_pattern = (int) led_actions[i].action_data;
+           m_ledevent->Set();
+Only in kodi-15.2-02e7013-new/xbmc/windows: GUIWindowHome.cpp.orig
+Only in kodi-15.2-02e7013-new/xbmc/windows: GUIWindowHome.cpp.rej

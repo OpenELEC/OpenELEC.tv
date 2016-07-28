@@ -1,0 +1,371 @@
+diff -ru build.Slice-Slice.arm-8.0-devel/LibreELEC-settings-c0aa38f/language/English/strings.po projects/Slice/patches/LibreELEC-settings/LibreELEC-settings-01-slice.patch/language/English/strings.po
+--- LibreELEC-settings-c0aa38f/language/English/strings.po	2016-05-19 03:12:57.000000000 +0000
++++ LibreELEC-settings-01-slice.patch/language/English/strings.po	2016-06-14 17:47:52.923107411 +0000
+@@ -112,10 +112,22 @@
+ msgid "If you have an small LCD or VFD attached to your @DISTRONAME@ system you must configure the correct display driver"
+ msgstr ""
+ 
++msgctxt "#718"
++msgid "This specifies the build type you are checking for, stable is the default and preferred"
++msgstr ""
++
++msgctxt "#719"
++msgid "Execute a script as stored on sprunge.us"
++msgstr ""
++ 
+ msgctxt "#720"
+ msgid "Set to ON and Bluetooth devices will be disabled during power-saving modes"
+ msgstr ""
+ 
++msgctxt "#721"
++msgid "Output config.txt, cmdline.txt, shutdown.sh, autostart.sh, kodi.log and kodi.old.log to pastebin and show a link to copy"
++msgstr ""
++
+ msgctxt "#722"
+ msgid "Create a tar archive containing all @DISTRONAME@ and Kodi configuration settings, databases and thumbnail content. Backup files will be stored in /storage/backups"
+ msgstr ""
+@@ -189,7 +201,7 @@
+ msgstr ""
+ 
+ msgctxt "#742"
+-msgid "Set to ON to enable the embedded SSH server. The SSH console can be accessed with username 'root' and password '@ROOT_PASSWORD@'."
++msgid "Set to ON to enable the embedded SSH server. The SSH console can be accessed with username 'root' and password 'openelec'."
+ msgstr ""
+ 
+ msgctxt "#743"
+@@ -268,6 +280,18 @@
+ msgid "Automatic Updates"
+ msgstr ""
+ 
++msgctxt "#32015"
++msgid "Infra red contol"
++msgstr ""
++
++msgctxt "#32016"
++msgid "Enable Infra Red Sensor"
++msgstr ""
++
++msgctxt "#32017"
++msgid "Disable here if you're having trouble with an IR remote"
++msgstr ""
++
+ msgctxt "#32100"
+ msgid "Connections"
+ msgstr ""
+@@ -565,7 +589,7 @@
+ msgstr ""
+ 
+ msgctxt "#32312"
+-msgid "@DISTRONAME@ also supports SSH for remote access. This is for advanced users who wish to interact with @DISTRONAME@'s underlying operating system. The default user is [COLOR blue]root[/COLOR] and the default password is [COLOR blue]@ROOT_PASSWORD@[/COLOR]."
++msgid "@DISTRONAME@ also supports SSH for remote access. This is for advanced users who wish to interact with @DISTRONAME@'s underlying operating system. The default user is [COLOR blue]root[/COLOR] and the default password is [COLOR blue]openelec[/COLOR]."
+ msgstr ""
+ 
+ msgctxt "#32313"
+@@ -660,6 +684,10 @@
+ msgid "Trust and Connect"
+ msgstr ""
+ 
++msgctxt "#32361"
++msgid "Update Type"
++msgstr ""
++
+ msgctxt "#32362"
+ msgid "Check for updates now:"
+ msgstr ""
+@@ -712,6 +740,18 @@
+ msgid "Backup Progress"
+ msgstr ""
+ 
++msgctxt "#32376"
++msgid "Debug"
++msgstr ""
++
++msgctxt "#32377"
++msgid "Paste debug to pastebin"
++msgstr ""
++
++msgctxt "#32378"
++msgid "Execute script"
++msgstr ""
++
+ msgctxt "#32379"
+ msgid "There is not enough free storage space to continue!"
+ msgstr ""
+diff -ru build.Slice-Slice.arm-8.0-devel/LibreELEC-settings-c0aa38f/src/defaults.py projects/Slice/patches/LibreELEC-settings/LibreELEC-settings-01-slice.patch/src/defaults.py
+--- LibreELEC-settings-c0aa38f/src/defaults.py	2016-05-19 03:12:57.000000000 +0000
++++ LibreELEC-settings-01-slice.patch/src/defaults.py	2016-06-14 17:40:07.547107411 +0000
+@@ -82,8 +82,8 @@
+     'ENABLED': True,
+     'KERNEL_CMD': '/proc/cmdline',
+     'SET_CLOCK_CMD': '/sbin/hwclock --systohc --utc',
+-    'UPDATE_REQUEST_URL': 'http://update.libreelec.tv/updates.php',
+-    'UPDATE_DOWNLOAD_URL': 'http://%s.libreelec.tv/%s',
++    'UPDATE_REQUEST_URL': 'http://updates.fiveninjas.com/updates.php',
++    'UPDATE_DOWNLOAD_URL': 'http://%s.fiveninjas.com/%s',
+     'LOCAL_UPDATE_DIR': '/storage/.update/',
+     'GET_CPU_FLAG': "cat /proc/cpuinfo | grep -q 'flags.* lm ' && echo '1' || echo '0'",
+     'XBMC_RESET_FILE': '%s/reset_xbmc' % CONFIG_CACHE,
+diff -ru build.Slice-Slice.arm-8.0-devel/LibreELEC-settings-c0aa38f/src/resources/lib/modules/system.py projects/Slice/patches/LibreELEC-settings/LibreELEC-settings-01-slice.patch/src/resources/lib/modules/system.py
+--- LibreELEC-settings-c0aa38f/src/resources/lib/modules/system.py	2016-05-19 03:12:57.000000000 +0000
++++ LibreELEC-settings-01-slice.patch/src/resources/lib/modules/system.py	2016-06-14 17:46:40.723107411 +0000
+@@ -132,8 +132,24 @@
+                             },
+                         },
+                     },
+-                'update': {
++
++                'lirc': {
+                     'order': 3,
++                    'name' : 32015,
++                    'settings' : {
++                        'LIRCEnable' : {
++                            'name' : 32016,
++                            'value': '1',
++                            'action': 'set_ir_enable',
++                            'type': 'bool',
++                            'InfoText': 32017,
++                            'order': 1,
++                        },
++                    },
++                },
++
++                'update': {
++                    'order': 4,
+                     'name': 32013,
+                     'settings': {
+                         'AutoUpdate': {
+@@ -161,10 +177,19 @@
+                             'InfoText': 716,
+                             'order': 3,
+                             },
+-                        },
++                        'UpdateType': {
++                            'name': 32361,
++                            'value': 'stable',
++                            'action': 'set_update_type',
++                            'type': 'multivalue',
++                            'values': ['stable', 'nightly', 'bloody'],
++                            'InfoText': 718,
++                            'order': 4,
++                            },
++                         },
+                     },
+                 'backup': {
+-                    'order': 7,
++                    'order': 5,
+                     'name': 32371,
+                     'settings': {
+                         'backup': {
+@@ -185,8 +210,32 @@
+                             },
+                         },
+                     },
++
++                'debug': {
++                    'order': 6,
++                    'name': 32376,
++                    'settings': {
++                        'paste': {
++                            'name': 32377,
++                            'value': '0',
++                            'action': 'do_pastebin',
++                            'type': 'button',
++                            'InfoText': 721,
++                            'order': 1,
++                            },
++                        'execute': {
++                            'name': 32378,
++                            'value': '0',
++                            'action': 'do_execscript',
++                            'type': 'button',
++                            'InfoText': 719,
++                            'order': 1,
++                            },
++                        },
++                    },
++                             
+                 'reset': {
+-                    'order': 8,
++                    'order': 7,
+                     'name': 32323,
+                     'settings': {
+                         'xbmc_reset': {
+@@ -305,6 +354,13 @@
+             else:
+                 self.struct['ident']['settings']['hostname']['value'] = self.oe.DISTRIBUTION
+ 
++            # LIRC enable
++            value = self.oe.read_setting('system', 'LIRCEnable')
++            if not value is None:
++                self.struct['lirc']['settings']['LIRCEnable']['value'] = value
++            else:
++                self.struct['lirc']['settings']['LIRCEnable']['value'] = '0' if os.path.exists('/storage/.config/modprobe.d/disable-lirc.conf') else '1'
++
+             # AutoUpdate
+ 
+             value = self.oe.read_setting('system', 'AutoUpdate')
+@@ -316,6 +372,12 @@
+             if os.path.isfile('%s/SYSTEM' % self.LOCAL_UPDATE_DIR):
+                 self.update_in_progress = True
+ 
++            value = self.oe.read_setting('system', 'UpdateType')
++            if not value is None:
++                self.struct['update']['settings']['UpdateType']['value'] = value
++            else:
++                self.struct['update']['settings']['UpdateType']['value'] = self.get_os_type()
++
+             # AutoUpdate = manual by environment var.
+ 
+             if os.path.exists('/dev/.update_disabled'):
+@@ -344,6 +406,50 @@
+         except Exception, e:
+             self.oe.dbg_log('system::set_value', 'ERROR: (' + repr(e) + ')')
+ 
++    def set_update_type(self, listItem=None):
++        try:
++            self.oe.dbg_log('system::set_update_type', 'enter_function ', 0)
++            self.set_value(listItem)
++            updateType = listItem.getProperty('value')
++            xbmcDialog = xbmcgui.Dialog()
++            answer = xbmcDialog.yesno('Slice Update', 'Switching update type to ' + updateType + ' requires a forced update, do you want to update now?')
++            if answer == 1:
++                self.check_updates_v2(True, True)
++            self.oe.dbg_log('system::set_update_type', 'exit_function', 0)       
++        except Exception, e:
++            self.oe.dbg_log('system::set_update_type', 'ERROR: (' + repr(e) + ')')
++
++    def set_ir_enable(self, listItem=None):
++        try:
++            self.oe.dbg_log('system::set_ir_enable', 'enter_function ', 0)
++            self.set_value(listItem)
++            enable = listItem.getProperty('value') == '1'
++            self.oe.dbg_log('system::set_ir_enable', 'enable', 0)
++            if enable and os.path.exists('/storage/.config/modprobe.d/disable-lirc.conf'):
++                self.oe.dbg_log('system::set_ir_enable', 'remove file', 0)
++                os.remove('/storage/.config/modprobe.d/disable-lirc.conf')
++                xbmcDialog = xbmcgui.Dialog()
++                answer = xbmcDialog.yesno('Enable LIRC', 'Needs reboot to enable')
++                if answer == 1 :
++                    self.oe.winOeMain.close()
++                    time.sleep(1)
++                    xbmc.executebuiltin('Reboot')
++            if not enable:
++                self.oe.dbg_log('system::set_ir_enable', 'do command', 0)
++		f = open('/storage/.config/modprobe.d/disable-lirc.conf', 'w')
++		f.write('blacklist lirc_rpi\n')
++		f.close()
++                xbmcDialog = xbmcgui.Dialog()
++                answer = xbmcDialog.yesno('Disable LIRC', 'Needs reboot to disable')
++                if answer == 1:
++                    self.oe.winOeMain.close()
++                    time.sleep(1)
++                    xbmc.executebuiltin('Reboot')
++            self.oe.dbg_log('system::set_ir_enable', 'exit_function', 0)       
++        except Exception, e:
++            self.oe.dbg_log('system::set_ir_enable', 'ERROR: (' + repr(e) + ')')
++
++
+     def set_keyboard_layout(self, listItem=None):
+         try:
+             self.oe.dbg_log('system::set_keyboard_layout', 'enter_function', 0)
+@@ -516,18 +622,29 @@
+         except Exception, e:
+             self.oe.dbg_log('system::get_keyboard_layouts', 'ERROR: (' + repr(e) + ')')
+ 
+-    def check_updates_v2(self, force=False):
++    def get_os_type(self):
++        typ = 'stable'
++        with open('/storage/installed_os.json') as fd:
++            name = json.load(fd)[0]["name"]
++            typ = name.split('(')[1].split(')')[0]
++        return str(typ)
++
++    def check_updates_v2(self, force=False, ignore_version=False):
+         try:
+             self.oe.dbg_log('system::check_updates_v2', 'enter_function', 0)
+             if hasattr(self, 'update_in_progress'):
+                 self.oe.dbg_log('system::check_updates_v2', 'Update in progress (exit)', 0)
+                 return
+-            url = '%s?i=%s&d=%s&pa=%s&v=%s&l=%s' % (
++            version = self.oe.VERSION
++            if ignore_version:
++                version = 'devel-0-nothing'
++            url = '%s?i=%s&d=%s&pa=%s&v=%s&t=%s&l=%s' % (
+                 self.UPDATE_REQUEST_URL,
+                 self.oe.SYSTEMID,
+                 self.oe.DISTRIBUTION,
+                 self.oe.ARCHITECTURE,
+-                self.oe.VERSION,
++                version,
++                self.struct['update']['settings']['UpdateType']['value'],
+                 self.cpu_lm_flag,
+                 )
+             self.oe.dbg_log('system::check_updates_v2', 'URL: %s' % url, 0)
+@@ -614,7 +731,7 @@
+             self.oe.dbg_log('system::reset_oe', 'enter_function', 0)
+             if self.ask_sure_reset('Hard') == 1:
+                 self.oe.set_busy(1)
+-                reset_file = open(self.LIBREELEC_RESET_FILE, 'w')
++                reset_file = open(self.XBMC_RESET_FILE, 'w')
+                 reset_file.write('reset')
+                 reset_file.close()
+                 self.oe.winOeMain.close()
+@@ -744,6 +861,46 @@
+         except Exception, e:
+             self.oe.dbg_log('system::do_restore', 'ERROR: (' + repr(e) + ')')
+ 
++    def cat_file(self, tmp, filen):
++        self.oe.execute('echo "======== ' + filen + ' ==============" >> ' + tmp)
++        self.oe.execute('cat ' + filen + ' >> ' + tmp)
++
++    def do_pastebin(self, listItem=None):
++        try:
++            paste_dlg = xbmcgui.DialogProgress()
++            paste_dlg.create('Pasting log files', 'Pasting...', ' ', ' ')
++            self.oe.execute('echo "Paste output" > /storage/.kodi/temp/paste.tmp')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/flash/config.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/flash/cmdline.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/kodi.log')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/kodi.old.log')
++            self.oe.execute('dmesg > /storage/.kodi/temp/dmesg.txt')
++            self.cat_file('/storage/.kodi/temp/paste.tmp', '/storage/.kodi/temp/dmesg.txt')
++
++            result = self.oe.execute('paste /storage/.kodi/temp/paste.tmp', 1)
++            if not paste_dlg.iscanceled():
++                paste_dlg.close()
++                link = result.find('http')
++                done_dlg = xbmcgui.Dialog()
++                if link > 0:
++                    done_dlg.ok('Debug pasted', 'Log files pasted to ' + result[link:])
++                    self.oe.dbg_log('system::do_pastebin', result[link:]) 
++                else:
++                    done_dlg.ok('Failed paste', 'Failed to paste log files, try again')
++        except Exception, e:
++            self.oe.dbg_log('system::do_pastebin', 'ERROR: (' + repr(e) + ')')
++
++    def do_execscript(self, listItem=None):
++        try:
++            editfield = xbmcgui.Dialog()
++            link = editfield.input('Enter link for script', 'http://sprunge.us/')
++            self.oe.dbg_log('link', 'link is ' + link)
++            self.oe.execute('curl ' + link + ' > /storage/.kodi/temp/script.sh')
++            self.oe.execute('chmod +x /storage/.kodi/temp/script.sh')
++            self.oe.execute('/storage/.kodi/temp/script.sh > /storage/.kodi/temp/paste.tmp')
++        except Exception, e:
++            self.oe.dbg_log('system::do_executescript', 'ERROR: (' + repr(e) + ')')
++
+     def tar_add_folder(self, tar, folder):
+         try:
+             for item in os.listdir(folder):
+diff -ru LibreELEC-settings-c0aa38f/Makefile LibreELEC-settings-c0aa38f-new/Makefile
+--- LibreELEC-settings-c0aa38f/Makefile	2016-05-19 03:12:57.000000000 +0000
++++ LibreELEC-settings-c0aa38f-new/Makefile	2016-06-25 11:33:37.811107411 +0000
+@@ -71,7 +71,7 @@
+ 
+ $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/default:
+ 	mkdir -p $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/default
+-	cp textures/$(DISTRONAME)/*.png $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/default
++	cp textures/LibreELEC/*.png $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/default
+ 
+ $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/icons:
+ 	mkdir -p $(BUILDDIR)/$(ADDON_NAME)/resources/skins/Default/media/icons
