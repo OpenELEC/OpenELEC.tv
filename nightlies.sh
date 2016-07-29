@@ -6,6 +6,10 @@ rm -rf target/
 DISTRO=Lakka PROJECT=Generic ARCH=x86_64 make image -j9
 >&2 echo "Generic.i386"
 DISTRO=Lakka PROJECT=Generic ARCH=i386 make image -j9
+>&2 echo "Generic.x86_64 UEFI"
+DISTRO=Lakka PROJECT=Generic ARCH=x86_64 UEFI="yes" make image -j9
+>&2 echo "Generic.i386 UEFI"
+DISTRO=Lakka PROJECT=Generic ARCH=i386 UEFI="yes" make image -j9
 >&2 echo "RPi.arm"
 DISTRO=Lakka PROJECT=RPi ARCH=arm make image -j9
 >&2 echo "RPi.arm noobs"
