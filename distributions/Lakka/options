@@ -296,8 +296,8 @@
 "/tmp/cores/handy_libretro.so;"\
 "/tmp/cores/hatari_libretro.so;"\
 "/tmp/cores/mednafen_wswan_libretro.so;"\
-"/tmp/cores/nxengine_libretro.so;"\
 "/tmp/cores/mednafen_wswan_libretro.so;"\
+"/tmp/cores/nxengine_libretro.so;"\
 "/tmp/cores/bluemsx_libretro.so;"\
 "/tmp/cores/prboom_libretro.so;"\
 "/tmp/cores/fba_libretro.so;"\
