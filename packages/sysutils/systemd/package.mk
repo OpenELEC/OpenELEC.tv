@@ -179,8 +179,9 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/systemd/system-generators
   rm -rf $INSTALL/usr/lib/systemd/catalog
 
-  # meh presets
-  rm -rf $INSTALL/usr/lib/systemd/system-preset
+  # disable usage of presets, see: https://freedesktop.org/wiki/Software/systemd/Preset/
+  rm -rf $INSTALL/usr/lib/systemd/system-preset/*
+  echo "disable *" $INSTALL/usr/lib/systemd/system-preset/99-default.preset
 
   # remove networkd
   rm -rf $INSTALL/usr/lib/systemd/network
