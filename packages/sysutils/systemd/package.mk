@@ -38,7 +38,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            ac_cv_path_MOUNT_PATH="/bin/mount"
                            ac_cv_path_UMOUNT_PATH="/bin/umount"
                            KMOD=/usr/bin/kmod \
-                           --with-support-url=http://www.openelec.tv \
+                           --with-support-url="$SUPPORT_URL" \
                            --disable-nls \
                            --disable-dbus \
                            --disable-utmp \
