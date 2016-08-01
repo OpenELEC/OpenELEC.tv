@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="229"
+PKG_VERSION="231"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -38,10 +38,10 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            ac_cv_path_MOUNT_PATH="/bin/mount"
                            ac_cv_path_UMOUNT_PATH="/bin/umount"
                            KMOD=/usr/bin/kmod \
+                           --with-support-url=http://www.openelec.tv \
                            --disable-nls \
                            --disable-dbus \
                            --disable-utmp \
-                           --disable-compat-libs \
                            --disable-coverage \
                            --enable-kmod \
                            --disable-xkbcommon \
@@ -50,6 +50,8 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-ima \
                            --disable-selinux \
                            --disable-apparmor \
+                           --disable-adm-group \
+                           --disable-wheel-group \
                            --disable-xz \
                            --disable-zlib \
                            --disable-bzip2 \
@@ -69,7 +71,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-libiptc \
                            --disable-binfmt \
                            --disable-vconsole \
-                           --disable-bootchart \
                            --disable-quotacheck \
                            --enable-tmpfiles \
                            --disable-sysusers \
@@ -77,7 +78,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-randomseed \
                            --disable-backlight \
                            --disable-rfkill \
-                           --enable-logind \
+                           --enable-logind --without-kill-user-processes \
                            --disable-machined \
                            --disable-importd \
                            --disable-hostnamed \
@@ -86,16 +87,16 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-localed \
                            --disable-coredump \
                            --disable-polkit \
-                           --disable-resolved \
+                           --disable-resolved --with-default-dnssec=allow-downgrade \
                            --disable-networkd \
                            --disable-efi \
                            --disable-gnuefi \
-                           --disable-kdbus \
                            --disable-myhostname \
                            --enable-hwdb \
                            --disable-manpages \
                            --disable-hibernate \
                            --disable-ldconfig \
+                           --disable-tpm --with-tpm-pcrindex=8 \
                            --enable-split-usr \
                            --disable-tests \
                            --without-python \
@@ -105,7 +106,6 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --with-dbuspolicydir=/etc/dbus-1/system.d \
                            --with-dbussessionservicedir=/usr/share/dbus-1/services \
                            --with-dbussystemservicedir=/usr/share/dbus-1/system-services \
-                           --with-dbusinterfacedir=/usr/share/dbus-1/interfaces \
                            --with-rootprefix=/usr \
                            --with-rootlibdir=/lib"
 
