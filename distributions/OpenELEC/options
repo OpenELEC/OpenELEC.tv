@@ -11,6 +11,9 @@
   GREETING3="##############################################"
   GREETING4=""
 
+# Specify the support URL to show in various packages.
+  SUPPORT_URL="http://www.openelec.tv"
+
 # Root password to integrate in the target system
   ROOT_PASSWORD="openelec"
 
