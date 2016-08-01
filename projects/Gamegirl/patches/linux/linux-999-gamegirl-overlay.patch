@@ -1,0 +1,35 @@
+diff -Naur linux-rpi.git/arch/arm/boot/dts/overlays/gamegirl-overlay.dts linux-rpi.patch/arch/arm/boot/dts/overlays/gamegirl-overlay.dts
+--- linux-rpi.git/arch/arm/boot/dts/overlays/gamegirl-overlay.dts	1970-01-01 01:00:00.000000000 +0100
++++ linux-rpi.patch/arch/arm/boot/dts/overlays/gamegirl-overlay.dts	2016-05-27 20:39:03.329580551 +0200
+@@ -0,0 +1,20 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++    compatible = "brcm,bcm2708";
++
++    fragment@0 {
++        target = <&gpio>;
++        __overlay__ {
++            pinctrl-names = "default";
++            pinctrl-0 = <&gamegirl>;
++
++            gamegirl: gamegirl {
++                brcm,pins = <18 19>;     /* gpio no. */
++                brcm,function = <2 2>; /* 0: GPIO in, 1: GPIO out, 2: alt5, 3: alt4, 4: alt0, 5: alt1, 6: alt2, 7: alt3 */
++                brcm,pull = <2 2>;     /* 2:up 1:down 0:none */
++            };
++        };
++    };
++};
+diff -Naur linux-rpi.git/arch/arm/boot/dts/overlays/Makefile linux-rpi.patch/arch/arm/boot/dts/overlays/Makefile
+--- linux-rpi.git/arch/arm/boot/dts/overlays/Makefile	2016-05-27 20:26:49.984164346 +0200
++++ linux-rpi.patch/arch/arm/boot/dts/overlays/Makefile	2016-05-27 20:57:01.587094700 +0200
+@@ -19,6 +19,7 @@
+ dtb-$(RPI_DT_OVERLAYS) += boomberry-digi-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += dht11-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += enc28j60-overlay.dtb
++dtb-$(RPI_DT_OVERLAYS) += gamegirl-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += gpio-ir-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += gpio-poweroff-overlay.dtb
+ dtb-$(RPI_DT_OVERLAYS) += hifiberry-amp-overlay.dtb
