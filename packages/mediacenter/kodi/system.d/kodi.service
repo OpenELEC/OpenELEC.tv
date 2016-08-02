@@ -8,6 +8,8 @@ Wants=network-online.target
 Environment=DISPLAY=:0.0
 Environment=SDL_MOUSE_RELATIVE=0
 Environment=HOME=/storage
+Environment=KODI_TEMP=/storage/.kodi/temp
+Environment=KODI_HOME=/usr/share/kodi/
 EnvironmentFile=-/run/openelec/kodi.conf
 EnvironmentFile=-/run/openelec/debug/kodi.conf
 ExecStartPre=-/usr/lib/kodi/kodi-config
