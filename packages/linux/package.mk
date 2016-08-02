@@ -41,7 +41,7 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   rpi)
-    PKG_VERSION="6006082"
+    PKG_VERSION="f3b7592"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
     PKG_GIT_BRANCH="raspberry-rpi-4.6.y"
     ;;
