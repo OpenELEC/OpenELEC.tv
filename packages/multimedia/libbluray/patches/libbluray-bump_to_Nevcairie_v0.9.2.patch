@@ -1,21 +1,33 @@
-From b9f9865bac7372f5ed0ac54fb7d3018c2336160a Mon Sep 17 00:00:00 2001
-From: Hendrik Leppkes <h.leppkes@gmail.com>
-Date: Wed, 12 Sep 2012 23:26:17 +0200
-Subject: [PATCH 1/9] Support for building with MSVC 2013/2015
-
----
- config.h                       | 157 ++++++++++++++++++
- includes/inttypes.h            | 305 +++++++++++++++++++++++++++++++++++
- libbluray.def                  |  60 +++++++
- libbluray.vcxproj              | 231 +++++++++++++++++++++++++++
- libbluray.vcxproj.filters      | 353 +++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 1144 insertions(+)
- create mode 100644 config.h
- create mode 100644 includes/inttypes.h
- create mode 100644 libbluray.def
- create mode 100644 libbluray.vcxproj
- create mode 100644 libbluray.vcxproj.filters
-
+diff --git a/Makefile.am b/Makefile.am
+index 3a54bfc..035553b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -161,6 +161,15 @@ noinst_HEADERS = \
+ 	jni/win32/jni_md.h \
+ 	jni/darwin/jni_md.h
+ 
++
++bdnavdir=$(pkgincludedir)/bdnav
++bdnav_HEADERS = \
++	src/libbluray/bdnav/clpi_data.h
++
++utildir=$(pkgincludedir)/../util
++util_HEADERS = \
++	src/util/attributes.h
++
+ pkginclude_HEADERS = \
+ 	src/file/filesystem.h \
+ 	src/libbluray/bluray.h \
+@@ -168,6 +177,9 @@ pkginclude_HEADERS = \
+ 	src/libbluray/keys.h \
+ 	src/libbluray/player_settings.h \
+ 	src/libbluray/bdnav/clpi_data.h \
++	src/libbluray/bdnav/clpi_parse.h \
++	src/libbluray/bdnav/mpls_parse.h \
++	src/libbluray/bdnav/uo_mask_table.h \
+ 	src/libbluray/bdnav/meta_data.h \
+ 	src/libbluray/decoders/overlay.h \
+ 	src/util/log_control.h
 diff --git a/config.h b/config.h
 new file mode 100644
 index 0000000..6764704
@@ -492,10 +504,10 @@ index 0000000..ead903f
 +#endif // _MSC_INTTYPES_H_ ]
 diff --git a/libbluray.def b/libbluray.def
 new file mode 100644
-index 0000000..1b10823
+index 0000000..d4c93cb
 --- /dev/null
 +++ b/libbluray.def
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,63 @@
 +; libbluray.def ; declares the exports
 +
 +LIBRARY         "libbluray.dll"
@@ -511,6 +523,7 @@ index 0000000..1b10823
 +                bd_close
 +                bd_seek
 +                bd_seek_time
++                bd_find_seek_point
 +                bd_read
 +                bd_read_skip_still
 +                bd_seek_chapter
@@ -551,6 +564,8 @@ index 0000000..1b10823
 +                bd_free_mpls
 +                bd_read_mobj
 +                bd_free_mobj
++                bd_get_clip_infos
++                bd_get_title_mpls
 +
 +                ; additional functions
 +                bd_set_debug_handler
@@ -1154,6 +1169,461 @@ index 0000000..57ff16c
 +  </ItemGroup>
 +</Project>
 \ No newline at end of file
--- 
-1.9.3
-
+diff --git a/src/file/dir_win32.c b/src/file/dir_win32.c
+index 2690658..f42114d 100644
+--- a/src/file/dir_win32.c
++++ b/src/file/dir_win32.c
+@@ -86,8 +86,8 @@ static BD_DIR_H *_dir_open_win32(const char* dirname)
+ 
+     dir->internal = priv;
+ 
+-    wchar_t wfilespec[MAX_PATH];
+-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, MAX_PATH))
++    wchar_t wfilespec[4096 + 1] = {0};
++    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, 4096))
+         priv->handle = _wfindfirst(wfilespec, &priv->info);
+     else
+         priv->handle = -1;
+diff --git a/src/file/dirs_win32.c b/src/file/dirs_win32.c
+index e165fea..3d07251 100644
+--- a/src/file/dirs_win32.c
++++ b/src/file/dirs_win32.c
+@@ -36,7 +36,7 @@
+ 
+ char *win32_get_font_dir(const char *font_file)
+ {
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+     if (S_OK != SHGetFolderPathW(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT, wdir)) {
+         int lenght = GetWindowsDirectoryW(wdir, MAX_PATH);
+         if (lenght == 0 || lenght > (MAX_PATH - 8)) {
+@@ -67,7 +67,7 @@ char *file_get_config_home(void)
+ 
+ char *file_get_data_home(void)
+ {
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+ 
+     /* Get the "Application Data" folder for the user */
+     if (S_OK == SHGetFolderPathW(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE,
+@@ -92,7 +92,7 @@ char *file_get_cache_home(void)
+ const char *file_get_config_system(const char *dir)
+ {
+     static char *appdir = NULL;
+-    wchar_t wdir[MAX_PATH];
++    wchar_t wdir[MAX_PATH+1] = {0};
+ 
+     if (!dir) {
+         // first call
+diff --git a/src/file/dl_win32.c b/src/file/dl_win32.c
+index e4492e1..7f6ae73 100644
+--- a/src/file/dl_win32.c
++++ b/src/file/dl_win32.c
+@@ -57,7 +57,7 @@ void *dl_dlopen(const char *path, const char *version)
+ {
+     (void)version;
+ 
+-    wchar_t wname[MAX_PATH];
++    wchar_t wname[MAX_PATH+1] = {0};
+     char *name;
+     void *result;
+ 
+@@ -109,7 +109,7 @@ const char *dl_get_path(void)
+     if (!initialized) {
+         initialized = 1;
+ 
+-        static char path[MAX_PATH];
++        static char path[MAX_PATH + 1];
+         HMODULE hModule;
+         wchar_t wpath[MAX_PATH];
+ 
+diff --git a/src/file/file_win32.c b/src/file/file_win32.c
+index d9845fb..b4fb7ad 100644
+--- a/src/file/file_win32.c
++++ b/src/file/file_win32.c
+@@ -107,9 +107,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+ {
+     BD_FILE_H *file;
+     FILE *fp;
+-    wchar_t wfilename[MAX_PATH], wmode[8];
++    wchar_t wfilename[4096 + 1] = {0}, wmode[8] = {0};
+ 
+-    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, MAX_PATH) ||
++    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename, -1, wfilename, 4096) ||
+         !MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, mode, -1, wmode, 8)) {
+ 
+         BD_DEBUG(DBG_FILE, "Error opening file %s\n", filename);
+@@ -122,6 +122,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+         return NULL;
+     }
+ 
++    // Set file buffer
++    setvbuf(fp, NULL, _IOFBF, 6144 * 10);
++
+     file = calloc(1, sizeof(BD_FILE_H));
+     if (!file) {
+         BD_DEBUG(DBG_FILE | DBG_CRIT, "Error opening file %s (out of memory)\n", filename);
+diff --git a/src/libbluray/bdnav/clpi_parse.c b/src/libbluray/bdnav/clpi_parse.c
+index 394347e..39bbcef 100644
+--- a/src/libbluray/bdnav/clpi_parse.c
++++ b/src/libbluray/bdnav/clpi_parse.c
+@@ -39,6 +39,7 @@
+ #define CLPI_SIG1  ('H' << 24 | 'D' << 16 | 'M' << 8 | 'V')
+ #define CLPI_SIG2A ('0' << 24 | '2' << 16 | '0' << 8 | '0')
+ #define CLPI_SIG2B ('0' << 24 | '1' << 16 | '0' << 8 | '0')
++#define CLPI_SIG2C ('0' << 24 | '2' << 16 | '4' << 8 | '0')
+ 
+ static void
+ _human_readable_sig(char *sig, uint32_t s1, uint32_t s2)
+@@ -129,7 +130,8 @@ _parse_header(BITSTREAM *bits, CLPI_CL *cl)
+     cl->type_indicator2 = bs_read(bits, 32);
+     if (cl->type_indicator != CLPI_SIG1 || 
+         (cl->type_indicator2 != CLPI_SIG2A &&
+-         cl->type_indicator2 != CLPI_SIG2B)) {
++         cl->type_indicator2 != CLPI_SIG2B &&
++         cl->type_indicator2 != CLPI_SIG2C)) {
+ 
+         char sig[9];
+         char expect[9];
+diff --git a/src/libbluray/bdnav/mpls_parse.c b/src/libbluray/bdnav/mpls_parse.c
+index e196118..87b240a 100644
+--- a/src/libbluray/bdnav/mpls_parse.c
++++ b/src/libbluray/bdnav/mpls_parse.c
+@@ -39,6 +39,7 @@
+ #define MPLS_SIG1  ('M' << 24 | 'P' << 16 | 'L' << 8 | 'S')
+ #define MPLS_SIG2A ('0' << 24 | '2' << 16 | '0' << 8 | '0')
+ #define MPLS_SIG2B ('0' << 24 | '1' << 16 | '0' << 8 | '0')
++#define MPLS_SIG2C ('0' << 24 | '2' << 16 | '4' << 8 | '0')
+ 
+ static void
+ _human_readable_sig(char *sig, uint32_t s1, uint32_t s2)
+@@ -137,8 +138,9 @@ _parse_appinfo(BITSTREAM *bits, MPLS_AI *ai)
+     ai->random_access_flag = bs_read(bits, 1);
+     ai->audio_mix_flag = bs_read(bits, 1);
+     ai->lossless_bypass_flag = bs_read(bits, 1);
++    ai->mvc_base_view_r_flag = bs_read(bits, 1);
+     // Reserved
+-    bs_skip(bits, 13);
++    bs_skip(bits, 12);
+     bs_seek_byte(bits, pos + len);
+     return 1;
+ }
+@@ -155,7 +157,8 @@ _parse_header(BITSTREAM *bits, MPLS_PL *pl)
+     pl->type_indicator2 = bs_read(bits, 32);
+     if (pl->type_indicator != MPLS_SIG1 || 
+         (pl->type_indicator2 != MPLS_SIG2A && 
+-         pl->type_indicator2 != MPLS_SIG2B)) {
++         pl->type_indicator2 != MPLS_SIG2B &&
++         pl->type_indicator2 != MPLS_SIG2C)) {
+ 
+         char sig[9];
+         char expect[9];
+@@ -259,6 +262,7 @@ _parse_stream(BITSTREAM *bits, MPLS_STREAM *s)
+             break;
+     };
+     s->lang[3] = '\0';
++    s->ss_offset_sequence_id = 0xFF;
+ 
+     bs_seek_byte(bits, pos + len);
+     return 1;
+@@ -882,6 +886,99 @@ _parse_subpath_extension(BITSTREAM *bits, MPLS_PL *pl)
+ }
+ 
+ static int
++_parse_stn_ss_extension(BITSTREAM *bits, MPLS_PL *pl)
++{
++    int ii, s;
++    int64_t pos;
++
++    for (ii = 0; ii < pl->list_count; ii++) {
++        uint32_t len = bs_read(bits, 16);
++        pos = bs_pos(bits) >> 3;
++        int Fixed_offset_during_PopUp_flag = bs_read(bits, 1);
++        bs_skip(bits, 15); // reserved
++
++        for (s = 0; s < pl->play_item[ii].stn.num_video; s++) {
++            // stream_entry
++            uint32_t slen = bs_read(bits, 8);
++            bs_skip(bits, slen * 8);
++
++            // stream_attributes_ss
++            slen = bs_read(bits, 8);
++            bs_skip(bits, slen * 8);
++
++            bs_skip(bits, 10); // reserved
++            bs_skip(bits, 6);  // number_of_offset_sequences
++        }
++
++        for (s = 0; s < pl->play_item[ii].stn.num_pg; s++) {
++            pl->play_item[ii].stn.pg[s].ss_offset_sequence_id = bs_read(bits, 8);
++
++            bs_skip(bits, 4); // reserved
++            bs_skip(bits, 1); // dialog_region_offset_valid_flag
++            int is_SS_PG = bs_read(bits, 1);
++            int is_top_AS_PG_textST = bs_read(bits, 1);
++            int is_bottom_AS_PG_textST = bs_read(bits, 1);
++            if (is_SS_PG) {
++                // stream_entry left eye
++                uint32_t slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                // stream_entry right eye
++                slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                bs_skip(bits, 8); // reserved
++                bs_skip(bits, 8); // PG offset
++            }
++            if (is_top_AS_PG_textST) {
++                // stream_entry
++                uint32_t slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                bs_skip(bits, 8); // reserved
++                bs_skip(bits, 8); // PG offset
++            }
++            if (is_bottom_AS_PG_textST) {
++                // stream_entry
++                uint32_t slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                bs_skip(bits, 8); // reserved
++                bs_skip(bits, 8); // PG offset
++            }
++        }
++
++        for (s = 0; s < pl->play_item[ii].stn.num_ig; s++) {
++            if (Fixed_offset_during_PopUp_flag)
++              bs_skip(bits, 8);
++            else
++              pl->play_item[ii].stn.ig[s].ss_offset_sequence_id = bs_read(bits, 8);
++
++            bs_skip(bits, 16); // IG_Plane_offset_during_BB_video
++            bs_skip(bits, 7); // reserved
++            int is_SS_IG = bs_read(bits, 1);
++            if (is_SS_IG) {
++                // stream_entry left eye
++                uint32_t slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                // stream_entry right eye
++                slen = bs_read(bits, 8);
++                bs_skip(bits, slen * 8);
++
++                bs_skip(bits, 8); // reserved
++                bs_skip(bits, 8); // PG offset
++            }
++        }
++
++        // Skip to next play item
++        bs_seek_byte(bits, pos + len);
++    }
++
++    return 0;
++}
++
++static int
+ _parse_mpls_extension(BITSTREAM *bits, int id1, int id2, void *handle)
+ {
+     MPLS_PL *pl = (MPLS_PL*)handle;
+@@ -895,7 +992,7 @@ _parse_mpls_extension(BITSTREAM *bits, int id1, int id2, void *handle)
+ 
+     if (id1 == 2) {
+         if (id2 == 1) {
+-            return 0;
++            return _parse_stn_ss_extension(bits, pl);
+         }
+         if (id2 == 2) {
+             // SubPath entries extension
+diff --git a/src/libbluray/bdnav/mpls_parse.h b/src/libbluray/bdnav/mpls_parse.h
+index 94bfa67..c1b2c31 100644
+--- a/src/libbluray/bdnav/mpls_parse.h
++++ b/src/libbluray/bdnav/mpls_parse.h
+@@ -49,6 +49,7 @@ typedef struct
+     uint8_t         sv_num_pip_pg_ref;
+     uint8_t        *sv_secondary_audio_ref;
+     uint8_t        *sv_pip_pg_ref;
++    uint8_t         ss_offset_sequence_id;
+ } MPLS_STREAM;
+ 
+ typedef struct
+@@ -109,6 +110,7 @@ typedef struct
+     uint8_t         random_access_flag;
+     uint8_t         audio_mix_flag;
+     uint8_t         lossless_bypass_flag;
++    uint8_t         mvc_base_view_r_flag;
+ } MPLS_AI;
+ 
+ typedef struct
+diff --git a/src/libbluray/bluray.c b/src/libbluray/bluray.c
+index 0e60b68..f633d7a 100644
+--- a/src/libbluray/bluray.c
++++ b/src/libbluray/bluray.c
+@@ -1626,6 +1626,25 @@ int64_t bd_seek_time(BLURAY *bd, uint64_t tick)
+     return bd->s_pos;
+ }
+ 
++int64_t bd_find_seek_point(BLURAY *bd, uint64_t tick)
++{
++  uint32_t clip_pkt, out_pkt;
++  NAV_CLIP *clip;
++
++  tick /= 2;
++
++  if (bd->title &&
++    tick < bd->title->duration) {
++
++      // Find the closest access unit to the requested position
++      clip = nav_time_search(bd->title, (uint32_t)tick, &clip_pkt, &out_pkt);
++
++      return (int64_t)out_pkt * 192;
++  }
++
++  return bd->s_pos;
++}
++
+ uint64_t bd_tell_time(BLURAY *bd)
+ {
+     uint32_t clip_pkt = 0, out_pkt = 0, out_time = 0;
+@@ -2602,6 +2621,7 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
+         BLURAY_CLIP_INFO *ci = &title_info->clips[ii];
+         NAV_CLIP *nc = &title->clip_list.clip[ii];
+ 
++        ci->idx = nc->clip_id;
+         ci->pkt_count = nc->end_pkt - nc->start_pkt;
+         ci->start_time = (uint64_t)nc->title_time * 2;
+         ci->in_time = (uint64_t)pi->in_time * 2;
+@@ -2628,6 +2648,8 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
+         _copy_streams(nc, ci->sec_audio_streams, pi->stn.secondary_audio, ci->sec_audio_stream_count);
+     }
+ 
++    title_info->mvc_base_view_r_flag = title->pl->app_info.mvc_base_view_r_flag;
++
+     return title_info;
+ }
+ 
+@@ -3746,3 +3768,28 @@ void bd_free_bdjo(struct bdjo_data *obj)
+     (void)obj;
+ #endif
+ }
++
++int bd_get_clip_infos(BLURAY *bd, unsigned clip, uint64_t *clip_start_time, uint64_t *stream_start_time, uint64_t *pos, uint64_t *duration)
++{
++    if (bd && bd->title && bd->title->clip_list.count > clip) {
++      if (clip_start_time)
++        *clip_start_time = (uint64_t)bd->title->clip_list.clip[clip].title_time << 1;
++      if (stream_start_time)
++        *stream_start_time = (uint64_t)bd->title->clip_list.clip[clip].in_time << 1;
++      if (pos)
++        *pos = (uint64_t)bd->title->clip_list.clip[clip].title_pkt * 192;
++      if (duration)
++        *duration = (uint64_t)bd->title->clip_list.clip[clip].duration << 1;
++
++      return 1;
++    }
++    return 0;
++}
++
++struct mpls_pl* bd_get_title_mpls(BLURAY * bd)
++{
++  if (bd && bd->title) {
++    return bd->title->pl;
++  }
++  return NULL;
++}
+diff --git a/src/libbluray/bluray.h b/src/libbluray/bluray.h
+index cbf16fc..97dc1a3 100644
+--- a/src/libbluray/bluray.h
++++ b/src/libbluray/bluray.h
+@@ -32,6 +32,7 @@ extern "C" {
+  */
+ 
+ #include <stdint.h>
++#include "bdnav/clpi_data.h"
+ 
+ #define TITLES_ALL              0    /**< all titles. */
+ #define TITLES_FILTER_DUP_TITLE 0x01 /**< remove duplicate titles. */
+@@ -225,6 +226,7 @@ typedef struct bd_stream_info {
+ } BLURAY_STREAM_INFO;
+ 
+ typedef struct bd_clip {
++    uint32_t           idx;
+     uint32_t           pkt_count;
+     uint8_t            still_mode;
+     uint16_t           still_time;  /* seconds */
+@@ -275,6 +277,8 @@ typedef struct bd_title_info {
+ 
+     uint32_t             mark_count;
+     BLURAY_TITLE_MARK    *marks;
++
++    uint8_t              mvc_base_view_r_flag;
+ } BLURAY_TITLE_INFO;
+ 
+ /*
+@@ -483,6 +487,16 @@ uint32_t bd_get_current_title(BLURAY *bd);
+ 
+ /**
+  *
++ * Find the byte position to specific time in 90Khz ticks
++ *
++ * @param bd    BLURAY ojbect
++ * @param tick  tick count
++ * @return byte position
++ */
++int64_t bd_find_seek_point(BLURAY *bd, uint64_t tick);
++
++/**
++ *
+  *  Read from currently selected title file, decrypt if possible
+  *
+  * @param bd  BLURAY object
+@@ -1007,7 +1021,6 @@ int bd_mouse_select(BLURAY *bd, int64_t pts, uint16_t x, uint16_t y);
+ 
+ /* access to internal information */
+ 
+-struct clpi_cl;
+ /**
+  *
+  *  Get copy of clip information for requested playitem.
+@@ -1060,6 +1073,28 @@ void bd_stop_bdj(BLURAY *bd); // shutdown BD-J and clean up resources
+  */
+ int bd_read_file(BLURAY *, const char *path, void **data, int64_t *size);
+ 
++/**
++ *
++ * Get information about the clip
++ *
++ * @param bd  BLURAY object
++ * @param clip clip index
++ * @param clip_start_time start of the clip (in the total title) (in 90khz)
++ * @param stream_start_time first pts in the clip (in 90khz)
++ * @param byte position of the clip (absolute)
++ * @param duration duration of the clip (in 90khz)
++ */
++int bd_get_clip_infos(BLURAY *bd, unsigned clip, uint64_t *clip_start_time, uint64_t *stream_start_time, uint64_t *pos, uint64_t *duration);
++
++/**
++ * Get the MPLS struct of the current title
++ *
++ * @param bd BLURAY object
++ * @return the MPLS struct
++ *
++ * Lifetime of the MPLS pointer is limited to the lifetime of the BD title
++ */
++struct mpls_pl* bd_get_title_mpls(BLURAY * bd);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/src/libbluray/disc/disc.c b/src/libbluray/disc/disc.c
+index defa084..375e6c3 100644
+--- a/src/libbluray/disc/disc.c
++++ b/src/libbluray/disc/disc.c
+@@ -69,7 +69,7 @@ static BD_FILE_H *_bdrom_open_path(void *p, const char *rel_path)
+         return NULL;
+     }
+ 
+-    fp = file_open(abs_path, "rb");
++    fp = file_open(abs_path, "rbS");
+     X_FREE(abs_path);
+ 
+     return fp;
