@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="3.0.2"
+PKG_VERSION="3.1.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPLv2.1+"
@@ -61,14 +61,10 @@ fi
 
 case "$TARGET_ARCH" in
   arm)
-      FFMPEG_CPU=""
       FFMPEG_TABLES="--enable-hardcoded-tables"
-      FFMPEG_PIC="--enable-pic"
   ;;
-  x86_64)
-      FFMPEG_CPU=""
+  *)
       FFMPEG_TABLES="--disable-hardcoded-tables"
-      FFMPEG_PIC="--enable-pic"
   ;;
 esac
 
@@ -132,7 +128,7 @@ configure_target() {
               --enable-logging \
               --disable-doc \
               $FFMPEG_DEBUG \
-              $FFMPEG_PIC \
+              --enable-pic \
               --pkg-config="$ROOT/$TOOLCHAIN/bin/pkg-config" \
               --enable-optimizations \
               --disable-extra-warnings \
@@ -194,7 +190,6 @@ configure_target() {
               --disable-libopencore-amrwb \
               --disable-libopencv \
               --disable-libdc1394 \
-              --disable-libdcadec \
               --disable-libfaac \
               --disable-libfreetype \
               --disable-libgsm \
@@ -214,7 +209,6 @@ configure_target() {
               --enable-zlib \
               --enable-asm \
               --disable-altivec \
-              $FFMPEG_CPU \
               $FFMPEG_FPU \
               --enable-yasm \
               --disable-symver
