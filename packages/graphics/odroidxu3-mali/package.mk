@@ -19,12 +19,12 @@
 ################################################################################
 
 PKG_NAME="odroidxu3-mali"
-PKG_VERSION="r6p0-02rel0"
+PKG_VERSION="r7p0-02rel0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
 PKG_SITE="http://malideveloper.arm.com/resources/drivers/arm-mali-midgard-gpu-user-space-drivers/"
-PKG_URL="http://malideveloper.arm.com/downloads/drivers/binary/r6p0-02rel0/mali-t62x_r6p0-02rel0_linux_1+fbdev.tar.gz"
+PKG_URL="http://malideveloper.arm.com/downloads/drivers/binary/r7p0-02rel0/mali-t62x_r7p0-02rel0_linux_1+fbdev.tar.gz"
 PKG_SOURCE_DIR="fbdev"
 PKG_BUILD_DEPENDS_TARGET="toolchain"
 PKG_DEPENDS_TARGET="libump odroidxu3-mali-headers"

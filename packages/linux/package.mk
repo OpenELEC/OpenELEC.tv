@@ -31,7 +31,7 @@ PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and
 PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 case "$LINUX" in
   linux-odroidxu3)
-    PKG_VERSION="acd3565"
+    PKG_VERSION="533ce55"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
   linux-odroidc-3.10.y)

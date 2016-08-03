@@ -38,7 +38,7 @@ elif [ "$UBOOT_VERSION" = "odroidc" ]; then
   PKG_SITE="http://odroid.com/dokuwiki/doku.php?id=en:c1_building_u-boot"
   PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "odroidxu3" ]; then
-  PKG_VERSION="d80b05d"
+  PKG_VERSION="fe2f831"
   PKG_SITE="http://hardkernel.org"
   PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 else
