@@ -18,7 +18,7 @@
 
 PKG_NAME="opengl"
 case $OPENGL in
-  mesa|imx-gpu-viv|bcm2835-firmware)
+  mesa|bcm2835-firmware)
     PKG_VERSION="1"
     PKG_REV="1"
     PKG_ARCH="any"
@@ -30,6 +30,19 @@ case $OPENGL in
     PKG_SECTION="virtual"
     PKG_SHORTDESC="opengl: virtual package to build OpenGL(X/ES) support"
     PKG_LONGDESC="opengl is a virtual package to build OpenGL(X/ES) support."
+    ;;
+  imx-gpu-viv)
+    PKG_VERSION="$OPENGL-5.0.11.p4.5"
+    PKG_REV="1"
+    PKG_ARCH="arm"
+    PKG_LICENSE="nonfree"
+    PKG_SITE="http://www.freescale.com"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="toolchain"
+    PKG_PRIORITY="optional"
+    PKG_SECTION="graphics"
+    PKG_SHORTDESC="opengl-imx-gpu-viv: OpenGL-ES and VIVANTE driver for imx6q"
+    PKG_LONGDESC="opengl-imx-gpu-viv: OpenGL-ES and VIVANTE driver for imx6q"
     ;;
   meson6)
     PKG_VERSION="$OPENGL-r5p1-01rel0-armhf"
@@ -62,6 +75,12 @@ esac
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$TARGET_FLOAT" = "softfp" -o "$TARGET_FLOAT" = "soft" ]; then
+  FLOAT="softfp"
+elif [ "$TARGET_FLOAT" = "hard" ]; then
+  FLOAT="hardfp"
+fi
+
 make_target() {
  : # nothing todo
 }
@@ -77,6 +96,53 @@ if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" ]; then
     mkdir -p $INSTALL/usr/lib
       cp -PR usr/lib/*.so* $INSTALL/usr/lib
   }
+elif [ "$OPENGL" = "imx-gpu-viv" ]; then
+  makeinstall_target() {
+    mkdir -p $SYSROOT_PREFIX/usr/include
+      cp -PRv $FLOAT/gpu-core/usr/include/* $SYSROOT_PREFIX/usr/include
+      cp -PRv $FLOAT/g2d/usr/include/* $SYSROOT_PREFIX/usr/include
+
+    mkdir -p $SYSROOT_PREFIX/usr/lib
+      cp -PRv $FLOAT/gpu-core/usr/lib/libEGL-fb.so \
+              $FLOAT/gpu-core/usr/lib/libEGL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLES_CL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLES_CM.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv1_CL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv1_CM.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv2-fb.so \
+              $FLOAT/gpu-core/usr/lib/libGLESv2.so* \
+              $FLOAT/gpu-core/usr/lib/libGAL-fb.so \
+              $FLOAT/gpu-core/usr/lib/libGAL.so* \
+              $FLOAT/gpu-core/usr/lib/libGAL_egl.fb.so \
+              $FLOAT/gpu-core/usr/lib/libGAL_egl.so* \
+              $FLOAT/gpu-core/usr/lib/libVIVANTE-fb.so \
+              $FLOAT/gpu-core/usr/lib/libVIVANTE.so* \
+              $FLOAT/gpu-core/usr/lib/libOpenCL.so \
+              $FLOAT/gpu-core/usr/lib/libVSC.so \
+              $FLOAT/g2d/usr/lib/libg2d*.so* \
+              $SYSROOT_PREFIX/usr/lib
+
+    mkdir -p $INSTALL/usr/lib
+      cp -PRv $FLOAT/gpu-core/usr/lib/libEGL-fb.so \
+              $FLOAT/gpu-core/usr/lib/libEGL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLES_CL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLES_CM.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv1_CL.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv1_CM.so* \
+              $FLOAT/gpu-core/usr/lib/libGLESv2-fb.so \
+              $FLOAT/gpu-core/usr/lib/libGLESv2.so* \
+              $FLOAT/gpu-core/usr/lib/libGLSLC.so* \
+              $FLOAT/gpu-core/usr/lib/libGAL-fb.so \
+              $FLOAT/gpu-core/usr/lib/libGAL.so* \
+              $FLOAT/gpu-core/usr/lib/libGAL_egl.fb.so \
+              $FLOAT/gpu-core/usr/lib/libGAL_egl.so* \
+              $FLOAT/gpu-core/usr/lib/libVIVANTE-fb.so \
+              $FLOAT/gpu-core/usr/lib/libVIVANTE.so* \
+              $FLOAT/gpu-core/usr/lib/libOpenCL.so \
+              $FLOAT/gpu-core/usr/lib/libVSC.so \
+              $FLOAT/g2d/usr/lib/libg2d*.so* \
+              $INSTALL/usr/lib
+  }
 fi
 
 if [ ! "$OPENGL" = "mesa" ]; then
@@ -84,3 +150,5 @@ if [ ! "$OPENGL" = "mesa" ]; then
     enable_service unbind-console.service
   }
 fi
+
+
