@@ -94,9 +94,8 @@ else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-video-x11-vm --without-x"
 fi
 
-if [ ! "$OPENGL" = "no" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL glu"
-
+if [ "$OPENGL" = "mesa" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET opengl glu"
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-video-opengl --disable-video-opengles"
 else
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-video-opengl --disable-video-opengles"

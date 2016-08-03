@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/popcornmix/screensaver.shadertoy"
 PKG_GIT_URL="https://github.com/popcornmix/screensaver.shadertoy.git"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain kodi-platform"
+PKG_DEPENDS_TARGET="toolchain kodi-platform opengl"
 PKG_PRIORITY="optional"
 PKG_SECTION=""
 PKG_SHORTDESC="screensaver.shadertoy"
@@ -34,13 +34,8 @@ PKG_AUTORECONF="no"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.ui.screensaver"
 
-if [ ! "$OPENGL" = "no" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL glew"
-fi
-
-if [ "$OPENGLES_SUPPORT" = yes ]; then
-# for OpenGL-ES support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
+if [ "$OPENGL" = "mesa" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glew"
 fi
 
 pre_configure_target() {

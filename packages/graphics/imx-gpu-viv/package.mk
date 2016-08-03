@@ -88,7 +88,3 @@ makeinstall_target() {
             $FLOAT/g2d/usr/lib/libg2d*.so* \
             $INSTALL/usr/lib
 }
-
-post_install() {
-  enable_service unbind-console.service
-}

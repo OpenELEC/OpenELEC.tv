@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/notspiff/visualization.shadertoy"
 PKG_GIT_URL="https://github.com/notspiff/visualization.shadertoy"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain kodi-platform"
+PKG_DEPENDS_TARGET="toolchain kodi-platform opengl"
 PKG_PRIORITY="optional"
 PKG_SECTION=""
 PKG_SHORTDESC="visualization.shadertoy"
@@ -34,12 +34,8 @@ PKG_AUTORECONF="no"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.player.musicviz"
 
-if [ ! "$OPENGL" = "no" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL glew"
-fi
-
-if [ "$OPENGLES_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
+if [ "$OPENGL" = "mesa" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glew"
 fi
 
 configure_target() {

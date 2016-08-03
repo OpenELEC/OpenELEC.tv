@@ -40,11 +40,9 @@ if [ "$DISPLAYSERVER" = "x11" ] ; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext libXrender"
 fi
 
-if [ "$OPENGL_SUPPORT" = "yes" ] ; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mesa glu"
-fi
-
-if [ "$OPENGL" = "no" ]; then
+if [ "$OPENGL" = "mesa" ] ; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET opengl glu"
+else
   EXTRAOPTS="--without-opengl"
 fi
 

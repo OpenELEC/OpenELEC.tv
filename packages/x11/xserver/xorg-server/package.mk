@@ -34,8 +34,8 @@ PKG_AUTORECONF="yes"
 
 get_graphicdrivers
 
-if [ ! "$OPENGL" = "no" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glproto $OPENGL libepoxy glu"
+if [ "$OPENGL" = "mesa" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glproto opengl libepoxy glu"
   XORG_MESA="--enable-glx --enable-dri --enable-glamor"
 else
   XORG_MESA="--disable-glx --disable-dri --disable-glamor"

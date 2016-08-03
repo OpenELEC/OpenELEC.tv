@@ -34,7 +34,7 @@ PKG_AUTORECONF="no"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.player.musicviz"
 
-if [ "$OPENGL" = "no" ] ; then
+if [ ! "$OPENGL" = "mesa" ] ; then
   exit 0
 fi
 

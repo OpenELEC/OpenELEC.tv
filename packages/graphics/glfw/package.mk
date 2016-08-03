@@ -32,7 +32,7 @@ PKG_LONGDESC="glfw:"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$OPENGL" = "no" ] ; then
+if [ ! "$OPENGL" = "mesa" ] ; then
   exit 0
 fi
 

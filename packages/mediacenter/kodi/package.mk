@@ -21,7 +21,7 @@ PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_DEPENDS_TARGET="toolchain kodi:host xmlstarlet:host Python zlib systemd pciutils lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib"
+PKG_DEPENDS_TARGET="toolchain kodi:host xmlstarlet:host Python zlib systemd pciutils lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib opengl"
 PKG_DEPENDS_HOST="lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -60,20 +60,12 @@ else
   KODI_XORG="--disable-x11"
 fi
 
-if [ ! "$OPENGL" = "no" ]; then
+if [ "$OPENGL" = "mesa" ]; then
 # for OpenGL (GLX) support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL glu"
-  KODI_OPENGL="--enable-gl"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glu"
+  KODI_OPENGL="--enable-gl --disable-gles"
 else
-  KODI_OPENGL="--disable-gl"
-fi
-
-if [ "$OPENGLES_SUPPORT" = yes ]; then
-# for OpenGL-ES support
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
-  KODI_OPENGLES="--enable-gles"
-else
-  KODI_OPENGLES="--disable-gles"
+  KODI_OPENGL="--disable-gl --enable-gles"
 fi
 
 if [ "$ALSA_SUPPORT" = yes ]; then
@@ -246,7 +238,6 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            --disable-debug \
                            --disable-optimizations \
                            $KODI_OPENGL \
-                           $KODI_OPENGLES \
                            $KODI_OPENMAX \
                            $KODI_VDPAU \
                            $KODI_VAAPI \

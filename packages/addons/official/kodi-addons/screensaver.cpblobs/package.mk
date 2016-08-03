@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/notspiff/screensaver.cpblobs"
 PKG_GIT_URL="https://github.com/notspiff/screensaver.cpblobs"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain kodi-platform soil $OPENGL"
+PKG_DEPENDS_TARGET="toolchain kodi-platform soil opengl"
 PKG_PRIORITY="optional"
 PKG_SECTION=""
 PKG_SHORTDESC="screensaver.cpblobs"
@@ -34,7 +34,7 @@ PKG_AUTORECONF="no"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.ui.screensaver"
 
-if [ "$OPENGL" = "no" ] ; then
+if [ ! "$OPENGL" = "mesa" ] ; then
   exit 0
 fi
 
