@@ -1,6 +1,6 @@
-diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/resource.language.en_gb/resources/strings.po
---- a/addons/resource.language.en_gb/resources/strings.po	2016-04-15 18:52:10.000000000 +0200
-+++ codec/addons/resource.language.en_gb/resources/strings.po	2016-05-22 11:15:24.342839404 +0200
+diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec2/addons/resource.language.en_gb/resources/strings.po
+--- a/addons/resource.language.en_gb/resources/strings.po	2016-04-17 14:05:15.000000000 +0200
++++ codec2/addons/resource.language.en_gb/resources/strings.po	2016-08-03 20:04:52.750165392 +0200
 @@ -8333,7 +8333,13 @@
  msgid "IMX - Fast motion (double)"
  msgstr ""
@@ -16,9 +16,9 @@ diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/res
  
  #: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
  msgctxt "#16400"
-diff -Nur a/configure.ac codec/configure.ac
---- a/configure.ac	2016-04-15 18:52:10.000000000 +0200
-+++ codec/configure.ac	2016-05-03 21:53:55.762853622 +0200
+diff -Nur a/configure.ac codec2/configure.ac
+--- a/configure.ac	2016-08-03 19:58:43.996813544 +0200
++++ codec2/configure.ac	2016-08-03 20:04:52.750165392 +0200
 @@ -513,7 +513,7 @@
  
  AC_ARG_ENABLE([codec],
@@ -28,7 +28,7 @@ diff -Nur a/configure.ac codec/configure.ac
    [add_codecs=$enableval],
    [add_codecs=no])
  
-@@ -1867,6 +1867,10 @@
+@@ -1876,6 +1876,10 @@
      *libstagefright*)
          XB_ADD_CODEC([LIBSTAGEFRIGHT], [libstagefright], [$codecs])
          ;;
@@ -39,9 +39,9 @@ diff -Nur a/configure.ac codec/configure.ac
      *imxvpu*)
        AC_CHECK_HEADER([imx-mm/vpu/vpu_wrapper.h],, AC_MSG_ERROR($missing_headers))
        AC_CHECK_LIB([vpu], main, LIBS="$LIBS -lfslvpuwrap -lvpu -lg2d", AC_MSG_ERROR($missing_library))
-diff -Nur a/system/settings/sunxi.xml codec/system/settings/sunxi.xml
+diff -Nur a/system/settings/sunxi.xml codec2/system/settings/sunxi.xml
 --- a/system/settings/sunxi.xml	1970-01-01 01:00:00.000000000 +0100
-+++ codec/system/settings/sunxi.xml	2016-05-03 21:53:55.762853622 +0200
++++ codec2/system/settings/sunxi.xml	2016-08-03 20:04:52.750165392 +0200
 @@ -0,0 +1,17 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<settings>
@@ -60,9 +60,9 @@ diff -Nur a/system/settings/sunxi.xml codec/system/settings/sunxi.xml
 +    </category>
 +  </section>
 +</settings>
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
---- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-05-03 21:53:55.762853622 +0200
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec2/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+--- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-08-03 20:04:52.750165392 +0200
 @@ -40,6 +40,7 @@
  #if defined(HAS_IMXVPU)
  #include "Video/DVDVideoCodecIMX.h"
@@ -97,10 +97,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/
  #if defined(TARGET_DARWIN_OSX)
    if (!hint.software && CSettings::GetInstance().GetBool(CSettings::SETTING_VIDEOPLAYER_USEVDA) && !g_advancedSettings.m_useFfmpegVda)
    {
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-06-02 22:32:11.767572151 +0200
-@@ -0,0 +1,882 @@
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-08-03 20:22:44.413552536 +0200
+@@ -0,0 +1,892 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -787,6 +787,16 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +  if(m_instances == 0)
 +    return;
 +  
++  if(m_last != NULL)
++  {
++    CSingleLock lk(m_decodersLock);
++    
++    if(m_decoders.find(m_last->pVideoCodec) == m_decoders.end())
++    { 
++      SAFE_RELEASE(m_last);
++    }
++  }
++  
 +  if ((m_deinterlace) && (m_last != NULL) &&
 +      (m_difd != -1) && (buffer->pPicture->ePixelFormat == PIXEL_FORMAT_NV21))
 +  {
@@ -983,9 +993,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +    ReturnPicture(decoder, picture);
 +  }
 +}
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-05-19 21:39:50.743291847 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-08-03 20:04:52.753498726 +0200
 @@ -0,0 +1,124 @@
 +#pragma once
 +/*
@@ -1111,9 +1121,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbm
 +};
 +
 +extern CSunxiContext g_SunxiContext;
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-05-03 21:53:55.766186955 +0200
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-08-03 20:04:52.753498726 +0200
 @@ -52,6 +52,7 @@
  class CDVDMediaCodecInfo;
  class CDVDVideoCodecIMXBuffer;
@@ -1133,9 +1143,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec/xbmc/core
  
    };
  
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
---- a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-05-03 21:53:55.766186955 +0200
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-08-03 20:04:52.753498726 +0200
 @@ -23,6 +23,9 @@
  ifeq (@USE_IMXVPU@,1)
  SRCS += DVDVideoCodecIMX.cpp
@@ -1146,9 +1156,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec/xbmc/cores/dv
  ifeq (@USE_LIBAMCODEC@,1)
  SRCS += AMLCodec.cpp
  SRCS += DVDVideoCodecAmlogic.cpp
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	1970-01-01 01:00:00.000000000 +0100
-+++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	2016-05-05 19:33:02.000000000 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	2016-08-03 20:04:52.753498726 +0200
 @@ -0,0 +1,388 @@
 +#ifndef __SUNXI_DISPLAY_H__
 +#define __SUNXI_DISPLAY_H__
@@ -1538,9 +1548,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec/xbmc/cor
 +
 +#endif
 +
-diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
---- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-05-03 21:53:55.766186955 +0200
+diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec2/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
+--- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-08-03 20:04:52.753498726 +0200
 @@ -931,6 +931,7 @@
      case RENDER_FMT_MEDIACODECSURFACE:return "MEDIACODECSURFACE";
      case RENDER_FMT_IMXMAP:    return "IMXMAP";
@@ -1549,9 +1559,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec/xbmc/cores/dvdplayer/D
      case RENDER_FMT_NONE:      return "NONE";
    }
    return "UNKNOWN";
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
---- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-05-22 11:17:04.179506939 +0200
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
+--- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-08-03 20:04:52.753498726 +0200
 @@ -93,6 +93,10 @@
  #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
  #endif
@@ -1811,9 +1821,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/Vid
      return false;
    else
      return true;
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
---- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-05-03 21:53:55.769520288 +0200
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
+--- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-08-03 20:04:52.753498726 +0200
 @@ -45,6 +45,7 @@
  #ifdef HAS_IMXVPU
  class CDVDVideoCodecIMXBuffer;
@@ -1871,9 +1881,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec/xbmc/cores/Video
    };
  
    typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];
-diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec/xbmc/cores/VideoRenderers/RenderFormats.h
---- a/xbmc/cores/VideoRenderers/RenderFormats.h	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/VideoRenderers/RenderFormats.h	2016-05-03 21:53:55.769520288 +0200
+diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec2/xbmc/cores/VideoRenderers/RenderFormats.h
+--- a/xbmc/cores/VideoRenderers/RenderFormats.h	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/VideoRenderers/RenderFormats.h	2016-08-03 20:04:52.753498726 +0200
 @@ -43,6 +43,7 @@
    RENDER_FMT_MEDIACODECSURFACE,
    RENDER_FMT_IMXMAP,
@@ -1882,9 +1892,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec/xbmc/cores/VideoRend
  };
  
  struct CRenderInfo
-diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec/xbmc/cores/VideoRenderers/RenderManager.cpp
---- a/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-05-03 21:53:55.769520288 +0200
+diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec2/xbmc/cores/VideoRenderers/RenderManager.cpp
+--- a/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-08-03 20:04:52.753498726 +0200
 @@ -1029,6 +1029,10 @@
    else if(pic.format == RENDER_FMT_MMAL)
      m_pRenderer->AddProcessor(pic.MMALBuffer, index);
@@ -1896,10 +1906,10 @@ diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec/xbmc/cores/VideoRe
  
    m_pRenderer->ReleaseImage(index, false);
  
-diff -Nur a/xbmc/settings/Settings.cpp codec/xbmc/settings/Settings.cpp
---- a/xbmc/settings/Settings.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/settings/Settings.cpp	2016-05-03 21:53:55.769520288 +0200
-@@ -800,6 +800,9 @@
+diff -Nur a/xbmc/settings/Settings.cpp codec2/xbmc/settings/Settings.cpp
+--- a/xbmc/settings/Settings.cpp	2016-08-03 19:58:43.960146875 +0200
++++ codec2/xbmc/settings/Settings.cpp	2016-08-03 20:04:52.753498726 +0200
+@@ -812,6 +812,9 @@
  #elif defined(HAS_IMXVPU)
    if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
      CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
@@ -1909,9 +1919,9 @@ diff -Nur a/xbmc/settings/Settings.cpp codec/xbmc/settings/Settings.cpp
  #elif defined(TARGET_LINUX)
    if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
      CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
-diff -Nur a/xbmc/settings/VideoSettings.h codec/xbmc/settings/VideoSettings.h
---- a/xbmc/settings/VideoSettings.h	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/settings/VideoSettings.h	2016-05-22 11:16:08.506173121 +0200
+diff -Nur a/xbmc/settings/VideoSettings.h codec2/xbmc/settings/VideoSettings.h
+--- a/xbmc/settings/VideoSettings.h	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/settings/VideoSettings.h	2016-08-03 20:04:52.753498726 +0200
 @@ -74,6 +74,8 @@
  
    VS_INTERLACEMETHOD_IMX_FASTMOTION = 29,
@@ -1921,9 +1931,9 @@ diff -Nur a/xbmc/settings/VideoSettings.h codec/xbmc/settings/VideoSettings.h
  
    VS_INTERLACEMETHOD_MAX // do not use and keep as last enum value.
  };
-diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
---- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-04-15 18:52:10.000000000 +0200
-+++ codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-05-22 11:16:25.629506603 +0200
+diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec2/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
+--- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-04-17 14:05:15.000000000 +0200
++++ codec2/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-08-03 20:04:52.753498726 +0200
 @@ -274,6 +274,7 @@
    entries.push_back(std::make_pair(16333, VS_INTERLACEMETHOD_MMAL_BOB_HALF));
    entries.push_back(std::make_pair(16334, VS_INTERLACEMETHOD_IMX_FASTMOTION));
