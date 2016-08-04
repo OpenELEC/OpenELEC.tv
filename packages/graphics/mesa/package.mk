@@ -65,7 +65,7 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --disable-selinux \
                            --enable-opengl \
                            --disable-gles1 \
-                           --disable-gles2 \
+                           --enable-gles2 \
                            --enable-dri \
                            --enable-dri3 \
                            --enable-glx \
