@@ -81,69 +81,45 @@ elif [ "$TARGET_FLOAT" = "hard" ]; then
   FLOAT="hardfp"
 fi
 
+if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" ]; then
+  OPENGL_INCLUDES="usr/include/*"
+  OPENGL_LIBRARYS="usr/lib/*.so*"
+elif [ "$OPENGL" = "imx-gpu-viv" ]; then
+  OPENGL_INCLUDES="$FLOAT/gpu-core/usr/include/* \
+                   $FLOAT/g2d/usr/include/*"
+  OPENGL_LIBRARYS="$FLOAT/gpu-core/usr/lib/libEGL-fb.so \
+                   $FLOAT/gpu-core/usr/lib/libEGL.so* \
+                   $FLOAT/gpu-core/usr/lib/libGLES_CL.so* \
+                   $FLOAT/gpu-core/usr/lib/libGLES_CM.so* \
+                   $FLOAT/gpu-core/usr/lib/libGLESv1_CL.so* \
+                   $FLOAT/gpu-core/usr/lib/libGLESv1_CM.so* \
+                   $FLOAT/gpu-core/usr/lib/libGLESv2-fb.so \
+                   $FLOAT/gpu-core/usr/lib/libGLESv2.so* \
+                   $FLOAT/gpu-core/usr/lib/libGAL-fb.so \
+                   $FLOAT/gpu-core/usr/lib/libGAL.so* \
+                   $FLOAT/gpu-core/usr/lib/libGAL_egl.fb.so \
+                   $FLOAT/gpu-core/usr/lib/libGAL_egl.so* \
+                   $FLOAT/gpu-core/usr/lib/libVIVANTE-fb.so \
+                   $FLOAT/gpu-core/usr/lib/libVIVANTE.so* \
+                   $FLOAT/gpu-core/usr/lib/libOpenCL.so \
+                   $FLOAT/gpu-core/usr/lib/libVSC.so \
+                   $FLOAT/g2d/usr/lib/libg2d*.so*"
+fi
+
 make_target() {
  : # nothing todo
 }
 
-if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" ]; then
-  makeinstall_target() {
-    mkdir -p $SYSROOT_PREFIX/usr/include
-      cp -PR usr/include/* $SYSROOT_PREFIX/usr/include
+makeinstall_target() {
+  mkdir -p $SYSROOT_PREFIX/usr/include
+    cp -PRv $OPENGL_INCLUDES $SYSROOT_PREFIX/usr/include
 
-    mkdir -p $SYSROOT_PREFIX/usr/lib
-      cp -PR usr/lib/*.so* $SYSROOT_PREFIX/usr/lib
+  mkdir -p $SYSROOT_PREFIX/usr/lib
+    cp -PRv $OPENGL_LIBRARYS $SYSROOT_PREFIX/usr/lib
 
-    mkdir -p $INSTALL/usr/lib
-      cp -PR usr/lib/*.so* $INSTALL/usr/lib
-  }
-elif [ "$OPENGL" = "imx-gpu-viv" ]; then
-  makeinstall_target() {
-    mkdir -p $SYSROOT_PREFIX/usr/include
-      cp -PRv $FLOAT/gpu-core/usr/include/* $SYSROOT_PREFIX/usr/include
-      cp -PRv $FLOAT/g2d/usr/include/* $SYSROOT_PREFIX/usr/include
-
-    mkdir -p $SYSROOT_PREFIX/usr/lib
-      cp -PRv $FLOAT/gpu-core/usr/lib/libEGL-fb.so \
-              $FLOAT/gpu-core/usr/lib/libEGL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLES_CL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLES_CM.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv1_CL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv1_CM.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv2-fb.so \
-              $FLOAT/gpu-core/usr/lib/libGLESv2.so* \
-              $FLOAT/gpu-core/usr/lib/libGAL-fb.so \
-              $FLOAT/gpu-core/usr/lib/libGAL.so* \
-              $FLOAT/gpu-core/usr/lib/libGAL_egl.fb.so \
-              $FLOAT/gpu-core/usr/lib/libGAL_egl.so* \
-              $FLOAT/gpu-core/usr/lib/libVIVANTE-fb.so \
-              $FLOAT/gpu-core/usr/lib/libVIVANTE.so* \
-              $FLOAT/gpu-core/usr/lib/libOpenCL.so \
-              $FLOAT/gpu-core/usr/lib/libVSC.so \
-              $FLOAT/g2d/usr/lib/libg2d*.so* \
-              $SYSROOT_PREFIX/usr/lib
-
-    mkdir -p $INSTALL/usr/lib
-      cp -PRv $FLOAT/gpu-core/usr/lib/libEGL-fb.so \
-              $FLOAT/gpu-core/usr/lib/libEGL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLES_CL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLES_CM.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv1_CL.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv1_CM.so* \
-              $FLOAT/gpu-core/usr/lib/libGLESv2-fb.so \
-              $FLOAT/gpu-core/usr/lib/libGLESv2.so* \
-              $FLOAT/gpu-core/usr/lib/libGLSLC.so* \
-              $FLOAT/gpu-core/usr/lib/libGAL-fb.so \
-              $FLOAT/gpu-core/usr/lib/libGAL.so* \
-              $FLOAT/gpu-core/usr/lib/libGAL_egl.fb.so \
-              $FLOAT/gpu-core/usr/lib/libGAL_egl.so* \
-              $FLOAT/gpu-core/usr/lib/libVIVANTE-fb.so \
-              $FLOAT/gpu-core/usr/lib/libVIVANTE.so* \
-              $FLOAT/gpu-core/usr/lib/libOpenCL.so \
-              $FLOAT/gpu-core/usr/lib/libVSC.so \
-              $FLOAT/g2d/usr/lib/libg2d*.so* \
-              $INSTALL/usr/lib
-  }
-fi
+  mkdir -p $INSTALL/usr/lib
+    cp -PRv $OPENGL_LIBRARYS $INSTALL/usr/lib
+}
 
 if [ ! "$OPENGL" = "mesa" ]; then
   post_install() {
