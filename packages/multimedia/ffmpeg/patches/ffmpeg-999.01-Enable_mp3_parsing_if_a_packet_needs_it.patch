@@ -1,0 +1,35 @@
+From a59ca3ca161e87f33800bc081aee8271bd03d0a5 Mon Sep 17 00:00:00 2001
+From: Michael Niedermayer <michael@niedermayer.cc>
+Date: Sat, 16 Jul 2016 23:27:54 +0200
+Subject: [PATCH] avformat/mov: Enable mp3 parsing if a packet needs it
+
+Fixes Ticket5689
+
+Signed-off-by: Michael Niedermayer <michael@niedermayer.cc>
+---
+ libavformat/mov.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/libavformat/mov.c b/libavformat/mov.c
+index 33ee799..7266fd0 100644
+--- a/libavformat/mov.c
++++ b/libavformat/mov.c
+@@ -43,6 +43,7 @@
+ #include "libavutil/sha.h"
+ #include "libavutil/timecode.h"
+ #include "libavcodec/ac3tab.h"
++#include "libavcodec/mpegaudiodecheader.h"
+ #include "avformat.h"
+ #include "internal.h"
+ #include "avio_internal.h"
+@@ -5222,6 +5223,10 @@ static int mov_read_packet(AVFormatContext *s, AVPacket *pkt)
+                 return ret;
+         }
+ #endif
++        if (st->codecpar->codec_id == AV_CODEC_ID_MP3 && !st->need_parsing && pkt->size > 4) {
++            if (ff_mpa_check_header(AV_RB32(pkt->data)) < 0)
++                st->need_parsing = AVSTREAM_PARSE_FULL;
++        }
+     }
+ 
+     pkt->stream_index = sc->ffindex;
