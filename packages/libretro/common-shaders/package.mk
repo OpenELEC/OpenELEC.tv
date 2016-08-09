@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="common-shaders"
-PKG_VERSION="68cbaca"
+PKG_VERSION="7b403c8"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
