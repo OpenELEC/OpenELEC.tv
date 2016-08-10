@@ -33,6 +33,10 @@ PKG_LONGDESC="netbsd-curses: netbsd-libcurses portable edition"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+# remove some problematic *FLAGS
+  export CFLAGS=`echo $CFLAGS | sed -e "s|-D_FORTIFY_SOURCE=.||g"`
+  export LDFLAGS=`echo $LDFLAGS | sed -e "s|-D_FORTIFY_SOURCE=.||g"`
+
 make_target() {
   make HOSTCC="$HOST_CC" PREFIX=/usr all-static
 }
