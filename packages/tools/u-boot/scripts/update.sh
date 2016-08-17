@@ -61,7 +61,7 @@ fi
       cp -p $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex $BOOT_ROOT/script.bin
     fi
     echo "*** updating u-boot image for board  $SYSTEM_TYPE ..."
-    dd if=$SYSTEM_ROOT/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
+    dd if=$SYSTEM_ROOT/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$BOOT_DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
   elif [ "$SYSTEM_TYPE" = "matrix" ]; then
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_TYPE.imx ]; then
       echo "*** updating u-boot image in eMMC ..."
