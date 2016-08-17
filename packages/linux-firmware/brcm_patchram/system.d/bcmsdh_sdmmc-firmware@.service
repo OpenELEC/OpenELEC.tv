@@ -1,0 +1,12 @@
+# aml: /devices/platform/aml_sdio.0/mmc_host/sdio/sdio:0001/sdio:0001:1
+# aml: /sys/bus/sdio/drivers/bcmsdh_sdmmc/
+
+[Unit]
+Description=Broadcom sdio firmware update for %I
+ConditionPathExists=/dev/ttyS1
+ConditionPathExists=/sys/bus/sdio/drivers/bcmsdh_sdmmc
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/bin/brcm_patchram_plus --patchram /lib/firmware/brcm/%I.hcd --baudrate 2000000 --use_baudrate_for_download /dev/ttyS1 --enable_hci --no2bytes --tosleep=50000
