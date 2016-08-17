@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="wlan-firmware"
-PKG_VERSION="5d07595"
+PKG_VERSION="011015e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Free-to-use"
 PKG_SITE="https://github.com/OpenELEC/wlan-firmware"
 PKG_GIT_URL="https://github.com/OpenELEC/wlan-firmware.git"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain brcm_patchram"
 PKG_PRIORITY="optional"
 PKG_SECTION="firmware"
 PKG_SHORTDESC="wlan-firmware: firmwares for various WLAN drivers"
@@ -39,4 +39,8 @@ make_target() {
 
 makeinstall_target() {
   DESTDIR=$INSTALL ./install
+}
+
+post_install() {
+  enable_service brcmfmac_sdio-firmware.service
 }
