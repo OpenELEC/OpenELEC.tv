@@ -46,7 +46,7 @@ case "$LINUX" in
     PKG_GIT_BRANCH="raspberry-rpi-4.7.y"
     ;;
   *)
-    PKG_VERSION="4.7"
+    PKG_VERSION="4.7.1"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
