@@ -18,22 +18,23 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
+PKG_NAME="beetle-saturn"
+PKG_VERSION="a2d77c3"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch uzebox mgba o2em puae snes9x picodrive 81 yabause hatari dosbox mame2003 gw-libretro fuse-libretro scummvm bluemsx beetle-sgx lutro 4do prosystem bsnes-mercury tyrquake 2048 virtualjaguar ppsspp beetle-saturn beetle-vb beetle-wswan desmume beetle-ngp beetle-pcfx beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine nestopia gambatte stella vbam libretro-ffmpeg"
-if [ "$ARCH" == "x86_64" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET reicast"
-fi
+PKG_LICENSE="GPLv2"
+PKG_SITE="https://github.com/libretro/mednafen-libretro"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+PKG_SECTION="libretro"
+PKG_SHORTDESC="Standalone port of Mednafen Saturn to libretro."
+PKG_LONGDESC="Standalone port of Mednafen Saturn to libretro."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp mednafen_saturn_libretro.so $INSTALL/usr/lib/libretro/
+}
