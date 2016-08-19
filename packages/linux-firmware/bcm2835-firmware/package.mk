@@ -67,7 +67,9 @@ makeinstall_target() {
 
   mkdir -p $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libbrcmEGL.so $INSTALL/usr/lib
+    ln -sf libbrcmEGL.so $INSTALL/usr/lib/libEGL.so
     cp -PRv $FLOAT/opt/vc/lib/libbrcmGLESv2.so $INSTALL/usr/lib
+    ln -sf libbrcmGLESv2.so $INSTALL/usr/lib/libGLESv2.so
     cp -PRv $FLOAT/opt/vc/lib/libbcm_host.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libcontainers.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libdtovl.so $INSTALL/usr/lib
