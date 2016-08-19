@@ -1,0 +1,27 @@
+From ddb8061e04a59c3d14a30e88a69cf695f1000753 Mon Sep 17 00:00:00 2001
+From: Stefan Saraev <stefan@saraev.ca>
+Date: Wed, 27 Apr 2016 11:21:51 +0300
+Subject: [PATCH] [skin] save skin settings early on exit
+
+---
+ xbmc/Application.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index 2ce90c4..f4c530d 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -2797,6 +2797,13 @@ void CApplication::Stop(int exitCode)
+     else
+       CLog::Log(LOGNOTICE, "Not saving settings (settings.xml is not present)");
+ 
++    // kodi may crash or deadlock during exit (shutdown / reboot) due to
++    // either a bug in core or misbehaving addons. so try saving
++    // skin settings early
++    CLog::Log(LOGNOTICE, "Saving skin settings");
++    if (g_SkinInfo != nullptr)
++      g_SkinInfo->SaveSettings();
++
+     m_bStop = true;
+     m_AppFocused = false;
+     m_ExitCode = exitCode;
