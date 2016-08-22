@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,22 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="Generic"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch uzebox mgba o2em puae snes9x picodrive 81 yabause hatari dosbox mame2003 gw-libretro fuse-libretro scummvm bluemsx beetle-sgx lutro 4do prosystem bsnes-mercury tyrquake 2048 virtualjaguar ppsspp beetle-vb beetle-wswan desmume beetle-ngp beetle-pcfx beetle-psx-hw beetle-psx mupen64plus vecx snes9x-next dinothawr prboom beetle-pce fba handy genesis-plus-gx nxengine nestopia gambatte stella vbam libretro-ffmpeg"
-if [ "$ARCH" == "x86_64" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET reicast beetle-saturn"
-fi
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
-PKG_LONGDESC=""
+echo "getting sources..."
+  if [ ! -d beetle-psx.git ]; then
+    git clone https://github.com/libretro/beetle-psx-libretro.git -b master beetle-psx-hw.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd beetle-psx-hw.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
+echo "copying sources..."
+  rm -rf beetle-psx-$GIT_REV
+  cp -R beetle-psx-hw.git beetle-psx-hw-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf beetle-psx-hw-$GIT_REV/.git
+  rm beetle-psx-hw-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf beetle-psx-hw-$GIT_REV.tar.xz beetle-psx-hw-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf beetle-psx-hw-$GIT_REV
