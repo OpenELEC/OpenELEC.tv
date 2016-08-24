@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,27 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d snes9x-next.git ]; then
-    git clone https://github.com/libretro/snes9x-next.git -b master snes9x-next.git
-  fi
+PKG_NAME="snes9x2010"
+PKG_VERSION="906065d"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="Non-commercial"
+PKG_SITE="https://github.com/libretro/snes9x-next"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="libretro"
+PKG_SHORTDESC="Snes9x 2010."
+PKG_LONGDESC="Snes9x 2010. Port of Snes9x 1.52+ to Libretro (previously called SNES9x Next). Rewritten in C and several optimizations and speedhacks."
 
-  cd snes9x-next.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
 
-echo "copying sources..."
-  rm -rf snes9x-next-$GIT_REV
-  cp -R snes9x-next.git snes9x-next-$GIT_REV
+make_target() {
+  make -f Makefile.libretro
+}
 
-echo "cleaning sources..."
-  rm -rf snes9x-next-$GIT_REV/.git
-  rm snes9x-next-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf snes9x-next-$GIT_REV.tar.xz snes9x-next-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf snes9x-next-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp snes9x2010_libretro.so $INSTALL/usr/lib/libretro/
+}

@@ -320,8 +320,8 @@
 "/tmp/cores/desmume_libretro.so;"\
 "/tmp/cores/desmume_libretro.so;"\
 "/tmp/cores/nestopia_libretro.so;"\
-"/tmp/cores/snes9x_next_libretro.so;"\
-"/tmp/cores/snes9x_next_libretro.so;"\
+"/tmp/cores/snes9x2010_libretro.so;"\
+"/tmp/cores/snes9x2010_libretro.so;"\
 "/tmp/cores/mednafen_vb_libretro.so;"\
 "/tmp/cores/tyrquake_libretro.so;"\
 "/tmp/cores/scummvm_libretro.so;"\
