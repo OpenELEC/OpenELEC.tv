@@ -300,7 +300,7 @@
 "/tmp/cores/nxengine_libretro.so;"\
 "/tmp/cores/bluemsx_libretro.so;"\
 "/tmp/cores/prboom_libretro.so;"\
-"/tmp/cores/fba_libretro.so;"\
+"/tmp/cores/fbalpha_libretro.so;"\
 "/tmp/cores/vecx_libretro.so;"\
 "/tmp/cores/lutro_libretro.so;"\
 "/tmp/cores/o2em_libretro.so;"\

@@ -1,4 +1,3 @@
-#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -19,26 +18,31 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-echo "getting sources..."
-  if [ ! -d fba.git ]; then
-    git clone https://github.com/libretro/libretro-fba -b master fba.git
+PKG_NAME="fbalpha"
+PKG_VERSION="25ed7a6"
+PKG_REV="1"
+PKG_ARCH="any"
+PKG_LICENSE="Non-commercial"
+PKG_SITE="https://github.com/libretro/fbalpha"
+PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_PRIORITY="optional"
+PKG_SECTION="libretro"
+PKG_SHORTDESC="Port of Final Burn Alpha to Libretro (v0.2.97.38)."
+PKG_LONGDESC="Currently, FB Alpha supports games on Capcom CPS-1 and CPS-2 hardware, SNK Neo-Geo hardware, Toaplan hardware, Cave hardware, and various games on miscellaneous hardware. "
+
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
+
+make_target() {
+  if [ "$ARCH" == "arm" ]; then
+    make -f makefile.libretro profile=performance
+  else
+    make -f makefile.libretro profile=accuracy
   fi
+}
 
-  cd fba.git
-    git pull
-    GIT_REV=`git log -n1 --format=%h`
-  cd ..
-
-echo "copying sources..."
-  rm -rf fba-$GIT_REV
-  cp -R fba.git fba-$GIT_REV
-
-echo "cleaning sources..."
-  rm -rf fba-$GIT_REV/.git
-  rm fba-$GIT_REV/.gitignore
-
-echo "packing sources..."
-  tar cvJf fba-$GIT_REV.tar.xz fba-$GIT_REV
-
-echo "remove temporary sourcedir..."
-  rm -rf fba-$GIT_REV
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/lib/libretro
+  cp fbalpha_libretro.so $INSTALL/usr/lib/libretro/
+}

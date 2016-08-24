@@ -156,6 +156,13 @@ makeinstall_target() {
   # Playlists
   echo "playlist_names = \"$RA_PLAYLIST_NAMES\"" >> $INSTALL/etc/retroarch.cfg
   echo "playlist_cores = \"$RA_PLAYLIST_CORES\"" >> $INSTALL/etc/retroarch.cfg
+
+  # Gamegirl
+  if [ "$PROJECT" == "Gamegirl" ]; then
+    echo "xmb_theme = 3" >> $INSTALL/etc/retroarch.cfg
+    echo "xmb_menu_color_theme = 9" >> $INSTALL/etc/retroarch.cfg
+    echo "video_font_size = 10" >> $INSTALL/etc/retroarch.cfg
+  fi
 }
 
 post_install() {  

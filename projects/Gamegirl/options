@@ -153,6 +153,7 @@
   # kernel image name
     KERNEL_NAME="kernel.img"
 
-  # override core assignation for snes, nes, and genesis
-    RA_PLAYLIST_CORES="/tmp/cores/stella_libretro.so;DETECT;/tmp/cores/prosystem_libretro.so;/tmp/cores/virtualjaguar_libretro.so;/tmp/cores/handy_libretro.so;/tmp/cores/hatari_libretro.so;/tmp/cores/mednafen_wswan_libretro.so;/tmp/cores/mednafen_wswan_libretro.so;/tmp/cores/bluemsx_libretro.so;/tmp/cores/prboom_libretro.so;/tmp/cores/fba_libretro.so;/tmp/cores/vecx_libretro.so;/tmp/cores/o2em_libretro.so;/tmp/cores/mame_libretro.so;/tmp/cores/bluemsx_libretro.so;/tmp/cores/bluemsx_libretro.so;/tmp/cores/mednafen_supergrafx_libretro.so;/tmp/cores/mednafen_pce_fast_libretro.so;/tmp/cores/fceumm_libretro.so;/tmp/cores/gpsp_libretro.so;/tmp/cores/gpsp_libretro.so;/tmp/cores/gambatte_libretro.so;/tmp/cores/gambatte_libretro.so;/tmp/cores/mupen64plus_libretro.so;/tmp/cores/desmume_libretro.so;/tmp/cores/desmume_libretro.so;/tmp/cores/desmume_libretro.so;/tmp/cores/desmume_libretro.so;/tmp/cores/fceumm_libretro.so;/tmp/cores/pocketsnes_libretro.so;/tmp/cores/pocketsnes_libretro.so;/tmp/cores/mednafen_vb_libretro.so;/tmp/cores/tyrquake_libretro.so;/tmp/cores/scummvm_libretro.so;/tmp/cores/picodrive_libretro.so;/tmp/cores/genesis_plus_gx_libretro.so;/tmp/cores/genesis_plus_gx_libretro.so;/tmp/cores/picodrive_libretro.so;/tmp/cores/picodrive_libretro.so;/tmp/cores/genesis_plus_gx_libretro.so;/tmp/cores/fuse_libretro.so;/tmp/cores/mednafen_ngp_libretro.so;/tmp/cores/mednafen_ngp_libretro.so;/tmp/cores/ppsspp_libretro.so;/tmp/cores/pcsx_rearmed_libretro.so"
-
+  # override some playlist core assignation
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//nestopia/fceumm}"
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//snes9x_next/pocketsnes}"
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//genesis_plus_gx/picodrive}"
