@@ -18,8 +18,8 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="catsfc"
-PKG_VERSION="f85531b"
+PKG_NAME="snes9x2005"
+PKG_VERSION="76b73ff"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Non-commercial"
@@ -28,8 +28,8 @@ PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="libretro"
-PKG_SHORTDESC="Super Nintendo/Super Famicom emulator."
-PKG_LONGDESC="Super Nintendo/Super Famicom emulator."
+PKG_SHORTDESC="Snes9x 2005."
+PKG_LONGDESC="Snes9x 2005. Port of SNES9x 1.43 for libretro (was previously called CAT SFC)."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
@@ -40,5 +40,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
-  cp catsfc_libretro.so $INSTALL/usr/lib/libretro/
+  cp snes9x2005_libretro.so $INSTALL/usr/lib/libretro/
 }

@@ -20,25 +20,25 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d catsfc.git ]; then
-    git clone https://github.com/libretro/catsfc.git -b master catsfc.git
+  if [ ! -d snes9x2005.git ]; then
+    git clone https://github.com/libretro/snes9x2005.git -b master snes9x2005.git
   fi
 
-  cd catsfc.git
+  cd snes9x2005.git
     git pull
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
 echo "copying sources..."
-  rm -rf catsfc-$GIT_REV
-  cp -R catsfc.git catsfc-$GIT_REV
+  rm -rf snes9x2005-$GIT_REV
+  cp -R snes9x2005.git snes9x2005-$GIT_REV
 
 echo "cleaning sources..."
-  rm -rf catsfc-$GIT_REV/.git
-  rm catsfc-$GIT_REV/.gitignore
+  rm -rf snes9x2005-$GIT_REV/.git
+  rm snes9x2005-$GIT_REV/.gitignore
 
 echo "packing sources..."
-  tar cvJf catsfc-$GIT_REV.tar.xz catsfc-$GIT_REV
+  tar cvJf snes9x2005-$GIT_REV.tar.xz snes9x2005-$GIT_REV
 
 echo "remove temporary sourcedir..."
-  rm -rf catsfc-$GIT_REV
+  rm -rf snes9x2005-$GIT_REV
