@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,23 +19,26 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="pocketsnes"
-PKG_VERSION="79f6be5"
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="Non-commercial"
-PKG_SITE="https://github.com/ToadKing/pocketsnes-libretro"
-PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain"
-PKG_PRIORITY="optional"
-PKG_SECTION="libretro"
-PKG_SHORTDESC="An ARM-based SNES emulator for libretro"
-PKG_LONGDESC="An ARM-based SNES emulator for libretro"
+echo "getting sources..."
+  if [ ! -d snes9x2002.git ]; then
+    git clone https://github.com/libretro/snes9x2002.git -b master snes9x2002.git
+  fi
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+  cd snes9x2002.git
+    git pull
+    GIT_REV=`git log -n1 --format=%h`
+  cd ..
 
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp libretro.so $INSTALL/usr/lib/libretro/pocketsnes_libretro.so
-}
+echo "copying sources..."
+  rm -rf snes9x2002-$GIT_REV
+  cp -R snes9x2002.git snes9x2002-$GIT_REV
+
+echo "cleaning sources..."
+  rm -rf snes9x2002-$GIT_REV/.git
+  rm snes9x2002-$GIT_REV/.gitignore
+
+echo "packing sources..."
+  tar cvJf snes9x2002-$GIT_REV.tar.xz snes9x2002-$GIT_REV
+
+echo "remove temporary sourcedir..."
+  rm -rf snes9x2002-$GIT_REV
