@@ -1,6 +1,6 @@
-diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/Makefile linux-4.6.1/arch/arm/boot/dts/overlays/Makefile
---- linux-4.6.1-old/arch/arm/boot/dts/overlays/Makefile	2016-06-04 12:03:45.289652775 +0000
-+++ linux-4.6.1/arch/arm/boot/dts/overlays/Makefile	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/arch/arm/boot/dts/overlays/Makefile	2016-07-29 09:31:11.178762674 +0100
++++ linux-4.6.1/arch/arm/boot/dts/overlays/Makefile	2016-07-29 09:35:50.378775589 +0100
 @@ -89,6 +89,8 @@
  dtbo-$(RPI_DT_OVERLAYS) += w1-gpio.dtbo
  dtbo-$(RPI_DT_OVERLAYS) += w1-gpio-pullup.dtbo
@@ -10,9 +10,9 @@ diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/Makefile linux-4.6.1/arch/a
  
  targets += dtbs dtbs_install
  targets += $(dtbo-y)
-diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/README linux-4.6.1/arch/arm/boot/dts/overlays/README
---- linux-4.6.1-old/arch/arm/boot/dts/overlays/README	2016-06-04 12:03:45.289652775 +0000
-+++ linux-4.6.1/arch/arm/boot/dts/overlays/README	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/arch/arm/boot/dts/overlays/README	2016-07-29 09:31:11.182762674 +0100
++++ linux-4.6.1/arch/arm/boot/dts/overlays/README	2016-07-29 09:35:50.378775589 +0100
 @@ -1079,6 +1079,11 @@
              Old touch display:
                  dtoverlay=tinylcd35,touch,touchgpio=3
@@ -25,9 +25,9 @@ diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/README linux-4.6.1/arch/arm
  
  Name:   uart1
  Info:   Enable uart1 in place of uart0
-diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/slice-overlay.dts linux-4.6.1/arch/arm/boot/dts/overlays/slice-overlay.dts
---- linux-4.6.1-old/arch/arm/boot/dts/overlays/slice-overlay.dts	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.6.1/arch/arm/boot/dts/overlays/slice-overlay.dts	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/arch/arm/boot/dts/overlays/slice-overlay.dts	1970-01-01 01:00:00.000000000 +0100
++++ linux-4.6.1/arch/arm/boot/dts/overlays/slice-overlay.dts	2016-07-29 09:35:50.378775589 +0100
 @@ -0,0 +1,171 @@
 +// Definitions for Slice hardware
 +/dts-v1/;
@@ -200,9 +200,9 @@ diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/slice-overlay.dts linux-4.6
 +    };
 +  };
 +};
-diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts linux-4.6.1/arch/arm/boot/dts/overlays/ws2812-overlay.dts
---- linux-4.6.1-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.6.1/arch/arm/boot/dts/overlays/ws2812-overlay.dts	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/arch/arm/boot/dts/overlays/ws2812-overlay.dts	1970-01-01 01:00:00.000000000 +0100
++++ linux-4.6.1/arch/arm/boot/dts/overlays/ws2812-overlay.dts	2016-07-29 09:35:50.378775589 +0100
 @@ -0,0 +1,33 @@
 +/dts-v1/;
 +/plugin/;
@@ -237,9 +237,9 @@ diff -ruN linux-4.6.1-old/arch/arm/boot/dts/overlays/ws2812-overlay.dts linux-4.
 +        num_leds =      <&ws2812>,"rpi,num_leds:0";
 +	};
 +};
-diff -ruN linux-4.6.1-old/arch/arm/configs/slice2708_defconfig linux-4.6.1/arch/arm/configs/slice2708_defconfig
---- linux-4.6.1-old/arch/arm/configs/slice2708_defconfig	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.6.1/arch/arm/configs/slice2708_defconfig	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/arch/arm/configs/slice2708_defconfig	1970-01-01 01:00:00.000000000 +0100
++++ linux-4.6.1/arch/arm/configs/slice2708_defconfig	2016-07-29 09:35:50.378775589 +0100
 @@ -0,0 +1,1201 @@
 +# CONFIG_ARM_PATCH_PHYS_VIRT is not set
 +CONFIG_PHYS_OFFSET=0
@@ -1442,9 +1442,9 @@ diff -ruN linux-4.6.1-old/arch/arm/configs/slice2708_defconfig linux-4.6.1/arch/
 +# CONFIG_CRYPTO_HW is not set
 +CONFIG_CRC_ITU_T=y
 +CONFIG_LIBCRC32C=y
-diff -ruN linux-4.6.1-old/drivers/misc/Kconfig linux-4.6.1/drivers/misc/Kconfig
---- linux-4.6.1-old/drivers/misc/Kconfig	2016-06-04 12:03:45.637652775 +0000
-+++ linux-4.6.1/drivers/misc/Kconfig	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/drivers/misc/Kconfig	2016-07-29 09:31:11.166762673 +0100
++++ linux-4.6.1/drivers/misc/Kconfig	2016-07-29 09:35:50.378775589 +0100
 @@ -4,6 +4,10 @@
  
  menu "Misc devices"
@@ -1456,9 +1456,9 @@ diff -ruN linux-4.6.1-old/drivers/misc/Kconfig linux-4.6.1/drivers/misc/Kconfig
  config SENSORS_LIS3LV02D
  	tristate
  	depends on INPUT
-diff -ruN linux-4.6.1-old/drivers/misc/Makefile linux-4.6.1/drivers/misc/Makefile
---- linux-4.6.1-old/drivers/misc/Makefile	2016-06-04 12:03:45.637652775 +0000
-+++ linux-4.6.1/drivers/misc/Makefile	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/drivers/misc/Makefile	2016-07-29 09:31:11.166762673 +0100
++++ linux-4.6.1/drivers/misc/Makefile	2016-07-29 09:35:50.378775589 +0100
 @@ -2,6 +2,7 @@
  # Makefile for misc devices that really don't fit anywhere else.
  #
@@ -1467,10 +1467,10 @@ diff -ruN linux-4.6.1-old/drivers/misc/Makefile linux-4.6.1/drivers/misc/Makefil
  obj-$(CONFIG_IBM_ASM)		+= ibmasm/
  obj-$(CONFIG_AD525X_DPOT)	+= ad525x_dpot.o
  obj-$(CONFIG_AD525X_DPOT_I2C)	+= ad525x_dpot-i2c.o
-diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.c
---- linux-4.6.1-old/drivers/misc/ws2812.c	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.6.1/drivers/misc/ws2812.c	2016-06-04 12:04:23.877652775 +0000
-@@ -0,0 +1,524 @@
+reverted:
+--- unpatched_linux/drivers/misc/ws2812.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-4.6.1/drivers/misc/ws2812.c	2016-07-29 09:40:19.434788035 +0100
+@@ -0,0 +1,533 @@
 +/*
 + * Raspberry Pi WS2812 PWM driver
 + *
@@ -1541,6 +1541,7 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +#include <linux/platform_device.h>
 +#include <linux/uaccess.h>
 +#include <linux/of.h>
++#include <linux/of_address.h>
 +#include <linux/gpio/consumer.h>
 +#include <asm-generic/ioctl.h>
 +
@@ -1548,22 +1549,22 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +
 +struct ws2812_state {
 +	struct device *        dev;
-+    struct cdev            cdev;
-+    struct class *         cl;
-+    struct dma_chan *      dma_chan;
++	struct cdev            cdev;
++	struct class *         cl;
++	struct dma_chan *      dma_chan;
 +	dma_addr_t dma_addr;
 +
-+    void __iomem *         ioaddr;
-+    phys_addr_t            phys_addr;
++	void __iomem *         ioaddr;
++	phys_addr_t            phys_addr;
 +
-+    uint8_t *              buffer;
-+    uint32_t *             pixbuf;
++	uint8_t *              buffer;
++	uint32_t *             pixbuf;
 +
-+    struct gpio_desc *     led_en;
++	struct gpio_desc *     led_en;
 +
-+    unsigned char          brightness;
-+    u32                    invert;
-+    u32                    num_leds;
++	unsigned char          brightness;
++	u32                    invert;
++	u32                    num_leds;
 +};
 +
 +#ifndef BCM2708_PERI_BASE
@@ -1622,18 +1623,18 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +	pwm_writel(state, 0,  PWM_DAT1);
 +
 +	reg = (1 << 0) | /* CH1EN */
-+	      (1 << 1) | /* serialiser */
-+	      (0 << 2) | /* don't repeat last word */
-+	      (0 << 3) | /* silence is zero */
-+	      ((state->invert ? 1 : 0) << 4) | /* polarity */
-+	      (1 << 5) | /* use fifo */
-+	      (1 << 6) | /* Clear fifo */
-+	      (1 << 7) | /* MSEN - Mask space enable */
-+	      ((state->invert ? 1 : 0) << 11); /* Silence bit = 1 */
++		  (1 << 1) | /* serialiser */
++		  (0 << 2) | /* don't repeat last word */
++		  (0 << 3) | /* silence is zero */
++		  ((state->invert ? 1 : 0) << 4) | /* polarity */
++		  (1 << 5) | /* use fifo */
++		  (1 << 6) | /* Clear fifo */
++		  (1 << 7) | /* MSEN - Mask space enable */
++		  ((state->invert ? 1 : 0) << 11); /* Silence bit = 1 */
 +	pwm_writel(state, reg, PWM_CTL);
 +	reg = (1 << 31) | /* DMA enabled */
-+	      (4 << 8)  | /* Threshold for panic */
-+	      (8 << 0);   /* Threshold for dreq */
++		  (4 << 8)  | /* Threshold for panic */
++		  (8 << 0);   /* Threshold for dreq */
 +	pwm_writel(state, reg, PWM_DMAC);
 +
 +	return 0;
@@ -1689,24 +1690,24 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +
 +int clear_leds(struct ws2812_state * state)
 +{
-+    int i;
++	int i;
 +
-+    for(i = 0; i < state->num_leds * BYTES_PER_LED; i++)
-+        state->buffer[i] = 0x88;
-+    for(i = 0; i < RESET_BYTES; i++)
-+        state->buffer[state->num_leds * BYTES_PER_LED + i] = 0;
++	for(i = 0; i < state->num_leds * BYTES_PER_LED; i++)
++		state->buffer[i] = 0x88;
++	for(i = 0; i < RESET_BYTES; i++)
++		state->buffer[state->num_leds * BYTES_PER_LED + i] = 0;
 +
-+    issue_dma(state, state->buffer, state->num_leds * BYTES_PER_LED + RESET_BYTES);
++	issue_dma(state, state->buffer, state->num_leds * BYTES_PER_LED + RESET_BYTES);
 +
 +	return 0;
 +}
 +
 +static int ws2812_open(struct inode *inode, struct file *file)
 +{
-+    struct ws2812_state * state;
-+    state  = container_of(inode->i_cdev, struct ws2812_state, cdev);
++	struct ws2812_state * state;
++	state  = container_of(inode->i_cdev, struct ws2812_state, cdev);
 +
-+    file->private_data = state;
++	file->private_data = state;
 +
 +	return 0;
 +}
@@ -1785,9 +1786,9 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +	int32_t *p_rgb;
 +	int8_t * p_buffer;
 +	int i, length, num_leds;
-+    struct ws2812_state * state = (struct ws2812_state *) filp->private_data;
++	struct ws2812_state * state = (struct ws2812_state *) filp->private_data;
 +
-+    num_leds = min(count/4, state->num_leds);
++	num_leds = min(count/4, state->num_leds);
 +
 +	if(copy_from_user(state->pixbuf, buf, num_leds * 4))
 +		return -EFAULT;
@@ -1797,25 +1798,25 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +	for(i = 0; i < num_leds; i++)
 +		p_buffer = led_encode(state, *p_rgb++, p_buffer);
 +
-+    /* Fill rest with '0' */
++	/* Fill rest with '0' */
 +	memset(p_buffer, 0x00, RESET_BYTES);
 +
 +	length = (int) p_buffer - (int) state->buffer + RESET_BYTES;
 +
 +	/* Setup DMA engine */
-+    issue_dma(state, state->buffer, length);
++	issue_dma(state, state->buffer, length);
 +
 +	return count;
 +}
 +
 +
 +struct file_operations ws2812_fops = {
-+    .owner = THIS_MODULE,
-+    .llseek = NULL,
-+    .read = NULL,
-+    .write = ws2812_write,
-+    .open = ws2812_open,
-+    .release = NULL,
++	.owner = THIS_MODULE,
++	.llseek = NULL,
++	.read = NULL,
++	.write = ws2812_write,
++	.open = ws2812_open,
++	.release = NULL,
 +};
 +
 +/*
@@ -1823,109 +1824,117 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 + */
 +static int ws2812_probe(struct platform_device *pdev)
 +{
-+    int ret;
-+    struct device *dev = &pdev->dev;
-+    struct device_node *node = dev->of_node;
-+    struct ws2812_state * state;
-+    struct dma_slave_config cfg =
-+    {
-+        .src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
-+        .dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
-+        .slave_id = PWM_DMA_DREQ,
-+        .direction = DMA_MEM_TO_DEV,
-+        .src_addr = 0,
-+    };
-+    struct resource *iomem;
++	int ret;
++	struct device *dev = &pdev->dev;
++	struct device_node *node = dev->of_node;
++	struct ws2812_state * state;
++	struct resource *iomem;
++	const __be32 *addr;
++	struct dma_slave_config cfg =
++	{
++		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
++		.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
++		.slave_id = PWM_DMA_DREQ,
++		.direction = DMA_MEM_TO_DEV,
++		.src_addr = 0,
++	};
 +
-+    if(node == NULL)
-+    {
-+        pr_err("Require device tree entry\n");
-+        goto fail;
-+    }
++	if(node == NULL)
++	{
++		pr_err("Require device tree entry\n");
++		goto fail;
++	}
 +
-+    state = kmalloc(sizeof(struct ws2812_state), GFP_KERNEL);
-+    if (!state) {
-+        pr_err("Can't allocate state\n");
-+        goto fail;
-+    }
++	state = kmalloc(sizeof(struct ws2812_state), GFP_KERNEL);
++	if (!state) {
++		pr_err("Can't allocate state\n");
++		goto fail;
++	}
 +
-+    state->dev = dev;
-+    state->brightness = 255;
++	state->dev = dev;
++	state->brightness = 255;
 +
-+    // Create character device interface /dev/ws2812
-+    if(alloc_chrdev_region(&devid, 0, 1, "ws2812") < 0)
-+    {
-+        pr_err("Unable to create chrdev region");
-+        goto fail_malloc;
-+    }
-+    if((state->cl = class_create(THIS_MODULE, "ws2812")) == NULL)
-+    {
-+        unregister_chrdev_region(devid, 1);
-+        pr_err("Unable to create class ws2812");
-+        goto fail_chrdev;
-+    }
-+    if(device_create(state->cl, NULL, devid, NULL, "ws2812") == NULL)
-+    {
-+        class_destroy(state->cl);
-+        unregister_chrdev_region(devid, 1);
-+        pr_err("Unable to create device ws2812");
-+        goto fail_class;
-+    }
++	// Create character device interface /dev/ws2812
++	if(alloc_chrdev_region(&devid, 0, 1, "ws2812") < 0)
++	{
++		pr_err("Unable to create chrdev region");
++		goto fail_malloc;
++	}
++	if((state->cl = class_create(THIS_MODULE, "ws2812")) == NULL)
++	{
++		unregister_chrdev_region(devid, 1);
++		pr_err("Unable to create class ws2812");
++		goto fail_chrdev;
++	}
++	if(device_create(state->cl, NULL, devid, NULL, "ws2812") == NULL)
++	{
++		class_destroy(state->cl);
++		unregister_chrdev_region(devid, 1);
++		pr_err("Unable to create device ws2812");
++		goto fail_class;
++	}
 +
-+    state->cdev.owner = THIS_MODULE;
-+    cdev_init(&state->cdev, &ws2812_fops);
++	state->cdev.owner = THIS_MODULE;
++	cdev_init(&state->cdev, &ws2812_fops);
 +
-+    if(cdev_add(&state->cdev, devid, 1)) {
-+        pr_err("CDEV failed\n");
-+        goto fail_device;
-+    }
++	if(cdev_add(&state->cdev, devid, 1)) {
++		pr_err("CDEV failed\n");
++		goto fail_device;
++	}
 +
-+    platform_set_drvdata(pdev, state);
++	platform_set_drvdata(pdev, state);
 +
-+    /* get parameters from device tree */
-+    of_property_read_u32(node,
-+                 "rpi,invert",
-+                 &state->invert);
-+    of_property_read_u32(node,
-+                 "rpi,num_leds",
-+                 &state->num_leds);
++	/* get parameters from device tree */
++	of_property_read_u32(node,
++				 "rpi,invert",
++				 &state->invert);
++	of_property_read_u32(node,
++				 "rpi,num_leds",
++				 &state->num_leds);
 +
-+    state->pixbuf = kmalloc(state->num_leds * sizeof(int), GFP_KERNEL);
-+    if(state->pixbuf == NULL)
-+    {
++	state->pixbuf = kmalloc(state->num_leds * sizeof(int), GFP_KERNEL);
++	if(state->pixbuf == NULL)
++	{
 +		pr_err("Failed to allocate internal buffer\n");
 +		goto fail_cdev;
 +	}
 +
-+    iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+    state->ioaddr = devm_ioremap_resource(dev, iomem);
-+    if (IS_ERR(state->ioaddr)) {
-+        goto fail_pixbuf;
-+    }
-+	pr_err("iomem->start = 0x%x\n", iomem->start);
-+    state->phys_addr = iomem->start + BCM2835_VCMMU_SHIFT;
++	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	state->ioaddr = devm_ioremap_resource(dev, iomem);
++	if (IS_ERR(state->ioaddr)) {
++		goto fail_pixbuf;
++	}
 +
-+    state->buffer = kmalloc(state->num_leds * BYTES_PER_LED + RESET_BYTES, GFP_KERNEL);
-+    if(state->buffer == NULL)
-+    {
++	addr = of_get_address(node, 0, NULL, NULL);
++	if (!addr) {
++		dev_err(dev, "could not get DMA-register address\n");
++		return -ENODEV;
++	}
++	state->phys_addr = be32_to_cpup(addr);
++	
++	pr_err("phys_addr = 0x%x\n", state->phys_addr);
++
++	state->buffer = kmalloc(state->num_leds * BYTES_PER_LED + RESET_BYTES, GFP_KERNEL);
++	if(state->buffer == NULL)
++	{
 +		pr_err("Failed to allocate internal buffer\n");
 +		goto fail_pixbuf;
 +	}
 +
-+    state->dma_chan = dma_request_slave_channel(dev, "pwm_dma");
-+    if(state->dma_chan == NULL)
-+    {
-+        pr_err("Failed to request DMA channel");
-+        goto fail_buffer;
-+    }
++	state->dma_chan = dma_request_slave_channel(dev, "pwm_dma");
++	if(state->dma_chan == NULL)
++	{
++		pr_err("Failed to request DMA channel");
++		goto fail_buffer;
++	}
 +
-+    /* request a DMA channel */
-+    cfg.dst_addr = state->phys_addr + PWM_FIFO1;
-+    ret = dmaengine_slave_config(state->dma_chan, &cfg);
-+    if (state->dma_chan < 0) {
-+        pr_err("Can't allocate DMA channel\n");
-+        goto fail_dma_init;
-+    }
++	/* request a DMA channel */
++	cfg.dst_addr = state->phys_addr + PWM_FIFO1;
++	ret = dmaengine_slave_config(state->dma_chan, &cfg);
++	if (state->dma_chan < 0) {
++		pr_err("Can't allocate DMA channel\n");
++		goto fail_dma_init;
++	}
 +	pwm_init(state);
 +
 +	// Enable the LED power
@@ -1933,61 +1942,61 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +
 +	clear_leds(state);
 +
-+    return 0;
++	return 0;
 +fail_dma_init:
-+    dma_release_channel(state->dma_chan);
++	dma_release_channel(state->dma_chan);
 +fail_buffer:
 +	kfree(state->buffer);
 +fail_pixbuf:
-+    kfree(state->pixbuf);
++	kfree(state->pixbuf);
 +fail_cdev:
-+    cdev_del(&state->cdev);
++	cdev_del(&state->cdev);
 +fail_device:
-+    device_destroy(state->cl, devid);
++	device_destroy(state->cl, devid);
 +fail_class:
-+    class_destroy(state->cl);
++	class_destroy(state->cl);
 +fail_chrdev:
-+    unregister_chrdev_region(devid, 1);
++	unregister_chrdev_region(devid, 1);
 +fail_malloc:
-+    kfree(state);
++	kfree(state);
 +fail:
 +
-+    return -1;
++	return -1;
 +}
 +
 +
 +static int ws2812_remove(struct platform_device *pdev)
 +{
-+    struct ws2812_state *state = platform_get_drvdata(pdev);
++	struct ws2812_state *state = platform_get_drvdata(pdev);
 +
-+    platform_set_drvdata(pdev, NULL);
++	platform_set_drvdata(pdev, NULL);
 +
-+    dma_release_channel(state->dma_chan);
-+    kfree(state->buffer);
-+    kfree(state->pixbuf);
-+    cdev_del(&state->cdev);
-+    device_destroy(state->cl, devid);
-+    class_destroy(state->cl);
-+    unregister_chrdev_region(devid, 1);
-+    kfree(state);
++	dma_release_channel(state->dma_chan);
++	kfree(state->buffer);
++	kfree(state->pixbuf);
++	cdev_del(&state->cdev);
++	device_destroy(state->cl, devid);
++	class_destroy(state->cl);
++	unregister_chrdev_region(devid, 1);
++	kfree(state);
 +
-+    return 0;
++	return 0;
 +}
 +
 +static const struct of_device_id ws2812_match[] = {
-+    { .compatible = "rpi,ws2812" },
-+    { }
++	{ .compatible = "rpi,ws2812" },
++	{ }
 +};
 +MODULE_DEVICE_TABLE(of, ws2812_match);
 +
 +static struct platform_driver ws2812_driver = {
-+    .probe      = ws2812_probe,
-+    .remove     = ws2812_remove,
-+    .driver     = {
-+        .name       = DRIVER_NAME,
-+        .owner      = THIS_MODULE,
-+        .of_match_table = ws2812_match,
-+    },
++	.probe      = ws2812_probe,
++	.remove     = ws2812_remove,
++	.driver     = {
++		.name       = DRIVER_NAME,
++		.owner      = THIS_MODULE,
++		.of_match_table = ws2812_match,
++	},
 +};
 +module_platform_driver(ws2812_driver);
 +
@@ -1995,14 +2004,13 @@ diff -ruN linux-4.6.1-old/drivers/misc/ws2812.c linux-4.6.1/drivers/misc/ws2812.
 +MODULE_DESCRIPTION("WS2812 PWM driver");
 +MODULE_LICENSE("GPL v2");
 +MODULE_AUTHOR("Gordon Hollingworth");
-diff -ruN linux-4.6.1-old/drivers/rtc/rtc-pcf8523.c linux-4.6.1/drivers/rtc/rtc-pcf8523.c
---- linux-4.6.1-old/drivers/rtc/rtc-pcf8523.c	2016-06-04 12:03:53.241652775 +0000
-+++ linux-4.6.1/drivers/rtc/rtc-pcf8523.c	2016-06-04 12:04:23.877652775 +0000
+reverted:
+--- unpatched_linux/drivers/rtc/rtc-pcf8523.c	2016-06-01 20:18:22.000000000 +0100
++++ linux-4.6.1/drivers/rtc/rtc-pcf8523.c	2016-07-29 09:35:50.378775589 +0100
 @@ -291,7 +291,13 @@
  	if (!pcf)
  		return -ENOMEM;
  
--	err = pcf8523_select_capacitance(client, true);
 +	if (of_property_read_bool(client->dev.of_node, "nxp,xtalcap-7pf")) {
 +		printk(KERN_ERR "PCF8523 - set 7pF crystal load");
 +		err = pcf8523_select_capacitance(client, false);
@@ -2010,12 +2018,13 @@ diff -ruN linux-4.6.1-old/drivers/rtc/rtc-pcf8523.c linux-4.6.1/drivers/rtc/rtc-
 +		printk(KERN_ERR "PCF8523 - set 12pF crystal load");
 +		err = pcf8523_select_capacitance(client, true);
 +	}
+-	err = pcf8523_select_capacitance(client, true);
  	if (err < 0)
  		return err;
  
-diff -ruN linux-4.6.1-old/sound/soc/bcm/Kconfig linux-4.6.1/sound/soc/bcm/Kconfig
---- linux-4.6.1-old/sound/soc/bcm/Kconfig	2016-06-04 12:04:04.309652775 +0000
-+++ linux-4.6.1/sound/soc/bcm/Kconfig	2016-06-04 12:06:59.125652775 +0000
+reverted:
+--- unpatched_linux/sound/soc/bcm/Kconfig	2016-07-29 09:31:11.218762676 +0100
++++ linux-4.6.1/sound/soc/bcm/Kconfig	2016-07-29 09:35:50.378775589 +0100
 @@ -100,3 +100,10 @@
          select SND_SOC_WM8741
          help
@@ -2027,9 +2036,9 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/Kconfig linux-4.6.1/sound/soc/bcm/Kconfi
 +	select SND_SOC_CS4265
 +	help
 +	  Say Y or M if you want to add support for Slice on-board sound.
-diff -ruN linux-4.6.1-old/sound/soc/bcm/Makefile linux-4.6.1/sound/soc/bcm/Makefile
---- linux-4.6.1-old/sound/soc/bcm/Makefile	2016-06-04 12:04:04.309652775 +0000
-+++ linux-4.6.1/sound/soc/bcm/Makefile	2016-06-04 12:07:33.209652775 +0000
+reverted:
+--- unpatched_linux/sound/soc/bcm/Makefile	2016-07-29 09:31:11.218762676 +0100
++++ linux-4.6.1/sound/soc/bcm/Makefile	2016-07-29 09:35:50.378775589 +0100
 @@ -17,6 +17,7 @@
  snd-soc-raspidac3-objs := raspidac3.o
  snd-soc-audioinjector-pi-soundcard-objs := audioinjector-pi-soundcard.o
@@ -2044,10 +2053,10 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/Makefile linux-4.6.1/sound/soc/bcm/Makef
  obj-$(CONFIG_SND_DIGIDAC1_SOUNDCARD) += snd-soc-digidac1-soundcard.o
 +obj-$(CONFIG_SND_BCM2708_SOC_SLICE) += snd-soc-slice.o
  
-diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.c
---- linux-4.6.1-old/sound/soc/bcm/slice.c	1970-01-01 00:00:00.000000000 +0000
-+++ linux-4.6.1/sound/soc/bcm/slice.c	2016-06-04 12:04:23.877652775 +0000
-@@ -0,0 +1,326 @@
+reverted:
+--- unpatched_linux/sound/soc/bcm/slice.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-4.6.1/sound/soc/bcm/slice.c	2016-07-29 09:35:50.378775589 +0100
+@@ -0,0 +1,340 @@
 +/*
 + * ASoC Driver for Slice on-board sound
 + *
@@ -2241,6 +2250,15 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.
 +	return 0;
 +}
 +
++static int snd_slice_params_fixup(struct snd_soc_pcm_runtime *rtd,
++            struct snd_pcm_hw_params *params)
++{
++printk(KERN_ERR "snd_slice_params_fixup called\n");
++    /* force 32 bit */
++    params_set_format(params, SNDRV_PCM_FORMAT_S32_LE);
++    return 0;
++}
++
 +/* machine stream operations */
 +static struct snd_soc_ops snd_slice_ops = {
 +	.hw_params = snd_slice_hw_params,
@@ -2268,6 +2286,10 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.
 +	{"Spdif", NULL, "SPDIF"},
 +};
 +
++static const struct snd_soc_pcm_stream snd_slice_params = {
++         .formats = SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_S24_LE,
++};
++
 +static struct snd_soc_dai_link snd_slice_dai[] = {
 +{
 +	.name		= "Slice",
@@ -2280,6 +2302,7 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.
 +				SND_SOC_DAIFMT_CBM_CFM,
 +	.ops		= &snd_slice_ops,
 +	.init		= snd_slice_init,
++    .be_hw_params_fixup = snd_slice_params_fixup,
 +},
 +};
 +
@@ -2374,3 +2397,49 @@ diff -ruN linux-4.6.1-old/sound/soc/bcm/slice.c linux-4.6.1/sound/soc/bcm/slice.
 +MODULE_AUTHOR("James Adams <james@fiveninjas.com>");
 +MODULE_DESCRIPTION("ASoC Driver for Slice on-board audio");
 +MODULE_LICENSE("GPL v2");
+reverted:
+--- unpatched_linux/sound/soc/codecs/cs4265.c	2016-06-01 20:18:22.000000000 +0100
++++ linux-4.6.1/sound/soc/codecs/cs4265.c	2016-07-29 09:35:50.378775589 +0100
+@@ -157,7 +157,7 @@
+ 	SOC_SINGLE("Validity Bit Control Switch", CS4265_SPDIF_CTL2,
+ 				3, 1, 0),
+ 	SOC_ENUM("SPDIF Mono/Stereo", spdif_mono_stereo_enum),
++	SOC_SINGLE("MMTLR Data Switch", CS4265_SPDIF_CTL2,
+-	SOC_SINGLE("MMTLR Data Switch", 0,
+ 				1, 1, 0),
+ 	SOC_ENUM("Mono Channel Select", spdif_mono_select_enum),
+ 	SND_SOC_BYTES("C Data Buffer", CS4265_C_DATA_BUFF, 24),
+@@ -199,8 +199,6 @@
+ 			SND_SOC_NOPM, 0, 0),
+ 	SND_SOC_DAPM_AIF_IN("DIN2", NULL,  0,
+ 			SND_SOC_NOPM, 0, 0),
+-	SND_SOC_DAPM_AIF_IN("TXIN", NULL,  0,
+-			CS4265_SPDIF_CTL2, 5, 1),
+ 
+ 	SND_SOC_DAPM_OUTPUT("LINEOUTL"),
+ 	SND_SOC_DAPM_OUTPUT("LINEOUTR"),
+@@ -384,7 +382,6 @@
+ static int cs4265_digital_mute(struct snd_soc_dai *dai, int mute)
+ {
+ 	struct snd_soc_codec *codec = dai->codec;
+-
+ 	if (mute) {
+ 		snd_soc_update_bits(codec, CS4265_DAC_CTL,
+ 			CS4265_DAC_CTL_MUTE,
+@@ -410,7 +407,7 @@
+ 	struct snd_soc_codec *codec = dai->codec;
+ 	struct cs4265_private *cs4265 = snd_soc_codec_get_drvdata(codec);
+ 	int index;
++printk(KERN_ERR "cs4265_pcm_hw_params: format = 0x%x, width = %d\n", cs4265->format, params_width(params));
+-
+ 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
+ 		((cs4265->format & SND_SOC_DAIFMT_FORMAT_MASK)
+ 		== SND_SOC_DAIFMT_RIGHT_J))
+@@ -469,6 +466,7 @@
+ static int cs4265_set_bias_level(struct snd_soc_codec *codec,
+ 					enum snd_soc_bias_level level)
+ {
++printk(KERN_ERR "set_bias_level %d\n", level);
+ 	switch (level) {
+ 	case SND_SOC_BIAS_ON:
+ 		break;
