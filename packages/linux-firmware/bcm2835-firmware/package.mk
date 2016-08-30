@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="bcm2835-firmware"
-PKG_VERSION="1205048"
+PKG_VERSION="d0bc6ce"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
