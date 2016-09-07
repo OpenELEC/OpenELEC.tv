@@ -331,14 +331,15 @@ if [ ! -f $STAMP ]; then
             rm -rf $i/share/locale
             rm -rf $i/share/man
             rm -rf $i/share/pkgconfig
-            find $i -name "*.la" -exec rm -f "{}" ";" 2>/dev/null || true
-            find $i -name "*.a" -exec rm -f "{}" ";" 2>/dev/null || true
-            find $i -name "*.so*T" -exec rm -f "{}" ";" 2>/dev/null || true
-            # patch backups nonsense
-            find $i -name "*.orig" -exec rm -f "{}" ";" 2>/dev/null || true
-            # kodi / addons nonsense
-            find $i -name "addon.xml.in" -exec rm -f "{}" ";" 2>/dev/null || true
-            find $i -name "Makefile.in" -exec rm -f "{}" ";" 2>/dev/null || true
+            find $i \( -name "*.orig" \
+                    -o -name "*.rej" \
+                    -o -name "*.a" \
+                    -o -name "*.la" \
+                    -o -name "*.so*T" \
+                    -o -name "*.o" \
+                    -o -name "*.in" \
+                    -o -name ".git*" \) \
+            -exec rm -f "{}" ";" 2>/dev/null || true
           done
 
           find $INSTALL -type d -exec rmdir -p "{}" ";" 2>/dev/null || true
