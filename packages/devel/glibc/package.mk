@@ -34,6 +34,8 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
+                           libc_cv_slibdir=/usr/lib \
+                           libc_cv_rtlddir=/lib \
                            ac_cv_path_PERL= \
                            ac_cv_prog_MAKEINFO= \
                            --libexecdir=/usr/lib/glibc \
@@ -117,7 +119,6 @@ libc_cv_ssp_strong=no
 libc_cv_slibdir=/lib
 EOF
 
-echo "slibdir=/lib" >> configparms
 echo "sbindir=/usr/bin" >> configparms
 echo "rootsbindir=/usr/bin" >> configparms
 }
