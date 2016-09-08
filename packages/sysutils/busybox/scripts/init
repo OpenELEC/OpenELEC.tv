@@ -685,6 +685,7 @@
       mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
     fi
 
+    chown 0:0 /storage
     mount --move /flash /sysroot/flash
     mount --move /storage /sysroot/storage
 
