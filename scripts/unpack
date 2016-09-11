@@ -52,6 +52,7 @@ for i in $BUILD/$1-*; do
   fi
 done
 
+[ ! -f "$STAMP" -a -d "$PKG_BUILD" ] && $SCRIPTS/clean $1 # stale builddir
 [ -f "$STAMP" ] && exit 0
 
 printf "%${BUILD_INDENT}c ${boldcyan}UNPACK${endcolor}   $1\n" ' '>&$SILENT_OUT
