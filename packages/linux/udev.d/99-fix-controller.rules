@@ -6,3 +6,5 @@
 
 SUBSYSTEM=="input", ATTRS{idVendor}=="0955", ATTRS{idProduct}=="7210", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_MOUSE}=""
 
+# Same goes for the OUYA controller
+SUBSYSTEM=="input", ATTRS{name}=="OUYA Game Controller", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_MOUSE}=""
