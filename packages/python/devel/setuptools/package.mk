@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="setuptools"
-PKG_VERSION="20.6.7"
+PKG_VERSION="26.1.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="https://pypi.python.org/pypi/setuptools"
-PKG_URL="http://pypi.python.org/packages/source/s/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="https://pypi.python.org/packages/32/3c/e853a68b703f347f5ed86585c2dd2828a83252e1216c1201fa6f81270578/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_HOST="Python:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="python/devel"
