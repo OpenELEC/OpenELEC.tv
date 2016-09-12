@@ -1,0 +1,29 @@
+From bfdf99d6ff64b9c2d840e8a5767eaa57e4363c79 Mon Sep 17 00:00:00 2001
+From: Mike Gorchak <mike.gorchak.qnx@gmail.com>
+Date: Wed, 2 Jan 2013 13:39:50 -0700
+Subject: glu: initialize PriorityQ::order field to NULL in pqNewPriorityQ()
+
+pqNewPriorityQ() function creates and setups PriorityQ structure, all
+except for the field "order". It is filled later in function
+pqInit(). Depending on vertices of polygon which must be tesselated
+there possible following situation, pqDeletePriorityQ() is called
+right after pqNewPriorityQ() function. pqNewPriorityQ() tries to free
+memory using pq->order as pointer, which is unitialized at this point.
+
+Signed-off-by: Brian Paul <brianp@vmware.com>
+
+diff --git a/src/libtess/priorityq.c b/src/libtess/priorityq.c
+index c6b99cc..db7cd59 100644
+--- a/src/libtess/priorityq.c
++++ b/src/libtess/priorityq.c
+@@ -65,6 +65,7 @@ PriorityQ *pqNewPriorityQ( int (*leq)(PQkey key1, PQkey key2) )
+      return NULL;
+   }
+ 
++  pq->order = NULL;
+   pq->size = 0;
+   pq->max = INIT_SIZE;
+   pq->initialized = FALSE;
+-- 
+cgit v0.10.2
+
