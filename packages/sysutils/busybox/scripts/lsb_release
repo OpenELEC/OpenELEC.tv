@@ -20,4 +20,9 @@
 
 # show release information
 . /etc/os-release
-echo "$PRETTY_NAME"
+
+if [ -e /dev/psplash_fifo ]; then
+  echo "MSG $PRETTY_NAME" > /dev/psplash_fifo
+else
+  echo "$PRETTY_NAME"
+fi

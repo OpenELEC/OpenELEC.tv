@@ -172,7 +172,6 @@ makeinstall_init() {
   mkdir -p $INSTALL/lib
     cp -PR $ROOT/$PKG_BUILD/.$TARGET_NAME/elf/ld*.so* $INSTALL/lib
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/libc.so.6 $INSTALL/lib
-    cp $ROOT/$PKG_BUILD/.$TARGET_NAME/math/libm.so* $INSTALL/lib
     cp $ROOT/$PKG_BUILD/.$TARGET_NAME/nptl/libpthread.so.0 $INSTALL/lib
     cp -PR $ROOT/$PKG_BUILD/.$TARGET_NAME/rt/librt.so* $INSTALL/lib
 

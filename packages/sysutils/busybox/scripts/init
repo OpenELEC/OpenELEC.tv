@@ -161,25 +161,42 @@
   SILENT_OUT=3
 
   progress() {
-    if test "$PROGRESS" = "yes"; then
+    if [ "$PROGRESS" = "yes" -a -e /dev/psplash_fifo ] ; then
+      echo "MSG $1" > /dev/psplash_fifo
+    elif [ "$PROGRESS" = "yes" ] ; then
       echo "### $1 ###"
     fi
   }
 
+  message() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "MSG $1" > /dev/psplash_fifo
+    else
+      echo "$1"
+    fi
+  }
+
+  error() {
+    # Display fatal error message
+    # $1:action which caused error, $2:message
+
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
+    echo "*** Error in $BOOT_STEP: $1: $2 ***"
+    debug_shell
+  }
+
   debug_shell() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
     echo "### Starting debugging shell... type  exit  to quit ###"
 
     # show cursor
     echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
 
     sh </dev/tty1 >/dev/tty1 2>&1
-  }
-
-  error() {
-    # Display fatal error message
-    # $1:action which caused error, $2:message
-    echo "*** Error in $BOOT_STEP: $1: $2 ***"
-    debug_shell
   }
 
   break_after() {
@@ -339,7 +356,7 @@
 
   update_file() {
     if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
-      echo "updating $1..."
+      message "updating $1..."
       mount -o remount,rw /flash
       mv $UPDATE_DIR/$2 $3 2>/dev/null
       # loopback file needs writable /flash all the time
@@ -352,7 +369,7 @@
 
   update_partition() {
     if [ -f "$UPDATE_DIR/$2" -a -b "$3" ]; then
-      echo "updating $1..."
+      message "updating $1..."
       dd if="$UPDATE_DIR/$2" of="$3"
      fi
    }
@@ -364,7 +381,7 @@
     mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
 
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/update.sh ]; then
-      echo "updating Bootloader..."
+      message "updating Bootloader..."
       sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
       sync
     fi
@@ -387,8 +404,6 @@
     if [ ! "$SPLASH" = "no" ]; then
       progress "Loading bootsplash"
 
-      SPLASHIMAGE="/splash/splash-full.png"
-
       # load uvesafb module if needed
       if [ -f "$MODULE_DIR/uvesafb.ko" -a ! -e /dev/fb0 ]; then
         progress "Loading kernel module uvesafb.ko"
@@ -398,25 +413,18 @@
         # set framebuffer to a default resolution (1024x768-32)
         if [ ! "$SWITCH_FRAMEBUFFER" = "no" ]; then
           fbset -g 1024 768 1024 768 32
-          SPLASHIMAGE="/splash/splash-1024.png"
         fi
       fi
 
       if [ -e /dev/fb0 ]; then
         # load splash
-        if [ -f /flash/oemsplash.png ]; then
-          SPLASHIMAGE="/flash/oemsplash.png"
-        elif [ -f /splash/splash.conf ]; then
-          . /splash/splash.conf
-        fi
-
-        ply-image $SPLASHIMAGE > /dev/null 2>&1
+        TMPDIR=/dev /bin/psplash -f 0 &
       fi
     fi
   }
 
   do_reboot() {
-    echo "System reboots now..."
+    message "System reboots now..."
 
     # syncing filesystem
       sync
@@ -435,6 +443,9 @@
   }
 
   force_fsck() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
     echo "Filesystem corruption has been detected"
     echo "To prevent an automatic repair attempt continuing"
     echo "press any key or power off your system within the next 120 seconds"
@@ -443,8 +454,7 @@
     # The exit status is 0 if input is available
     # The exit status is greater than 128 if the timeout is exceeded
     if [ "$?" -ne "0" -o "$?" -gt "128" ] ; then
-      echo "repairing filesystem.."
-      echo ""
+      message "repairing filesystem.."
       /sbin/fsck -T -M -y $RUN_FSCK_DISKS
       FSCK_RET="$?"
       if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
@@ -459,7 +469,7 @@
       fi
       do_reboot
     else
-      echo "shutting down..."
+      message "shutting down..."
       sleep 5
       sync
       poweroff
@@ -478,7 +488,7 @@
           force_fsck
         elif [ "$(( $FSCK_RET & 2 ))" = 2 ] ; then
           # reboot needed
-          echo "filesystem repaired, reboot needed..."
+          message "filesystem repaired, reboot needed..."
           do_reboot
         elif [ "$(( $FSCK_RET & 1 ))" = 1 ] ; then
           # filesystem errors corrected
@@ -561,7 +571,7 @@
     if [ -f "$UPDATE_DIR/$UPDATE_KERNEL" -a -f "$UPDATE_DIR/$UPDATE_SYSTEM" -o -f "$UPDATE_TAR" ] ; then
       if [ "$UPDATE_DISABLED" = "yes" ] ; then
         rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
-        echo "Updating not supported on netboot. normal startup in 10s..."
+        message "Updating not supported on netboot. normal startup in 10s..."
         sync
         usleep 10000000
         return 0
@@ -569,7 +579,7 @@
 
       # check for .tar
       if [ -f "$UPDATE_TAR" ] ; then
-        echo "Found new .tar archive. extracting..."
+        message "Found new .tar archive. extracting..."
         mkdir -p $UPDATE_DIR/.tmp &>/dev/null
         tar -xf "$UPDATE_TAR" -C $UPDATE_DIR/.tmp &>/dev/null
         mv $UPDATE_DIR/.tmp/*/target/* $UPDATE_DIR &>/dev/null
@@ -577,7 +587,7 @@
         rm -rf $UPDATE_DIR/.tmp &>/dev/null
         sync
         if [ ! -f "$UPDATE_DIR/$UPDATE_KERNEL" -o ! -f "$UPDATE_DIR/$UPDATE_SYSTEM" ] ; then
-          echo "missing ${UPDATE_KERNEL} or ${UPDATE_SYSTEM}... normal startup in 10s"
+          message "missing ${UPDATE_KERNEL} or ${UPDATE_SYSTEM}... normal startup in 10s"
           sync
           usleep 10000000
           return 0
@@ -593,20 +603,20 @@
         if [ -f "$UPDATE_DIR/${UPDATE_KERNEL}.md5" -a -f "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" ] ; then
           # *.md5 size-check
           if [ ! -s "$UPDATE_DIR/${UPDATE_KERNEL}.md5" -o ! -s "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" ] ; then
-            echo "zero-sized .md5 file..."
+            message "zero-sized .md5 file..."
             MD5_FAILED="1"
           else
             sed  -i 's#target#/storage/.update#g' "$UPDATE_DIR/${UPDATE_KERNEL}.md5"
             sed  -i 's#target#/storage/.update#g' "$UPDATE_DIR/${UPDATE_SYSTEM}.md5"
 
-            echo "Checking ${UPDATE_KERNEL}.md5..."
+            message "Checking ${UPDATE_KERNEL}.md5..."
             md5sum -c "$UPDATE_DIR/${UPDATE_KERNEL}.md5" || MD5_FAILED="1"
 
-            echo "Checking ${UPDATE_SYSTEM}.md5..."
+            message "Checking ${UPDATE_SYSTEM}.md5..."
             md5sum -c "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" || MD5_FAILED="1"
           fi
         else
-          echo "missing ${UPDATE_KERNEL}.md5 or ${UPDATE_SYSTEM}.md5..."
+          message "missing ${UPDATE_KERNEL}.md5 or ${UPDATE_SYSTEM}.md5..."
           MD5_FAILED="1"
         fi
       fi
@@ -631,9 +641,9 @@
       FLASH_FREE_MIN=$(($FLASH_FREE_MIN*1024*1024))
 
       if [ $TMP_SIZE -ge $FLASH_FREE_MIN ]; then
-        echo "Checking size: OK"
+        message "Checking size: OK"
       else
-        echo "Checking size: FAILED"
+        message "Checking size: FAILED"
         SIZE_FAILED="1"
       fi
 
@@ -652,13 +662,13 @@
           do_reboot
         else
           rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
-          echo "md5 check failed. normal startup in 30s..."
+          message "md5 check failed. normal startup in 30s..."
           sync
           usleep 30000000
         fi
       else
         rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
-        echo "size check failed. normal startup in 30s..."
+        message "size check failed. normal startup in 30s..."
         sync
         usleep 30000000
       fi
@@ -679,6 +689,9 @@
     mount --move /storage /sysroot/storage
 
     if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
+      if [ -e /dev/psplash_fifo ] ; then
+        echo "QUIT" > /dev/psplash_fifo
+      fi
       echo ""
       echo "NEVER TOUCH boot= in extlinux.conf / cmdline.txt"
       echo "if you dont know what you are doing"
@@ -699,10 +712,10 @@
 
   # main boot sequence
   for BOOT_STEP in \
+      load_splash \
       load_modules \
       check_disks \
       mount_flash \
-      load_splash \
       mount_storage \
       check_update \
       prepare_sysroot; do
