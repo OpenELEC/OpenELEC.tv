@@ -1,0 +1,16 @@
+diff -Naur tiff-3.9.7/configure.ac tiff-3.9.7.patch/configure.ac
+--- tiff-3.9.7/configure.ac	2012-09-22 18:51:48.000000000 +0200
++++ tiff-3.9.7.patch/configure.ac	2016-09-09 23:59:14.630215370 +0200
+@@ -575,9 +575,9 @@
+ 
+ AC_PATH_XTRA
+ 
+-AX_CHECK_GL
+-AX_CHECK_GLU
+-AX_CHECK_GLUT
++AX_CHECK_GL([no_gl=no],[no_gl=yes])
++AX_CHECK_GLU([no_glu=no],[no_glu=yes])
++AX_CHECK_GLUT([no_glut=no],[no_glut=yes])
+ 
+ if test "$no_x" != "yes" -a "$no_gl" != "yes" \
+ 	-a "$no_glu" != "yes" -a "$no_glut" != "yes" ; then
