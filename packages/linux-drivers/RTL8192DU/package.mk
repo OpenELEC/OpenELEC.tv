@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="RTL8192DU"
-PKG_VERSION="9e7eb15"
+PKG_VERSION="69552b2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
