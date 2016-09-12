@@ -1,0 +1,27 @@
+From 01cf2069631609b6a9a17fe087cf96925f9ac546 Mon Sep 17 00:00:00 2001
+From: Christian Ege <k4230r6@gmail.com>
+Date: Sat, 20 Aug 2016 10:37:53 +0200
+Subject: [PATCH] Manage transparency to each 32 bit pixel in RGB888
+
+Otherwise we'll have a black screen instead of a boot splash
+
+Signed-off-by: Christian Ege <k4230r6@gmail.com>
+---
+ psplash-fb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/psplash-fb.c b/psplash-fb.c
+index 38cd6a4..6ca8006 100644
+--- a/psplash-fb.c
++++ b/psplash-fb.c
+@@ -308,7 +308,7 @@ psplash_fb_plot_pixel (PSplashFB    *fb,
+         break;
+       case 32:
+         *(volatile uint32_t *) (fb->data + off)
+-          = (red << 16) | (green << 8) | (blue);
++          = (0xFF << 24) | (red << 16) | (green << 8) | (blue);
+         break;
+
+       case 16:
+-- 
+2.7.4
