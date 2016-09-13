@@ -1,0 +1,505 @@
+Submitted By:            Igor Živković
+Date:                    2016-01-30
+Initial Package Version: 1.0.1
+Upstream Status:         Fixed
+Origin:                  Upstream
+Description:             Compilation fixes from the upstream git repository.
+
+--- libnl-tiny-1.0.1.orig/include/linux/gen_stats.h
++++ /dev/null
+@@ -1,67 +0,0 @@
+-#ifndef __LINUX_GEN_STATS_H
+-#define __LINUX_GEN_STATS_H
+-
+-#include <linux/types.h>
+-
+-enum {
+-	TCA_STATS_UNSPEC,
+-	TCA_STATS_BASIC,
+-	TCA_STATS_RATE_EST,
+-	TCA_STATS_QUEUE,
+-	TCA_STATS_APP,
+-	__TCA_STATS_MAX,
+-};
+-#define TCA_STATS_MAX (__TCA_STATS_MAX - 1)
+-
+-/**
+- * struct gnet_stats_basic - byte/packet throughput statistics
+- * @bytes: number of seen bytes
+- * @packets: number of seen packets
+- */
+-struct gnet_stats_basic
+-{
+-	__u64	bytes;
+-	__u32	packets;
+-};
+-
+-/**
+- * struct gnet_stats_rate_est - rate estimator
+- * @bps: current byte rate
+- * @pps: current packet rate
+- */
+-struct gnet_stats_rate_est
+-{
+-	__u32	bps;
+-	__u32	pps;
+-};
+-
+-/**
+- * struct gnet_stats_queue - queuing statistics
+- * @qlen: queue length
+- * @backlog: backlog size of queue
+- * @drops: number of dropped packets
+- * @requeues: number of requeues
+- * @overlimits: number of enqueues over the limit
+- */
+-struct gnet_stats_queue
+-{
+-	__u32	qlen;
+-	__u32	backlog;
+-	__u32	drops;
+-	__u32	requeues;
+-	__u32	overlimits;
+-};
+-
+-/**
+- * struct gnet_estimator - rate estimator configuration
+- * @interval: sampling period
+- * @ewma_log: the log of measurement window weight
+- */
+-struct gnet_estimator
+-{
+-	signed char	interval;
+-	unsigned char	ewma_log;
+-};
+-
+-
+-#endif /* __LINUX_GEN_STATS_H */
+--- libnl-tiny-1.0.1.orig/include/linux/genetlink.h
++++ /dev/null
+@@ -1,83 +0,0 @@
+-#ifndef __LINUX_GENERIC_NETLINK_H
+-#define __LINUX_GENERIC_NETLINK_H
+-
+-#include <linux/types.h>
+-#include <linux/netlink.h>
+-
+-#define GENL_NAMSIZ	16	/* length of family name */
+-
+-#define GENL_MIN_ID	NLMSG_MIN_TYPE
+-#define GENL_MAX_ID	1023
+-
+-struct genlmsghdr {
+-	__u8	cmd;
+-	__u8	version;
+-	__u16	reserved;
+-};
+-
+-#define GENL_HDRLEN	NLMSG_ALIGN(sizeof(struct genlmsghdr))
+-
+-#define GENL_ADMIN_PERM		0x01
+-#define GENL_CMD_CAP_DO		0x02
+-#define GENL_CMD_CAP_DUMP	0x04
+-#define GENL_CMD_CAP_HASPOL	0x08
+-
+-/*
+- * List of reserved static generic netlink identifiers:
+- */
+-#define GENL_ID_GENERATE	0
+-#define GENL_ID_CTRL		NLMSG_MIN_TYPE
+-
+-/**************************************************************************
+- * Controller
+- **************************************************************************/
+-
+-enum {
+-	CTRL_CMD_UNSPEC,
+-	CTRL_CMD_NEWFAMILY,
+-	CTRL_CMD_DELFAMILY,
+-	CTRL_CMD_GETFAMILY,
+-	CTRL_CMD_NEWOPS,
+-	CTRL_CMD_DELOPS,
+-	CTRL_CMD_GETOPS,
+-	CTRL_CMD_NEWMCAST_GRP,
+-	CTRL_CMD_DELMCAST_GRP,
+-	CTRL_CMD_GETMCAST_GRP, /* unused */
+-	__CTRL_CMD_MAX,
+-};
+-
+-#define CTRL_CMD_MAX (__CTRL_CMD_MAX - 1)
+-
+-enum {
+-	CTRL_ATTR_UNSPEC,
+-	CTRL_ATTR_FAMILY_ID,
+-	CTRL_ATTR_FAMILY_NAME,
+-	CTRL_ATTR_VERSION,
+-	CTRL_ATTR_HDRSIZE,
+-	CTRL_ATTR_MAXATTR,
+-	CTRL_ATTR_OPS,
+-	CTRL_ATTR_MCAST_GROUPS,
+-	__CTRL_ATTR_MAX,
+-};
+-
+-#define CTRL_ATTR_MAX (__CTRL_ATTR_MAX - 1)
+-
+-enum {
+-	CTRL_ATTR_OP_UNSPEC,
+-	CTRL_ATTR_OP_ID,
+-	CTRL_ATTR_OP_FLAGS,
+-	__CTRL_ATTR_OP_MAX,
+-};
+-
+-#define CTRL_ATTR_OP_MAX (__CTRL_ATTR_OP_MAX - 1)
+-
+-enum {
+-	CTRL_ATTR_MCAST_GRP_UNSPEC,
+-	CTRL_ATTR_MCAST_GRP_NAME,
+-	CTRL_ATTR_MCAST_GRP_ID,
+-	__CTRL_ATTR_MCAST_GRP_MAX,
+-};
+-
+-#define CTRL_ATTR_MCAST_GRP_MAX (__CTRL_ATTR_MCAST_GRP_MAX - 1)
+-
+-#endif	/* __LINUX_GENERIC_NETLINK_H */
+--- libnl-tiny-1.0.1.orig/include/linux/if.h
++++ /dev/null
+@@ -1,121 +0,0 @@
+-/*
+- * INET		An implementation of the TCP/IP protocol suite for the LINUX
+- *		operating system.  INET is implemented using the  BSD Socket
+- *		interface as the means of communication with the user level.
+- *
+- *		Global definitions for the INET interface module.
+- *
+- * Version:	@(#)if.h	1.0.2	04/18/93
+- *
+- * Authors:	Original taken from Berkeley UNIX 4.3, (c) UCB 1982-1988
+- *		Ross Biro
+- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
+- *
+- *		This program is free software; you can redistribute it and/or
+- *		modify it under the terms of the GNU General Public License
+- *		as published by the Free Software Foundation; either version
+- *		2 of the License, or (at your option) any later version.
+- */
+-#ifndef _LINUX_IF_H
+-#define _LINUX_IF_H
+-
+-#include <linux/types.h>		/* for "__kernel_caddr_t" et al	*/
+-
+-#define	IFNAMSIZ	16
+-
+-/* Standard interface flags (netdevice->flags). */
+-#define	IFF_UP		0x1		/* interface is up		*/
+-#define	IFF_BROADCAST	0x2		/* broadcast address valid	*/
+-#define	IFF_DEBUG	0x4		/* turn on debugging		*/
+-#define	IFF_LOOPBACK	0x8		/* is a loopback net		*/
+-#define	IFF_POINTOPOINT	0x10		/* interface is has p-p link	*/
+-#define	IFF_NOTRAILERS	0x20		/* avoid use of trailers	*/
+-#define	IFF_RUNNING	0x40		/* interface RFC2863 OPER_UP	*/
+-#define	IFF_NOARP	0x80		/* no ARP protocol		*/
+-#define	IFF_PROMISC	0x100		/* receive all packets		*/
+-#define	IFF_ALLMULTI	0x200		/* receive all multicast packets*/
+-
+-#define IFF_MASTER	0x400		/* master of a load balancer 	*/
+-#define IFF_SLAVE	0x800		/* slave of a load balancer	*/
+-
+-#define IFF_MULTICAST	0x1000		/* Supports multicast		*/
+-
+-#define IFF_PORTSEL	0x2000          /* can set media type		*/
+-#define IFF_AUTOMEDIA	0x4000		/* auto media select active	*/
+-#define IFF_DYNAMIC	0x8000		/* dialup device with changing addresses*/
+-
+-#define IFF_LOWER_UP	0x10000		/* driver signals L1 up		*/
+-#define IFF_DORMANT	0x20000		/* driver signals dormant	*/
+-
+-#define IFF_ECHO	0x40000		/* echo sent packets		*/
+-
+-#define IFF_VOLATILE	(IFF_LOOPBACK|IFF_POINTOPOINT|IFF_BROADCAST|IFF_ECHO|\
+-		IFF_MASTER|IFF_SLAVE|IFF_RUNNING|IFF_LOWER_UP|IFF_DORMANT)
+-
+-/* Private (from user) interface flags (netdevice->priv_flags). */
+-#define IFF_802_1Q_VLAN 0x1             /* 802.1Q VLAN device.          */
+-#define IFF_EBRIDGE	0x2		/* Ethernet bridging device.	*/
+-#define IFF_SLAVE_INACTIVE	0x4	/* bonding slave not the curr. active */
+-#define IFF_MASTER_8023AD	0x8	/* bonding master, 802.3ad. 	*/
+-#define IFF_MASTER_ALB	0x10		/* bonding master, balance-alb.	*/
+-#define IFF_BONDING	0x20		/* bonding master or slave	*/
+-#define IFF_SLAVE_NEEDARP 0x40		/* need ARPs for validation	*/
+-#define IFF_ISATAP	0x80		/* ISATAP interface (RFC4214)	*/
+-
+-#define IF_GET_IFACE	0x0001		/* for querying only */
+-#define IF_GET_PROTO	0x0002
+-
+-/* For definitions see hdlc.h */
+-#define IF_IFACE_V35	0x1000		/* V.35 serial interface	*/
+-#define IF_IFACE_V24	0x1001		/* V.24 serial interface	*/
+-#define IF_IFACE_X21	0x1002		/* X.21 serial interface	*/
+-#define IF_IFACE_T1	0x1003		/* T1 telco serial interface	*/
+-#define IF_IFACE_E1	0x1004		/* E1 telco serial interface	*/
+-#define IF_IFACE_SYNC_SERIAL 0x1005	/* can't be set by software	*/
+-#define IF_IFACE_X21D   0x1006          /* X.21 Dual Clocking (FarSite) */
+-
+-/* For definitions see hdlc.h */
+-#define IF_PROTO_HDLC	0x2000		/* raw HDLC protocol		*/
+-#define IF_PROTO_PPP	0x2001		/* PPP protocol			*/
+-#define IF_PROTO_CISCO	0x2002		/* Cisco HDLC protocol		*/
+-#define IF_PROTO_FR	0x2003		/* Frame Relay protocol		*/
+-#define IF_PROTO_FR_ADD_PVC 0x2004	/*    Create FR PVC		*/
+-#define IF_PROTO_FR_DEL_PVC 0x2005	/*    Delete FR PVC		*/
+-#define IF_PROTO_X25	0x2006		/* X.25				*/
+-#define IF_PROTO_HDLC_ETH 0x2007	/* raw HDLC, Ethernet emulation	*/
+-#define IF_PROTO_FR_ADD_ETH_PVC 0x2008	/*  Create FR Ethernet-bridged PVC */
+-#define IF_PROTO_FR_DEL_ETH_PVC 0x2009	/*  Delete FR Ethernet-bridged PVC */
+-#define IF_PROTO_FR_PVC	0x200A		/* for reading PVC status	*/
+-#define IF_PROTO_FR_ETH_PVC 0x200B
+-#define IF_PROTO_RAW    0x200C          /* RAW Socket                   */
+-
+-/* RFC 2863 operational status */
+-enum {
+-	IF_OPER_UNKNOWN,
+-	IF_OPER_NOTPRESENT,
+-	IF_OPER_DOWN,
+-	IF_OPER_LOWERLAYERDOWN,
+-	IF_OPER_TESTING,
+-	IF_OPER_DORMANT,
+-	IF_OPER_UP,
+-};
+-
+-/* link modes */
+-enum {
+-	IF_LINK_MODE_DEFAULT,
+-	IF_LINK_MODE_DORMANT,	/* limit upward transition to dormant */
+-};
+-
+-/*
+- *	Device mapping structure. I'd just gone off and designed a 
+- *	beautiful scheme using only loadable modules with arguments
+- *	for driver options and along come the PCMCIA people 8)
+- *
+- *	Ah well. The get() side of this is good for WDSETUP, and it'll
+- *	be handy for debugging things. The set side is fine for now and
+- *	being very small might be worth keeping for clean configuration.
+- */
+-
+-#include <net/if.h>
+-
+-#endif /* _LINUX_IF_H */
+--- libnl-tiny-1.0.1.orig/include/linux/if_addr.h
++++ /dev/null
+@@ -1,62 +0,0 @@
+-#ifndef __LINUX_IF_ADDR_H
+-#define __LINUX_IF_ADDR_H
+-
+-#include <linux/netlink.h>
+-
+-struct ifaddrmsg
+-{
+-	__u8		ifa_family;
+-	__u8		ifa_prefixlen;	/* The prefix length		*/
+-	__u8		ifa_flags;	/* Flags			*/
+-	__u8		ifa_scope;	/* Address scope		*/
+-	__u32		ifa_index;	/* Link index			*/
+-};
+-
+-/*
+- * Important comment:
+- * IFA_ADDRESS is prefix address, rather than local interface address.
+- * It makes no difference for normally configured broadcast interfaces,
+- * but for point-to-point IFA_ADDRESS is DESTINATION address,
+- * local address is supplied in IFA_LOCAL attribute.
+- */
+-enum
+-{
+-	IFA_UNSPEC,
+-	IFA_ADDRESS,
+-	IFA_LOCAL,
+-	IFA_LABEL,
+-	IFA_BROADCAST,
+-	IFA_ANYCAST,
+-	IFA_CACHEINFO,
+-	IFA_MULTICAST,
+-	__IFA_MAX,
+-};
+-
+-#define IFA_MAX (__IFA_MAX - 1)
+-
+-/* ifa_flags */
+-#define IFA_F_SECONDARY		0x01
+-#define IFA_F_TEMPORARY		IFA_F_SECONDARY
+-
+-#define	IFA_F_NODAD		0x02
+-#define IFA_F_OPTIMISTIC	0x04
+-#define	IFA_F_HOMEADDRESS	0x10
+-#define IFA_F_DEPRECATED	0x20
+-#define IFA_F_TENTATIVE		0x40
+-#define IFA_F_PERMANENT		0x80
+-
+-struct ifa_cacheinfo
+-{
+-	__u32	ifa_prefered;
+-	__u32	ifa_valid;
+-	__u32	cstamp; /* created timestamp, hundredths of seconds */
+-	__u32	tstamp; /* updated timestamp, hundredths of seconds */
+-};
+-
+-/* backwards compatibility for userspace */
+-#ifndef __KERNEL__
+-#define IFA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifaddrmsg))))
+-#define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
+-#endif
+-
+-#endif
+--- libnl-tiny-1.0.1.orig/include/linux/netlink.h
++++ /dev/null
+@@ -1,150 +0,0 @@
+-#ifndef __LINUX_NETLINK_H
+-#define __LINUX_NETLINK_H
+-
+-#include <linux/socket.h> /* for sa_family_t */
+-#include <linux/types.h>
+-
+-#define NETLINK_ROUTE		0	/* Routing/device hook				*/
+-#define NETLINK_UNUSED		1	/* Unused number				*/
+-#define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	*/
+-#define NETLINK_FIREWALL	3	/* Firewalling hook				*/
+-#define NETLINK_INET_DIAG	4	/* INET socket monitoring			*/
+-#define NETLINK_NFLOG		5	/* netfilter/iptables ULOG */
+-#define NETLINK_XFRM		6	/* ipsec */
+-#define NETLINK_SELINUX		7	/* SELinux event notifications */
+-#define NETLINK_ISCSI		8	/* Open-iSCSI */
+-#define NETLINK_AUDIT		9	/* auditing */
+-#define NETLINK_FIB_LOOKUP	10	
+-#define NETLINK_CONNECTOR	11
+-#define NETLINK_NETFILTER	12	/* netfilter subsystem */
+-#define NETLINK_IP6_FW		13
+-#define NETLINK_DNRTMSG		14	/* DECnet routing messages */
+-#define NETLINK_KOBJECT_UEVENT	15	/* Kernel messages to userspace */
+-#define NETLINK_GENERIC		16
+-/* leave room for NETLINK_DM (DM Events) */
+-#define NETLINK_SCSITRANSPORT	18	/* SCSI Transports */
+-#define NETLINK_ECRYPTFS	19
+-
+-#define MAX_LINKS 32		
+-
+-struct sockaddr_nl
+-{
+-	sa_family_t	nl_family;	/* AF_NETLINK	*/
+-	unsigned short	nl_pad;		/* zero		*/
+-	__u32		nl_pid;		/* port ID	*/
+-       	__u32		nl_groups;	/* multicast groups mask */
+-};
+-
+-struct nlmsghdr
+-{
+-	__u32		nlmsg_len;	/* Length of message including header */
+-	__u16		nlmsg_type;	/* Message content */
+-	__u16		nlmsg_flags;	/* Additional flags */
+-	__u32		nlmsg_seq;	/* Sequence number */
+-	__u32		nlmsg_pid;	/* Sending process port ID */
+-};
+-
+-/* Flags values */
+-
+-#define NLM_F_REQUEST		1	/* It is request message. 	*/
+-#define NLM_F_MULTI		2	/* Multipart message, terminated by NLMSG_DONE */
+-#define NLM_F_ACK		4	/* Reply with ack, with zero or error code */
+-#define NLM_F_ECHO		8	/* Echo this request 		*/
+-
+-/* Modifiers to GET request */
+-#define NLM_F_ROOT	0x100	/* specify tree	root	*/
+-#define NLM_F_MATCH	0x200	/* return all matching	*/
+-#define NLM_F_ATOMIC	0x400	/* atomic GET		*/
+-#define NLM_F_DUMP	(NLM_F_ROOT|NLM_F_MATCH)
+-
+-/* Modifiers to NEW request */
+-#define NLM_F_REPLACE	0x100	/* Override existing		*/
+-#define NLM_F_EXCL	0x200	/* Do not touch, if it exists	*/
+-#define NLM_F_CREATE	0x400	/* Create, if it does not exist	*/
+-#define NLM_F_APPEND	0x800	/* Add to end of list		*/
+-
+-/*
+-   4.4BSD ADD		NLM_F_CREATE|NLM_F_EXCL
+-   4.4BSD CHANGE	NLM_F_REPLACE
+-
+-   True CHANGE		NLM_F_CREATE|NLM_F_REPLACE
+-   Append		NLM_F_CREATE
+-   Check		NLM_F_EXCL
+- */
+-
+-#define NLMSG_ALIGNTO	4
+-#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
+-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
+-#define NLMSG_LENGTH(len) ((len)+NLMSG_ALIGN(NLMSG_HDRLEN))
+-#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
+-#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
+-#define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
+-				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
+-#define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
+-			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
+-			   (nlh)->nlmsg_len <= (len))
+-#define NLMSG_PAYLOAD(nlh,len) ((nlh)->nlmsg_len - NLMSG_SPACE((len)))
+-
+-#define NLMSG_NOOP		0x1	/* Nothing.		*/
+-#define NLMSG_ERROR		0x2	/* Error		*/
+-#define NLMSG_DONE		0x3	/* End of a dump	*/
+-#define NLMSG_OVERRUN		0x4	/* Data lost		*/
+-
+-#define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages */
+-
+-struct nlmsgerr
+-{
+-	int		error;
+-	struct nlmsghdr msg;
+-};
+-
+-#define NETLINK_ADD_MEMBERSHIP	1
+-#define NETLINK_DROP_MEMBERSHIP	2
+-#define NETLINK_PKTINFO		3
+-
+-struct nl_pktinfo
+-{
+-	__u32	group;
+-};
+-
+-#define NET_MAJOR 36		/* Major 36 is reserved for networking 						*/
+-
+-enum {
+-	NETLINK_UNCONNECTED = 0,
+-	NETLINK_CONNECTED,
+-};
+-
+-/*
+- *  <------- NLA_HDRLEN ------> <-- NLA_ALIGN(payload)-->
+- * +---------------------+- - -+- - - - - - - - - -+- - -+
+- * |        Header       | Pad |     Payload       | Pad |
+- * |   (struct nlattr)   | ing |                   | ing |
+- * +---------------------+- - -+- - - - - - - - - -+- - -+
+- *  <-------------- nlattr->nla_len -------------->
+- */
+-
+-struct nlattr
+-{
+-	__u16           nla_len;
+-	__u16           nla_type;
+-};
+-
+-/*
+- * nla_type (16 bits)
+- * +---+---+-------------------------------+
+- * | N | O | Attribute Type                |
+- * +---+---+-------------------------------+
+- * N := Carries nested attributes
+- * O := Payload stored in network byte order
+- *
+- * Note: The N and O flag are mutually exclusive.
+- */
+-#define NLA_F_NESTED		(1 << 15)
+-#define NLA_F_NET_BYTEORDER	(1 << 14)
+-#define NLA_TYPE_MASK		~(NLA_F_NESTED | NLA_F_NET_BYTEORDER)
+-
+-#define NLA_ALIGNTO		4
+-#define NLA_ALIGN(len)		(((len) + NLA_ALIGNTO - 1) & ~(NLA_ALIGNTO - 1))
+-#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
+-
+-#endif	/* __LINUX_NETLINK_H */

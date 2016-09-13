@@ -1,0 +1,23 @@
+diff -Naur libnl-tiny-1.0.1/Makefile libnl-tiny-1.0.1.patch/Makefile
+--- libnl-tiny-1.0.1/Makefile	2014-07-11 18:31:36.000000000 +0200
++++ libnl-tiny-1.0.1.patch/Makefile	2016-09-12 13:43:58.058994389 +0200
+@@ -3,6 +3,8 @@
+ includedir=$(prefix)/include
+ 
+ CC=gcc
++AR=ar
++RANLIB=ranlib
+ WFLAGS=-Wall
+ CFLAGS?=-O2
+ INCLUDES=-Iinclude
+@@ -40,8 +42,8 @@
+ 
+ $(STATICLIB): $(OBJS)
+ 	rm -f $@
+-	ar rc $@ $^
+-	ranlib $@
++	$(AR) rc $@ $^
++	$(RANLIB) $@
+ 
+ $(PCFILE): $(PCFILE).in
+ 	sed s,@prefix@,$(prefix),g $< > $@
