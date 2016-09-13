@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="inputstream.rtmp"
-PKG_VERSION="7bf2298"
+PKG_VERSION="91bb374"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

@@ -17,11 +17,11 @@
 ################################################################################
 
 PKG_NAME="peripheral.joystick"
-PKG_VERSION="75966fa"
+PKG_VERSION="263aa84"
 
 # temporary hack until kodi is updated
 if [ "$KODIPLAYER_DRIVER" = bcm2835-firmware ]; then
-  PKG_VERSION="6090a90"
+  PKG_VERSION="263aa84"
 fi
 
 PKG_REV="1"
