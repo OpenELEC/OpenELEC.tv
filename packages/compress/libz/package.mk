@@ -39,6 +39,7 @@ HOST_CONFIGURE_OPTS="--prefix=$ROOT/$TOOLCHAIN"
 pre_configure_host() {
 # clean host cflags and use libz's own
   CFLAGS=""
+  CC=$LOCAL_CC
 }
 
 pre_build_target() {
