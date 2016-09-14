@@ -18,17 +18,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="RPi"
+PKG_NAME="S805"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/lakkatv/Lakka"
 PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch tyrquake scummvm dosbox mgba prosystem o2em genesis-plus-gx 81 fuse-libretro gw-libretro lutro gpsp 2048 vecx dinothawr prboom beetle-wswan beetle-ngp beetle-pce beetle-sgx handy picodrive snes9x2002 nxengine fceumm gambatte stella fbalpha"
+PKG_DEPENDS_TARGET="retroarch tyrquake scummvm dosbox mgba prosystem o2em 81 fuse-libretro gw-libretro beetle-sgx genesis-plus-gx mupen64plus lutro gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x2010 dinothawr prboom beetle-pce handy picodrive nxengine nestopia gambatte stella fbalpha"
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for RPi"
+PKG_SHORTDESC="Lakka metapackage for S805"
 PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
