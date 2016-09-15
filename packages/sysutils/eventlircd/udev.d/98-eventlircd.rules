@@ -222,6 +222,11 @@ ATTRS{name}=="Sony Computer Entertainment Inc BD Remote Control", \
   ENV{eventlircd_enable}="true", \
   ENV{eventlircd_evmap}="ps3remote.evmap"
 
+# Amazon Fire TV stick remote
+ATTRS{name}=="Amazon Fire TV Remote", \
+  ENV{eventlircd_enable}="true", \
+  ENV{eventlircd_evmap}="aftvsremote.evmap"
+
 LABEL="end-bluetooth"
 
 LABEL="end"
