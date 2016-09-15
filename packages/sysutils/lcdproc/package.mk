@@ -40,14 +40,17 @@ fi
 IFS=$','
 for i in $LCD_DRIVER; do
   case $i in
-    glcd) PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET serdisplib"
+    glcd) PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET freetype serdisplib"
       ;;
     *)
   esac
 done
 unset IFS
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-libusb --enable-drivers=$LCD_DRIVER,!curses,!svga --enable-seamless-hbars"
+PKG_CONFIGURE_OPTS_TARGET="--with-ft-prefix=$SYSROOT_PREFIX/usr \
+                           --enable-libusb \
+                           --enable-drivers=$LCD_DRIVER,!curses,!svga \
+                           --enable-seamless-hbars"
 
 pre_make_target() {
   # dont build parallel
