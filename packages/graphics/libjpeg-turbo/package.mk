@@ -47,7 +47,7 @@ pre_configure_target() {
   export CFLAGS="$CFLAGS -fPIC -DPIC"
 }
 
-if [ $SIMD_SUPPORT = "no" ]; then
+if [ "$SIMD_SUPPORT" = "no" ]; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --without-simd"
 fi
 
