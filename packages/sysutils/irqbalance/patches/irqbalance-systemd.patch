@@ -1,0 +1,12 @@
+diff -Naur irqbalance-aa04f78/configure.ac irqbalance-aa04f78.patch/configure.ac
+--- irqbalance-aa04f78/configure.ac	2016-06-27 14:34:47.000000000 +0200
++++ irqbalance-aa04f78.patch/configure.ac	2016-09-15 15:40:19.663695774 +0200
+@@ -35,7 +35,7 @@
+ )
+ AS_IF(
+   [test "x$with_systemd" = xyes], [
+-    PKG_CHECK_MODULES([SYSTEMD], [libsystemd-journal], [journal_lib=yes])
++    PKG_CHECK_MODULES([SYSTEMD], [libsystemd], [journal_lib=yes])
+     AC_DEFINE(HAVE_LIBSYSTEMD, 1, [systemd support])
+     AC_CHECK_LIB([systemd], [sd_journal_print_with_location])
+     AC_CHECK_LIB([systemd], [sd_journal_print])
