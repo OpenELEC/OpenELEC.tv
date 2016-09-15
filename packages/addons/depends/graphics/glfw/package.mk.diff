@@ -1,0 +1,11 @@
+--- packages/graphics/glfw/package.mk	2016-08-03 10:50:43.914995496 +0200
++++ LibreELEC.tv.git/packages/graphics/glfw/package.mk	2016-09-15 08:36:04.432523978 +0200
+@@ -32,7 +32,7 @@
+ PKG_IS_ADDON="no"
+ PKG_AUTORECONF="no"
+ 
+-if [ ! "$OPENGL" = "mesa" ] ; then
++if [ "$OPENGL" = "no" ] ; then
+   exit 0
+ fi
+ 
