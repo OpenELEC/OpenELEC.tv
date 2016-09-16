@@ -1,6 +1,8 @@
 #!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 OpenELEC.tv
+#      Copyright (C) 2014-2016 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2014 Alex Deryskyba (alex@codesnake.com)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
@@ -20,90 +22,68 @@
 hdmimode="720p"
 
 # Parse command line arguments
-for arg in $(cat /proc/cmdline); do
-  case $arg in
-    hdmimode=*)
-      hdmimode="${arg#*=}"
-      ;;
-  esac
-done
+  for arg in $(cat /proc/cmdline); do
+    case $arg in
+      hdmimode=*)
+        hdmimode="${arg#*=}"
+        ;;
+    esac
+  done
 
-echo "$hdmimode" > /sys/class/display/mode
+# check for valid displaymodes if display is connected
+  HPD_STATE="/sys/class/amhdmitx/amhdmitx0/hpd_state"
+  DISP_CAP="/sys/class/amhdmitx/amhdmitx0/disp_cap"
+
+  if [ -e $HPD_STATE -a -e $DISP_CAP ]; then
+    if [ ! $(cat /sys/class/amhdmitx/amhdmitx0/hpd_state) = "0" ]; then
+      displaymode=$(cat /sys/class/amhdmitx/amhdmitx0/disp_cap | \
+                    sed -e 's/^[[:space:]]*//' \
+                        -e 's/[[:space:]]*$//' \
+                        -e "s,p.*,p,g" \
+                        -e "s,i.*,i,g" | \
+                    sort -n | tail -n1)
+      if [ -n "$displaymode" ]; then
+        hdmimode="$displaymode"
+      fi
+    fi
+  fi
+
+# setup display defaults
+  case $hdmimode in
+    480*)
+      xRes=720; yRes=480; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    576*)
+      xRes=720; yRes=576; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    1080*)
+      xRes=1920; yRes=1080; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    2160*|4k2k*hz|4k2ksmpte|smpte24hz)
+      xRes=3840; yRes=2160; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32; hdmimode=2160p
+      ;;
+    *)
+      xRes=1280; yRes=720; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32; hdmimode=720p
+  esac
+
+# set displaymode
+  echo "$hdmimode" > /sys/class/display/mode
 
 # Enable first framebuffer
-echo 0 > /sys/class/graphics/fb0/blank
+  echo 0 > /sys/class/graphics/fb0/blank
 
 # Disable second framebuffer
-echo 1 > /sys/class/graphics/fb1/blank
+  echo 1 > /sys/class/graphics/fb1/blank
 
 # Disable framebuffer scaling
-echo 0 > /sys/class/graphics/fb0/free_scale
+  echo 0 > /sys/class/graphics/fb0/free_scale
 
 # set initial video state
-echo 1 > /sys/class/video/disable_video
-
-# Set default resolution parameters
-bpp=32;
-xRes=1280;
-yRes=720;
-
-# Get max supported display resolution by hdmi device
-maxRes=$(tail -n1 /sys/class/amhdmitx/amhdmitx0/disp_cap | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//');
-if [ -z "$maxRes" ]; then
-  maxRes="$hdmimode";
-fi
-case "$maxRes" in
-  480*)
-    xRes=720; yRes=480;
-    ;;
-  576*)
-    xRes=720; yRes=576;
-    ;;
-  1080*)
-    xRes=1920; yRes=1080;
-    ;;
-  4k2k*hz|2160p*)
-    xRes=3840; yRes=2160;
-    ;;
-  4k2ksmpte|smpte24hz)
-    xRes=4096; yRes=2160;
-    ;;
-esac
-vXRes=$xRes;
-vYRes=$(( $yRes * 2 ));
-
-# Choose boot resolution by hdmimode param
-case "$hdmimode" in
-  480*)
-    if [ "$vXRes" -ge 720 -a "$vYRes" -ge 960 ]; then
-      xRes=720; yRes=480;
-    fi
-    ;;
-  576*)
-    if [ "$vXRes" -ge 720 -a "$vYRes" -ge 1152 ]; then
-      xRes=720; yRes=576;
-    fi
-    ;;
-  720*)
-    if [ "$vXRes" -ge 1280 -a "$vYRes" -ge 1440 ]; then
-      xRes=1280; yRes=720;
-    fi
-    ;;
-  1080*)
-    if [ "$vXRes" -ge 1920 -a "$vYRes" -ge 2160 ]; then
-      xRes=1920; yRes=1080;
-    fi
-    ;;
-  4k2k*hz|2160p*)
-    if [ "$vXRes" -ge 3840 -a "$vYRes" -ge 4320 ]; then
-      xRes=3840; yRes=2160;
-    fi
-    ;;
-esac
+  echo 1 > /sys/class/video/disable_video
 
 # Set framebuffer geometry to match the resolution
-fbset -fb /dev/fb0 -g $xRes $yRes $vXRes $vYRes $bpp;
+  fbset -fb /dev/fb0 -g $xRes $yRes $vXRes $vYRes $bpp
 
 # Include deinterlacer into default VFM map
-echo rm default > /sys/class/vfm/map
-echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map
+  echo rm default > /sys/class/vfm/map
+  echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map
