@@ -35,8 +35,8 @@ hdmimode="720p"
   DISP_CAP="/sys/class/amhdmitx/amhdmitx0/disp_cap"
 
   if [ -e $HPD_STATE -a -e $DISP_CAP ]; then
-    if [ ! $(cat /sys/class/amhdmitx/amhdmitx0/hpd_state) = "0" ]; then
-      displaymode=$(cat /sys/class/amhdmitx/amhdmitx0/disp_cap | \
+    if [ ! $(cat $HPD_STATE) = "0" ]; then
+      displaymode=$(cat $DISP_CAP | \
                     sed -e 's/^[[:space:]]*//' \
                         -e 's/[[:space:]]*$//' \
                         -e "s,p.*,p,g" \
