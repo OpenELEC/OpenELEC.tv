@@ -25,7 +25,7 @@ PKG_SITE="http://www.broadcom.com"
 PKG_GIT_URL="https://github.com/raspberrypi/firmware.git"
 PKG_GIT_BRANCH="master"
 PKG_KEEP_CHECKOUT="yes"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain dtc"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="OpenMAX-bcm2835: OpenGL-ES and OpenMAX driver for BCM2835"
@@ -88,12 +88,12 @@ makeinstall_target() {
 # some usefull debug tools
   mkdir -p $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/vcdbg $INSTALL/usr/bin
-      cp -PRv $FLOAT/opt/vc/lib/libdebug_sym.so $INSTALL/usr/lib
-
+    cp -PRv $FLOAT/opt/vc/lib/libdebug_sym.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/bin/vcgencmd $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/tvservice $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/edidparser $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/dtoverlay $INSTALL/usr/bin
+    ln -s dtoverlay $INSTALL/usr/bin/dtparam
 
   mkdir -p $INSTALL/opt/vc
     ln -sf /usr/lib $INSTALL/opt/vc/lib
