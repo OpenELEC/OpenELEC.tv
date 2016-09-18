@@ -56,8 +56,8 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            CXXFLAGS_FOR_BUILD= \
                            LDFLAGS_FOR_BUILD= \
                            X11_INCLUDES= \
-                           DRI_DRIVER_INSTALL_DIR=$XORG_PATH_DRI \
-                           DRI_DRIVER_SEARCH_DIR=$XORG_PATH_DRI \
+                           DRI_DRIVER_INSTALL_DIR=/usr/lib/dri \
+                           DRI_DRIVER_SEARCH_DIR=/usr/lib/dri \
                            --disable-debug \
                            --disable-mangling \
                            --enable-texture-float \
