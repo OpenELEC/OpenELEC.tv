@@ -33,5 +33,5 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-silent-rules \
-                           --with-xorg-module-dir=$XORG_PATH_MODULES \
+                           --with-xorg-module-dir=/usr/lib/xorg/modules \
                            --with-gnu-ld"
