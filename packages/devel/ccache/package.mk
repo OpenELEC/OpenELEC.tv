@@ -33,22 +33,23 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 export CC=$LOCAL_CC
+export CXX=$LOCAL_CXX
 
 post_makeinstall_host() {
 # setup ccache
   $ROOT/$TOOLCHAIN/bin/ccache --max-size=$CCACHE_CACHE_SIZE
 
-  cat > $HOST_CC <<EOF
+  cat > $ROOT/$TOOLCHAIN/bin/host-gcc <<EOF
 #!/bin/sh
-$ROOT/$TOOLCHAIN/bin/ccache $LOCAL_CC "\$@"
+$ROOT/$TOOLCHAIN/bin/ccache $CC "\$@"
 EOF
 
-  chmod +x $HOST_CC
+  chmod +x $ROOT/$TOOLCHAIN/bin/host-gcc
 
-  cat > $HOST_CXX <<EOF
+  cat > $ROOT/$TOOLCHAIN/bin/host-g++ <<EOF
 #!/bin/sh
-$ROOT/$TOOLCHAIN/bin/ccache $LOCAL_CXX "\$@"
+$ROOT/$TOOLCHAIN/bin/ccache $CXX "\$@"
 EOF
 
-  chmod +x $HOST_CXX
+  chmod +x $ROOT/$TOOLCHAIN/bin/host-g++
 }
