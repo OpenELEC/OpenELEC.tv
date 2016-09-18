@@ -32,5 +32,5 @@ PKG_LONGDESC="The xkbcomp keymap compiler converts a description of an XKB keyma
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--with-xkb-config-root=$XORG_PATH_XKB"
+PKG_CONFIGURE_OPTS_TARGET="--with-xkb-config-root=/usr/share/X11/xkb"
 
