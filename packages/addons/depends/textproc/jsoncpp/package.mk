@@ -40,9 +40,3 @@ pre_configure_target() {
 pre_build_target() {
   cp $PKG_DIR/config/CMakeLists.txt $ROOT/$PKG_BUILD
 }
-
-configure_target() {
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        ..
-}
