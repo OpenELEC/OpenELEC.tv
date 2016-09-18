@@ -34,13 +34,8 @@ PKG_AUTORECONF="no"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="kodi.inputstream"
 
-configure_target() {
-  cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
-        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
-        ..
-}
+PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
+                       -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr"
 
 post_makeinstall_target() {
   cd $ROOT/$PKG_BUILD/wvdecrypter
@@ -63,4 +58,3 @@ addon() {
    mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/lib
     cp -P $PKG_BUILD/wvdecrypter/libssd_wv.so $ADDON_BUILD/$PKG_ADDON_ID/lib
 }
-
