@@ -38,7 +38,7 @@ PKG_CONFIGURE_OPTS_TARGET="XKBCOMP=/usr/bin/xkbcomp \
                            --enable-runtime-deps \
                            --enable-nls \
                            --disable-rpath \
-                           --with-xkb-base=$XORG_PATH_XKB \
+                           --with-xkb-base=/usr/share/X11/xkb \
                            --with-xkb-rules-symlink=xorg \
                            --with-gnu-ld"
 
