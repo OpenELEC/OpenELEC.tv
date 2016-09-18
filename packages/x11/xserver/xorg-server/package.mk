@@ -120,8 +120,8 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --with-sha1=libcrypto \
                            --without-systemd-daemon \
                            --with-os-vendor=OpenELEC.tv \
-                           --with-module-dir=$XORG_PATH_MODULES \
-                           --with-xkb-path=$XORG_PATH_XKB \
+                           --with-module-dir=/usr/lib/xorg/modules \
+                           --with-xkb-path=/usr/share/X11/xkb \
                            --with-xkb-output=/var/cache/xkb \
                            --with-log-dir=/var/log \
                            --with-fontrootdir=/usr/share/fonts \
