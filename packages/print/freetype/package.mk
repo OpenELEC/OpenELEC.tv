@@ -32,7 +32,7 @@ PKG_LONGDESC="The FreeType engine is a free and portable TrueType font rendering
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=ON \
+PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=OFF \
                        -DWITH_ZLIB=ON \
                        -DWITH_BZIP2=OFF \
                        -DWITH_PNG=OFF \
