@@ -55,33 +55,33 @@ esac
 if [ "$DISPLAYSERVER" = "x11" ]; then
 # for libX11 support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libX11 libXext libdrm libXrandr"
-  KODI_XORG="--enable-x11"
+  KODI_CONFIG="$KODI_CONFIG --enable-x11"
 else
-  KODI_XORG="--disable-x11"
+  KODI_CONFIG="$KODI_CONFIG --disable-x11"
 fi
 
 if [ "$OPENGL" = "mesa" ]; then
 # for OpenGL (GLX) support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glu"
-  KODI_OPENGL="--enable-gl --disable-gles"
+  KODI_CONFIG="$KODI_CONFIG --enable-gl --disable-gles"
 else
-  KODI_OPENGL="--disable-gl --enable-gles"
+  KODI_CONFIG="$KODI_CONFIG --disable-gl --enable-gles"
 fi
 
 if [ "$ALSA_SUPPORT" = yes ]; then
 # for ALSA support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET alsa-lib"
-  KODI_ALSA="--enable-alsa"
+  KODI_CONFIG="$KODI_CONFIG --enable-alsa"
 else
-  KODI_ALSA="--disable-alsa"
+  KODI_CONFIG="$KODI_CONFIG --disable-alsa"
 fi
 
 if [ "$PULSEAUDIO_SUPPORT" = yes ]; then
 # for PulseAudio support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
-  KODI_PULSEAUDIO="--enable-pulse"
+  KODI_CONFIG="$KODI_CONFIG --enable-pulse"
 else
-  KODI_PULSEAUDIO="--disable-pulse"
+  KODI_CONFIG="$KODI_CONFIG --disable-pulse"
 fi
 
 if [ "$ESPEAK_SUPPORT" = yes ]; then
@@ -92,135 +92,133 @@ fi
 if [ "$CEC_SUPPORT" = yes ]; then
 # for CEC support
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libcec"
-  KODI_CEC="--enable-libcec"
+  KODI_CONFIG="$KODI_CONFIG --enable-libcec"
 else
-  KODI_CEC="--disable-libcec"
+  KODI_CONFIG="$KODI_CONFIG --disable-libcec"
 fi
 
 if [ "$KODI_OPTICAL_SUPPORT" = yes ]; then
-  KODI_OPTICAL="--enable-optical-drive"
+  KODI_CONFIG="$KODI_CONFIG --enable-optical-drive"
 else
-  KODI_OPTICAL="--disable-optical-drive"
+  KODI_CONFIG="$KODI_CONFIG --disable-optical-drive"
 fi
 
 if [ "$KODI_NONFREE_SUPPORT" = yes ]; then
 # for non-free support
-  KODI_NONFREE="--enable-non-free"
+  KODI_CONFIG="$KODI_CONFIG --enable-non-free"
 else
-  KODI_NONFREE="--disable-non-free"
+  KODI_CONFIG="$KODI_CONFIG --disable-non-free"
 fi
 
 if [ "$KODI_DVDCSS_SUPPORT" = yes ]; then
-  KODI_DVDCSS="--enable-dvdcss"
+  KODI_CONFIG="$KODI_CONFIG --enable-dvdcss"
 else
-  KODI_DVDCSS="--disable-dvdcss"
+  KODI_CONFIG="$KODI_CONFIG --disable-dvdcss"
 fi
 
 if [ "$KODI_BLURAY_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libbluray"
-  KODI_BLURAY="--enable-libbluray"
+  KODI_CONFIG="$KODI_CONFIG --enable-libbluray"
 else
-  KODI_BLURAY="--disable-libbluray"
+  KODI_CONFIG="$KODI_CONFIG --disable-libbluray"
 fi
 
 if [ "$AVAHI_DAEMON" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET avahi nss-mdns"
-  KODI_AVAHI="--enable-avahi"
+  KODI_CONFIG="$KODI_CONFIG --enable-avahi"
 else
-  KODI_AVAHI="--disable-avahi"
+  KODI_CONFIG="$KODI_CONFIG --disable-avahi"
 fi
 
 if [ "$KODI_MYSQL_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mariadb"
-  KODI_MYSQL="--enable-mysql"
+  KODI_CONFIG="$KODI_CONFIG --enable-mysql"
 else
-  KODI_MYSQL="--disable-mysql"
+  KODI_CONFIG="$KODI_CONFIG --disable-mysql"
 fi
 
 if [ "$KODI_AIRPLAY_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libplist"
-  KODI_AIRPLAY="--enable-airplay"
+  KODI_CONFIG="$KODI_CONFIG --enable-airplay"
 else
-  KODI_AIRPLAY="--disable-airplay"
+  KODI_CONFIG="$KODI_CONFIG --disable-airplay"
 fi
 
 if [ "$KODI_AIRTUNES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libshairplay"
-  KODI_AIRTUNES="--enable-airtunes"
+  KODI_CONFIG="$KODI_CONFIG --enable-airtunes"
 else
-  KODI_AIRTUNES="--disable-airtunes"
+  KODI_CONFIG="$KODI_CONFIG --disable-airtunes"
 fi
 
 if [ "$KODI_NFS_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libnfs"
-  KODI_NFS="--enable-nfs"
+  KODI_CONFIG="$KODI_CONFIG --enable-nfs"
 else
-  KODI_NFS="--disable-nfs"
+  KODI_CONFIG="$KODI_CONFIG --disable-nfs"
 fi
 
 if [ "$KODI_SAMBA_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET samba"
-  KODI_SAMBA="--enable-samba"
+  KODI_CONFIG="$KODI_CONFIG --enable-samba"
 else
-  KODI_SAMBA="--disable-samba"
+  KODI_CONFIG="$KODI_CONFIG --disable-samba"
 fi
 
 if [ "$KODI_WEBSERVER_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libmicrohttpd"
-  KODI_WEBSERVER="--enable-webserver"
+  KODI_CONFIG="$KODI_CONFIG --enable-webserver"
 else
-  KODI_WEBSERVER="--disable-webserver"
+  KODI_CONFIG="$KODI_CONFIG --disable-webserver"
 fi
 
 if [ "$KODI_UPNP_SUPPORT" = yes ]; then
-  KODI_UPNP="--enable-upnp"
+  KODI_CONFIG="$KODI_CONFIG --enable-upnp"
 else
-  KODI_UPNP="--disable-upnp"
+  KODI_CONFIG="$KODI_CONFIG --disable-upnp"
 fi
 
 if [ "$KODI_SSHLIB_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libssh"
-  KODI_SSH="--enable-ssh"
+  KODI_CONFIG="$KODI_CONFIG --enable-ssh"
 else
-  KODI_SSH="--disable-ssh"
+  KODI_CONFIG="$KODI_CONFIG --disable-ssh"
 fi
 
 if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $KODIPLAYER_DRIVER"
 
   if [ "$KODIPLAYER_DRIVER" = bcm2835-firmware ]; then
-    KODI_OPENMAX="--enable-openmax"
-    KODI_PLAYER="--enable-player=omxplayer"
-    KODI_CODEC="--with-platform=raspberry-pi"
+    KODI_CONFIG="$KODI_CONFIG --enable-openmax"
+    KODI_CONFIG="$KODI_CONFIG --enable-player=omxplayer"
+    KODI_CONFIG="$KODI_CONFIG --with-platform=raspberry-pi"
     BCM2835_INCLUDES="-I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads/ \
                       -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
     KODI_CFLAGS="$KODI_CFLAGS $BCM2835_INCLUDES"
     KODI_CXXFLAGS="$KODI_CXXFLAGS $BCM2835_INCLUDES"
   elif [ "$KODIPLAYER_DRIVER" = libfslvpuwrap ]; then
-    KODI_CODEC="--enable-codec=imxvpu"
+    KODI_CONFIG="$KODI_CONFIG --enable-codec=imxvpu"
   elif [ "$KODIPLAYER_DRIVER" = libamcodec ]; then
-    KODI_CODEC="--enable-codec=amcodec"
+    KODI_CONFIG="$KODI_CONFIG --enable-codec=amcodec"
   else
-    KODI_OPENMAX="--disable-openmax"
+    KODI_CONFIG="$KODI_CONFIG --disable-openmax"
   fi
 fi
 
 if [ "$VDPAU_SUPPORT" = "yes" -a "$DISPLAYSERVER" = "x11" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libvdpau"
-  KODI_VDPAU="--enable-vdpau"
+  KODI_CONFIG="$KODI_CONFIG --enable-vdpau"
 else
-  KODI_VDPAU="--disable-vdpau"
+  KODI_CONFIG="$KODI_CONFIG --disable-vdpau"
 fi
 
 if [ "$VAAPI_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libva-intel-driver"
-  KODI_VAAPI="--enable-vaapi"
+  KODI_CONFIG="$KODI_CONFIG --enable-vaapi"
 else
-  KODI_VAAPI="--disable-vaapi"
+  KODI_CONFIG="$KODI_CONFIG --disable-vaapi"
 fi
 
-export CXX_FOR_BUILD="$HOST_CXX"
-export CC_FOR_BUILD="$HOST_CC"
 export CXXFLAGS_FOR_BUILD="$HOST_CXXFLAGS"
 export CFLAGS_FOR_BUILD="$HOST_CFLAGS"
 export LDFLAGS_FOR_BUILD="$HOST_LDFLAGS"
@@ -237,40 +235,18 @@ PKG_CONFIGURE_OPTS_TARGET="gl_cv_func_gettimeofday_clobber=no \
                            ac_python_version=$PYTHON_VERSION \
                            --disable-debug \
                            --disable-optimizations \
-                           $KODI_OPENGL \
-                           $KODI_OPENMAX \
-                           $KODI_VDPAU \
-                           $KODI_VAAPI \
                            --disable-vtbdecoder \
                            --disable-tegra \
                            --disable-profiling \
-                           $KODI_CEC \
                            --enable-udev \
                            --disable-libusb \
-                           $KODI_XORG \
                            --disable-ccache \
-                           $KODI_ALSA \
-                           $KODI_PULSEAUDIO \
-                           $KODI_SAMBA \
-                           $KODI_NFS \
                            --disable-libcap \
-                           $KODI_DVDCSS \
                            --disable-mid \
-                           $KODI_AVAHI \
-                           $KODI_UPNP \
-                           $KODI_MYSQL \
-                           $KODI_SSH \
-                           $KODI_AIRPLAY \
-                           $KODI_AIRTUNES \
                            --disable-libbluetooth \
-                           $KODI_NONFREE \
-                           $KODI_WEBSERVER \
-                           $KODI_OPTICAL \
-                           $KODI_BLURAY \
                            --enable-texturepacker \
                            --with-ffmpeg=shared \
-                           $KODI_CODEC \
-                           $KODI_PLAYER"
+                           $KODI_CONFIG"
 
 build_cmake_hosttool() {
 # this build a cmake tool for host with cmake
