@@ -1,63 +1,77 @@
-diff -Nur a/configs/orangepi_2_defconfig b/configs/orangepi_2_defconfig
---- a/configs/orangepi_2_defconfig	2016-07-11 21:01:01.000000000 +0200
-+++ b/configs/orangepi_2_defconfig	2016-08-17 21:01:44.006323512 +0200
-@@ -1,7 +1,7 @@
- CONFIG_ARM=y
- CONFIG_ARCH_SUNXI=y
- CONFIG_MACH_SUN8I_H3=y
--CONFIG_DRAM_CLK=672
-+CONFIG_DRAM_CLK=624
- CONFIG_DRAM_ZQ=3881979
- CONFIG_DRAM_ODT_EN=y
- CONFIG_MMC0_CD_PIN="PF6"
-@@ -14,4 +14,4 @@
- # CONFIG_CMD_FLASH is not set
+diff -Nur a/configs/orangepi_2_defconfig configs/configs/orangepi_2_defconfig
+--- a/configs/orangepi_2_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_2_defconfig	2016-09-20 19:09:21.943391943 +0200
+@@ -13,4 +13,6 @@
  # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
  CONFIG_SY8106A_POWER=y
 -CONFIG_USB_EHCI_HCD=y
 +# CONFIG_USB_EHCI_HCD is not set
-diff -Nur a/configs/orangepi_one_defconfig b/configs/orangepi_one_defconfig
---- a/configs/orangepi_one_defconfig	2016-07-11 21:01:01.000000000 +0200
-+++ b/configs/orangepi_one_defconfig	2016-08-17 21:01:54.576323219 +0200
-@@ -1,7 +1,7 @@
- CONFIG_ARM=y
- CONFIG_ARCH_SUNXI=y
- CONFIG_MACH_SUN8I_H3=y
--CONFIG_DRAM_CLK=672
-+CONFIG_DRAM_CLK=624
- CONFIG_DRAM_ZQ=3881979
- CONFIG_DRAM_ODT_EN=y
- CONFIG_MMC0_CD_PIN="PF6"
-@@ -12,4 +12,4 @@
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_lite_defconfig configs/configs/orangepi_lite_defconfig
+--- a/configs/orangepi_lite_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_lite_defconfig	2016-09-20 19:09:36.436725403 +0200
+@@ -10,4 +10,6 @@
  # CONFIG_CMD_IMLS is not set
  # CONFIG_CMD_FLASH is not set
  # CONFIG_CMD_FPGA is not set
 -CONFIG_USB_EHCI_HCD=y
 +# CONFIG_USB_EHCI_HCD is not set
-diff -Nur a/configs/orangepi_pc_defconfig b/configs/orangepi_pc_defconfig
---- a/configs/orangepi_pc_defconfig	2016-07-11 21:01:01.000000000 +0200
-+++ b/configs/orangepi_pc_defconfig	2016-08-17 21:01:59.826323074 +0200
-@@ -12,4 +12,4 @@
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_one_defconfig configs/configs/orangepi_one_defconfig
+--- a/configs/orangepi_one_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_one_defconfig	2016-09-20 19:09:53.413392217 +0200
+@@ -11,4 +11,6 @@
  # CONFIG_CMD_FLASH is not set
  # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
+-CONFIG_USB_EHCI_HCD=y
++# CONFIG_USB_EHCI_HCD is not set
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_pc_defconfig configs/configs/orangepi_pc_defconfig
+--- a/configs/orangepi_pc_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_pc_defconfig	2016-09-20 19:10:05.656725657 +0200
+@@ -12,4 +12,6 @@
+ # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
  CONFIG_SY8106A_POWER=y
 -CONFIG_USB_EHCI_HCD=y
 +# CONFIG_USB_EHCI_HCD is not set
-diff -Nur a/configs/orangepi_plus_defconfig b/configs/orangepi_plus_defconfig
---- a/configs/orangepi_plus_defconfig	2016-07-11 21:01:01.000000000 +0200
-+++ b/configs/orangepi_plus_defconfig	2016-08-17 21:02:10.206322786 +0200
-@@ -1,7 +1,7 @@
- CONFIG_ARM=y
- CONFIG_ARCH_SUNXI=y
- CONFIG_MACH_SUN8I_H3=y
--CONFIG_DRAM_CLK=672
-+CONFIG_DRAM_CLK=624
- CONFIG_DRAM_ZQ=3881979
- CONFIG_DRAM_ODT_EN=y
- CONFIG_MMC0_CD_PIN="PF6"
-@@ -16,4 +16,4 @@
- # CONFIG_CMD_FLASH is not set
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_pc_plus_defconfig configs/configs/orangepi_pc_plus_defconfig
+--- a/configs/orangepi_pc_plus_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_pc_plus_defconfig	2016-09-20 19:10:18.013392431 +0200
+@@ -13,4 +13,6 @@
  # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
  CONFIG_SY8106A_POWER=y
 -CONFIG_USB_EHCI_HCD=y
 +# CONFIG_USB_EHCI_HCD is not set
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_plus2e_defconfig configs/configs/orangepi_plus2e_defconfig
+--- a/configs/orangepi_plus2e_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_plus2e_defconfig	2016-09-20 19:10:41.586725969 +0200
+@@ -14,4 +14,6 @@
+ # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
+ CONFIG_SY8106A_POWER=y
+-CONFIG_USB_EHCI_HCD=y
++# CONFIG_USB_EHCI_HCD is not set
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
+diff -Nur a/configs/orangepi_plus_defconfig configs/configs/orangepi_plus_defconfig
+--- a/configs/orangepi_plus_defconfig	2016-09-12 16:05:51.000000000 +0200
++++ configs/configs/orangepi_plus_defconfig	2016-09-20 19:10:29.233392528 +0200
+@@ -15,4 +15,6 @@
+ # CONFIG_CMD_FPGA is not set
+ CONFIG_SUN8I_EMAC=y
+ CONFIG_SY8106A_POWER=y
+-CONFIG_USB_EHCI_HCD=y
++# CONFIG_USB_EHCI_HCD is not set
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
