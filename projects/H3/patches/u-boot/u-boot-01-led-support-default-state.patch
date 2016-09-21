@@ -1,6 +1,18 @@
+diff -Nur a/arch/arm/Kconfig leds/arch/arm/Kconfig
+--- a/arch/arm/Kconfig	2016-09-12 16:05:51.000000000 +0200
++++ leds/arch/arm/Kconfig	2016-09-21 19:17:56.246729135 +0200
+@@ -651,6 +651,8 @@
+ 	select DM_KEYBOARD
+ 	select DM_SERIAL
+ 	select DM_USB
++	select LED
++	select LED_GPIO
+ 	select OF_BOARD_SETUP
+ 	select OF_CONTROL
+ 	select OF_SEPARATE
 diff -Nur a/board/sunxi/board.c leds/board/sunxi/board.c
 --- a/board/sunxi/board.c	2016-09-12 16:05:51.000000000 +0200
-+++ leds/board/sunxi/board.c	2016-09-20 18:57:31.593385774 +0200
++++ leds/board/sunxi/board.c	2016-09-21 19:14:16.236727224 +0200
 @@ -29,6 +29,7 @@
  #include <asm/io.h>
  #include <crc.h>
@@ -24,7 +36,7 @@ diff -Nur a/board/sunxi/board.c leds/board/sunxi/board.c
  	/* determine if we are running in FEL mode */
 diff -Nur a/drivers/led/led_gpio.c leds/drivers/led/led_gpio.c
 --- a/drivers/led/led_gpio.c	2016-09-12 16:05:51.000000000 +0200
-+++ leds/drivers/led/led_gpio.c	2016-09-20 19:38:18.773407029 +0200
++++ leds/drivers/led/led_gpio.c	2016-09-21 19:14:16.236727224 +0200
 @@ -67,6 +67,7 @@
  	     node = fdt_next_subnode(blob, node)) {
  		struct led_uclass_plat *uc_plat;
@@ -59,7 +71,7 @@ diff -Nur a/drivers/led/led_gpio.c leds/drivers/led/led_gpio.c
  	return 0;
 diff -Nur a/drivers/led/led-uclass.c leds/drivers/led/led-uclass.c
 --- a/drivers/led/led-uclass.c	2016-09-12 16:05:51.000000000 +0200
-+++ leds/drivers/led/led-uclass.c	2016-09-20 19:37:58.893406856 +0200
++++ leds/drivers/led/led-uclass.c	2016-09-21 19:14:16.236727224 +0200
 @@ -12,6 +12,21 @@
  #include <dm/root.h>
  #include <dm/uclass-internal.h>
@@ -111,7 +123,7 @@ diff -Nur a/drivers/led/led-uclass.c leds/drivers/led/led-uclass.c
  	struct led_ops *ops = led_get_ops(dev);
 diff -Nur a/include/led.h leds/include/led.h
 --- a/include/led.h	2016-09-12 16:05:51.000000000 +0200
-+++ leds/include/led.h	2016-09-20 19:36:38.453406158 +0200
++++ leds/include/led.h	2016-09-21 19:14:16.236727224 +0200
 @@ -8,6 +8,14 @@
  #ifndef __LED_H
  #define __LED_H
