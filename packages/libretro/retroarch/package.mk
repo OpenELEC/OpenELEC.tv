@@ -147,6 +147,11 @@ makeinstall_target() {
   # Menu
   sed -i -e "s/# menu_core_enable = true/menu_core_enable = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# thumbnails_directory =/thumbnails_directory = \/storage\/thumbnails/" $INSTALL/etc/retroarch.cfg
+  echo "menu_show_advanced_settings = \"false\"" >> $INSTALL/etc/retroarch.cfg
+  echo "menu_wallpaper_opacity = \"1.0\"" >> $INSTALL/etc/retroarch.cfg
+  echo "xmb_show_images = \"false\"" >> $INSTALL/etc/retroarch.cfg
+  echo "xmb_show_music = \"false\"" >> $INSTALL/etc/retroarch.cfg
+  echo "xmb_show_video = \"false\"" >> $INSTALL/etc/retroarch.cfg
 
   # Updater
   if [ "$ARCH" == "arm" ]; then
