@@ -31,6 +31,19 @@ case $OPENGL in
     PKG_SHORTDESC="opengl: virtual package to build OpenGL(X/ES) support"
     PKG_LONGDESC="opengl is a virtual package to build OpenGL(X/ES) support."
     ;;
+  gpu-viv-bin-mx6q)
+    PKG_VERSION="$OPENGL-3.10.17-1.0.2"
+    PKG_REV="1"
+    PKG_ARCH="arm"
+    PKG_LICENSE="nonfree"
+    PKG_SITE="http://www.freescale.com"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="toolchain gpu-viv-g2d"
+    PKG_PRIORITY="optional"
+    PKG_SECTION="graphics"
+    PKG_SHORTDESC="gpu-viv-bin-mx6q: OpenGL-ES and VIVANTE driver for imx6q"
+    PKG_LONGDESC="gpu-viv-bin-mx6q: OpenGL-ES and VIVANTE driver for imx6q"
+    ;;
   imx-gpu-viv)
     PKG_VERSION="$OPENGL-5.0.11.p4.5"
     PKG_REV="1"
@@ -84,6 +97,22 @@ fi
 if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" ]; then
   OPENGL_INCLUDES="usr/include/*"
   OPENGL_LIBRARYS="usr/lib/*.so*"
+elif [ "$OPENGL" = "gpu-viv-bin-mx6q" ]; then
+  OPENGL_INCLUDES="$FLOAT/usr/include/*"
+  OPENGL_LIBRARYS="$FLOAT/usr/lib/libEGL-fb.so \
+                   $FLOAT/usr/lib/libEGL.so* \
+                   $FLOAT/usr/lib/libGLES_CL.so \
+                   $FLOAT/usr/lib/libGLES_CM.so \
+                   $FLOAT/usr/lib/libGLESv1_CL.so* \
+                   $FLOAT/usr/lib/libGLESv1_CM.so* \
+                   $FLOAT/usr/lib/libGLESv2-fb.so \
+                   $FLOAT/usr/lib/libGLESv2.so* \
+                   $FLOAT/usr/lib/libGLSLC.so* \
+                   $FLOAT/usr/lib/libGAL-fb.so \
+                   $FLOAT/usr/lib/libGAL.so* \
+                   $FLOAT/usr/lib/libVIVANTE-fb.so \
+                   $FLOAT/usr/lib/libVIVANTE.so* \
+                   $FLOAT/usr/lib/libOpenCL.so"
 elif [ "$OPENGL" = "imx-gpu-viv" ]; then
   OPENGL_INCLUDES="$FLOAT/gpu-core/usr/include/* \
                    $FLOAT/g2d/usr/include/*"
@@ -126,5 +155,3 @@ if [ ! "$OPENGL" = "mesa" ]; then
     enable_service unbind-console.service
   }
 fi
-
-
