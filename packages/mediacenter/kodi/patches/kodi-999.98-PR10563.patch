@@ -1,0 +1,176 @@
+From 644d950f7b059cae77d7576ac7dd349f059e7129 Mon Sep 17 00:00:00 2001
+From: Stephan Raue <stephan@openelec.tv>
+Date: Sun, 25 Sep 2016 23:20:37 +0200
+Subject: [PATCH] [cmake] [IMX] add cmake option -DENABLE_IMXVPU to add and
+ complete support for IMX based devices. Rename IMX_FOUND to IMXVPU_FOUND so
+ it matches with the needed libraries.
+
+---
+ project/cmake/CMakeLists.txt                       |  2 ++
+ project/cmake/modules/FindEMBEDDED.cmake           |  2 +-
+ project/cmake/modules/FindIMXVPU.cmake             | 27 ++++++++++++++++++++++
+ .../VideoPlayer/DVDCodecs/Video/CMakeLists.txt     |  2 +-
+ .../VideoRenderers/HwDecRender/CMakeLists.txt      |  2 +-
+ xbmc/linux/CMakeLists.txt                          |  7 ++++++
+ xbmc/linux/imx/CMakeLists.txt                      |  6 -----
+ xbmc/video/videosync/CMakeLists.txt                |  5 ++++
+ xbmc/windowing/egl/CMakeLists.txt                  |  7 +++++-
+ 9 files changed, 50 insertions(+), 10 deletions(-)
+ create mode 100644 project/cmake/modules/FindIMXVPU.cmake
+ delete mode 100644 xbmc/linux/imx/CMakeLists.txt
+
+diff --git a/project/cmake/CMakeLists.txt b/project/cmake/CMakeLists.txt
+index 76870a4..2d93e84 100644
+--- a/project/cmake/CMakeLists.txt
++++ b/project/cmake/CMakeLists.txt
+@@ -56,6 +56,7 @@ if(UNIX)
+   if(CORE_SYSTEM_NAME STREQUAL linux OR CORE_SYSTEM_NAME STREQUAL freebsd)
+     option(ENABLE_X11         "Enable X11 support?" ON)
+     option(ENABLE_AML         "Enable AML?" OFF)
++    option(ENABLE_IMXVPU      "Enable IMX VPU support?" OFF)
+   endif()
+ endif()
+ # System options
+@@ -216,6 +217,7 @@ endif()
+ 
+ if(CORE_SYSTEM_NAME STREQUAL android OR CORE_SYSTEM_NAME STREQUAL linux)
+   core_optional_dep(AML)
++  core_optional_dep(IMXVPU)
+ elseif(CORE_SYSTEM_NAME STREQUAL rbpi)
+   core_require_dep(MMAL)
+ endif()
+diff --git a/project/cmake/modules/FindEMBEDDED.cmake b/project/cmake/modules/FindEMBEDDED.cmake
+index aa938c5..0b1fa9b 100644
+--- a/project/cmake/modules/FindEMBEDDED.cmake
++++ b/project/cmake/modules/FindEMBEDDED.cmake
+@@ -13,4 +13,4 @@ if(NOT CMAKE_CROSSCOMPILING AND NOT TARGET_ARCH_ARM)
+   return()
+ endif()
+ 
+-find_path(EMBEDDED_FOUND NAMES include/linux/imxfb.h include/bcm_host.h PATHS /opt/vc)
++find_path(EMBEDDED_FOUND NAMES include/linux/mxcfb.h include/bcm_host.h PATHS /opt/vc)
+diff --git a/project/cmake/modules/FindIMXVPU.cmake b/project/cmake/modules/FindIMXVPU.cmake
+new file mode 100644
+index 0000000..f181420
+--- /dev/null
++++ b/project/cmake/modules/FindIMXVPU.cmake
+@@ -0,0 +1,27 @@
++# - Try to find IMXVPU
++# Once done this will define
++#
++# IMXVPU_FOUND - system has IMXVPU
++# IMXVPU_INCLUDE_DIRS - the IMXVPU include directory
++# IMXVPU_LIBRARIES - The IMXVPU libraries
++
++if(PKG_CONFIG_FOUND)
++  pkg_check_modules(IMXVPU fslvpuwrap QUIET)
++endif()
++
++if(NOT IMXVPU_FOUND)
++  find_path(IMXVPU_INCLUDE_DIRS imx-mm/vpu/vpu_wrapper.h)
++  find_library(FSLVPUWRAP_LIBRARY fslvpuwrap)
++  find_library(VPU_LIBRARY vpu)
++  find_library(G2D_LIBRARY g2d)
++
++  set(IMXVPU_LIBRARIES ${VPU_LIBRARY} ${FSLVPUWRAP_LIBRARY} ${G2D_LIBRARY}
++      CACHE STRING "imx-vpu libraries" FORCE)
++endif()
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(IMXVPU DEFAULT_MSG IMXVPU_LIBRARIES IMXVPU_INCLUDE_DIRS)
++
++list(APPEND IMXVPU_DEFINITIONS -DHAS_IMXVPU=1 -DLINUX -DEGL_API_FB)
++
++mark_as_advanced(IMXVPU_INCLUDE_DIRS IMXVPU_LIBRARIES IMXVPU_DEFINITIONS)
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/CMakeLists.txt b/xbmc/cores/VideoPlayer/DVDCodecs/Video/CMakeLists.txt
+index 7ee3bb6..b586f73c 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/CMakeLists.txt
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/CMakeLists.txt
+@@ -53,7 +53,7 @@ if(MMAL_FOUND)
+   list(APPEND HEADERS MMALFFmpeg.h)
+ endif()
+ 
+-if(IMX_FOUND)
++if(IMXVPU_FOUND)
+   list(APPEND SOURCES DVDVideoCodecIMX.cpp)
+   list(APPEND HEADERS DVDVideoCodecIMX.h)
+ endif()
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
+index ed575cf..bef2f2f 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
+@@ -38,7 +38,7 @@ if(OPENMAX_FOUND)
+   list(APPEND HEADERS RendererOpenMax.h)
+ endif()
+ 
+-if(IMX_FOUND)
++if(IMXVPU_FOUND)
+   list(APPEND SOURCES RendererIMX.cpp)
+   list(APPEND HEADERS RendererIMX.h)
+ endif()
+diff --git a/xbmc/linux/CMakeLists.txt b/xbmc/linux/CMakeLists.txt
+index 754cc1e..182be4a 100644
+--- a/xbmc/linux/CMakeLists.txt
++++ b/xbmc/linux/CMakeLists.txt
+@@ -40,4 +40,11 @@ if(OMXLIB_FOUND)
+                       OMXCore.h)
+ endif()
+ 
++if(IMXVPU_FOUND)
++  list(APPEND SOURCES imx/IMX.cpp
++                      imx/GlobalsIMX.cpp)
++  list(APPEND HEADERS imx/IMX.h)
++endif()
++
++
+ core_add_library(linuxsupport)
+diff --git a/xbmc/linux/imx/CMakeLists.txt b/xbmc/linux/imx/CMakeLists.txt
+deleted file mode 100644
+index 2c2fc9a..0000000
+--- a/xbmc/linux/imx/CMakeLists.txt
++++ /dev/null
+@@ -1,6 +0,0 @@
+-set(SOURCES IMX.cpp
+-            GlobalsIMX.cpp)
+-
+-set(HEADERS IMX.h)
+-
+-core_add_library(linuxsupport_imx)
+diff --git a/xbmc/video/videosync/CMakeLists.txt b/xbmc/video/videosync/CMakeLists.txt
+index 421af44..d062e39 100644
+--- a/xbmc/video/videosync/CMakeLists.txt
++++ b/xbmc/video/videosync/CMakeLists.txt
+@@ -20,6 +20,11 @@ if(CORE_SYSTEM_NAME STREQUAL rbpi)
+   list(APPEND HEADERS VideoSyncPi.h)
+ endif()
+ 
++if(IMXVPU_FOUND)
++  list(APPEND SOURCES VideoSyncIMX.cpp)
++  list(APPEND HEADERS VideoSyncIMX.h)
++endif()
++
+ if(CORE_SYSTEM_NAME STREQUAL osx)
+   list(APPEND SOURCES VideoSyncOsx.cpp)
+   list(APPEND HEADERS VideoSyncOsx.h)
+diff --git a/xbmc/windowing/egl/CMakeLists.txt b/xbmc/windowing/egl/CMakeLists.txt
+index 3ab603e..00a8d81 100644
+--- a/xbmc/windowing/egl/CMakeLists.txt
++++ b/xbmc/windowing/egl/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-if(OPENGLES_FOUND OR AML_FOUND OR MMAL_FOUND)
++if(OPENGLES_FOUND OR AML_FOUND OR IMXVPU_FOUND OR MMAL_FOUND)
+   set(SOURCES EGLWrapper.cpp)
+ 
+   set(HEADERS EGLNativeType.h
+@@ -25,6 +25,11 @@ if(AML_FOUND)
+   list(APPEND HEADERS EGLNativeTypeAmlogic.h)
+ endif()
+ 
++if(IMXVPU_FOUND)
++  list(APPEND SOURCES EGLNativeTypeIMX.cpp)
++  list(APPEND HEADERS EGLNativeTypeIMX.h)
++endif()
++
+ if(MMAL_FOUND)
+   list(APPEND SOURCES EGLNativeTypeRaspberryPI.cpp)
+   list(APPEND HEADERS EGLNativeTypeRaspberryPI.h)
