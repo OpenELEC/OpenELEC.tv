@@ -472,10 +472,8 @@ gmac_phy_power_en   = port:PD06<1><default><default><0>
 ;axp22_eldo2
 ;fill handle string "" when not using any pmu power supply
 ;--------------------------------------------------------------------------------
-
 [csi0]
-
-vip_used                 = 1
+vip_used                 = 0
 vip_mode                 = 0
 vip_dev_qty              = 1
 vip_define_sensor_list   = 0
