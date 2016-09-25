@@ -1,10 +1,10 @@
 # see https://github.com/wongsyrone/openwrt-1/commit/93c0a5173414cfa7684547de3c3a1f3dc4240383
 # and https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65932
 
-diff -Naur linux-cuboxi-3.14-ea83bda.orig/arch/arm/Makefile linux-cuboxi-3.14-ea83bda/arch/arm/Makefile
---- linux-cuboxi-3.14-ea83bda.orig/arch/arm/Makefile	2015-05-06 10:05:43.000000000 -0700
-+++ linux-cuboxi-3.14-ea83bda/arch/arm/Makefile	2015-10-05 13:51:43.641612713 -0700
-@@ -120,7 +120,8 @@
+diff -Naur linux-4.3-rc5.orig/arch/arm/Makefile linux-4.3-rc5/arch/arm/Makefile
+--- linux-4.3-rc5.orig/arch/arm/Makefile	2015-10-11 11:09:45.000000000 -0700
++++ linux-4.3-rc5/arch/arm/Makefile	2015-10-20 12:24:44.507102957 -0700
+@@ -130,7 +130,8 @@
  endif
  
  # Need -Uarm for gcc < 3.x

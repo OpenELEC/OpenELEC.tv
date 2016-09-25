@@ -1,30 +1,30 @@
-diff -Naur linux-3.15-rc6.orig/drivers/hid/hid-core.c linux-3.15-rc6/drivers/hid/hid-core.c
---- linux-3.15-rc6.orig/drivers/hid/hid-core.c	2014-06-06 13:46:49.711845049 -0700
-+++ linux-3.15-rc6/drivers/hid/hid-core.c	2014-06-06 13:50:33.019965538 -0700
-@@ -1848,6 +1848,7 @@
+diff -Naur linux-3.19.orig/drivers/hid/hid-core.c linux-3.19/drivers/hid/hid-core.c
+--- linux-3.19.orig/drivers/hid/hid-core.c	2015-02-20 14:01:17.080322846 -0800
++++ linux-3.19/drivers/hid/hid-core.c	2015-02-20 14:03:30.375519421 -0800
+@@ -1884,6 +1884,7 @@
  	{ HID_USB_DEVICE(USB_VENDOR_ID_NTRIG, USB_DEVICE_ID_NTRIG_TOUCH_SCREEN_18) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_PKB1700) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_WKB2000) },
 +	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_OUYA, USB_DEVICE_ID_OUYA_CONTROLLER) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_PENMOUNT, USB_DEVICE_ID_PENMOUNT_6000) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_PETALYNX, USB_DEVICE_ID_PETALYNX_MAXTER_REMOTE) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_PHILIPS, USB_DEVICE_ID_PHILIPS_SPINEL_PLUS_1) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_PHILIPS, USB_DEVICE_ID_PHILIPS_SPINEL_PLUS_2) },
-diff -Naur linux-3.15-rc6.orig/drivers/hid/hid-ids.h linux-3.15-rc6/drivers/hid/hid-ids.h
---- linux-3.15-rc6.orig/drivers/hid/hid-ids.h	2014-06-06 13:46:49.711845049 -0700
-+++ linux-3.15-rc6/drivers/hid/hid-ids.h	2014-06-06 13:51:36.146564828 -0700
-@@ -700,6 +700,9 @@
+diff -Naur linux-3.19.orig/drivers/hid/hid-ids.h linux-3.19/drivers/hid/hid-ids.h
+--- linux-3.19.orig/drivers/hid/hid-ids.h	2015-02-20 14:01:17.080322846 -0800
++++ linux-3.19/drivers/hid/hid-ids.h	2015-02-20 14:03:30.382519482 -0800
+@@ -721,6 +721,9 @@
  #define USB_DEVICE_ID_ORTEK_PKB1700	0x1700
  #define USB_DEVICE_ID_ORTEK_WKB2000	0x2000
  
 +#define USB_VENDOR_ID_OUYA		0x2836
 +#define USB_DEVICE_ID_OUYA_CONTROLLER	0x0001
 +
+ #define USB_VENDOR_ID_PLANTRONICS	0x047f
+ 
  #define USB_VENDOR_ID_PANASONIC		0x04da
- #define USB_DEVICE_ID_PANABOARD_UBT780	0x1044
- #define USB_DEVICE_ID_PANABOARD_UBT880	0x104d
-diff -Naur linux-3.15-rc6.orig/drivers/hid/hid-ouya.c linux-3.15-rc6/drivers/hid/hid-ouya.c
---- linux-3.15-rc6.orig/drivers/hid/hid-ouya.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-3.15-rc6/drivers/hid/hid-ouya.c	2014-06-06 13:52:22.785007560 -0700
+diff -Naur linux-3.19.orig/drivers/hid/hid-ouya.c linux-3.19/drivers/hid/hid-ouya.c
+--- linux-3.19.orig/drivers/hid/hid-ouya.c	1969-12-31 16:00:00.000000000 -0800
++++ linux-3.19/drivers/hid/hid-ouya.c	2015-02-20 14:03:30.371519386 -0800
 @@ -0,0 +1,260 @@
 +/*
 + *  HID driver for OUYA Game Controller(s)
@@ -286,10 +286,10 @@ diff -Naur linux-3.15-rc6.orig/drivers/hid/hid-ouya.c linux-3.15-rc6/drivers/hid
 +
 +module_init(ouya_init);
 +module_exit(ouya_exit);
-diff -Naur linux-3.15-rc6.orig/drivers/hid/Kconfig linux-3.15-rc6/drivers/hid/Kconfig
---- linux-3.15-rc6.orig/drivers/hid/Kconfig	2014-06-06 13:46:49.710845040 -0700
-+++ linux-3.15-rc6/drivers/hid/Kconfig	2014-06-06 13:48:41.674908325 -0700
-@@ -499,6 +499,12 @@
+diff -Naur linux-3.19.orig/drivers/hid/Kconfig linux-3.19/drivers/hid/Kconfig
+--- linux-3.19.orig/drivers/hid/Kconfig	2015-02-20 14:01:17.081322855 -0800
++++ linux-3.19/drivers/hid/Kconfig	2015-02-20 14:03:30.381519473 -0800
+@@ -528,6 +528,12 @@
  	   - Ortek WKB-2000
  	   - Skycable wireless presenter
  
@@ -302,14 +302,14 @@ diff -Naur linux-3.15-rc6.orig/drivers/hid/Kconfig linux-3.15-rc6/drivers/hid/Kc
  config HID_PANTHERLORD
  	tristate "Pantherlord/GreenAsia game controller"
  	depends on HID
-diff -Naur linux-3.15-rc6.orig/drivers/hid/Makefile linux-3.15-rc6/drivers/hid/Makefile
---- linux-3.15-rc6.orig/drivers/hid/Makefile	2014-06-06 13:46:49.710845040 -0700
-+++ linux-3.15-rc6/drivers/hid/Makefile	2014-06-06 13:49:23.951309760 -0700
-@@ -68,6 +68,7 @@
+diff -Naur linux-3.19.orig/drivers/hid/Makefile linux-3.19/drivers/hid/Makefile
+--- linux-3.19.orig/drivers/hid/Makefile	2015-02-20 14:01:17.081322855 -0800
++++ linux-3.19/drivers/hid/Makefile	2015-02-20 14:03:30.382519482 -0800
+@@ -70,6 +70,7 @@
  obj-$(CONFIG_HID_MULTITOUCH)	+= hid-multitouch.o
  obj-$(CONFIG_HID_NTRIG)		+= hid-ntrig.o
  obj-$(CONFIG_HID_ORTEK)		+= hid-ortek.o
 +obj-$(CONFIG_HID_OUYA)		+= hid-ouya.o
  obj-$(CONFIG_HID_PRODIKEYS)	+= hid-prodikeys.o
  obj-$(CONFIG_HID_PANTHERLORD)	+= hid-pl.o
- obj-$(CONFIG_HID_PETALYNX)	+= hid-petalynx.o
+ obj-$(CONFIG_HID_PENMOUNT)	+= hid-penmount.o

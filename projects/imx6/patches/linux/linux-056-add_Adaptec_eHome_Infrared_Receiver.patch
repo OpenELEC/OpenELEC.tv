@@ -1,21 +1,21 @@
-diff --git a/drivers/media/rc/mceusb.c b/drivers/media/rc/mceusb.c
-index baa1203..fee1f95 100644
---- a/drivers/media/rc/mceusb.c
-+++ b/drivers/media/rc/mceusb.c
-@@ -200,6 +200,7 @@ static bool debug;
- #define VENDOR_CONEXANT		0x0572
+diff -Naur linux-3.17.1/drivers/media/rc/mceusb.c linux-3.17.1.patch/drivers/media/rc/mceusb.c
+--- linux-3.17.1/drivers/media/rc/mceusb.c	2014-10-15 12:29:30.000000000 +0200
++++ linux-3.17.1.patch/drivers/media/rc/mceusb.c	2014-10-16 11:45:57.480176874 +0200
+@@ -188,6 +188,8 @@
  #define VENDOR_TWISTEDMELON	0x2596
  #define VENDOR_HAUPPAUGE	0x2040
+ #define VENDOR_PCTV		0x2013
 +#define VENDOR_ADAPTEC		0x03f3
++
  
  enum mceusb_model_type {
  	MCE_GEN2 = 0,		/* Most boards */
-@@ -414,6 +415,8 @@ static struct usb_device_id mceusb_dev_table[] = {
- 	/* Hauppauge WINTV-HVR-HVR 930C-HD - based on cx231xx */
- 	{ USB_DEVICE(VENDOR_HAUPPAUGE, 0xb130),
+@@ -401,6 +403,8 @@
+ 	  .driver_info = HAUPPAUGE_CX_HYBRID_TV },
+ 	{ USB_DEVICE(VENDOR_PCTV, 0x025e),
  	  .driver_info = HAUPPAUGE_CX_HYBRID_TV },
 +	/* Adaptec / HP eHome Receiver */
 +	{ USB_DEVICE(VENDOR_ADAPTEC, 0x0094) },
+ 
  	/* Terminating entry */
  	{ }
- };

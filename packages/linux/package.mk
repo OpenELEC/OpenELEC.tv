@@ -36,9 +36,9 @@ case "$LINUX" in
     PKG_GIT_BRANCH="amlogic-3.10.y"
     ;;
   imx6)
-    PKG_VERSION="4386797"
-    PKG_GIT_URL="https://github.com/SolidRun/linux-fslc.git"
-    PKG_GIT_BRANCH="3.14-1.0.x-mx6-sr"
+    PKG_VERSION="f14907b"
+    PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
+    PKG_GIT_BRANCH="imx6-4.4.y"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   rpi)

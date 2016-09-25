@@ -1,15 +1,14 @@
-diff -urN a/drivers/of/fdt.c b/drivers/of/fdt.c
---- a/drivers/of/fdt.c	2015-01-13 20:49:42.799509145 +0100
-+++ b/drivers/of/fdt.c	2015-01-13 20:56:29.118557900 +0100
-@@ -804,6 +804,7 @@
+--- a/drivers/of/fdt.c	2016-01-17 14:32:52.792880390 +0100
++++ b/drivers/of/fdt.c	2016-01-17 14:34:00.170297953 +0100
+@@ -934,6 +934,7 @@
  {
- 	unsigned long l;
- 	char *p;
+ 	int l;
+ 	const char *p;
 +	char tmp_command_line[COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
  
  	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
  
-@@ -822,12 +823,23 @@
+@@ -952,12 +953,23 @@
  	 * CONFIG_CMDLINE is meant to be a default in case nothing else
  	 * managed to set the command line, unless CONFIG_CMDLINE_FORCE
  	 * is set in which case we override whatever was found earlier.

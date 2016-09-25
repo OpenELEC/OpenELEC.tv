@@ -8,15 +8,21 @@
  #ifndef CHAR_BIT
  #define CHAR_BIT 8	/* Normally in <limits.h> */
  #endif
-@@ -242,9 +241,8 @@ again:
- 			}
- 
- 			scancode = data->body;
--			if (data->count == RC6_6A_32_NBITS &&
--					(scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
--				/* MCE RC */
-+			if (data->count == RC6_6A_32_NBITS) {
-+				/* MCE compatible RC */
- 				toggle = (scancode & RC6_6A_MCE_TOGGLE_MASK) ? 1 : 0;
- 				scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
- 			} else {
+@@ -257,14 +256,9 @@ again:
+ 				toggle = 0;
+ 				break;
+ 			case 32:
+-				if ((scancode & RC6_6A_LCC_MASK) == RC6_6A_MCE_CC) {
+-					protocol = RC_TYPE_RC6_MCE;
+-					toggle = !!(scancode & RC6_6A_MCE_TOGGLE_MASK);
+-					scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
+-				} else {
+-					protocol = RC_BIT_RC6_6A_32;
+-					toggle = 0;
+-				}
++				protocol = RC_TYPE_RC6_MCE;
++				toggle = !!(scancode & RC6_6A_MCE_TOGGLE_MASK);
++				scancode &= ~RC6_6A_MCE_TOGGLE_MASK;
+ 				break;
+ 			default:
+ 				IR_dprintk(1, "RC6(6A) unsupported length\n");
