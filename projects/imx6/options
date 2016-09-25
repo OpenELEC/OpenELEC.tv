@@ -95,7 +95,7 @@
     ALSA_SUPPORT="yes"
 
   # OpenGL (X/ES) implementation to use (mesa / bcm2835-firmware / meson6 / meson8 / imx-gpu-viv)
-    OPENGL="imx-gpu-viv"
+    OPENGL="gpu-viv-bin-mx6q
 
   # include uvesafb support (yes / no)
     UVESAFB_SUPPORT="no"
