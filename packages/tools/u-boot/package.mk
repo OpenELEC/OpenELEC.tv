@@ -98,6 +98,8 @@ make_target() {
         TARGET_NAME="opipcplus"
       elif [ "$UBOOT_TARGET" = "Sinovoip_BPI_M3_defconfig" ]; then
         TARGET_NAME="bpim3"
+      elif [ "$UBOOT_TARGET" = "beelink_x2_defconfig" ]; then
+        TARGET_NAME="bx2"
       else
         TARGET_NAME="undef"
       fi
