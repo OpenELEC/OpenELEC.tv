@@ -32,6 +32,9 @@ case "$SYSTEM_TYPE" in
   "TBS Matrix")
     export SYSTEM_TYPE="matrix"
     ;;
+  "SolidRun Cubox-i Solo/DualLite")
+    export SYSTEM_TYPE="cuboxi"
+    ;;
   "SolidRun Cubox-i Dual/Quad")
     export SYSTEM_TYPE="cuboxi"
     ;;
