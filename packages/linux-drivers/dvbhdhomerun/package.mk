@@ -35,7 +35,7 @@ PKG_LONGDESC="A linux DVB driver for the HDHomeRun TV tuner (http://www.silicond
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CMAKE_SCRIPT="userhdhomerun/CMakeLists.txt"
+PKG_CMAKE_SCRIPT_TARGET="userhdhomerun/CMakeLists.txt"
 
 pre_make_target() {
   ( cd ../kernel
