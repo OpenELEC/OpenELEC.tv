@@ -76,13 +76,13 @@ diff -Nur a/src/libcec/adapter/AdapterFactory.cpp b/src/libcec/adapter/AdapterFa
 +  }
 +#endif
  
--#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_IMX_API)
-+#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_IMX_API) && !defined(HAVE_SUNXI_API)
+-#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_IMX_API) && !defined(HAVE_AMLOGIC_API)
++#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_IMX_API) && !defined(HAVE_AMLOGIC_API) && !defined(HAVE_SUNXI_API)
  #error "libCEC doesn't have support for any type of adapter. please check your build system or configuration"
  #endif
  
 @@ -198,11 +215,16 @@
-     return new CIMXCECAdapterCommunication(m_lib->m_cec);
+     return new CAmlogicCECAdapterCommunication(m_lib->m_cec);
  #endif
  
 +#if defined(HAVE_SUNXI_API)
@@ -94,8 +94,8 @@ diff -Nur a/src/libcec/adapter/AdapterFactory.cpp b/src/libcec/adapter/AdapterFa
    return new CUSBCECAdapterCommunication(m_lib->m_cec, strPort, iBaudRate);
  #endif
  
--#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_IMX_API)  && !defined(HAVE_AMLOGIC_API)
-+#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_IMX_API)  && !defined(HAVE_AMLOGIC_API) && !defined(HAVE_SUNXI_API)
+-#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_IMX_API) && !defined(HAVE_AMLOGIC_API)
++#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_IMX_API) && !defined(HAVE_AMLOGIC_API) && !defined(HAVE_SUNXI_API)
    return NULL;
  #endif
  }
