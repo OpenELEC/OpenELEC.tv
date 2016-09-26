@@ -17,12 +17,11 @@
 ################################################################################
 
 PKG_NAME="xf86-video-intel"
-PKG_VERSION="0204e55"
+PKG_VERSION="74e4c13"
 PKG_REV="1"
 PKG_ARCH="x86_64"
 PKG_LICENSE="OSS"
 PKG_SITE="http://intellinuxgraphics.org/"
-#PKG_URL="http://xorg.freedesktop.org/archive/individual/driver/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_GIT_URL="git://anongit.freedesktop.org/xorg/driver/xf86-video-intel"
 PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain libXcomposite util-macros fontsproto systemd xorg-server"

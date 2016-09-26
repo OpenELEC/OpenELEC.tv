@@ -1,0 +1,21 @@
+From 9f5f24b6a4218c587bc539de3519b071433d5b4d Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sun, 10 Apr 2016 21:35:12 +0200
+Subject: [PATCH] [pvr] - fix epg search
+
+---
+ xbmc/pvr/windows/GUIWindowPVRSearch.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xbmc/pvr/windows/GUIWindowPVRSearch.cpp b/xbmc/pvr/windows/GUIWindowPVRSearch.cpp
+index 7a2c1b9..482fb94 100644
+--- a/xbmc/pvr/windows/GUIWindowPVRSearch.cpp
++++ b/xbmc/pvr/windows/GUIWindowPVRSearch.cpp
+@@ -171,6 +171,7 @@ void CGUIWindowPVRSearch::OnPrepareFileItems(CFileItemList &items)
+ 
+     bAddSpecialSearchItem = true;
+ 
++    items.Clear();
+     CGUIDialogProgress* dlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+     if (dlgProgress)
+     {

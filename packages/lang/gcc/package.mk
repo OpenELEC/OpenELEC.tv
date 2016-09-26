@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="gcc"
-PKG_VERSION="5.3.0"
+PKG_VERSION="5.4.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -109,6 +109,10 @@ PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME \
                          --disable-nls \
                          --enable-checking=release \
                          --with-default-libstdcxx-abi=gcc4-compatible"
+
+pre_configure_host() {
+  export CXXFLAGS="$CXXFLAGS -std=gnu++98"
+}
 
 pre_configure_bootstrap() {
   setup_toolchain host

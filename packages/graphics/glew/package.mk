@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="glew"
-PKG_VERSION="1.13.0"
+PKG_VERSION="2.0.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://glew.sourceforge.net/"
 PKG_URL="$SOURCEFORGE_SRC/glew/glew/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tgz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain libX11"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="glew: The OpenGL Extension Wrangler Library"

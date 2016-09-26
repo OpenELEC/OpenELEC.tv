@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libamcodec"
-PKG_VERSION="45a1086"
+PKG_VERSION="5e23a81"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="other"

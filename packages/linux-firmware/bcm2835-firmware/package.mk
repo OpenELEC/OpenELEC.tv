@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="bcm2835-firmware"
-PKG_VERSION="611d798"
+PKG_VERSION="d0bc6ce"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -25,7 +25,7 @@ PKG_SITE="http://www.broadcom.com"
 PKG_GIT_URL="https://github.com/raspberrypi/firmware.git"
 PKG_GIT_BRANCH="master"
 PKG_KEEP_CHECKOUT="no"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain dtc"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="OpenMAX-bcm2835: OpenGL-ES and OpenMAX driver for BCM2835"
@@ -45,8 +45,10 @@ make_target() {
     cp -PRv $FLOAT/opt/vc/include/* $SYSROOT_PREFIX/usr/include
 
   mkdir -p $SYSROOT_PREFIX/usr/lib
-    cp -PRv $FLOAT/opt/vc/lib/libEGL.so $SYSROOT_PREFIX/usr/lib
-    cp -PRv $FLOAT/opt/vc/lib/libGLESv2.so $SYSROOT_PREFIX/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libbrcmEGL.so $SYSROOT_PREFIX/usr/lib
+    ln -sf libbrcmEGL.so $SYSROOT_PREFIX/usr/lib/libEGL.so
+    cp -PRv $FLOAT/opt/vc/lib/libbrcmGLESv2.so $SYSROOT_PREFIX/usr/lib
+    ln -sf libbrcmGLESv2.so $SYSROOT_PREFIX/usr/lib/libGLESv2.so
     cp -PRv $FLOAT/opt/vc/lib/libbcm_host.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libcontainers.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libdtovl.so $SYSROOT_PREFIX/usr/lib
@@ -66,8 +68,10 @@ makeinstall_target() {
     cp -PRv $FLOAT/opt/vc/sbin/vcfiled $INSTALL/usr/sbin
 
   mkdir -p $INSTALL/usr/lib
-    cp -PRv $FLOAT/opt/vc/lib/libEGL.so $INSTALL/usr/lib
-    cp -PRv $FLOAT/opt/vc/lib/libGLESv2.so $INSTALL/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libbrcmEGL.so $INSTALL/usr/lib
+    ln -sf libbrcmEGL.so $INSTALL/usr/lib/libEGL.so
+    cp -PRv $FLOAT/opt/vc/lib/libbrcmGLESv2.so $INSTALL/usr/lib
+    ln -sf libbrcmGLESv2.so $INSTALL/usr/lib/libGLESv2.so
     cp -PRv $FLOAT/opt/vc/lib/libbcm_host.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libcontainers.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libdtovl.so $INSTALL/usr/lib
@@ -84,12 +88,12 @@ makeinstall_target() {
 # some usefull debug tools
   mkdir -p $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/vcdbg $INSTALL/usr/bin
-      cp -PRv $FLOAT/opt/vc/lib/libdebug_sym.so $INSTALL/usr/lib
-
+    cp -PRv $FLOAT/opt/vc/lib/libdebug_sym.so $INSTALL/usr/lib
     cp -PRv $FLOAT/opt/vc/bin/vcgencmd $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/tvservice $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/edidparser $INSTALL/usr/bin
     cp -PRv $FLOAT/opt/vc/bin/dtoverlay $INSTALL/usr/bin
+    ln -s dtoverlay $INSTALL/usr/bin/dtparam
 
   mkdir -p $INSTALL/opt/vc
     ln -sf /usr/lib $INSTALL/opt/vc/lib

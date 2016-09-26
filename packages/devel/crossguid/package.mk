@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="crossguid"
-PKG_VERSION="8f399e8"
+PKG_VERSION="fef89a4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="nano"
-PKG_VERSION="2.5.3"
+PKG_VERSION="2.6.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.nano-editor.org/"
-PKG_URL="http://ftp.gnu.org/gnu/nano/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="https://www.nano-editor.org/dist/v2.6/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain netbsd-curses"
 PKG_PRIORITY="optional"
 PKG_SECTION="shell/texteditor"

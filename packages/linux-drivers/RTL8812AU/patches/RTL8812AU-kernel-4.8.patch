@@ -1,0 +1,20 @@
+diff -Naur RTL8812AU-d3c7f0e/os_dep/linux/ioctl_cfg80211.c RTL8812AU-d3c7f0e.patch/os_dep/linux/ioctl_cfg80211.c
+--- RTL8812AU-d3c7f0e/os_dep/linux/ioctl_cfg80211.c	2016-09-12 00:32:45.000000000 +0200
++++ RTL8812AU-d3c7f0e.patch/os_dep/linux/ioctl_cfg80211.c	2016-09-14 00:08:36.991931703 +0200
+@@ -2025,7 +2025,16 @@
+ 		}
+ 		else
+ 		{
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0))
++			if(aborted) {
++				struct cfg80211_scan_info info = {
++					.aborted = aborted,
++				};
++				cfg80211_scan_done(pwdev_priv->scan_request, &info);
++			}
++#else
+ 			cfg80211_scan_done(pwdev_priv->scan_request, aborted);
++#endif
+ 		}
+ 
+ 		pwdev_priv->scan_request = NULL;

@@ -1,0 +1,19 @@
+diff -Naur nano-2.6.3/src/nano.c nano-2.6.3.patch/src/nano.c
+--- nano-2.6.3/src/nano.c	2016-08-10 11:22:23.000000000 +0200
++++ nano-2.6.3.patch/src/nano.c	2016-08-15 21:02:23.597649586 +0200
+@@ -2527,10 +2527,11 @@
+ 	controldown = key_defined(keyvalue);
+ #endif
+ 
+-#ifndef USE_SLANG
+-    /* Tell ncurses to pass the Esc key quickly. */
+-    set_escdelay(50);
+-#endif
++// netbsd-curses dont contain set_escdelay
++//#ifndef USE_SLANG
++//    /* Tell ncurses to pass the Esc key quickly. */
++//    set_escdelay(50);
++//#endif
+ 
+ #ifdef DEBUG
+     fprintf(stderr, "Main: open file\n");

@@ -18,7 +18,7 @@
 ################################################################################
 
 PKG_NAME="json-c"
-PKG_VERSION="537f8bc"
+PKG_VERSION="ea1499a"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -34,7 +34,8 @@ PKG_LONGDESC="JSON-C implements a reference counting object model that allows yo
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_realloc_0_nonnull=yes \
-                           ac_cv_func_malloc_0_nonnull=yes \
-                           --enable-static --disable-shared \
-                           --disable-oldname-compat"
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
+
+if [ $TARGET_ARCH = "x86_64" ]; then
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-rdrand"
+fi
