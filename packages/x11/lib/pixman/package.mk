@@ -32,26 +32,26 @@ PKG_LONGDESC="Pixman is a generic library for manipulating pixel regions, contai
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-if [ "$TARGET_ARCH" = arm ]; then
-  if [ "$TARGET_FPU" = neon -o "$TARGET_FPU" = neon-fp16 ]; then
-    PIXMAN_NEON="--enable-arm-neon"
-  else
-    PIXMAN_NEON="--disable-arm-neon"
-  fi
-  PIXMAN_CONFIG="--disable-mmx --disable-sse2 --disable-vmx --enable-arm-simd $PIXMAN_NEON --disable-arm-iwmmxt"
-elif [ "$TARGET_ARCH" = x86_64  ]; then
-  PIXMAN_CONFIG="--enable-mmx --enable-sse2 --disable-ssse3 --disable-vmx --disable-arm-simd --disable-arm-neon"
-fi
-
 PKG_CONFIGURE_OPTS_TARGET="--disable-openmp \
                            --disable-loongson-mmi \
-                           $PIXMAN_CONFIG \
                            --disable-mips-dspr2 \
                            --enable-gcc-inline-asm \
                            --disable-timers \
                            --disable-gtk \
                            --disable-libpng \
                            --with-gnu-ld"
+
+if [ "$TARGET_ARCH" = arm ]; then
+  if [ "$TARGET_FPU" = neon -o "$TARGET_FPU" = neon-fp16 ]; then
+    PKG_CONFIGURE_OPTS_TARGET+=" --enable-arm-neon"
+  else
+    PKG_CONFIGURE_OPTS_TARGET+=" --disable-arm-neon"
+  fi
+  PKG_CONFIGURE_OPTS_TARGET+=" --disable-mmx --disable-sse2 --disable-vmx --enable-arm-simd --disable-arm-iwmmxt"
+elif [ "$TARGET_ARCH" = x86_64  ]; then
+  PKG_CONFIGURE_OPTS_TARGET+=" --enable-mmx --enable-sse2 --disable-ssse3 --disable-vmx --disable-arm-simd --disable-arm-neon"
+fi
+
 
 post_makeinstall_target() {
   cp $SYSROOT_PREFIX/usr/lib/pkgconfig/pixman-1.pc \
