@@ -6,7 +6,7 @@ Wants=network-pre.target
 [Service]
 Type=oneshot
 Environment=HOME=/storage
-ExecStart=-/bin/sh -c ". /etc/profile; exec /bin/sh /usr/lib/openelec/wifi_init"
+ExecStart=-/bin/sh -c "echo "123" > /proc/driver/wifi-pm/power"
 
 [Install]
 WantedBy=network.target

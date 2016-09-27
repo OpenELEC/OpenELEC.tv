@@ -22,13 +22,10 @@
 value=`read_fex bt_para bt_used`
 if [ "$value" == "1" ]; then
   # for now we know to handle only ap6212
-  value=`read_fex module_para module_num`
-  if [ "$value" == "4" ]; then
-    echo "0" > /sys/class/rfkill/rfkill0/state
-    echo "1" > /sys/class/rfkill/rfkill0/state
-    # assert RTS on UART
-    echo " " > /dev/ttyS1
-    # load firmware and start it
-    hciattach /dev/ttyS1 bcm43xx 1500000
-  fi
+  echo "0" > /sys/class/rfkill/rfkill0/state
+  echo "1" > /sys/class/rfkill/rfkill0/state
+  # assert RTS on UART
+  echo " " > /dev/ttyS1
+  # load firmware and start it
+  hciattach /dev/ttyS1 bcm43xx 1500000
 fi
