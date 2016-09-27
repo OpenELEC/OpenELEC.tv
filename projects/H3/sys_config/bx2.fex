@@ -246,8 +246,8 @@ gpio_pin_1  = port:PL10<1><default><default><1>
 gpio_pin_2  = port:PA15<1><default><default><0>
 
 [led_assign]
-normal_led = "gpio_pin_2"
-standby_led = "gpio_pin_1"
+normal_led = "gpio_pin_1"
+standby_led = "gpio_pin_2"
 
 [leds_para]
 leds_used = 1
@@ -710,23 +710,12 @@ serial_unique       = 0
 
 ;--------------------------------------------------------------------------------
 ;wifi/bt/fm/gps/nfc modules configuration
-;module_num:
-;             0- none
-;             1- rtl8188eu(wifi)
-;             2- rtl8723bs(wifi+bt)
-;             3- ap6181(wifi)
-;             4- ap6210(wifi+bt)
-;             5- ap6330(wifi+bt)
-;             6- ap6335(wifi)
-;             7- rtl8189etv(wifi)
-;             8- rtl8189ftv(wifi)
 ;module_power0: axp used by module, "axp22_dldo1" - use dldo1, not use keep it empty
 ;module_power0_vol: power0 voltage, mv;
 ;chip_en:       enable chip io
 ;lpo_use_apclk: ""- not use, "losc_out"- a23/33/H3, "ac10032k1"、"ac10032k2"、"ac10032k3"- a80
 ;--------------------------------------------------------------------------------
 [module_para]
-module_num        = 7
 module_power0     = port:PL07<1><default><default><1>
 module_power0_vol = 0
 module_power1     = port:PG13<1><default><default><0>
@@ -878,32 +867,34 @@ hdmi_used = 1
 [s_cir0]
 ir_used             = 1
 ir_rx               = port:PL11<2><1><default><default>
-ir_power_key_code0  = 0x40
-ir_addr_code0       = 0x01
-ir_power_key_code1  = 0xf1
-ir_addr_code1       = 0x01
-ir_power_key_code2  = 0x00
-ir_addr_code2       = 0x209f
-ir_power_key_code3  = 0x15
+ir_power_key_code0  = 0x57
+ir_addr_code0       = 0x9f00
+ir_power_key_code1  = 0x1a
+ir_addr_code1       = 0xfb04
+ir_power_key_code2  = 0x14
+ir_addr_code2       = 0x7F80
+ir_power_key_code3  = 0x51
 ir_addr_code3       = 0x7F80
 ir_power_key_code4  = 0x0b
-ir_addr_code4       = 0x20b0
-ir_power_key_code5  = 0x90
+ir_addr_code4       = 0xF708
+ir_power_key_code5  = 0x03
 ir_addr_code5       = 0x00EF
 ir_power_key_code6  = 0x9f
 ir_addr_code6       = 0x4CB3
-ir_power_key_code7  = 0x00
-ir_addr_code7       = 0x209f
+ir_power_key_code7  = 0x0a
+ir_addr_code7       = 0x7748
 ir_power_key_code8  = 0x45
 ir_addr_code8       = 0xbd02
 ir_power_key_code9  = 0x4d
 ir_addr_code9       = 0xde21
-ir_power_key_code10 = 0x18
-ir_addr_code10      = 0xfe01
-ir_power_key_code11 = 0x57
-ir_addr_code11      = 0xff00
-ir_power_key_code12 = 0x4d
-ir_addr_code12      = 0xff40
+ir_power_key_code10  = 0x18
+ir_addr_code10       = 0xfe01
+ir_power_key_code11  = 0x57
+ir_addr_code11       = 0xff00
+ir_power_key_code12  = 0x4d
+ir_addr_code12       = 0xff40
+ir_power_key_code13  = 0x88
+ir_addr_code13       = 0xdd22
 
 ;----------------------------------------------------------------------------------
 ;ir tx--- infra remote configuration

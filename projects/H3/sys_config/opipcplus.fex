@@ -725,23 +725,12 @@ serial_unique       = 0
 
 ;--------------------------------------------------------------------------------
 ;wifi/bt/fm/gps/nfc modules configuration
-;module_num:
-;             0- none
-;             1- rtl8188eu(wifi)
-;             2- rtl8723bs(wifi+bt)
-;             3- ap6181(wifi)
-;             4- ap6210(wifi+bt)
-;             5- ap6330(wifi+bt)
-;             6- ap6335(wifi)
-;             7- rtl8189etv(wifi)
-;             8- rtl8189ftv(wifi)
 ;module_power0: axp used by module, "axp22_dldo1" - use dldo1, not use keep it empty
 ;module_power0_vol: power0 voltage, mv;
 ;chip_en:       enable chip io
 ;lpo_use_apclk: ""- not use, "losc_out"- a23/33/H3, "ac10032k1"、"ac10032k2"、"ac10032k3"- a80
 ;--------------------------------------------------------------------------------
 [module_para]
-module_num          = 8
 module_power0       = "vcc-wifi-33"
 module_power0_vol   = 0
 module_power1       =
