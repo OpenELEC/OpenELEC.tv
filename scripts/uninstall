@@ -58,10 +58,10 @@ if [ -f $STAMP ]; then
         PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_TARGET"
       elif [ "$TARGET" = "host" -a -n "$PKG_CMAKE_SCRIPT_HOST" ]; then
         PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_HOST"
-      elif [ "$TARGET" = "init" -a -n "$PKG_CMAKE_SCRIPT_TARGET" ]; then
-        PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_TARGET"
-      elif [ "$TARGET" = "bootstrap" -a -n "$PKG_CMAKE_SCRIPT_HOST" ]; then
-        PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_HOST"
+      elif [ "$TARGET" = "init" -a -n "$PKG_CMAKE_SCRIPT_INIT" ]; then
+        PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_INIT"
+      elif [ "$TARGET" = "bootstrap" -a -n "$PKG_CMAKE_SCRIPT_BOOTSTRAP" ]; then
+        PKG_CMAKE_SCRIPT="$ROOT/$PKG_BUILD/$PKG_CMAKE_SCRIPT_BOOTSTRAP"
       fi
 
       # ensure $PKG_BUILD is there. (installer? PKG_URL="")
