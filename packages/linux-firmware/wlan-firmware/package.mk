@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="wlan-firmware"
-PKG_VERSION="d79ada7"
+PKG_VERSION="4eea440"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Free-to-use"
