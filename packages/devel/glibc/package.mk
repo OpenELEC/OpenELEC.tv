@@ -59,9 +59,9 @@ PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
                            --disable-timezone-tools"
 
 if [ "$DEBUG" = yes ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-debug"
+  PKG_CONFIGURE_OPTS_TARGET+=" --enable-debug"
 else
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --disable-debug"
+  PKG_CONFIGURE_OPTS_TARGET+=" --disable-debug"
 fi
 
 GLIBC_EXCLUDE_BIN="catchsegv gencat getconf iconv iconvconfig ldconfig"
