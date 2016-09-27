@@ -49,7 +49,7 @@ pre_configure_target() {
 }
 
 if [ "$SIMD_SUPPORT" = "no" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --without-simd"
+  PKG_CONFIGURE_OPTS_TARGET+=" --without-simd"
 fi
 
 post_makeinstall_target() {
