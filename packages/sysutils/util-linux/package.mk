@@ -74,7 +74,7 @@ PKG_CONFIGURE_OPTS_TARGET="$UTILLINUX_CONFIG_DEFAULT \
                            --enable-blkid"
 
 if [ "$SWAP_SUPPORT" = "yes" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-swapon"
+  PKG_CONFIGURE_OPTS_TARGET+=" --enable-swapon"
 fi
 
 PKG_CONFIGURE_OPTS_HOST="--enable-static \
@@ -95,7 +95,7 @@ PKG_CONFIGURE_OPTS_INIT="--prefix=/ \
                          --enable-fsck"
 
 if [ "$INITRAMFS_PARTED_SUPPORT" = "yes" ]; then
-  PKG_CONFIGURE_OPTS_INIT="$PKG_CONFIGURE_OPTS_INIT --enable-mkfs --enable-libuuid"
+  PKG_CONFIGURE_OPTS_INIT+=" --enable-mkfs --enable-libuuid"
 fi
 
 post_makeinstall_target() {
