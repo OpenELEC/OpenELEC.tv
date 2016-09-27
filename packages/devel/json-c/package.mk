@@ -38,5 +38,5 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
 
 if [ $TARGET_ARCH = "x86_64" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-rdrand"
+  PKG_CONFIGURE_OPTS_TARGET+=" --enable-rdrand"
 fi
