@@ -38,7 +38,7 @@ if [ "$OPENGL" = "mesa" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET glew"
 fi
 
-PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
+PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/share/kodi \
                        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr"
 
 pre_configure_target() {

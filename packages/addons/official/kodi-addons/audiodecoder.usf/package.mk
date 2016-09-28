@@ -35,7 +35,7 @@ PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="kodi.audiodecoder"
 PKG_ADDON_PROJECTS="Generic imx6 RPi2 WeTek_Core WeTek_Play"
 
-PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
+PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/share/kodi \
                        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr"
 
 addon() {
