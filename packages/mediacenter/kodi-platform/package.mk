@@ -33,7 +33,7 @@ PKG_LONGDESC="kodi-platform:"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/lib/kodi \
+PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/share/kodi \
                        -DBUILD_SHARED_LIBS=0"
 
 post_makeinstall_target() {
