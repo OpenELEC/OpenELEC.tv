@@ -31,17 +31,26 @@ PKG_LONGDESC="The FreeType engine is a free and portable TrueType font rendering
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+PKG_USE_CMAKE="no"
 
-PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=OFF \
-                       -DWITH_ZLIB=ON \
-                       -DWITH_BZIP2=OFF \
-                       -DWITH_PNG=OFF \
-                       -DWITH_HARFBUZZ=OFF"
+# package specific configure options
+PKG_CONFIGURE_OPTS_TARGET="--enable-static \
+                           --disable-shared \
+                           --with-zlib=yes \
+                           --with-bzip2=no \
+                           --with-png=no \
+                           --with-harfbuzz=no"
+
+pre_configure_target() {
+  # unset LIBTOOL because freetype uses its own
+    ( cd ..
+      unset LIBTOOL
+      sh autogen.sh
+    )
+}
 
 post_makeinstall_target() {
-  mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
-    cp $PKG_DIR/config/freetype2.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
-
+  $SED "s:\(['=\" ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" $SYSROOT_PREFIX/usr/bin/freetype-config
   ln -v -sf $SYSROOT_PREFIX/usr/include/freetype2 $SYSROOT_PREFIX/usr/include/freetype
 
   rm -rf $INSTALL/usr/bin
