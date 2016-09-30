@@ -35,6 +35,12 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/codesnake/linux.git"
     PKG_GIT_BRANCH="amlogic-3.10.y"
     ;;
+  amlogic-3.14)
+    PKG_VERSION="ac1471d"
+    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
+#    PKG_GIT_BRANCH="amlogic-3.14.y"
+    PKG_GIT_BRANCH="wetek_play_2_dts"
+    ;;
   imx6)
     PKG_VERSION="f14907b"
     PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
