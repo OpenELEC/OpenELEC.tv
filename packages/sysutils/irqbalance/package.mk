@@ -19,7 +19,7 @@
 PKG_NAME="irqbalance"
 PKG_VERSION="aa04f78"
 PKG_REV="1"
-PKG_ARCH="any"
+PKG_ARCH="i386 x86_64 arm"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/Irqbalance/irqbalance"
 PKG_GIT_URL="https://github.com/Irqbalance/irqbalance.git"
