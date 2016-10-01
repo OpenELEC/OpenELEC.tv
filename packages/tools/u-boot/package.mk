@@ -30,7 +30,7 @@ else
   exit 0
 fi
 PKG_REV="1"
-PKG_ARCH="arm"
+PKG_ARCH="arm aarch64"
 PKG_LICENSE="GPL"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
