@@ -17,13 +17,10 @@
 ################################################################################
 
 PKG_NAME="libamcodec"
-PKG_VERSION="5e23a81"
 PKG_REV="1"
-PKG_ARCH="arm"
+PKG_ARCH="arm aarch64"
 PKG_LICENSE="other"
 PKG_SITE="http://openlinux.amlogic.com"
-PKG_GIT_URL="https://github.com/codesnake/libamcodec.git"
-PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
@@ -32,6 +29,18 @@ PKG_LONGDESC="libamplayer: Interface library for Amlogic media codecs"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+case $TARGET_ARCH in
+  arm)
+    PKG_VERSION="5e23a81"
+    PKG_GIT_URL="https://github.com/codesnake/libamcodec.git"
+    PKG_GIT_BRANCH="master"
+    ;;
+  aarch64)
+    PKG_VERSION="210755d"
+    PKG_URL="http://amlinux.ru/source/$PKG_NAME-$PKG_VERSION.tar.gz"
+    ;;
+esac
 
 make_target() {
   make -C amavutils CC="$CC" PREFIX="$SYSROOT_PREFIX/usr"
