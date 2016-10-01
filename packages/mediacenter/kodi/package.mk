@@ -41,6 +41,7 @@ case "$KODIPLAYER_DRIVER" in
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="master"
     PKG_KEEP_CHECKOUT="no"
+    PKG_PATCH_DIRS="$LINUX"
     ;;
 esac
 
