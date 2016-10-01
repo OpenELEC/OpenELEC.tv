@@ -83,6 +83,19 @@ case $OPENGL in
     PKG_SHORTDESC="opengl-meson8: OpenGL ES pre-compiled libraries for Mali 450 GPUs found in Amlogic Meson8 SoCs"
     PKG_LONGDESC="opengl-meson8: OpenGL ES pre-compiled libraries for Mali 450 GPUs found in Amlogic Meson8 SoCs. The libraries could be found in a Linux buildroot released by Amlogic at http://openlinux.amlogic.com:8000/download/ARM/filesystem/. See the opengl package."
     ;;
+  meson-gxbb)
+    PKG_VERSION="$OPENGL-r6p1-01rel0"
+    PKG_REV="1"
+    PKG_ARCH="arm aarch64"
+    PKG_LICENSE="nonfree"
+    PKG_SITE="http://openlinux.amlogic.com:8000/download/ARM/filesystem/"
+    PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="toolchain"
+    PKG_PRIORITY="optional"
+    PKG_SECTION="graphics"
+    PKG_SHORTDESC="opengl-meson-gxbb: OpenGL ES pre-compiled libraries for Mali 450 GPUs found in Amlogic Meson8 SoCs"
+    PKG_LONGDESC="opengl-meson-gxbb: OpenGL ES pre-compiled libraries for Mali 450 GPUs found in Amlogic Meson8 SoCs. The libraries could be found in a Linux buildroot released by Amlogic at http://openlinux.amlogic.com:8000/download/ARM/filesystem/. See the opengl package."
+    ;;
 esac
 
 PKG_IS_ADDON="no"
@@ -94,7 +107,7 @@ elif [ "$TARGET_FLOAT" = "hard" ]; then
   FLOAT="hardfp"
 fi
 
-if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" ]; then
+if [ "$OPENGL" = "meson6" -o "$OPENGL" = "meson8" -o "$OPENGL" = "meson-gxbb" ]; then
   OPENGL_INCLUDES="usr/include/*"
   OPENGL_LIBRARYS="usr/lib/*.so*"
 elif [ "$OPENGL" = "gpu-viv-bin-mx6q" ]; then
