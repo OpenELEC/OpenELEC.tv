@@ -40,6 +40,7 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
 #    PKG_GIT_BRANCH="amlogic-3.14.y"
     PKG_GIT_BRANCH="wetek_play_2_dts"
+    PKG_PATCH_DIRS="linux-3.14 amlogic-3.14"
     ;;
   imx6)
     PKG_VERSION="f14907b"
@@ -51,6 +52,7 @@ case "$LINUX" in
     PKG_VERSION="447249f"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
     PKG_GIT_BRANCH="raspberry-rpi-4.8.y"
+
     ;;
   *)
     PKG_VERSION="4.8-rc8"
