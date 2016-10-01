@@ -52,7 +52,7 @@ case "$LINUX" in
     PKG_VERSION="447249f"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
     PKG_GIT_BRANCH="raspberry-rpi-4.8.y"
-
+    PKG_PATCH_DIRS="linux-4.8"
     ;;
   *)
     PKG_VERSION="4.8-rc8"
