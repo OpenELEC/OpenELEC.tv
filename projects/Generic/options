@@ -67,7 +67,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL(X) implementation to use (mesa)
+  # OpenGL (X/ES) implementation to use (mesa / bcm2835-firmware / meson6 / meson8 / meson-gxbb / gpu-imx-gpu-viv)
     OPENGL="mesa"
 
   # include uvesafb support (yes / no)

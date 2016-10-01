@@ -56,8 +56,8 @@
   # Build Android kernel image using mkbootimg
     BUILD_ANDROID_BOOTIMG="no"
 
-  # Path to a file that will be passed as the --second parameter to Android mkbootimg
-    ANDROID_BOOTIMG_SECOND=""
+  # Additional options to be passed to Android mkbootimg
+    ANDROID_BOOTIMG_OPTIONS=""
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=""
@@ -93,7 +93,7 @@
   # build and install ALSA Audio support (yes / no)
     ALSA_SUPPORT="yes"
 
-  # OpenGL (X/ES) implementation to use (mesa / bcm2835-firmware / meson6 / meson8)
+  # OpenGL (X/ES) implementation to use (mesa / bcm2835-firmware / meson6 / meson8 / meson-gxbb / gpu-imx-gpu-viv)
     OPENGL="meson6"
 
   # include uvesafb support (yes / no)
