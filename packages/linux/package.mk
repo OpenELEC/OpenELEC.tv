@@ -47,6 +47,7 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
     PKG_GIT_BRANCH="imx6-4.4.y"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
+    PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
     ;;
   rpi)
     PKG_VERSION="447249f"
