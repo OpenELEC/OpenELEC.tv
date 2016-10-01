@@ -34,6 +34,7 @@ case "$LINUX" in
     PKG_VERSION="8b1bb2b"
     PKG_GIT_URL="https://github.com/codesnake/linux.git"
     PKG_GIT_BRANCH="amlogic-3.10.y"
+    PKG_PATCH_DIRS="linux-3.10 amlogic-3.10"
     ;;
   amlogic-3.14)
     PKG_VERSION="ac1471d"
