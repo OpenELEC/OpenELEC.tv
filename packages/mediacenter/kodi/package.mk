@@ -213,6 +213,7 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DENABLE_MMAL=ON -DCORE_SYSTEM_NAME=rbpi"
   elif [ "$KODIPLAYER_DRIVER" = libfslvpuwrap ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DENABLE_IMXVPU=ON"
+    strip_lto # fails to build with LTO support (todo)
   elif [ "$KODIPLAYER_DRIVER" = libamcodec ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DENABLE_AML=ON"
   fi
