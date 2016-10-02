@@ -46,7 +46,6 @@ makeinstall_target() {
 
 post_install() {
   enable_service sunxi-bt-load.service
-  enable_service sunxi-wifi-load.service
   enable_service sunxi-poweroff.service
   enable_service sunxi-suspend.service
 }
