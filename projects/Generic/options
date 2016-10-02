@@ -29,6 +29,9 @@
   # Kernel target
     KERNEL_TARGET="bzImage"
 
+  # Kernel devicetree image
+    KERNEL_UBOOT_DT_IMAGE=""
+
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET=""
 

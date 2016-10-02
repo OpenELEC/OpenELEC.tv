@@ -50,6 +50,9 @@
   # Kernel target
     KERNEL_TARGET="uImage-dtb"
 
+  # Kernel devicetree image
+    KERNEL_UBOOT_DT_IMAGE=""
+
   # Kernel extra targets to build
     KERNEL_UBOOT_EXTRA_TARGET="meson8m2_wetek_core.dtd meson8m2_wetek_core.dtb"
 

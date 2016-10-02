@@ -151,10 +151,12 @@ make_target() {
     $SCRIPTS/install initramfs
   )
 
-  if [ "$BOOTLOADER" = "u-boot" -a -n "$KERNEL_UBOOT_EXTRA_TARGET" ]; then
-    for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET"; do
-      LDFLAGS="" make $extra_target
-    done
+  if [ "$BOOTLOADER" = "u-boot" ]; then
+    if [ -n "$KERNEL_UBOOT_EXTRA_TARGET" -o -n "$KERNEL_UBOOT_DT_IMAGE" ]; then
+      for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET" $(basename "$KERNEL_UBOOT_DT_IMAGE") ; do
+        LDFLAGS="" make $extra_target
+      done
+    fi
   fi
 
   LDFLAGS="" make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD
@@ -167,21 +169,23 @@ make_target() {
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "u-boot" ]; then
+  if [ "$BOOTLOADER" = "u-boot" -o "$BOOTLOADER" = "bcm2835-firmware" ]; then
     mkdir -p $INSTALL/usr/share/bootloader
     for dtb in arch/$TARGET_KERNEL_ARCH/boot/dts/*.dtb; do
-      cp $dtb $INSTALL/usr/share/bootloader 2>/dev/null || :
+      [ -f $dtb ] && cp -p $dtb $INSTALL/usr/share/bootloader
     done
-    if [ -f arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/$KERNEL_UBOOT_EXTRA_TARGET ]; then
-      cp arch/$TARGET_KERNEL_ARCH/boot/dts/amlogic/$KERNEL_UBOOT_EXTRA_TARGET $INSTALL/usr/share/bootloader/dtb.img 2>/dev/null || :
+
+    if [ "$BOOTLOADER" = "u-boot" ]; then
+      if [ -f arch/$TARGET_KERNEL_ARCH/boot/dts/$KERNEL_UBOOT_DT_IMAGE ]; then
+        cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/$KERNEL_UBOOT_DT_IMAGE $INSTALL/usr/share/bootloader/dtb.img
+      fi
+    elif [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
+      mkdir -p $INSTALL/usr/share/bootloader/overlays
+      for dtbo in arch/$TARGET_KERNEL_ARCH/boot/dts/overlays/*.dtbo; do
+        [ -f $dtbo ] && cp -p $dtbo $INSTALL/usr/share/bootloader/overlays
+      done
+      cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
     fi
-  elif [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
-    mkdir -p $INSTALL/usr/share/bootloader/overlays
-    cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/*.dtb $INSTALL/usr/share/bootloader
-    for dtb in arch/$TARGET_KERNEL_ARCH/boot/dts/overlays/*.dtbo; do
-      cp $dtb $INSTALL/usr/share/bootloader/overlays 2>/dev/null || :
-    done
-    cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/overlays/README $INSTALL/usr/share/bootloader/overlays
   fi
 }
 

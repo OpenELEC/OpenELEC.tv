@@ -38,8 +38,11 @@
   # Kernel target
     KERNEL_TARGET="Image.lzo"
 
+  # Kernel devicetree image
+    KERNEL_UBOOT_DT_IMAGE="amlogic/gxbb_p200_2G_wetek_play_2.dtb"
+
   # Kernel extra targets to build
-    KERNEL_UBOOT_EXTRA_TARGET="gxbb_p200_2G_wetek_play_2.dtb"
+    KERNEL_UBOOT_EXTRA_TARGET=""
 
   # Build Android kernel image using mkbootimg
     BUILD_ANDROID_BOOTIMG="yes"
