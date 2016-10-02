@@ -208,11 +208,6 @@ fi
     sed -e "s,$INSTALL/lib/modules/$MODVER/,," > $INSTALL/lib/modules/$MODVER/modules.order
   $ROOT/$TOOLCHAIN/bin/depmod -b $INSTALL $MODVER 2> /dev/null
 
-# strip kernel modules
-  for MOD in `find $INSTALL/lib/modules/ -type f -name *.ko`; do
-    $STRIP --strip-debug $MOD
-  done
-
 # make target dir
   mkdir -p $TARGET_IMG
     rm -rf $TARGET_IMG/$IMAGE_NAME.kernel
