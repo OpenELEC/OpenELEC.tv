@@ -211,8 +211,8 @@ makeinstall_target() {
 post_install() {
   ROOT_PWD="`$ROOT/$TOOLCHAIN/bin/cryptpw -m sha512 $ROOT_PASSWORD`"
 
-  echo "chmod 4755 $INSTALL/bin/busybox" >> $FAKEROOT_SCRIPT
-  echo "chmod 000 $INSTALL/etc/shadow" >> $FAKEROOT_SCRIPT
+  echo "chmod 4755 $INSTALL/bin/busybox" >> $FAKEROOT_SCRIPT_SYSTEM
+  echo "chmod 000 $INSTALL/etc/shadow" >> $FAKEROOT_SCRIPT_SYSTEM
 
   add_user root "$ROOT_PWD" 0 0 "Root User" "/storage" "/bin/sh"
   add_group root 0

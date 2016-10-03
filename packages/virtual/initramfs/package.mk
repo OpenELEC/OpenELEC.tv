@@ -47,7 +47,13 @@ post_install() {
     if [ "$TARGET_ARCH" = "x86_64" -o "$TARGET_ARCH" = "powerpc64" ]; then
       ln -s /lib $ROOT/$BUILD/initramfs/lib64
     fi
+
     mkdir -p $ROOT/$BUILD/image/
-    find . | cpio -H newc -ov -R 0:0 > $ROOT/$BUILD/image/initramfs.cpio
+      echo "find . | cpio -H newc -ov -R 0:0 > $ROOT/$BUILD/image/initramfs.cpio" >> $FAKEROOT_SCRIPT_INIT
+
+    # run fakeroot
+      chmod +x $FAKEROOT_SCRIPT_INIT
+      $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT_INIT
+      rm -rf $FAKEROOT_SCRIPT_INIT
   cd -
 }

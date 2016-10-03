@@ -212,6 +212,9 @@ makeinstall_init() {
       uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
       cp $uvesafb $INSTALL/lib/modules/`basename $uvesafb`
   fi
+
+  echo "mkdir -p dev" >> $FAKEROOT_SCRIPT_INIT
+  echo "mknod -m 600 dev/console c 5 1" >> $FAKEROOT_SCRIPT_INIT
 }
 
 post_install() {

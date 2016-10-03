@@ -58,16 +58,16 @@ if [ -n "$IMAGE_SUFFIX" ]; then
   IMAGE_NAME="$IMAGE_NAME-$IMAGE_SUFFIX"
 fi
 
-# setup fakeroot
-  rm -rf $FAKEROOT_SCRIPT   # remove $FAKEROOT_SCRIPT if it exist
-  touch $FAKEROOT_SCRIPT    # create an empty $FAKEROOT_SCRIPT
-  chmod +x $FAKEROOT_SCRIPT # make $FAKEROOT_SCRIPT executable
-  echo "chown -R 0:0 $INSTALL" >> $FAKEROOT_SCRIPT
-
 # clean old install dirs
   rm -rf $INSTALL
   rm -rf $STAMPS_INSTALL
   mkdir -p $INSTALL
+
+# setup fakeroot
+  rm -rf $FAKEROOT_SCRIPT_SYSTEM   # remove $FAKEROOT_SCRIPT_SYSTEM if it exist
+  touch $FAKEROOT_SCRIPT_SYSTEM    # create an empty $FAKEROOT_SCRIPT_SYSTEM
+  chmod +x $FAKEROOT_SCRIPT_SYSTEM # make $FAKEROOT_SCRIPT_SYSTEM executable
+  echo "chown -R 0:0 $INSTALL" >> $FAKEROOT_SCRIPT_SYSTEM
 
 # create baselayout
   mkdir -p $INSTALL/bin
@@ -227,12 +227,12 @@ fi
     SQUASHFS_COMPRESSION="gzip"
   fi
 
-  echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT
-  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT
+  echo "rm -rf $TARGET_IMG/$IMAGE_NAME.system" >> $FAKEROOT_SCRIPT_SYSTEM
+  echo "$ROOT/$TOOLCHAIN/bin/mksquashfs $BUILD/image/system $TARGET_IMG/$IMAGE_NAME.system -noappend -comp $SQUASHFS_COMPRESSION" >> $FAKEROOT_SCRIPT_SYSTEM
 
 # run fakeroot
-  $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT
-  rm -rf $FAKEROOT_SCRIPT
+  $ROOT/$TOOLCHAIN/bin/fakeroot -- $FAKEROOT_SCRIPT_SYSTEM
+  rm -rf $FAKEROOT_SCRIPT_SYSTEM
 
 # set permissions
   chmod 0644 $TARGET_IMG/$IMAGE_NAME.system
