@@ -154,23 +154,28 @@ if [ ! -f $STAMP ]; then
   # include buildfile
     . $PKG_DIR/package.mk
 
-    if [ "$TARGET" = "target" ]; then
-      for p in $PKG_DEPENDS_TARGET; do
-        $SCRIPTS/build $p
-      done
-    elif [ "$TARGET" = "host" ]; then
-      for p in $PKG_DEPENDS_HOST; do
-        $SCRIPTS/build $p
-      done
-    elif [ "$TARGET" = "init" ]; then
-      for p in $PKG_DEPENDS_INIT; do
-        $SCRIPTS/build $p
-      done
-    elif [ "$TARGET" = "bootstrap" ]; then
-      for p in $PKG_DEPENDS_BOOTSTRAP; do
-        $SCRIPTS/build $p
-      done
-    fi
+    case "$TARGET" in
+      target)
+        for p in $PKG_DEPENDS_TARGET; do
+          $SCRIPTS/build $p
+        done
+        ;;
+      host)
+        for p in $PKG_DEPENDS_HOST; do
+          $SCRIPTS/build $p
+        done
+        ;;
+      init)
+        for p in $PKG_DEPENDS_INIT; do
+          $SCRIPTS/build $p
+        done
+        ;;
+      bootstrap)
+        for p in $PKG_DEPENDS_BOOTSTRAP; do
+          $SCRIPTS/build $p
+        done
+        ;;
+    esac
 
     printf "%${BUILD_INDENT}c ${boldyellow}BUILD${endcolor}    $PACKAGE_NAME ${boldwhite}($TARGET)${endcolor}\n" ' '>&$SILENT_OUT
     export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
@@ -183,18 +188,17 @@ if [ ! -f $STAMP ]; then
     if [ ! "$PKG_SECTION" = "virtual" ]; then
 
       # configure other variables
-      if [ "$TARGET" = "target" ]; then
-        INSTALL=$ROOT/$PKG_BUILD/.install_pkg
-      elif [ "$TARGET" = "init" ]; then
-        INSTALL=$ROOT/$PKG_BUILD/.install_init
-      fi
+      case "$TARGET" in
+        target)
+          INSTALL=$ROOT/$PKG_BUILD/.install_pkg
+          ;;
+        init)
+          INSTALL=$ROOT/$PKG_BUILD/.install_init
+          ;;
+      esac
 
-       # clean up
-       if [ ! -z "$INSTALL" ] ; then
-         if [ -d "$INSTALL" ] ; then
-           rm -rf $INSTALL
-         fi
-       fi
+      # clean up
+      [ -n "$INSTALL" ] && rm -rf $INSTALL
 
       # setup configure script
       if [ -z "$PKG_CONFIGURE_SCRIPT" ]; then
@@ -220,33 +224,35 @@ if [ ! -f $STAMP ]; then
       fi
 
       # ensure $PKG_BUILD is there. (installer? PKG_URL="")
-      if [ ! -d $PKG_BUILD ] ; then
-        mkdir -p $PKG_BUILD
-      fi
+      mkdir -p $PKG_BUILD
 
       cd $PKG_BUILD
-
-      if [ "$TARGET" = "target" ]; then
-        if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
-          mkdir -p .$TARGET_NAME
-          cd .$TARGET_NAME
-        fi
-      elif [ "$TARGET" = "host" ]; then
-        if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
-          mkdir -p .$HOST_NAME
-          cd .$HOST_NAME
-        fi
-      elif [ "$TARGET" = "init" ]; then
-        if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
-          mkdir -p .$TARGET_NAME-$TARGET
-          cd .$TARGET_NAME-$TARGET
-        fi
-      elif [ "$TARGET" = "bootstrap" ]; then
-        if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
-          mkdir -p .$HOST_NAME-$TARGET
-          cd .$HOST_NAME-$TARGET
-        fi
-      fi
+        case "$TARGET" in
+          target)
+            if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
+              mkdir -p .$TARGET_NAME
+              cd .$TARGET_NAME
+            fi
+            ;;
+          host)
+            if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
+              mkdir -p .$HOST_NAME
+              cd .$HOST_NAME
+            fi
+            ;;
+          init)
+            if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
+              mkdir -p .$TARGET_NAME-$TARGET
+              cd .$TARGET_NAME-$TARGET
+            fi
+            ;;
+          bootstrap)
+            if [ -f "$PKG_CONFIGURE_SCRIPT" -o -f "$PKG_CMAKE_SCRIPT" ]; then
+              mkdir -p .$HOST_NAME-$TARGET
+              cd .$HOST_NAME-$TARGET
+            fi
+            ;;
+        esac
 
       # configure
       if [ "$(type -t pre_configure_$TARGET)" = "function" ]; then
@@ -255,25 +261,35 @@ if [ ! -f $STAMP ]; then
       if [ "$(type -t configure_$TARGET)" = "function" ]; then
         configure_$TARGET
       elif [ -f "$PKG_CMAKE_SCRIPT" -a ! "$PKG_USE_CMAKE" = "no" ]; then
-        if [ "$TARGET" = "target" ]; then
-          cmake $TARGET_CMAKE_OPTS $PKG_CMAKE_OPTS_TARGET $(dirname $PKG_CMAKE_SCRIPT)
-        elif [ "$TARGET" = "host" ]; then
-          cmake $HOST_CMAKE_OPTS $PKG_CMAKE_OPTS_HOST $(dirname $PKG_CMAKE_SCRIPT)
-        elif [ "$TARGET" = "init" ]; then
-          cmake $INIT_CMAKE_OPTS $PKG_CMAKE_OPTS_INIT $(dirname $PKG_CMAKE_SCRIPT)
-        elif [ "$TARGET" = "bootstrap" ]; then
-          cmake $BOOTSTRAP_CMAKE_OPTS $PKG_CMAKE_OPTS_BOOTSTRAP $(dirname $PKG_CMAKE_SCRIPT)
-        fi
+        case "$TARGET" in
+          target)
+            cmake $TARGET_CMAKE_OPTS $PKG_CMAKE_OPTS_TARGET $(dirname $PKG_CMAKE_SCRIPT)
+            ;;
+          host)
+            cmake $HOST_CMAKE_OPTS $PKG_CMAKE_OPTS_HOST $(dirname $PKG_CMAKE_SCRIPT)
+            ;;
+          init)
+            cmake $INIT_CMAKE_OPTS $PKG_CMAKE_OPTS_INIT $(dirname $PKG_CMAKE_SCRIPT)
+            ;;
+          bootstrap)
+            cmake $BOOTSTRAP_CMAKE_OPTS $PKG_CMAKE_OPTS_BOOTSTRAP $(dirname $PKG_CMAKE_SCRIPT)
+            ;;
+        esac
       elif [ -f "$PKG_CONFIGURE_SCRIPT" ]; then
-        if [ "$TARGET" = "target" ]; then
-          $PKG_CONFIGURE_SCRIPT $TARGET_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_TARGET
-        elif [ "$TARGET" = "host" ]; then
-          $PKG_CONFIGURE_SCRIPT $HOST_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_HOST
-        elif [ "$TARGET" = "init" ]; then
-          $PKG_CONFIGURE_SCRIPT $INIT_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_INIT
-        elif [ "$TARGET" = "bootstrap" ]; then
-          $PKG_CONFIGURE_SCRIPT $BOOTSTRAP_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_BOOTSTRAP
-        fi
+        case "$TARGET" in
+          target)
+            $PKG_CONFIGURE_SCRIPT $TARGET_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_TARGET
+            ;;
+          host)
+            $PKG_CONFIGURE_SCRIPT $HOST_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_HOST
+            ;;
+          init)
+            $PKG_CONFIGURE_SCRIPT $INIT_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_INIT
+            ;;
+          bootstrap)
+            $PKG_CONFIGURE_SCRIPT $BOOTSTRAP_CONFIGURE_OPTS $PKG_CONFIGURE_OPTS_BOOTSTRAP
+            ;;
+        esac
       fi
       if [ "$(type -t post_configure_$TARGET)" = "function" ]; then
         post_configure_$TARGET
@@ -286,15 +302,20 @@ if [ ! -f $STAMP ]; then
       if [ "$(type -t make_$TARGET)" = "function" ]; then
         make_$TARGET
       else
-        if [ "$TARGET" = "target" ]; then
-          make $PKG_MAKE_OPTS_TARGET
-        elif [ "$TARGET" = "host" ]; then
-          make $PKG_MAKE_OPTS_HOST
-        elif [ "$TARGET" = "init" ]; then
-          make $PKG_MAKE_OPTS_INIT
-        elif [ "$TARGET" = "bootstrap" ]; then
-          make $PKG_MAKE_OPTS_BOOTSTRAP
-        fi
+        case "$TARGET" in
+          target)
+            make $PKG_MAKE_OPTS_TARGET
+            ;;
+          host)
+            make $PKG_MAKE_OPTS_HOST
+            ;;
+          init)
+            make $PKG_MAKE_OPTS_INIT
+            ;;
+          bootstrap)
+            make $PKG_MAKE_OPTS_BOOTSTRAP
+            ;;
+        esac
       fi
       if [ "$(type -t post_make_$TARGET)" = "function" ]; then
         post_make_$TARGET
@@ -307,24 +328,29 @@ if [ ! -f $STAMP ]; then
       if [ "$(type -t makeinstall_$TARGET)" = "function" ]; then
         makeinstall_$TARGET
       else
-        if [ "$TARGET" = "target" ]; then
-          $MAKEINSTALL $PKG_MAKEINSTALL_OPTS_TARGET
-          make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_TARGET
-        elif [ "$TARGET" = "host" ]; then
-          make install $PKG_MAKEINSTALL_OPTS_HOST
-        elif [ "$TARGET" = "init" ]; then
-          make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_INIT
-        elif [ "$TARGET" = "bootstrap" ]; then
-          make install $PKG_MAKEINSTALL_OPTS_BOOTSTRAP
-        fi
+        case "$TARGET" in
+          target)
+            $MAKEINSTALL $PKG_MAKEINSTALL_OPTS_TARGET
+            make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_TARGET
+            ;;
+          host)
+            make install $PKG_MAKEINSTALL_OPTS_HOST
+            ;;
+          init)
+            make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_INIT
+            ;;
+          bootstrap)
+            make install $PKG_MAKEINSTALL_OPTS_BOOTSTRAP
+            ;;
+        esac
       fi
       if [ "$(type -t post_makeinstall_$TARGET)" = "function" ]; then
         post_makeinstall_$TARGET
       fi
 
       if [ "$TARGET" = "target" -o "$TARGET" = "init" ]; then
-       if [ -d $INSTALL ] ; then
-         for i in $INSTALL $INSTALL/usr; do
+        if [ -d $INSTALL ] ; then
+          for i in $INSTALL $INSTALL/usr; do
             rm -rf $i/include
             rm -rf $i/lib/cmake
             rm -rf $i/lib/pkgconfig
