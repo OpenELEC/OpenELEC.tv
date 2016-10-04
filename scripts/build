@@ -69,49 +69,16 @@ if [ ! -f $STAMP ]; then
   setup_toolchain $TARGET
 
   # unset functions
-    unset -f pre_build_target
-    unset -f pre_configure_target
-    unset -f configure_target
-    unset -f post_configure_target
-    unset -f pre_make_target
-    unset -f make_target
-    unset -f post_make_target
-    unset -f pre_makeinstall_target
-    unset -f makeinstall_target
-    unset -f post_makeinstall_target
-
-    unset -f pre_build_host
-    unset -f pre_configure_host
-    unset -f configure_host
-    unset -f post_configure_host
-    unset -f pre_make_host
-    unset -f make_host
-    unset -f post_make_host
-    unset -f pre_makeinstall_host
-    unset -f makeinstall_host
-    unset -f post_makeinstall_host
-
-    unset -f pre_build_init
-    unset -f pre_configure_init
-    unset -f configure_init
-    unset -f post_configure_init
-    unset -f pre_make_init
-    unset -f make_init
-    unset -f post_make_init
-    unset -f pre_makeinstall_init
-    unset -f makeinstall_init
-    unset -f post_makeinstall_init
-
-    unset -f pre_build_bootstrap
-    unset -f pre_configure_bootstrap
-    unset -f configure_bootstrap
-    unset -f post_configure_bootstrap
-    unset -f pre_make_bootstrap
-    unset -f make_bootstrap
-    unset -f post_make_bootstrap
-    unset -f pre_makeinstall_bootstrap
-    unset -f makeinstall_bootstrap
-    unset -f post_makeinstall_bootstrap
+    unset -f pre_build_$TARGET
+    unset -f pre_configure_$TARGET
+    unset -f configure_$TARGET
+    unset -f post_configure_$TARGET
+    unset -f pre_make_$TARGET
+    unset -f make_$TARGET
+    unset -f post_make_$TARGET
+    unset -f pre_makeinstall_$TARGET
+    unset -f makeinstall_$TARGET
+    unset -f post_makeinstall_$TARGET
 
   # configure TARGET build defaults
     TARGET_CONFIGURE_OPTS="--host=$TARGET_NAME \
