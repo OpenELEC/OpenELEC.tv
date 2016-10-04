@@ -108,7 +108,23 @@ if [ ! -f $STAMP ]; then
     export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
 
     if [ "$PKG_AUTORECONF" = yes ]; then
-      $SCRIPTS/autoreconf $PACKAGE_NAME
+      if [ ! -f "$PKG_BUILD/configure.in" \
+          -a ! -f "$PKG_BUILD/configure.ac" ] ; then
+        echo "configure.in or configure.ac not found"
+        exit 1
+      fi
+
+      if [ ! -f $PKG_BUILD/.autoreconf-done ] ; then
+        touch $PKG_BUILD/NEWS $PKG_BUILD/AUTHORS $PKG_BUILD/ChangeLog
+        mkdir -p $PKG_BUILD/m4
+        mkdir -p $PKG_BUILD/build-aux
+
+        printf "%${BUILD_INDENT}c ${boldmagenta}AUTORECONF${endcolor}   $1\n" ' '>&$SILENT_OUT
+        export BUILD_INDENT=$((${BUILD_INDENT:-1}+$BUILD_INDENT_SIZE))
+
+        do_autoreconf $PKG_BUILD
+        touch $PKG_BUILD/.autoreconf-done
+      fi
     fi
 
     # virtual packages dont must be build, they only contains dependencies, so dont go further here
