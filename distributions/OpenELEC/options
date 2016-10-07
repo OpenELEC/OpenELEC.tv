@@ -65,7 +65,7 @@
 # install extra kernel drivers, see configfiles in distributions/*/linux/*.config
 # please add all configfiles which should be included without the suffix
 # Space separated list is supported,
-  KERNEL_EXTRA_CONFIG="touchscreen"
+  KERNEL_EXTRA_CONFIG="touchscreen filesystem"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
