@@ -35,6 +35,7 @@ case "$LINUX" in
     PKG_GIT_URL="https://github.com/codesnake/linux.git"
     PKG_GIT_BRANCH="amlogic-3.10.y"
     PKG_PATCH_DIRS="linux-3.10 amlogic-3.10"
+    KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   amlogic-3.14)
     PKG_VERSION="ac1471d"
@@ -42,12 +43,13 @@ case "$LINUX" in
 #    PKG_GIT_BRANCH="amlogic-3.14.y"
     PKG_GIT_BRANCH="wetek_play_2_dts"
     PKG_PATCH_DIRS="linux-3.14 amlogic-3.14"
+    KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   imx6)
     PKG_VERSION="f14907b"
     PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
     PKG_GIT_BRANCH="imx6-4.4.y"
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
+    PKG_DEPENDS_TARGET+=" imx6-status-led imx6-soc-fan"
     PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
     ;;
   rpi)
@@ -57,7 +59,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="linux-4.8"
     ;;
   *)
-    PKG_VERSION="4.8"
+    PKG_VERSION="4.8.1"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_PATCH_DIRS="linux-4.8"
     ;;
@@ -68,9 +70,11 @@ PKG_AUTORECONF="no"
 
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_KERNEL_ARCH headers_check"
 
-if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET mkbootimg:host"
-fi
+[ "$BUILD_ANDROID_BOOTIMG" = "yes" ] && PKG_DEPENDS_TARGET+=" mkbootimg:host"
+[ "$SWAP_SUPPORT" = yes ]            && KERNEL_EXTRA_CONFIG+=" swap"
+[ "$NFS_SUPPORT" = yes ]             && KERNEL_EXTRA_CONFIG+=" nfs"
+[ "$SAMBA_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" samba"
+[ "$ISCSI_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" iscsi"
 
 post_patch() {
   if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
@@ -79,13 +83,14 @@ post_patch() {
     KERNEL_CFG_FILE=$PKG_DIR/config/$PKG_NAME.$TARGET_ARCH.conf
   fi
 
+  cp $KERNEL_CFG_FILE $PKG_BUILD/.config
+
   sed -i -e "s|^HOSTCC[[:space:]]*=.*$|HOSTCC = $ROOT/$TOOLCHAIN/bin/host-gcc|" \
          -e "s|^HOSTCXX[[:space:]]*=.*$|HOSTCXX = $ROOT/$TOOLCHAIN/bin/host-g++|" \
          -e "s|^ARCH[[:space:]]*?=.*$|ARCH = $TARGET_KERNEL_ARCH|" \
          -e "s|^CROSS_COMPILE[[:space:]]*?=.*$|CROSS_COMPILE = $TARGET_PREFIX|" \
          $PKG_BUILD/Makefile
 
-  cp $KERNEL_CFG_FILE $PKG_BUILD/.config
   if [ ! "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
     sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$ROOT/$BUILD/image/initramfs.cpio\"|" $PKG_BUILD/.config
   fi
@@ -93,34 +98,49 @@ post_patch() {
   # set default hostname based on $DISTRONAME
     sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
 
-  # disable swap support if not enabled
-  if [ ! "$SWAP_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_SWAP=.*$|# CONFIG_SWAP is not set|" $PKG_BUILD/.config
-  fi
-
-  # disable nfs support if not enabled
-  if [ ! "$NFS_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_NFS_FS=.*$|# CONFIG_NFS_FS is not set|" $PKG_BUILD/.config
-  fi
-
-  # disable cifs support if not enabled
-  if [ ! "$SAMBA_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_CIFS=.*$|# CONFIG_CIFS is not set|" $PKG_BUILD/.config
-  fi
-
-  # disable iscsi support if not enabled
-  if [ ! "$ISCSI_SUPPORT" = yes ]; then
-    sed -i -e "s|^CONFIG_SCSI_ISCSI_ATTRS=.*$|# CONFIG_SCSI_ISCSI_ATTRS is not set|" $PKG_BUILD/.config
-    sed -i -e "s|^CONFIG_ISCSI_TCP=.*$|# CONFIG_ISCSI_TCP is not set|" $PKG_BUILD/.config
-    sed -i -e "s|^CONFIG_ISCSI_BOOT_SYSFS=.*$|# CONFIG_ISCSI_BOOT_SYSFS is not set|" $PKG_BUILD/.config
-    sed -i -e "s|^CONFIG_ISCSI_IBFT_FIND=.*$|# CONFIG_ISCSI_IBFT_FIND is not set|" $PKG_BUILD/.config
-    sed -i -e "s|^CONFIG_ISCSI_IBFT=.*$|# CONFIG_ISCSI_IBFT is not set|" $PKG_BUILD/.config
-  fi
-
   # copy some extra firmware to linux tree
-  cp -R $PKG_DIR/firmware/* $PKG_BUILD/firmware
+    cp -R $PKG_DIR/firmware/* $PKG_BUILD/firmware
 
-  make -C $PKG_BUILD oldconfig
+  # ask for new config options after kernel update
+    make -C $PKG_BUILD oldconfig
+
+  # set default config
+    for config in $(find $PKG_DIR/config -type f -name default-*.config 2>&1); do
+      if [ -f $config ]; then
+        echo ">>> include $config ..."
+        cat $config >> $PKG_BUILD/.config
+      fi
+    done
+    for config in $(find $PROJECT_DIR/$PROJECT/$PKG_NAME -type f -name default-*.config 2>&1); do
+      if [ -f $config ]; then
+        echo ">>> include $config ..."
+        cat $config >> $PKG_BUILD/.config
+      fi
+    done
+    for config in $(find $DISTRO_DIR/$DISTRO/$PKG_NAME -type f -name default-*.config 2>&1); do
+      if [ -f $config ]; then
+        echo ">>> include $config ..."
+        cat $config >> $PKG_BUILD/.config
+      fi
+    done
+
+  # set extra config
+    for config in $KERNEL_EXTRA_CONFIG; do
+      if [ -f $PKG_DIR/config/extra-${config}.config ]; then
+        echo ">>> include $PKG_DIR/config/extra-${config}.config ..."
+        cat $PKG_DIR/config/extra-${config}.config >> $PKG_BUILD/.config
+      fi
+      if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/extra-${config}.config ]; then
+        echo ">>> include $PROJECT_DIR/$PROJECT/$PKG_NAME/extra-${config}.config ..."
+        cat $PROJECT_DIR/$PROJECT/$PKG_NAME/extra-${config}.config >> $PKG_BUILD/.config
+      fi
+      if [ -f $DISTRO_DIR/$DISTRO/$PKG_NAME/extra-${config}.config ]; then
+        echo ">>> include $DISTRO_DIR/$DISTRO/$PKG_NAME/extra-${config}.config ..."
+        cat $DISTRO_DIR/$DISTRO/$PKG_NAME/extra-${config}.config >> $PKG_BUILD/.config
+      fi
+    done
+
+    make -C $PKG_BUILD olddefconfig
 }
 
 makeinstall_host() {

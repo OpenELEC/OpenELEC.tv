@@ -29,6 +29,15 @@ ROOT=`pwd`
 DISTRO_DIR="$ROOT/distributions"
 PROJECT_DIR="$ROOT/projects"
 LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/packages/linux/package.mk"
+for linux_depends in $(find $ROOT/packages/linux/config -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
+for linux_depends in $(find $PROJECT_DIR/$PROJECT/linux -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
+for linux_depends in $(find $DISTRO_DIR/$DISTRO/linux -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
 
 # include versioning
   . config/version
