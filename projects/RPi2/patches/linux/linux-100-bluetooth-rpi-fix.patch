@@ -1,0 +1,20 @@
+diff --git a/drivers/bluetooth/hci_ath.c b/drivers/bluetooth/hci_ath.c
+index ec8fa0e..667b854 100644
+--- a/drivers/bluetooth/hci_ath.c
++++ b/drivers/bluetooth/hci_ath.c
+@@ -192,6 +192,7 @@ static int ath_recv(struct hci_uart *hu, const void *data, int count)
+ 	if (IS_ERR(ath->rx_skb)) {
+ 		int err = PTR_ERR(ath->rx_skb);
+ 		BT_ERR("%s: Frame reassembly failed (%d)", hu->hdev->name, err);
++		ath->rx_skb = NULL;
+ 		return err;
+ 	}
+ 
+@@ -242,6 +243,7 @@ static struct sk_buff *ath_dequeue(struct hci_uart *hu)
+ static const struct hci_uart_proto athp = {
+ 	.id		= HCI_UART_ATH3K,
+ 	.name		= "ATH3K",
++	.manufacturer	= 69,
+ 	.open		= ath_open,
+ 	.close		= ath_close,
+ 	.flush		= ath_flush,
