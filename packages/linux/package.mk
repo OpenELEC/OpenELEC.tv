@@ -68,7 +68,7 @@ esac
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_HOST="ARCH=$TARGET_KERNEL_ARCH headers_check"
+PKG_MAKE_OPTS_HOST="headers_check"
 
 [ "$BUILD_ANDROID_BOOTIMG" = "yes" ] && PKG_DEPENDS_TARGET+=" mkbootimg:host"
 [ "$SWAP_SUPPORT" = yes ]            && KERNEL_EXTRA_CONFIG+=" swap"
@@ -144,9 +144,7 @@ post_patch() {
 }
 
 makeinstall_host() {
-  make ARCH=$TARGET_KERNEL_ARCH INSTALL_HDR_PATH=dest headers_install
-  mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -R dest/include/* $SYSROOT_PREFIX/usr/include
+  make INSTALL_HDR_PATH=$SYSROOT_PREFIX/usr headers_install
 }
 
 pre_make_target() {
@@ -161,8 +159,10 @@ pre_make_target() {
 }
 
 make_target() {
-  LDFLAGS="" make modules
-  LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
+  unset LDFLAGS
+
+  make modules
+  make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" INSTALL_MOD_STRIP=1 modules_install
   rm -f $INSTALL/lib/modules/*/build
   rm -f $INSTALL/lib/modules/*/source
 
@@ -174,15 +174,15 @@ make_target() {
   if [ "$BOOTLOADER" = "u-boot" ]; then
     if [ -n "$KERNEL_UBOOT_EXTRA_TARGET" -o -n "$KERNEL_UBOOT_DT_IMAGE" ]; then
       for extra_target in "$KERNEL_UBOOT_EXTRA_TARGET" $(basename "$KERNEL_UBOOT_DT_IMAGE") ; do
-        LDFLAGS="" make $extra_target
+        make $extra_target
       done
     fi
   fi
 
-  LDFLAGS="" make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD
+  make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD
 
   if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
-    LDFLAGS="" mkbootimg --kernel arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
+    mkbootimg --kernel arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET --ramdisk $ROOT/$BUILD/image/initramfs.cpio \
       $ANDROID_BOOTIMG_OPTIONS --output arch/$TARGET_KERNEL_ARCH/boot/boot.img
     mv -f arch/$TARGET_KERNEL_ARCH/boot/boot.img arch/$TARGET_KERNEL_ARCH/boot/$KERNEL_TARGET
   fi
@@ -222,7 +222,7 @@ makeinstall_init() {
       module=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name $i.ko`
       if [ -n "$module" ]; then
         echo $i >> $INSTALL/etc/modules
-        cp $module $INSTALL/lib/modules/`basename $module`
+        cp $module $INSTALL/lib/modules/$(basename $module)
       fi
     done
   fi
@@ -230,7 +230,7 @@ makeinstall_init() {
   if [ "$UVESAFB_SUPPORT" = yes ]; then
     mkdir -p $INSTALL/lib/modules
       uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
-      cp $uvesafb $INSTALL/lib/modules/`basename $uvesafb`
+      cp $uvesafb $INSTALL/lib/modules/$(basename $uvesafb)
   fi
 
   echo "mkdir -p dev" >> $FAKEROOT_SCRIPT_INIT
