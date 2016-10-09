@@ -38,10 +38,10 @@ case "$LINUX" in
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   amlogic-3.14)
-    PKG_VERSION="ac1471d"
-    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
-#    PKG_GIT_BRANCH="amlogic-3.14.y"
-    PKG_GIT_BRANCH="wetek_play_2_dts"
+    PKG_VERSION="069e204"
+#    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
+    PKG_GIT_URL="https://github.com/LibreELEC/linux-amlogic.git"
+    PKG_GIT_BRANCH="amlogic-3.14.y"
     PKG_PATCH_DIRS="linux-3.14 amlogic-3.14"
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
@@ -53,7 +53,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
     ;;
   rpi)
-    PKG_VERSION="d3d0a59"
+    PKG_VERSION="c018644"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
     PKG_GIT_BRANCH="raspberry-rpi-4.8.y"
     PKG_PATCH_DIRS="linux-4.8"
