@@ -75,6 +75,7 @@ PKG_MAKE_OPTS_HOST="headers_check"
 [ "$NFS_SUPPORT" = yes ]             && KERNEL_EXTRA_CONFIG+=" nfs"
 [ "$SAMBA_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" samba"
 [ "$ISCSI_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" iscsi"
+[ "$BLUETOOTH_SUPPORT" = yes ]       && KERNEL_EXTRA_CONFIG+=" bluetooth"
 
 post_patch() {
   if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
