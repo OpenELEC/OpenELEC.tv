@@ -69,8 +69,10 @@ GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN localedef makedb mtrace pcprofiledump"
 GLIBC_EXCLUDE_BIN="$GLIBC_EXCLUDE_BIN pldd rpcgen sln sotruss sprof xtrace"
 
 pre_configure_target() {
-  aclocal --force --verbose
-  autoconf --force --verbose
+  ( cd $ROOT/$PKG_BUILD
+    aclocal --force --verbose
+    autoconf --force --verbose
+  )
 
 # Fails to compile with GCC's link time optimization.
   strip_lto
