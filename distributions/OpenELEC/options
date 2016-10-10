@@ -68,7 +68,7 @@
 # except the default-*.config and the ones included in packages/linux/package.mk
 # Space separated list is supported,
   KERNEL_EXTRA_CONFIG+=" filesystem hid-drivers remote touchscreen"
-  KERNEL_EXTRA_CONFIG+=" dvb-usb dvb-other lan-usb wlan-usb wlan-other"
+  KERNEL_EXTRA_CONFIG+=" dvb-usb dvb-other lan-usb lan-other wlan-usb wlan-other"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
