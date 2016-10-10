@@ -93,7 +93,7 @@ pll_de           = 864
 ;dram_para2 = 0x00001100  ;on behalf of a single channel is enabled dram
 ;*****************************************************************************
 [dram_para]
-dram_clk        = 672
+dram_clk        = 624
 dram_type       = 3
 dram_zq         = 0x3b3bfb
 dram_odt_en     = 0x1
