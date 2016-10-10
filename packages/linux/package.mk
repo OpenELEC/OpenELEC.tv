@@ -45,7 +45,7 @@ case "$LINUX" in
     PKG_GIT_BRANCH="rpi-4.4.y"
     ;;
   sun8i)
-    PKG_VERSION="0bcbbc1"
+    PKG_VERSION="f143b8a"
     PKG_GIT_URL="https://github.com/jernejsk/linux.git"
     PKG_GIT_BRANCH="master"
     PKG_KEEP_CHECKOUT="yes"
