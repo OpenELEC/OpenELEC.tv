@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="LGPL"
 PKG_SITE="http://ffmpeg.org"
 PKG_URL="https://www.ffmpeg.org/releases/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis libressl libx264"
+PKG_DEPENDS_TARGET="toolchain yasm:host zlib bzip2 libvorbis libressl libx264 lame libtheora"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video."
@@ -126,7 +126,7 @@ configure_target() {
               --enable-shared \
               --enable-gpl \
               --disable-version3 \
-              --disable-nonfree \
+              --enable-nonfree \
               --enable-logging \
               --disable-doc \
               $FFMPEG_DEBUG \
@@ -171,13 +171,14 @@ configure_target() {
               --enable-encoder=flac \
               --disable-decoder=mpeg_xvmc \
               --enable-hwaccels \
-              --disable-muxers \
+              --enable-muxers \
               --enable-muxer=spdif \
               --enable-muxer=adts \
               --enable-muxer=asf \
               --enable-muxer=ipod \
               --enable-muxer=mpegts \
               --enable-demuxers \
+              --enable-demuxer=ogg,matroska,mov,flv \
               --enable-parsers \
               --enable-bsfs \
               --enable-protocol=http \
@@ -192,15 +193,15 @@ configure_target() {
               --disable-libopencv \
               --disable-libdc1394 \
               --disable-libfaac \
-              --disable-libfreetype \
+              --enable-libfreetype \
               --disable-libgsm \
-              --disable-libmp3lame \
+              --enable-libmp3lame \
               --disable-libnut \
               --disable-libopenjpeg \
               --disable-librtmp \
               --disable-libschroedinger \
               --disable-libspeex \
-              --disable-libtheora \
+              --enable-libtheora \
               --disable-libvo-aacenc \
               --disable-libvo-amrwbenc \
               --enable-libvorbis --enable-muxer=ogg --enable-encoder=libvorbis \
