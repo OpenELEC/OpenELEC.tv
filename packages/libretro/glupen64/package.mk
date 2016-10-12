@@ -50,6 +50,9 @@ make_target() {
     Generic)
       make
       ;;
+    OdroidXU3)
+      make platform=odroid BOARD=ODROID-XU3
+      ;;
     *)
       make platform=rpi2
       ;;
