@@ -1,4 +1,6 @@
-From 47d52268958e8a93b7e5ccfc22f83c82e13e1f6f Mon Sep 17 00:00:00 2001
+# see https://github.com/torvalds/linux/compare/v4.8...plbossart:byt-cht-hdmi-v4.8
+
+From 982a9c5bbe16cabc297e75d6d9e8d2926f5641b8 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Wed, 2 Mar 2016 14:30:44 -0600
 Subject: [PATCH 01/12] drm: i915: remove intel_hdmi variable declaration
@@ -12,10 +14,10 @@ Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/i915/intel_hdmi.c b/drivers/gpu/drm/i915/intel_hdmi.c
-index 616108c..3b362ddb 100644
+index 4df9f38..34e497f 100644
 --- a/drivers/gpu/drm/i915/intel_hdmi.c
 +++ b/drivers/gpu/drm/i915/intel_hdmi.c
-@@ -1413,7 +1413,7 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
+@@ -1496,7 +1496,7 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
  	intel_hdmi_unset_edid(connector);
  
  	if (intel_hdmi_set_edid(connector, live_status)) {
@@ -25,7 +27,7 @@ index 616108c..3b362ddb 100644
  		hdmi_to_dig_port(intel_hdmi)->base.type = INTEL_OUTPUT_HDMI;
  		status = connector_status_connected;
 
-From 146a6648f67ce715e90bbd122c509aa26247a8e4 Mon Sep 17 00:00:00 2001
+From 9a4bb140fbca791441bcf93ddf0a2ae062bc9945 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 1 Mar 2016 16:25:04 -0600
 Subject: [PATCH 02/12] drm/i915: Add headers for non-HDAudio HDMI interface
@@ -181,18 +183,18 @@ index 0000000..165bba5
 +
 +#endif /* __HDMI_AUDIO_IF_H */
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index b0847b9..b700adc 100644
+index f68c789..4c682fae 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -52,6 +52,7 @@
- #include <linux/kref.h>
- #include <linux/pm_qos.h>
- #include "intel_guc.h"
+@@ -63,6 +63,7 @@
+ #include "i915_gem_render_state.h"
+ 
+ #include "intel_gvt.h"
 +#include "hdmi_audio_if.h"
  
  /* General customization:
   */
-@@ -1153,6 +1154,18 @@ struct intel_gen6_power_mgmt {
+@@ -1208,6 +1209,18 @@ struct intel_gen6_power_mgmt {
  	struct mutex hw_lock;
  };
  
@@ -211,7 +213,7 @@ index b0847b9..b700adc 100644
  /* defined intel_pm.c */
  extern spinlock_t mchdev_lock;
  
-@@ -1953,6 +1966,19 @@ struct drm_i915_private {
+@@ -2066,6 +2079,19 @@ struct drm_i915_private {
  
  	struct intel_encoder *dig_port_map[I915_MAX_PORTS];
  
@@ -231,7 +233,7 @@ index b0847b9..b700adc 100644
  	/*
  	 * NOTE: This is the dri1/ums dungeon, don't add stuff here. Your patch
  	 * will be rejected. Instead look for a better place.
-@@ -3509,6 +3535,11 @@ int intel_freq_opcode(struct drm_i915_private *dev_priv, int val);
+@@ -3903,6 +3929,11 @@ int intel_freq_opcode(struct drm_i915_private *dev_priv, int val);
  	} while (upper != old_upper && loop++ < 2);			\
  	(u64)upper << 32 | lower; })
  
@@ -244,10 +246,10 @@ index b0847b9..b700adc 100644
  #define POSTING_READ16(reg)	(void)I915_READ16_NOTRACE(reg)
  
 diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
-index 4897728..713a0173 100644
+index bf2cad3..bb0378f2d 100644
 --- a/drivers/gpu/drm/i915/i915_reg.h
 +++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -2053,7 +2053,25 @@ enum skl_disp_power_wells {
+@@ -2131,7 +2131,25 @@ enum skl_disp_power_wells {
  #define I915_WINVALID_INTERRUPT				(1<<1)
  #define I915_USER_INTERRUPT				(1<<1)
  #define I915_ASLE_INTERRUPT				(1<<0)
@@ -273,7 +275,7 @@ index 4897728..713a0173 100644
  
  #define GEN6_BSD_RNCID			_MMIO(0x12198)
  
-@@ -3355,6 +3373,9 @@ enum skl_disp_power_wells {
+@@ -3468,6 +3486,9 @@ enum {
  #define _GEN3_SDVOC	0x61160
  #define GEN3_SDVOB	_MMIO(_GEN3_SDVOB)
  #define GEN3_SDVOC	_MMIO(_GEN3_SDVOC)
@@ -283,7 +285,7 @@ index 4897728..713a0173 100644
  #define GEN4_HDMIB	GEN3_SDVOB
  #define GEN4_HDMIC	GEN3_SDVOC
  #define VLV_HDMIB	_MMIO(VLV_DISPLAY_BASE + 0x61140)
-@@ -3364,6 +3385,7 @@ enum skl_disp_power_wells {
+@@ -3477,6 +3498,7 @@ enum {
  #define PCH_HDMIB	PCH_SDVOB
  #define PCH_HDMIC	_MMIO(0xe1150)
  #define PCH_HDMID	_MMIO(0xe1160)
@@ -292,10 +294,10 @@ index 4897728..713a0173 100644
  #define PORT_DFT_I9XX				_MMIO(0x61150)
  #define   DC_BALANCE_RESET			(1 << 25)
 diff --git a/drivers/gpu/drm/i915/intel_drv.h b/drivers/gpu/drm/i915/intel_drv.h
-index df7f3cb..12cd13e 100644
+index ff399b9..83915b1 100644
 --- a/drivers/gpu/drm/i915/intel_drv.h
 +++ b/drivers/gpu/drm/i915/intel_drv.h
-@@ -695,6 +695,14 @@ struct cxsr_latency {
+@@ -796,6 +796,14 @@ struct cxsr_latency {
  #define to_intel_plane_state(x) container_of(x, struct intel_plane_state, base)
  #define intel_fb_obj(x) (x ? to_intel_framebuffer(x)->obj : NULL)
  
@@ -310,7 +312,7 @@ index df7f3cb..12cd13e 100644
  struct intel_hdmi {
  	i915_reg_t hdmi_reg;
  	int ddc_bus;
-@@ -706,6 +714,9 @@ struct intel_hdmi {
+@@ -811,6 +819,9 @@ struct intel_hdmi {
  	bool rgb_quant_range_selectable;
  	enum hdmi_picture_aspect aspect_ratio;
  	struct intel_connector *attached_connector;
@@ -320,17 +322,17 @@ index df7f3cb..12cd13e 100644
  	void (*write_infoframe)(struct drm_encoder *encoder,
  				enum hdmi_infoframe_type type,
  				const void *frame, ssize_t len);
-@@ -1138,6 +1149,8 @@ intel_rotation_90_or_270(unsigned int rotation)
+@@ -1263,6 +1274,8 @@ intel_rotation_90_or_270(unsigned int rotation)
  
  void intel_create_rotation_property(struct drm_device *dev,
  					struct intel_plane *plane);
 +void chv_set_lpe_audio_reg_pipe(struct drm_device *dev,
 +				int encoder_type, enum port port);
  
- /* shared dpll functions */
- struct intel_shared_dpll *intel_crtc_to_shared_dpll(struct intel_crtc *crtc);
+ void assert_pch_transcoder_disabled(struct drm_i915_private *dev_priv,
+ 				    enum pipe pipe);
 
-From 1cab896a5981554dc754f6279a675a67fc9adf16 Mon Sep 17 00:00:00 2001
+From 0aca8e42f07b0f84970a39d7f91b33a9899001a9 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 1 Mar 2016 16:25:04 -0600
 Subject: [PATCH 03/12] drm/i915: changes for non-HDAudio HDMI interface
@@ -348,6 +350,9 @@ IER setting for hdmi_audio was missing.
 This fixes the following warning in dmesg.
 [  302.369965] had: Driver detected 2 missed buffer done interrupt(s)!!!!
 
+includes fix to handle display resolution change and changes to
+account for tmds clock set in vlv/chv_crtc_compute_clock
+
 Cleanup, correction for PIPE_A/PIPE_B inversions,
 port to 4.5 and intel-drm by Pierre Bossart
 CherryTrail support by Jerome Anand
@@ -356,16 +361,16 @@ Signed-off-by: David Henningsson <david.henningsson@canonical.com>
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Signed-off-by: Toyo Abe <toyo.abe@gmail.com>
 ---
- drivers/gpu/drm/i915/i915_irq.c      | 151 +++++++++++++++++++++++++
- drivers/gpu/drm/i915/intel_display.c |  86 ++++++++++++++
- drivers/gpu/drm/i915/intel_hdmi.c    | 211 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 446 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/i915_irq.c      | 169 +++++++++++++++++++++++++++-
+ drivers/gpu/drm/i915/intel_display.c | 100 +++++++++++++++++
+ drivers/gpu/drm/i915/intel_hdmi.c    | 212 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 478 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-index fa8afa7..59f4eaa 100644
+index 1c2aec3..93ad21e 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
-@@ -603,6 +603,42 @@ i915_disable_pipestat(struct drm_i915_private *dev_priv, enum pipe pipe,
+@@ -587,6 +587,42 @@ i915_disable_pipestat(struct drm_i915_private *dev_priv, enum pipe pipe,
  	__i915_disable_pipestat(dev_priv, pipe, enable_mask, status_mask);
  }
  
@@ -378,7 +383,7 @@ index fa8afa7..59f4eaa 100644
 +	mask = dev_priv->hdmi_audio_interrupt_mask;
 +	mask |= I915_HDMI_AUDIO_UNDERRUN | I915_HDMI_AUDIO_BUFFER_DONE;
 +	/* Enable the interrupt, clear any pending status */
-+	if (IS_CHERRYVIEW(dev_priv->dev)) {
++	if (IS_CHERRYVIEW(dev_priv)) {
 +		I915_WRITE(I915_LPE_AUDIO_HDMI_STATUS_C, mask);
 +		POSTING_READ(I915_LPE_AUDIO_HDMI_STATUS_C);
 +	} else {
@@ -395,7 +400,7 @@ index fa8afa7..59f4eaa 100644
 +	mask = dev_priv->hdmi_audio_interrupt_mask;
 +	mask |= I915_HDMI_AUDIO_UNDERRUN | I915_HDMI_AUDIO_BUFFER_DONE;
 +	/* Disable the interrupt, clear any pending status */
-+	if (IS_CHERRYVIEW(dev_priv->dev)) {
++	if (IS_CHERRYVIEW(dev_priv)) {
 +		I915_WRITE(I915_LPE_AUDIO_HDMI_STATUS_C, mask);
 +		POSTING_READ(I915_LPE_AUDIO_HDMI_STATUS_C);
 +
@@ -407,9 +412,9 @@ index fa8afa7..59f4eaa 100644
 +
  /**
   * i915_enable_asle_pipestat - enable ASLE pipestat for OpRegion
-  * @dev: drm device
-@@ -1644,6 +1680,24 @@ static bool intel_pipe_handle_vblank(struct drm_device *dev, enum pipe pipe)
- 	return true;
+  * @dev_priv: i915 device private
+@@ -1618,6 +1654,24 @@ static bool intel_pipe_handle_vblank(struct drm_i915_private *dev_priv,
+ 	return ret;
  }
  
 +static inline
@@ -430,34 +435,58 @@ index fa8afa7..59f4eaa 100644
 +	}
 +}
 +
- static void valleyview_pipestat_irq_handler(struct drm_device *dev, u32 iir)
+ static void valleyview_pipestat_irq_ack(struct drm_i915_private *dev_priv,
+ 					u32 iir, u32 pipe_stats[I915_MAX_PIPES])
  {
- 	struct drm_i915_private *dev_priv = dev->dev_private;
-@@ -1713,6 +1767,23 @@ static void valleyview_pipestat_irq_handler(struct drm_device *dev, u32 iir)
- 			intel_cpu_fifo_underrun_irq_handler(dev_priv, pipe);
- 	}
+@@ -1817,6 +1871,23 @@ static irqreturn_t valleyview_irq_handler(int irq, void *arg)
+ 			i9xx_hpd_irq_handler(dev_priv, hotplug_status);
  
-+	if (IS_CHERRYVIEW(dev)) {
-+		// FIXME: plb: why are pipes and status mapped this way?
-+		if (iir & I915_LPE_PIPE_C_INTERRUPT)
-+			i915_notify_audio_buffer_status(dev,
-+						I915_LPE_AUDIO_HDMI_STATUS_C);
+ 		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
++
++		if (IS_CHERRYVIEW(dev_priv)) {
++			// FIXME: plb: why are pipes and status mapped this way?
++			if (iir & I915_LPE_PIPE_C_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++								I915_LPE_AUDIO_HDMI_STATUS_C);
 +		if (iir & I915_LPE_PIPE_B_INTERRUPT)
 +			i915_notify_audio_buffer_status(dev,
-+						I915_LPE_AUDIO_HDMI_STATUS_B);
++							I915_LPE_AUDIO_HDMI_STATUS_B);
 +		if (iir & I915_LPE_PIPE_A_INTERRUPT)
 +			i915_notify_audio_buffer_status(dev,
-+						I915_LPE_AUDIO_HDMI_STATUS_A);
-+	} else {
-+		if (iir & I915_LPE_PIPE_B_INTERRUPT)
-+			i915_notify_audio_buffer_status(dev,
-+						I915_LPE_AUDIO_HDMI_STATUS_A);
-+	}
++							I915_LPE_AUDIO_HDMI_STATUS_A);
++		} else {
++			if (iir & I915_LPE_PIPE_B_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++								I915_LPE_AUDIO_HDMI_STATUS_A);
++		}
+ 	} while (0);
+ 
+ 	enable_rpm_wakeref_asserts(dev_priv);
+@@ -1894,6 +1965,23 @@ static irqreturn_t cherryview_irq_handler(int irq, void *arg)
+ 			i9xx_hpd_irq_handler(dev_priv, hotplug_status);
+ 
+ 		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
 +
- 	if (pipe_stats[0] & PIPE_GMBUS_INTERRUPT_STATUS)
- 		gmbus_irq_handler(dev);
- }
-@@ -2790,6 +2861,72 @@ static void gen8_disable_vblank(struct drm_device *dev, unsigned int pipe)
++		if (IS_CHERRYVIEW(dev_priv)) {
++			// FIXME: plb: why are pipes and status mapped this way?
++			if (iir & I915_LPE_PIPE_C_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++								I915_LPE_AUDIO_HDMI_STATUS_C);
++			if (iir & I915_LPE_PIPE_B_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++						I915_LPE_AUDIO_HDMI_STATUS_B);
++			if (iir & I915_LPE_PIPE_A_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++								I915_LPE_AUDIO_HDMI_STATUS_A);
++		} else {
++			if (iir & I915_LPE_PIPE_B_INTERRUPT)
++				i915_notify_audio_buffer_status(dev,
++								I915_LPE_AUDIO_HDMI_STATUS_A);
++		}
+ 	} while (0);
+ 
+ 	enable_rpm_wakeref_asserts(dev_priv);
+@@ -2803,6 +2891,72 @@ static void gen8_disable_vblank(struct drm_device *dev, unsigned int pipe)
  	spin_unlock_irqrestore(&dev_priv->irq_lock, irqflags);
  }
  
@@ -474,7 +503,7 @@ index fa8afa7..59f4eaa 100644
 +
 +	imr = I915_READ(VLV_IMR);
 +
-+	if (IS_CHERRYVIEW(dev_priv->dev)) {
++	if (IS_CHERRYVIEW(dev_priv)) {
 +		// FIXME: plb: looks wrong
 +
 +		//imr &= ~I915_LPE_PIPE_C_INTERRUPT;
@@ -506,7 +535,7 @@ index fa8afa7..59f4eaa 100644
 +	spin_lock_irqsave(&dev_priv->irq_lock, irqflags);
 +	imr = I915_READ(VLV_IMR);
 +
-+	if (IS_CHERRYVIEW(dev_priv->dev)) {
++	if (IS_CHERRYVIEW(dev_priv)) {
 +		// FIXME: plb: looks wrong, should have other interrupts as well?
 +		//imr |= I915_LPE_PIPE_C_INTERRUPT;
 +		int_bit = (pipe ? (I915_LPE_PIPE_B_INTERRUPT >>
@@ -528,56 +557,60 @@ index fa8afa7..59f4eaa 100644
 +}
 +
  static bool
- ring_idle(struct intel_engine_cs *ring, u32 seqno)
+ ring_idle(struct intel_engine_cs *engine, u32 seqno)
  {
-@@ -3539,6 +3676,7 @@ static void valleyview_display_irqs_install(struct drm_i915_private *dev_priv)
+@@ -3293,7 +3447,8 @@ static void vlv_display_irq_postinstall(struct drm_i915_private *dev_priv)
  	u32 pipestat_mask;
- 	u32 iir_mask;
+ 	u32 enable_mask;
  	enum pipe pipe;
+-
 +	u32 lpe_status_clear;
++	
+ 	pipestat_mask = PLANE_FLIP_DONE_INT_STATUS_VLV |
+ 			PIPE_CRC_DONE_INTERRUPT_STATUS;
  
- 	pipestat_mask = PIPESTAT_INT_STATUS_MASK |
- 			PIPE_FIFO_UNDERRUN_STATUS;
-@@ -3559,12 +3697,25 @@ static void valleyview_display_irqs_install(struct drm_i915_private *dev_priv)
- 		   I915_DISPLAY_PIPE_B_EVENT_INTERRUPT;
+@@ -3307,6 +3462,18 @@ static void vlv_display_irq_postinstall(struct drm_i915_private *dev_priv)
  	if (IS_CHERRYVIEW(dev_priv))
- 		iir_mask |= I915_DISPLAY_PIPE_C_EVENT_INTERRUPT;
-+
-+	if (IS_CHERRYVIEW(dev_priv->dev))
-+		// FIXME: plb: looks wrong: what about other interrupts
-+		iir_mask |= I915_LPE_PIPE_C_INTERRUPT;
-+
- 	dev_priv->irq_mask &= ~iir_mask;
+ 		enable_mask |= I915_DISPLAY_PIPE_C_EVENT_INTERRUPT;
  
- 	I915_WRITE(VLV_IIR, iir_mask);
- 	I915_WRITE(VLV_IIR, iir_mask);
- 	I915_WRITE(VLV_IER, ~dev_priv->irq_mask);
- 	I915_WRITE(VLV_IMR, dev_priv->irq_mask);
-+
++	if (IS_CHERRYVIEW(dev_priv))
++		// FIXME: plb: looks wrong: what about other interrupts
++		enable_mask |= I915_LPE_PIPE_C_INTERRUPT;
++	
 +	lpe_status_clear = I915_HDMI_AUDIO_UNDERRUN |
 +			I915_HDMI_AUDIO_BUFFER_DONE;
 +	I915_WRITE(I915_LPE_AUDIO_HDMI_STATUS_A, lpe_status_clear);
 +	I915_WRITE(I915_LPE_AUDIO_HDMI_STATUS_B, lpe_status_clear);
-+	if (IS_CHERRYVIEW(dev_priv->dev))
++	if (IS_CHERRYVIEW(dev_priv))
 +		I915_WRITE(I915_LPE_AUDIO_HDMI_STATUS_C, lpe_status_clear);
 +
- 	POSTING_READ(VLV_IMR);
- }
++	
+ 	WARN_ON(dev_priv->irq_mask != ~0);
  
+ 	dev_priv->irq_mask = ~enable_mask;
 diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
-index 46947ff..ca212bb 100644
+index 175595f..d4499ff 100644
 --- a/drivers/gpu/drm/i915/intel_display.c
 +++ b/drivers/gpu/drm/i915/intel_display.c
-@@ -8010,6 +8010,16 @@ static int i9xx_crtc_compute_clock(struct intel_crtc *crtc,
- 				  num_connectors);
- 	}
+@@ -8096,6 +8096,8 @@ static int chv_crtc_compute_clock(struct intel_crtc *crtc,
+ {
+ 	int refclk = 100000;
+ 	const struct intel_limit *limit = &intel_limits_chv;
++	struct drm_device *dev = crtc->base.dev;
++	struct drm_i915_private *dev_priv = dev->dev_private;
+ 
+ 	memset(&crtc_state->dpll_hw_state, 0,
+ 	       sizeof(crtc_state->dpll_hw_state));
+@@ -8109,6 +8111,16 @@ static int chv_crtc_compute_clock(struct intel_crtc *crtc,
+ 
+ 	chv_compute_dpll(crtc, crtc_state);
  
 +	/* Added for HDMI Audio */
-+	if ((IS_CHERRYVIEW(dev)) || (IS_VALLEYVIEW(dev))) {
-+		if(intel_pipe_has_type(crtc, INTEL_OUTPUT_HDMI)) {
++	if ((IS_CHERRYVIEW(dev_priv)) || (IS_VALLEYVIEW(dev_priv))) {
++		if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI)) {
 +			dev_priv->tmds_clock_speed = crtc_state->port_clock;
 +
-+			mid_hdmi_audio_signal_event(dev_priv->dev,
++			mid_hdmi_audio_signal_event(dev,
 +				HAD_EVENT_MODE_CHANGING);
 +		}
 +	}
@@ -585,15 +618,40 @@ index 46947ff..ca212bb 100644
  	return 0;
  }
  
-@@ -14606,6 +14616,82 @@ static void intel_setup_outputs(struct drm_device *dev)
+@@ -8117,6 +8129,8 @@ static int vlv_crtc_compute_clock(struct intel_crtc *crtc,
+ {
+ 	int refclk = 100000;
+ 	const struct intel_limit *limit = &intel_limits_vlv;
++	struct drm_device *dev = crtc->base.dev;
++	struct drm_i915_private *dev_priv = dev->dev_private;
+ 
+ 	memset(&crtc_state->dpll_hw_state, 0,
+ 	       sizeof(crtc_state->dpll_hw_state));
+@@ -8130,6 +8144,16 @@ static int vlv_crtc_compute_clock(struct intel_crtc *crtc,
+ 
+ 	vlv_compute_dpll(crtc, crtc_state);
+ 
++	/* Added for HDMI Audio */
++	if ((IS_CHERRYVIEW(dev_priv)) || (IS_VALLEYVIEW(dev_priv))) {
++		if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI)) {
++			dev_priv->tmds_clock_speed = crtc_state->port_clock;
++
++			mid_hdmi_audio_signal_event(dev,
++				HAD_EVENT_MODE_CHANGING);
++		}
++	}
++
+ 	return 0;
+ }
+ 
+@@ -14913,6 +14937,82 @@ static void intel_setup_outputs(struct drm_device *dev)
  	drm_helper_move_panel_connectors_to_head(dev);
  }
  
 +void chv_set_lpe_audio_reg_pipe(struct drm_device *dev,
 +				int encoder_type, enum port port)
 +{
-+	struct drm_i915_private *dev_priv = dev->dev_private;
-+	struct intel_encoder *intel_encoder;
++	struct drm_i915_private *dev_priv = to_i915(dev);
 +	struct hdmi_audio_priv *hdmi_priv = get_hdmi_priv();
 +
 +	if(!hdmi_priv) {
@@ -617,6 +675,7 @@ index 46947ff..ca212bb 100644
 +		//else
 +		//	hdmi_priv->hdmi_reg = CHV_DP_D;
 +	} else {
++#if 0
 +		list_for_each_entry(intel_encoder, &dev->
 +			mode_config.encoder_list, base.head) {
 +
@@ -650,7 +709,7 @@ index 46947ff..ca212bb 100644
 +				break;
 +			}
 +		}
-+
++#endif
 +		if (port == PORT_B) {
 +			if (encoder_type == INTEL_OUTPUT_HDMI)
 +				hdmi_priv->hdmi_reg = HDMIB;
@@ -669,7 +728,7 @@ index 46947ff..ca212bb 100644
  {
  	struct drm_device *dev = fb->dev;
 diff --git a/drivers/gpu/drm/i915/intel_hdmi.c b/drivers/gpu/drm/i915/intel_hdmi.c
-index 3b362ddb..dd289b7 100644
+index 34e497f..67cbf17 100644
 --- a/drivers/gpu/drm/i915/intel_hdmi.c
 +++ b/drivers/gpu/drm/i915/intel_hdmi.c
 @@ -38,6 +38,8 @@
@@ -681,7 +740,7 @@ index 3b362ddb..dd289b7 100644
  static struct drm_device *intel_hdmi_to_dev(struct intel_hdmi *intel_hdmi)
  {
  	return hdmi_to_dig_port(intel_hdmi)->base.base.dev;
-@@ -1386,6 +1388,124 @@ intel_hdmi_set_edid(struct drm_connector *connector, bool force)
+@@ -1461,6 +1463,124 @@ intel_hdmi_set_edid(struct drm_connector *connector, bool force)
  	return connected;
  }
  
@@ -806,7 +865,7 @@ index 3b362ddb..dd289b7 100644
  static enum drm_connector_status
  intel_hdmi_detect(struct drm_connector *connector, bool force)
  {
-@@ -1394,6 +1514,8 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
+@@ -1469,6 +1589,8 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
  	struct drm_i915_private *dev_priv = to_i915(connector->dev);
  	bool live_status = false;
  	unsigned int try;
@@ -815,7 +874,7 @@ index 3b362ddb..dd289b7 100644
  
  	DRM_DEBUG_KMS("[CONNECTOR:%d:%s]\n",
  		      connector->base.id, connector->name);
-@@ -1422,6 +1544,31 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
+@@ -1505,6 +1627,31 @@ intel_hdmi_detect(struct drm_connector *connector, bool force)
  
  	intel_display_power_put(dev_priv, POWER_DOMAIN_GMBUS);
  
@@ -836,7 +895,7 @@ index 3b362ddb..dd289b7 100644
 +		/* Send a disconnect event to audio */
 +		if (inform_audio) {
 +			DRM_DEBUG_DRIVER("Sending event to audio");
-+			mid_hdmi_audio_signal_event(dev_priv->dev,
++			mid_hdmi_audio_signal_event(dev,
 +			HAD_EVENT_HOT_UNPLUG);
 +		}
 +	}
@@ -847,7 +906,7 @@ index 3b362ddb..dd289b7 100644
  	return status;
  }
  
-@@ -1445,12 +1592,29 @@ intel_hdmi_force(struct drm_connector *connector)
+@@ -1528,12 +1675,29 @@ intel_hdmi_force(struct drm_connector *connector)
  static int intel_hdmi_get_modes(struct drm_connector *connector)
  {
  	struct edid *edid;
@@ -857,7 +916,7 @@ index 3b362ddb..dd289b7 100644
 +				hdmi_to_dig_port(intel_hdmi);
 +	struct drm_device *dev = connector->dev;
 +	int ret;
-+	struct drm_i915_private *dev_priv = connector->dev->dev_private;
++
  
  	edid = to_intel_connector(connector)->detect_edid;
  	if (edid == NULL)
@@ -869,7 +928,7 @@ index 3b362ddb..dd289b7 100644
 +	if (i915_notify_had) {
 +		chv_set_lpe_audio_reg_pipe(dev, INTEL_OUTPUT_HDMI,
 +					intel_dig_port->port);
-+		mid_hdmi_audio_signal_event(dev_priv->dev,
++		mid_hdmi_audio_signal_event(dev,
 +			HAD_EVENT_HOT_PLUG);
 +		i915_notify_had = 0;
 +	}
@@ -878,7 +937,7 @@ index 3b362ddb..dd289b7 100644
  }
  
  static bool
-@@ -2149,6 +2313,20 @@ void intel_hdmi_init_connector(struct intel_digital_port *intel_dig_port,
+@@ -1907,6 +2071,21 @@ void intel_hdmi_init_connector(struct intel_digital_port *intel_dig_port,
  		u32 temp = I915_READ(PEG_BAND_GAP_DATA);
  		I915_WRITE(PEG_BAND_GAP_DATA, (temp & ~0xf) | 0xd);
  	}
@@ -891,15 +950,16 @@ index 3b362ddb..dd289b7 100644
 +{
 +	struct drm_i915_private *dev_priv = container_of(work,
 +		struct drm_i915_private, hdmi_audio_wq);
++	struct drm_device *dev = &dev_priv->drm;
 +
 +	if (i915_hdmi_state == connector_status_connected) {
-+		mid_hdmi_audio_signal_event(dev_priv->dev,
-+			HAD_EVENT_HOT_PLUG);
++		mid_hdmi_audio_signal_event(dev,
++					HAD_EVENT_HOT_PLUG);
 +	}
  }
  
  void intel_hdmi_init(struct drm_device *dev,
-@@ -2157,7 +2335,10 @@ void intel_hdmi_init(struct drm_device *dev,
+@@ -1915,7 +2094,10 @@ void intel_hdmi_init(struct drm_device *dev,
  	struct intel_digital_port *intel_dig_port;
  	struct intel_encoder *intel_encoder;
  	struct intel_connector *intel_connector;
@@ -911,7 +971,7 @@ index 3b362ddb..dd289b7 100644
  	intel_dig_port = kzalloc(sizeof(*intel_dig_port), GFP_KERNEL);
  	if (!intel_dig_port)
  		return;
-@@ -2168,6 +2349,7 @@ void intel_hdmi_init(struct drm_device *dev,
+@@ -1926,6 +2108,7 @@ void intel_hdmi_init(struct drm_device *dev,
  		return;
  	}
  
@@ -919,8 +979,8 @@ index 3b362ddb..dd289b7 100644
  	intel_encoder = &intel_dig_port->base;
  
  	drm_encoder_init(dev, &intel_encoder->base, &intel_hdmi_enc_funcs,
-@@ -2226,4 +2408,29 @@ void intel_hdmi_init(struct drm_device *dev,
- 	intel_dig_port->dp.output_reg = INVALID_MMIO_REG;
+@@ -1985,4 +2168,29 @@ void intel_hdmi_init(struct drm_device *dev,
+ 	intel_dig_port->max_lanes = 4;
  
  	intel_hdmi_init_connector(intel_dig_port, intel_connector);
 +
@@ -950,7 +1010,7 @@ index 3b362ddb..dd289b7 100644
 +
  }
 
-From b009763ab63002ca2b6d2e5ca8764d2e93a1fcee Mon Sep 17 00:00:00 2001
+From c2fc8a0fadd274be5b75f6ca10c3ca35c381d611 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 1 Mar 2016 16:25:04 -0600
 Subject: [PATCH 04/12] drm/i915: power-related changes non-HDAudio HDMI
@@ -1455,10 +1515,10 @@ index 0000000..511311c
 +
 +#endif /*CONFIG_PM_RUNTIME*/
 diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
-index b28c29f..916c1b1 100644
+index 2d24813..23206de 100644
 --- a/drivers/gpu/drm/i915/intel_pm.c
 +++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -31,6 +31,17 @@
+@@ -32,6 +32,17 @@
  #include "../../../platform/x86/intel_ips.h"
  #include <linux/module.h>
  
@@ -1474,17 +1534,17 @@ index b28c29f..916c1b1 100644
 +#endif
 +
  /**
-  * RC6 is a special power stage which allows the GPU to enter an very
-  * low-voltage mode when idle, using down to 0V while at this stage.  This
-@@ -6964,6 +6975,7 @@ void intel_suspend_hw(struct drm_device *dev)
+  * DOC: RC6
+  *
+@@ -7774,6 +7785,7 @@ void intel_init_clock_gating_hooks(struct drm_i915_private *dev_priv)
  void intel_init_pm(struct drm_device *dev)
  {
- 	struct drm_i915_private *dev_priv = dev->dev_private;
+ 	struct drm_i915_private *dev_priv = to_i915(dev);
 +	gdev = dev;
  
  	intel_fbc_init(dev_priv);
  
-@@ -7257,3 +7269,44 @@ void intel_pm_setup(struct drm_device *dev)
+@@ -8088,3 +8100,44 @@ void intel_pm_setup(struct drm_device *dev)
  	atomic_set(&dev_priv->pm.wakeref_count, 0);
  	atomic_set(&dev_priv->pm.atomic_seq, 0);
  }
@@ -1530,7 +1590,7 @@ index b28c29f..916c1b1 100644
 +}
 +EXPORT_SYMBOL(ospm_power_using_hw_end);
 
-From 360a6900efb298201fc2f44b991f1a7d2c422ecb Mon Sep 17 00:00:00 2001
+From d37021d5405ce4eb5f42328b575f07fa5d6f34a9 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Thu, 3 Mar 2016 11:08:10 -0600
 Subject: [PATCH 05/12] drm/i915: Add API code for non-HDAudio HDMI interface
@@ -1553,7 +1613,7 @@ Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
 diff --git a/drivers/gpu/drm/i915/hdmi_audio_if.c b/drivers/gpu/drm/i915/hdmi_audio_if.c
 new file mode 100644
-index 0000000..c7c5f8f
+index 0000000..d176b25
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/hdmi_audio_if.c
 @@ -0,0 +1,425 @@
@@ -1608,7 +1668,7 @@ index 0000000..c7c5f8f
 +	struct drm_i915_private *dev_priv =
 +		(struct drm_i915_private *) dev->dev_private;
 +	memcpy(hdmi_eld, eld, HAD_MAX_ELD_BYTES);
-+	mid_hdmi_audio_signal_event(dev_priv->dev, HAD_EVENT_HOT_PLUG);
++	mid_hdmi_audio_signal_event(dev, HAD_EVENT_HOT_PLUG);
 +}
 +
 +static inline int android_hdmi_get_eld(struct drm_device *dev, void *eld)
@@ -1983,7 +2043,7 @@ index 0000000..c7c5f8f
 +EXPORT_SYMBOL(mid_hdmi_audio_register);
 +#endif
 
-From 62adc203bbd9556c97ff848906f2f76f1cf5d1f0 Mon Sep 17 00:00:00 2001
+From fee88eee7f0b174a146bf612ef19bc0602b5f89b Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 1 Mar 2016 16:25:04 -0600
 Subject: [PATCH 06/12] drm/i915: enable non-HDAudio HDMI interface Makefile
@@ -2003,12 +2063,12 @@ Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-index 0851de07..2432085 100644
+index 684fc1c..ea14a7c 100644
 --- a/drivers/gpu/drm/i915/Makefile
 +++ b/drivers/gpu/drm/i915/Makefile
-@@ -12,7 +12,8 @@ i915-y := i915_drv.o \
- 	  i915_sysfs.o \
+@@ -16,7 +16,8 @@ i915-y := i915_drv.o \
  	  intel_csr.o \
+ 	  intel_device_info.o \
  	  intel_pm.o \
 -	  intel_runtime_pm.o
 +	  intel_runtime_pm.o \
@@ -2016,8 +2076,8 @@ index 0851de07..2432085 100644
  
  i915-$(CONFIG_COMPAT)   += i915_ioc32.o
  i915-$(CONFIG_DEBUG_FS) += i915_debugfs.o
-@@ -37,6 +38,7 @@ i915-y += i915_cmd_parser.o \
- 	  i915_trace_points.o \
+@@ -42,6 +43,7 @@ i915-y += i915_cmd_parser.o \
+ 	  intel_breadcrumbs.o \
  	  intel_lrc.o \
  	  intel_mocs.o \
 +	  i915_rpm.o \
@@ -2025,7 +2085,7 @@ index 0851de07..2432085 100644
  	  intel_uncore.o
  
 
-From 45ff48a26a923af4de33d810848e5cf7b1a00e68 Mon Sep 17 00:00:00 2001
+From 138e6f7e00064d2d94a76308771f4f4b7e528a48 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Thu, 3 Mar 2016 11:09:26 -0600
 Subject: [PATCH 07/12] ALSA: Intel: Atom: add Atom non-HDAudio HDMI interface
@@ -2071,10 +2131,10 @@ index 5a240e0..75c679e 100644
 +          Choose this option to support HDMI.
 +
 diff --git a/sound/Makefile b/sound/Makefile
-index 7732070..f2c5e82 100644
+index c41bdf5..256f335 100644
 --- a/sound/Makefile
 +++ b/sound/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_DMASOUND) += oss/
+@@ -7,6 +7,7 @@ obj-$(CONFIG_DMASOUND) += oss/
  obj-$(CONFIG_SND) += core/ i2c/ drivers/ isa/ pci/ ppc/ arm/ sh/ synth/ usb/ \
  	firewire/ sparc/ spi/ parisc/ pcmcia/ mips/ soc/ atmel/ hda/
  obj-$(CONFIG_SND_AOA) += aoa/
@@ -5416,7 +5476,7 @@ index 0000000..acc407d
 +	return retval;
 +}
 
-From 62d0281f3f491572b2426e66c31184394b31a1bd Mon Sep 17 00:00:00 2001
+From ba7b36acd4d4f2bcf9c84c885d385d3d1327b221 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Sat, 20 Feb 2016 18:08:41 -0600
 Subject: [PATCH 08/12] add dependency on PM_RUNTIME
@@ -5439,7 +5499,7 @@ index 75c679e..b8b4fce 100644
          help
            Choose this option to support HDMI.
 
-From 9302f62e2eb342f57f3d79ebf5b3b890619b9ce9 Mon Sep 17 00:00:00 2001
+From 30f9d3b223b28623431348350cdf00409b8cef24 Mon Sep 17 00:00:00 2001
 From: David Henningsson <david.henningsson@canonical.com>
 Date: Fri, 21 Aug 2015 11:08:47 +0200
 Subject: [PATCH 09/12] hdmi_audio: Improve position reporting
@@ -5492,7 +5552,7 @@ index d8c5574..b2337c3 100644
  }
  
 
-From da71a0a7f01f07365a1e0c927625e5507aee32a7 Mon Sep 17 00:00:00 2001
+From 25f0028061dcb8c4ed3d464419e4095570a68441 Mon Sep 17 00:00:00 2001
 From: David Henningsson <david.henningsson@canonical.com>
 Date: Fri, 21 Aug 2015 11:18:19 +0200
 Subject: [PATCH 10/12] hdmi_audio: Fixup some monitor
@@ -5544,7 +5604,7 @@ index b2337c3..1667748 100644
  	return 0;
  }
 
-From 2c20a521494d0b547282d0fb7d9b7d8ad84dbc81 Mon Sep 17 00:00:00 2001
+From 0ef07c8e6cf8505f89ceab0b27895d8a21062d70 Mon Sep 17 00:00:00 2001
 From: Toyo Abe <toyo.abe@gmail.com>
 Date: Thu, 3 Mar 2016 12:57:41 +0900
 Subject: [PATCH 11/12] hdmi_audio: Fix mishandling of AUD_HDMI_STATUS_v2
@@ -5574,7 +5634,7 @@ index 1667748..86db38e 100644
  		} else
  			break;
 
-From 2b24782107f1ad3a2522fd172e847686c337202b Mon Sep 17 00:00:00 2001
+From 71729bb7f7f080b68e36a4e4b9f65fce67d5e869 Mon Sep 17 00:00:00 2001
 From: Jerome Anand <jerome.anand@intel.com>
 Date: Fri, 1 Apr 2016 11:07:48 +0530
 Subject: [PATCH 12/12] Create a platform device for hdmi audio driver and
