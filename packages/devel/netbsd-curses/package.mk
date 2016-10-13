@@ -17,13 +17,12 @@
 ################################################################################
 
 PKG_NAME="netbsd-curses"
-PKG_VERSION="bd35ef8"
+PKG_VERSION="0.1.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/sabotage-linux/netbsd-curses"
-PKG_GIT_URL="https://github.com/sabotage-linux/netbsd-curses.git"
-PKG_GIT_BRANCH="master"
+PKG_URL="https://github.com/sabotage-linux/netbsd-curses/releases/download/v${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain libz"
 PKG_PRIORITY="optional"
 PKG_SECTION="devel"
