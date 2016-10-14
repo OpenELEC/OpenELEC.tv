@@ -69,7 +69,7 @@
 # Space separated list is supported,
   KERNEL_EXTRA_CONFIG+=" filesystem hid-drivers remote touchscreen"
   KERNEL_EXTRA_CONFIG+=" dvb-usb dvb-other lan-usb lan-phy"
-  KERNEL_EXTRA_CONFIG+=" wlan-usb wlan-other"
+  KERNEL_EXTRA_CONFIG+=" wlan-usb wlan-other sound-usb"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
