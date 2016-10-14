@@ -101,4 +101,4 @@
   # please add all configfiles which should be included without the suffix and prefix
   # except the default-*.config and the ones included in packages/linux/package.mk
   # Space separated list is supported,
-    KERNEL_EXTRA_CONFIG+=" scsi sata dvb-pci lan-pci wlan-pci sound-pci"
+    KERNEL_EXTRA_CONFIG+=" scsi sata dvb-pci lan-pci wlan-pci sound-pci sound-soc-x86"
