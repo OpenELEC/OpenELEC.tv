@@ -39,11 +39,18 @@ make_target() {
   :
 }
 
+make_target() {
+  mkdir -p $SYSROOT_PREFIX/usr/lib
+    cp -PR fbdev/mali_libs/* $SYSROOT_PREFIX/usr/lib
+  mkdir -p $SYSROOT_PREFIX/usr/include
+    cp -PR fbdev/mali_headers/* $SYSROOT_PREFIX/usr/include
+}
+
 makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib
     cp -PR fbdev/mali_libs/* $SYSROOT_PREFIX/usr/lib
   mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -PR fbdev/mali_libs/* $SYSROOT_PREFIX/usr/include
+    cp -PR fbdev/mali_headers/* $SYSROOT_PREFIX/usr/include
   mkdir -p $INSTALL/usr/lib
     cp -PR fbdev/mali_libs/*.so* $INSTALL/usr/lib
 }
