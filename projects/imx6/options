@@ -131,7 +131,7 @@
   # please add all configfiles which should be included without the suffix and prefix
   # except the default-*.config and the ones included in packages/linux/package.mk
   # Space separated list is supported,
-    KERNEL_EXTRA_CONFIG+=" sata-imx v4l-imx"
+    KERNEL_EXTRA_CONFIG+=" sata-imx v4l-imx sound-soc-imx"
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
