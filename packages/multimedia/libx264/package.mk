@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libx264"
-PKG_VERSION="72d53ab"
+PKG_VERSION="86b7198"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -32,4 +32,9 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF=""
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-asm"
+PKG_CONFIGURE_OPTS_TARGET="--disable-cli --disable-asm"
+
+pre_configure_target() {
+  strip_lto
+  strip_gold
+}

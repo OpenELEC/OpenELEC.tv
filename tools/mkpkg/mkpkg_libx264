@@ -25,7 +25,7 @@ echo "getting sources..."
   fi
 
   cd libx264.git
-    git pull
+    git checkout 86b71982e131eaa70125f8d0e725fcade9c4c677
     GIT_REV=`git log -n1 --format=%h`
   cd ..
 
