@@ -1,0 +1,158 @@
+# Distro information
+
+  show_message "$dashes$dashes$dashes"
+  show_message "Configuration for $DISTRONAME ($([ "$OFFICIAL" = "yes" ] && echo "official" || echo "community"))"
+  show_message "$dashes$dashes$dashes"
+
+# Build options
+
+  show_message "\n Buildoptions:"
+  show_message "$dashes$dashes"
+
+  show_message "- CPU (ARCH):\t\t\t\t $TARGET_CPU ($TARGET_ARCH)"
+  show_message "- FLOAT:\t\t\t\t $TARGET_FLOAT"
+  show_message "- FPU:\t\t\t\t\t $TARGET_FPU"
+  show_message "- SIMD support:\t\t\t $SIMD_SUPPORT"
+  show_message "- Optimizations:\t\t\t $OPTIMIZATIONS"
+  show_message "- LTO (Link Time Optimization) support: $LTO_SUPPORT"
+  show_message "- GOLD (Google Linker) Support:\t $GOLD_SUPPORT"
+  show_message "- LLVM support:\t\t\t $LLVM_SUPPORT"
+
+  show_message "- CFLAGS:\t\t\t\t $TARGET_CFLAGS"
+  show_message "- CXXFLAGS:\t\t\t\t $TARGET_CXXFLAGS"
+  show_message "- LDFLAGS:\t\t\t\t $TARGET_LDFLAGS"
+
+# Graphic configuration
+
+  show_message "\n Graphic configuration:"
+  show_message "$dashes$dashes"
+
+  if [ "$DISPLAYSERVER" = "x11" ] ; then
+    show_message "- Xorg Graphic Drivers:\t\t $GRAPHIC_DRIVERS"
+    show_message "- XORG Composite support:\t\t $COMPOSITE_SUPPORT"
+    show_message "- WindowManager:\t\t\t $WINDOWMANAGER"
+  fi
+  show_message "- OpenGL (GLX/ES) support (provider):\t $OPENGL"
+  show_message "- uvesafb support:\t\t\t $UVESAFB_SUPPORT"
+
+# Hardware decoder support
+
+  show_message "\n Hardware decoder configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- Kodi Player driver:\t\t\t $KODIPLAYER_DRIVER"
+  show_message "- VAAPI Support:\t\t\t $VAAPI_SUPPORT"
+  show_message "- VDPAU Support:\t\t\t $VDPAU_SUPPORT"
+
+# Input device configuration
+
+  show_message "\n Input device configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- Remote support:\t\t\t $REMOTE_SUPPORT"
+  show_message "- ATV Remote support:\t\t\t $ATVCLIENT_SUPPORT"
+  show_message "- CEC Adapter support:\t\t\t $CEC_SUPPORT"
+  show_message "- IRTrans support:\t\t\t $IRSERVER_SUPPORT"
+
+# Misc. hardware configuration
+
+  show_message "\n Misc. hardware configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- ALSA support:\t\t\t $ALSA_SUPPORT"
+  show_message "- Pulseaudio support:\t\t\t $PULSEAUDIO_SUPPORT"
+  show_message "- Bluetooth support:\t\t\t $BLUETOOTH_SUPPORT"
+  show_message "- LCD drivers:\t\t\t\t $LCD_DRIVER"
+
+  for config_driver in $ADDITIONAL_DRIVERS; do
+    show_message "- Include driver:\t\t\t $config_driver"
+  done
+
+  for config_firmware in $FIRMWARE; do
+    show_message "- Include firmware:\t\t\t $config_firmware"
+  done
+
+  for config_modules in $INITRAMFS_MODULES; do
+    show_message "- Initramfs modules:\t\t\t $config_modules"
+  done
+
+  # Network service configuration
+
+  show_message "\n Network service configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- Avahi (Zeroconf) support:\t\t $AVAHI_DAEMON"
+  show_message "- NFS mounting support:\t\t $NFS_SUPPORT"
+  show_message "- SAMBA mounting support:\t\t $SAMBA_SUPPORT"
+  show_message "- SAMBA server support:\t\t $SAMBA_SERVER"
+  show_message "- SFTP server support:\t\t\t $SFTP_SERVER"
+  show_message "- PPTP support:\t\t\t $PPTP_SUPPORT"
+  show_message "- OpenVPN support:\t\t\t $OPENVPN_SUPPORT"
+
+# OS configuration
+
+  show_message "\n OS configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- OEM Support:\t\t\t\t $OEM_SUPPORT"
+  show_message "- Default ROOT Password:\t\t $ROOT_PASSWORD"
+  show_message "- Bootloader:\t\t\t\t $BOOTLOADER"
+  if [ "$BOOTLOADER" = "u-boot" ]; then
+    show_message "  - U-Boot configuration:\t\t $UBOOT_CONFIG"
+    show_message "  - U-Boot config file:\t\t $UBOOT_CONFIGFILE"
+  fi
+  show_message "- UDevil support:\t\t\t $UDEVIL"
+  show_message "- Installer support:\t\t\t $INSTALLER_SUPPORT"
+
+# Misc. Filesystems
+
+  show_message "\n Misc. Filesystems:"
+  show_message "$dashes$dashes"
+
+  show_message "- Swap Support:\t\t\t $SWAP_SUPPORT"
+  if [ "$SWAP_SUPPORT" = "yes" ]; then
+    show_message "  - Swapfile default size:\t\t $SWAPFILESIZE"
+  fi
+  show_message "- exFAT Support (via Fuse):\t\t $EXFAT"
+  show_message "- NTFS Support (via Fuse):\t\t $NTFS3G"
+  show_message "- Install HFS Tools:\t\t\t $HFSTOOLS"
+
+# Kodi configuration
+
+  show_message "\n Kodi configuration:"
+  show_message "$dashes$dashes"
+
+  show_message "- Kodi version:\t\t\t $MEDIACENTER"
+  show_message "- Kodi include language files:\t\t $KODI_LANGUAGE_ADDONS"
+  show_message "- Kodi nonfree support:\t\t $KODI_NONFREE_SUPPORT"
+  show_message "- Kodi Blu-Ray support:\t\t $KODI_BLURAY_SUPPORT"
+
+  if [ "$KODI_BLURAY_SUPPORT" = "yes" ] ; then
+    show_message "  - Bluray BD+ support:\t\t $BLURAY_BDPLUS_SUPPORT"
+    show_message "  - Bluray AACS support:\t\t $BLURAY_AACS_SUPPORT"
+  fi
+
+  show_message "- Kodi DVDCSS support:\t\t\t $KODI_DVDCSS_SUPPORT"
+  show_message "- Kodi Airplay support:\t\t $KODI_AIRPLAY_SUPPORT"
+  show_message "- Kodi Airtunes support:\t\t $KODI_AIRTUNES_SUPPORT"
+  show_message "- Kodi NFS support:\t\t\t $KODI_NFS_SUPPORT"
+  show_message "- Kodi MySQL support:\t\t\t $KODI_MYSQL_SUPPORT"
+  show_message "- Kodi Optical Drive support:\t\t $KODI_OPTICAL_SUPPORT"
+  show_message "- Kodi SAMBA client support:\t\t $KODI_SAMBA_SUPPORT"
+  show_message "- Kodi SSH client support:\t\t $KODI_SSHLIB_SUPPORT"
+  show_message "- Kodi UPNP support:\t\t\t $KODI_UPNP_SUPPORT"
+  show_message "- Kodi Webserver support:\t\t $KODI_WEBSERVER_SUPPORT"
+
+  for config_skin in $SKINS; do
+    show_message "- Include Skin:\t\t\t $config_skin"
+  done
+
+  show_message "- Default Skin:\t\t\t $SKIN_DEFAULT"
+  show_message "- Remove shipped skins:\t\t $SKIN_REMOVE_SHIPPED"
+  show_message "- Include extra fonts:\t\t\t $KODI_EXTRA_FONTS"
+
+  show_message ""
+  show_message "$dashes$dashes$dashes"
+  show_message "End Configuration for $DISTRONAME"
+  show_message "$dashes$dashes$dashes"
+  show_message "\n\n"
