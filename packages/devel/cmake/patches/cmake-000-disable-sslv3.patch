@@ -13,3 +13,14 @@
  #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && /* OpenSSL 1.1.0+ */ \
    !defined(LIBRESSL_VERSION_NUMBER)
  #define SSLeay_add_ssl_algorithms() SSL_library_init()
+--- a/Utilities/cmcurl/lib/vtls/openssl.c.orig	2016-10-19 19:06:52.439430376 +0200
++++ b/Utilities/cmcurl/lib/vtls/openssl.c	2016-10-19 19:04:21.327612220 +0200
+@@ -1737,7 +1737,7 @@
+     break;
+ #endif
+   case CURL_SSLVERSION_SSLv3:
+-#ifdef OPENSSL_NO_SSL3_METHOD
++#ifdef OPENSSL_NO_SSL3
+     failf(data, OSSL_PACKAGE " was built without SSLv3 support");
+     return CURLE_NOT_BUILT_IN;
+ #else
