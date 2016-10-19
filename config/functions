@@ -136,10 +136,6 @@ get_pkg_build() {
   fi
 }
 
-kernel_path() {
-  get_pkg_build linux
-}
-
 # get kernel module dir
 get_module_dir() {
   basename $(ls -d $(get_build_dir linux)/.install_pkg/lib/modules/*)

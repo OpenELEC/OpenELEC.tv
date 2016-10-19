@@ -37,13 +37,13 @@ PKG_AUTORECONF="no"
 
 make_target() {
   LDFLAGS="" \
-  make V=1 -C $(kernel_path) \
+  make V=1 -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/bcmdhd_1_201_59_x
 }
 
 makeinstall_target() {
   LDFLAGS="" \
-  make V=1 -C $(kernel_path) \
+  make V=1 -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/bcmdhd_1_201_59_x \
        INSTALL_MOD_PATH=$INSTALL \
        INSTALL_MOD_STRIP=1 \

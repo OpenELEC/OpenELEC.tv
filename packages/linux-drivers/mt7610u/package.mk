@@ -37,7 +37,7 @@ PKG_AUTORECONF="no"
 
 make_target() {
 
-  sed -i '198s|.*LINUX_SRC.*|LINUX_SRC = '$(kernel_path)'|' Makefile
+  sed -i '198s|.*LINUX_SRC.*|LINUX_SRC = '$(get_pkg_build linux)'|' Makefile
   sed -i '199s|.*LINUX_SRC_MODULE.*|LINUX_SRC_MODULE = '$INSTALL'/lib/modules/'$(get_module_dir)'/kernel/drivers/net/wireless/|' Makefile
   make osdrv
 

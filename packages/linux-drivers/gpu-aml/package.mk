@@ -37,7 +37,7 @@ PKG_AUTORECONF="no"
 
 make_target() {
   LDFLAGS="" \
-  make -C $(kernel_path) \
+  make -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/mali \
        CONFIG_MALI400=m \
        CONFIG_MALI450=m
@@ -45,7 +45,7 @@ make_target() {
 
 makeinstall_target() {
   LDFLAGS="" \
-  make -C $(kernel_path) \
+  make -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/mali \
        INSTALL_MOD_PATH=$INSTALL \
        INSTALL_MOD_STRIP=1 \

@@ -38,7 +38,7 @@ PKG_AUTORECONF="no"
 
 make_target() {
   cd x86-64
-    KBUILD_NOPEDANTIC=1 make V=1 CC=$CC -C $(kernel_path) M=`pwd` BINARCH=$TARGET_KERNEL_ARCH
+    KBUILD_NOPEDANTIC=1 make V=1 CC=$CC -C $(get_pkg_build linux) M=`pwd` BINARCH=$TARGET_KERNEL_ARCH
 }
 
 makeinstall_target() {

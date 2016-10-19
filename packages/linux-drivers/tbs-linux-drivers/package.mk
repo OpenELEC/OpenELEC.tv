@@ -41,8 +41,8 @@ post_unpack() {
 make_target() {
   cd $ROOT/$PKG_BUILD/linux-tbs-drivers
   ./v4l/tbs-x86_64.sh
-  LDFLAGS="" make DIR=$(kernel_path) prepare
-  LDFLAGS="" make DIR=$(kernel_path)
+  LDFLAGS="" make DIR=$(get_pkg_build linux) prepare
+  LDFLAGS="" make DIR=$(get_pkg_build linux)
 }
 
 makeinstall_target() {

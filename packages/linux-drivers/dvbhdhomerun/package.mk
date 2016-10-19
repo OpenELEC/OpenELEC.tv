@@ -39,7 +39,7 @@ PKG_CMAKE_SCRIPT_TARGET="userhdhomerun/CMakeLists.txt"
 
 pre_make_target() {
   ( cd ../kernel
-    LDFLAGS="" make dvb_hdhomerun KERNEL_DIR=$(kernel_path)
+    LDFLAGS="" make dvb_hdhomerun KERNEL_DIR=$(get_pkg_build linux)
     fix_module_depends dvb_hdhomerun_core.ko "dvb_core"
   )
 }
