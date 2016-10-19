@@ -153,7 +153,7 @@ makeinstall_host() {
 
 pre_make_target() {
   # regdb
-  cp $(get_build_dir wireless-regdb)/db.txt $ROOT/$PKG_BUILD/net/wireless/db.txt
+  cp $(get_pkg_build wireless-regdb)/db.txt $ROOT/$PKG_BUILD/net/wireless/db.txt
 
   if [ "$BOOTLOADER" = "u-boot" ]; then
     ( cd $ROOT

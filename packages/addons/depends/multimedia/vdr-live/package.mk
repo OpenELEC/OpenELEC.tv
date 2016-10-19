@@ -45,7 +45,7 @@ pre_make_target() {
 }
 
 make_target() {
-  VDR_DIR=$(get_build_dir vdr)
+  VDR_DIR=$(get_pkg_build vdr)
   make VDRDIR=$VDR_DIR \
     LIBDIR="." \
     LOCALEDIR="./locale"

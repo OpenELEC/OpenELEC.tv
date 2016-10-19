@@ -46,12 +46,12 @@ makeinstall_target() {
 }
 
 addon() {
-  VDR_DIR="$(get_build_dir vdr)"
-  VDR_LIVE_DIR="$(get_build_dir vdr-live)"
-  VDR_PLUGIN_VNSISERVER_DIR="$(get_build_dir vdr-plugin-vnsiserver)"
-  VDR_PLUGIN_STREAMVEV_DIR="$(get_build_dir vdr-plugin-streamdev)"
-  VDR_PLUGIN_EPGFIXER_DIR="$(get_build_dir vdr-plugin-epgfixer)"
-  VDR_PLUGIN_RESTFULAPI_DIR="$(get_build_dir vdr-plugin-restfulapi)"
+  VDR_DIR="$(get_pkg_build vdr)"
+  VDR_LIVE_DIR="$(get_pkg_build vdr-live)"
+  VDR_PLUGIN_VNSISERVER_DIR="$(get_pkg_build vdr-plugin-vnsiserver)"
+  VDR_PLUGIN_STREAMVEV_DIR="$(get_pkg_build vdr-plugin-streamdev)"
+  VDR_PLUGIN_EPGFIXER_DIR="$(get_pkg_build vdr-plugin-epgfixer)"
+  VDR_PLUGIN_RESTFULAPI_DIR="$(get_pkg_build vdr-plugin-restfulapi)"
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config
   touch $ADDON_BUILD/$PKG_ADDON_ID/config/channels.conf
@@ -71,17 +71,17 @@ addon() {
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_VNSISERVER_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-iptv)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-wirbelscan)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-wirbelscancontrol)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-plugin-dvbapi)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-plugin-eepg)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-iptv)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-wirbelscan)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-wirbelscancontrol)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-plugin-dvbapi)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-plugin-eepg)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/server/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/client/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_LIVE_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-plugin-epgsearch)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-dummydevice)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
-  cp -PR $(get_build_dir vdr-plugin-satip)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-plugin-epgsearch)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-dummydevice)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
+  cp -PR $(get_pkg_build vdr-plugin-satip)/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_EPGFIXER_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
   cp -PR $VDR_PLUGIN_RESTFULAPI_DIR/libvdr*.so.* $ADDON_BUILD/$PKG_ADDON_ID/plugin
 
@@ -94,7 +94,7 @@ addon() {
   cp -P $VDR_DIR/vdr $ADDON_BUILD/$PKG_ADDON_ID/bin/vdr.bin
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/lib
-  cp -PL $(get_build_dir tntnet)/.install_pkg/usr/lib/libtntnet.so.12 $ADDON_BUILD/$PKG_ADDON_ID/lib
+  cp -PL $(get_pkg_build tntnet)/.install_pkg/usr/lib/libtntnet.so.12 $ADDON_BUILD/$PKG_ADDON_ID/lib
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/streamdev-server
   cp -PR $VDR_PLUGIN_STREAMVEV_DIR/streamdev-server/streamdevhosts.conf $ADDON_BUILD/$PKG_ADDON_ID/config/plugins/streamdev-server
