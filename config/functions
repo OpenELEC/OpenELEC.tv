@@ -278,50 +278,53 @@ show_message() {
 }
 
 check_path() {
-dashes="==========================="
+  show_message=""
   if [ "${PWD##/usr}" != "${PWD}" ]; then
-    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
-    check_pathmessage="$check_pathmessage\n ERROR: You try to build inside /usr"
-    check_pathmessage="$check_pathmessage\n $dashes$dashes$dashes"
-    check_pathmessage="$check_pathmessage\n This is not supported with our buildsystem."
-    check_pathmessage="$check_pathmessage\n Please use another dir (for example your \$HOME) to build $DISTRONAME"
+    show_message "$dashes$dashes$dashes"
+    show_message "ERROR: You try to build inside /usr"
+    show_message "$dashes$dashes$dashes"
+    show_message "This is not supported with our buildsystem."
+    show_message "Please use another dir (for example your \$HOME) to build $DISTRONAME"
 
-    echo -e $check_pathmessage
+    echo -e $show_message
     exit 1
   fi
 }
 
 check_config() {
-dashes="==========================="
+  show_message=""
   if [ ! -d $PROJECT_DIR/$PROJECT -a ! -d $HOME/.openelec/projects/$PROJECT ]; then
-    check_project="$check_project\n $dashes$dashes$dashes"
-    check_project="$check_project\n ERROR: Project not found, use a valid project or create a new config"
-    check_project="$check_project\n $dashes$dashes$dashes"
-    check_project="$check_project\n\n Valid projects:"
+    show_message "$dashes$dashes$dashes"
+    show_message "ERROR: Project not found, use a valid project or create a new config"
+    show_message "$dashes$dashes$dashes"
+    show_message "\n Valid projects:"
 
     for projects in $PROJECT_DIR/* $HOME/.openelec/projects/*; do
-      check_project="$check_project\n - $(basename $projects)"
+      show_message " - $(basename $projects)"
     done
-    echo -e $check_project
+    echo -e $show_message
     exit 1
   fi
 
+  show_message=""
   if [ ! -f $PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf -a ! -f $HOME/.openelec/projects/$PROJECT/linux/linux.$TARGET_ARCH.conf ]; then
-    check_arch="$check_arch\n $dashes$dashes$dashes"
-    check_arch="$check_arch\n ERROR: Architecture not found, use a valid Architecture"
-    check_arch="$check_arch\n for your project or create a new config"
-    check_arch="$check_arch\n $dashes$dashes$dashes"
-    check_arch="$check_arch\n\n Valid Architectures for your project: $PROJECT"
+    show_message "$dashes$dashes$dashes"
+    show_message "ERROR: Architecture not found, use a valid Architecture"
+    show_message "for your project or create a new config"
+    show_message "$dashes$dashes$dashes"
+    show_message "\n Valid Architectures for your project: $PROJECT"
 
     for arch in $PROJECT_DIR/$PROJECT/linux/*.conf $HOME/.openelec/projects/$PROJECT/linux/*.conf; do
-      check_arch="$check_arch\n - $(basename $arch | cut -f2 -d".")"
+      show_message " - $(basename $arch | cut -f2 -d".")"
     done
-    echo -e $check_arch
+    echo -e $show_message
     exit 1
   fi
 }
 
 show_config() {
+  show_message=""
+
   # load graphic configuration
     get_graphicdrivers
 
