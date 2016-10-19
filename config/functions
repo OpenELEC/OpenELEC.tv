@@ -95,32 +95,53 @@ setup_toolchain() {
   esac
 }
 
-kernel_path() {
-  if [ -e $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk
-  elif [ -e $HOME/.openelec/packages/linux/package.mk ]; then
-    . $HOME/.openelec/packages/linux/package.mk
-  elif [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $ROOT/projects/$PROJECT/packages/linux/package.mk
-  else
-    . $ROOT/packages/linux/package.mk
-  fi
+get_pkg_dir() {
+  PKG_EXTRA_FOLDERS="$HOME/.openelec/projects/$PROJECT/packages \
+                     $HOME/.openelec/packages \
+                     $ROOT/projects/$PROJECT/packages"
 
-  echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
+  for i in $PKG_EXTRA_FOLDERS ; do
+    if [ -d $i ]; then
+      PKG_FOLDERS+=" $i"
+    fi
+  done
+
+  PKG_FOLDERS+=" $ROOT/packages"
+
+  if [ ! -z $1 ] ; then
+    local _PKG_DIR=$(find $PKG_FOLDERS -name $1 | head -n1 2>/dev/null)
+    if [ -d "$_PKG_DIR" -a -f $_PKG_DIR/package.mk ] ; then
+      echo $_PKG_DIR
+    fi
+  fi
+}
+
+get_pkg_version() {
+  if [ ! -z $1 ] ; then
+    local _PKG_DIR=$(get_pkg_dir $1)
+    if [ -d "$_PKG_DIR" -a -f $_PKG_DIR/package.mk ] ; then
+      . $_PKG_DIR/package.mk
+    fi
+    echo ${PKG_VERSION}
+  fi
+}
+
+get_pkg_build() {
+  if [ ! -z $1 ] ; then
+    local _PKG_DIR=$(get_pkg_dir $1)
+    if [ -d "$_PKG_DIR" -a -f $_PKG_DIR/package.mk ] ; then
+      . $_PKG_DIR/package.mk
+    fi
+    echo $ROOT/$BUILD/${PKG_NAME}-${PKG_VERSION}
+  fi
+}
+
+kernel_path() {
+  get_pkg_build linux
 }
 
 kernel_version() {
-  if [ -e $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $HOME/.openelec/projects/$PROJECT/packages/linux/package.mk
-  elif [ -e $HOME/.openelec/packages/linux/package.mk ]; then
-    . $HOME/.openelec/packages/linux/package.mk
-  elif [ -e $ROOT/projects/$PROJECT/packages/linux/package.mk ]; then
-    . $ROOT/projects/$PROJECT/packages/linux/package.mk
-  else
-    . $ROOT/packages/linux/package.mk
-  fi
-
-  echo ${PKG_VERSION}
+  get_pkg_version linux
 }
 
 # get kernel module dir
