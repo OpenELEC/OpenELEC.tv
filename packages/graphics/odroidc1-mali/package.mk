@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="odroidc1-mali"
-PKG_VERSION="31d5c21"
+PKG_VERSION="cdf9ddb"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
