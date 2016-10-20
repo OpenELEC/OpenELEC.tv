@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="2.5.4"
+PKG_VERSION="3.1.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -149,7 +149,7 @@ configure_target() {
               --disable-w32threads \
               --disable-x11grab \
               --enable-network \
-              --disable-gnutls --enable-libressl \
+              --disable-gnutls \
               --disable-gray \
               --enable-swscale-alpha \
               --disable-small \
@@ -202,7 +202,6 @@ configure_target() {
               --disable-libschroedinger \
               --disable-libspeex \
               --enable-libtheora \
-              --disable-libvo-aacenc \
               --disable-libvo-amrwbenc \
               --enable-libvorbis --enable-muxer=ogg --enable-encoder=libvorbis \
               --disable-libvpx \
