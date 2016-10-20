@@ -57,19 +57,6 @@ done
    . $PROJECT_DIR/$PROJECT/options
  fi
 
-# Need to point to your actual cc
-# If you have ccache installed, take care that LOCAL_CC don't point to it
-  LOCAL_CC=`which gcc`
-
-if [ -z "$LOCAL_CC" ] ; then
-  echo "***** Please install gcc *****"
-  exit 127
-fi
-
-# Need to point to your actual g++
-# If you have ccache installed, take care that LOCAL_CXX don't point to it
-  LOCAL_CXX=`which g++`
-
 # verbose compilation mode (yes/no)
   VERBOSE="yes"
 

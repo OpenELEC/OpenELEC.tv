@@ -36,12 +36,10 @@ PKG_AUTORECONF="no"
 
 PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH CROSS_COMPILE= KBUILD_VERBOSE=1 install"
 PKG_MAKE_OPTS_TARGET="ARCH=$TARGET_ARCH \
-                      HOSTCC=$HOST_CC \
                       CROSS_COMPILE=$TARGET_PREFIX \
                       KBUILD_VERBOSE=1 \
                       install"
 PKG_MAKE_OPTS_INIT="ARCH=$TARGET_ARCH \
-                    HOSTCC=$HOST_CC \
                     CROSS_COMPILE=$TARGET_PREFIX \
                     KBUILD_VERBOSE=1 \
                     install"

@@ -32,24 +32,14 @@ PKG_LONGDESC="Ccache is a compiler cache. It speeds up re-compilation of C/C++ c
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-export CC=$LOCAL_CC
-export CXX=$LOCAL_CXX
-
 post_makeinstall_host() {
 # setup ccache
   $ROOT/$TOOLCHAIN/bin/ccache --max-size=$CCACHE_CACHE_SIZE
+  $ROOT/$TOOLCHAIN/bin/ccache --set-config=compiler_check=string:$(gcc -dumpversion)-$(get_pkg_version gcc)
 
-  cat > $ROOT/$TOOLCHAIN/bin/host-gcc <<EOF
-#!/bin/sh
-$ROOT/$TOOLCHAIN/bin/ccache $CC "\$@"
-EOF
-
-  chmod +x $ROOT/$TOOLCHAIN/bin/host-gcc
-
-  cat > $ROOT/$TOOLCHAIN/bin/host-g++ <<EOF
-#!/bin/sh
-$ROOT/$TOOLCHAIN/bin/ccache $CXX "\$@"
-EOF
-
-  chmod +x $ROOT/$TOOLCHAIN/bin/host-g++
+  mkdir -p $ROOT/$TOOLCHAIN/lib/ccache
+    ln -sf $ROOT/$TOOLCHAIN/bin/ccache $ROOT/$TOOLCHAIN/lib/ccache/gcc
+    ln -sf $ROOT/$TOOLCHAIN/bin/ccache $ROOT/$TOOLCHAIN/lib/ccache/g++
+    ln -sf $ROOT/$TOOLCHAIN/bin/ccache $ROOT/$TOOLCHAIN/lib/ccache/${HOST_NAME}-gcc
+    ln -sf $ROOT/$TOOLCHAIN/bin/ccache $ROOT/$TOOLCHAIN/lib/ccache/${HOST_NAME}-g++
 }
