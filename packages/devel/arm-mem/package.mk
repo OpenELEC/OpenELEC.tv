@@ -37,7 +37,7 @@ PKG_AUTORECONF="no"
 PKG_MAKE_OPTS_TARGET="libarmmem.so"
 
 pre_make_target() {
-  export CROSS_COMPILE=$TARGET_PREFIX
+  export CROSS_COMPILE=${TARGET_NAME}-
   export CFLAGS="$CFLAGS -fPIC"
 }
 
