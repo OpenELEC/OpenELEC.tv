@@ -33,7 +33,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make DIRS="vpu" CFLAGS="$CFLAGS" PLATFORM=IMX6Q CROSS_COMPILE=$TARGET_PREFIX
+  make DIRS="vpu" CFLAGS="$CFLAGS" PLATFORM=IMX6Q
 }
 
 makeinstall_target() {
