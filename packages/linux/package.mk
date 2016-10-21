@@ -88,7 +88,7 @@ post_patch() {
   cp $KERNEL_CFG_FILE $PKG_BUILD/.config
 
   sed -i -e "s|^ARCH[[:space:]]*?=.*$|ARCH = $TARGET_KERNEL_ARCH|" \
-         -e "s|^CROSS_COMPILE[[:space:]]*?=.*$|CROSS_COMPILE = $TARGET_PREFIX|" \
+         -e "s|^CROSS_COMPILE[[:space:]]*?=.*$|CROSS_COMPILE = ${TARGET_NAME}-|" \
          $PKG_BUILD/Makefile
 
   if [ ! "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
