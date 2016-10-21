@@ -33,7 +33,7 @@ PKG_LONGDESC="The library provides functionality to setup the HDHomeRun, change 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_MAKE_OPTS_TARGET="CROSS_COMPILE=$TARGET_PREFIX"
+PKG_MAKE_OPTS_TARGET="CROSS_COMPILE=${TARGET_NAME}-"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/bin
