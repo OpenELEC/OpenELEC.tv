@@ -36,7 +36,7 @@ PKG_MAKE_OPTS="PREFIX=/usr SHARED=no STRIP= IDSDIR=/usr/share"
 
 make_target() {
   make OPT="$CFLAGS" \
-       CROSS_COMPILE=${TARGET_PREFIX} \
+       CROSS_COMPILE=${TARGET_NAME}- \
        HOST=$TARGET_ARCH-linux \
        $PKG_MAKE_OPTS \
        ZLIB=no DNS=no LIBKMOD=yes HWDB=yes
