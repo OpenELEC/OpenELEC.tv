@@ -47,8 +47,8 @@ make_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib
   cp -PR amavutils/*.so $SYSROOT_PREFIX/usr/lib
 
-  make -C amadec CC="$CC" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="$TARGET_PREFIX" install
-  make -C amcodec CC="$CC" HEADERS_DIR="$SYSROOT_PREFIX/usr/include/amcodec" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="$TARGET_PREFIX" install
+  make -C amadec CC="$CC" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="${TARGET_NAME}-" install
+  make -C amcodec CC="$CC" HEADERS_DIR="$SYSROOT_PREFIX/usr/include/amcodec" PREFIX="$SYSROOT_PREFIX/usr" CROSS_PREFIX="${TARGET_NAME}-" install
 }
 
 makeinstall_target() {
