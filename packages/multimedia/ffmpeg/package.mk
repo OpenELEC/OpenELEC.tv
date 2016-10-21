@@ -101,7 +101,7 @@ configure_target() {
               --cpu=$TARGET_CPU \
               --arch=$TARGET_ARCH \
               --enable-cross-compile \
-              --cross-prefix=$TARGET_PREFIX \
+              --cross-prefix=${TARGET_NAME}- \
               --sysroot=$SYSROOT_PREFIX \
               --sysinclude="$SYSROOT_PREFIX/usr/include" \
               --target-os="linux" \
