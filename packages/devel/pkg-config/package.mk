@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="pkg-config"
-PKG_VERSION="0.28"
+PKG_VERSION="0.29.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/software/pkgconfig/"
-PKG_URL="http://pkgconfig.freedesktop.org/releases/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_URL="http://pkg-config.freedesktop.org/releases/$PKG_NAME-$PKG_VERSION.tar.gz"
 PKG_DEPENDS_HOST="ccache:host gettext:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
@@ -38,5 +38,5 @@ PKG_CONFIGURE_OPTS_HOST="--disable-silent-rules \
 
 post_makeinstall_host() {
   mkdir -p $SYSROOT_PREFIX/usr/share/aclocal
-    cp ../pkg.m4 $SYSROOT_PREFIX/usr/share/aclocal
+  cp pkg.m4 $SYSROOT_PREFIX/usr/share/aclocal
 }
