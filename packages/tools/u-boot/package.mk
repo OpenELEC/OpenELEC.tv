@@ -58,7 +58,6 @@ pre_configure_target() {
 
 # copy compiler-gcc5.h to compiler-gcc6. for fake building
   cp include/linux/compiler-gcc5.h include/linux/compiler-gcc6.h
-
 }
 
 make_target() {
@@ -69,25 +68,25 @@ make_target() {
   done
 
   for UBOOT_TARGET in $UBOOT_CONFIG; do
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" mrproper
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_TARGET
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
+    make CROSS_COMPILE=${TARGET_NAME}- ARCH=$TARGET_ARCH mrproper
+    make CROSS_COMPILE=${TARGET_NAME}- ARCH=$TARGET_ARCH $UBOOT_TARGET
+    make CROSS_COMPILE=${TARGET_NAME}- ARCH=$TARGET_ARCH HOSTCC="$HOST_CC" HOSTSTRIP="true"
 
     # rename files in case of multiple targets
     if [ $UBOOT_TARGET_CNT -gt 1 ]; then
       if [ "$UBOOT_TARGET" = "mx6_cubox-i_config" ]; then
-        TARGET_NAME="cuboxi"
+        UBOOT_TARGET_NAME="cuboxi"
       elif [ "$UBOOT_TARGET" = "matrix" ]; then
-        TARGET_NAME="matrix"
+        UBOOT_TARGET_NAME="matrix"
       elif [ "$UBOOT_TARGET" = "udoo_config" ]; then
-        TARGET_NAME="udoo"
+        UBOOT_TARGET_NAME="udoo"
       else
-        TARGET_NAME="undef"
+        UBOOT_TARGET_NAME="undef"
       fi
 
-      [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
-      [ -f u-boot.imx ] && mv u-boot.imx u-boot-$TARGET_NAME.imx || :
-      [ -f SPL ] && mv SPL SPL-$TARGET_NAME || :
+      [ -f u-boot.img ] && mv u-boot.img u-boot-$UBOOT_TARGET_NAME.img || :
+      [ -f u-boot.imx ] && mv u-boot.imx u-boot-$UBOOT_TARGET_NAME.imx || :
+      [ -f SPL ] && mv SPL SPL-$UBOOT_TARGET_NAME || :
     fi
   done
 }
