@@ -99,8 +99,8 @@ post_make_host() {
   ln -sf libgcc_s.so.1 $TARGET_NAME/libgcc/libgcc_s.so
 
   if [ ! "$DEBUG" = yes ]; then
-    ${TARGET_PREFIX}strip $TARGET_NAME/libgcc/libgcc_s.so*
-    ${TARGET_PREFIX}strip $TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so*
+    ${TARGET_NAME}-strip $TARGET_NAME/libgcc/libgcc_s.so*
+    ${TARGET_NAME}-strip $TARGET_NAME/libstdc++-v3/src/.libs/libstdc++.so*
   fi
 }
 
