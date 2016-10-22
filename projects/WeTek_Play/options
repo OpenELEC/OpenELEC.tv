@@ -130,7 +130,7 @@
   # please add all configfiles which should be included without the suffix and prefix
   # except the default-*.config and the ones included in packages/linux/package.mk
   # Space separated list is supported,
-    KERNEL_EXTRA_CONFIG+=" sound-soc-meson6"
+    KERNEL_EXTRA_CONFIG+=" sound-soc-meson6 fix-config"
 
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
