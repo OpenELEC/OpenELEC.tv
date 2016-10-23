@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libressl"
-PKG_VERSION="2.1.1"
+PKG_VERSION="2.4.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
@@ -30,7 +30,7 @@ PKG_SHORTDESC="libressl: a FREE version of the SSL/TLS protocol forked from Open
 PKG_LONGDESC="LibreSSL is a FREE version of the SSL/TLS protocol forked from OpenSSL"
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="yes"
+PKG_AUTORECONF="no"
 
 post_makeinstall_target() {
 # ca-certification: provides a tool to download and create ca-bundle.crt
@@ -40,5 +40,8 @@ post_makeinstall_target() {
   mkdir -p $INSTALL/$SSL_CERTIFICATES
     cp $PKG_DIR/cert/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cacert.pem
   mkdir -p $INSTALL/etc/ssl
-  ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/ssl/cert.pem
+    ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/ssl/cert.pem
+
+  mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
+    cp $PKG_DIR/config/*.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
 }
