@@ -7,7 +7,7 @@ includedir=${prefix}/include
 
 Name: LibreSSL-libtls
 Description: Secure communications using the TLS socket protocol.
-Version: 2.4.2
+Version: 2.4.3
 Requires:
 Requires.private: libcrypto libssl
 Conflicts:
