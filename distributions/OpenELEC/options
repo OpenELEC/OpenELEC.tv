@@ -200,6 +200,9 @@
 # cron support (yes / no)
   CRON_SUPPORT="yes"
 
+# Locales to install. format: "locale.charmap" (eg. de_DE.UTF-8)
+  GLIBC_LOCALES="en_US.UTF-8"
+
 # Distribution Specific source location
   DISTRO_MIRROR="http://sources.openelec.tv/mirror"
   DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
