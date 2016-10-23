@@ -23,7 +23,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/software/libc/"
 PKG_URL="http://ftp.gnu.org/pub/gnu/glibc/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="ccache:host autotools:host autoconf:host linux:host gcc:bootstrap"
+PKG_DEPENDS_TARGET="ccache:host autotools:host autoconf:host linux:host gcc:bootstrap localedef-eglibc:host"
 PKG_DEPENDS_INIT="glibc"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
@@ -141,6 +141,18 @@ post_makeinstall_target() {
 
 # remove locales and charmaps
   rm -rf $INSTALL/usr/share/i18n/charmaps
+  if [ -n "$GLIBC_LOCALES" ]; then
+    mkdir -p $INSTALL/usr/lib/locale
+    for locale in $GLIBC_LOCALES; do
+      echo ">>> install inputfile $(echo $locale | cut -f1 -d ".") with charmap $(echo $locale | cut -f2 -d ".") as $locale <<<"
+      I18NPATH=../localedata \
+      $ROOT/$TOOLCHAIN/bin/localedef \
+        -i ../localedata/locales/$(echo $locale | cut -f1 -d ".") \
+        -f ../localedata/charmaps/$(echo $locale | cut -f2 -d ".") \
+        $locale --prefix=$INSTALL
+    done
+  fi
+
   if [ ! "$GLIBC_LOCALES" = yes ]; then
     rm -rf $INSTALL/usr/share/i18n/locales
     mkdir -p $INSTALL/usr/share/i18n/locales
