@@ -7,5 +7,5 @@ includedir=${prefix}/include
 
 Name: LibreSSL
 Description: Secure Sockets Layer and cryptography libraries and tools
-Version: 2.4.2
+Version: 2.4.3
 Requires: libssl libcrypto
