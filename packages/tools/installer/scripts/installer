@@ -40,14 +40,6 @@
 # exclude mounted partitions
 # for i in `cat /proc/mounts | grep ^/dev/ | cut -f1 -d " " | sed "s/[0-9]//"`; do TEST="$TEST `echo "| grep -v $i"`"; done
 
-# Interpret embedded "\Z" sequences in the dialog text by the following
-# character, which tells dialog to set colors or video attributes: 0 through 7
-# are the ANSI used in curses: black, red, green, yellow, blue, magenta, cyan
-# and white respectively. Bold is set by 'b', reset by 'B'. Reverse is set
-# by 'r', reset by 'R'. Underline is set by 'u', reset by 'U'. The settings are
-# cumulative, e.g., "\Zb\Z1" makes the following text bold (perhaps bright)
-# red. Restore normal settings with "\Zn".
-
 # disable Ctrl+C - can be very dangerous
 trap '' 2
 
@@ -145,7 +137,7 @@ create_partition_list() {
 do_install_mbr() {
   # show menu
 
-  MSG_TITLE="\Z4[ (RE)INSTALL MBR ]\Zn"
+  MSG_TITLE="${TEXT_BLUE}[ (RE)INSTALL MBR ]${TEXT_RESET}"
   MSG_MENU="\n Please select where to install MBR.\n\n Please select a device:"
   MSG_CANCEL="Back"
 
@@ -181,7 +173,7 @@ do_install_mbr() {
 
 do_install_quick() {
   # show menu
-  MSG_TITLE="\Z4[ QUICK INSTALL MENU ]\Zn"
+  MSG_TITLE="${TEXT_BLUE}[ QUICK INSTALL MENU ]${TEXT_RESET}"
   MSG_MENU="\nUse the up/down arrows to select the correct device.\n\n Please select a device:"
   MSG_CANCEL="Back"
   DIALOG_OPTIONS="--defaultno"
@@ -213,7 +205,7 @@ do_install_quick() {
       prompt_backup_unpack
 
       # check for confirmation (twice!)
-      MSG_TITLE="\Z1[ Confirmation before installing ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ Confirmation before installing ]${TEXT_RESET}"
       MSG_DETAIL="\nIf you continue the target disk will be wiped out:\n\n$INSTALL_DEVICE_FULL\n\n"
       DIALOG_OPTIONS="--defaultno"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
@@ -222,7 +214,7 @@ do_install_quick() {
         menu_main
       fi
 
-      MSG_TITLE="\Z1[ Confirmation before installing ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ Confirmation before installing ]${TEXT_RESET}"
       MSG_DETAIL="\nThis is last chance to abort the installation!\n\nIf you continue the target disk will be wiped out:\n\n$INSTALL_DEVICE_FULL\n\n\n"
       DIALOG_OPTIONS="--defaultno"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
@@ -372,7 +364,7 @@ do_install_quick() {
       fi
 
       # install complete
-      MSG_TITLE="\Z1[ @DISTRONAME@ Install Complete ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ @DISTRONAME@ Install Complete ]${TEXT_RESET}"
       MSG_DETAIL="\nYou may now remove the install media and reboot\n"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
 
@@ -389,7 +381,7 @@ do_install_quick() {
 
 do_install_custom() {
   # show menu
-  MSG_TITLE="\Z4[ REPAIR/UPGRADE MENU ]\Zn"
+  MSG_TITLE="${TEXT_BLUE}[ REPAIR/UPGRADE MENU ]${TEXT_RESET}"
   MSG_MENU="\nUse the up/down arrows to select the correct partition where you want to overwrite KERNEL and SYSTEM files.\n\n Please select a partition:"
   MSG_CANCEL="Back"
   DIALOG_OPTIONS="--defaultno"
@@ -429,7 +421,7 @@ do_install_custom() {
       INSTALL_PARTITION_FULL=$(echo $PARTITION_LIST | sed "s|.*$INSTALL_PARTITION \([^ ]*\).*|$INSTALL_PARTITION \1|")
 
       # check for confirmation (twice!)
-      MSG_TITLE="\Z1[ Confirmation before copying ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ Confirmation before copying ]${TEXT_RESET}"
       MSG_DETAIL="\nIf you continue the target partition will be\noverwritten with new KERNEL and SYSTEM files:\n\n$INSTALL_PARTITION_FULL\n\n"
       DIALOG_OPTIONS="--defaultno"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
@@ -438,7 +430,7 @@ do_install_custom() {
         menu_main
       fi
 
-      MSG_TITLE="\Z1[ Confirmation before copying ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ Confirmation before copying ]${TEXT_RESET}"
       MSG_DETAIL="\nThis is last chance to abort the copying!\n\nIf you continue the target partition will be\noverwritten with new KERNEL and SYSTEM files:\n\n$INSTALL_PARTITION_FULL\n\n\n"
       DIALOG_OPTIONS="--defaultno"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
@@ -495,7 +487,7 @@ do_install_custom() {
       rmdir $TMPDIR/part1 >> $LOGFILE 2>&1
 
       # install complete
-      MSG_TITLE="\Z1[ @DISTRONAME@ Install Complete ]\Zn"
+      MSG_TITLE="${TEXT_RED}[ @DISTRONAME@ Install Complete ]${TEXT_RESET}"
       MSG_DETAIL="\nYou may now remove the install media and reboot\n"
       dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
 
@@ -512,7 +504,7 @@ do_install_custom() {
 
 msg_no_device() {
   # show a warning dialog if we dont find not mounted devices for install and return to main menu
-  MSG_TITLE="\Z1[ WARNING ]\Zn"
+  MSG_TITLE="${TEXT_RED}[ WARNING ]${TEXT_RESET}"
   MSG_INFOBOX=" No devices were found. "
 
   dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 9 70
@@ -522,7 +514,7 @@ msg_no_device() {
 
 msg_target_space() {
   # show an error dialog for missing space
-  MSG_TITLE="\Z1[ TARGET SPACE ]\Zn"
+  MSG_TITLE="${TEXT_RED}[ TARGET SPACE ]${TEXT_RESET}"
   MSG_INFOBOX="\nNot enough target space!\nCopying aborted.\n"
 
   dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 8 70
@@ -532,7 +524,7 @@ msg_target_space() {
 
 msg_install_ready() {
   # show a dialog that we have installed
-  MSG_TITLE="\Z1[ INFORMATION ]\Zn"
+  MSG_TITLE="${TEXT_RED}[ INFORMATION ]${TEXT_RESET}"
 
   dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox " $1" 7 70
 
@@ -541,7 +533,7 @@ msg_install_ready() {
 
 msg_progress_install() {
   # show the progress dialog
-  MSG_TITLE="\Z1[ INSTALLING ]\Zn"
+  MSG_TITLE="${TEXT_RED}[ INSTALLING ]${TEXT_RESET}"
 
   dbglg "$2"
   dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --gauge "$2 ..." 6 70 $1 &
@@ -569,7 +561,7 @@ prompt_backup_unpack() {
   # provides: BACKUP_UNPACK
   BACKUP_UNPACK="0"
   if [ -f /flash/backup.tar.bz2 -o -f /flash/backup.zip ]; then
-    MSG_TITLE="\Z1[ Restore backup files ]\Zn"
+    MSG_TITLE="${TEXT_RED}[ Restore backup files ]${TEXT_RESET}"
     MSG_DETAIL="Restore backup files to storage partition.\nFile backup.tar.bz2 or/and backup.zip exist on\ninstallation USB stick."
     DIALOG_OPTIONS="--defaultno"
     if dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0; then
@@ -580,11 +572,11 @@ prompt_backup_unpack() {
 
 menu_main() {
   # show the mainmenu
-  MSG_TITLE="\Z4[ MAIN MENU ]\Zn"
-  MSG_MENU="\n\ZbQuick Install:\Zn do a default installation on a specific device \
-            \Z1\Zb(this will delete ALL data on this device!)\Zn \
-            \n\ZbRepair / Upgrade:\Zn do repair / upgrade \
-            \n\ZbShow logfile:\Zn show and save the logfile \
+  MSG_TITLE="${TEXT_BLUE}[ MAIN MENU ]${TEXT_RESET}"
+  MSG_MENU="\n${TEXT_BOLD}Quick Install:${TEXT_RESET} do a default installation on a specific device \
+            ${TEXT_RED}${TEXT_BOLD}(this will delete ALL data on this device!)${TEXT_RESET} \
+            \n${TEXT_BOLD}Repair / Upgrade:${TEXT_RESET} do repair / upgrade \
+            \n${TEXT_BOLD}Show logfile:${TEXT_RESET} show and save the logfile \
             \n \
             \nPlease select:"
   MSG_CANCEL="Reboot"
@@ -640,6 +632,19 @@ BACKTITLE="@DISTRONAME@ Installer $INSTALLER_VERSION - $OS_VERSION"
 
 TMPDIR="/tmp/installer"
 LOGFILE="$TMPDIR/install.log"
+
+
+# Interpret embedded "\Z" sequences in the dialog text by the following
+# character, which tells dialog to set colors or video attributes: 0 through 7
+# are the ANSI used in curses: black, red, green, yellow, blue, magenta, cyan
+# and white respectively. Bold is set by 'b', reset by 'B'. Reverse is set
+# by 'r', reset by 'R'. Underline is set by 'u', reset by 'U'. The settings are
+# cumulative, e.g., "\Zn\Z1" makes the following text bold (perhaps bright)
+# red. Restore normal settings with "\Zn".
+  TEXT_RESET="\Zn"
+  TEXT_BOLD="\Zb"
+  TEXT_RED="\Z1"
+  TEXT_BLUE="\Z4"
 
 # prepare temporary directory
 rm -rf $TMPDIR
