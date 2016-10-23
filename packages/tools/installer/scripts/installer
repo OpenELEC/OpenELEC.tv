@@ -143,7 +143,7 @@ do_install_mbr() {
 
   create_device_list
 
-  dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" ${CANCEL_BUTTON} "$MSG_CANCEL" \
     --title "$MSG_TITLE" --menu "$MSG_MENU" 20 50 5 \
     $DEVICE_LIST 2> $TMPDIR/device_for_install
 
@@ -180,7 +180,7 @@ do_install_quick() {
 
   create_device_list
 
-  dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" ${CANCEL_BUTTON} "$MSG_CANCEL" \
     $DIALOG_OPTIONS --title "$MSG_TITLE" --menu "$MSG_MENU" 20 50 5 \
     $DEVICE_LIST 2> $TMPDIR/device_for_install
 
@@ -208,7 +208,7 @@ do_install_quick() {
       MSG_TITLE="${TEXT_RED}[ Confirmation before installing ]${TEXT_RESET}"
       MSG_DETAIL="\nIf you continue the target disk will be wiped out:\n\n$INSTALL_DEVICE_FULL\n\n"
       DIALOG_OPTIONS="--defaultno"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
         $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0
       if [ $? -ne 0 ]; then
         menu_main
@@ -217,7 +217,7 @@ do_install_quick() {
       MSG_TITLE="${TEXT_RED}[ Confirmation before installing ]${TEXT_RESET}"
       MSG_DETAIL="\nThis is last chance to abort the installation!\n\nIf you continue the target disk will be wiped out:\n\n$INSTALL_DEVICE_FULL\n\n\n"
       DIALOG_OPTIONS="--defaultno"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
         $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0
       if [ $? -ne 0 ]; then
         menu_main
@@ -366,7 +366,7 @@ do_install_quick() {
       # install complete
       MSG_TITLE="${TEXT_RED}[ @DISTRONAME@ Install Complete ]${TEXT_RESET}"
       MSG_DETAIL="\nYou may now remove the install media and reboot\n"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
 
       menu_main
       ;;
@@ -410,7 +410,7 @@ do_install_custom() {
     msg_no_device
   fi
 
-  dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" ${CANCEL_BUTTON} "$MSG_CANCEL" \
     $DIALOG_OPTIONS --title "$MSG_TITLE" --menu "$MSG_MENU" 20 50 5 \
     $PARTITION_LIST 2> $TMPDIR/device_for_install
 
@@ -424,7 +424,7 @@ do_install_custom() {
       MSG_TITLE="${TEXT_RED}[ Confirmation before copying ]${TEXT_RESET}"
       MSG_DETAIL="\nIf you continue the target partition will be\noverwritten with new KERNEL and SYSTEM files:\n\n$INSTALL_PARTITION_FULL\n\n"
       DIALOG_OPTIONS="--defaultno"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
         $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0
       if [ $? -ne 0 ]; then
         menu_main
@@ -433,7 +433,7 @@ do_install_custom() {
       MSG_TITLE="${TEXT_RED}[ Confirmation before copying ]${TEXT_RESET}"
       MSG_DETAIL="\nThis is last chance to abort the copying!\n\nIf you continue the target partition will be\noverwritten with new KERNEL and SYSTEM files:\n\n$INSTALL_PARTITION_FULL\n\n\n"
       DIALOG_OPTIONS="--defaultno"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" \
         $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0
       if [ $? -ne 0 ]; then
         menu_main
@@ -489,7 +489,7 @@ do_install_custom() {
       # install complete
       MSG_TITLE="${TEXT_RED}[ @DISTRONAME@ Install Complete ]${TEXT_RESET}"
       MSG_DETAIL="\nYou may now remove the install media and reboot\n"
-      dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
+      ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_DETAIL" 6 52
 
       menu_main
       ;;
@@ -507,7 +507,7 @@ msg_no_device() {
   MSG_TITLE="${TEXT_RED}[ WARNING ]${TEXT_RESET}"
   MSG_INFOBOX=" No devices were found. "
 
-  dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 9 70
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 9 70
 
   menu_main
 }
@@ -517,7 +517,7 @@ msg_target_space() {
   MSG_TITLE="${TEXT_RED}[ TARGET SPACE ]${TEXT_RESET}"
   MSG_INFOBOX="\nNot enough target space!\nCopying aborted.\n"
 
-  dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 8 70
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox "$MSG_INFOBOX" 8 70
 
   menu_main
 }
@@ -526,7 +526,7 @@ msg_install_ready() {
   # show a dialog that we have installed
   MSG_TITLE="${TEXT_RED}[ INFORMATION ]${TEXT_RESET}"
 
-  dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox " $1" 7 70
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --msgbox " $1" 7 70
 
   menu_main
 }
@@ -536,7 +536,7 @@ msg_progress_install() {
   MSG_TITLE="${TEXT_RED}[ INSTALLING ]${TEXT_RESET}"
 
   dbglg "$2"
-  dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" --gauge "$2 ..." 6 70 $1 &
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" --gauge "$2 ..." 6 70 $1 &
 }
 
 prompt_gpt() {
@@ -564,7 +564,7 @@ prompt_backup_unpack() {
     MSG_TITLE="${TEXT_RED}[ Restore backup files ]${TEXT_RESET}"
     MSG_DETAIL="Restore backup files to storage partition.\nFile backup.tar.bz2 or/and backup.zip exist on\ninstallation USB stick."
     DIALOG_OPTIONS="--defaultno"
-    if dialog --colors --backtitle "$BACKTITLE" --title "$MSG_TITLE" $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0; then
+    if ${CREATE_DIALOG} --backtitle "$BACKTITLE" --title "$MSG_TITLE" $DIALOG_OPTIONS --yesno "$MSG_DETAIL" 0 0; then
       BACKUP_UNPACK="1"
     fi
   fi
@@ -581,7 +581,7 @@ menu_main() {
             \nPlease select:"
   MSG_CANCEL="Reboot"
 
-  dialog --colors --backtitle "$BACKTITLE" --cancel-label "$MSG_CANCEL" \
+  ${CREATE_DIALOG} --backtitle "$BACKTITLE" ${CANCEL_BUTTON} "$MSG_CANCEL" \
     --title "$MSG_TITLE" --menu "$MSG_MENU" 20 70 5 \
       1 "Quick Install of @DISTRONAME@" \
       2 "Repair / Upgrade" \
@@ -606,7 +606,7 @@ menu_main() {
 }
 
 logfile_show() {
-  dialog --textbox "$LOGFILE" 20 70
+  ${CREATE_DIALOG} --textbox "$LOGFILE" 20 70
   clear
   menu_main
 }
@@ -632,6 +632,9 @@ BACKTITLE="@DISTRONAME@ Installer - $OS_VERSION"
 TMPDIR="/tmp/installer"
 LOGFILE="$TMPDIR/install.log"
 
+# set dialogs defaults
+  CANCEL_BUTTON="--cancel-label"
+  CREATE_DIALOG="dialog --colors"
 
 # Interpret embedded "\Z" sequences in the dialog text by the following
 # character, which tells dialog to set colors or video attributes: 0 through 7
