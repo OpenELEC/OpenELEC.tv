@@ -293,17 +293,6 @@ Patch for generation of OrangePI 2 kernel with gcc-5.2.1
  {
  	struct rtc_device *rtc;
  	int ret;
---- linux-3.4/drivers/usb/sunxi_usb/udc/sunxi_udc.c.orig	2015-01-27 03:29:31.000000000 +0100
-+++ linux-3.4/drivers/usb/sunxi_usb/udc/sunxi_udc.c	2015-06-27 09:04:10.930561614 +0200
-@@ -3113,7 +3113,7 @@
- 	return 0;
- }
- #endif
--static int __init sunxi_udc_probe(struct platform_device *pdev)
-+static int sunxi_udc_probe(struct platform_device *pdev)
- {
- #ifdef  CONFIG_USB_SUNXI_USB0_OTG
- #if defined (CONFIG_ARCH_SUN8IW6) || defined (CONFIG_ARCH_SUN8IW7) || defined (CONFIG_ARCH_SUN8IW8)
 --- linux-3.4/drivers/video/sunxi/disp2/hdmi/dev_hdmi.c.orig	2015-01-27 03:29:32.000000000 +0100
 +++ linux-3.4/drivers/video/sunxi/disp2/hdmi/dev_hdmi.c	2015-06-26 19:06:59.276721370 +0200
 @@ -148,7 +148,7 @@
