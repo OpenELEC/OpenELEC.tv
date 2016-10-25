@@ -1,6 +1,6 @@
-diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec2/addons/resource.language.en_gb/resources/strings.po
+diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec/addons/resource.language.en_gb/resources/strings.po
 --- a/addons/resource.language.en_gb/resources/strings.po	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/addons/resource.language.en_gb/resources/strings.po	2016-08-03 20:04:52.750165392 +0200
++++ codec/addons/resource.language.en_gb/resources/strings.po	2016-10-24 17:57:39.882181450 +0200
 @@ -8333,7 +8333,13 @@
  msgid "IMX - Fast motion (double)"
  msgstr ""
@@ -16,9 +16,9 @@ diff -Nur a/addons/resource.language.en_gb/resources/strings.po codec2/addons/re
  
  #: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
  msgctxt "#16400"
-diff -Nur a/configure.ac codec2/configure.ac
+diff -Nur a/configure.ac codec/configure.ac
 --- a/configure.ac	2016-08-03 19:58:43.996813544 +0200
-+++ codec2/configure.ac	2016-08-03 20:04:52.750165392 +0200
++++ codec/configure.ac	2016-10-24 17:57:39.882181450 +0200
 @@ -513,7 +513,7 @@
  
  AC_ARG_ENABLE([codec],
@@ -39,9 +39,9 @@ diff -Nur a/configure.ac codec2/configure.ac
      *imxvpu*)
        AC_CHECK_HEADER([imx-mm/vpu/vpu_wrapper.h],, AC_MSG_ERROR($missing_headers))
        AC_CHECK_LIB([vpu], main, LIBS="$LIBS -lfslvpuwrap -lvpu -lg2d", AC_MSG_ERROR($missing_library))
-diff -Nur a/system/settings/sunxi.xml codec2/system/settings/sunxi.xml
+diff -Nur a/system/settings/sunxi.xml codec/system/settings/sunxi.xml
 --- a/system/settings/sunxi.xml	1970-01-01 01:00:00.000000000 +0100
-+++ codec2/system/settings/sunxi.xml	2016-08-03 20:04:52.750165392 +0200
++++ codec/system/settings/sunxi.xml	2016-10-24 17:57:39.885514784 +0200
 @@ -0,0 +1,17 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<settings>
@@ -60,9 +60,9 @@ diff -Nur a/system/settings/sunxi.xml codec2/system/settings/sunxi.xml
 +    </category>
 +  </section>
 +</settings>
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec2/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-08-03 20:04:52.750165392 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp	2016-10-24 17:57:39.885514784 +0200
 @@ -40,6 +40,7 @@
  #if defined(HAS_IMXVPU)
  #include "Video/DVDVideoCodecIMX.h"
@@ -97,10 +97,10 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/DVDFactoryCodec.cpp codec2/xbmc/cores
  #if defined(TARGET_DARWIN_OSX)
    if (!hint.software && CSettings::GetInstance().GetBool(CSettings::SETTING_VIDEOPLAYER_USEVDA) && !g_advancedSettings.m_useFfmpegVda)
    {
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-08-03 20:22:44.413552536 +0200
-@@ -0,0 +1,892 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp	2016-10-25 18:45:50.176909349 +0200
+@@ -0,0 +1,922 @@
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
 + *      http://xbmc.org
@@ -124,8 +124,6 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +#include <sys/ioctl.h>
 +#include <math.h>
 +#include <stdio.h>
-+//#include <stdlib.h>
-+#include <sys/ioctl.h>
 +
 +#include <cedarx/memoryAdapter.h>
 +
@@ -177,11 +175,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +CSunxiContext g_SunxiContext;
 +
 +CDVDVideoCodecSunxi::CDVDVideoCodecSunxi() :
-+  m_videoCodec(NULL),
++  m_videoCodec(nullptr),
 +  m_pFormatName("cedarx-xxx"),
 +  m_dropState(false),
 +  m_vp9orhevccodec(false),
-+  m_bitstream(NULL)
++  m_bitstream(nullptr)
 +{
 +  
 +}
@@ -245,7 +243,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_XVID;
 +        break;
 +      default:
-+        CLog::Log(LOGERROR, "CedarX : Using XVID for MPEG4 codec with tag %d.", m_hints.codec_tag);
++        CLog::Log(LOGWARNING, "CedarX : Using XVID for MPEG4 codec with tag %d.", m_hints.codec_tag);
 +        m_pFormatName = "cedarx-xvid";
 +        m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_XVID;
 +        break;
@@ -390,7 +388,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  }
 +
 +  m_videoCodec = CreateVideoDecoder();
-+  if(m_videoCodec == NULL)
++  if(m_videoCodec == nullptr)
 +  {
 +      CLog::Log(LOGERROR,"CDVDVideoCodecSunxi::OpenDecoder - CreateVideoDecoder failed!\n");
 +      return false;
@@ -415,7 +413,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  {
 +    g_SunxiContext.RemoveDecoder(m_videoCodec);
 +    DestroyVideoDecoder(m_videoCodec);
-+    m_videoCodec = NULL;
++    m_videoCodec = nullptr;
 +  }
 +  
 +  if (m_bitstream)
@@ -444,7 +442,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  else if (dts!= DVD_NOPTS_VALUE)
 +    nPts = dts;
 +
-+  if((pData != NULL) && (iSize > 0))
++  if((pData != nullptr) && (iSize > 0))
 +  {
 +    if (m_bitstream)
 +    {
@@ -511,7 +509,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  //CLog::Log(LOGDEBUG, "CDVDVideoCodecSunxi::Decode - returned value: %d", ret);
 +  
 +  picture = RequestPicture(m_videoCodec, 0);
-+  if(picture != NULL)
++  if(picture != nullptr)
 +  { 
 +    m_buffer = new CCedarXBuffer;
 +    
@@ -538,7 +536,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +void CDVDVideoCodecSunxi::Reset(void)
 +{
-+  if(m_videoCodec != NULL)
++  if(m_videoCodec != nullptr)
 +  {
 +    ResetVideoDecoder(m_videoCodec);
 +  }
@@ -546,7 +544,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +bool CDVDVideoCodecSunxi::ClearPicture(DVDVideoPicture* pDvdVideoPicture)
 +{
-+  if(pDvdVideoPicture != NULL)
++  if(pDvdVideoPicture != nullptr)
 +  {
 +    SAFE_RELEASE(pDvdVideoPicture->Disp2Buffer);
 +  }
@@ -556,7 +554,7 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +bool CDVDVideoCodecSunxi::GetPicture(DVDVideoPicture* pDvdVideoPicture)
 +{
-+  if (pDvdVideoPicture != NULL)
++  if (pDvdVideoPicture != nullptr)
 +  {
 +    int realWidth  = m_buffer->pPicture->nRightOffset - m_buffer->leftOffset;
 +    int realHeight = m_buffer->pPicture->nBottomOffset - m_buffer->topOffset;
@@ -622,13 +620,14 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +CCedarXBuffer::~CCedarXBuffer()
 +{
-+  g_SunxiContext.FreePicture(pVideoCodec, pPicture);
-+  pPicture = NULL;
++  VideoPicture *pic = pPicture;
++  pPicture = nullptr;
++  g_SunxiContext.FreePicture(pVideoCodec, pic);
 +}
 +
 +CSunxiContext::CSunxiContext() : 
 +  m_deinterlace(false),
-+  m_last(NULL),
++  m_last(nullptr),
 +  m_paused(false),
 +  m_instances(0),
 +  m_vsync(false),
@@ -780,24 +779,16 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  unsigned long args[4] = { m_screenid, (unsigned long)(&video_config), 1, 0 };
 +  int numOfPasses = 1;
 +  
-+  // sanity check
-+  if(buffer == NULL)
++  if (!buffer || !buffer->pPicture || !IsDecoderValid(buffer->pVideoCodec))
 +    return;
 +  
-+  if(m_instances == 0)
++  if (m_instances == 0)
 +    return;
++
++  if ((m_last != nullptr) && !IsDecoderValid(m_last->pVideoCodec))
++    SAFE_RELEASE(m_last);
 +  
-+  if(m_last != NULL)
-+  {
-+    CSingleLock lk(m_decodersLock);
-+    
-+    if(m_decoders.find(m_last->pVideoCodec) == m_decoders.end())
-+    { 
-+      SAFE_RELEASE(m_last);
-+    }
-+  }
-+  
-+  if ((m_deinterlace) && (m_last != NULL) &&
++  if ((m_deinterlace) && (m_last != nullptr) &&
 +      (m_difd != -1) && (buffer->pPicture->ePixelFormat == PIXEL_FORMAT_NV21))
 +  {
 +    numOfPasses = 2;
@@ -807,6 +798,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  {
 +    CCedarXBuffer *renderbuf;
 +    VideoPicture *pPicture;
++    unsigned long memAddr0 = 0;
++    unsigned long memAddr1 = 0;
++    unsigned long memAddr2 = 0;
 +    
 +    if(numOfPasses > 1)
 +    {
@@ -819,25 +813,37 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +      renderbuf = buffer;
 +    
 +    // sanity check
-+    if(renderbuf == NULL)
++    if(renderbuf == nullptr)
 +      continue;
 +    
 +    pPicture = renderbuf->pPicture;
 +
 +    // Y, U and V buffer format and addresses
-+    if(pPicture->ePixelFormat == PIXEL_FORMAT_YV12)
++    if (pPicture->ePixelFormat == PIXEL_FORMAT_YV12)
 +    {
 +      video_config.info.fb.format  = DISP_FORMAT_YUV420_P;
-+      video_config.info.fb.addr[0] = (unsigned long )MemAdapterGetPhysicAddressCpu(pPicture->pData0);
-+      video_config.info.fb.addr[1] = (unsigned long )MemAdapterGetPhysicAddressCpu(pPicture->pData2);
-+      video_config.info.fb.addr[2] = (unsigned long )MemAdapterGetPhysicAddressCpu(pPicture->pData1);
++      memAddr0 = (unsigned long)MemAdapterGetPhysicAddressCpu(pPicture->pData0);
++      memAddr1 = (unsigned long)MemAdapterGetPhysicAddressCpu(pPicture->pData2);
++      memAddr2 = (unsigned long)MemAdapterGetPhysicAddressCpu(pPicture->pData1);
++      
++      // sanity check
++      if (!memAddr0 || !memAddr1 || !memAddr2)
++	return;
 +    }
 +    else // NV21 is default
 +    {
 +      video_config.info.fb.format  = DISP_FORMAT_YUV420_SP_VUVU;
-+      video_config.info.fb.addr[0] = (unsigned long )MemAdapterGetPhysicAddressCpu(pPicture->pData0);
-+      video_config.info.fb.addr[1] = (unsigned long )MemAdapterGetPhysicAddressCpu(pPicture->pData1);
++      memAddr0 = (unsigned long)MemAdapterGetPhysicAddressCpu(pPicture->pData0);
++      memAddr1 = (unsigned long)MemAdapterGetPhysicAddressCpu(pPicture->pData1);
++      
++      // sanity check
++      if (!memAddr0 || !memAddr1)
++	return;
 +    }
++    
++    video_config.info.fb.addr[0] = memAddr0;
++    video_config.info.fb.addr[1] = memAddr1;
++    video_config.info.fb.addr[2] = memAddr2;
 +    
 +    // Y, U and V buffer sizes
 +    //int bufWidth = (pPicture->nWidth + 15) & ~15;
@@ -926,14 +932,34 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +{
 +  DiParaT     mDiParaT;
 +  DiRectSizeT mSrcSize;
-+  DiRectSizeT mDstSize;  
++  DiRectSizeT mDstSize; 
++  uintptr_t   preMemAddr0;
++  uintptr_t   preMemAddr1;
++  uintptr_t   curMemAddr0;
++  uintptr_t   curMemAddr1;
 +  
 +  // sanity check
-+  if ((m_last == NULL) || (current == NULL))
-+    return NULL;
++  if ((m_last == nullptr) || (current == nullptr))
++    return nullptr;
 +  
 +  VideoPicture *pPrePicture = m_last->pPicture;
 +  VideoPicture *pCurPicture = current->pPicture;
++  
++  // sanity check #2
++  if ((pPrePicture == nullptr) || (pCurPicture == nullptr))
++    return nullptr;
++  
++  preMemAddr0 = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pPrePicture->pData0);
++  preMemAddr1 = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pPrePicture->pData1);
++  curMemAddr0 = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pCurPicture->pData0);
++  curMemAddr1 = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pCurPicture->pData1);
++  
++  // sanity check #3
++  if (!preMemAddr0 || !preMemAddr1 || !curMemAddr0 || !curMemAddr0)
++  {
++    CLog::Log(LOGERROR, "CedarX deinterlacing: Could not resolve phy memory address!");
++    return nullptr;
++  }
 +
 +  mSrcSize.nWidth  = pCurPicture->nWidth;
 +  mSrcSize.nHeight = pCurPicture->nHeight;
@@ -950,17 +976,17 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +  mDiParaT.nField              = nField;
 +  mDiParaT.bTopFieldFirst      = pCurPicture->bTopFieldFirst;
 +
-+  mDiParaT.mInputFb.addr[0]    = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pCurPicture->pData0);
-+  mDiParaT.mInputFb.addr[1]    = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pCurPicture->pData1);
-+  mDiParaT.mPreFb.addr[0]      = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pPrePicture->pData0);
-+  mDiParaT.mPreFb.addr[1]      = (uintptr_t)MemAdapterGetPhysicAddressCpu((void*)pPrePicture->pData1);
++  mDiParaT.mInputFb.addr[0]    = curMemAddr0;
++  mDiParaT.mInputFb.addr[1]    = curMemAddr1;
++  mDiParaT.mPreFb.addr[0]      = preMemAddr0;
++  mDiParaT.mPreFb.addr[1]      = preMemAddr1;
 +  mDiParaT.mOutputFb.addr[0]   = mDiParaT.mPreFb.addr[0];
 +  mDiParaT.mOutputFb.addr[1]   = mDiParaT.mPreFb.addr[1];
 +
 +  if (ioctl(m_difd, DI_IOCSTART, &mDiParaT) != 0)
 +  {
 +    CLog::Log(LOGERROR, "HW deinterlacing failed!");
-+    return NULL;
++    return nullptr;
 +  }
 +  
 +  return m_last;
@@ -968,9 +994,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +void CSunxiContext::AddDecoder(VideoDecoder *decoder)
 +{
-+  CSingleLock lk(m_decodersLock);
++  CSingleLock lk(m_renderLock);
 +  
-+  if(decoder != NULL)
++  if(decoder != nullptr)
 +  {
 +    m_decoders.insert(decoder);
 +  }
@@ -978,25 +1004,29 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec2/
 +
 +void CSunxiContext::RemoveDecoder(VideoDecoder *decoder)
 +{
-+  CSingleLock lk(m_decodersLock);
++  CSingleLock lk(m_renderLock);
 +  
 +  m_decoders.erase(decoder);
 +}
 +
 +void CSunxiContext::FreePicture(VideoDecoder *decoder, VideoPicture *picture)
 +{
-+  CSingleLock lk(m_decodersLock);
++  CSingleLock lk(m_renderLock);
 +  
-+  if((m_decoders.find(decoder) != m_decoders.end()) &&
-+     (picture != NULL))
++  if((picture != nullptr) && IsDecoderValid(decoder))
 +  { 
 +    ReturnPicture(decoder, picture);
 +  }
 +}
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
++
++bool CSunxiContext::IsDecoderValid(VideoDecoder *decoder)
++{
++  return m_decoders.find(decoder) != m_decoders.end();
++}
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	1970-01-01 01:00:00.000000000 +0100
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-08-03 20:04:52.753498726 +0200
-@@ -0,0 +1,124 @@
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h	2016-10-24 18:10:42.145554063 +0200
+@@ -0,0 +1,128 @@
 +#pragma once
 +/*
 + *      Copyright (C) 2005-2013 Team XBMC
@@ -1032,7 +1062,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec2/xb
 +class CCedarXBuffer 
 +{
 +public:
-+  CCedarXBuffer() : pPicture(NULL), m_iRefs(0) {}
++  CCedarXBuffer() : pPicture(nullptr),
++  pVideoCodec(nullptr), leftOffset(0),
++  topOffset(0), m_iRefs(0) {}
 +
 +  // Shared pointer interface
 +  virtual void Lock();
@@ -1100,6 +1132,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec2/xb
 +  void AddDecoder(VideoDecoder *decoder);
 +  void RemoveDecoder(VideoDecoder *decoder);
 +  void FreePicture(VideoDecoder *decoder, VideoPicture *picture);
++
++private:
++  inline bool IsDecoderValid(VideoDecoder *decoder);
 +  
 +private:
 +  disp_layer_config video_config;
@@ -1117,13 +1152,12 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.h codec2/xb
 +  unsigned char     m_savedZOrder;
 +  // ugly hack
 +  std::set<VideoDecoder*> m_decoders;
-+  CCriticalSection  m_decodersLock;
 +};
 +
 +extern CSunxiContext g_SunxiContext;
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h	2016-10-24 17:57:39.885514784 +0200
 @@ -52,6 +52,7 @@
  class CDVDMediaCodecInfo;
  class CDVDVideoCodecIMXBuffer;
@@ -1143,9 +1177,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h codec2/xbmc/cor
  
    };
  
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in	2016-10-24 17:57:39.885514784 +0200
 @@ -23,6 +23,9 @@
  ifeq (@USE_IMXVPU@,1)
  SRCS += DVDVideoCodecIMX.cpp
@@ -1156,9 +1190,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/Makefile.in codec2/xbmc/cores/d
  ifeq (@USE_LIBAMCODEC@,1)
  SRCS += AMLCodec.cpp
  SRCS += DVDVideoCodecAmlogic.cpp
-diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h
+diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h
 --- a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	1970-01-01 01:00:00.000000000 +0100
-+++ codec2/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h	2016-10-24 17:57:39.885514784 +0200
 @@ -0,0 +1,388 @@
 +#ifndef __SUNXI_DISPLAY_H__
 +#define __SUNXI_DISPLAY_H__
@@ -1548,9 +1582,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/sunxi_display2.h codec2/xbmc/co
 +
 +#endif
 +
-diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec2/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
+diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
 --- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp	2016-10-24 17:57:39.888848117 +0200
 @@ -931,6 +931,7 @@
      case RENDER_FMT_MEDIACODECSURFACE:return "MEDIACODECSURFACE";
      case RENDER_FMT_IMXMAP:    return "IMXMAP";
@@ -1559,9 +1593,9 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp codec2/xbmc/cores/dvdplayer/
      case RENDER_FMT_NONE:      return "NONE";
    }
    return "UNKNOWN";
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp
 --- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp	2016-10-25 19:31:52.130381366 +0200
 @@ -93,6 +93,10 @@
  #include "DVDCodecs/Video/DVDVideoCodecAndroidMediaCodec.h"
  #endif
@@ -1595,7 +1629,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  
  #ifdef HAVE_VIDEOTOOLBOXDECODER
    if (m_renderMethod & RENDER_CVREF )
-@@ -733,6 +745,52 @@
+@@ -733,6 +745,45 @@
  #endif
    }
  #endif
@@ -1633,14 +1667,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
 +        break;
 +      }
 +
-+      if (flags & RENDER_FLAG_FIELDMASK)
-+      {
-+        g_SunxiContext.SetDeinterlacing(true);
-+      }
-+      // Progressive
-+      else
-+        g_SunxiContext.SetDeinterlacing(false);
-+      
++      g_SunxiContext.SetDeinterlacing(flags & RENDER_FLAG_FIELDMASK);
 +      g_SunxiContext.Render(buffer, srcRect, dstRect);
 +    }
 +  }
@@ -1648,7 +1675,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  }
  
  void CLinuxRendererGLES::FlipPage(int source)
-@@ -780,6 +838,9 @@
+@@ -780,6 +831,9 @@
  #ifdef HAS_IMXVPU
    m_formats.push_back(RENDER_FMT_IMXMAP);
  #endif
@@ -1658,7 +1685,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  
    // setup the background colour
    m_clearColour = (float)(g_advancedSettings.m_videoBlackBarColour & 0xff) / 0xff;
-@@ -894,6 +955,12 @@
+@@ -894,6 +948,12 @@
          m_renderMethod = RENDER_IMXMAP;
          break;
        }
@@ -1671,7 +1698,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
        else if (m_format == RENDER_FMT_BYPASS)
        {
          CLog::Log(LOGNOTICE, "GL: Using BYPASS render method");
-@@ -992,6 +1059,12 @@
+@@ -992,6 +1052,12 @@
      m_textureCreate = &CLinuxRendererGLES::CreateIMXMAPTexture;
      m_textureDelete = &CLinuxRendererGLES::DeleteIMXMAPTexture;
    }
@@ -1684,7 +1711,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
    else if (m_format == RENDER_FMT_OMXEGL)
    {
      m_textureUpload = &CLinuxRendererGLES::UploadOpenMaxTexture;
-@@ -1110,6 +1183,10 @@
+@@ -1110,6 +1176,10 @@
    if (m_renderMethod & RENDER_IMXMAP)
      SAFE_RELEASE(buf.IMXBuffer);
  #endif
@@ -1695,7 +1722,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  }
  
  void CLinuxRendererGLES::Render(DWORD flags, int index)
-@@ -1176,6 +1253,11 @@
+@@ -1176,6 +1246,11 @@
      RenderIMXMAPTexture(index, m_currentField);
      VerifyGLState();
    }
@@ -1707,7 +1734,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
    else
    {
      RenderSoftware(index, m_currentField);
-@@ -1892,6 +1974,10 @@
+@@ -1892,6 +1967,10 @@
  {
  }
  
@@ -1718,7 +1745,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  bool CLinuxRendererGLES::RenderCapture(CRenderCapture* capture)
  {
    if (!m_bValidated)
-@@ -2889,7 +2975,32 @@
+@@ -2889,7 +2968,28 @@
    glDisable(m_textureTarget);
    return true;
  }
@@ -1733,25 +1760,21 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
 +{
 +#ifdef HAS_CEDARX
 +  YUVBUFFER &buf = m_buffers[index];
-+
-+  if(buf.Disp2Buffer != NULL)
-+  {
-+    SAFE_RELEASE(buf.Disp2Buffer);
-+  }
++  SAFE_RELEASE(buf.Disp2Buffer);
 +#endif
 +}
  
 +bool CLinuxRendererGLES::CreateDisp2Texture(int index)
 +{
 +#ifdef HAS_CEDARX
-+  m_buffers[index].Disp2Buffer = 0;
++  m_buffers[index].Disp2Buffer = nullptr;
 +#endif
 +  return true;
 +}
  
  bool CLinuxRendererGLES::Supports(ERENDERFEATURE feature)
  {
-@@ -2996,6 +3107,14 @@
+@@ -2996,6 +3096,14 @@
  
    if(m_renderMethod & RENDER_CVREF)
      return false;
@@ -1766,7 +1789,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  
    if(method == VS_INTERLACEMETHOD_AUTO)
      return true;
-@@ -3034,6 +3153,10 @@
+@@ -3034,6 +3142,10 @@
  
    if(m_renderMethod & RENDER_IMXMAP)
      return false;
@@ -1777,7 +1800,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  
    if (m_renderMethod & RENDER_MEDIACODECSURFACE)
      return false;
-@@ -3073,6 +3196,9 @@
+@@ -3073,6 +3185,9 @@
  
    if(m_renderMethod & RENDER_IMXMAP)
      return VS_INTERLACEMETHOD_IMX_FASTMOTION;
@@ -1787,7 +1810,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
  
  #if !defined(TARGET_ANDROID) && (defined(__i386__) || defined(__x86_64__))
    return VS_INTERLACEMETHOD_DEINTERLACE_HALF;
-@@ -3090,7 +3216,8 @@
+@@ -3090,7 +3205,8 @@
       m_format == RENDER_FMT_CVBREF ||
       m_format == RENDER_FMT_EGLIMG ||
       m_format == RENDER_FMT_MEDIACODEC ||
@@ -1797,7 +1820,7 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
      info.optimal_buffer_size = 2;
    else if(m_format == RENDER_FMT_IMXMAP)
    {
-@@ -3187,9 +3314,22 @@
+@@ -3187,9 +3303,22 @@
  }
  #endif
  
@@ -1821,9 +1844,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.cpp codec2/xbmc/cores/Vi
      return false;
    else
      return true;
-diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
+diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h
 --- a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/VideoRenderers/LinuxRendererGLES.h	2016-10-24 17:57:39.888848117 +0200
 @@ -45,6 +45,7 @@
  #ifdef HAS_IMXVPU
  class CDVDVideoCodecIMXBuffer;
@@ -1881,9 +1904,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/LinuxRendererGLES.h codec2/xbmc/cores/Vide
    };
  
    typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];
-diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec2/xbmc/cores/VideoRenderers/RenderFormats.h
+diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec/xbmc/cores/VideoRenderers/RenderFormats.h
 --- a/xbmc/cores/VideoRenderers/RenderFormats.h	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/VideoRenderers/RenderFormats.h	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/VideoRenderers/RenderFormats.h	2016-10-24 17:57:39.888848117 +0200
 @@ -43,6 +43,7 @@
    RENDER_FMT_MEDIACODECSURFACE,
    RENDER_FMT_IMXMAP,
@@ -1892,9 +1915,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/RenderFormats.h codec2/xbmc/cores/VideoRen
  };
  
  struct CRenderInfo
-diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec2/xbmc/cores/VideoRenderers/RenderManager.cpp
+diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec/xbmc/cores/VideoRenderers/RenderManager.cpp
 --- a/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/cores/VideoRenderers/RenderManager.cpp	2016-10-24 17:57:39.888848117 +0200
 @@ -1029,6 +1029,10 @@
    else if(pic.format == RENDER_FMT_MMAL)
      m_pRenderer->AddProcessor(pic.MMALBuffer, index);
@@ -1906,9 +1929,9 @@ diff -Nur a/xbmc/cores/VideoRenderers/RenderManager.cpp codec2/xbmc/cores/VideoR
  
    m_pRenderer->ReleaseImage(index, false);
  
-diff -Nur a/xbmc/settings/Settings.cpp codec2/xbmc/settings/Settings.cpp
+diff -Nur a/xbmc/settings/Settings.cpp codec/xbmc/settings/Settings.cpp
 --- a/xbmc/settings/Settings.cpp	2016-08-03 19:58:43.960146875 +0200
-+++ codec2/xbmc/settings/Settings.cpp	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/settings/Settings.cpp	2016-10-24 17:57:39.892181451 +0200
 @@ -812,6 +812,9 @@
  #elif defined(HAS_IMXVPU)
    if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
@@ -1919,9 +1942,9 @@ diff -Nur a/xbmc/settings/Settings.cpp codec2/xbmc/settings/Settings.cpp
  #elif defined(TARGET_LINUX)
    if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
      CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
-diff -Nur a/xbmc/settings/VideoSettings.h codec2/xbmc/settings/VideoSettings.h
+diff -Nur a/xbmc/settings/VideoSettings.h codec/xbmc/settings/VideoSettings.h
 --- a/xbmc/settings/VideoSettings.h	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/settings/VideoSettings.h	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/settings/VideoSettings.h	2016-10-24 17:57:39.892181451 +0200
 @@ -74,6 +74,8 @@
  
    VS_INTERLACEMETHOD_IMX_FASTMOTION = 29,
@@ -1931,9 +1954,9 @@ diff -Nur a/xbmc/settings/VideoSettings.h codec2/xbmc/settings/VideoSettings.h
  
    VS_INTERLACEMETHOD_MAX // do not use and keep as last enum value.
  };
-diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec2/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
+diff -Nur a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp
 --- a/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-04-17 14:05:15.000000000 +0200
-+++ codec2/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-08-03 20:04:52.753498726 +0200
++++ codec/xbmc/video/dialogs/GUIDialogVideoSettings.cpp	2016-10-24 17:57:39.892181451 +0200
 @@ -274,6 +274,7 @@
    entries.push_back(std::make_pair(16333, VS_INTERLACEMETHOD_MMAL_BOB_HALF));
    entries.push_back(std::make_pair(16334, VS_INTERLACEMETHOD_IMX_FASTMOTION));
