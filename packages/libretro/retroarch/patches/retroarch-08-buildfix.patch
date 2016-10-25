@@ -1,0 +1,12 @@
+diff -Naur retroarch.git/libretro-common/include/glsym/glsym_es2.h retroarch.patch/libretro-common/include/glsym/glsym_es2.h
+--- retroarch.git/libretro-common/include/glsym/glsym_es2.h	2016-10-25 09:43:24.421687485 +0200
++++ retroarch.patch/libretro-common/include/glsym/glsym_es2.h	2016-10-25 17:15:41.929540480 +0200
+@@ -23,7 +23,7 @@
+ typedef GLint GLfixed;
+ #endif
+ 
+-#if (__STDC_VERSION__ <= 199409L) || (OSX && !MAC_OS_X_VERSION_10_7)
++#if (__STDC_VERSION__ <= 199901L) || (OSX && !MAC_OS_X_VERSION_10_7)
+ typedef long long int GLint64;
+ typedef unsigned long long int GLuint64;
+ typedef unsigned long long int GLuint64EXT;
