@@ -17,12 +17,20 @@
 ################################################################################
 
 PKG_NAME="gcc"
-PKG_VERSION="6.2.0"
 PKG_REV="1"
+PKG_USE_SNAPSHOT="true"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://gcc.gnu.org/"
-PKG_URL="http://ftpmirror.gnu.org/gcc/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
+if [ x"$PKG_USE_SNAPSHOT" == x"true" ]; then
+    PKG_VERSION="6.2.1"
+    PKG_SNAPSHOT_DATESTAMP="20161020"
+    PKG_MAJOR_VERSION=$(echo $PKG_VERSION | awk -F'.' '{print $1}')
+    PKG_URL="ftp://gcc.gnu.org/pub/gcc/snapshots/$PKG_MAJOR_VERSION-$PKG_SNAPSHOT_DATESTAMP/gcc-$PKG_MAJOR_VERSION-$PKG_SNAPSHOT_DATESTAMP.tar.bz2"
+else
+    PKG_VERSION="6.2.0"
+    PKG_URL="http://ftpmirror.gnu.org/gcc/$PKG_NAME-$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
+fi
 PKG_DEPENDS_BOOTSTRAP="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host"
 PKG_DEPENDS_TARGET="gcc:host"
 PKG_DEPENDS_HOST="ccache:host autoconf:host binutils:host gmp:host mpfr:host mpc:host glibc"
@@ -87,6 +95,13 @@ PKG_CONFIGURE_OPTS_HOST="$GCC_COMMON_CONFIGURE_OPTS \
                          --enable-libstdcxx-time \
                          --enable-clocale=gnu \
                          $GCC_OPTS"
+
+pre_patch() {
+  if [ x"$PKG_USE_SNAPSHOT" == x"true" ]; then
+    [ -d $ROOT/$BUILD/gcc-$PKG_VERSION ] && rm -fr $ROOT/$BUILD/gcc-$PKG_VERSION
+    mv $ROOT/$BUILD/gcc-$PKG_MAJOR_VERSION-$PKG_SNAPSHOT_DATESTAMP $ROOT/$BUILD/gcc-$PKG_VERSION
+  fi
+}
 
 pre_configure_host() {
   export CXXFLAGS="$CXXFLAGS -std=gnu++98"
