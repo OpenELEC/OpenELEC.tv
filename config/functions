@@ -23,6 +23,7 @@ setup_toolchain() {
       export PKG_CONFIG_SYSROOT_DIR="$SYSROOT_PREFIX"
       export CMAKE_CONF=$ROOT/$TOOLCHAIN/etc/cmake-$TARGET_NAME.conf
       export CMAKE="cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF -DCMAKE_INSTALL_PREFIX=/usr"
+      export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
       if [ ! -f $CMAKE_CONF ] ; then
         mkdir -p $ROOT/$TOOLCHAIN/etc
         echo "SET(CMAKE_SYSTEM_NAME Linux)" >> $CMAKE_CONF
@@ -85,6 +86,7 @@ setup_toolchain() {
         echo "SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)" >> $CMAKE_CONF
         echo "SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)" >> $CMAKE_CONF
       fi
+      export PYTHONXCPREFIX="$ROOT/$TOOLCHAIN"
       export HOST_CC="$CC"
       export HOST_CXX="$CXX"
       export HOSTCC="$CC"
