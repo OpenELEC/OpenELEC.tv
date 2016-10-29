@@ -32,11 +32,6 @@ PKG_LONGDESC="The Python Imaging Library (PIL) adds image processing capabilitie
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-pre_make_target() {
-  export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
-  export LDSHARED="$CC -shared"
-}
-
 make_target() {
   python setup.py build_ext --disable-platform-guessing
 }
