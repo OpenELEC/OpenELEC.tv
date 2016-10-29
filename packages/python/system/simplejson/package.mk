@@ -34,7 +34,6 @@ PKG_AUTORECONF="no"
 
 pre_make_target() {
   strip_lto
-  export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
 }
 
 make_target() {
