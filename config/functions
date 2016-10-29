@@ -27,6 +27,7 @@ setup_toolchain() {
     export _python_sysroot="$SYSROOT_PREFIX"
     export _python_prefix=/usr
     export _python_exec_prefix=/usr
+    export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
 
   # set CMAKE configfile for target
     export CMAKE_CONF=$ROOT/$TOOLCHAIN/etc/cmake-$TARGET_NAME.conf
@@ -54,10 +55,10 @@ setup_toolchain() {
     export PKG_CONFIG_PATH="$HOST_PKG_CONFIG_PATH"
     export PKG_CONFIG_LIBDIR="$HOST_PKG_CONFIG_LIBDIR"
     export PKG_CONFIG_SYSROOT_DIR="$HOST_PKG_CONFIG_SYSROOT_DIR"
+    export PYTHONXCPREFIX="$ROOT/$TOOLCHAIN"
 
   # set CMAKE configfile for host
     export CMAKE_CONF=$ROOT/$TOOLCHAIN/etc/cmake-$HOST_NAME.conf
-
   fi
 }
 
