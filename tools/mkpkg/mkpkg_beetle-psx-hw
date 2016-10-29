@@ -20,7 +20,7 @@
 ################################################################################
 
 echo "getting sources..."
-  if [ ! -d beetle-psx.git ]; then
+  if [ ! -d beetle-psx-hw.git ]; then
     git clone https://github.com/libretro/beetle-psx-libretro.git -b master beetle-psx-hw.git
   fi
 
@@ -30,7 +30,7 @@ echo "getting sources..."
   cd ..
 
 echo "copying sources..."
-  rm -rf beetle-psx-$GIT_REV
+  rm -rf beetle-psx-hw-$GIT_REV
   cp -R beetle-psx-hw.git beetle-psx-hw-$GIT_REV
 
 echo "cleaning sources..."
