@@ -53,7 +53,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
     ;;
   rpi)
-    PKG_VERSION="0105b0e"
+    PKG_VERSION="7ede3d57"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
     PKG_GIT_BRANCH="raspberry-rpi-4.8.y"
     PKG_PATCH_DIRS="linux-4.8"
