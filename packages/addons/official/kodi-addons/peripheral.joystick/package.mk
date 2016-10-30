@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="peripheral.joystick"
-PKG_VERSION="abff316"
+PKG_VERSION="ae86732"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/kodi-game/peripheral.joystick"
-PKG_GIT_URL="https://github.com/kodi-game/peripheral.joystick"
+PKG_GIT_URL="https://github.com/xbmc/peripheral.joystick"
 PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain kodi-platform SDL2"
 PKG_PRIORITY="optional"
