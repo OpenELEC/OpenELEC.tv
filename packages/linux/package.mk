@@ -40,12 +40,12 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET imx6-status-led imx6-soc-fan"
     ;;
   rpi)
-    PKG_VERSION="73bada5"
+    PKG_VERSION="5afda48"
     PKG_GIT_URL="https://github.com/raspberrypi/linux.git"
     PKG_GIT_BRANCH="rpi-4.4.y"
     ;;
   *)
-    PKG_VERSION="4.4.20"
+    PKG_VERSION="4.4.28"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
