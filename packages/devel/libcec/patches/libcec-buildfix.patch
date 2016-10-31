@@ -1,0 +1,11 @@
+diff -Naur libcec-5388d3a/src/libcec/adapter/AOCEC/AOCECAdapterCommunication.cpp libcec-5388d3a.patch/src/libcec/adapter/AOCEC/AOCECAdapterCommunication.cpp
+--- libcec-5388d3a/src/libcec/adapter/AOCEC/AOCECAdapterCommunication.cpp	2016-10-26 19:58:03.000000000 +0200
++++ libcec-5388d3a.patch/src/libcec/adapter/AOCEC/AOCECAdapterCommunication.cpp	2016-10-30 23:35:42.612720124 +0100
+@@ -115,7 +115,6 @@
+ 
+ std::string CAOCECAdapterCommunication::GetError(void) const
+ {
+-  CLockObject lock(m_mutex);
+   std::string strError(m_strError);
+   return strError;
+ }
