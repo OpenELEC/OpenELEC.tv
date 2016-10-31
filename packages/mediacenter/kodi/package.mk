@@ -31,17 +31,17 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="4c67f75"
+    PKG_VERSION="a5a0e5d"
     PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
     PKG_GIT_BRANCH="newclock5"
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="e596558"
+    PKG_VERSION="96fe9d1"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="master"
     PKG_KEEP_CHECKOUT="no"
-    PKG_PATCH_DIRS="$LINUX"
+    PKG_PATCH_DIRS="$LINUX libcec-4.0"
     ;;
 esac
 
