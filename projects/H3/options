@@ -141,4 +141,4 @@
     INSTALLER_SUPPORT="no"
 
   # additional drivers
-    ADDITIONAL_DRIVERS+=" mt7601u"
+    ADDITIONAL_DRIVERS+=" mt7601u RTL8188EU"
