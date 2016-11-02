@@ -258,6 +258,8 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.imx" of="$DISK" bs=512 seek=2 conv=fsync,notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
       dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=notrunc
+    elif [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/uboot-sunxi-$UBOOT_SYSTEM.bin" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/uboot-sunxi-$UBOOT_SYSTEM.bin" of="$DISK" bs=1k seek=8 conv=fsync,notrunc
     elif [ -e "$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
       dd if=$RELEASE_DIR/3rdparty/bootloader/u-boot-sunxi-with-spl.bin of="$DISK" bs=1024 seek=8 conv=notrunc
     elif [ -d "$RELEASE_DIR/3rdparty/bootloader/hardkernel" ]; then
@@ -279,6 +281,10 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
       cp "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" "$OE_TMP/u-boot.img"
     elif [ -f $RELEASE_DIR/3rdparty/bootloader/u-boot.img ] ; then
       cp $RELEASE_DIR/3rdparty/bootloader/u-boot.img "$OE_TMP"
+    fi
+
+    if [ -f "$RELEASE_DIR/3rdparty/bootloader/$UBOOT_SYSTEM.fex" ]; then
+      cp $RELEASE_DIR/3rdparty/bootloader/$UBOOT_SYSTEM.fex $RELEASE_DIR/3rdparty/bootloader/script.bin
     fi
 
     if [ -f "$RELEASE_DIR/3rdparty/bootloader/script.bin" ]; then

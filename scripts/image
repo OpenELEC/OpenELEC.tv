@@ -41,7 +41,7 @@ if [ "$OPENELEC_VERSION" = devel ]; then
 fi
 
 TARGET_VERSION="$PROJECT"
-if [ "$PROJECT" == "imx6" -a -n "$SYSTEM" ]; then
+if [ "$PROJECT" == "imx6" -o "$PROJECT" == "H3" ] && [ -n "$SYSTEM" ]; then
   TARGET_VERSION="$TARGET_VERSION.$SYSTEM"
 fi
 TARGET_VERSION="$TARGET_VERSION.$TARGET_ARCH-$OPENELEC_VERSION"
@@ -319,6 +319,12 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
             UBOOT_SYSTEM="$SYSTEM"
           else
             UBOOT_SYSTEM="cuboxi"
+          fi
+        elif [ "$PROJECT" == "H3" ]; then
+          if [ -n "$SYSTEM" ]; then
+            UBOOT_SYSTEM="$SYSTEM"
+          else
+            UBOOT_SYSTEM="opi2"
           fi
         fi
 

@@ -15,6 +15,26 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="no"
 
-makeinstall_host() {
-  find . -maxdepth 1 -type f -executable |while read file; do cp -vL $file $ROOT/$TOOLCHAIN/bin; done
+make_host() {
+  make clean
+  make fex2bin
 }
+
+make_target() {
+  make clean
+  make CC="$TARGET_CC" fex2bin
+  make CC="$TARGET_CC" bin2fex
+}
+
+makeinstall_host() {
+  cp -PR fex2bin $ROOT/$TOOLCHAIN/bin/
+  cp -PR fexc $ROOT/$TOOLCHAIN/bin/
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/bin
+  cp -PR fex2bin $INSTALL/usr/bin
+  cp -PR bin2fex $INSTALL/usr/bin
+  cp -PR fexc $INSTALL/usr/bin
+}
+

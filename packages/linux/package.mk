@@ -47,6 +47,11 @@ case "$LINUX" in
     PKG_VERSION="6ce48b3"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
+  linux-sun8i)
+    PKG_VERSION="f143b8a"
+    PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host sunxi-sys-utils"
+    ;;
   wandboard)
     PKG_VERSION="8e81319"
     PKG_URL="$LAKKA_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
@@ -165,6 +170,14 @@ pre_make_target() {
 make_target() {
   LDFLAGS="" make modules
   LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
+
+  if [ "$LINUX" = "linux-sun8i" ]; then
+    for all_fex in $PROJECT_DIR/$PROJECT/sys_config/*.fex; do
+      fex=$(basename $all_fex)
+      fex2bin $all_fex $fex
+    done
+  fi
+
   rm -f $INSTALL/lib/modules/*/build
   rm -f $INSTALL/lib/modules/*/source
 

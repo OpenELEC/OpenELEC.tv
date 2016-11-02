@@ -1,0 +1,688 @@
+diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp
+--- a/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	1970-01-01 01:00:00.000000000 +0100
++++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.cpp	2016-05-24 21:10:08.186817913 +0200
+@@ -0,0 +1,589 @@
++/*
++ *      Copyright (C) 2011-2013 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "EGLNativeTypeSunxi.h"
++#include "guilib/gui3d.h"
++#include "utils/StringUtils.h"
++#include "utils/SysfsUtils.h"
++#include "utils/log.h"
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <linux/fb.h>
++#include <sys/ioctl.h>
++#include <EGL/egl.h>
++
++#define DISP_GET_OUTPUT_TYPE   0x09
++#define DISP_VSYNC_EVENT_EN    0x0B
++#define DISP_BLANK             0x0C
++#define DISP_DEVICE_SWITCH     0x0F
++#define DISP_GET_OUTPUT        0x10
++#define DISP_HDMI_SUPPORT_MODE 0xC4
++
++typedef enum
++{
++  DISP_TV_MOD_480I                = 0,
++  DISP_TV_MOD_576I                = 1,
++  DISP_TV_MOD_480P                = 2,
++  DISP_TV_MOD_576P                = 3,
++  DISP_TV_MOD_720P_50HZ           = 4,
++  DISP_TV_MOD_720P_60HZ           = 5,
++  DISP_TV_MOD_1080I_50HZ          = 6,
++  DISP_TV_MOD_1080I_60HZ          = 7,
++  DISP_TV_MOD_1080P_24HZ          = 8,
++  DISP_TV_MOD_1080P_50HZ          = 9,
++  DISP_TV_MOD_1080P_60HZ          = 0xa,
++  DISP_TV_MOD_PAL                 = 0xb,
++  DISP_TV_MOD_PAL_SVIDEO          = 0xc,
++  DISP_TV_MOD_NTSC                = 0xe,
++  DISP_TV_MOD_NTSC_SVIDEO         = 0xf,
++  DISP_TV_MOD_PAL_M               = 0x11,
++  DISP_TV_MOD_PAL_M_SVIDEO        = 0x12,
++  DISP_TV_MOD_PAL_NC              = 0x14,
++  DISP_TV_MOD_PAL_NC_SVIDEO       = 0x15,
++  DISP_TV_MOD_1080P_24HZ_3D_FP    = 0x17,
++  DISP_TV_MOD_720P_50HZ_3D_FP     = 0x18,
++  DISP_TV_MOD_720P_60HZ_3D_FP     = 0x19,
++  DISP_TV_MOD_1080P_25HZ          = 0x1a,
++  DISP_TV_MOD_1080P_30HZ          = 0x1b,
++  DISP_TV_MOD_3840_2160P_30HZ     = 0x1c,
++  DISP_TV_MOD_3840_2160P_25HZ     = 0x1d,
++  DISP_TV_MOD_3840_2160P_24HZ     = 0x1e,
++  DISP_TV_MODE_NUM                = 0x1f,
++} disp_tv_mode;
++
++typedef struct
++{
++  unsigned int type;
++  unsigned int mode;
++} disp_output;
++
++static const unsigned long supportedModes[] = 
++{
++  DISP_TV_MOD_480I,
++  DISP_TV_MOD_576I,
++  DISP_TV_MOD_480P,
++  DISP_TV_MOD_576P,
++  DISP_TV_MOD_720P_50HZ,
++  DISP_TV_MOD_720P_60HZ,
++  DISP_TV_MOD_1080I_50HZ,
++  DISP_TV_MOD_1080I_60HZ,
++  DISP_TV_MOD_1080P_24HZ,
++  DISP_TV_MOD_1080P_50HZ,
++  DISP_TV_MOD_1080P_60HZ,
++  DISP_TV_MOD_1080P_25HZ,
++  DISP_TV_MOD_1080P_30HZ,
++  DISP_TV_MOD_3840_2160P_24HZ,
++  DISP_TV_MOD_3840_2160P_25HZ,
++  DISP_TV_MOD_3840_2160P_30HZ
++};
++
++CEGLNativeTypeSunxi::CEGLNativeTypeSunxi()
++{
++  m_nativeWindow = NULL;
++  m_disp = -1;
++  
++  // assume HDMI at first
++  m_screenid = 0;
++}
++
++CEGLNativeTypeSunxi::~CEGLNativeTypeSunxi()
++{
++}
++
++bool CEGLNativeTypeSunxi::CheckCompatibility()
++{
++  std::string name;
++  std::string modalias = "/sys/class/graphics/fb0/device/modalias";
++
++  SysfsUtils::GetString(modalias, name);
++  StringUtils::Trim(name);
++  if (name == "platform:disp")
++    return true;
++  return false;
++}
++
++void CEGLNativeTypeSunxi::Initialize()
++{
++  unsigned long args[4];
++  disp_output para;
++
++  if((m_disp = open("/dev/disp", O_RDWR)) == -1)
++  {
++    CLog::Log(LOGERROR, "%s - Can't open display. Nothing will work!\n", __FUNCTION__);
++    return;
++  }
++
++  args[0] = 0;
++  args[1] = (unsigned long)(&para);
++  ioctl(m_disp, DISP_GET_OUTPUT, args);
++  
++  m_screenid = (para.type == 0) ? 1 : 0;
++  
++  CLog::Log(LOGNOTICE, "%s - Screen ID %d is selected\n", __FUNCTION__, m_screenid);
++  
++  args[0] = m_screenid;
++  args[1] = 1;
++  
++  ioctl(m_disp, DISP_VSYNC_EVENT_EN, args);
++}
++void CEGLNativeTypeSunxi::Destroy()
++{
++  if(m_disp != -1)
++  {
++    close(m_disp);
++    m_disp = -1;
++  }
++}
++
++bool CEGLNativeTypeSunxi::CreateNativeDisplay()
++{
++  m_nativeDisplay = EGL_DEFAULT_DISPLAY;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::CreateNativeWindow()
++{
++  RESOLUTION_INFO res;
++  EGLNativeWindowType nativeWindow = new struct mali_native_window;
++  
++  if (!nativeWindow)
++    return false;
++  
++  if (m_disp == -1)
++    return false;
++  
++  if (!GetNativeResolution(&res))
++    return false;
++
++  nativeWindow->width = res.iScreenWidth;
++  nativeWindow->height = res.iScreenHeight;
++  m_nativeWindow = nativeWindow;
++
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const
++{
++  if (!nativeDisplay)
++    return false;
++  
++  *nativeDisplay = (XBNativeDisplayType*) &m_nativeDisplay;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::GetNativeWindow(XBNativeWindowType **nativeWindow) const
++{
++  if (!nativeWindow)
++    return false;
++  
++  *nativeWindow = (XBNativeWindowType*) &m_nativeWindow;
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::DestroyNativeDisplay()
++{
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::DestroyNativeWindow()
++{
++  delete (EGLNativeWindowType)m_nativeWindow, m_nativeWindow = NULL;
++
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::GetNativeResolution(RESOLUTION_INFO *res) const
++{
++  unsigned long args[4];
++  disp_output para;
++  
++  args[0] = m_screenid;
++  args[1] = (unsigned long)(&para);
++  ioctl(m_disp, DISP_GET_OUTPUT, args);
++  
++  if(!ModeToResolution(para.mode, res))
++    return false;
++ 
++  return res->iWidth > 0 && res->iHeight> 0;
++}
++
++bool CEGLNativeTypeSunxi::SetNativeResolution(const RESOLUTION_INFO &res)
++{
++  if(m_screenid == 1)
++    return false;
++  
++  switch((int)(0.5 + res.fRefreshRate))
++  {
++    case 60:
++      switch(res.iScreenHeight)
++      {
++        case 480:
++	  if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++	    SetDisplayResolution(DISP_TV_MOD_480I);
++	  else
++	    SetDisplayResolution(DISP_TV_MOD_480P);
++          break;
++        default:
++        case 720:
++          SetDisplayResolution(DISP_TV_MOD_720P_60HZ);
++          break;
++        case 1080:
++          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution(DISP_TV_MOD_1080I_60HZ);
++          else
++            SetDisplayResolution(DISP_TV_MOD_1080P_60HZ);
++          break;
++      }
++      break;
++    default:
++    case 50:
++      switch(res.iScreenHeight)
++      {
++        case 576:
++	  if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution(DISP_TV_MOD_576I);
++	  else
++	    SetDisplayResolution(DISP_TV_MOD_576P);
++          break;
++        case 720:
++          SetDisplayResolution(DISP_TV_MOD_720P_50HZ);
++          break;
++        default:
++        case 1080:
++          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
++            SetDisplayResolution(DISP_TV_MOD_1080I_50HZ);
++          else
++            SetDisplayResolution(DISP_TV_MOD_1080P_50HZ);
++          break;
++      }
++      break;
++    case 30:
++      switch(res.iScreenHeight)
++      {
++        default:
++        case 1080:
++          SetDisplayResolution(DISP_TV_MOD_1080P_30HZ);
++          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_30HZ);
++          break;
++      }
++      break;
++    case 25:
++      switch(res.iScreenHeight)
++      {
++        default:
++        case 1080:
++          SetDisplayResolution(DISP_TV_MOD_1080P_25HZ);
++          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_25HZ);
++          break;
++      }
++      break;
++    case 24:
++      switch(res.iScreenHeight)
++      {
++        default:
++        case 1080:
++          SetDisplayResolution(DISP_TV_MOD_1080P_24HZ);
++          break;
++        case 2160:
++          SetDisplayResolution(DISP_TV_MOD_3840_2160P_24HZ);
++          break;
++      }
++      break;
++  }
++  
++  if (m_nativeWindow)
++  {
++    ((EGLNativeWindowType)m_nativeWindow)->width = res.iScreenWidth;
++    ((EGLNativeWindowType)m_nativeWindow)->height = res.iScreenHeight;
++  }
++  
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
++{
++  if(m_screenid == 0)
++  {
++    unsigned long args[4];
++    
++    args[0] = m_screenid;
++    args[2] = 0;
++    args[3] = 0;
++
++    for(unsigned int i = 0; i < sizeof(supportedModes) / sizeof(supportedModes[0]); i++)
++    {
++      args[1] = supportedModes[i];
++      if(ioctl(m_disp, DISP_HDMI_SUPPORT_MODE, args))
++      {
++        RESOLUTION_INFO res;
++
++        ModeToResolution(supportedModes[i], &res);
++        resolutions.push_back(res);
++      }
++    }
++  }
++  else
++  {
++    RESOLUTION_INFO res;
++
++    if(GetNativeResolution(&res))
++      resolutions.push_back(res);
++  }
++
++  return resolutions.size() > 0;
++}
++
++bool CEGLNativeTypeSunxi::GetPreferredResolution(RESOLUTION_INFO *res) const
++{
++  // check display/mode, it gets defaulted at boot
++  if (!GetNativeResolution(res))
++  {
++    // set sane defaults if we get nothing
++    if(m_screenid == 0)
++      ModeToResolution(DISP_TV_MOD_1080P_60HZ, res);
++    else
++      ModeToResolution(DISP_TV_MOD_NTSC, res);
++  }
++
++  return true;
++}
++
++bool CEGLNativeTypeSunxi::ShowWindow(bool show)
++{
++  unsigned long args[4];
++  
++  args[0] = m_screenid;
++  args[1] = show ? 0 : 1;
++  
++  return ioctl(m_disp, DISP_BLANK, args) == 0;
++}
++
++bool CEGLNativeTypeSunxi::SetDisplayResolution(unsigned int mode)
++{
++  unsigned long args[4];
++  RESOLUTION_INFO res;
++  
++  args[0] = m_screenid;
++  args[1] = ioctl(m_disp, DISP_GET_OUTPUT_TYPE, args);
++  args[2] = mode;
++  if(ioctl(m_disp, DISP_DEVICE_SWITCH, args) != 0)
++    return false;
++  
++  ModeToResolution(mode, &res);
++  SetFramebufferResolution(res.iScreenWidth, res.iScreenHeight);
++
++  return true;
++}
++
++void CEGLNativeTypeSunxi::SetFramebufferResolution(int width, int height) const
++{
++  int fd0;
++  std::string framebuffer = "/dev/fb0";
++
++  if ((fd0 = open(framebuffer.c_str(), O_RDWR)) >= 0)
++  {
++    struct fb_var_screeninfo vinfo;
++    if (ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0)
++    {
++      vinfo.xres = width;
++      vinfo.yres = height;
++      vinfo.xres_virtual = width;
++      vinfo.yres_virtual = height * 2;
++      vinfo.bits_per_pixel = 32;
++      vinfo.activate = FB_ACTIVATE_ALL;
++      ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
++    }
++    close(fd0);
++  }
++}
++
++bool CEGLNativeTypeSunxi::ModeToResolution(unsigned int mode, RESOLUTION_INFO *res) const
++{
++  
++  if (!res)
++    return false;
++
++  res->iWidth = 0;
++  res->iHeight= 0;
++  
++  switch(mode)
++  {
++    case DISP_TV_MOD_480I:
++      res->iWidth = 720;
++      res->iHeight= 480;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 480;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    case DISP_TV_MOD_576I:
++      res->iWidth = 720;
++      res->iHeight= 576;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 576;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    case DISP_TV_MOD_480P:
++      res->iWidth = 720;
++      res->iHeight= 480;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 480;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_576P:
++      res->iWidth = 720;
++      res->iHeight= 576;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 576;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_720P_50HZ:
++      res->iWidth = 1280;
++      res->iHeight= 720;
++      res->iScreenWidth = 1280;
++      res->iScreenHeight= 720;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_720P_60HZ:
++      res->iWidth = 1280;
++      res->iHeight= 720;
++      res->iScreenWidth = 1280;
++      res->iScreenHeight= 720;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_1080I_50HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    case DISP_TV_MOD_1080I_60HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    case DISP_TV_MOD_1080P_24HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 24;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_1080P_50HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_1080P_60HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_1080P_25HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 25;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_1080P_30HZ:
++      res->iWidth = 1920;
++      res->iHeight= 1080;
++      res->iScreenWidth = 1920;
++      res->iScreenHeight= 1080;
++      res->fRefreshRate = 30;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_3840_2160P_30HZ:
++      res->iWidth = 3840;
++      res->iHeight= 2160;
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 30;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_3840_2160P_25HZ:
++      res->iWidth = 3840;
++      res->iHeight= 2160;
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 25;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_3840_2160P_24HZ:
++      res->iWidth = 3840;
++      res->iHeight= 2160;
++      res->iScreenWidth = 3840;
++      res->iScreenHeight= 2160;
++      res->fRefreshRate = 24;
++      res->dwFlags = D3DPRESENTFLAG_PROGRESSIVE;
++      break;
++    case DISP_TV_MOD_PAL:
++      res->iWidth = 720;
++      res->iHeight= 576;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 576;
++      res->fRefreshRate = 50;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    case DISP_TV_MOD_NTSC:
++      res->iWidth = 720;
++      res->iHeight= 480;
++      res->iScreenWidth = 720;
++      res->iScreenHeight= 480;
++      res->fRefreshRate = 60;
++      res->dwFlags = D3DPRESENTFLAG_INTERLACED;
++      break;
++    default:
++      return false;
++  }
++  
++  res->iScreen       = 0;
++  res->bFullScreen   = true;
++  res->iSubtitles    = (int)(0.965 * res->iHeight);
++  res->fPixelRatio   = 1.0f;
++  res->strMode       = StringUtils::Format("%dx%d @ %.2f%s - Full Screen", res->iScreenWidth, res->iScreenHeight, res->fRefreshRate,
++    res->dwFlags & D3DPRESENTFLAG_INTERLACED ? "i" : "");
++  
++  return true;
++}
+diff -Nur a/xbmc/windowing/egl/EGLNativeTypeSunxi.h win/xbmc/windowing/egl/EGLNativeTypeSunxi.h
+--- a/xbmc/windowing/egl/EGLNativeTypeSunxi.h	1970-01-01 01:00:00.000000000 +0100
++++ win/xbmc/windowing/egl/EGLNativeTypeSunxi.h	2016-05-04 18:26:44.483202125 +0200
+@@ -0,0 +1,59 @@
++#pragma once
++
++/*
++ *      Copyright (C) 2011-2013 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "EGLNativeType.h"
++
++class CEGLNativeTypeSunxi : public CEGLNativeType
++{
++public:
++  CEGLNativeTypeSunxi();
++  virtual ~CEGLNativeTypeSunxi();
++  virtual std::string GetNativeName() const { return "sunxi"; };
++  virtual bool  CheckCompatibility();
++  virtual void  Initialize();
++  virtual void  Destroy();
++  virtual int   GetQuirks() { return EGL_QUIRK_NONE; };
++
++  virtual bool  CreateNativeDisplay();
++  virtual bool  CreateNativeWindow();
++  virtual bool  GetNativeDisplay(XBNativeDisplayType **nativeDisplay) const;
++  virtual bool  GetNativeWindow(XBNativeWindowType **nativeWindow) const;
++
++  virtual bool  DestroyNativeWindow();
++  virtual bool  DestroyNativeDisplay();
++
++  virtual bool  GetNativeResolution(RESOLUTION_INFO *res) const;
++  virtual bool  SetNativeResolution(const RESOLUTION_INFO &res);
++  virtual bool  ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions);
++  virtual bool  GetPreferredResolution(RESOLUTION_INFO *res) const;
++
++  virtual bool  ShowWindow(bool show);
++
++protected:
++  int m_disp;
++  unsigned long m_screenid;
++  bool SetDisplayResolution(unsigned int mode);
++
++private:
++  void SetFramebufferResolution(int width, int height) const;
++  bool ModeToResolution(unsigned int mode, RESOLUTION_INFO *res) const;
++};
+diff -Nur a/xbmc/windowing/egl/EGLWrapper.cpp win/xbmc/windowing/egl/EGLWrapper.cpp
+--- a/xbmc/windowing/egl/EGLWrapper.cpp	2016-04-15 18:52:10.000000000 +0200
++++ win/xbmc/windowing/egl/EGLWrapper.cpp	2016-05-04 17:49:32.076600226 +0200
+@@ -37,6 +37,7 @@
+   #include "EGLNativeTypeIMX.h"
+ #endif
+ #include "EGLNativeTypeAmlogic.h"
++#include "EGLNativeTypeSunxi.h"
+ #include "EGLWrapper.h"
+ 
+ #define CheckError() m_result = eglGetError(); if(m_result != EGL_SUCCESS) CLog::Log(LOGERROR, "EGL error in %s: %x",__FUNCTION__, m_result);
+@@ -105,7 +106,8 @@
+ #if defined(HAS_IMXVPU)
+       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeIMX>(implementation)) ||
+ #endif
+-      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation))
++      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation)) ||
++      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeSunxi>(implementation))
+       )
+   {
+     m_nativeTypes = nativeGuess;
+diff -Nur a/xbmc/windowing/egl/Makefile.in win/xbmc/windowing/egl/Makefile.in
+--- a/xbmc/windowing/egl/Makefile.in	2016-04-15 18:52:10.000000000 +0200
++++ win/xbmc/windowing/egl/Makefile.in	2016-05-04 17:49:32.076600226 +0200
+@@ -2,6 +2,7 @@
+ 
+ SRCS = WinSystemEGL.cpp
+ SRCS+= EGLNativeTypeAmlogic.cpp
++SRCS+= EGLNativeTypeSunxi.cpp
+ ifeq (@USE_ANDROID@,1)
+ SRCS+= EGLNativeTypeAndroid.cpp
+ SRCS+= EGLNativeTypeAmlAndroid.cpp
