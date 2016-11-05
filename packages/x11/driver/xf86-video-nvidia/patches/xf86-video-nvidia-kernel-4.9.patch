@@ -1,0 +1,62 @@
+diff -Naur NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/common/inc/nv-mm.h NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/common/inc/nv-mm.h
+--- NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/common/inc/nv-mm.h	2016-09-02 03:32:09.000000000 +0200
++++ NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/common/inc/nv-mm.h	2016-11-05 11:15:23.442362961 +0100
+@@ -45,8 +45,8 @@
+     #define NV_GET_USER_PAGES           get_user_pages
+     #define NV_GET_USER_PAGES_REMOTE    get_user_pages_remote
+ #else
+-    #define NV_GET_USER_PAGES(start, nr_pages, write, force, pages, vmas) \
+-        get_user_pages(current, current->mm, start, nr_pages, write, force, pages, vmas)
++    #define NV_GET_USER_PAGES(start, nr_pages, gup_flags, pages, vmas) \
++        get_user_pages(current, current->mm, start, nr_pages, gup_flags, pages, vmas)
+ 
+     #define NV_GET_USER_PAGES_REMOTE    get_user_pages
+ #endif
+diff -Naur NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia/os-mlock.c NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia/os-mlock.c
+--- NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia/os-mlock.c	2016-09-02 03:32:09.000000000 +0200
++++ NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia/os-mlock.c	2016-11-05 11:15:23.443362963 +0100
+@@ -117,7 +117,7 @@
+ 
+     down_read(&mm->mmap_sem);
+     ret = NV_GET_USER_PAGES((unsigned long)address,
+-                            page_count, write, force, user_pages, NULL);
++                            page_count, write ? FOLL_WRITE : 0, user_pages, NULL);
+     up_read(&mm->mmap_sem);
+     pinned = ret;
+ 
+diff -Naur NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-drm/nvidia-drm-linux.c NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-drm/nvidia-drm-linux.c
+--- NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-drm/nvidia-drm-linux.c	2016-09-02 03:33:06.000000000 +0200
++++ NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-drm/nvidia-drm-linux.c	2016-11-05 11:15:23.443362963 +0100
+@@ -137,7 +137,7 @@
+ 
+     down_read(&mm->mmap_sem);
+ 
+-    pages_pinned = NV_GET_USER_PAGES(address, pages_count, write, force,
++    pages_pinned = NV_GET_USER_PAGES(address, pages_count, write ? FOLL_WRITE :0,
+                                      user_pages, NULL);
+     up_read(&mm->mmap_sem);
+ 
+diff -Naur NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-drm/nvidia-drm-mmap.c NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-drm/nvidia-drm-mmap.c
+--- NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-drm/nvidia-drm-mmap.c	2016-09-02 03:33:06.000000000 +0200
++++ NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-drm/nvidia-drm-mmap.c	2016-11-05 11:15:23.445362968 +0100
+@@ -113,7 +113,7 @@
+ 
+     /* Check the caller has been granted access to the buffer object */
+ 
+-    if (!drm_vma_node_is_allowed(&gem->vma_node, filp))
++    if (!drm_vma_node_is_allowed(&gem->vma_node, (struct drm_file*)filp))
+     {
+         ret = -EACCES;
+ 
+diff -Naur NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-uvm/uvm8_tools.c NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-uvm/uvm8_tools.c
+--- NVIDIA-Linux-x86_64-370.28-no-compat32/kernel/nvidia-uvm/uvm8_tools.c	2016-09-02 03:30:48.000000000 +0200
++++ NVIDIA-Linux-x86_64-370.28-no-compat32.patch/kernel/nvidia-uvm/uvm8_tools.c	2016-11-05 11:15:23.444362966 +0100
+@@ -224,7 +224,7 @@
+     }
+ 
+     down_read(&current->mm->mmap_sem);
+-    ret = NV_GET_USER_PAGES(user_va, num_pages, 1, 0, *pages, vmas);
++    ret = NV_GET_USER_PAGES(user_va, num_pages, 1 ? FOLL_WRITE : 0, *pages, vmas);
+     up_read(&current->mm->mmap_sem);
+     if (ret != num_pages) {
+         status = NV_ERR_INVALID_ARGUMENT;
