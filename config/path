@@ -50,7 +50,6 @@ INSTALL_INIT=$BUILD/image/initramfs/root-image
 . config/sources
 
 MAKE="$ROOT/$TOOLCHAIN/bin/make"
-MAKEINSTALL="$ROOT/$TOOLCHAIN/bin/make -j1 DESTDIR=$SYSROOT_PREFIX install"
 SED="sed -i"
 
 # set package metadata

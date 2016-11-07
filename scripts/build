@@ -273,7 +273,7 @@ if [ ! -f $STAMP ]; then
       else
         case "$TARGET" in
           target)
-            $MAKEINSTALL $PKG_MAKEINSTALL_OPTS_TARGET
+            make install DESTDIR=$SYSROOT_PREFIX $PKG_MAKEINSTALL_OPTS_TARGET
             make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_TARGET
             ;;
           host)
