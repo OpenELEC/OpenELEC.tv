@@ -38,5 +38,5 @@ make_target() {
 }
 
 makeinstall_target() {
-  DESTDIR=$INSTALL ./install
+  DESTDIR=$INSTALL/usr ./install
 }
