@@ -44,9 +44,9 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp driver/$WETEK_DVB_MODULE $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME/wetekdvb.ko
+  mkdir -p $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
+    cp driver/$WETEK_DVB_MODULE $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME/wetekdvb.ko
 
-  mkdir -p $INSTALL/lib/firmware
+  mkdir -p $INSTALL/usr/lib/firmware
     cp firmware/* $INSTALL/usr/lib/firmware
 }
