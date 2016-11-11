@@ -131,6 +131,7 @@ if [ ! -f $STAMP ]; then
     if [ ! "$PKG_SECTION" = "virtual" ]; then
 
       # configure other variables
+      INSTALL_DEV=$ROOT/$PKG_BUILD/.install_dev
       case "$TARGET" in
         target)
           INSTALL=$ROOT/$PKG_BUILD/.install_pkg
@@ -270,11 +271,18 @@ if [ ! -f $STAMP ]; then
       fi
       if [ "$(type -t makeinstall_$TARGET)" = "function" ]; then
         makeinstall_$TARGET
+        if [ "$TARGET" = "target" -a -d "$INSTALL_DEV" ]; then
+          mkdir -p $INSTALL
+            cp -PRv $INSTALL_DEV/* $INSTALL
+        fi
       else
         case "$TARGET" in
           target)
-            make install DESTDIR=$SYSROOT_PREFIX $PKG_MAKEINSTALL_OPTS_TARGET
-            make install DESTDIR=$INSTALL $PKG_MAKEINSTALL_OPTS_TARGET
+            make install DESTDIR=$INSTALL_DEV $PKG_MAKEINSTALL_OPTS_TARGET
+            mkdir -p $SYSROOT_PREFIX
+              cp -PRv $INSTALL_DEV/* $SYSROOT_PREFIX
+            mkdir -p $INSTALL
+              cp -PRv $INSTALL_DEV/* $INSTALL
             ;;
           host)
             make install $PKG_MAKEINSTALL_OPTS_HOST
