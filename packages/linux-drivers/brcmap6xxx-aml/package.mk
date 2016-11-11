@@ -45,11 +45,11 @@ makeinstall_target() {
   LDFLAGS="" \
   make V=1 -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/bcmdhd_1_201_59_x \
-       INSTALL_MOD_PATH=$INSTALL \
+       INSTALL_MOD_PATH=$INSTALL/usr \
        INSTALL_MOD_STRIP=1 \
        DEPMOD=: \
        modules_install
 
-  mkdir -p $INSTALL/lib/firmware/brcm
-    cp $PKG_DIR/config/config.txt $INSTALL/lib/firmware/brcm
+  mkdir -p $INSTALL/usr/lib/firmware/brcm
+    cp $PKG_DIR/config/config.txt $INSTALL/usr/lib/firmware/brcm
 }
