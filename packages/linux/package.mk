@@ -169,9 +169,9 @@ make_target() {
   unset LDFLAGS
 
   make modules
-  make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" INSTALL_MOD_STRIP=1 modules_install
-  rm -f $INSTALL/lib/modules/*/build
-  rm -f $INSTALL/lib/modules/*/source
+  make INSTALL_MOD_PATH=$INSTALL/usr DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" INSTALL_MOD_STRIP=1 modules_install
+  rm -f $INSTALL/usr/lib/modules/*/build
+  rm -f $INSTALL/usr/lib/modules/*/source
 
   ( cd $ROOT
     rm -rf $ROOT/$BUILD/initramfs
@@ -226,7 +226,7 @@ makeinstall_init() {
     mkdir -p $INSTALL/lib/modules
 
     for i in $INITRAMFS_MODULES; do
-      module=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name $i.ko`
+      module=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name $i.ko`
       if [ -n "$module" ]; then
         echo $i >> $INSTALL/etc/modules
         cp $module $INSTALL/lib/modules/$(basename $module)
@@ -236,7 +236,7 @@ makeinstall_init() {
 
   if [ "$UVESAFB_SUPPORT" = yes ]; then
     mkdir -p $INSTALL/lib/modules
-      uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
+      uvesafb=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
       cp $uvesafb $INSTALL/lib/modules/$(basename $uvesafb)
   fi
 
@@ -245,6 +245,9 @@ makeinstall_init() {
 }
 
 post_install() {
+  mkdir -p $INSTALL/lib
+    ln -sf /usr/lib/modules/ $INSTALL/lib/modules
+
   mkdir -p $INSTALL/lib
     ln -sf /usr/lib/firmware/ $INSTALL/lib/firmware
 

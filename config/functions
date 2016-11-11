@@ -142,7 +142,7 @@ get_pkg_build() {
 
 # get kernel module dir
 get_module_dir() {
-  basename $(ls -d $(get_pkg_build linux)/.install_pkg/lib/modules/*)
+  basename $(ls -d $(get_pkg_build linux)/.install_pkg/usr/lib/modules/*)
 }
 
 tolower(){
