@@ -47,7 +47,7 @@ makeinstall_target() {
   LDFLAGS="" \
   make -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/mali \
-       INSTALL_MOD_PATH=$INSTALL \
+       INSTALL_MOD_PATH=$INSTALL/usr \
        INSTALL_MOD_STRIP=1 \
        DEPMOD=: \
        modules_install
