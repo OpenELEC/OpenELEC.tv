@@ -245,9 +245,12 @@ makeinstall_init() {
 }
 
 post_install() {
-  mkdir -p $INSTALL/lib/firmware/
-    ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
+  mkdir -p $INSTALL/lib
+    ln -sf /usr/lib/firmware/ $INSTALL/lib/firmware
+
+  mkdir -p $INSTALL/usr/lib/firmware/
+    ln -sf /storage/.config/firmware/ $INSTALL/usr/lib/firmware/updates
 
   # bluez looks in /etc/firmware/
-    ln -sf /lib/firmware/ $INSTALL/etc/firmware
+    ln -sf /usr/lib/firmware/ $INSTALL/etc/firmware
 }
