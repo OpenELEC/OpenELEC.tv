@@ -44,9 +44,9 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp os/linux/mt7610u_sta.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  mkdir -p $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
+    cp os/linux/mt7610u_sta.ko $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
 
-  mkdir -p $INSTALL/lib/firmware/mt7610u
-    cp RT2870STA.dat $INSTALL/lib/firmware/mt7610u/mt7610u_sta.dat
+  mkdir -p $INSTALL/usr/lib/firmware/mt7610u
+    cp RT2870STA.dat $INSTALL/usr/lib/firmware/mt7610u/mt7610u_sta.dat
 }
