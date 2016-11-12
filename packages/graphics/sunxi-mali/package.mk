@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="sunxi-mali"
-PKG_VERSION="d343311"
+PKG_VERSION="541e445"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -36,7 +36,11 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make ABI=armhf VERSION=r3p0 EGL_TYPE=framebuffer
+  if [ "$LINUX" == "linux-sun8i" ]; then
+    make ABI=armhf VERSION=r4p0-00rel0 EGL_TYPE=framebuffer
+  else
+    make ABI=armhf VERSION=r3p0 EGL_TYPE=framebuffer
+  fi
 }
 
 pre_makeinstall_target() {
