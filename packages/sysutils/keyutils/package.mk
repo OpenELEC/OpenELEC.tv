@@ -35,8 +35,8 @@ PKG_MAKE_OPTS_TARGET="NO_ARLIB=0 NO_SOLIB=1 LIBDIR=/lib USRLIBDIR=/usr/lib"
 PKG_MAKEINSTALL_OPTS_TARGET="$PKG_MAKE_OPTS_TARGET"
 
 post_makeinstall_target() {
-	rm -rf $INSTALL/usr
-	rmdir $INSTALL/etc/request-key.d
-	ln -sf /storage/.config/request-key.d $INSTALL/etc/request-key.d
+  mkdir -p $INSTALL/etc
+    ln -sf /storage/.config/request-key.d $INSTALL/etc/request-key.d
+  rm -rf $INSTALL/usr
 }
 
