@@ -48,6 +48,11 @@ else
   PKG_CONFIGURE_OPTS_TARGET+=" --disable-debug"
 fi
 
+pre_configure_target() {
+  # Todo, remove in later versions with pkgconfig support
+  LDFLAGS+=" -lusb-1.0"
+}
+
 pre_make_target() {
   export MAKEFLAGS=-j1
 }
