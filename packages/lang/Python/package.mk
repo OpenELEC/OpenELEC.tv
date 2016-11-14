@@ -121,6 +121,9 @@ post_makeinstall_target() {
     rm -rf $INSTALL/usr/lib/python*/$dir
   done
 
+# set file permissions
+  chmod 755 $INSTALL/usr/lib/libpython*.so*
+
   ( cd $INSTALL/usr/lib/python2.7
     python -Wi -t -B $ROOT/$PKG_BUILD/Lib/compileall.py -d /usr/lib/python2.7 -f .
     find $INSTALL/usr/lib/python2.7 -name "*.py" -exec rm -f {} \; &>/dev/null
