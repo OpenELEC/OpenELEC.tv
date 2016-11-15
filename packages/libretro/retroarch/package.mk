@@ -80,13 +80,7 @@ pre_configure_target() {
 }
 
 make_target() {
-  LAKKA_PROJECT="$PROJECT"
-  if [ "$PROJECT" == "imx6" -a -n "$SYSTEM" ]; then
-    LAKKA_PROJECT="$LAKKA_PROJECT.$SYSTEM"
-  fi
-  LAKKA_PROJECT="$LAKKA_PROJECT.$ARCH"
-  echo $LAKKA_PROJECT
-  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 LAKKA_PROJECT=\'\"$LAKKA_PROJECT\"\'
+  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C audio/audio_filters compiler=$CC extra_flags="$CFLAGS"
 }
