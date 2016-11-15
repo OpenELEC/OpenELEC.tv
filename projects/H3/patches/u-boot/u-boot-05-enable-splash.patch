@@ -1,0 +1,42 @@
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index c63c1bc..4cb057d 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -293,6 +293,10 @@ extern int soft_i2c_gpio_scl;
+ #endif
+ 
+ #define CONFIG_VIDEO_LOGO
++#define CONFIG_HIDE_LOGO_VERSION
++#define CONFIG_SPLASH_SCREEN_ALIGN
++#define CONFIG_VIDEO_BMP_RLE8
++#define CONFIG_VIDEO_BMP_LOGO
+ #define CONFIG_VIDEO_STD_TIMINGS
+ #define CONFIG_I2C_EDID
+ #define VIDEO_LINE_LEN (pGD->plnSizeX)
+@@ -480,15 +484,15 @@ extern int soft_i2c_gpio_scl;
+ 	"stdin=serial\0"
+ #endif
+ 
+-#ifdef CONFIG_VIDEO
++/*#ifdef CONFIG_VIDEO
+ #define CONSOLE_STDOUT_SETTINGS \
+ 	"stdout=serial,vga\0" \
+ 	"stderr=serial,vga\0"
+-#else
++#else*/
+ #define CONSOLE_STDOUT_SETTINGS \
+ 	"stdout=serial\0" \
+ 	"stderr=serial\0"
+-#endif
++/*#endif*/
+ 
+ #define CONSOLE_ENV_SETTINGS \
+ 	CONSOLE_STDIN_SETTINGS \
+@@ -500,6 +504,7 @@ extern int soft_i2c_gpio_scl;
+ 	DFU_ALT_INFO_RAM \
+ 	"fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
+ 	"console=ttyS0,115200\0" \
++	"splashpos=m,m\0" \
+ 	BOOTCMD_SUNXI_COMPAT \
+ 	BOOTENV
+ 

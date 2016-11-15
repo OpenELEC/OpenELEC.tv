@@ -16,5 +16,5 @@ diff -Nur a/configs/beelink_x2_defconfig b/configs/beelink_x2_defconfig
 +# CONFIG_CMD_FLASH is not set
 +# CONFIG_CMD_FPGA is not set
 +CONFIG_SUN8I_EMAC=y
-+CONFIG_SY8106A_POWER=y
 +CONFIG_USB_EHCI_HCD=y
++CONFIG_VIDEO=y

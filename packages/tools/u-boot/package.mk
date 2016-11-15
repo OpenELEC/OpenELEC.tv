@@ -27,7 +27,7 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_GIT_URL="https://github.com/SolidRun/u-boot-imx6.git"
   PKG_GIT_BRANCH="imx6"
 elif [ "$UBOOT_VERSION" = "sunxi" ]; then
-  PKG_VERSION="2016.09"
+  PKG_VERSION="2016.11"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
 else
@@ -69,10 +69,6 @@ make_target() {
   done
 
   for UBOOT_TARGET in $UBOOT_CONFIG; do
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" mrproper
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_TARGET
-    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true"
-
     # rename files in case of multiple targets
     if [ $UBOOT_TARGET_CNT -gt 1 ]; then
       if [ "$UBOOT_TARGET" = "mx6_cubox-i_config" ]; then
@@ -104,7 +100,19 @@ make_target() {
       else
         TARGET_NAME="undef"
       fi
+    fi
+    
+    if [ -f "$PROJECT_DIR/$PROJECT/logo/splash-$TARGET_NAME.bmp" ]; then
+      LOGOIMG="$PROJECT_DIR/$PROJECT/logo/splash-$TARGET_NAME.bmp"
+    elif [ -f "$PROJECT_DIR/$PROJECT/logo/splash.bmp" ]; then
+      LOGOIMG="$PROJECT_DIR/$PROJECT/logo/splash.bmp"
+    fi
+    
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" mrproper
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" $UBOOT_TARGET
+    make CROSS_COMPILE="$TARGET_PREFIX" ARCH="$TARGET_ARCH" HOSTCC="$HOST_CC" HOSTSTRIP="true" LOGO_BMP="$LOGOIMG"
 
+    if [ $UBOOT_TARGET_CNT -gt 1 ]; then
       [ -f u-boot.img ] && mv u-boot.img u-boot-$TARGET_NAME.img || :
       [ -f u-boot.imx ] && mv u-boot.imx u-boot-$TARGET_NAME.imx || :
       [ -f u-boot-sunxi-with-spl.bin ] && mv u-boot-sunxi-with-spl.bin uboot-sunxi-$TARGET_NAME.bin || :
