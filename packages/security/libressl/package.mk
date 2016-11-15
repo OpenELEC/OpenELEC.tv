@@ -30,6 +30,7 @@ PKG_SHORTDESC="libressl: a FREE version of the SSL/TLS protocol forked from Open
 PKG_LONGDESC="LibreSSL is a FREE version of the SSL/TLS protocol forked from OpenSSL"
 
 PKG_IS_ADDON="no"
+PKG_USE_CMAKE="no"
 PKG_AUTORECONF="no"
 
 post_makeinstall_target() {
@@ -41,7 +42,4 @@ post_makeinstall_target() {
     cp $PKG_DIR/cert/ca-bundle.crt $INSTALL/$SSL_CERTIFICATES/cacert.pem
   mkdir -p $INSTALL/etc/ssl
     ln -sf $SSL_CERTIFICATES/cacert.pem $INSTALL/etc/ssl/cert.pem
-
-  mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
-    cp $PKG_DIR/config/*.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
 }
