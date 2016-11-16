@@ -1,0 +1,21 @@
+diff --git a/drivers/net/wireless/rtl8188eu/platform/platform_ARM_SUNxI_usb.c b/drivers/net/wireless/rtl8188eu/platform/platform_ARM_SUNxI_usb.c
+index 7639591..c7e676b 100755
+--- a/drivers/net/wireless/rtl8188eu/platform/platform_ARM_SUNxI_usb.c
++++ b/drivers/net/wireless/rtl8188eu/platform/platform_ARM_SUNxI_usb.c
+@@ -51,7 +51,7 @@ static script_item_u item;
+ int platform_wifi_power_on(void)
+ {
+ 	int ret = 0;
+-
++#if 0
+ #ifdef CONFIG_PLATFORM_ARM_SUNxI
+ #ifndef CONFIG_RTL8723A
+ 	{
+@@ -111,6 +111,7 @@ int platform_wifi_power_on(void)
+ 		#endif
+ 	}
+ #endif //CONFIG_PLATFORM_ARM_SUN8I
++#endif
+ 
+ exit:
+ 	return ret;
