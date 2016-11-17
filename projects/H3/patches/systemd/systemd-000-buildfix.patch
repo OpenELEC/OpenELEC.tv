@@ -1,0 +1,12 @@
+diff -Naur systemd-228/configure.ac systemd-228.patch/configure.ac
+--- systemd-228/configure.ac	2016-11-17 21:16:20.342156295 +0000
++++ systemd-228.patch/configure.ac	2016-11-17 21:19:32.930453995 +0000
+@@ -280,7 +280,7 @@
+ # ------------------------------------------------------------------------------
+ 
+ AC_CHECK_HEADERS([sys/capability.h], [], [AC_MSG_ERROR([*** POSIX caps headers not found])])
+-AC_CHECK_HEADERS([linux/btrfs.h], [], [])
++#AC_CHECK_HEADERS([linux/btrfs.h], [], [])
+ AC_CHECK_HEADERS([linux/memfd.h], [], [])
+ 
+ # unconditionally pull-in librt with old glibc versions
