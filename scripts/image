@@ -101,7 +101,7 @@ fi
   echo -e "HOME_URL=\"http://www.openelec.tv\"" >> $INSTALL/etc/os-release
   echo -e "BUG_REPORT_URL=\"https://github.com/OpenELEC/OpenELEC.tv\"" >> $INSTALL/etc/os-release
   if [ -n "$GIT_HASH" ]; then
-	echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
+    echo -e "BUILD_ID=\"$GIT_HASH\"" >> $INSTALL/etc/os-release
   fi
   echo -e "OPENELEC_ARCH=\"$PROJECT.$TARGET_ARCH\"" >> $INSTALL/etc/os-release
   if [ "$OFFICIAL" = "yes" ]; then
