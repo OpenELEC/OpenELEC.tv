@@ -45,10 +45,9 @@ case "$LINUX" in
     PKG_GIT_BRANCH="rpi-4.4.y"
     ;;
   sun8i)
-    PKG_VERSION="f143b8a"
+    PKG_VERSION="5ea667f"
     PKG_GIT_URL="https://github.com/jernejsk/linux.git"
     PKG_GIT_BRANCH="master"
-    PKG_KEEP_CHECKOUT="yes"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host sunxi-sys-utils"
     ;;
   *)
