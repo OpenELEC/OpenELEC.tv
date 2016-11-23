@@ -42,9 +42,13 @@ pre_configure_target() {
 make_target() {
   case $PROJECT in
     RPi|Gamegirl)
+      CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads \
+	              -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
       make platform=rpi
       ;;
     RPi2)
+      CFLAGS="$CFLAGS -I$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads \
+                      -I$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux"
       make platform=rpi2
       ;;
     Generic)
