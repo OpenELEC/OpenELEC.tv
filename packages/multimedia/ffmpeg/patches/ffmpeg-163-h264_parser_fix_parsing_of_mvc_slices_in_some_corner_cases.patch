@@ -1,31 +1,21 @@
-From 12d99a92469e5916de3bc787dce4c13abfdd5e09 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Sun, 26 Jun 2016 20:20:04 +0100
-Subject: [PATCH] h264_parser: fix parsing of mvc slices in some corner cases
-
----
- libavcodec/h264_parser.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/libavcodec/h264_parser.c b/libavcodec/h264_parser.c
-index 082ac17..b9b0c78 100644
---- a/libavcodec/h264_parser.c
-+++ b/libavcodec/h264_parser.c
-@@ -59,6 +59,7 @@ typedef struct H264ParseContext {
+diff -Naur ffmpeg-3.2/libavcodec/h264_parser.c ffmpeg-3.2.patch/libavcodec/h264_parser.c
+--- ffmpeg-3.2/libavcodec/h264_parser.c	2016-11-24 09:55:59.733570951 +0100
++++ ffmpeg-3.2.patch/libavcodec/h264_parser.c	2016-11-24 09:55:37.630509535 +0100
+@@ -61,6 +61,7 @@
      int parse_history_count;
      int parse_last_mb;
      int is_mvc;
 +    int slice_ext;
+     int64_t reference_dts;
+     int last_frame_num, last_picture_structure;
  } H264ParseContext;
- 
- 
-@@ -116,18 +117,17 @@ static int h264_find_frame_end(H264ParseContext *p, const uint8_t *buf,
-                        nalu_type == NAL_IDR_SLICE || (p->is_mvc && nalu_type == NAL_SLICE_EXT)) {
+@@ -120,18 +121,17 @@
+                        nalu_type == H264_NAL_IDR_SLICE || (p->is_mvc && nalu_type == H264_NAL_SLICE_EXT)) {
                  state += 8;
  
--                if (nalu_type == NAL_SLICE_EXT)
+-                if (nalu_type == H264_NAL_SLICE_EXT)
 -                    i += 3; // skip mvc extension
-+                p->slice_ext = (nalu_type == NAL_SLICE_EXT);
++                p->slice_ext = (nalu_type == H264_NAL_SLICE_EXT);
                  continue;
              }
              state = 7;
@@ -41,7 +31,7 @@ index 082ac17..b9b0c78 100644
                  p->parse_history_count = 0;
                  mb= get_ue_golomb_long(&gb);
                  p->parse_last_mb = mb;
-@@ -150,7 +150,7 @@ found:
+@@ -154,7 +154,7 @@
      pc->frame_start_found = 0;
      if (p->is_avc)
          return next_avc;
@@ -50,6 +40,3 @@ index 082ac17..b9b0c78 100644
  }
  
  static int scan_mmco_reset(AVCodecParserContext *s, GetBitContext *gb,
--- 
-2.7.4
-
