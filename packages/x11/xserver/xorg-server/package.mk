@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="xorg-server"
-PKG_VERSION="1.18.4"
+PKG_VERSION="1.19.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/xserver/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto presentproto libpciaccess libX11 libXfont libXinerama libxshmfence libxkbfile libdrm libressl freetype pixman fontsproto systemd xorg-launch-helper"
+PKG_DEPENDS_TARGET="toolchain util-macros font-util fontsproto randrproto recordproto renderproto dri2proto dri3proto fixesproto damageproto videoproto inputproto xf86dgaproto xf86vidmodeproto xf86driproto xf86miscproto presentproto libpciaccess libX11 libXfont2 libXinerama libxshmfence libxkbfile libdrm libressl freetype pixman fontsproto systemd xorg-launch-helper"
 PKG_PRIORITY="optional"
 PKG_SECTION="x11/xserver"
 PKG_SHORTDESC="xorg-server: The Xorg X server"
@@ -113,6 +113,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --disable-local-transport \
                            --disable-secure-rpc \
                            --enable-xtrans-send-fds \
+                           --enable-input-thread \
                            --disable-docs \
                            --disable-devel-docs \
                            --with-int10=x86emu \
@@ -134,8 +135,6 @@ pre_configure_target() {
 # hack to prevent a build error
   CFLAGS=`echo $CFLAGS | sed -e "s|-O3|-O2|" -e "s|-Ofast|-O2|"`
   LDFLAGS=`echo $LDFLAGS | sed -e "s|-O3|-O2|" -e "s|-Ofast|-O2|"`
-
-  PKG_CONFIG="$ROOT/$TOOLCHAIN/bin/pkg-config --static"
 }
 
 post_makeinstall_target() {
