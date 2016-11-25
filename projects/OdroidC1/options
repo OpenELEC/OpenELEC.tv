@@ -50,7 +50,7 @@
     KERNEL_UBOOT_TARGET="uImage"
 
   # Kernel extra targets to build
-    KERNEL_UBOOT_EXTRA_TARGET="dtbs"
+    KERNEL_UBOOT_EXTRA_TARGET="meson8b_odroidc.dtb"
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD=""
