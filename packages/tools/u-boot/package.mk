@@ -34,7 +34,7 @@ elif [ "$UBOOT_VERSION" = "imx6-wandboard" ]; then
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
 elif [ "$UBOOT_VERSION" = "odroidc" ]; then
-  PKG_VERSION="e7d4447"
+  PKG_VERSION="86125f8"
   PKG_SITE="http://odroid.com/dokuwiki/doku.php?id=en:c1_building_u-boot"
   PKG_URL="$LAKKA_MIRROR/u-boot-$PKG_VERSION.tar.xz"
 elif [ "$UBOOT_VERSION" = "odroidxu3" ]; then
