@@ -39,6 +39,7 @@ PKG_CONFIGURE_OPTS_HOST="--enable-tools \
                          --disable-gtk-doc-html \
                          --disable-gtk-doc-pdf \
                          --disable-manpages \
+                         --disable-test-modules \
                          --with-gnu-ld \
                          --without-xz \
                          --without-zlib"
@@ -50,6 +51,7 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-tools \
                            --disable-gtk-doc-html \
                            --disable-gtk-doc-pdf \
                            --disable-manpages \
+                           --disable-test-modules \
                            --with-gnu-ld \
                            --without-xz \
                            --without-zlib"
