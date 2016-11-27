@@ -14,10 +14,10 @@ index 8c7c420..e63dc2d 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
 @@ -2527,6 +2527,7 @@ typedef struct AVCodecContext {
- #define FF_BUG_DC_CLIP          4096
  #define FF_BUG_MS               8192 ///< Work around various bugs in Microsoft's broken decoders.
  #define FF_BUG_TRUNCATED       16384
-+#define FF_BUG_GMC_UNSUPPORTED 32768
+ #define FF_BUG_IEDGE           32768
++#define FF_BUG_GMC_UNSUPPORTED 65536
  
      /**
       * strictly follow the standard (MPEG4, ...).
