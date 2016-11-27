@@ -1,0 +1,27 @@
+--- a/CMakeLists.txt.orig	2016-10-30 16:53:31.373479799 +0100
++++ b/CMakeLists.txt	2016-10-30 17:31:22.057510637 +0100
+@@ -264,5 +264,24 @@
+ 	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+ 	IMMEDIATE @ONLY)
+ 
++# handle pkgconfig files
++if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
++  set(CMAKE_INSTALL_LIBDIR lib)
++endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
++set(prefix      ${CMAKE_INSTALL_PREFIX})
++set(exec_prefix \${prefix})
++set(libdir      \${exec_prefix}/${CMAKE_INSTALL_LIBDIR})
++set(includedir  \${prefix}/include)
++file(STRINGS "VERSION" VERSION LIMIT_COUNT 1) 
++set(LIBS        "-lresolv")
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcrypto.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libcrypto.pc @ONLY)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libssl.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libssl.pc @ONLY)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libtls.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libtls.pc @ONLY)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/openssl.pc.in ${CMAKE_CURRENT_BINARY_DIR}/openssl.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcrypto.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libssl.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libtls.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openssl.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++
+ add_custom_target(uninstall
+ 	COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
