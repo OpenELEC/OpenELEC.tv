@@ -1,0 +1,134 @@
+#!/bin/sh
+#
+#  Copyright (c) 2013, 2014 Mikolaj Kucharski <mikolaj@kucharski.name>
+#
+#  Permission to use, copy, modify, and/or distribute this software for any
+#  purpose with or without fee is hereby granted, provided that the above
+#  copyright notice and this permission notice appear in all copies.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+#  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+#  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+#  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+#  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+#  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+set -e
+
+SRC="$1"
+DST="$2"
+
+if [ -z "$SRC" -o -z "$DST" ]
+then
+	echo "usage: update-openelec <tarball> <flashdir>" >&2
+	exit 1
+fi
+
+echo "Source tarball = '$SRC'"
+echo "Destination dir = '$DST'"
+
+if [ ! -r "$SRC" ]
+then
+	echo "Unable to read source tarball '$SRC'" >&2
+	exit 1
+fi
+
+if [ ! -d "$DST" ]
+then
+	echo "Destination directory missing!" >&2
+	exit 1
+fi
+
+case "$SRC" in
+	*.tar.bz2)
+		EXT="tar.bz2"
+		CAT="bzip2 -dc"
+		;;
+	*.tar)
+		EXT="tar"
+		CAT="cat"
+		;;
+	*)
+		echo "error" >&2
+		exit 1
+		;;
+esac
+
+CWD="`pwd`"
+NAME="`basename "$SRC" .$EXT`"
+TEMP=`mktemp -d "$CWD/tmp.XXXXXXXXXXXX"` || exit 1
+trap 'rm -rf "$TEMP"' EXIT
+trap 'exit 1' HUP INT QUIT TRAP PIPE TERM USR1 USR2
+
+if ! md5sum -c "$SRC.md5"
+then
+	echo "fail" >&2
+	exit 1
+fi
+
+echo "Extracting $SRC ..."
+if ! $CAT "$SRC" | tar -C "$TEMP" -xf -
+then
+	echo "Extraction failed" >&2
+	exit 1
+fi
+
+if ! cd "$TEMP/$NAME"
+then
+	echo "fail" >&2
+	exit 1
+fi
+
+# no cmp or diff command is available
+if md5sum < RELEASE | sed -e "s|-|$DST/RELEASE|" | md5sum -c - >/dev/null 2>&1
+then
+	echo "Release OpenELEC `head -n1 RELEASE` already installed" >&2
+	exit 1
+fi
+
+md5sum -c target/KERNEL.md5
+md5sum -c target/SYSTEM.md5
+
+echo "Remounting RW destination directory..."
+if ! mount -o rw,remount $DST
+then
+	echo "fail" >&2
+	exit 1
+fi
+
+# XXX dangerous, but my /flash is too small to have both
+echo "Copying files to destination directory..."
+rm -f "$DST"/kernel.img	# XXX lame!
+cp -f target/KERNEL "$DST"/kernel.img
+rm -f "$DST"/SYSTEM	# XXX lame!
+cp -f target/SYSTEM "$DST"/
+cp -f 3rdparty/bootloader/* "$DST"/
+cp -f openelec.ico "$DST"/
+cp -f README.md "$DST"/
+cp -f RELEASE "$DST"/
+
+cd "$CWD"
+
+echo "Cleaning up temporary files..."
+rm -rf "$TEMP/$NAME"
+
+if [ -r "$DST/cmdline.txt" ]
+then
+	: # echo "boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 ssh quiet" > cmdline.txt
+else
+	echo "File '$DST/cmdline.txt' is missing!" >&2
+	exit 1
+fi
+
+sync
+
+echo "Remounting RO destination directory..."
+if ! mount -o ro,remount $DST
+then
+	echo "fail" >&2
+	exit 1
+fi
+
+sync
