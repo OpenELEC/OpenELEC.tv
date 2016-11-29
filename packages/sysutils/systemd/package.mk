@@ -105,7 +105,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --with-dbuspolicydir=/etc/dbus-1/system.d \
                            --with-dbussessionservicedir=/usr/share/dbus-1/services \
                            --with-dbussystemservicedir=/usr/share/dbus-1/system-services \
-                           --with-rootprefix=/usr \
+                           --with-rootprefix=/ \
                            --with-rootlibdir=/usr/lib"
 
 unpack() {

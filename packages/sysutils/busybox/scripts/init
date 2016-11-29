@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
 #
@@ -35,6 +35,7 @@
 
   # set needed variables
   MODULE_DIR=/lib/modules
+  SYSTEMD_BIN=/lib/systemd/systemd
 
   UPDATE_DIR=/storage/.update
   UPDATE_KERNEL="KERNEL"
@@ -689,7 +690,7 @@
     mount --move /flash /sysroot/flash
     mount --move /storage /sysroot/storage
 
-    if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
+    if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/$SYSTEMD_BIN" ]; then
       if [ -e /dev/psplash_fifo ] ; then
         echo "QUIT" > /dev/psplash_fifo
       fi
@@ -704,7 +705,7 @@
     fi
 
 
-    [ -f "/sysroot/usr/lib/systemd/systemd" ] || error "final_check" "Could not find system."
+    [ -f "/sysroot/$SYSTEMD_BIN" ] || error "final_check" "Could not find system."
   }
 
   if [ "${boot%%=*}" = "FILE" ]; then
@@ -767,6 +768,6 @@
     INIT_UNIT="--unit=factory-reset.target"
   fi
   # switch to new sysroot and start real init
-  exec /bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
+  exec /bin/busybox switch_root /sysroot $SYSTEMD_BIN $INIT_ARGS $INIT_UNIT
 
   error "switch_root" "Error in initramfs. Could not switch to new root"
