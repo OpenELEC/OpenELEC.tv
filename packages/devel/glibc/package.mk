@@ -34,8 +34,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
-                           libc_cv_slibdir=/usr/lib \
-                           libc_cv_rtlddir=/lib \
+                           libc_cv_slibdir=/lib \
                            ac_cv_path_PERL= \
                            ac_cv_prog_MAKEINFO= \
                            --libexecdir=/usr/lib/glibc \
@@ -112,7 +111,6 @@ libc_cv_forced_unwind=yes
 libc_cv_c_cleanup=yes
 libc_cv_ssp=no
 libc_cv_ssp_strong=no
-libc_cv_slibdir=/lib
 EOF
 
   echo "sbindir=/usr/bin" >> configparms
@@ -120,10 +118,9 @@ EOF
 }
 
 post_makeinstall_target() {
-# we are linking against ld.so, so symlink
-  ln -sf $(basename $INSTALL/lib/ld-*.so) $INSTALL/lib/ld.so
+  ln -sf ld-$PKG_VERSION.so $INSTALL/lib/ld.so
   if [ "$TARGET_ARCH" = "arm" -a "$TARGET_FLOAT" = "hard" ]; then
-    ln -sf ld.so $INSTALL/lib/ld-linux.so.3
+    ln -sf ld-$PKG_VERSION.so $INSTALL/lib/ld-linux.so.3
   fi
 
 # cleanup
