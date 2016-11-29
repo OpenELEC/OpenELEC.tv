@@ -1,0 +1,2 @@
+# Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="meson8b_mxq.dtd meson8b_mxq.dtb"

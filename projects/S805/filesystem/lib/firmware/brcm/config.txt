@@ -1,0 +1,9 @@
+bcn_timeout=20
+kso_enable=0
+ccode=EU
+regrev=38
+nv_by_chip=4 \
+43362 0 nvram_ap6181.txt \
+43362 1 nvram_ap6210.txt \
+43430 0 nvram_ap6212.txt \
+17200 4 nvram_ap6330.txt
