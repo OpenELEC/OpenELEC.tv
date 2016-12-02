@@ -1,32 +1,16 @@
 diff --git a/menu/menu_setting.c b/menu/menu_setting.c
-index 2b5f1d9..0208a2b 100644
+index 2a39907..6760276 100644
 --- a/menu/menu_setting.c
 +++ b/menu/menu_setting.c
-@@ -2148,6 +2148,7 @@ static bool setting_append_list(
-                &group_info,
-                &subgroup_info,
-                parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+@@ -2215,6 +2215,7 @@ static bool setting_append_list(
+                (*list)[list_info->index - 1].values       = ext_name;
+                menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_LOAD_CORE);
+                settings_data_list_current_add_flags(list, list_info, SD_FLAG_BROWSER_ACTION);
++               settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+             }
+          }
  
- #if defined(HAVE_VIDEO_PROCESSOR)
-          CONFIG_ACTION(
-@@ -2157,6 +2158,7 @@ static bool setting_append_list(
-                &group_info,
-                &subgroup_info,
-                parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- #endif
- 
- #if defined(HAVE_NETWORKING) && defined(HAVE_NETWORKGAMEPAD)
-@@ -2167,6 +2169,7 @@ static bool setting_append_list(
-                &group_info,
-                &subgroup_info,
-                parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- #endif
- 
-          CONFIG_ACTION(
-@@ -2240,6 +2243,7 @@ static bool setting_append_list(
+@@ -2256,6 +2257,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -34,7 +18,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2284,6 +2288,7 @@ static bool setting_append_list(
+@@ -2273,6 +2275,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -42,39 +26,15 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2301,6 +2306,7 @@ static bool setting_append_list(
+@@ -2300,6 +2303,7 @@ static bool setting_append_list(
+                &group_info,
                 &subgroup_info,
                 parent_group);
-          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_MENU_SAVE_CURRENT_CONFIG);
 +         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2310,6 +2316,7 @@ static bool setting_append_list(
-                &subgroup_info,
-                parent_group);
-          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_MENU_SAVE_CONFIG);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
-          CONFIG_ACTION(
-                list, list_info,
-@@ -2319,6 +2326,7 @@ static bool setting_append_list(
-                &subgroup_info,
-                parent_group);
-          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_MENU_SAVE_CURRENT_CONFIG_OVERRIDE_CORE);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
-          CONFIG_ACTION(
-                list, list_info,
-@@ -2328,6 +2336,7 @@ static bool setting_append_list(
-                &subgroup_info,
-                parent_group);
-          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_MENU_SAVE_CURRENT_CONFIG_OVERRIDE_GAME);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
-          CONFIG_ACTION(
-                list, list_info,
-@@ -2336,6 +2345,7 @@ static bool setting_append_list(
+@@ -2352,6 +2356,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -82,7 +42,7 @@ index 2b5f1d9..0208a2b 100644
  
  #if !defined(IOS)
           /* Apple rejects iOS apps that lets you forcibly quit an application. */
-@@ -2376,6 +2386,7 @@ static bool setting_append_list(
+@@ -2392,6 +2397,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -90,32 +50,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2401,16 +2412,14 @@ static bool setting_append_list(
-                &subgroup_info,
-                parent_group);
- 
--         if (settings->menu.show_advanced_settings)
--         {
--            CONFIG_ACTION(
--                  list, list_info,
--                  MENU_ENUM_LABEL_CORE_SETTINGS,
--                  MENU_ENUM_LABEL_VALUE_CORE_SETTINGS,
--                  &group_info,
--                  &subgroup_info,
--                  parent_group);
--         }
-+         CONFIG_ACTION(
-+               list, list_info,
-+               MENU_ENUM_LABEL_CORE_SETTINGS,
-+               MENU_ENUM_LABEL_VALUE_CORE_SETTINGS,
-+               &group_info,
-+               &subgroup_info,
-+               parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
-          CONFIG_ACTION(
-                list, list_info,
-@@ -2419,6 +2428,7 @@ static bool setting_append_list(
+@@ -2433,6 +2439,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -123,34 +58,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2427,17 +2437,16 @@ static bool setting_append_list(
-                &group_info,
-                &subgroup_info,
-                parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
--         if (settings->menu.show_advanced_settings)
--         {
--            CONFIG_ACTION(
--                  list, list_info,
--                  MENU_ENUM_LABEL_LOGGING_SETTINGS,
--                  MENU_ENUM_LABEL_VALUE_LOGGING_SETTINGS,
--                  &group_info,
--                  &subgroup_info,
--                  parent_group);
--         }
-+         CONFIG_ACTION(
-+               list, list_info,
-+               MENU_ENUM_LABEL_LOGGING_SETTINGS,
-+               MENU_ENUM_LABEL_VALUE_LOGGING_SETTINGS,
-+               &group_info,
-+               &subgroup_info,
-+               parent_group);
-+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
- 
-          CONFIG_ACTION(
-                list, list_info,
-@@ -2446,6 +2455,7 @@ static bool setting_append_list(
+@@ -2441,6 +2448,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -158,7 +66,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2454,6 +2464,7 @@ static bool setting_append_list(
+@@ -2458,6 +2466,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -166,7 +74,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2462,6 +2473,7 @@ static bool setting_append_list(
+@@ -2466,6 +2475,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -174,7 +82,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2470,6 +2482,7 @@ static bool setting_append_list(
+@@ -2474,6 +2484,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -182,7 +90,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2478,6 +2491,7 @@ static bool setting_append_list(
+@@ -2482,6 +2493,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -190,7 +98,23 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2495,6 +2509,7 @@ static bool setting_append_list(
+@@ -2490,6 +2502,7 @@ static bool setting_append_list(
+                &group_info,
+                &subgroup_info,
+                parent_group);
++         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+          CONFIG_ACTION(
+                list, list_info,
+@@ -2498,6 +2511,7 @@ static bool setting_append_list(
+                &group_info,
+                &subgroup_info,
+                parent_group);
++         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+          CONFIG_ACTION(
+                list, list_info,
+@@ -2515,6 +2529,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -198,7 +122,7 @@ index 2b5f1d9..0208a2b 100644
  #endif
  
           CONFIG_ACTION(
-@@ -2504,6 +2519,7 @@ static bool setting_append_list(
+@@ -2524,6 +2539,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -206,7 +130,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2512,6 +2528,7 @@ static bool setting_append_list(
+@@ -2532,6 +2548,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -214,7 +138,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2520,6 +2537,7 @@ static bool setting_append_list(
+@@ -2540,6 +2557,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -222,7 +146,7 @@ index 2b5f1d9..0208a2b 100644
  
           if (!string_is_equal(settings->wifi.driver, "null"))
           {
-@@ -2539,6 +2557,7 @@ static bool setting_append_list(
+@@ -2559,6 +2577,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -230,7 +154,7 @@ index 2b5f1d9..0208a2b 100644
  
  #ifdef HAVE_LAKKA
           CONFIG_ACTION(
-@@ -2557,6 +2576,7 @@ static bool setting_append_list(
+@@ -2577,6 +2596,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -238,7 +162,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -2573,6 +2593,7 @@ static bool setting_append_list(
+@@ -2593,6 +2613,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
@@ -246,16 +170,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_ACTION(
                 list, list_info,
-@@ -3039,7 +3060,7 @@ static bool setting_append_list(
- 
-          START_SUB_GROUP(list, list_info, "State", &group_info, &subgroup_info, parent_group);
- 
--#if !defined(RARCH_CONSOLE) && !defined(RARCH_MOBILE)
-+#if !defined(RARCH_CONSOLE) && !defined(RARCH_MOBILE) && !defined(HAVE_LAKKA)
-          CONFIG_BOOL(
-                list, list_info,
-                &settings->ui.suspend_screensaver_enable,
-@@ -3054,6 +3075,7 @@ static bool setting_append_list(
+@@ -3092,6 +3113,7 @@ static bool setting_append_list(
                 general_write_handler,
                 general_read_handler,
                 SD_FLAG_NONE);
@@ -263,7 +178,7 @@ index 2b5f1d9..0208a2b 100644
  #endif
  
           CONFIG_BOOL(
-@@ -3115,6 +3137,7 @@ static bool setting_append_list(
+@@ -3153,6 +3175,7 @@ static bool setting_append_list(
                    general_read_handler,
                    SD_FLAG_CMD_APPLY_AUTO);
              menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_REINIT);
@@ -271,15 +186,15 @@ index 2b5f1d9..0208a2b 100644
           }
           if (video_driver_has_windowed())
           {
-@@ -3132,6 +3155,7 @@ static bool setting_append_list(
+@@ -3170,6 +3193,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler,
                    SD_FLAG_NONE);
 +            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
           }
- 
           CONFIG_FLOAT(
-@@ -3231,6 +3255,7 @@ static bool setting_append_list(
+                list, list_info,
+@@ -3268,6 +3292,7 @@ static bool setting_append_list(
                 list,
                 list_info,
                 CMD_EVENT_VIDEO_APPLY_STATE_CHANGES);
@@ -287,7 +202,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_INT(
                 list, list_info,
-@@ -3248,6 +3273,7 @@ static bool setting_append_list(
+@@ -3285,6 +3310,7 @@ static bool setting_append_list(
                 list,
                 list_info,
                 CMD_EVENT_VIDEO_APPLY_STATE_CHANGES);
@@ -295,7 +210,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_UINT(
                 list, list_info,
-@@ -3270,6 +3296,7 @@ static bool setting_append_list(
+@@ -3307,6 +3333,7 @@ static bool setting_append_list(
                 list,
                 list_info,
                 CMD_EVENT_VIDEO_APPLY_STATE_CHANGES);
@@ -303,7 +218,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_UINT(
                 list, list_info,
-@@ -3292,6 +3319,7 @@ static bool setting_append_list(
+@@ -3329,6 +3356,7 @@ static bool setting_append_list(
                 list,
                 list_info,
                 CMD_EVENT_VIDEO_APPLY_STATE_CHANGES);
@@ -311,15 +226,31 @@ index 2b5f1d9..0208a2b 100644
  
           END_SUB_GROUP(list, list_info, parent_group);
           START_SUB_GROUP(list, list_info, "Scaling", &group_info, &subgroup_info, parent_group);
-@@ -3311,6 +3339,7 @@ static bool setting_append_list(
+@@ -3348,6 +3376,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 1.0, 10.0, 1.0, true, true);
 +            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+             CONFIG_UINT(
+                   list, list_info,
+                   &settings->video.window_x,
+@@ -3360,6 +3389,7 @@ static bool setting_append_list(
+                   general_write_handler,
+                   general_read_handler);
+             menu_settings_list_current_add_range(list, list_info, 0, 7680, 8, true, true);
++            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+             CONFIG_UINT(
+                   list, list_info,
+                   &settings->video.window_y,
+@@ -3372,6 +3402,7 @@ static bool setting_append_list(
+                   general_write_handler,
+                   general_read_handler);
+             menu_settings_list_current_add_range(list, list_info, 0, 4320, 8, true, true);
++            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
           }
  
           CONFIG_BOOL(
-@@ -3417,7 +3446,7 @@ static bool setting_append_list(
+@@ -3479,7 +3510,7 @@ static bool setting_append_list(
                 parent_group,
                 general_write_handler,
                 general_read_handler,
@@ -328,7 +259,7 @@ index 2b5f1d9..0208a2b 100644
                 );
           menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_REINIT);
  #endif
-@@ -3484,6 +3513,7 @@ static bool setting_append_list(
+@@ -3546,6 +3577,7 @@ static bool setting_append_list(
                    general_read_handler,
                    SD_FLAG_NONE
                    );
@@ -336,7 +267,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_UINT(
                    list, list_info,
-@@ -3530,6 +3560,7 @@ static bool setting_append_list(
+@@ -3592,6 +3624,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -344,7 +275,7 @@ index 2b5f1d9..0208a2b 100644
  #endif
           END_SUB_GROUP(list, list_info, parent_group);
           START_SUB_GROUP(
-@@ -3588,6 +3619,7 @@ static bool setting_append_list(
+@@ -3634,6 +3667,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -352,7 +283,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_PATH(
                 list, list_info,
-@@ -3603,6 +3635,7 @@ static bool setting_append_list(
+@@ -3649,6 +3683,7 @@ static bool setting_append_list(
                 general_read_handler);
           menu_settings_list_current_add_values(list, list_info, "filt");
           menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_REINIT);
@@ -360,7 +291,7 @@ index 2b5f1d9..0208a2b 100644
  
           END_SUB_GROUP(list, list_info, parent_group);
           END_GROUP(list, list_info, parent_group);
-@@ -3707,6 +3740,7 @@ static bool setting_append_list(
+@@ -3753,6 +3788,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -368,7 +299,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_UINT(
                 list, list_info,
-@@ -3721,6 +3755,7 @@ static bool setting_append_list(
+@@ -3767,6 +3803,7 @@ static bool setting_append_list(
                 general_write_handler,
                 general_read_handler);
           menu_settings_list_current_add_range(list, list_info, 8, 512, 16.0, true, true);
@@ -376,7 +307,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_FLOAT(
                 list, list_info,
-@@ -3806,7 +3841,7 @@ static bool setting_append_list(
+@@ -3852,7 +3889,7 @@ static bool setting_append_list(
                 parent_group,
                 general_write_handler,
                 general_read_handler);
@@ -385,7 +316,7 @@ index 2b5f1d9..0208a2b 100644
           (*list)[list_info->index - 1].action_left   = &setting_string_action_left_audio_device;
           (*list)[list_info->index - 1].action_right  = &setting_string_action_right_audio_device;
  #endif
-@@ -3838,6 +3873,7 @@ static bool setting_append_list(
+@@ -3884,6 +3921,7 @@ static bool setting_append_list(
                 general_read_handler);
           menu_settings_list_current_add_values(list, list_info, "dsp");
           menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_DSP_FILTER_INIT);
@@ -393,7 +324,7 @@ index 2b5f1d9..0208a2b 100644
  
           END_SUB_GROUP(list, list_info, parent_group);
           END_GROUP(list, list_info, parent_group);
-@@ -3865,6 +3901,7 @@ static bool setting_append_list(
+@@ -3911,6 +3949,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 1, MAX_USERS, 1, true, true);
@@ -401,7 +332,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_UINT(
                    list, list_info,
-@@ -3878,6 +3915,7 @@ static bool setting_append_list(
+@@ -3924,6 +3963,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 0, 2, 1, true, true);
@@ -409,7 +340,7 @@ index 2b5f1d9..0208a2b 100644
            
  #ifdef VITA
              CONFIG_BOOL(
-@@ -4022,6 +4060,7 @@ static bool setting_append_list(
+@@ -4034,6 +4074,7 @@ static bool setting_append_list(
                    general_read_handler,
                    SD_FLAG_NONE
                    );
@@ -417,7 +348,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_BOOL(
                    list, list_info,
-@@ -4038,6 +4077,7 @@ static bool setting_append_list(
+@@ -4050,6 +4091,7 @@ static bool setting_append_list(
                    general_read_handler,
                    SD_FLAG_NONE
                    );
@@ -425,7 +356,23 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_BOOL(
                    list, list_info,
-@@ -4095,6 +4135,7 @@ static bool setting_append_list(
+@@ -4066,6 +4108,7 @@ static bool setting_append_list(
+                   general_read_handler,
+                   SD_FLAG_NONE
+                   );
++            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+             CONFIG_BOOL(
+                   list, list_info,
+@@ -4082,6 +4125,7 @@ static bool setting_append_list(
+                   general_read_handler,
+                   SD_FLAG_NONE
+                   );
++            settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+ #if 0
+             CONFIG_BOOL(
+@@ -4141,6 +4185,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 0, 1.00, 0.001, true, true);
@@ -433,7 +380,7 @@ index 2b5f1d9..0208a2b 100644
              
              CONFIG_UINT(
                    list, list_info,
-@@ -4632,6 +4673,7 @@ static bool setting_append_list(
+@@ -4648,6 +4693,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_values(list, list_info, "png");
@@ -441,7 +388,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_FLOAT(
                    list, list_info,
-@@ -4646,6 +4688,7 @@ static bool setting_append_list(
+@@ -4662,6 +4708,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 0.0, 1.0, 0.010, true, true);
@@ -449,7 +396,7 @@ index 2b5f1d9..0208a2b 100644
           }
  
  
-@@ -4666,6 +4709,7 @@ static bool setting_append_list(
+@@ -4682,6 +4729,7 @@ static bool setting_append_list(
                    general_read_handler,
                    SD_FLAG_NONE
                    );
@@ -457,7 +404,7 @@ index 2b5f1d9..0208a2b 100644
           }
  
  
-@@ -4685,6 +4729,7 @@ static bool setting_append_list(
+@@ -4701,6 +4749,7 @@ static bool setting_append_list(
                 SD_FLAG_CMD_APPLY_AUTO
                 );
           menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_MENU_PAUSE_LIBRETRO);
@@ -465,7 +412,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_BOOL(
                 list, list_info,
-@@ -4701,6 +4746,7 @@ static bool setting_append_list(
+@@ -4717,6 +4766,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -473,7 +420,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_BOOL(
                 list, list_info,
-@@ -4717,6 +4763,7 @@ static bool setting_append_list(
+@@ -4733,6 +4783,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -481,7 +428,7 @@ index 2b5f1d9..0208a2b 100644
  
           CONFIG_BOOL(
                 list, list_info,
-@@ -4733,6 +4780,7 @@ static bool setting_append_list(
+@@ -4749,6 +4800,7 @@ static bool setting_append_list(
                 general_read_handler,
                 SD_FLAG_NONE
                 );
@@ -489,7 +436,7 @@ index 2b5f1d9..0208a2b 100644
  
  #ifdef RARCH_MOBILE
           /* We don't want mobile users being able to switch this off. */
-@@ -4894,6 +4942,7 @@ static bool setting_append_list(
+@@ -4910,6 +4962,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 0, 100, 1, true, true);
@@ -497,7 +444,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_UINT(
                    list, list_info,
-@@ -4907,6 +4956,7 @@ static bool setting_append_list(
+@@ -4923,6 +4976,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler);
              menu_settings_list_current_add_range(list, list_info, 0, 100, 1, true, true);
@@ -505,7 +452,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_PATH(
                    list, list_info,
-@@ -4920,6 +4970,7 @@ static bool setting_append_list(
+@@ -4936,6 +4990,7 @@ static bool setting_append_list(
                    parent_group,
                    general_write_handler,
                    general_read_handler);
@@ -513,7 +460,7 @@ index 2b5f1d9..0208a2b 100644
  
              CONFIG_UINT(
                    list, list_info,
-@@ -4991,6 +5042,7 @@ static bool setting_append_list(
+@@ -5007,6 +5062,7 @@ static bool setting_append_list(
                    general_write_handler,
                    general_read_handler,
                    SD_FLAG_NONE);
@@ -521,7 +468,7 @@ index 2b5f1d9..0208a2b 100644
  
  #ifdef HAVE_IMAGEVIEWER
              CONFIG_BOOL(
-@@ -5120,6 +5172,7 @@ static bool setting_append_list(
+@@ -5136,6 +5192,7 @@ static bool setting_append_list(
                 general_write_handler,
                 general_read_handler,
                 SD_FLAG_NONE);
@@ -529,7 +476,15 @@ index 2b5f1d9..0208a2b 100644
  
           if (string_is_equal(settings->menu.driver, "xmb"))
           {
-@@ -5166,6 +5219,7 @@ static bool setting_append_list(
+@@ -5167,6 +5224,7 @@ static bool setting_append_list(
+                general_write_handler,
+                general_read_handler,
+                SD_FLAG_NONE);
++         settings_data_list_current_add_flags(list, list_info, SD_FLAG_ADVANCED);
+ 
+          CONFIG_BOOL(
+                list, list_info,
+@@ -5182,6 +5240,7 @@ static bool setting_append_list(
                 general_write_handler,
                 general_read_handler,
                 SD_FLAG_NONE);
@@ -537,7 +492,7 @@ index 2b5f1d9..0208a2b 100644
  
           END_SUB_GROUP(list, list_info, parent_group);
           END_GROUP(list, list_info, parent_group);
-@@ -5800,6 +5854,7 @@ static bool setting_append_list(
+@@ -5827,6 +5886,7 @@ static bool setting_append_list(
                 &group_info,
                 &subgroup_info,
                 parent_group);
