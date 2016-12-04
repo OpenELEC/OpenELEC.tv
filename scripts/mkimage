@@ -302,6 +302,13 @@ elif [ "$BOOTLOADER" = "u-boot" ]; then
     fi
 fi # bootloader
 
+if [ -f "$INSTALL_SRC_DIR/aml_autoscript.src" ]; then
+  cat "$INSTALL_SRC_DIR/aml_autoscript.src" > "$OE_TMP/aml_autoscript.src"
+  echo "run storeargs" >> "$OE_TMP/aml_autoscript.src"
+  echo "run bootcmd" >> "$OE_TMP/aml_autoscript.src"
+  $MKIMAGE_TOOL_CMD "$OE_TMP/aml_autoscript.src" "$OE_TMP/aml_autoscript"
+fi
+
 # unmount part1
   echo "image: unmounting part1..."
   sync
