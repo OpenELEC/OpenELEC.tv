@@ -31,15 +31,15 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="7318e40"
+    PKG_VERSION="85847e9"
     PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
-    PKG_GIT_BRANCH="newclock5"
+    PKG_GIT_BRANCH="krypton_rbp_backports"
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="fd7fcfa"
+    PKG_VERSION="1dd8613"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
-    PKG_GIT_BRANCH="master"
+    PKG_GIT_BRANCH="Krypton"
     PKG_KEEP_CHECKOUT="no"
     PKG_PATCH_DIRS="$LINUX"
     ;;
@@ -64,6 +64,7 @@ PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=$ROOT/$TOOLCHAIN \
                        -DPYTHON_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include/python2.7 \
                        -DGIT_VERSION=$PKG_VERSION \
                        -DENABLE_LDGOLD=OFF \
+                       -DWITH_TEXTUREPACKER=$ROOT/$TOOLCHAIN/bin/TexturePacker \
                        -DENABLE_INTERNAL_FFMPEG=OFF \
                        -DFFMPEG_INCLUDE_DIRS=$SYSROOT_PREFIX/usr \
                        -DENABLE_INTERNAL_CROSSGUID=OFF \
