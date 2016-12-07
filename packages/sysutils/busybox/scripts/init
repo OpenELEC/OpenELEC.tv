@@ -690,22 +690,9 @@
     mount --move /flash /sysroot/flash
     mount --move /storage /sysroot/storage
 
-    if [ ! -d "/sysroot/lib/modules/$(uname -r)/" -a -f "/sysroot/$SYSTEMD_BIN" ]; then
-      if [ -e /dev/psplash_fifo ] ; then
-        echo "QUIT" > /dev/psplash_fifo
-      fi
-      echo ""
-      echo "NEVER TOUCH boot= in extlinux.conf / cmdline.txt"
-      echo "if you dont know what you are doing"
-      echo ""
-      echo "your installation is now broken"
-      echo ""
-      echo "normal boot in 60s..."
-      usleep 60000000
+    if [ ! -f "/sysroot/$SYSTEMD_BIN" ]; then
+      error "final_check" "Could not find system."
     fi
-
-
-    [ -f "/sysroot/$SYSTEMD_BIN" ] || error "final_check" "Could not find system."
   }
 
   if [ "${boot%%=*}" = "FILE" ]; then
