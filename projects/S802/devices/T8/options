@@ -1,0 +1,2 @@
+  # Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET="meson8_t8_2G.dtd meson8_t8_2G.dtb"

@@ -1,0 +1,23 @@
+diff --git a/xbmc/windows/GUIWindowSystemInfo.cpp b/xbmc/windows/GUIWindowSystemInfo.cpp
+index 604a0d9..f0a1489 100644
+--- a/xbmc/windows/GUIWindowSystemInfo.cpp
++++ b/xbmc/windows/GUIWindowSystemInfo.cpp
+@@ -100,7 +100,6 @@ void CGUIWindowSystemInfo::FrameMove()
+ #endif
+     SetControlLabel(i++, "%s: %s", 12390, SYSTEM_UPTIME);
+     SetControlLabel(i++, "%s: %s", 12394, SYSTEM_TOTALUPTIME);
+-    SetControlLabel(i++, "%s: %s", 12395, SYSTEM_BATTERY_LEVEL);
+   }
+   else if (m_section == CONTROL_BT_STORAGE)
+   {
+@@ -151,10 +150,7 @@ void CGUIWindowSystemInfo::FrameMove()
+ #ifdef HAS_SYSINFO
+     SET_CONTROL_LABEL(i++, g_sysinfo.GetCPUModel());
+ #if defined(__arm__) && defined(TARGET_LINUX)
+-    SET_CONTROL_LABEL(i++, g_sysinfo.GetCPUBogoMips());
+     SET_CONTROL_LABEL(i++, g_sysinfo.GetCPUHardware());
+-    SET_CONTROL_LABEL(i++, g_sysinfo.GetCPURevision());
+-    SET_CONTROL_LABEL(i++, g_sysinfo.GetCPUSerial());
+ #endif
+     SetControlLabel(i++, "%s %s", 22011, SYSTEM_CPU_TEMPERATURE);
+ #if !defined(__arm__) || defined(TARGET_RASPBERRY_PI)

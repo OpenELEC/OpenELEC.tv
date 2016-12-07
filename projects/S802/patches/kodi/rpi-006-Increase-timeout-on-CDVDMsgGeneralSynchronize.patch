@@ -1,0 +1,23 @@
+From f84267b07136093e2363057ba6d1372142182a80 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 22 Aug 2015 23:06:56 +0100
+Subject: [PATCH 92/97] [dvdmessage] Increase timeout on
+ CDVDMsgGeneralSynchronize
+
+---
+ xbmc/cores/dvdplayer/DVDMessage.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDMessage.cpp b/xbmc/cores/dvdplayer/DVDMessage.cpp
+index ae745c6..73fff98 100644
+--- a/xbmc/cores/dvdplayer/DVDMessage.cpp
++++ b/xbmc/cores/dvdplayer/DVDMessage.cpp
+@@ -91,7 +91,7 @@ bool CDVDMsgGeneralSynchronize::Wait(unsigned int milliseconds, unsigned int sou
+ 
+ void CDVDMsgGeneralSynchronize::Wait(volatile bool *abort, unsigned int source)
+ {
+-  while(!Wait(100, source))
++  while(!Wait(200, source))
+   {
+     if(abort && *abort)
+       return;

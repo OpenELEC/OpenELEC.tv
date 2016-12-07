@@ -1,0 +1,44 @@
+From 5ff6bfa939d5933164a05e3ae96f620e0d84daa8 Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sun, 14 Feb 2016 13:10:29 +0100
+Subject: [PATCH] FIX: [subs] properly handle nosub and forced-only preferences
+
+---
+ xbmc/cores/dvdplayer/DVDPlayer.cpp | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+index 278b111..dc4a497 100644
+--- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
++++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+@@ -161,9 +161,6 @@ class PredicateSubtitleFilter
+ 
+   bool operator()(const SelectionStream& ss) const
+   {
+-    if (ss.type_index == CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleStream)
+-      return false;
+-
+     if (nosub)
+       return true;
+ 
+@@ -175,7 +172,10 @@ class PredicateSubtitleFilter
+         return true;
+     }
+       
+-    if(STREAM_SOURCE_MASK(ss.source) == STREAM_SOURCE_DEMUX_SUB || STREAM_SOURCE_MASK(ss.source) == STREAM_SOURCE_TEXT)
++    if (ss.type_index == CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleStream)
++      return false;
++
++    if (STREAM_SOURCE_MASK(ss.source) == STREAM_SOURCE_DEMUX_SUB || STREAM_SOURCE_MASK(ss.source) == STREAM_SOURCE_TEXT)
+       return false;
+ 
+     if ((ss.flags & CDemuxStream::FLAG_FORCED) && (original || g_LangCodeExpander.CompareISO639Codes(ss.language, audiolang)))
+@@ -899,7 +899,7 @@ void CDVDPlayer::OpenDefaultStreams(bool reset)
+     {
+       valid = true;
+       if(!psp.relevant(*it))
+-        visible = false;
++        valid = false;
+       else if(it->flags & CDemuxStream::FLAG_FORCED)
+         visible = true;
+     }

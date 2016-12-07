@@ -1,0 +1,160 @@
+diff -Naur kodi-16.1-c327c53.orig/xbmc/utils/AMLUtils.cpp kodi-16.1-c327c53/xbmc/utils/AMLUtils.cpp
+--- kodi-16.1-c327c53.orig/xbmc/utils/AMLUtils.cpp	2016-06-03 01:41:28.953559187 +0200
++++ kodi-16.1-c327c53/xbmc/utils/AMLUtils.cpp	2016-06-03 01:41:36.000000000 +0200
+@@ -449,8 +449,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2ksmpte") || StringUtils::EqualsNoCase(fromMode, "smpte24hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 4096;
++    res->iHeight= 2160;
+     res->iScreenWidth = 4096;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 24;
+@@ -458,8 +458,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k23hz") || StringUtils::EqualsNoCase(fromMode, "2160p23hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 23.976;
+@@ -467,8 +467,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k24hz") || StringUtils::EqualsNoCase(fromMode, "2160p24hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 24;
+@@ -476,8 +476,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k25hz") || StringUtils::EqualsNoCase(fromMode, "2160p25hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 25;
+@@ -485,8 +485,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k29hz") || StringUtils::EqualsNoCase(fromMode, "2160p29hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 29.970;
+@@ -494,8 +494,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "4k2k30hz") || StringUtils::EqualsNoCase(fromMode, "2160p30hz"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 30;
+@@ -503,8 +503,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "2160p50hz420"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 50;
+@@ -512,8 +512,8 @@
+   }
+   else if (StringUtils::EqualsNoCase(fromMode, "2160p60hz420"))
+   {
+-    res->iWidth = 1920;
+-    res->iHeight= 1080;
++    res->iWidth = 3840;
++    res->iHeight= 2160;
+     res->iScreenWidth = 3840;
+     res->iScreenHeight= 2160;
+     res->fRefreshRate = 60;
+diff -Naur kodi-16.1-c327c53.orig/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp kodi-16.1-c327c53/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+--- kodi-16.1-c327c53.orig/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp	2016-06-03 01:41:28.981559188 +0200
++++ kodi-16.1-c327c53/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp	2016-06-03 01:41:40.000000000 +0200
+@@ -65,6 +65,7 @@
+ {
+   aml_permissions();
+   DisableFreeScale();
++  m_maxResolution = GetMaxResolution();
+ }
+ void CEGLNativeTypeAmlogic::Destroy()
+ {
+@@ -84,8 +85,8 @@
+   if (!nativeWindow)
+     return false;
+ 
+-  nativeWindow->width = 1920;
+-  nativeWindow->height = 1080;
++  nativeWindow->width = m_maxResolution.iScreenWidth;
++  nativeWindow->height = m_maxResolution.iScreenHeight;
+   m_nativeWindow = nativeWindow;
+ 
+   SetFramebufferResolution(nativeWindow->width, nativeWindow->height);
+@@ -125,6 +126,22 @@
+   return true;
+ }
+ 
++RESOLUTION_INFO CEGLNativeTypeAmlogic::GetMaxResolution()
++{
++  std::vector<RESOLUTION_INFO> resolutions;
++  RESOLUTION_INFO maxResolution = {0};
++  ProbeResolutions(resolutions);
++
++  for (size_t i = 0; i < resolutions.size(); i++)
++  {
++    if (resolutions[i].iScreenWidth > maxResolution.iScreenWidth || resolutions[i].iScreenHeight > maxResolution.iScreenHeight)
++    {
++      maxResolution = resolutions[i];
++    }
++  }
++  return maxResolution;
++}
++
+ bool CEGLNativeTypeAmlogic::GetNativeResolution(RESOLUTION_INFO *res) const
+ {
+   std::string mode;
+@@ -245,8 +262,8 @@
+     {
+       vinfo.xres = width;
+       vinfo.yres = height;
+-      vinfo.xres_virtual = 1920;
+-      vinfo.yres_virtual = 2160;
++      vinfo.xres_virtual = m_maxResolution.iScreenWidth;
++      vinfo.yres_virtual = m_maxResolution.iScreenHeight * 2;
+       vinfo.bits_per_pixel = 32;
+       vinfo.activate = FB_ACTIVATE_ALL;
+       ioctl(fd0, FBIOPUT_VSCREENINFO, &vinfo);
+diff -Naur kodi-16.1-c327c53.orig/xbmc/windowing/egl/EGLNativeTypeAmlogic.h kodi-16.1-c327c53/xbmc/windowing/egl/EGLNativeTypeAmlogic.h
+--- kodi-16.1-c327c53.orig/xbmc/windowing/egl/EGLNativeTypeAmlogic.h	2016-06-03 01:41:28.981559188 +0200
++++ kodi-16.1-c327c53/xbmc/windowing/egl/EGLNativeTypeAmlogic.h	2016-06-03 01:41:43.000000000 +0200
+@@ -55,6 +55,8 @@
+ private:
+   void SetFramebufferResolution(const RESOLUTION_INFO &res) const;
+   void SetFramebufferResolution(int width, int height) const;
+-
++  RESOLUTION_INFO GetMaxResolution();
++  
+   std::string m_framebuffer_name;
++  RESOLUTION_INFO m_maxResolution;
+ };
