@@ -1,0 +1,35 @@
+commit 87eeb08222b3655683e7be7e846d6e9f89bae4b6
+Author: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date:   Sun Jun 5 11:32:37 2016 +0800
+
+    Fixed, pvr LiveTV. check both audio AND video buffer levels.
+    5/10 percent of audio is really tiny compared to video which leads to
+    stalling because video is too low. Refactored. Courtesy of Davilla.
+
+diff --git a/xbmc/cores/dvdplayer/DVDPlayer.cpp b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+index 663f9af..0dc6714 100644
+--- a/xbmc/cores/dvdplayer/DVDPlayer.cpp
++++ b/xbmc/cores/dvdplayer/DVDPlayer.cpp
+@@ -1841,11 +1841,19 @@ void CDVDPlayer::HandlePlaySpeed()
+       if (m_CurrentAudio.id >= 0)
+       {
+         double adjust = -1.0; // a unique value
+-        if (m_clock.GetSpeedAdjust() == 0.0 && m_dvdPlayerAudio->GetLevel() < 5)
++        if (m_clock.GetSpeedAdjust() >= 0)
++        {
++          bool video_under = m_CurrentVideo.id >= 0 ? (m_dvdPlayerVideo->GetLevel() < 5) : false;
++          if (m_dvdPlayerAudio->GetLevel() < 5 || video_under)
+           adjust = -0.01;
++        }
+ 
+-        if (m_clock.GetSpeedAdjust() < 0 && m_dvdPlayerAudio->GetLevel() > 20)
+-          adjust = 0.0;
++        if (m_clock.GetSpeedAdjust() < 0)
++        {
++          bool video_over = m_CurrentVideo.id >= 0 ? (m_dvdPlayerVideo->GetLevel() < 10) : true;
++          if (m_dvdPlayerAudio->GetLevel() > 10 && video_over)
++            adjust = 0.0;
++        }
+ 
+         if (adjust != -1.0)
+         {

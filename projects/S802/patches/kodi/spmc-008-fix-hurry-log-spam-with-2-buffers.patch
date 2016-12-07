@@ -1,0 +1,28 @@
+From 534ae6e481b0e0efbf680e099960f53b50d61660 Mon Sep 17 00:00:00 2001
+From: Chris Browet <koying@semperpax.com>
+Date: Tue, 16 Feb 2016 10:53:48 +0100
+Subject: [PATCH] FIX: "hurry" log spam with 2 buffers
+
+---
+ xbmc/cores/dvdplayer/DVDPlayerVideo.cpp | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
+index 379c541..c811649 100644
+--- a/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
++++ b/xbmc/cores/dvdplayer/DVDPlayerVideo.cpp
+@@ -1381,14 +1381,8 @@ int CDVDPlayerVideo::CalcDropRequirement(double pts, bool updateOnly)
+   g_renderManager.GetStats(iSleepTime, iRenderPts, queued, discard);
+   iBufferLevel = queued + discard;
+ 
+-  if (iBufferLevel < 0)
++  if (iBufferLevel < 2)
+     result |= EOS_BUFFER_LEVEL;
+-  else if (iBufferLevel < 2)
+-  {
+-    result |= EOS_BUFFER_LEVEL;
+-    if (g_advancedSettings.CanLogComponent(LOGVIDEO))
+-      CLog::Log(LOGDEBUG,"CDVDPlayerVideo::CalcDropRequirement - hurry: %d", iBufferLevel);
+-  }
+ 
+   bNewFrame = iDecoderPts != m_droppingStats.m_lastDecoderPts;

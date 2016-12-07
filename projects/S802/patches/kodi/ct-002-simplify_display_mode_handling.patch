@@ -1,0 +1,240 @@
+From 92f3b4a4d859c233b88db79f178adebe8bd400b8 Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Thu, 28 Jan 2016 16:33:26 +0100
+Subject: [PATCH] [aml] Simplify display mode handling and make it work
+ correctly for kernels >= 3.14
+
+Since kernel 3.14 Amlogic changed some of the display mode IDs, e.g.
+before kernel 3.14 1080p 60Hz display mode had an ID of 1080p, but
+in kernel 3.14 it was changed to 1080p60hz. This commit allows
+to handle display modes for all Amlogic kernels in universal way.
+---
+ xbmc/utils/AMLUtils.cpp                        |   1 +
+ xbmc/windowing/egl/EGLNativeTypeAmlAndroid.cpp | 139 +++----------------------
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp    |  47 ++-------
+ 3 files changed, 19 insertions(+), 168 deletions(-)
+
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 1b54435..5915e61 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -529,6 +529,7 @@ bool aml_mode_to_resolution(const char *mode, RESOLUTION_INFO *res)
+   res->bFullScreen   = true;
+   res->iSubtitles    = (int)(0.965 * res->iHeight);
+   res->fPixelRatio   = 1.0f;
++  res->strId         = fromMode;
+   res->strMode       = StringUtils::Format("%dx%d @ %.2f%s - Full Screen", res->iScreenWidth, res->iScreenHeight, res->fRefreshRate,
+     res->dwFlags & D3DPRESENTFLAG_INTERLACED ? "i" : "");
+ 
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlAndroid.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlAndroid.cpp
+index ff900d5..fb722ae 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlAndroid.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlAndroid.cpp
+@@ -69,136 +69,21 @@ bool CEGLNativeTypeAmlAndroid::SetNativeResolution(const RESOLUTION_INFO &res)
+   if (!m_isWritable)
+     return false;
+ 
+-  switch((int)(res.fRefreshRate*10))
++  if (res.iScreenWidth == 720 && !aml_IsHdmiConnected())
+   {
+-    default:
+-    case 600:
+-      switch(res.iScreenWidth)
+-      {
+-        default:
+-        case 720:
+-          if (!aml_IsHdmiConnected())
+-          {
+-            if (res.iScreenHeight == 480)
+-              return SetDisplayResolution("480cvbs");
+-            else
+-              return SetDisplayResolution("576cvbs");
+-          }
+-          else
+-          {
+-            if (res.iScreenHeight == 480)
+-            {
+-              if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-                return SetDisplayResolution("480i");
+-              else
+-                return SetDisplayResolution("480p");
+-            }
+-            else
+-            {
+-              if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-                return SetDisplayResolution("576i");
+-              else
+-                return SetDisplayResolution("576p");
+-            }
+-          }
+-          break;
+-        case 1280:
+-          return SetDisplayResolution("720p");
+-          break;
+-        case 1920:
+-          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            return SetDisplayResolution("1080i");
+-          else
+-            return SetDisplayResolution("1080p");
+-          break;
+-      }
+-      break;
+-    case 599:
+-      switch(res.iScreenWidth)
+-      {
+-        default:
+-          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            return SetDisplayResolution("1080i59hz");
+-          else
+-            return SetDisplayResolution("1080p59hz");
+-          break;
+-      }
+-    case 500:
+-      switch(res.iScreenWidth)
+-      {
+-        default:
+-        case 1280:
+-          return SetDisplayResolution("720p50hz");
+-          break;
+-        case 1920:
+-          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            return SetDisplayResolution("1080i50hz");
+-          else
+-            return SetDisplayResolution("1080p50hz");
+-          break;
+-      }
+-      break;
+-    case 300:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k30hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p30hz");
+-          break;
+-      }
+-      break;
+-    case 299:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k29hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p29hz");
+-          break;
+-      }
+-      break;
+-    case 250:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k25hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p25hz");
+-          break;
+-      }
+-      break;
+-    case 240:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k24hz");
+-          break;
+-        case 4096:
+-          return SetDisplayResolution("4k2ksmpte");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p24hz");
+-          break;
+-      }
+-      break;
+-    case 239:
+-      switch(res.iScreenWidth)
+-      {
+-        case 3840:
+-          return SetDisplayResolution("4k2k23hz");
+-          break;
+-        default:
+-          return SetDisplayResolution("1080p23hz");
+-          break;
+-      }
+-      break;
++    if (res.iScreenHeight == 480)
++      return SetDisplayResolution("480cvbs");
++    else
++      return SetDisplayResolution("576cvbs");
+   }
+ 
+-  return false;
++  // Don't set the same mode as current
++  std::string mode;
++  SysfsUtils::GetString("/sys/class/display/mode", mode);
++  if (res.strId == mode)
++    return false;
++
++  return SetDisplayResolution(res.strId.c_str());
+ }
+ 
+ bool CEGLNativeTypeAmlAndroid::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 21256ef..3d6598a 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -142,48 +142,13 @@ bool CEGLNativeTypeAmlogic::SetNativeResolution(const RESOLUTION_INFO &res)
+   }
+ #endif
+ 
+-  switch((int)(0.5 + res.fRefreshRate))
+-  {
+-    default:
+-    case 60:
+-      switch(res.iScreenWidth)
+-      {
+-        default:
+-        case 1280:
+-          SetDisplayResolution("720p");
+-          break;
+-        case 1920:
+-          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            SetDisplayResolution("1080i");
+-          else
+-            SetDisplayResolution("1080p");
+-          break;
+-      }
+-      break;
+-    case 50:
+-      switch(res.iScreenWidth)
+-      {
+-        default:
+-        case 1280:
+-          SetDisplayResolution("720p50hz");
+-          break;
+-        case 1920:
+-          if (res.dwFlags & D3DPRESENTFLAG_INTERLACED)
+-            SetDisplayResolution("1080i50hz");
+-          else
+-            SetDisplayResolution("1080p50hz");
+-          break;
+-      }
+-      break;
+-    case 30:
+-      SetDisplayResolution("1080p30hz");
+-      break;
+-    case 24:
+-      SetDisplayResolution("1080p24hz");
+-      break;
+-  }
++  // Don't set the same mode as current
++  std::string mode;
++  SysfsUtils::GetString("/sys/class/display/mode", mode);
++  if (res.strId == mode)
++    return false;
+ 
+-  return true;
++  return SetDisplayResolution(res.strId.c_str());
+ }
+ 
+ bool CEGLNativeTypeAmlogic::ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions)

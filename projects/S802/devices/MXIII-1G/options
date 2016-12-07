@@ -1,0 +1,2 @@
+  # Kernel extra targets to build
+  KERNEL_UBOOT_EXTRA_TARGET=" meson8_k200b_1G_emmc_sdio.dtd meson8_k200b_1G_emmc_sdio.dtb"

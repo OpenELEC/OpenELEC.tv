@@ -1,0 +1,1627 @@
+From 013b91ed50d929cc40bc2b0ff9e30b1682f68d8c Mon Sep 17 00:00:00 2001
+From: "Chris \\\"Koying\\\" Browet" <cbro@semperpax.com>
+Date: Wed, 12 Nov 2014 20:52:14 +0100
+Subject: [PATCH 01/12] ADD: [aml] Automatic 3D HDMI switch
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp |   9 +-
+ xbmc/rendering/gles/RenderSystemGLES.cpp          |  18 ++--
+ xbmc/rendering/gles/RenderSystemGLES.h            |   1 +
+ xbmc/utils/AMLUtils.cpp                           | 115 +++++++++++++++++++++-
+ xbmc/utils/AMLUtils.h                             |   2 +
+ xbmc/utils/SystemInfo.cpp                         |  17 ++++
+ xbmc/utils/SystemInfo.h                           |   3 +
+ 7 files changed, 154 insertions(+), 11 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 1b9ddb8..1ed1161 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -1680,6 +1680,7 @@ void CAMLCodec::CloseDecoder()
+   // return tsync to default so external apps work
+   SysfsUtils::SetInt("/sys/class/tsync/enable", 1);
+ 
++  SetVideo3dMode(MODE_3D_DISABLE);
+   ShowMainVideo(false);
+ 
+   // add a little delay after closing in case
+@@ -2092,8 +2093,14 @@ void CAMLCodec::GetRenderFeatures(Features &renderFeatures)
+ 
+ void CAMLCodec::SetVideo3dMode(const int mode3d)
+ {
++  static int old3dmode = MODE_3D_DISABLE;
++
++  if (mode3d == old3dmode)
++    return;
++
+   CLog::Log(LOGDEBUG, "CAMLCodec::SetVideo3dMode:mode3d(0x%x)", mode3d);
+   SysfsUtils::SetInt("/sys/class/ppmgr/ppmgr_3d_mode", mode3d);
++  old3dmode = mode3d;
+ }
+ 
+ std::string CAMLCodec::GetStereoMode()
+@@ -2107,8 +2114,6 @@ std::string CAMLCodec::GetStereoMode()
+     default:                                  stereo_mode = m_hints.stereo_mode; break;
+   }
+ 
+-  if(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_StereoInvert)
+-    stereo_mode = RenderManager::GetStereoModeInvert(stereo_mode);
+   return stereo_mode;
+ }
+ 
+diff --git a/xbmc/rendering/gles/RenderSystemGLES.cpp b/xbmc/rendering/gles/RenderSystemGLES.cpp
+index cde084b..05910a9 100644
+--- a/xbmc/rendering/gles/RenderSystemGLES.cpp
++++ b/xbmc/rendering/gles/RenderSystemGLES.cpp
+@@ -718,17 +718,19 @@ GLint CRenderSystemGLES::GUIShaderGetBrightness()
+   return -1;
+ }
+ 
++void CRenderSystemGLES::SetStereoMode(RENDER_STEREO_MODE mode, RENDER_STEREO_VIEW view)
++{
++  CRenderSystemBase::SetStereoMode(mode, view);
++
++  g_sysinfo.HWSetStereoMode(mode, view);
++}
++
+ bool CRenderSystemGLES::SupportsStereo(RENDER_STEREO_MODE mode)
+ {
+-  switch(mode)
+-  {
+-    case RENDER_STEREO_MODE_INTERLACED:
+-      if (g_sysinfo.HasHW3DInterlaced())
+-        return true;
++  if (g_sysinfo.HWSupportsStereo(mode))
++    return true;
+ 
+-    default:
+-      return CRenderSystemBase::SupportsStereo(mode);
+-  }
++  return CRenderSystemBase::SupportsStereo(mode);
+ }
+ 
+ GLint CRenderSystemGLES::GUIShaderGetModel()
+diff --git a/xbmc/rendering/gles/RenderSystemGLES.h b/xbmc/rendering/gles/RenderSystemGLES.h
+index f9f3c68..cac5425 100644
+--- a/xbmc/rendering/gles/RenderSystemGLES.h
++++ b/xbmc/rendering/gles/RenderSystemGLES.h
+@@ -77,6 +77,7 @@ public:
+ 
+   virtual void ApplyHardwareTransform(const TransformMatrix &matrix);
+   virtual void RestoreHardwareTransform();
++  virtual void SetStereoMode(RENDER_STEREO_MODE mode, RENDER_STEREO_VIEW view);
+   virtual bool SupportsStereo(RENDER_STEREO_MODE mode);
+ 
+   virtual bool TestRender();
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 5915e61..79192ad 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -25,7 +25,9 @@
+ #include <fcntl.h>
+ #include <string>
+ 
+-#include "AMLUtils.h"
++#include "rendering/RenderSystem.h"
++#include "settings/MediaSettings.h"
++#include "utils/AMLUtils.h"
+ #include "utils/CPUInfo.h"
+ #include "utils/log.h"
+ #include "utils/SysfsUtils.h"
+@@ -34,6 +36,43 @@
+ #include "guilib/gui3d.h"
+ #include "utils/RegExp.h"
+ 
++#define MODE_HDMI3D_LR          "3dlr"
++#define MODE_HDMI3D_TB          "3dtb"
++#define MODE_HDMI3D_OFF         "3doff"
++
++static void aml_hdmi_3D_mode(const std::string mode3d)
++{
++  static std::string oldhdmi3dmode = MODE_HDMI3D_OFF;
++  static bool reset_disp_mode = false;
++
++  if (mode3d == oldhdmi3dmode)
++    return;
++
++  aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/config", mode3d.c_str());
++  oldhdmi3dmode = mode3d;
++
++  if (strstr(mode3d.c_str(), MODE_HDMI3D_OFF))
++  {
++    if (reset_disp_mode)
++    {
++      // Some 3D HDTVs will not exit from 3D mode with 3doff
++      char disp_mode[256] = {};
++      if (aml_get_sysfs_str("/sys/class/display/mode", disp_mode, 255) != -1)
++      {
++        aml_set_sysfs_int("/sys/class/graphics/fb0/blank", 1);
++        // Setting the same mode does not reset HDMI on M8
++        aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_mode", "720p");
++        aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_mode", disp_mode);
++        aml_set_sysfs_int("/sys/class/graphics/fb0/blank", 0);
++      }
++
++      reset_disp_mode = false;
++    }
++  }
++  else
++    reset_disp_mode = true;
++}
++
+ bool aml_present()
+ {
+   static int has_aml = -1;
+@@ -64,6 +103,80 @@ bool aml_hw3d_present()
+   return has_hw3d == 1;
+ }
+ 
++bool aml_supports_stereo(const int mode)
++{
++  static int last_mode = -1;
++  static bool last_rtn = false;
++  if (last_mode == mode)
++    return last_rtn;
++
++  char disp_cap_3d[256] = {};
++  if (aml_get_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_cap_3d", disp_cap_3d, 255) == -1)
++  {
++    last_rtn = false;
++    last_mode = -1;
++    return last_rtn;
++  }
++
++  if (mode == RENDER_STEREO_MODE_INTERLACED && strstr(disp_cap_3d,"FramePacking"))
++    last_rtn = true;
++  else if (mode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL && strstr(disp_cap_3d,"TopBottom"))
++    last_rtn = true;
++  else if (mode == RENDER_STEREO_MODE_SPLIT_VERTICAL && strstr(disp_cap_3d,"SidebySide"))
++    last_rtn = true;
++
++  last_mode = mode;
++
++  return last_rtn;
++}
++
++void aml_set_stereo_mode(const int mode, const int view)
++{
++  static int last_mode = -1;
++  // do nothing if mode matches last time someone called us.
++  if (last_mode == mode)
++    return;
++
++  if (!aml_supports_stereo(mode))
++  {
++    last_mode = mode;
++    return;
++  }
++
++  switch(mode)
++  {
++    default:
++      aml_hdmi_3D_mode("3doff");
++      break;
++    case RENDER_STEREO_MODE_SPLIT_VERTICAL:
++      aml_hdmi_3D_mode("3dlr");
++      break;
++    case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
++      aml_hdmi_3D_mode("3dtb");
++      break;
++
++    case RENDER_STEREO_MODE_INTERLACED:
++      {
++        std::string  stereo_mode;
++        switch(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_StereoMode)
++        {
++          case RENDER_STEREO_MODE_SPLIT_VERTICAL:
++            aml_hdmi_3D_mode("3dlr");
++            break;
++          case RENDER_STEREO_MODE_SPLIT_HORIZONTAL:
++            aml_hdmi_3D_mode("3dtb");
++            break;
++          default:
++            aml_hdmi_3D_mode("3doff");
++            break;
++        }
++      }
++      break;
++  }
++
++  return;
++}
++
+ bool aml_wired_present()
+ {
+   static int has_wired = -1;
+diff --git a/xbmc/utils/AMLUtils.h b/xbmc/utils/AMLUtils.h
+index 6ba1ff7..3b5f588 100644
+--- a/xbmc/utils/AMLUtils.h
++++ b/xbmc/utils/AMLUtils.h
+@@ -44,6 +44,8 @@ enum AML_DISPLAY_AXIS_PARAM
+ bool aml_present();
+ bool aml_permissions();
+ bool aml_hw3d_present();
++bool aml_supports_stereo(const int mode);
++void aml_set_stereo_mode(const int mode, const int view);
+ bool aml_wired_present();
+ bool aml_support_hevc();
+ bool aml_support_hevc_4k2k();
+diff --git a/xbmc/utils/SystemInfo.cpp b/xbmc/utils/SystemInfo.cpp
+index d38502c..efae19e 100644
+--- a/xbmc/utils/SystemInfo.cpp
++++ b/xbmc/utils/SystemInfo.cpp
+@@ -872,6 +872,23 @@ bool CSysInfo::HasHW3DInterlaced()
+   return false;
+ }
+ 
++bool CSysInfo::HWSupportsStereo(const int mode)
++{
++#if defined(HAS_LIBAMCODEC)
++  if (aml_present())
++    return aml_supports_stereo(mode);
++#endif
++  return false;
++}
++
++void CSysInfo::HWSetStereoMode(const int mode, const int view)
++{
++#if defined(HAS_LIBAMCODEC)
++  if (aml_present())
++    aml_set_stereo_mode(mode, view);
++#endif
++}
++
+ CSysInfo::WindowsVersion CSysInfo::m_WinVer = WindowsVersionUnknown;
+ 
+ bool CSysInfo::IsWindowsVersion(WindowsVersion ver)
+diff --git a/xbmc/utils/SystemInfo.h b/xbmc/utils/SystemInfo.h
+index 87a9740..758af7d 100644
+--- a/xbmc/utils/SystemInfo.h
++++ b/xbmc/utils/SystemInfo.h
+@@ -118,6 +118,9 @@ public:
+   bool HasVideoToolBoxDecoder();
+   bool IsAeroDisabled();
+   bool HasHW3DInterlaced();
++  bool HWSupportsStereo(const int mode);
++  void HWSetStereoMode(const int mode, const int view);
++
+   static bool IsWindowsVersion(WindowsVersion ver);
+   static bool IsWindowsVersionAtLeast(WindowsVersion ver);
+   static WindowsVersion GetWindowsVersion();
+-- 
+1.8.3.1
+
+
+From 2850d2b32630ace6f8f420280c2c82562a15cb45 Mon Sep 17 00:00:00 2001
+From: "Chris \\\"Koying\\\" Browet" <cbro@semperpax.com>
+Date: Wed, 31 Dec 2014 15:08:12 +0100
+Subject: [PATCH 02/12] CHG: Extract SysfsUtils from the AML utils
+
+---
+ xbmc/utils/AMLUtils.cpp | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 79192ad..93e1baa 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -48,7 +48,7 @@ static void aml_hdmi_3D_mode(const std::string mode3d)
+   if (mode3d == oldhdmi3dmode)
+     return;
+ 
+-  aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/config", mode3d.c_str());
++  SysfsUtils::SetString("/sys/class/amhdmitx/amhdmitx0/config", mode3d.c_str());
+   oldhdmi3dmode = mode3d;
+ 
+   if (strstr(mode3d.c_str(), MODE_HDMI3D_OFF))
+@@ -56,14 +56,14 @@ static void aml_hdmi_3D_mode(const std::string mode3d)
+     if (reset_disp_mode)
+     {
+       // Some 3D HDTVs will not exit from 3D mode with 3doff
+-      char disp_mode[256] = {};
+-      if (aml_get_sysfs_str("/sys/class/display/mode", disp_mode, 255) != -1)
++      std::string disp_mode;
++      if (SysfsUtils::GetString("/sys/class/display/mode", disp_mode) != -1)
+       {
+-        aml_set_sysfs_int("/sys/class/graphics/fb0/blank", 1);
++        SysfsUtils::SetInt("/sys/class/graphics/fb0/blank", 1);
+         // Setting the same mode does not reset HDMI on M8
+-        aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_mode", "720p");
+-        aml_set_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_mode", disp_mode);
+-        aml_set_sysfs_int("/sys/class/graphics/fb0/blank", 0);
++        SysfsUtils::SetString("/sys/class/amhdmitx/amhdmitx0/disp_mode", "720p");
++        SysfsUtils::SetString("/sys/class/amhdmitx/amhdmitx0/disp_mode", disp_mode);
++        SysfsUtils::SetInt("/sys/class/graphics/fb0/blank", 0);
+       }
+ 
+       reset_disp_mode = false;
+@@ -110,19 +110,19 @@ bool aml_supports_stereo(const int mode)
+   if (last_mode == mode)
+     return last_rtn;
+ 
+-  char disp_cap_3d[256] = {};
+-  if (aml_get_sysfs_str("/sys/class/amhdmitx/amhdmitx0/disp_cap_3d", disp_cap_3d, 255) == -1)
++  std::string disp_cap_3d;
++  if (SysfsUtils::GetString("/sys/class/amhdmitx/amhdmitx0/disp_cap_3d", disp_cap_3d) == -1)
+   {
+     last_rtn = false;
+     last_mode = -1;
+     return last_rtn;
+   }
+ 
+-  if (mode == RENDER_STEREO_MODE_INTERLACED && strstr(disp_cap_3d,"FramePacking"))
++  if (mode == RENDER_STEREO_MODE_INTERLACED && disp_cap_3d.find("FramePacking") != std::string::npos)
+     last_rtn = true;
+-  else if (mode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL && strstr(disp_cap_3d,"TopBottom"))
++  else if (mode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)
+     last_rtn = true;
+-  else if (mode == RENDER_STEREO_MODE_SPLIT_VERTICAL && strstr(disp_cap_3d,"SidebySide"))
++  else if (mode == RENDER_STEREO_MODE_SPLIT_VERTICAL)
+     last_rtn = true;
+ 
+   last_mode = mode;
+-- 
+1.8.3.1
+
+
+From 346bbdd80747d6772eb9eb17f62c23fa590d88bd Mon Sep 17 00:00:00 2001
+From: Trent Nelson <trent.a.b.nelson@gmail.com>
+Date: Tue, 11 Mar 2014 17:22:39 -0600
+Subject: [PATCH 03/12] Fixes mode being set every frame.
+
+---
+ xbmc/utils/AMLUtils.cpp | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/xbmc/utils/AMLUtils.cpp b/xbmc/utils/AMLUtils.cpp
+index 93e1baa..dad4603 100644
+--- a/xbmc/utils/AMLUtils.cpp
++++ b/xbmc/utils/AMLUtils.cpp
+@@ -137,11 +137,9 @@ void aml_set_stereo_mode(const int mode, const int view)
+   if (last_mode == mode)
+     return;
+ 
++  last_mode = mode;
+   if (!aml_supports_stereo(mode))
+-  {
+-    last_mode = mode;
+     return;
+-  }
+ 
+   switch(mode)
+   {
+-- 
+1.8.3.1
+
+
+From 1ca78164951c175a153e4462b4354133fd82529c Mon Sep 17 00:00:00 2001
+From: "Chris \\\"koying\\\" Browet" <cbro@semperpax.com>
+Date: Fri, 8 May 2015 15:52:04 +0200
+Subject: [PATCH 04/12] ADD: [demux] support ssif
+
+---
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 127 ++++++++++++++++++++-
+ xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h  |   3 +
+ xbmc/settings/AdvancedSettings.cpp                 |   2 +-
+ 3 files changed, 128 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index db8e308..e813eaa 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -174,6 +174,7 @@ CDVDDemuxFFmpeg::CDVDDemuxFFmpeg() : CDVDDemux()
+   m_currentPts = DVD_NOPTS_VALUE;
+   m_bMatroska = false;
+   m_bAVI = false;
++  m_bSSIF = false;
+   m_speed = DVD_PLAYSPEED_NORMAL;
+   m_program = UINT_MAX;
+   m_pkt.result = -1;
+@@ -517,6 +518,11 @@ void CDVDDemuxFFmpeg::Dispose()
+ {
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++  while (!m_SSIFqueue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
++    m_SSIFqueue.pop();
++  }
+ 
+   if (m_pFormatContext)
+   {
+@@ -565,6 +571,11 @@ void CDVDDemuxFFmpeg::Flush()
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++  while (!m_SSIFqueue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
++    m_SSIFqueue.pop();
++  }
+ }
+ 
+ void CDVDDemuxFFmpeg::Abort()
+@@ -710,7 +721,9 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+     {
+       Flush();
+     }
+-    else if (IsProgramChange())
++    // libavformat is confused by the interleaved SSIF.
++    // Disable program management for those
++    else if (!m_bSSIF && IsProgramChange())
+     {
+       // update streams
+       CreateStreams(m_program);
+@@ -737,6 +750,11 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+ 
+       m_pkt.result = -1;
+       av_free_packet(&m_pkt.pkt);
++      while (!m_SSIFqueue.empty())
++      {
++        CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
++        m_SSIFqueue.pop();
++      }
+     }
+     else
+     {
+@@ -746,7 +764,9 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+ 
+       if (IsVideoReady())
+       {
+-        if (m_program != UINT_MAX)
++        // libavformat is confused by the interleaved SSIF.
++        // Disable program management for those
++        if ( !m_bSSIF && m_program != UINT_MAX )
+         {
+           /* check so packet belongs to selected program */
+           for (unsigned int i = 0; i < m_pFormatContext->programs[m_program]->nb_stream_indexes; i++)
+@@ -883,6 +903,80 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+         // content has changed
+         stream = AddStream(pPacket->iStreamId);
+       }
++      if (m_bSSIF && stream->iPhysicalId == 0x1011)
++      {
++        // Here, we recreate a h264 MVC packet from the base one + buffered MVC NALU's
++        if (m_SSIFqueue.size() <= 0)
++        {
++          CDVDDemuxUtils::FreeDemuxPacket(pPacket);
++          pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
++          pPacket->iSize = 0;
++        }
++        else
++        {
++          DemuxPacket* mvcpkt = m_SSIFqueue.front();
++          double tsA = (pPacket->dts != AV_NOPTS_VALUE ? pPacket->dts : pPacket->pts);
++          double tsB = (mvcpkt->dts != AV_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
++          while (tsB < tsA)
++          {
++            m_SSIFqueue.pop();
++            if (m_SSIFqueue.empty())
++            {
++              tsB = AV_NOPTS_VALUE;
++              break;
++            }
++            mvcpkt = m_SSIFqueue.front();
++            tsB = (mvcpkt->dts != AV_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
++          }
++          if (tsA == tsB)
++          {
++            m_SSIFqueue.pop();
++            DemuxPacket* newpkt = CDVDDemuxUtils::AllocateDemuxPacket(pPacket->iSize + mvcpkt->iSize);
++            newpkt->pts = pPacket->pts;
++            newpkt->dts = pPacket->dts;
++            newpkt->duration = pPacket->duration;
++            newpkt->iGroupId = pPacket->iGroupId;
++            newpkt->iStreamId = pPacket->iStreamId;
++            newpkt->iSize = pPacket->iSize + mvcpkt->iSize;
++            memcpy(newpkt->pData, pPacket->pData, pPacket->iSize);
++            memcpy(newpkt->pData + pPacket->iSize, mvcpkt->pData, mvcpkt->iSize);
++            //CLog::Log(LOGDEBUG, ">>> MVC merged packet: %d+%d, pts(%f/%f) dts (%f/%f)", pPacket->iSize, mvcpkt->iSize, pPacket->pts, mvcpkt->pts, pPacket->dts, mvcpkt->dts);
++
++            CDVDDemuxUtils::FreeDemuxPacket(pPacket);
++            CDVDDemuxUtils::FreeDemuxPacket(mvcpkt);
++            pPacket = newpkt;
++          }
++          else
++          {
++            //CLog::Log(LOGERROR, "!!! MVC error: missing mvc packet: pts(%f) dts(%f) - %lld", pPacket->pts, pPacket->dts, m_pkt.pkt.pts);
++            // Ignore packets without MVC part; solves seeking
++            CDVDDemuxUtils::FreeDemuxPacket(pPacket);
++            pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
++            pPacket->iSize = 0;
++          }
++        }
++      }
++    }
++    else if (stream->type == STREAM_DATA)
++    {
++      if (m_bSSIF && stream->iPhysicalId == 0x1012)
++      {
++        // Buffer the MVC NALU's for later merging with the base h264 packet
++        // This works because the MVC stream is guaranteed to come first
++        DemuxPacket* newpkt = CDVDDemuxUtils::AllocateDemuxPacket(pPacket->iSize);
++        newpkt->iSize = pPacket->iSize;
++        newpkt->pts = pPacket->pts;
++        newpkt->dts = pPacket->dts;
++        newpkt->duration = pPacket->duration;
++        newpkt->iGroupId = pPacket->iGroupId;
++        newpkt->iStreamId = pPacket->iStreamId;
++        memcpy(newpkt->pData, pPacket->pData, newpkt->iSize);
++        m_SSIFqueue.push(newpkt);
++        
++        CDVDDemuxUtils::FreeDemuxPacket(pPacket);
++        pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
++        pPacket->iSize = 0;
++      }
+     }
+     if (!stream)
+     {
+@@ -906,6 +1000,11 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++  while (!m_SSIFqueue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
++    m_SSIFqueue.pop();
++  }
+ 
+   CDVDInputStream::ISeekTime* ist = dynamic_cast<CDVDInputStream::ISeekTime*>(m_pInput);
+   if (ist)
+@@ -973,6 +1072,11 @@ bool CDVDDemuxFFmpeg::SeekByte(int64_t pos)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++  while (!m_SSIFqueue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
++    m_SSIFqueue.pop();
++  }
+ 
+   return (ret >= 0);
+ }
+@@ -1194,6 +1298,12 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int iId)
+           st->iFpsScale = 0;
+         }
+ 
++        if (m_bSSIF && pStream->id == 0x1011)
++        {
++          // Mark stream as MVC
++          pStream->codec->codec_tag = AV_CODEC_ID_H264MVC;
++        }
++
+         st->iWidth = pStream->codec->width;
+         st->iHeight = pStream->codec->height;
+         st->fAspect = SelectAspect(pStream, st->bForcedAspect) * pStream->codec->width / pStream->codec->height;
+@@ -1233,6 +1343,17 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int iId)
+       {
+         stream = new CDemuxStream();
+         stream->type = STREAM_DATA;
++        if (pStream->id == 0x1012)
++        {
++          // This is the MVC stream of a SSIF file
++          // SSIF's are 2 M2TS streams interleaved:
++          // - 1 base M2TS with base h264 + audio
++          // - 1 "extension" M2TS only containing the MVC NALU's of the h264 MVC stream
++          // The base h264 is always stream 0x1011 and the mvc one is always 0x1012
++          // The mvc stream always comes first
++          m_bSSIF = true;
++          pStream->need_parsing = AVSTREAM_PARSE_NONE;
++        }
+         break;
+       }
+     case AVMEDIA_TYPE_SUBTITLE:
+@@ -1383,7 +1504,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId, CDemuxStream* stream)
+     res.first->second = stream;
+   }
+   if(g_advancedSettings.m_logLevel > LOG_LEVEL_NORMAL)
+-    CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream(%d, ...) -> %d", iId, stream->iId);
++    CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream(%d, ...) -> %d (%d)", iId, stream->iId, stream->orig_type);
+ }
+ 
+ 
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+index 12398c7..c17a016 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+@@ -25,6 +25,7 @@
+ #include "threads/SystemClock.h"
+ #include <map>
+ #include <vector>
++#include <queue>
+ 
+ extern "C" {
+ #include "libavformat/avformat.h"
+@@ -153,6 +154,8 @@ protected:
+   double   m_currentPts; // used for stream length estimation
+   bool     m_bMatroska;
+   bool     m_bAVI;
++  bool     m_bSSIF;
++  std::queue<DemuxPacket*> m_SSIFqueue;
+   int      m_speed;
+   unsigned m_program;
+   XbmcThreads::EndTime  m_timeout;
+diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
+index bc3aa8c..170c9f8 100644
+--- a/xbmc/settings/AdvancedSettings.cpp
++++ b/xbmc/settings/AdvancedSettings.cpp
+@@ -368,7 +368,7 @@ void CAdvancedSettings::Initialize()
+ 
+   m_pictureExtensions = ".png|.jpg|.jpeg|.bmp|.gif|.ico|.tif|.tiff|.tga|.pcx|.cbz|.zip|.cbr|.rar|.dng|.nef|.cr2|.crw|.orf|.arw|.erf|.3fr|.dcr|.x3f|.mef|.raf|.mrw|.pef|.sr2|.rss";
+   m_musicExtensions = ".nsv|.m4a|.flac|.aac|.strm|.pls|.rm|.rma|.mpa|.wav|.wma|.ogg|.mp3|.mp2|.m3u|.gdm|.imf|.m15|.sfx|.uni|.ac3|.dts|.cue|.aif|.aiff|.wpl|.ape|.mac|.mpc|.mp+|.mpp|.shn|.zip|.rar|.wv|.dsp|.xsp|.xwav|.waa|.wvs|.wam|.gcm|.idsp|.mpdsp|.mss|.spt|.rsd|.sap|.cmc|.cmr|.dmc|.mpt|.mpd|.rmt|.tmc|.tm8|.tm2|.oga|.url|.pxml|.tta|.rss|.wtv|.mka|.tak|.opus|.dff|.dsf";
+-  m_videoExtensions = ".m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.mk3d|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.rar|.001|.wpl|.zip|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.webm|.bdmv|.wtv";
++  m_videoExtensions = ".m4v|.3g2|.3gp|.nsv|.tp|.ts|.ty|.strm|.pls|.rm|.rmvb|.m3u|.m3u8|.ifo|.mov|.qt|.divx|.xvid|.bivx|.vob|.nrg|.img|.iso|.pva|.wmv|.asf|.asx|.ogm|.m2v|.avi|.bin|.dat|.mpg|.mpeg|.mp4|.mkv|.mk3d|.avc|.vp3|.svq3|.nuv|.viv|.dv|.fli|.flv|.rar|.001|.wpl|.zip|.vdr|.dvr-ms|.xsp|.mts|.m2t|.m2ts|.evo|.ogv|.sdp|.avs|.rec|.url|.pxml|.vc1|.h264|.rcv|.rss|.mpls|.webm|.bdmv|.wtv|.ssif";
+   m_subtitlesExtensions = ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.text|.ssa|.aqt|.jss|.ass|.idx|.ifo|.rar|.zip";
+   m_discStubExtensions = ".disc";
+   // internal music extensions
+-- 
+1.8.3.1
+
+
+From bcfa2762cd821906207947f8b63cedf1dbc04576 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 16 Sep 2015 19:05:12 +0100
+Subject: [PATCH 05/12] Make MVC a valid 3D filename tag
+
+---
+ xbmc/guilib/StereoscopicsManager.cpp | 16 ++++++++++++++++
+ xbmc/settings/AdvancedSettings.cpp   |  2 ++
+ xbmc/settings/AdvancedSettings.h     |  1 +
+ 3 files changed, 19 insertions(+)
+
+diff --git a/xbmc/guilib/StereoscopicsManager.cpp b/xbmc/guilib/StereoscopicsManager.cpp
+index d9e0fa4..1ad4add 100644
+--- a/xbmc/guilib/StereoscopicsManager.cpp
++++ b/xbmc/guilib/StereoscopicsManager.cpp
+@@ -45,6 +45,7 @@
+ #include "utils/Variant.h"
+ #include "windowing/WindowingFactory.h"
+ #include "guiinfo/GUIInfoLabels.h"
++#include "utils/URIUtils.h"
+ 
+ using namespace KODI::MESSAGING;
+ 
+@@ -172,6 +173,12 @@ std::string CStereoscopicsManager::DetectStereoModeByString(const std::string &n
+   std::string searchString(needle);
+   CRegExp re(true);
+ 
++  if (URIUtils::HasExtension(needle, ".ssif"))
++  {
++    stereoMode = "left_right";
++    return stereoMode;
++  }
++
+   if (!re.RegComp(g_advancedSettings.m_stereoscopicregex_3d.c_str()))
+   {
+     CLog::Log(LOGERROR, "%s: Invalid RegExp for matching 3d content:'%s'", __FUNCTION__, g_advancedSettings.m_stereoscopicregex_3d.c_str());
+@@ -202,6 +209,15 @@ std::string CStereoscopicsManager::DetectStereoModeByString(const std::string &n
+   if (re.RegFind(searchString) > -1)
+     stereoMode = "top_bottom";
+ 
++  if (!re.RegComp(g_advancedSettings.m_stereoscopicregex_mvc.c_str()))
++  {
++    CLog::Log(LOGERROR, "%s: Invalid RegExp for matching 3d MVC content:'%s'", __FUNCTION__, g_advancedSettings.m_stereoscopicregex_mvc.c_str());
++    return stereoMode;
++  }
++
++  if (re.RegFind(searchString) > -1)
++    stereoMode = "left_right";
++
+   return stereoMode;
+ }
+ 
+diff --git a/xbmc/settings/AdvancedSettings.cpp b/xbmc/settings/AdvancedSettings.cpp
+index 170c9f8..ebb0398 100644
+--- a/xbmc/settings/AdvancedSettings.cpp
++++ b/xbmc/settings/AdvancedSettings.cpp
+@@ -379,6 +379,7 @@ void CAdvancedSettings::Initialize()
+   m_stereoscopicregex_3d = "[-. _]3d[-. _]";
+   m_stereoscopicregex_sbs = "[-. _]h?sbs[-. _]";
+   m_stereoscopicregex_tab = "[-. _]h?tab[-. _]";
++  m_stereoscopicregex_mvc = "[-. _]h?mvc[-. _]";
+ 
+   m_videoAssFixedWorks = false;
+ 
+@@ -502,6 +503,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
+     XMLUtils::GetString(pElement, "stereoscopicregex3d", m_stereoscopicregex_3d);
+     XMLUtils::GetString(pElement, "stereoscopicregexsbs", m_stereoscopicregex_sbs);
+     XMLUtils::GetString(pElement, "stereoscopicregextab", m_stereoscopicregex_tab);
++    XMLUtils::GetString(pElement, "stereoscopicregexmvc", m_stereoscopicregex_mvc);
+     XMLUtils::GetFloat(pElement, "subsdelayrange", m_videoSubsDelayRange, 10, 600);
+     XMLUtils::GetFloat(pElement, "audiodelayrange", m_videoAudioDelayRange, 10, 600);
+     XMLUtils::GetInt(pElement, "blackbarcolour", m_videoBlackBarColour, 0, 255);
+diff --git a/xbmc/settings/AdvancedSettings.h b/xbmc/settings/AdvancedSettings.h
+index 6475350..8efd698 100644
+--- a/xbmc/settings/AdvancedSettings.h
++++ b/xbmc/settings/AdvancedSettings.h
+@@ -385,6 +385,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
+     std::string m_stereoscopicregex_3d;
+     std::string m_stereoscopicregex_sbs;
+     std::string m_stereoscopicregex_tab;
++    std::string m_stereoscopicregex_mvc;
+ 
+     /*!< @brief position behavior of ass subtitiles when setting "subtitle position on screen" set to "fixed"
+     True to show at the fixed position set in video calibration
+-- 
+1.8.3.1
+
+
+From aecc5b152264823f78a715dd262485e02bc236c7 Mon Sep 17 00:00:00 2001
+From: Zidooer <dl@zidoo.tv>
+Date: Wed, 16 Sep 2015 21:05:04 +0100
+Subject: [PATCH 06/12] ADD: [demux] ssif patches from rk3368 platform
+
+---
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp |  3 ++-
+ xbmc/dialogs/GUIDialogSimpleMenu.cpp               | 27 ++++++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index e813eaa..14d8b17 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -925,6 +925,7 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+               tsB = AV_NOPTS_VALUE;
+               break;
+             }
++            CDVDDemuxUtils::FreeDemuxPacket(mvcpkt);
+             mvcpkt = m_SSIFqueue.front();
+             tsB = (mvcpkt->dts != AV_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
+           }
+@@ -1504,7 +1505,7 @@ void CDVDDemuxFFmpeg::AddStream(int iId, CDemuxStream* stream)
+     res.first->second = stream;
+   }
+   if(g_advancedSettings.m_logLevel > LOG_LEVEL_NORMAL)
+-    CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream(%d, ...) -> %d (%d)", iId, stream->iId, stream->orig_type);
++    CLog::Log(LOGDEBUG, "CDVDDemuxFFmpeg::AddStream(%d, ...) -> %d", iId, stream->iId);
+ }
+ 
+ 
+diff --git a/xbmc/dialogs/GUIDialogSimpleMenu.cpp b/xbmc/dialogs/GUIDialogSimpleMenu.cpp
+index 05c8a77..6e5ff6a 100644
+--- a/xbmc/dialogs/GUIDialogSimpleMenu.cpp
++++ b/xbmc/dialogs/GUIDialogSimpleMenu.cpp
+@@ -95,6 +95,27 @@ bool CGUIDialogSimpleMenu::ShowPlaySelection(CFileItem& item, const std::string&
+     return true;
+   }
+ 
++  /*  RK 3D Select Item */
++  CURL url3("udf://");
++  url3.SetHostName(item.GetPath());
++  url3.SetFileName("BDMV/STREAM/SSIF");
++  CFileItemList _3ditems;
++  XFILE::CDirectory::GetDirectory(url3, _3ditems, XFILE::CDirectory::CHints(), true);
++  if (!_3ditems.IsEmpty())
++  {
++    _3ditems.Sort(SortByTrackNumber,  SortOrderDescending);
++    _3ditems.Sort(SortBySize, SortOrderDescending);
++    printf("%s: %s\n", __func__, _3ditems[0]->GetPath().c_str());
++    CFileItemPtr _3ditem(new CFileItem("", false));
++    _3ditem->SetPath(_3ditems[0]->GetPath());
++    _3ditem->m_bIsFolder = false;
++    _3ditem->m_strTitle = "Play with 3d mode";
++    _3ditem->SetLabel("Play with 3d mode");
++    _3ditem->SetIconImage("DefaultVideo.png");
++    items.Add(_3ditem);
++  }
++  _3ditems.Clear();
++  /******************/
+   CGUIDialogSelect* dialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
+   while (true)
+   {
+@@ -114,9 +135,14 @@ bool CGUIDialogSimpleMenu::ShowPlaySelection(CFileItem& item, const std::string&
+     if (item_new->m_bIsFolder == false)
+     {
+       std::string original_path = item.GetPath();
++      std::string start_percent = item.GetProperty("StartPercent").asString();
++      int start_offset = item.m_lStartOffset;
+       item.Reset();
+       item = *item_new;
+       item.SetProperty("original_listitem_url", original_path);
++      item.SetProperty("StartPercent", start_percent);
++      item.m_lStartOffset = start_offset;
++      items.Clear();
+       return true;
+     }
+ 
+@@ -128,5 +154,6 @@ bool CGUIDialogSimpleMenu::ShowPlaySelection(CFileItem& item, const std::string&
+     }
+   }
+ 
++  items.Clear();
+   return false;
+ }
+-- 
+1.8.3.1
+
+
+From 7a9deb58941fcd5fd80535e2d1308afe435e024e Mon Sep 17 00:00:00 2001
+From: "Chris \\\"Koying\\\" Browet" <cbro@semperpax.com>
+Date: Sun, 10 Jan 2016 19:58:23 +0100
+Subject: [PATCH 07/12] FIX: [MVC;SSIF] append mvc part leftover as well
+
+Fixes MVC_green_macroblocks_00049.ssif
+---
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 275 +++++++++++++++------
+ xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h  |   5 +-
+ 2 files changed, 198 insertions(+), 82 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 14d8b17..63e7b25 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -52,6 +52,8 @@
+ #include "stdint.h"
+ #endif
+ 
++//#define DEBUG_VERBOSE 1
++
+ extern "C" {
+ #include "libavutil/opt.h"
+ }
+@@ -175,6 +177,7 @@ CDVDDemuxFFmpeg::CDVDDemuxFFmpeg() : CDVDDemux()
+   m_bMatroska = false;
+   m_bAVI = false;
+   m_bSSIF = false;
++  m_bSSIFSyncing = false;
+   m_speed = DVD_PLAYSPEED_NORMAL;
+   m_program = UINT_MAX;
+   m_pkt.result = -1;
+@@ -518,11 +521,17 @@ void CDVDDemuxFFmpeg::Dispose()
+ {
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
+-  while (!m_SSIFqueue.empty())
++  while (!m_H264queue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++    m_H264queue.pop();
++  }
++  while (!m_MVCqueue.empty())
+   {
+-    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
+-    m_SSIFqueue.pop();
++    CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++    m_MVCqueue.pop();
+   }
++  m_bSSIFSyncing = true;
+ 
+   if (m_pFormatContext)
+   {
+@@ -571,11 +580,17 @@ void CDVDDemuxFFmpeg::Flush()
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
+-  while (!m_SSIFqueue.empty())
++  while (!m_H264queue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++    m_H264queue.pop();
++  }
++  while (!m_MVCqueue.empty())
+   {
+-    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
+-    m_SSIFqueue.pop();
++    CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++    m_MVCqueue.pop();
+   }
++  m_bSSIFSyncing = true;
+ }
+ 
+ void CDVDDemuxFFmpeg::Abort()
+@@ -686,6 +701,148 @@ double CDVDDemuxFFmpeg::ConvertTimestamp(int64_t pts, int den, int num)
+   return timestamp*DVD_TIME_BASE;
+ }
+ 
++DemuxPacket* mergePacket(DemuxPacket* &srcPkt, DemuxPacket* &appendPkt)
++{
++  DemuxPacket* newpkt = NULL;
++  newpkt = CDVDDemuxUtils::AllocateDemuxPacket(srcPkt->iSize + appendPkt->iSize);
++  newpkt->iSize = srcPkt->iSize + appendPkt->iSize;
++
++  newpkt->pts = srcPkt->pts;
++  newpkt->dts = srcPkt->dts;
++  newpkt->duration = srcPkt->duration;
++  newpkt->iGroupId = srcPkt->iGroupId;
++  newpkt->iStreamId = srcPkt->iStreamId;
++  memcpy(newpkt->pData, srcPkt->pData, srcPkt->iSize);
++  memcpy(newpkt->pData + srcPkt->iSize, appendPkt->pData, appendPkt->iSize);
++
++  CDVDDemuxUtils::FreeDemuxPacket(srcPkt);
++  srcPkt = NULL;
++  CDVDDemuxUtils::FreeDemuxPacket(appendPkt);
++  appendPkt = NULL;
++
++  return newpkt;
++}
++
++DemuxPacket* movePacket(DemuxPacket* &srcPkt)
++{
++  DemuxPacket* newpkt = NULL;
++  newpkt = CDVDDemuxUtils::AllocateDemuxPacket(srcPkt->iSize);
++  newpkt->iSize = srcPkt->iSize;
++
++  newpkt->pts = srcPkt->pts;
++  newpkt->dts = srcPkt->dts;
++  newpkt->duration = srcPkt->duration;
++  newpkt->iGroupId = srcPkt->iGroupId;
++  newpkt->iStreamId = srcPkt->iStreamId;
++  memcpy(newpkt->pData, srcPkt->pData, srcPkt->iSize);
++
++  CDVDDemuxUtils::FreeDemuxPacket(srcPkt);
++  srcPkt = NULL;
++
++  return newpkt;
++}
++
++DemuxPacket* CDVDDemuxFFmpeg::GetMVCPacket()
++{
++  // Here, we recreate a h264 MVC packet from the base one + buffered MVC NALU's
++  DemuxPacket* newpkt = NULL;
++
++  double tsH264 = DVD_NOPTS_VALUE;
++  DemuxPacket* h264pkt = NULL;
++  if (!m_H264queue.empty())
++  {
++    h264pkt = m_H264queue.front();
++    tsH264 = (h264pkt->dts != DVD_NOPTS_VALUE ? h264pkt->dts : h264pkt->pts);
++    CLog::Log(LOGDEBUG, ">>> MVC h264 packet: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
++  }
++
++  double tsMVC = DVD_NOPTS_VALUE;
++  DemuxPacket* mvcpkt = NULL;
++  if (!m_MVCqueue.empty())
++  {
++    mvcpkt = m_MVCqueue.front();
++    tsMVC = (mvcpkt->dts != DVD_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
++    CLog::Log(LOGDEBUG, ">>> MVC mvc packet: %d, pts(%f) dts (%f)", mvcpkt->iSize, mvcpkt->pts, mvcpkt->dts);
++  }
++
++  if (tsH264 == tsMVC)
++  {
++    m_bSSIFSyncing = false;
++    m_H264queue.pop();
++    m_MVCqueue.pop();
++#if defined(DEBUG_VERBOSE)
++    CLog::Log(LOGDEBUG, ">>> MVC merge packet: %d+%d, pts(%f/%f) dts (%f/%f)", h264pkt->iSize, mvcpkt->iSize, h264pkt->pts, mvcpkt->pts, h264pkt->dts, mvcpkt->dts);
++#endif
++    newpkt = mergePacket(h264pkt, mvcpkt);
++    if (!m_MVCqueue.empty())
++    {
++      mvcpkt = m_MVCqueue.front();
++      while (mvcpkt->dts == DVD_NOPTS_VALUE && mvcpkt->pts == DVD_NOPTS_VALUE)
++      {
++        // Append leftover
++#if defined(DEBUG_VERBOSE)
++        CLog::Log(LOGDEBUG, ">>> MVC merge leftover: %d+%d, pts(%f) dts (%f)", newpkt->iSize, mvcpkt->iSize, newpkt->pts, newpkt->dts);
++#endif
++        newpkt = mergePacket(newpkt, mvcpkt);
++        m_MVCqueue.pop();
++        if (m_MVCqueue.empty())
++          break;
++        mvcpkt = m_MVCqueue.front();
++      }
++    }
++  }
++  else if (tsH264 > tsMVC)
++  {
++    // H264 before MVC ?
++#if defined(DEBUG_VERBOSE)
++    CLog::Log(LOGDEBUG, ">>> MVC missing mvc: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
++#endif
++    if (m_bSSIFSyncing)
++    {
++      if (!m_H264queue.empty())
++      {
++        CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++        m_H264queue.pop();
++      }
++      while (!m_MVCqueue.empty())
++      {
++        CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++        m_MVCqueue.pop();
++      }
++    }
++    else if (!m_MVCqueue.empty())
++    {
++      // pop or we are stuck
++      CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++      m_MVCqueue.pop();
++    }
++    newpkt = CDVDDemuxUtils::AllocateDemuxPacket(0);
++    newpkt->iSize = 0;
++  }
++  else
++  {
++    if (m_bSSIFSyncing && !m_H264queue.empty())
++    {
++      CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++      m_H264queue.pop();
++    }
++    else if (!m_H264queue.empty())
++    {
++      // missing an MVC packets
++#if defined(DEBUG_VERBOSE)
++      CLog::Log(LOGDEBUG, ">>> MVC missing mvc2: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
++#endif
++      // pop or we are stuck
++      CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++      m_H264queue.pop();
++    }
++    newpkt = CDVDDemuxUtils::AllocateDemuxPacket(0);
++    newpkt->iSize = 0;
++  }
++
++  return newpkt;
++}
++
+ DemuxPacket* CDVDDemuxFFmpeg::Read()
+ {
+   DemuxPacket* pPacket = NULL;
+@@ -750,10 +907,10 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+ 
+       m_pkt.result = -1;
+       av_free_packet(&m_pkt.pkt);
+-      while (!m_SSIFqueue.empty())
++      while (!m_MVCqueue.empty())
+       {
+-        CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
+-        m_SSIFqueue.pop();
++        CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++        m_MVCqueue.pop();
+       }
+     }
+     else
+@@ -905,78 +1062,22 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+       }
+       if (m_bSSIF && stream->iPhysicalId == 0x1011)
+       {
+-        // Here, we recreate a h264 MVC packet from the base one + buffered MVC NALU's
+-        if (m_SSIFqueue.size() <= 0)
+-        {
+-          CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+-          pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
+-          pPacket->iSize = 0;
+-        }
+-        else
+-        {
+-          DemuxPacket* mvcpkt = m_SSIFqueue.front();
+-          double tsA = (pPacket->dts != AV_NOPTS_VALUE ? pPacket->dts : pPacket->pts);
+-          double tsB = (mvcpkt->dts != AV_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
+-          while (tsB < tsA)
+-          {
+-            m_SSIFqueue.pop();
+-            if (m_SSIFqueue.empty())
+-            {
+-              tsB = AV_NOPTS_VALUE;
+-              break;
+-            }
+-            CDVDDemuxUtils::FreeDemuxPacket(mvcpkt);
+-            mvcpkt = m_SSIFqueue.front();
+-            tsB = (mvcpkt->dts != AV_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
+-          }
+-          if (tsA == tsB)
+-          {
+-            m_SSIFqueue.pop();
+-            DemuxPacket* newpkt = CDVDDemuxUtils::AllocateDemuxPacket(pPacket->iSize + mvcpkt->iSize);
+-            newpkt->pts = pPacket->pts;
+-            newpkt->dts = pPacket->dts;
+-            newpkt->duration = pPacket->duration;
+-            newpkt->iGroupId = pPacket->iGroupId;
+-            newpkt->iStreamId = pPacket->iStreamId;
+-            newpkt->iSize = pPacket->iSize + mvcpkt->iSize;
+-            memcpy(newpkt->pData, pPacket->pData, pPacket->iSize);
+-            memcpy(newpkt->pData + pPacket->iSize, mvcpkt->pData, mvcpkt->iSize);
+-            //CLog::Log(LOGDEBUG, ">>> MVC merged packet: %d+%d, pts(%f/%f) dts (%f/%f)", pPacket->iSize, mvcpkt->iSize, pPacket->pts, mvcpkt->pts, pPacket->dts, mvcpkt->dts);
+-
+-            CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+-            CDVDDemuxUtils::FreeDemuxPacket(mvcpkt);
+-            pPacket = newpkt;
+-          }
+-          else
+-          {
+-            //CLog::Log(LOGERROR, "!!! MVC error: missing mvc packet: pts(%f) dts(%f) - %lld", pPacket->pts, pPacket->dts, m_pkt.pkt.pts);
+-            // Ignore packets without MVC part; solves seeking
+-            CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+-            pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
+-            pPacket->iSize = 0;
+-          }
+-        }
++        DemuxPacket* newpkt = movePacket(pPacket);
++        m_H264queue.push(newpkt);
++
++        pPacket = GetMVCPacket();
+       }
+     }
+     else if (stream->type == STREAM_DATA)
+     {
+       if (m_bSSIF && stream->iPhysicalId == 0x1012)
+       {
+-        // Buffer the MVC NALU's for later merging with the base h264 packet
+-        // This works because the MVC stream is guaranteed to come first
+-        DemuxPacket* newpkt = CDVDDemuxUtils::AllocateDemuxPacket(pPacket->iSize);
+-        newpkt->iSize = pPacket->iSize;
+-        newpkt->pts = pPacket->pts;
+-        newpkt->dts = pPacket->dts;
+-        newpkt->duration = pPacket->duration;
+-        newpkt->iGroupId = pPacket->iGroupId;
+-        newpkt->iStreamId = pPacket->iStreamId;
+-        memcpy(newpkt->pData, pPacket->pData, newpkt->iSize);
+-        m_SSIFqueue.push(newpkt);
+-        
+-        CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+-        pPacket = CDVDDemuxUtils::AllocateDemuxPacket(0);
+-        pPacket->iSize = 0;
++        DemuxPacket* newpkt = movePacket(pPacket);
++        m_MVCqueue.push(newpkt);
++
++        pPacket = GetMVCPacket();
++        if (pPacket->iSize)
++          stream = GetStreamInternal(pPacket->iStreamId);
+       }
+     }
+     if (!stream)
+@@ -1001,11 +1102,17 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
+-  while (!m_SSIFqueue.empty())
++  while (!m_H264queue.empty())
+   {
+-    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
+-    m_SSIFqueue.pop();
++    CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++    m_H264queue.pop();
+   }
++  while (!m_MVCqueue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++    m_MVCqueue.pop();
++  }
++  m_bSSIFSyncing = true;
+ 
+   CDVDInputStream::ISeekTime* ist = dynamic_cast<CDVDInputStream::ISeekTime*>(m_pInput);
+   if (ist)
+@@ -1073,11 +1180,17 @@ bool CDVDDemuxFFmpeg::SeekByte(int64_t pos)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
+-  while (!m_SSIFqueue.empty())
++  while (!m_H264queue.empty())
++  {
++    CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++    m_H264queue.pop();
++  }
++  while (!m_MVCqueue.empty())
+   {
+-    CDVDDemuxUtils::FreeDemuxPacket(m_SSIFqueue.front());
+-    m_SSIFqueue.pop();
++    CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++    m_MVCqueue.pop();
+   }
++  m_bSSIFSyncing = true;
+ 
+   return (ret >= 0);
+ }
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+index c17a016..409da8e 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.h
+@@ -133,6 +133,7 @@ protected:
+   void ParsePacket(AVPacket *pkt);
+   bool IsVideoReady();
+   void ResetVideoStreams();
++  DemuxPacket* GetMVCPacket();
+ 
+   AVDictionary *GetFFMpegOptionsFromURL(const CURL &url);
+   double ConvertTimestamp(int64_t pts, int den, int num);
+@@ -155,7 +156,9 @@ protected:
+   bool     m_bMatroska;
+   bool     m_bAVI;
+   bool     m_bSSIF;
+-  std::queue<DemuxPacket*> m_SSIFqueue;
++  bool     m_bSSIFSyncing;
++  std::queue<DemuxPacket*> m_H264queue;
++  std::queue<DemuxPacket*> m_MVCqueue;
+   int      m_speed;
+   unsigned m_program;
+   XbmcThreads::EndTime  m_timeout;
+-- 
+1.8.3.1
+
+
+From a842fcec1e48beff29d1911087853f4bfaf9c809 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 18 Jan 2016 18:38:30 +0000
+Subject: [PATCH 08/12] ssif: tidy up the logic for merging ssif packets
+
+---
+ .../cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp | 153 ++++++++++-----------
+ 1 file changed, 76 insertions(+), 77 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 63e7b25..734c004 100644
+--- a/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/dvdplayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -52,7 +52,7 @@
+ #include "stdint.h"
+ #endif
+ 
+-//#define DEBUG_VERBOSE 1
++#define DEBUG_VERBOSE 1
+ 
+ extern "C" {
+ #include "libavutil/opt.h"
+@@ -521,6 +521,9 @@ void CDVDDemuxFFmpeg::Dispose()
+ {
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++#if defined(DEBUG_VERBOSE)
++  CLog::Log(LOGDEBUG, ">>> Dispose: flushing queue(%d,%d)", m_MVCqueue.size(), m_H264queue.size());
++#endif
+   while (!m_H264queue.empty())
+   {
+     CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+@@ -580,6 +583,9 @@ void CDVDDemuxFFmpeg::Flush()
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++#if defined(DEBUG_VERBOSE)
++  CLog::Log(LOGDEBUG, ">>> Flush: flushing queue(%d,%d)", m_MVCqueue.size(), m_H264queue.size());
++#endif
+   while (!m_H264queue.empty())
+   {
+     CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+@@ -745,102 +751,77 @@ DemuxPacket* movePacket(DemuxPacket* &srcPkt)
+ DemuxPacket* CDVDDemuxFFmpeg::GetMVCPacket()
+ {
+   // Here, we recreate a h264 MVC packet from the base one + buffered MVC NALU's
+-  DemuxPacket* newpkt = NULL;
+-
+-  double tsH264 = DVD_NOPTS_VALUE;
+-  DemuxPacket* h264pkt = NULL;
+-  if (!m_H264queue.empty())
++  while (!m_H264queue.empty() && !m_MVCqueue.empty())
+   {
+-    h264pkt = m_H264queue.front();
+-    tsH264 = (h264pkt->dts != DVD_NOPTS_VALUE ? h264pkt->dts : h264pkt->pts);
+-    CLog::Log(LOGDEBUG, ">>> MVC h264 packet: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
+-  }
++    DemuxPacket* h264pkt = m_H264queue.front();
++    double tsH264 = (h264pkt->dts != DVD_NOPTS_VALUE ? h264pkt->dts : h264pkt->pts);
++    DemuxPacket* mvcpkt = m_MVCqueue.front();
++    double tsMVC = (mvcpkt->dts != DVD_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
+ 
+-  double tsMVC = DVD_NOPTS_VALUE;
+-  DemuxPacket* mvcpkt = NULL;
+-  if (!m_MVCqueue.empty())
+-  {
+-    mvcpkt = m_MVCqueue.front();
+-    tsMVC = (mvcpkt->dts != DVD_NOPTS_VALUE ? mvcpkt->dts : mvcpkt->pts);
+-    CLog::Log(LOGDEBUG, ">>> MVC mvc packet: %d, pts(%f) dts (%f)", mvcpkt->iSize, mvcpkt->pts, mvcpkt->dts);
+-  }
+-
+-  if (tsH264 == tsMVC)
+-  {
+-    m_bSSIFSyncing = false;
+-    m_H264queue.pop();
+-    m_MVCqueue.pop();
+-#if defined(DEBUG_VERBOSE)
+-    CLog::Log(LOGDEBUG, ">>> MVC merge packet: %d+%d, pts(%f/%f) dts (%f/%f)", h264pkt->iSize, mvcpkt->iSize, h264pkt->pts, mvcpkt->pts, h264pkt->dts, mvcpkt->dts);
+-#endif
+-    newpkt = mergePacket(h264pkt, mvcpkt);
+-    if (!m_MVCqueue.empty())
++    if (tsH264 == tsMVC)
+     {
+-      mvcpkt = m_MVCqueue.front();
+-      while (mvcpkt->dts == DVD_NOPTS_VALUE && mvcpkt->pts == DVD_NOPTS_VALUE)
++      m_bSSIFSyncing = false;
++      m_H264queue.pop();
++      m_MVCqueue.pop();
++
++      while (!m_H264queue.empty())
+       {
+-        // Append leftover
+-#if defined(DEBUG_VERBOSE)
+-        CLog::Log(LOGDEBUG, ">>> MVC merge leftover: %d+%d, pts(%f) dts (%f)", newpkt->iSize, mvcpkt->iSize, newpkt->pts, newpkt->dts);
+-#endif
+-        newpkt = mergePacket(newpkt, mvcpkt);
+-        m_MVCqueue.pop();
+-        if (m_MVCqueue.empty())
++        DemuxPacket* pkt = m_H264queue.front();
++        double ts = (pkt->dts != DVD_NOPTS_VALUE ? pkt->dts : pkt->pts);
++        if (ts == DVD_NOPTS_VALUE)
++        {
++          #if defined(DEBUG_VERBOSE)
++          CLog::Log(LOGDEBUG, ">>> MVC merge h264 fragment: %6d+%6d, pts(%.3f/%.3f) dts(%.3f/%.3f) sync:%d", h264pkt->iSize, pkt->iSize, h264pkt->pts*1e-6, pkt->pts*1e-6, h264pkt->dts*1e-6, pkt->dts*1e-6, m_bSSIFSyncing);
++          #endif
++          h264pkt = mergePacket(h264pkt, pkt);
++          m_H264queue.pop();
++        }
++        else
+           break;
+-        mvcpkt = m_MVCqueue.front();
+-      }
+-    }
+-  }
+-  else if (tsH264 > tsMVC)
+-  {
+-    // H264 before MVC ?
+-#if defined(DEBUG_VERBOSE)
+-    CLog::Log(LOGDEBUG, ">>> MVC missing mvc: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
+-#endif
+-    if (m_bSSIFSyncing)
+-    {
+-      if (!m_H264queue.empty())
+-      {
+-        CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+-        m_H264queue.pop();
+       }
+       while (!m_MVCqueue.empty())
+       {
+-        CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
+-        m_MVCqueue.pop();
++        DemuxPacket* pkt = m_MVCqueue.front();
++        double ts = (pkt->dts != DVD_NOPTS_VALUE ? pkt->dts : pkt->pts);
++        if (ts == DVD_NOPTS_VALUE)
++        {
++          #if defined(DEBUG_VERBOSE)
++          CLog::Log(LOGDEBUG, ">>> MVC merge mvc fragment: %6d+%6d, pts(%.3f/%.3f) dts(%.3f/%.3f) sync:%d", mvcpkt->iSize, pkt->iSize, mvcpkt->pts*1e-6, pkt->pts*1e-6, mvcpkt->dts*1e-6, pkt->dts*1e-6, m_bSSIFSyncing);
++          #endif
++          mvcpkt = mergePacket(mvcpkt, pkt);
++          m_MVCqueue.pop();
++        }
++        else
++          break;
+       }
++
++      #if defined(DEBUG_VERBOSE)
++      CLog::Log(LOGDEBUG, ">>> MVC merge packet: %6d+%6d, pts(%.3f/%.3f) dts(%.3f/%.3f) sync:%d", h264pkt->iSize, mvcpkt->iSize, h264pkt->pts*1e-6, mvcpkt->pts*1e-6, h264pkt->dts*1e-6, mvcpkt->dts*1e-6, m_bSSIFSyncing);
++      #endif
++      return mergePacket(h264pkt, mvcpkt);
+     }
+-    else if (!m_MVCqueue.empty())
++    else if (tsH264 > tsMVC)
+     {
+-      // pop or we are stuck
+-      CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
++#if defined(DEBUG_VERBOSE)
++      CLog::Log(LOGDEBUG, ">>> MVC discard  mvc: %6d, pts(%.3f) dts(%.3f) sync:%d", mvcpkt->iSize, mvcpkt->pts*1e-6, mvcpkt->dts*1e-6, m_bSSIFSyncing);
++#endif
++      CDVDDemuxUtils::FreeDemuxPacket(mvcpkt);
+       m_MVCqueue.pop();
+     }
+-    newpkt = CDVDDemuxUtils::AllocateDemuxPacket(0);
+-    newpkt->iSize = 0;
+-  }
+-  else
+-  {
+-    if (m_bSSIFSyncing && !m_H264queue.empty())
+-    {
+-      CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+-      m_H264queue.pop();
+-    }
+-    else if (!m_H264queue.empty())
++    else
+     {
+-      // missing an MVC packets
+ #if defined(DEBUG_VERBOSE)
+-      CLog::Log(LOGDEBUG, ">>> MVC missing mvc2: %d, pts(%f) dts (%f)", h264pkt->iSize, h264pkt->pts, h264pkt->dts);
++      CLog::Log(LOGDEBUG, ">>> MVC discard h264: %6d, pts(%.3f) dts(%.3f) sync:%d", h264pkt->iSize, h264pkt->pts*1e-6, h264pkt->dts*1e-6, m_bSSIFSyncing);
+ #endif
+-      // pop or we are stuck
+-      CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++      CDVDDemuxUtils::FreeDemuxPacket(h264pkt);
+       m_H264queue.pop();
+     }
+-    newpkt = CDVDDemuxUtils::AllocateDemuxPacket(0);
+-    newpkt->iSize = 0;
+   }
+ 
+-  return newpkt;
++#if defined(DEBUG_VERBOSE)
++  CLog::Log(LOGDEBUG, ">>> MVC waiting. MVC(%d) H264(%d) sync:%d", m_MVCqueue.size(), m_H264queue.size(), m_bSSIFSyncing);
++#endif
++  return CDVDDemuxUtils::AllocateDemuxPacket(0);
+ }
+ 
+ DemuxPacket* CDVDDemuxFFmpeg::Read()
+@@ -907,11 +888,17 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+ 
+       m_pkt.result = -1;
+       av_free_packet(&m_pkt.pkt);
++      while (!m_H264queue.empty())
++      {
++        CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
++        m_H264queue.pop();
++      }
+       while (!m_MVCqueue.empty())
+       {
+         CDVDDemuxUtils::FreeDemuxPacket(m_MVCqueue.front());
+         m_MVCqueue.pop();
+       }
++      m_bSSIFSyncing = true;
+     }
+     else
+     {
+@@ -1065,6 +1052,9 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+         DemuxPacket* newpkt = movePacket(pPacket);
+         m_H264queue.push(newpkt);
+ 
++#if defined(DEBUG_VERBOSE)
++       CLog::Log(LOGDEBUG, ">>> Got H264: %6d, pts(%.3f) dts(%.3f) queue(%d) sync:%d", newpkt->iSize, newpkt->pts*1e-6, newpkt->dts*1e-6, m_H264queue.size(), m_bSSIFSyncing);
++#endif
+         pPacket = GetMVCPacket();
+       }
+     }
+@@ -1075,6 +1065,9 @@ DemuxPacket* CDVDDemuxFFmpeg::Read()
+         DemuxPacket* newpkt = movePacket(pPacket);
+         m_MVCqueue.push(newpkt);
+ 
++#if defined(DEBUG_VERBOSE)
++    CLog::Log(LOGDEBUG, ">>> Got  MVC: %6d, pts(%.3f) dts(%.3f) queue(%d) sync:%d", newpkt->iSize, newpkt->pts*1e-6, newpkt->dts*1e-6, m_MVCqueue.size(), m_bSSIFSyncing);
++#endif
+         pPacket = GetMVCPacket();
+         if (pPacket->iSize)
+           stream = GetStreamInternal(pPacket->iStreamId);
+@@ -1102,6 +1095,9 @@ bool CDVDDemuxFFmpeg::SeekTime(int time, bool backwords, double *startpts)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++#if defined(DEBUG_VERBOSE)
++  CLog::Log(LOGDEBUG, ">>> SeekTime: flushing queue(%d,%d)", m_MVCqueue.size(), m_H264queue.size());
++#endif
+   while (!m_H264queue.empty())
+   {
+     CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+@@ -1180,6 +1176,9 @@ bool CDVDDemuxFFmpeg::SeekByte(int64_t pos)
+ 
+   m_pkt.result = -1;
+   av_free_packet(&m_pkt.pkt);
++#if defined(DEBUG_VERBOSE)
++  CLog::Log(LOGDEBUG, ">>> SeekByte: flushing queue(%d,%d)", m_MVCqueue.size(), m_H264queue.size());
++#endif
+   while (!m_H264queue.empty())
+   {
+     CDVDDemuxUtils::FreeDemuxPacket(m_H264queue.front());
+-- 
+1.8.3.1
+
+
+From 482344cd022a9ca0c929f1da72d7182047baa9c7 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 6 Feb 2016 16:29:09 +0000
+Subject: [PATCH 09/12] fixup! [3d] Automatically enable 3D for ssif
+
+---
+ xbmc/guilib/StereoscopicsManager.cpp | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/xbmc/guilib/StereoscopicsManager.cpp b/xbmc/guilib/StereoscopicsManager.cpp
+index 1ad4add..10cb68e 100644
+--- a/xbmc/guilib/StereoscopicsManager.cpp
++++ b/xbmc/guilib/StereoscopicsManager.cpp
+@@ -173,12 +173,6 @@ std::string CStereoscopicsManager::DetectStereoModeByString(const std::string &n
+   std::string searchString(needle);
+   CRegExp re(true);
+ 
+-  if (URIUtils::HasExtension(needle, ".ssif"))
+-  {
+-    stereoMode = "left_right";
+-    return stereoMode;
+-  }
+-
+   if (!re.RegComp(g_advancedSettings.m_stereoscopicregex_3d.c_str()))
+   {
+     CLog::Log(LOGERROR, "%s: Invalid RegExp for matching 3d content:'%s'", __FUNCTION__, g_advancedSettings.m_stereoscopicregex_3d.c_str());
+@@ -218,6 +212,12 @@ std::string CStereoscopicsManager::DetectStereoModeByString(const std::string &n
+   if (re.RegFind(searchString) > -1)
+     stereoMode = "left_right";
+ 
++  if (URIUtils::HasExtension(needle, ".ssif"))
++  {
++    stereoMode = "top_bottom";
++    return stereoMode;
++  }
++
+   return stereoMode;
+ }
+ 
+-- 
+1.8.3.1
+
+
+From a5a34a0d57e130390779bfe105cf4b51fb0afb9a Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sun, 21 Jun 2015 17:11:09 +0100
+Subject: [PATCH 10/12] Revert "[3D] don't back out from 3D handling on
+ resolution changes if we're switching to a different 3D mode"
+
+This reverts commit 3c4c236a799dab8369b4bb74ff9993bc58a61a72.
+---
+ xbmc/guilib/GraphicContext.cpp | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/xbmc/guilib/GraphicContext.cpp b/xbmc/guilib/GraphicContext.cpp
+index a1b8812..87e71de 100644
+--- a/xbmc/guilib/GraphicContext.cpp
++++ b/xbmc/guilib/GraphicContext.cpp
+@@ -433,17 +433,14 @@ void CGraphicContext::SetVideoResolutionInternal(RESOLUTION res, bool forceUpdat
+ 
+   RENDER_STEREO_MODE stereo_mode = m_stereoMode;
+ 
+-  // if the new resolution is an actual stereo mode, switch to that
+-  // if the old resolution was an actual stereo mode and renderer is still in old 3D mode, switch to no 3d mode
++  // if the new mode is an actual stereo mode, switch to that
++  // if the old mode was an actual stereo mode, switch to no 3d mode
+   if (info_org.dwFlags & D3DPRESENTFLAG_MODE3DTB)
+     stereo_mode = RENDER_STEREO_MODE_SPLIT_HORIZONTAL;
+   else if (info_org.dwFlags & D3DPRESENTFLAG_MODE3DSBS)
+     stereo_mode = RENDER_STEREO_MODE_SPLIT_VERTICAL;
+-  else if ((info_last.dwFlags & D3DPRESENTFLAG_MODE3DTB)
+-        && m_stereoMode == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)
+-    stereo_mode = RENDER_STEREO_MODE_OFF;
+-  else if ((info_last.dwFlags & D3DPRESENTFLAG_MODE3DSBS)
+-        && m_stereoMode == RENDER_STEREO_MODE_SPLIT_VERTICAL)
++  else if ((info_last.dwFlags & D3DPRESENTFLAG_MODE3DSBS) != 0
++        || (info_last.dwFlags & D3DPRESENTFLAG_MODE3DTB)  != 0)
+     stereo_mode = RENDER_STEREO_MODE_OFF;
+ 
+   if(stereo_mode != m_stereoMode)
+-- 
+1.8.3.1
+
+
+From 1c35578daddf895c9b9f9ce28257c255598f8424 Mon Sep 17 00:00:00 2001
+From: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date: Thu, 2 Jun 2016 02:35:03 +0800
+Subject: [PATCH 11/12] 3D: Fix for Linux AML HasHW3DInterlaced
+
+---
+ xbmc/utils/SystemInfo.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/utils/SystemInfo.cpp b/xbmc/utils/SystemInfo.cpp
+index efae19e..6fb3216 100644
+--- a/xbmc/utils/SystemInfo.cpp
++++ b/xbmc/utils/SystemInfo.cpp
+@@ -865,7 +865,7 @@ bool CSysInfo::IsAeroDisabled()
+ 
+ bool CSysInfo::HasHW3DInterlaced()
+ {
+-#if defined(TARGET_ANDROID)
++#if defined(HAS_LIBAMCODEC)
+   if (aml_hw3d_present())
+     return true;
+ #endif
+-- 
+1.8.3.1
+
+
+From 491997d2d0a89293c70d4fa0b0c3bac9101ddd58 Mon Sep 17 00:00:00 2001
+From: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date: Thu, 2 Jun 2016 02:49:03 +0800
+Subject: [PATCH 12/12] 3D: Forgotten Includes and further de-androidification
+
+---
+ xbmc/utils/SystemInfo.cpp | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/xbmc/utils/SystemInfo.cpp b/xbmc/utils/SystemInfo.cpp
+index 6fb3216..caeaaa14 100644
+--- a/xbmc/utils/SystemInfo.cpp
++++ b/xbmc/utils/SystemInfo.cpp
+@@ -53,10 +53,7 @@
+ #include "powermanagement/PowerManager.h"
+ #include "utils/StringUtils.h"
+ #include "utils/XMLUtils.h"
+-#if defined(TARGET_ANDROID)
+-#include "android/jni/Build.h"
+ #include "utils/AMLUtils.h"
+-#endif
+ 
+ /* Platform identification */
+ #if defined(TARGET_DARWIN)
+-- 
+1.8.3.1
+
