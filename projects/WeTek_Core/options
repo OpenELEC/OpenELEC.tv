@@ -173,3 +173,6 @@
   # set the addon dirs
     ADDON_PATH="$ADDON_VERSION/WeTek_Play/$TARGET_ARCH"
     ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
+
+  # override some playlist core assignation
+    RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//mupen64plus/glupen64}"
