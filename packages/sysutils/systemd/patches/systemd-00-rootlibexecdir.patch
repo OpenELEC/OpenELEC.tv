@@ -1,0 +1,12 @@
+diff -Naur systemd-232/Makefile.am systemd-232.patch/Makefile.am
+--- systemd-232/Makefile.am	2016-11-03 18:16:42.000000000 +0100
++++ systemd-232.patch/Makefile.am	2016-12-08 11:21:36.499028075 +0100
+@@ -95,7 +95,7 @@
+ # And these are the special ones for /
+ rootprefix=@rootprefix@
+ rootbindir=$(rootprefix)/bin
+-rootlibexecdir=$(rootprefix)/lib/systemd
++rootlibexecdir=/lib/systemd
+ 
+ EXTRA_DIST =
+ BUILT_SOURCES =

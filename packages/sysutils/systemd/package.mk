@@ -105,7 +105,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --with-dbuspolicydir=/etc/dbus-1/system.d \
                            --with-dbussessionservicedir=/usr/share/dbus-1/services \
                            --with-dbussystemservicedir=/usr/share/dbus-1/system-services \
-                           --with-rootprefix=/ \
+                           --with-rootprefix=/usr \
                            --with-rootlibdir=/usr/lib"
 
 unpack() {
@@ -174,8 +174,8 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/systemd-nspawn
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
 
-  # remove genetators/catalog
-  rm -rf $INSTALL/usr/lib/systemd/system-generators
+  # remove generators/catalog
+  rm -rf $INSTALL/lib/systemd/system-generators/*
   rm -rf $INSTALL/usr/lib/systemd/catalog
 
   # disable usage of presets, see: https://freedesktop.org/wiki/Software/systemd/Preset/
