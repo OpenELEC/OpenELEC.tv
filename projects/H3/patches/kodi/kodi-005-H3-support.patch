@@ -316,11 +316,11 @@ diff -Nur a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecCedarX.cpp codec/x
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV2;
 +      break;
 +    case AV_CODEC_ID_VC1:
++      ignoreExtraData = true;
 +    case AV_CODEC_ID_WMV3:
 +      m_pFormatName = "cedarx-wmv3";
 +      m_streamInfo.eCodecFormat = VIDEO_CODEC_FORMAT_WMV3;
 +      m_streamInfo.bIsFramePackage = 1;
-+      ignoreExtraData = true;
 +      break;
 +    case AV_CODEC_ID_AVS:
 +    case AV_CODEC_ID_CAVS:
