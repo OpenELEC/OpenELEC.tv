@@ -1,10 +1,3 @@
-;H3 dolphin-p1 board application
-;H3 dolphin-p1 board application
-;---------------------------------------------------------------------------------------------------------
-; 说明： 脚本中的字符串区分大小写，用户可以修改"="后面的数值，但是不要修改前面的字符串
-; 描述gpio的形式：Port:端口+组内序号<功能分配><内部电阻状态><驱动能力><输出电平状态>
-;---------------------------------------------------------------------------------------------------------
-
 [product]
 version = "100"
 machine = "opiplus"
@@ -28,41 +21,6 @@ boot_clock   	= 1008
 storage_type    = -1
 
 ;---------------------------------------------------------------------------------
-; uboot key detect enable
-; 当keyen_flag = 1 时，支持按键检测
-; 当keyen_flag = 0 时，不支持
-;---------------------------------------------------------------------------------
-[key_detect_en]
-keyen_flag = 0
-
-;---------------------------------------------------------------------------------
-;"一键进烧写功能"的按键值配置，按住位于min~max范围内的按键都可以强制进烧写
-; fel_key_max用于配置按键的最大键值
-; fel_key_min用于配置按键的最小键值
-;---------------------------------------------------------------------------------
-[fel_key]
-fel_key_max            =07
-fel_key_min            =02
-
-;----------------------------------------------------------------------------------
-;card boot
-;logical_start用于配置启动卡上mbr的位置相对于SD卡sector 0的偏移，单位为sector(512byte)
-;sprite_gpio0用于配置卡量产时指示灯所用的gpio
-;----------------------------------------------------------------------------------
-;-------------------------------------------------------------------------------
-;	sprite_work_delay	:
-;	 sprite_err_delay	:
-;		 sprite_gpio0	：	卡量产、一键recovery状态指示灯
-;			next_work	： 卡量产完成，工作状态(默认关机)
-;-------------------------------------------------------------------------------
-[card_boot]
-logical_start   = 40960
-sprite_work_delay	= 500
-sprite_err_delay	= 200
-sprite_gpio0    = port:PL10<1><default><default><default>
-next_work       = 3
-
-;---------------------------------------------------------------------------------
 ; used       : 1: used this config, 0: not
 ; start_type : 1: start system directly when power supply, 0: wait IR/KEY to power on
 ; irkey_used : 1: ir key used, 0: not
@@ -79,28 +37,6 @@ pmukey_num = 3
 led_power = 0
 led_state = 0
 
-;-------------------------------------------------------------------------------
-; 	boot阶段上电初始化GPIO
-;		used		:模块使能端     置1：开启模块   置0：关闭模块
-;		gpiox ：上电初始化gpio （名称自定，但不能重复，并且GPIO允许可以多个）
-;		PH06  : 系统显示LED GPIO
-;-------------------------------------------------------------------------------
-[boot_init_gpio]
-used	=	1
-gpio0	=  port:PL10<1><default><default><1>
-gpio1	=  port:PG11<1><default><default><1>
-
-;----------------------------------------------------------------------------------
-;	used: 模块使能端     1：开启模块   0：关闭模块
-;	mode: 模式选择		 1：一键进入OTA升级		2：一键恢复（通过sysrecovery分区来恢复）  其他值：无效
-;	recovery_key ： 按键配置  （例如：recovery_key= port:PH16<0><default>）
-;----------------------------------------------------------------------------------
-[recovery_para]
-used =	1
-mode =	2
-recovery_key = port:PL04<0><default><default><default>
-
-
 ;---------------------------------------------------------------------------------------------------------
 ; if 1 == standby_mode, then support super standby;
 ; else, support normal standby.
@@ -108,6 +44,7 @@ recovery_key = port:PL04<0><default><default><default>
 [pm_para]
 standby_mode		= 1
 
+; THIS PARAMETERS SEEMS TO BE USED ONLY FOR TESTING
 [card0_boot_para]
 card_ctrl       = 0
 card_high_speed = 1
@@ -118,23 +55,6 @@ sdc_clk         = port:PF02<2><1><2><default>
 sdc_cmd         = port:PF03<2><1><2><default>
 sdc_d3          = port:PF04<2><1><2><default>
 sdc_d2          = port:PF05<2><1><2><default>
-
-[card2_boot_para]
-card_ctrl       = 2
-card_high_speed = 1
-card_line       = 8
-sdc_cmd         = port:PC06<3><1><2><default>
-sdc_clk         = port:PC05<3><1><2><default>
-sdc_d0          = port:PC08<3><1><2><default>
-sdc_d1          = port:PC09<3><1><2><default>
-sdc_d2          = port:PC10<3><1><2><default>
-sdc_d3          = port:PC11<3><1><2><default>
-sdc_d4          = port:PC12<3><1><2><default>
-sdc_d5          = port:PC13<3><1><2><default>
-sdc_d6          = port:PC14<3><1><2><default>
-sdc_d7          = port:PC15<3><1><2><default>
-sdc_2xmode   	= 1
-sdc_ddrmode		= 1
 
 [twi_para]
 twi_port        = 0
@@ -170,12 +90,10 @@ pll_de           = 864
 ;sdram configuration
 ;
 ;dram_para2 = 0x00001200  ;Representative enable dram Dual
-;
 ;dram_para2 = 0x00001100  ;on behalf of a single channel is enabled dram
-;
 ;*****************************************************************************
 [dram_para]
-dram_clk        = 672
+dram_clk        = 624
 dram_type       = 3
 dram_zq         = 0x3b3bfb
 dram_odt_en     = 0x1
@@ -199,9 +117,6 @@ dram_tpr10      = 0
 dram_tpr11      = 0x6aaa0000
 dram_tpr12      = 0x7979
 dram_tpr13      = 0x800800
-;----------------------------------------------------------------------------------
-;os life cycle para configuration
-;----------------------------------------------------------------------------------
 
 ;---------------------------------------------------------------------------------------------------------
 ; wakeup_src_para:
@@ -224,7 +139,7 @@ dram_tpr13      = 0x800800
 cpu_en              = 0
 cpu_freq            = 48
 ; (cpu:apb:ahb)
-pll_ratio           = 0x111
+pll_ratio           = 273
 dram_selfresh_en    = 1
 dram_freq           = 36
 wakeup_src0         =
@@ -240,7 +155,7 @@ twi_scl         = port:PA11<2><default><default><default>
 twi_sda         = port:PA12<2><default><default><default>
 
 [twi1]
-twi_used        = 1
+twi_used        = 0
 twi_scl         = port:PA18<3><default><default><default>
 twi_sda         = port:PA19<3><default><default><default>
 
@@ -270,7 +185,7 @@ uart_rts        = port:PG08<2><1><default><default>
 uart_cts        = port:PG09<2><1><default><default>
 
 [uart2]
-uart_used       = 1
+uart_used       = 0
 uart_port       = 2
 uart_type       = 4
 uart_tx         = port:PA00<2><1><default><default>
@@ -279,7 +194,7 @@ uart_rts        = port:PA02<2><1><default><default>
 uart_cts        = port:PA03<2><1><default><default>
 
 [uart3]
-uart_used       = 1
+uart_used       = 0
 uart_port       = 3
 uart_type       = 2
 uart_tx         = port:PA13<3><1><default><default>
@@ -326,36 +241,41 @@ manual_cs     = 0
 ; ** COMMENT THE PINS USED IN OTHER INTERFACES (I2C, SPI, 1-WIRE...)
 ;----------------------------------------------------------------------------------
 [gpio_para]
-gpio_used = 1
-gpio_num = 19
-gpio_pin_1       = port:PA06<1><default><default><0>
-gpio_pin_2       = port:PA13<1><default><default><0>
-gpio_pin_3       = port:PA14<1><default><default><0>
-gpio_pin_4       = port:PA01<1><default><default><0>
-gpio_pin_5       = port:PD14<1><default><default><0>
-gpio_pin_6       = port:PA00<1><default><default><0>
-gpio_pin_7       = port:PA03<1><default><default><0>
-gpio_pin_8       = port:PC04<1><default><default><0>
-gpio_pin_9       = port:PC07<1><default><default><0>
-gpio_pin_10      = port:PA02<1><default><default><0>
-gpio_pin_11      = port:PA21<1><default><default><0>
-gpio_pin_12      = port:PA07<1><default><default><0>
-gpio_pin_13      = port:PA08<1><default><default><0>
-gpio_pin_14      = port:PG08<1><default><default><0>
-gpio_pin_15      = port:PA09<1><default><default><0>
-gpio_pin_16      = port:PA10<1><default><default><0>
-gpio_pin_17      = port:PG09<1><default><default><0>
-gpio_pin_18      = port:PG06<1><default><default><0>
-gpio_pin_19      = port:PG07<1><default><default><0>
+gpio_used   = 1
+gpio_num    = 24
+gpio_pin_1  = port:PL10<1><default><default><1>
+gpio_pin_2  = port:PA15<1><default><default><0>
+gpio_pin_3  = port:PA12<1><default><default><0>
+gpio_pin_4  = port:PA11<1><default><default><0>
+gpio_pin_5  = port:PA06<1><default><default><0>
+gpio_pin_6  = port:PA13<1><default><default><0>
+gpio_pin_7  = port:PA14<1><default><default><0>
+gpio_pin_8  = port:PA01<1><default><default><0>
+gpio_pin_9  = port:PD14<1><default><default><0>
+gpio_pin_10 = port:PA00<1><default><default><0>
+gpio_pin_11 = port:PA03<1><default><default><0>
+gpio_pin_12 = port:PC04<1><default><default><0>
+gpio_pin_13 = port:PC07<1><default><default><0>
+gpio_pin_14 = port:PA02<1><default><default><0>
+gpio_pin_15 = port:PA19<1><default><default><0>
+gpio_pin_16 = port:PA18<1><default><default><0>
+gpio_pin_17 = port:PA07<1><default><default><0>
+gpio_pin_18 = port:PA08<1><default><default><0>
+gpio_pin_19 = port:PG08<1><default><default><0>
+gpio_pin_20 = port:PA09<1><default><default><0>
+gpio_pin_21 = port:PA10<1><default><default><0>
+gpio_pin_22 = port:PG09<1><default><default><0>
+gpio_pin_23 = port:PG06<1><default><default><0>
+gpio_pin_24 = port:PG07<1><default><default><0>
 
-;[led_assign]
-;normal_led      = "gpio_pin_2"
-;standby_led     = "gpio_pin_1"
+[led_assign]
+normal_led = "gpio_pin_2"
+standby_led = "gpio_pin_1"
 
 [leds_para]
 leds_used = 1
-green_led = port:PL10<1><default><default><1>
-green_led_active_low = 0
+green_led = port:PL10<1><default><default><0>
+green_led_active_low = 1
 red_led = port:PA15<1><default><default><0>
 red_led_active_low = 0
 
@@ -370,7 +290,6 @@ red_led_active_low = 0
 ;ths_trip_1_min : second temperature trigger's min freq
 ;ths_trip_1_max : second temperature trigger's max freq
 ;----------------------------------------------------------------------------------
-
 [ths_para]
 ths_used = 1
 ths_trip1_count = 6
@@ -402,7 +321,6 @@ ths_trip2_0 = 105
 ;----------------------------------------------------------------------------------
 ;cooler_table  cooler_count <=32
 ;----------------------------------------------------------------------------------
-
 [cooler_table]
 cooler_count = 9
 cooler0 = "1296000 4 4294967295 0"
@@ -437,35 +355,13 @@ nand0_d6            = port:PC14<2><default><default><default>
 nand0_d7            = port:PC15<2><default><default><default>
 nand0_ndqs          = port:PC16<2><default><default><default>
 
-
-;-----------------------------------------------------------------
-;auto_hpd    -   1:need hotplud for hdmi/tv;  0:don't hotplud for lcd
-;output_type -   0:none; 1:lcd; 2:tv; 4:hdmi; 8:vga (as default config in homlet)
-;hdmi_channel-   the display channel for hdmi (as default config in homlet)
-;cvbs_channel-   the display channel for cvbs (as default config in homlet)
-;hdmi_mode   -   as default config for output of hdmi in homlet
-;cvbs_mode   -   as default config for output of tv in homlet. 11:PAL; 14:NTSC
-;check the definition(of hdmi/cvbs_mode) of disp_tv_mode in sunxi_display2.h
-;hdmi_mode_check - disable/enable the function of checking hdmi mode, 0 is disable, 1 is enable
-;-----------------------------------------------------------------
-[boot_disp]
-advert_disp     = 0
-auto_hpd        = 1
-output_type     = 4
-hdmi_channel    = 0
-hdmi_mode       = 4
-cvbs_channel    = 1
-cvbs_mode       = 11
-output_full     = 1
-hdmi_mode_check = 1
-
 ;----------------------------------------------------------------------------------
 ;disp init configuration
 ;
 ;disp_mode             (0:screen0<screen0,fb0>; 1:screen1<screen1,fb0>)
-;screenx_output_type  (0:none; 1:lcd; 3:hdmi;)
+;screenx_output_type  (0:none; 1:lcd; 2:tv; 3:hdmi;)
 ;screenx_output_mode  (used for hdmi output, 0:480i 1:576i 2:480p 3:576p 4:720p50)
-;                     (5:720p60 6:1080i50 7:1080i60 8:1080p24 9:1080p50 10:1080p60)
+;                     (5:720p60 6:1080i50 7:1080i60 8:1080p24 9:1080p50 10:1080p60 11:PAL 14:NTSC)
 ;fbx format           (0:ARGB 1:ABGR 2:RGBA 3:BGRA 5:RGB565 8:RGB888 12:ARGB4444 16:ARGB1555 18:RGBA5551)
 ;fbx_width,fbx_height (framebuffer horizontal/vertical pixels, fix to output resolution while equal 0)
 ;lcdx_backlight       (lcd init backlight,the range:[0,256],default:197
@@ -473,13 +369,10 @@ hdmi_mode_check = 1
 [disp_init]
 disp_init_enable         = 1
 disp_mode                = 0
-
 screen0_output_type      = 3
-screen0_output_mode      = 5
-
-screen1_output_type      = 3
-screen1_output_mode      = 5
-
+screen0_output_mode      = 10
+screen1_output_type      = 0
+screen1_output_mode      = 0
 fb0_format               = 0
 fb0_width                = 0
 fb0_height               = 0
@@ -488,25 +381,18 @@ fb1_format               = 0
 fb1_width                = 0
 fb1_height               = 0
 
-fb0_framebuffer_num      = 3
-sunxi_fb_mem_reserve     = 32
-    
 ;----------------------------------------------------------------------------------
 ;hdmi configuration
 ;----------------------------------------------------------------------------------
 [hdmi_para]
 hdmi_used              = 1
 hdmi_power             = "vcc-hdmi-18"
-;-------------------------------------
-; set to 0 for hdmi->dvi compatibility
-;-------------------------------------
-;hdcp_enable            = 0
-;hdmi_cts_compatibility = 1
+hdcp_enable = 0
 
 [tv_para]
-tv_used				= 0
-tv_dac_used			= 1
-tv_dac_src0			= 0
+tv_used = 0
+tv_dac_used = 1
+tv_dac_src0 = 0
 
 ;----------------------------------------------------------------------------------
 ;pwm config
@@ -551,7 +437,7 @@ gmac_txen          = port:PD13<2><default><3><default>
 gmac_col           = port:PD15<2><default><3><default>
 gmac_mdc           = port:PD16<2><default><3><default>
 gmac_mdio          = port:PD17<2><default><3><default>
-gmac_power1        =
+gmac_power1 =
 
 [gmac_phy_power]
 gmac_phy_power_en   = port:PD06<1><default><default><0>
@@ -589,10 +475,8 @@ gmac_phy_power_en   = port:PD06<1><default><default><0>
 ;axp22_eldo2
 ;fill handle string "" when not using any pmu power supply
 ;--------------------------------------------------------------------------------
-
 [csi0]
-
-vip_used                 = 1
+vip_used                 = 0
 vip_mode                 = 0
 vip_dev_qty              = 1
 vip_define_sensor_list   = 0
@@ -667,25 +551,12 @@ vip_dev1_flash_en        =
 vip_dev1_flash_mode      =
 vip_dev1_af_pwdn         =
 
-
-;--------------------------------------------------------------------------------
-;tv configuration
-;
-;--------------------------------------------------------------------------------
-[tvout_para]
-tvout_used          =
-tvout_channel_num   =
-tv_en               =
-
-[tvin_para]
-tvin_used           =
-tvin_channel_num    =
-
 ;----------------------------------------------------------------------------------
-;DE-Interlace configuration
+;Deinterlace configuration
 ;----------------------------------------------------------------------------------
 [di_para]
 di_used           = 1
+di_by_pass = 0
 
 ;--------------------------------------------------------------------------------
 ;   SDMMC PINS MAPPING                                                          |
@@ -751,7 +622,7 @@ sdc_ddrmode       = 1
 
 [mmc2_para]
 sdc_used          = 1
-sdc_detmode       = 3
+sdc_detmode       = 1
 sdc_buswidth      = 8
 sdc_clk           = port:PC05<3><1><2><default>
 sdc_cmd           = port:PC06<3><1><2><default>
@@ -786,7 +657,6 @@ smc_vccen           = port:PA06<2><default><default><default>
 smc_sck             = port:PA07<2><default><default><default>
 smc_sda             = port:PA08<2><default><default><default>
 
-
 ;--------------------------------
 ; [usbc0]: Controller 0 configuration.
 ; usb used:          USB enable flag. Set, indicating that the system USB module is available, is set to 0, it means that the system USB is disabled.
@@ -800,14 +670,14 @@ smc_sda             = port:PA08<2><default><default><default>
 ; usb_restric_flag:  usb limiting standard set
 ;--------------------------------
 ;--------------------------------
-;---       USB0控制标志
+; USB0 OTG
 ;--------------------------------
 [usbc0]
 usb_used            = 1
-usb_port_type       = 1
+usb_port_type       = 2
 usb_detect_type     = 0
-usb_id_gpio         =
-usb_det_vbus_gpio   =
+usb_id_gpio         = port:PG12<0><1><default><default>
+usb_det_vbus_gpio   = port:PG12<0><1><default><default>
 usb_drv_vbus_gpio   = port:PL02<1><0><default><0>
 usb_host_init_state = 1
 usb_restrict_gpio   =
@@ -819,7 +689,7 @@ usb_regulator_vol   = 0
 usb_not_suspend     = 0
 
 ;--------------------------------
-;---       USB1控制标志
+; USB1 Host
 ;--------------------------------
 [usbc1]
 usb_used            = 1
@@ -832,7 +702,7 @@ usb_regulator_vol   = 0
 usb_not_suspend     = 0
 
 ;--------------------------------
-;---       USB2控制标志
+; USB2 Host
 ;--------------------------------
 [usbc2]
 usb_used            = 0
@@ -845,7 +715,7 @@ usb_regulator_vol   = 0
 usb_not_suspend     = 0
 
 ;--------------------------------
-;---       USB3控制标志
+; USB3 Host
 ;--------------------------------
 [usbc3]
 usb_used            = 1
@@ -859,7 +729,7 @@ usb_regulator_vol   = 0
 usb_not_suspend     = 0
 
 ;--------------------------------
-;---       USB Device
+; USB Device
 ;--------------------------------
 [usb_feature]
 vendor_id           = 0x18D1
@@ -879,25 +749,14 @@ luns                = 3
 [serial_feature]
 serial_unique       = 0
 
-
 ;--------------------------------------------------------------------------------
 ;wifi/bt/fm/gps/nfc modules configuration
-;module_num:
-;             0- none
-;             1- rtl8188eu(wifi)
-;             2- rtl8723bs(wifi+bt)
-;             3- ap6181(wifi)
-;             4- ap6210(wifi+bt)
-;             5- ap6330(wifi+bt)
-;             6- ap6335(wifi)
-;             7- rtl8189etv(wifi)
 ;module_power0: axp used by module, "axp22_dldo1" - use dldo1, not use keep it empty
 ;module_power0_vol: power0 voltage, mv;
 ;chip_en:       enable chip io
 ;lpo_use_apclk: ""- not use, "losc_out"- a23/33/H3, "ac10032k1"、"ac10032k2"、"ac10032k3"- a80
 ;--------------------------------------------------------------------------------
 [module_para]
-module_num          = 7
 module_power0       = "vcc-wifi-33"
 module_power0_vol   = 0
 module_power1       =
@@ -922,16 +781,16 @@ lpo_use_apclk       =
 [wifi_para]
 wifi_used             = 1
 wifi_sdc_id           = 1
-wifi_usbc_id          = 2
-wifi_usbc_type        = 1
+wifi_usbc_id          =
+wifi_usbc_type        =
 wl_reg_on             = port:PL07<1><default><default><0>
 wl_host_wake          = port:PG10<0><default><default><0> 
 wl_host_wake_invert   = 0
 
 ;--------------------------------------------------------------------------------
 ;bluetooth configuration
-;bt_used:       0- no used, 1- used
-;bt_uard_id:		0- uart0, 1- uart1, 2- uart2
+;bt_used:       0 - no used, 1- used
+;bt_uard_id:    0 - uart0, 1- uart1, 2- uart2
 ;bt_rst_n:      bt function enable io
 ;bt_wake:       host wake-up bluetooth device
 ;bt_host_wake:  bt device wake-up host
@@ -974,76 +833,74 @@ bt_host_wake_invert   = 0
 ;rx_data_mode 		:0: 16bit linear PCM; 1: 8bit linear PCM; 2: 8bit u-law; 3: 8bit a-law
 ;--------------------------------------------------------------------------------
 [pcm0]
-daudio_used         = 0
-daudio_master		= 4
-daudio_select  		= 1
-audio_format		= 1
-signal_inversion	= 1
-mclk_fs				= 128
-sample_resolution   = 16
-slot_width_select 	= 32
-;pcm_sync_period 	= 256
-pcm_lrck_period		= 32
-pcm_lrckr_period 	= 1
-msb_lsb_first 	    = 0
-sign_extend 		= 0
-slot_index 		    = 0
-slot_width 		    = 32
-frame_width 		= 0
-tx_data_mode 		= 0
-rx_data_mode 		= 0
-i2s_mclk            = port:PA18<2><1><default><default>
-i2s_bclk            = port:PA19<2><1><default><default>
-i2s_dout0           = port:PA20<2><1><default><default>
-i2s_din             = port:PA21<2><1><default><default>
-
+daudio_used = 0
+daudio_master = 4
+daudio_select = 1
+audio_format = 1
+signal_inversion = 1
+mclk_fs = 128
+sample_resolution = 16
+slot_width_select = 32
+;pcm_sync_period = 256
+pcm_lrck_period = 32
+pcm_lrckr_period = 1
+msb_lsb_first = 0
+sign_extend = 0
+slot_index = 0
+slot_width = 32
+frame_width = 0
+tx_data_mode = 0
+rx_data_mode = 0
+i2s_mclk = port:PA18<2><1><default><default>
+i2s_bclk = port:PA19<2><1><default><default>
+i2s_dout0 = port:PA20<2><1><default><default>
+i2s_din = port:PA21<2><1><default><default>
 
 [pcm1]
-daudio_used         = 0
-daudio_master		= 4
-daudio_select  		= 1
-audio_format		= 1
-signal_inversion	= 1
-mclk_fs				= 128
-sample_resolution   = 16
-slot_width_select 	= 32
-;pcm_sync_period 	= 256
-pcm_lrck_period		= 32
-pcm_lrckr_period 	= 1
-msb_lsb_first 	    = 0
-sign_extend 		= 0
-slot_index 		    = 0
-slot_width 		    = 32
-frame_width 		= 0
-tx_data_mode 		= 0
-rx_data_mode 		= 0
-i2s_mclk            = port:PG10<2><1><default><default>
-i2s_bclk            = port:PG11<2><1><default><default>
-i2s_dout0           = port:PG12<2><1><default><default>
-i2s_din             = port:PG13<2><1><default><default>
-
+daudio_used = 0
+daudio_master = 4
+daudio_select = 1
+audio_format = 1
+signal_inversion = 1
+mclk_fs = 128
+sample_resolution = 16
+slot_width_select = 32
+;pcm_sync_period = 256
+pcm_lrck_period = 32
+pcm_lrckr_period = 1
+msb_lsb_first = 0
+sign_extend = 0
+slot_index = 0
+slot_width = 32
+frame_width = 0
+tx_data_mode = 0
+rx_data_mode = 0
+i2s_mclk = port:PG10<2><1><default><default>
+i2s_bclk = port:PG11<2><1><default><default>
+i2s_dout0 = port:PG12<2><1><default><default>
+i2s_din = port:PG13<2><1><default><default>
 
 [audio0]
-audio_used          	= 1
-lineout_vol				= 0x1f
-cap_vol					= 0x5
-audio_hp_ldo       		= "none"
-adcagc_used       		= 0
-adcdrc_used       		= 0
-dacdrc_used       		= 0
-adchpf_used       		= 0
-dachpf_used       		= 0
-audio_pa_ctrl          	= port:PA16<1><default><default><0>
+audio_used = 1
+lineout_vol = 0x1f
+cap_vol = 0x5
+audio_hp_ldo = "none"
+adcagc_used = 0
+adcdrc_used = 0
+dacdrc_used = 0
+adchpf_used = 0
+dachpf_used = 0
+audio_pa_ctrl = port:PA16<1><default><default><0>
 
 [spdif0]
-spdif_used          = 0
-spdif_dout          = port:PA17<2><1><default><default>
+spdif_used = 0
+spdif_dout = port:PA17<2><1><default><default>
 
 [audiohub]
-hub_used    = 0
-codec_used 	= 1
-spdif_used 	= 1
-hdmi_used 	= 1
+hub_used = 1
+codec_used = 1
+spdif_used = 0
+hdmi_used = 1
 
 ;----------------------------------------------------------------------------------
 ;ir rx --- infra remote configuration
@@ -1071,13 +928,12 @@ ir_power_key_code8  = 0x45
 ir_addr_code8       = 0xbd02
 ir_power_key_code9  = 0x4d
 ir_addr_code9       = 0xde21
-ir_power_key_code10  = 0x18
-ir_addr_code10       = 0xfe01
-ir_power_key_code11  = 0x57
-ir_addr_code11       = 0xff00
-ir_power_key_code12  = 0x4d
-ir_addr_code12       = 0xff40
-
+ir_power_key_code10 = 0x18
+ir_addr_code10      = 0xfe01
+ir_power_key_code11 = 0x57
+ir_addr_code11      = 0xff00
+ir_power_key_code12 = 0x4d
+ir_addr_code12      = 0xff40
 
 ;----------------------------------------------------------------------------------
 ;ir tx--- infra remote configuration
@@ -1085,7 +941,6 @@ ir_addr_code12       = 0xff40
 [cir]
 ir_used             = 1
 ir_tx               = port:PH07<2><default><default><default>
-
 
 ;----------------------------------------------------------------------------------
 ; dvfs voltage-frequency table configuration
@@ -1113,9 +968,9 @@ ir_tx               = port:PH07<2><default><default><default>
 ;----------------------------------------------------------------------------------
 [dvfs_table]
 pmuic_type = 2
-pmu_gpio0         = port:PL06<1><1><2><1>
-pmu_level0        = 11300
-pmu_level1        = 01100
+pmu_gpio0 = port:PL06<1><1><2><1>
+pmu_level0 = 11300
+pmu_level1 = 1100
 extremity_freq = 1296000000
 max_freq = 1200000000
 min_freq = 480000000
@@ -1136,18 +991,13 @@ LV7_freq = 480000000
 LV7_volt = 980
 
 [gpu_dvfs_table]
-
 G_LV_count = 3
-
 G_LV0_freq = 312000000
 G_LV0_volt = 1200000
-
 G_LV1_freq = 384000000
 G_LV1_volt = 1200000
-
 G_LV2_freq = 456000000
 G_LV2_volt = 1200000
-
 
 ;----------------------------------------------------------------------------------
 ;virtual device
@@ -1214,7 +1064,6 @@ scr_sda             = port:PA08<2><default><default><default>
 scr_rst             = port:PA09<2><default><default><default>
 scr_det             = port:PA10<2><default><default><default>
 
-
 ;--------------------------------------------------------------------------------
 ;tsc configuration
 ;--------------------------------------------------------------------------------
@@ -1258,7 +1107,6 @@ key3_vol				  =	666
 key4_vol				  =	857
 key5_vol				  = 2000
 
-
 ;----------------------------------------------------------------------------------
 ;display seven segment para
 ;----------------------------------------------------------------------------------
@@ -1267,7 +1115,6 @@ d7s_used				= 0
 din_gpio				= port:PD00<1><default><default><1>
 clk_gpio				= port:PD01<1><default><default><1>
 stb_gpio				= port:PD02<1><default><default><1>
-
 
 ;----------------------------------------------------------------------------------
 ;mali parameters
@@ -1278,13 +1125,9 @@ mali_clkdiv = 1
 mali_extreme_freq = 600
 mali_extreme_vol = 1400
 
-
 ;----------------------------------------------------------------------------------
 ;1wire parameters (default - PA20)
 ;----------------------------------------------------------------------------------
 [w1_para]
 w1_used = 1
 gpio = 20
-
-[corekeeper]
-corekeeper_enabled = 1
