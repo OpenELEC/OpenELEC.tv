@@ -1,3 +1,11 @@
+8.0.1
+- vdr: add upstream patches
+- update to vdr-plugin-dvbapi-7a42b22
+- update to vdr-plugin-iptv-2226be2
+- update to vdr-plugin-restfulapi-0.2.6.5
+- update to vdr-plugin-satip-581ac49
+- update to vdr-plugin-vnsiserver-2c1f90b
+
 8.0.0
 - rebuild for OpenELEC-8.0
 - remove vdr-plugin-xmltv2vdr support
