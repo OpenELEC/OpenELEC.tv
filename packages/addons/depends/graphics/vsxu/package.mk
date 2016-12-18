@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://www.vsxu.com"
 # repackaged from https://github.com/vovoid/vsxu/archive/$PKG_VERSION.tar.gz
 PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain opengl libX11 libXrandr glew glfw libz libpng libjpeg-turbo freetype"
+PKG_DEPENDS_TARGET="toolchain opengl libX11 libXrandr glew glfw zlib libpng libjpeg-turbo freetype"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
 PKG_SHORTDESC="vsxu:"
