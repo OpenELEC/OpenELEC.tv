@@ -19,12 +19,13 @@
 ################################################################################
 
 PKG_NAME="gpu-aml"
-PKG_VERSION="2016-05-04-2364187a0c"
+PKG_VERSION="9b0fbbc"
 PKG_REV="1"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="GPL"
-PKG_SITE="http://openlinux.amlogic.com:8000/download/ARM/gpu/"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+# PKG_SITE="http://openlinux.amlogic.com:8000/download/ARM/gpu/"
+PKG_SITE="https://github.com/openwetek/gpu-aml.git"
+PKG_GIT_URL="https://github.com/openwetek/gpu-aml.git"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
