@@ -134,7 +134,7 @@ makeinstall_target() {
   fi
 
   # Saving
-  echo "savestate_thumbnail_enable = \"true\"" >> $INSTALL/etc/retroarch.cfg
+  echo "savestate_thumbnail_enable = \"false\"" >> $INSTALL/etc/retroarch.cfg
   
   # Input
   sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
