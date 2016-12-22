@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="mariadb"
-PKG_VERSION="10.1.17"
+PKG_VERSION="10.1.20"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
