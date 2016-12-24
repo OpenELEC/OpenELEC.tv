@@ -48,6 +48,11 @@ LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/package
    . $PROJECT_DIR/$PROJECT/options
  fi
 
+# read board options if available
+ if [ -f "$PROJECT_DIR/$PROJECT/devices/$SYSTEM/options" ]; then
+   . $PROJECT_DIR/$PROJECT/devices/$SYSTEM/options
+ fi
+
 # Need to point to your actual cc
 # If you have ccache installed, take care that LOCAL_CC don't point to it
   LOCAL_CC=`which gcc`
