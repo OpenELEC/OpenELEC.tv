@@ -1,0 +1,24 @@
+diff -Naur libtirpc-1.0.1/tirpc/rpc/rpcb_prot.h libtirpc-1.0.1.patch/tirpc/rpc/rpcb_prot.h
+--- libtirpc-1.0.1/tirpc/rpc/rpcb_prot.h	2015-10-30 16:15:14.000000000 +0100
++++ libtirpc-1.0.1.patch/tirpc/rpc/rpcb_prot.h	2016-12-24 23:44:31.111025261 +0100
+@@ -476,7 +476,7 @@
+ #define RPCBVERS_3 RPCBVERS
+ #define RPCBVERS_4 RPCBVERS4
+ 
+-#define _PATH_RPCBINDSOCK "/var/run/rpcbind.sock"
++#define _PATH_RPCBINDSOCK "/run/rpcbind.sock"
+ 
+ #else /* ndef _KERNEL */
+ #ifdef __cplusplus
+diff -Naur libtirpc-1.0.1/tirpc/rpc/rpcb_prot.x libtirpc-1.0.1.patch/tirpc/rpc/rpcb_prot.x
+--- libtirpc-1.0.1/tirpc/rpc/rpcb_prot.x	2015-10-30 16:15:14.000000000 +0100
++++ libtirpc-1.0.1.patch/tirpc/rpc/rpcb_prot.x	2016-12-24 23:44:59.053107092 +0100
+@@ -410,7 +410,7 @@
+ %#define	RPCBVERS_3		RPCBVERS
+ %#define	RPCBVERS_4		RPCBVERS4
+ %
+-%#define	_PATH_RPCBINDSOCK	"/var/run/rpcbind.sock"
++%#define	_PATH_RPCBINDSOCK	"/run/rpcbind.sock"
+ %
+ %#else		/* ndef _KERNEL */
+ %#ifdef __cplusplus
