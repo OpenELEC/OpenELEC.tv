@@ -134,6 +134,6 @@ enable_dpi_lcd=1
 dpi_group=2
 dpi_mode=87 # HDMI CVT
 display_default_lcd=1
-display_rotate=1
+display_rotate=3
 
 dtoverlay=overlays/gamegirl-overlay.dtb
