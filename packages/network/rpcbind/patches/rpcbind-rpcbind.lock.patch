@@ -1,0 +1,12 @@
+diff -Naur rpcbind-0.2.4/src/rpcbind.c rpcbind-0.2.4.patch/src/rpcbind.c
+--- rpcbind-0.2.4/src/rpcbind.c	2016-11-28 21:47:28.000000000 +0100
++++ rpcbind-0.2.4.patch/src/rpcbind.c	2016-12-28 16:40:11.912722284 +0100
+@@ -106,7 +106,7 @@
+ /* who to suid to if -s is given */
+ #define RUN_AS  "daemon"
+ 
+-#define RPCBINDDLOCK "/var/run/rpcbind.lock"
++#define RPCBINDDLOCK "/run/rpcbind.lock"
+ 
+ int runasdaemon = 0;
+ int insecure = 0;
