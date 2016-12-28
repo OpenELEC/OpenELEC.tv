@@ -18,19 +18,32 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="OdroidXU3"
-PKG_VERSION=""
+PKG_NAME="xu-fan-control"
+PKG_VERSION="1"
 PKG_REV="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
+PKG_LICENSE="GPLv3"
+PKG_SITE="https://www.hiscorebob.lu/2016/10/odroid-xu34-silent-fan-control-in-lakka-openelec/"
 PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch desmume glupen64 beetle-pcfx beetle-psx virtualjaguar 4do uzebox tyrquake scummvm dosbox mgba prosystem o2em 81 fuse-libretro gw-libretro beetle-sgx genesis-plus-gx mupen64plus lutro gpsp ppsspp 2048 beetle-vb beetle-wswan beetle-ngp pcsx_rearmed vecx snes9x2010 dinothawr prboom beetle-pce handy picodrive nxengine nestopia gambatte stella fbalpha bnes xu-fan-control"
+PKG_DEPENDS_TARGET=""
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for OdroidXU3"
-PKG_LONGDESC=""
+PKG_SECTION="tools"
+PKG_SHORTDESC="Odroid-XU3 fan control"
+PKG_LONGDESC="Odroid-XU3 fan control"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+make_target() {
+  :
+}
+
+makeinstall_target() {
+  mkdir -p $INSTALL/usr/bin/
+  cp $PKG_DIR/scripts/fan-control.sh $INSTALL/usr/bin/
+  chmod +x $INSTALL/usr/bin/fan-control.sh
+}
+
+post_install() {
+  enable_service fan-control.service
+}

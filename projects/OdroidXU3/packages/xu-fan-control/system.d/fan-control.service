@@ -1,0 +1,6 @@
+[Unit]
+Description=Fan control
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/fan-control.sh
