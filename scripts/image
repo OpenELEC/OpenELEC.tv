@@ -41,7 +41,7 @@ if [ "$OPENELEC_VERSION" = devel ]; then
 fi
 
 TARGET_VERSION="$PROJECT"
-if [ "$PROJECT" == "imx6" -o "$PROJECT" == "H3" -o "$PROJECT" == "S805" ] && [ -n "$SYSTEM" ]; then
+if [ "$PROJECT" == "imx6" -o "$PROJECT" == "H3" -o "$PROJECT" == "S802" -o "$PROJECT" == "S805" ] && [ -n "$SYSTEM" ]; then
   TARGET_VERSION="$TARGET_VERSION.$SYSTEM"
 fi
 TARGET_VERSION="$TARGET_VERSION.$TARGET_ARCH-$OPENELEC_VERSION"
