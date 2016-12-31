@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="freetype"
-PKG_VERSION="2.7"
+PKG_VERSION="2.7.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freetype.org"
-PKG_URL="http://download.savannah.gnu.org/releases/freetype/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_URL="http://downloads.sourceforge.net/freetype/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="print"
