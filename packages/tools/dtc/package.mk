@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="dtc"
-PKG_VERSION="1ed45d4"
+PKG_VERSION="0931cea"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
