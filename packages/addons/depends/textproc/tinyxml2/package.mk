@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="tinyxml2"
-PKG_VERSION="584af57"
+PKG_VERSION="5b733ff"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="zlib"
