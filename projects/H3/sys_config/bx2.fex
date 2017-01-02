@@ -235,20 +235,6 @@ mode          = 0
 full_duplex   = 1
 manual_cs     = 0
 
-;----------------------------------------------------------------------------------
-;userspace gpio interface
-; ** COMMENT THE PINS USED IN OTHER INTERFACES (I2C, SPI, 1-WIRE...)
-;----------------------------------------------------------------------------------
-[gpio_para]
-gpio_used   = 1
-gpio_num    = 2
-gpio_pin_1  = port:PL10<1><default><default><1>
-gpio_pin_2  = port:PA15<1><default><default><0>
-
-[led_assign]
-normal_led = "gpio_pin_1"
-standby_led = "gpio_pin_2"
-
 [leds_para]
 leds_used = 1
 green_led = port:PL10<1><default><default><0>
