@@ -1,0 +1,11 @@
+diff -Naur kodi-c1c4b9e/xbmc/addons/include/xbmc_pvr_dll.h kodi-c1c4b9e.patch/xbmc/addons/include/xbmc_pvr_dll.h
+--- kodi-c1c4b9e/xbmc/addons/include/xbmc_pvr_dll.h	2016-04-17 14:05:15.000000000 +0200
++++ kodi-c1c4b9e.patch/xbmc/addons/include/xbmc_pvr_dll.h	2017-01-01 15:04:47.526694567 +0100
+@@ -23,6 +23,7 @@
+ 
+ #include "xbmc_addon_dll.h"
+ #include "xbmc_pvr_types.h"
++#include <cstdio>
+ 
+ /*!
+  * Functions that the PVR client add-on must implement, but some can be empty.

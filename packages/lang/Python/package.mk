@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="Python"
-PKG_VERSION="2.7.11"
+PKG_VERSION="2.7.13"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -120,6 +120,9 @@ post_makeinstall_target() {
   for dir in $EXCLUDE_DIRS; do
     rm -rf $INSTALL/usr/lib/python*/$dir
   done
+
+# set file permissions
+  chmod 755 $INSTALL/usr/lib/libpython*.so*
 
   ( cd $INSTALL/usr/lib/python2.7
     python -Wi -t -B $ROOT/$PKG_BUILD/Lib/compileall.py -d /usr/lib/python2.7 -f .

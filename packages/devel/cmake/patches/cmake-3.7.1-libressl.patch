@@ -1,0 +1,24 @@
+diff -Naur cmake-3.7.1/Utilities/cmlibarchive/libarchive/archive_openssl_evp_private.h cmake-3.7.1.patch/Utilities/cmlibarchive/libarchive/archive_openssl_evp_private.h
+--- cmake-3.7.1/Utilities/cmlibarchive/libarchive/archive_openssl_evp_private.h	2016-11-30 16:14:33.000000000 +0100
++++ cmake-3.7.1.patch/Utilities/cmlibarchive/libarchive/archive_openssl_evp_private.h	2016-12-02 10:36:37.211227695 +0100
+@@ -28,7 +28,7 @@
+ #include <openssl/evp.h>
+ #include <openssl/opensslv.h>
+ 
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ #include <stdlib.h> /* malloc, free */
+ #include <string.h> /* memset */
+ static inline EVP_MD_CTX *EVP_MD_CTX_new(void)
+diff -Naur cmake-3.7.1/Utilities/cmlibarchive/libarchive/archive_openssl_hmac_private.h cmake-3.7.1.patch/Utilities/cmlibarchive/libarchive/archive_openssl_hmac_private.h
+--- cmake-3.7.1/Utilities/cmlibarchive/libarchive/archive_openssl_hmac_private.h	2016-11-30 16:14:33.000000000 +0100
++++ cmake-3.7.1.patch/Utilities/cmlibarchive/libarchive/archive_openssl_hmac_private.h	2016-12-02 10:36:23.788195920 +0100
+@@ -28,7 +28,7 @@
+ #include <openssl/hmac.h>
+ #include <openssl/opensslv.h>
+ 
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ #include <stdlib.h> /* malloc, free */
+ #include <string.h> /* memset */
+ static inline HMAC_CTX *HMAC_CTX_new(void)
