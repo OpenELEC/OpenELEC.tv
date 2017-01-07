@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="avahi"
-PKG_VERSION="0.6.31"
+PKG_VERSION="0.6.32"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
