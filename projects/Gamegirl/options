@@ -157,3 +157,11 @@
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//nestopia/fceumm}"
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//snes9x2010/snes9x2002}"
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//genesis_plus_gx/picodrive}"
+
+  # gamegirl specific stuff
+    SAMBA_SUPPORT="no"
+    SAMBA_SERVER="no"
+    SFTP_SERVER="no"
+    PPTP_SUPPORT="no"
+    OPENVPN_SUPPORT="no"
+    UDEVIL="no"
