@@ -47,6 +47,7 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin
   rm -rf $INSTALL/bin/lowntfs-3g
   rm -rf $INSTALL/sbin/mount.lowntfs-3g
+  rm -rf $INSTALL/sbin/mkfs.ntfs
 
   mkdir -p $INSTALL/sbin
     ln -sf /bin/ntfs-3g $INSTALL/sbin/mount.ntfs
