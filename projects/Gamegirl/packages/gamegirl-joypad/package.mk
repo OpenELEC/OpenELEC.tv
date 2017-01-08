@@ -35,7 +35,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  make gamegirl-joypad LDFLAGS="$LDFLAGS -lwiringPi"
+  make gamegirl-joypad LDLIBS="$LDLIBS $SYSROOT_PREFIX/usr/lib/libwiringPi.a -lpthread"
 }
 
 makeinstall_target() {

@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="wiringPi"
-PKG_VERSION="b0a60c3"
+PKG_VERSION="b1dfc18"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPLv3"
@@ -34,6 +34,10 @@ PKG_LONGDESC="GPIO Interface library for the Raspberry Pi"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+#pre_configure_target() {
+#  export CFLAGS="$CFLAGS -fPIC -DPIC"
+#}
+
 make_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib/
   mkdir -p $SYSROOT_PREFIX/usr/include/
@@ -41,24 +45,19 @@ make_target() {
   mkdir -p $INSTALL/usr/bin/
 
   cp wiringPi/*.h $SYSROOT_PREFIX/usr/include/
-  make -C wiringPi CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1
+  make -C wiringPi CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1 static
   cd wiringPi
-  ln -sfn libwiringPi.so.2.32 libwiringPi.so
-  cp libwiringPi.so* $SYSROOT_PREFIX/usr/lib/
+  cp libwiringPi.a* $SYSROOT_PREFIX/usr/lib/
   cd ..
 
-  cp devLib/*.h $SYSROOT_PREFIX/usr/include/
-  make -C devLib CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1
-  cd devLib
-  ln -sfn libwiringPiDev.so.2.32 libwiringPiDev.so
-  cp libwiringPiDev.so* $SYSROOT_PREFIX/usr/lib/
-  cd ..
-
-  make -C gpio CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1
+  #cp devLib/*.h $SYSROOT_PREFIX/usr/include/
+  #make -C devLib CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" V=1 static
+  #cd devLib
+  #cp libwiringPiDev.a* $SYSROOT_PREFIX/usr/lib/
+  #cd ..
 }
 
 makeinstall_target() {
-  cp wiringPi/libwiringPi.so* $INSTALL/usr/lib/
-  cp devLib/libwiringPiDev.so* $INSTALL/usr/lib/
-  cp gpio/gpio $INSTALL/usr/bin/
+  cp -v wiringPi/libwiringPi.a* $INSTALL/usr/lib/
+  #cp -v devLib/libwiringPiDev.a* $INSTALL/usr/lib/
 }
