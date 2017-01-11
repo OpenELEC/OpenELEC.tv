@@ -625,6 +625,9 @@ do_poweroff() {
   poweroff -f
 }
 
+export LC_ALL=en_US.UTF-8
+export COLORTERM="1"
+
 # setup needed variables
 OS_VERSION=$(lsb_release)
 BACKTITLE="@DISTRONAME@ Installer - $OS_VERSION"
@@ -633,8 +636,10 @@ TMPDIR="/tmp/installer"
 LOGFILE="$TMPDIR/install.log"
 
 # set dialogs defaults
-  CANCEL_BUTTON="--cancel-label"
-  CREATE_DIALOG="dialog --colors"
+# dialog  CANCEL_BUTTON="--cancel-label"
+# dialog  CREATE_DIALOG="dialog --colors"
+CANCEL_BUTTON="--cancel-button"
+CREATE_DIALOG="whiptail"
 
 # Interpret embedded "\Z" sequences in the dialog text by the following
 # character, which tells dialog to set colors or video attributes: 0 through 7
@@ -643,10 +648,14 @@ LOGFILE="$TMPDIR/install.log"
 # by 'r', reset by 'R'. Underline is set by 'u', reset by 'U'. The settings are
 # cumulative, e.g., "\Zn\Z1" makes the following text bold (perhaps bright)
 # red. Restore normal settings with "\Zn".
-  TEXT_RESET="\Zn"
-  TEXT_BOLD="\Zb"
-  TEXT_RED="\Z1"
-  TEXT_BLUE="\Z4"
+# dialog  TEXT_RESET="\Zn"
+# dialog  TEXT_BOLD="\Zb"
+# dialog  TEXT_RED="\Z1"
+# dialog  TEXT_BLUE="\Z4"
+  TEXT_RESET=""
+  TEXT_BOLD=""
+  TEXT_RED=""
+  TEXT_BLUE=""
 
 # prepare temporary directory
 rm -rf $TMPDIR
