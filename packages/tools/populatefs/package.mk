@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="populatefs"
-PKG_VERSION="95cc98b"
+PKG_VERSION="a140268"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/oskarirauta/populatefs"
-PKG_GIT_URL="https://github.com/oskarirauta/populatefs.git"
+PKG_SITE="https://github.com/lipnitsk/populatefs"
+PKG_GIT_URL="https://github.com/lipnitsk/populatefs.git"
 PKG_GIT_BRANCH="master"
 PKG_DEPENDS_HOST="e2fsprogs:host"
 PKG_PRIORITY="optional"
