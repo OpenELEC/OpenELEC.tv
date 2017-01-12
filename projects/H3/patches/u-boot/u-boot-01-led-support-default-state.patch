@@ -1,10 +1,10 @@
 diff -Nur a/arch/arm/Kconfig leds/arch/arm/Kconfig
 --- a/arch/arm/Kconfig	2016-09-12 16:05:51.000000000 +0200
 +++ leds/arch/arm/Kconfig	2016-09-21 19:17:56.246729135 +0200
-@@ -651,6 +651,8 @@
+@@ -584,6 +584,8 @@
  	select DM_KEYBOARD
  	select DM_SERIAL
- 	select DM_USB
+ 	select DM_USB if DISTRO_DEFAULTS
 +	select LED
 +	select LED_GPIO
  	select OF_BOARD_SETUP

@@ -27,7 +27,7 @@ elif [ "$UBOOT_VERSION" = "imx6-cuboxi" ]; then
   PKG_GIT_URL="https://github.com/SolidRun/u-boot-imx6.git"
   PKG_GIT_BRANCH="imx6"
 elif [ "$UBOOT_VERSION" = "sunxi" ]; then
-  PKG_VERSION="2016.11"
+  PKG_VERSION="2017.01"
   PKG_SITE="http://www.denx.de/wiki/U-Boot/WebHome"
   PKG_URL="ftp://ftp.denx.de/pub/u-boot/$PKG_NAME-$PKG_VERSION.tar.bz2"
 else
