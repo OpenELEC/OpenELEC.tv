@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libzip"
-PKG_VERSION="0.11.2"
+PKG_VERSION="1.1.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
