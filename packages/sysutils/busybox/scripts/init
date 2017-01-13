@@ -2,7 +2,7 @@
 
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
 #      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
 #
@@ -52,9 +52,6 @@
 
   NBD_DEVS="0"
   FLASH_FREE_MIN="5"
-
-  INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
-  SYSTEM_TORAM_LIMIT=1024000
 
   LIVE="no"
 
@@ -138,9 +135,6 @@
         ;;
       nosplash)
         SPLASH=no
-        ;;
-      noram)
-        SYSTEM_TORAM=no
         ;;
       live)
         LIVE=yes
@@ -678,13 +672,7 @@
 
   prepare_sysroot() {
     progress "Preparing system"
-
-    if [ "$SYSTEM_TORAM" = "no" -o "$INSTALLED_MEMORY" -lt "$SYSTEM_TORAM_LIMIT" ]; then
-      mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
-    else
-      cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
-      mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
-    fi
+    mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
 
     chown 0:0 /storage
     mount --move /flash /sysroot/flash
