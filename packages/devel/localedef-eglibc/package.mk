@@ -16,28 +16,27 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="autoconf-archive"
-PKG_VERSION="2016.09.16"
+PKG_NAME="localedef-eglibc"
+PKG_VERSION="2.14.1-r17443-ptx1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://ftp.gnu.org/gnu/autoconf-archive"
-PKG_URL="http://ftp.gnu.org/gnu/autoconf-archive/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_SITE="http://public.pengutronix.de"
+PKG_URL="http://public.pengutronix.de/mirror/software/ptxdist/temporary-src/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_HOST="ccache:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="autoconf-archive: macros for autoconf"
-PKG_LONGDESC="autoconf-archive is an package of m4 macros"
+PKG_SHORTDESC="localedef: Locale definition compiler"
+PKG_LONGDESC="The localedef program reads the indicated charmap and input files, compiles them to a form usable by the locale(7) functions in the C library, and places the six output files in the outputpath directory."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME --prefix=$ROOT/$TOOLCHAIN"
+PKG_CONFIGURE_OPTS_HOST="--prefix=/usr --with-glibc=../eglibc"
+
+CFLAGS+=" -fgnu89-inline"
 
 makeinstall_host() {
-# make install
-  make prefix=$SYSROOT_PREFIX/usr install
-
-# remove problematic m4 file
-  rm -rf $SYSROOT_PREFIX/usr/share/aclocal/ax_prog_cc_for_build.m4
+  mkdir -p $ROOT/$TOOLCHAIN/bin
+    cp localedef $ROOT/$TOOLCHAIN/bin
 }

@@ -16,28 +16,20 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="autoconf-archive"
-PKG_VERSION="2016.09.16"
+PKG_NAME="popt"
+PKG_VERSION="1.16"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://ftp.gnu.org/gnu/autoconf-archive"
-PKG_URL="http://ftp.gnu.org/gnu/autoconf-archive/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_HOST="ccache:host"
+PKG_SITE="http://rpm5.org/"
+PKG_URL="http://rpm5.org/files/popt/${PKG_NAME}-${PKG_VERSION}.tar.gz"
+PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
-PKG_SECTION="toolchain/devel"
-PKG_SHORTDESC="autoconf-archive: macros for autoconf"
-PKG_LONGDESC="autoconf-archive is an package of m4 macros"
+PKG_SECTION="devel"
+PKG_SHORTDESC="popt: contains the popt libraries which are used by some programs to parse command-line options"
+PKG_LONGDESC="The popt package contains the popt libraries which are used by some programs to parse command-line options."
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CONFIGURE_OPTS_HOST="--target=$TARGET_NAME --prefix=$ROOT/$TOOLCHAIN"
-
-makeinstall_host() {
-# make install
-  make prefix=$SYSROOT_PREFIX/usr install
-
-# remove problematic m4 file
-  rm -rf $SYSROOT_PREFIX/usr/share/aclocal/ax_prog_cc_for_build.m4
-}
+PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared"
