@@ -44,6 +44,10 @@ PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems, us
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$UBOOT_VERSION" = "sunxi" ]; then
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET Python:host"
+fi
+
 pre_configure_target() {
   if [ -z "$UBOOT_CONFIG" ]; then
     echo "$TARGET_PLATFORM does not define any u-boot configuration, aborting."
