@@ -1,4 +1,4 @@
-This issue tracker is NOT for help or support. Please use the Lakka forum (https://forums.libretro.com/c/libretro/lakka-tv-general) or IRC @ #lakka on freenode.net.
+This issue tracker is NOT for help or support. Please use the Lakka forum (https://forums.libretro.com/c/libretro/lakka-tv-general) or IRC @ #lakka on freenode.net for those kinds of posts.
 
 BEFORE you report a bug make sure you have tried the latest nightly version of Lakka at http://sources.lakka.tv/nightly/. Your bug might be already fixed.
 
