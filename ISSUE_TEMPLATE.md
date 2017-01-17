@@ -4,6 +4,7 @@ BEFORE you report a bug make sure you have tried the latest nightly version of L
 
 If you are sure that it's a bug in Lakka, please answer the following questions:
 - Which version of Lakka are you using?
+- What system hardware are you using?
 - What did you do?
 - What did you expect to happen?
 - What happened instead?
