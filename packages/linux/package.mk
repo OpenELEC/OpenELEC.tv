@@ -45,7 +45,7 @@ case "$LINUX" in
     PKG_GIT_BRANCH="rpi-4.4.y"
     ;;
   *)
-    PKG_VERSION="4.4.43"
+    PKG_VERSION="4.4.45"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
