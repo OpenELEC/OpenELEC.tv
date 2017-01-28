@@ -51,7 +51,7 @@ case "$LINUX" in
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET sunxi-tools:host sunxi-sys-utils"
     ;;
   *)
-    PKG_VERSION="4.4.41"
+    PKG_VERSION="4.4.45"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     ;;
 esac
