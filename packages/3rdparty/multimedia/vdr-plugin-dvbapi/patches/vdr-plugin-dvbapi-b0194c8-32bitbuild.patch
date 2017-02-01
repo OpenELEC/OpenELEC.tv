@@ -1,0 +1,13 @@
+diff --git a/FFdecsa/Makefile b/FFdecsa/Makefile
+index 463ecb7..327e41e 100644
+--- a/FFdecsa/Makefile
++++ b/FFdecsa/Makefile
+@@ -37,7 +37,7 @@ H_FILES = FFdecsa.h parallel_generic.h parallel_std_def.h fftable.h \
+           parallel_128_sse2.h \
+           parallel_128_sse.h
+ 
+-all: FFdecsa.o FFdecsa_test.done
++all: FFdecsa.o 
+ 
+ %.o: %.c
+ 	$(COMPILER) $(FLAGS) -DPARALLEL_MODE=$(PARALLEL_MODE) -c $<
