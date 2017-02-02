@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="mesa"
-PKG_VERSION="13.0.4"
+PKG_VERSION="17.0.0-rc2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
-PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
+# PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 dri3proto libxshmfence libressl zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
