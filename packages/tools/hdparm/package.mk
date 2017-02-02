@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="hdparm"
-PKG_VERSION="9.50"
+PKG_VERSION="9.51"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
