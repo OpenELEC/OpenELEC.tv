@@ -142,9 +142,6 @@
 # build and install NTFS-3G fuse support (yes / no)
   NTFS3G="yes"
 
-# build and install hfs filesystem utilities (yes / no)
-  HFSTOOLS="yes"
-
 # Windowmanager to use (ratpoison / fluxbox / none)
   WINDOWMANAGER="fluxbox"
 

@@ -33,10 +33,6 @@ PKG_IS_ADDON="no"
 
 PKG_AUTORECONF="yes"
 
-if [ "$HFSTOOLS" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET diskdev_cmds"
-fi
-
 PKG_CONFIGURE_OPTS_HOST="--prefix=/usr \
                          --bindir=/bin \
                          --sbindir=/sbin"

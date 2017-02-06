@@ -115,7 +115,6 @@
   fi
   show_message "- exFAT Support (via Fuse):\t\t $EXFAT"
   show_message "- NTFS Support (via Fuse):\t\t $NTFS3G"
-  show_message "- Install HFS Tools:\t\t\t $HFSTOOLS"
 
 # Kodi configuration
 
