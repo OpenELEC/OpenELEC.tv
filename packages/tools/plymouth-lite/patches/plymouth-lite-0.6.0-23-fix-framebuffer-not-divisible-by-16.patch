@@ -1,0 +1,45 @@
+From bf702d2610ecbd73cbd60b5a5b69a730103c26b4 Mon Sep 17 00:00:00 2001
+From: Sam Nazarko <email@samnazarko.co.uk>
+Date: Tue, 30 Jun 2015 19:57:19 +0100
+Subject: [PATCH] Use stride for ply_image_resize
+
+Signed-off-by: Sam Nazarko <email@samnazarko.co.uk>
+---
+ ply-image.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/ply-image.c b/ply-image.c
+index 291b9ce..1bda594 100644
+--- a/ply-image.c
++++ b/ply-image.c
+@@ -299,7 +299,8 @@ ply_image_get_height (ply_image_t *image)
+ ply_image_t *
+ ply_image_resize (ply_image_t *image,
+                   long         width,
+-                  long         height)
++                  long         height,
++		  unsigned int stride)
+ {
+   ply_image_t *new_image;
+   int x, y;
+@@ -308,7 +309,7 @@ ply_image_resize (ply_image_t *image,
+ 
+   new_image = ply_image_new (image->filename);
+ 
+-  new_image->layout.address = malloc (height * width * 4);
++  new_image->layout.address = malloc (height * stride * 4);
+ 
+   new_image->width = width;
+   new_image->height = height;
+@@ -465,7 +466,7 @@ main (int    argc,
+       return exit_code;
+     }
+ 
+-  image = ply_image_resize(image, buffer->area.width, buffer->area.height);
++  image = ply_image_resize(image, buffer->area.width, buffer->area.height, buffer->row_stride);
+ 
+   animate_at_time (buffer, image);
+ 
+-- 
+1.9.1
+
