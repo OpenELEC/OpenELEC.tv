@@ -32,10 +32,6 @@ PKG_LONGDESC="debug is a Metapackage for installing initramfs"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$ISCSI_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET open-iscsi:init"
-fi
-
 if [ "$INITRAMFS_PARTED_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET util-linux:init"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET e2fsprogs:init"
