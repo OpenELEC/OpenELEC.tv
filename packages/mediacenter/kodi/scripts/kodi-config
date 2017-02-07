@@ -49,3 +49,4 @@ else
 fi
 
 echo "KODI_ARGS=\"$KODI_ARGS\"" > /run/openelec/kodi.conf
+
