@@ -1,25 +1,25 @@
-diff -Naur lcdproc-0.5.6-old/acinclude.m4 lcdproc-0.5.6-new/acinclude.m4
---- lcdproc-0.5.6-old/acinclude.m4	2012-09-01 14:34:24.000000000 -0700
-+++ lcdproc-0.5.6-new/acinclude.m4	2012-11-14 12:06:48.000000000 -0800
-@@ -9,7 +9,7 @@
+diff -Naur lcdproc-3f6d1a4/acinclude.m4 lcdproc-3f6d1a4.patch/acinclude.m4
+--- lcdproc-3f6d1a4/acinclude.m4	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/acinclude.m4	2017-02-07 13:13:02.923062515 +0100
+@@ -8,7 +8,7 @@
+ 	[  --enable-drivers=<list> compile drivers for LCDs in <list>,]
  	[                  which is a comma-separated list of drivers.]
  	[                  Possible drivers are:]
- 	[                    bayrad,CFontz,CFontzPacket,curses,CwLnx,]
--	[                    ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,]
-+	[                    dm140,ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,]
+-	[                    bayrad,CFontz,CFontzPacket,curses,CwLnx,ea65,]
++	[                    bayrad,CFontz,CFontzPacket,curses,CwLnx,dm140,ea65,]
+ 	[                    EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,]
  	[                    icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,]
- 	[                    joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,]
- 	[                    ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,]
-@@ -22,7 +22,7 @@
+ 	[                    joy,lb216,lcdm001,lcterm,linux_input,lirc,lis,MD8800,mdm166a,]
+@@ -23,7 +23,7 @@
  	drivers="$enableval",
  	drivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,glk,lb216,lcdm001,MtxOrb,pyramid,text])
  
--allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd]
-+allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,dm140,ea65,EyeboxOne,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd]
+-allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,ea65,EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,linux_input,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,Olimex_MOD_LCD1x9,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd,rawserial,yard2LCD]
++allDrivers=[bayrad,CFontz,CFontzPacket,curses,CwLnx,dm140,ea65,EyeboxOne,futaba,g15,glcd,glcdlib,glk,hd44780,i2500vfd,icp_a106,imon,imonlcd,IOWarrior,irman,irtrans,joy,lb216,lcdm001,lcterm,linux_input,lirc,lis,MD8800,mdm166a,ms6931,mtc_s16209x,MtxOrb,mx5000,NoritakeVFD,Olimex_MOD_LCD1x9,picolcd,pyramid,sdeclcd,sed1330,sed1520,serialPOS,serialVFD,shuttleVFD,sli,stv5730,SureElec,svga,t6963,text,tyan,ula200,vlsys_m428,xosd,rawserial,yard2LCD]
  if test "$debug" = yes; then
  	allDrivers=["${allDrivers},debug"]
  fi
-@@ -127,6 +127,10 @@
+@@ -128,6 +128,10 @@
  			DRIVERS="$DRIVERS debug${SO}"
  			actdrivers=["$actdrivers debug"]
  			;;
@@ -30,10 +30,10 @@ diff -Naur lcdproc-0.5.6-old/acinclude.m4 lcdproc-0.5.6-new/acinclude.m4
  		ea65)
  			DRIVERS="$DRIVERS ea65${SO}"
  			actdrivers=["$actdrivers ea65"]
-diff -Naur lcdproc-0.5.6-old/LCDd.conf lcdproc-0.5.6-new/LCDd.conf
---- lcdproc-0.5.6-old/LCDd.conf	2012-08-19 07:29:07.000000000 -0700
-+++ lcdproc-0.5.6-new/LCDd.conf	2012-11-14 12:06:25.000000000 -0800
-@@ -290,6 +290,10 @@
+diff -Naur lcdproc-3f6d1a4/LCDd.conf lcdproc-3f6d1a4.patch/LCDd.conf
+--- lcdproc-3f6d1a4/LCDd.conf	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/LCDd.conf	2017-02-07 13:12:01.867973654 +0100
+@@ -293,6 +293,10 @@
  
  
  
@@ -44,10 +44,9 @@ diff -Naur lcdproc-0.5.6-old/LCDd.conf lcdproc-0.5.6-new/LCDd.conf
  ## ea65 driver for the display in AOpen XC Cube AV EA65 media barebones ##
  [ea65]
  
-diff -Naur lcdproc-0.5.6-old/LCDd.conf.orig lcdproc-0.5.6-new/LCDd.conf.orig
-diff -Naur lcdproc-0.5.6-old/server/drivers/dm140.c lcdproc-0.5.6-new/server/drivers/dm140.c
---- lcdproc-0.5.6-old/server/drivers/dm140.c	1969-12-31 16:00:00.000000000 -0800
-+++ lcdproc-0.5.6-new/server/drivers/dm140.c	2012-11-14 12:06:25.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/dm140.c lcdproc-3f6d1a4.patch/server/drivers/dm140.c
+--- lcdproc-3f6d1a4/server/drivers/dm140.c	1970-01-01 01:00:00.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/dm140.c	2017-02-07 13:12:01.868973655 +0100
 @@ -0,0 +1,241 @@
 +/*  
 + *  dm1400 vfd driver (c)2007 Henrik Larsson 
@@ -69,7 +68,7 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/dm140.c lcdproc-0.5.6-new/server/dri
 +#include "lcd.h"
 +#include "dm140.h"
 +
-+#include "report.h"
++#include "shared/report.h"
 +#include "lcd_lib.h"
 +#include "libvfd.h"
 +#include "led.h"
@@ -290,9 +289,9 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/dm140.c lcdproc-0.5.6-new/server/dri
 +}
 +
 +
-diff -Naur lcdproc-0.5.6-old/server/drivers/dm140.h lcdproc-0.5.6-new/server/drivers/dm140.h
---- lcdproc-0.5.6-old/server/drivers/dm140.h	1969-12-31 16:00:00.000000000 -0800
-+++ lcdproc-0.5.6-new/server/drivers/dm140.h	2012-11-14 12:06:25.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/dm140.h lcdproc-3f6d1a4.patch/server/drivers/dm140.h
+--- lcdproc-3f6d1a4/server/drivers/dm140.h	1970-01-01 01:00:00.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/dm140.h	2017-02-07 13:12:01.868973655 +0100
 @@ -0,0 +1,38 @@
 +#ifndef DM140_H
 +#define DM140_H
@@ -332,9 +331,9 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/dm140.h lcdproc-0.5.6-new/server/dri
 +MODULE_EXPORT int  dm140_flush (Driver *drvthis);
 +
 +#endif
-diff -Naur lcdproc-0.5.6-old/server/drivers/led.c lcdproc-0.5.6-new/server/drivers/led.c
---- lcdproc-0.5.6-old/server/drivers/led.c	1969-12-31 16:00:00.000000000 -0800
-+++ lcdproc-0.5.6-new/server/drivers/led.c	2012-11-14 12:06:25.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/led.c lcdproc-3f6d1a4.patch/server/drivers/led.c
+--- lcdproc-3f6d1a4/server/drivers/led.c	1970-01-01 01:00:00.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/led.c	2017-02-07 13:12:01.870973658 +0100
 @@ -0,0 +1,1065 @@
 +/* File modified by Henrik Larsson 2007 to interface with LCDproc API
 + */
@@ -365,7 +364,7 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/led.c lcdproc-0.5.6-new/server/drive
 +#include <string.h>
 +#include "lcd.h"
 +#include "libvfd.h"
-+#include "report.h"
++#include "shared/report.h"
 +#include "dm140.h"
 +
 +
@@ -1401,9 +1400,9 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/led.c lcdproc-0.5.6-new/server/drive
 +
 +  return 0;
 +}
-diff -Naur lcdproc-0.5.6-old/server/drivers/led.h lcdproc-0.5.6-new/server/drivers/led.h
---- lcdproc-0.5.6-old/server/drivers/led.h	1969-12-31 16:00:00.000000000 -0800
-+++ lcdproc-0.5.6-new/server/drivers/led.h	2012-11-14 12:06:25.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/led.h lcdproc-3f6d1a4.patch/server/drivers/led.h
+--- lcdproc-3f6d1a4/server/drivers/led.h	1970-01-01 01:00:00.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/led.h	2017-02-07 13:12:01.871973660 +0100
 @@ -0,0 +1,29 @@
 +#ifndef LED_H
 +#define LED_H
@@ -1434,9 +1433,9 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/led.h lcdproc-0.5.6-new/server/drive
 +int VFDGraphicsRect(Driver *drvthis, int page, char color, int srcx, int srcy, int width, int height);
 +
 +#endif
-diff -Naur lcdproc-0.5.6-old/server/drivers/libvfd.h lcdproc-0.5.6-new/server/drivers/libvfd.h
---- lcdproc-0.5.6-old/server/drivers/libvfd.h	1969-12-31 16:00:00.000000000 -0800
-+++ lcdproc-0.5.6-new/server/drivers/libvfd.h	2012-11-14 12:06:25.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/libvfd.h lcdproc-3f6d1a4.patch/server/drivers/libvfd.h
+--- lcdproc-3f6d1a4/server/drivers/libvfd.h	1970-01-01 01:00:00.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/libvfd.h	2017-02-07 13:12:01.871973660 +0100
 @@ -0,0 +1,183 @@
 +/* Header for libvfd
 + * Copyright (C) 2006, Advanced Micro Devices, Inc.
@@ -1621,23 +1620,23 @@ diff -Naur lcdproc-0.5.6-old/server/drivers/libvfd.h lcdproc-0.5.6-new/server/dr
 +void vfd_close(void);
 +
 +#endif
-diff -Naur lcdproc-0.5.6-old/server/drivers/Makefile.am lcdproc-0.5.6-new/server/drivers/Makefile.am
---- lcdproc-0.5.6-old/server/drivers/Makefile.am	2012-08-19 07:29:08.000000000 -0700
-+++ lcdproc-0.5.6-new/server/drivers/Makefile.am	2012-11-14 12:07:13.000000000 -0800
+diff -Naur lcdproc-3f6d1a4/server/drivers/Makefile.am lcdproc-3f6d1a4.patch/server/drivers/Makefile.am
+--- lcdproc-3f6d1a4/server/drivers/Makefile.am	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/Makefile.am	2017-02-07 13:14:22.771177773 +0100
 @@ -23,7 +23,7 @@
  
  lcdexecbindir = $(pkglibdir)
  lcdexecbin_PROGRAMS = @DRIVERS@
--EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses debug CwLnx ea65 EyeboxOne g15 glcd glcdlib glk hd44780 icp_a106 imon imonlcd IOWarrior irman joy lb216 lcdm001 lcterm lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD picolcd pyramid sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD stv5730 SureElec svga t6963 text tyan sli ula200 vlsys_m428 xosd i2500vfd irtrans
-+EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses debug CwLnx dm140 ea65 EyeboxOne g15 glcd glcdlib glk hd44780 icp_a106 imon imonlcd IOWarrior irman joy lb216 lcdm001 lcterm lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD picolcd pyramid sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD stv5730 SureElec svga t6963 text tyan sli ula200 vlsys_m428 xosd i2500vfd irtrans
+-EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses CwLnx debug ea65 EyeboxOne futaba g15 glcd glcdlib glk hd44780 i2500vfd icp_a106 imon imonlcd IOWarrior irman irtrans joy lb216 lcdm001 lcterm linux_input lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD Olimex_MOD_LCD1x9 picolcd pyramid rawserial sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD sli stv5730 SureElec svga t6963 text tyan ula200 vlsys_m428 xosd yard2LCD
++EXTRA_PROGRAMS = bayrad CFontz CFontzPacket curses CwLnx debug dm140 ea65 EyeboxOne futaba g15 glcd glcdlib glk hd44780 i2500vfd icp_a106 imon imonlcd IOWarrior irman irtrans joy lb216 lcdm001 lcterm linux_input lirc lis MD8800 mdm166a ms6931 mtc_s16209x MtxOrb mx5000 NoritakeVFD Olimex_MOD_LCD1x9 picolcd pyramid rawserial sdeclcd sed1330 sed1520 serialPOS serialVFD shuttleVFD sli stv5730 SureElec svga t6963 text tyan ula200 vlsys_m428 xosd yard2LCD
  noinst_LIBRARIES = libLCD.a libbignum.a
  
- g15_CFLAGS =         @LIBUSB_CFLAGS@ $(AM_CFLAGS)
-@@ -87,6 +87,7 @@
- curses_SOURCES =     lcd.h curses_drv.h curses_drv.c report.h
- CwLnx_SOURCES =      lcd.h lcd_lib.h CwLnx.c CwLnx.h report.h
- debug_SOURCES =      lcd.h report.h debug.c debug.h
+ futaba_CFLAGS =      @LIBUSB_CFLAGS@ @LIBUSB_1_0_CFLAGS@ $(AM_CFLAGS)
+@@ -89,6 +89,7 @@
+ curses_SOURCES =     lcd.h curses_drv.h curses_drv.c
+ CwLnx_SOURCES =      lcd.h lcd_lib.h CwLnx.c CwLnx.h
+ debug_SOURCES =      lcd.h debug.c debug.h
 +dm140_SOURCES =      lcd.h led.c libvfd.h led.h dm140.c dm140.h report.h
- ea65_SOURCES =       lcd.h ea65.h ea65.c report.h
- EyeboxOne_SOURCES =  lcd.h lcd_lib.h EyeboxOne.c EyeboxOne.h report.h
- g15_SOURCES =        lcd.h lcd_lib.h g15.h g15-num.c g15.c report.h
+ ea65_SOURCES =       lcd.h ea65.h ea65.c
+ EyeboxOne_SOURCES =  lcd.h lcd_lib.h EyeboxOne.c EyeboxOne.h
+ futaba_SOURCES =     lcd.h futaba.c futaba.h

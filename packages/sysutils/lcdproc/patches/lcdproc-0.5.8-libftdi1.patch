@@ -1,0 +1,60 @@
+diff -Naur lcdproc-3f6d1a4/configure.ac lcdproc-3f6d1a4.patch/configure.ac
+--- lcdproc-3f6d1a4/configure.ac	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/configure.ac	2017-02-07 12:25:38.479525432 +0100
+@@ -314,7 +314,7 @@
+ 
+ if test "$enable_libftdi" = "yes"; then
+ 	ifdef([PKG_CHECK_MODULES],
+-	 	[PKG_CHECK_MODULES(LIBFTDI, libftdi >= 0.8,
++	 	[PKG_CHECK_MODULES(LIBFTDI, libftdi1 >= 0.8,
+ 			[AC_DEFINE(HAVE_LIBFTDI, [1], [Define to 1 if you have libftdi])],
+ 			[ enable_libftdi=no ])],
+ 		[AC_MSG_WARN([pkg-config not (fully) installed; drivers requiring libftdi may not be built])])
+diff -Naur lcdproc-3f6d1a4/server/drivers/hd44780-low.h lcdproc-3f6d1a4.patch/server/drivers/hd44780-low.h
+--- lcdproc-3f6d1a4/server/drivers/hd44780-low.h	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/hd44780-low.h	2017-02-07 12:25:38.479525432 +0100
+@@ -26,7 +26,7 @@
+ #endif
+ 
+ #ifdef HAVE_LIBFTDI
+-# include <ftdi.h>
++# include <libftdi1/ftdi.h>
+ #endif
+ 
+ #include "i2c.h"
+diff -Naur lcdproc-3f6d1a4/server/drivers/i2500vfd.c lcdproc-3f6d1a4.patch/server/drivers/i2500vfd.c
+--- lcdproc-3f6d1a4/server/drivers/i2500vfd.c	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/i2500vfd.c	2017-02-07 12:25:38.479525432 +0100
+@@ -32,7 +32,7 @@
+ #include <stdio.h>
+ #include <unistd.h>
+ #include <string.h>
+-#include <ftdi.h>
++#include <libftdi1/ftdi.h>
+ 
+ #include "lcd.h"
+ #include "i2500vfd.h"
+diff -Naur lcdproc-3f6d1a4/server/drivers/lis.c lcdproc-3f6d1a4.patch/server/drivers/lis.c
+--- lcdproc-3f6d1a4/server/drivers/lis.c	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/lis.c	2017-02-07 12:26:24.391630679 +0100
+@@ -41,7 +41,7 @@
+ #include <errno.h>
+ #include <pthread.h>
+ 
+-#include <ftdi.h>
++#include <libftdi1/ftdi.h>
+ 
+ #include "lcd.h"
+ #include "lis.h"
+diff -Naur lcdproc-3f6d1a4/server/drivers/ula200.c lcdproc-3f6d1a4.patch/server/drivers/ula200.c
+--- lcdproc-3f6d1a4/server/drivers/ula200.c	2017-02-07 01:36:46.000000000 +0100
++++ lcdproc-3f6d1a4.patch/server/drivers/ula200.c	2017-02-07 12:26:44.960677831 +0100
+@@ -30,7 +30,7 @@
+ #include <string.h>
+ #include <errno.h>
+ 
+-#include <ftdi.h>
++#include <libftdi1/ftdi.h>
+ 
+ #include "lcd.h"
+ #include "ula200.h"
