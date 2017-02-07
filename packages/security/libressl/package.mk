@@ -34,8 +34,25 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 post_makeinstall_target() {
-  mkdir -p $INSTALL/etc/pki/tls
-    ln -sf /etc/ssl/cert.pem $INSTALL/etc/pki/tls/cacert.pem
-  mkdir -p $INSTALL/etc/pki/tls/certs
-    ln -sf /etc/ssl/cert.pem $INSTALL/etc/pki/tls/certs/ca-bundle.crt
+  # libressl default location
+    mkdir -p $INSTALL/etc/ssl/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/cert.pem
+
+  # legacy OpenELEC compat
+    mkdir -p $INSTALL/etc/pki/tls/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/cacert.pem
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/cert.pem
+
+  # Debian/Ubuntu/Gentoo etc. compat
+    mkdir -p $INSTALL/etc/ssl/certs/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/certs/ca-certificates.crt
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/certs/ca-bundle.crt
+
+  # Fedora/RHEL compat
+    mkdir -p $INSTALL/etc/pki/tls/certs/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/certs/ca-bundle.crt
+
+  # OpenSUSE compat
+    mkdir -p $INSTALL/etc/ssl/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/ca-bundle.pem
 }
