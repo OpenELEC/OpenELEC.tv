@@ -42,6 +42,8 @@ pre_configure_target() {
   # serdisplib fails to build in subdirs (found this in packages/devel/attr/package.mk)
   cd $ROOT/$PKG_BUILD
     rmdir .$TARGET_NAME
+
+  export LIBUSB_CONFIG="$SYSROOT_PREFIX/usr/bin/libusb-config"
 }
 
 post_make_target() {
