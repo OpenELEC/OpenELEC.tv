@@ -1,0 +1,15 @@
+diff -Naur libressl-2.4.5/CMakeLists.txt libressl-2.4.5.patch/CMakeLists.txt
+--- libressl-2.4.5/CMakeLists.txt	2016-09-23 12:44:03.000000000 +0200
++++ libressl-2.4.5.patch/CMakeLists.txt	2017-02-09 12:25:14.617606805 +0100
+@@ -183,11 +183,6 @@
+ 	add_definitions(-DHAVE_GETAUXVAL)
+ endif()
+ 
+-check_function_exists(getentropy HAVE_GETENTROPY)
+-if(HAVE_GETENTROPY)
+-	add_definitions(-DHAVE_GETENTROPY)
+-endif()
+-
+ check_function_exists(timingsafe_bcmp HAVE_TIMINGSAFE_BCMP)
+ if(HAVE_TIMINGSAFE_BCMP)
+ 	add_definitions(-DHAVE_TIMINGSAFE_BCMP)
