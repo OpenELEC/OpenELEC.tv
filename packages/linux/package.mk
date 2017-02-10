@@ -47,11 +47,11 @@ case "$LINUX" in
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   imx6)
-    PKG_VERSION="f14907b"
+    PKG_VERSION="47b3547"
     PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
-    PKG_GIT_BRANCH="imx6-4.4.y"
+    PKG_GIT_BRANCH="imx6-4.8.y"
     PKG_DEPENDS_TARGET+=" imx6-status-led imx6-soc-fan"
-    PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
+    PKG_PATCH_DIRS="linux-4.8 imx6-4.8"
     ;;
   rpi)
     PKG_VERSION="6398163"
