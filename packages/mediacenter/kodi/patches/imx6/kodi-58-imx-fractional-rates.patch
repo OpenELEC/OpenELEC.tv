@@ -1,0 +1,16 @@
+--- a/xbmc/windowing/egl/EGLNativeTypeIMX.cpp	2015-12-21 17:45:47.575690959 +0100
++++ b/xbmc/windowing/egl/EGLNativeTypeIMX.cpp	2015-12-21 17:45:47.615712478 +0100
+@@ -434,7 +434,12 @@
+   res->iHeight= h;
+   res->iScreenWidth = w;
+   res->iScreenHeight= h;
+-  res->fRefreshRate = r;
++  
++  if(r == 23 || (r % 10) == 9)
++    res->fRefreshRate = (float)((r + 1) * 1000) / 1001;
++  else
++    res->fRefreshRate = r;
++
+   res->dwFlags = p[0] == 'p' ? D3DPRESENTFLAG_PROGRESSIVE : D3DPRESENTFLAG_INTERLACED;
+ 
+   res->iScreen       = 0;

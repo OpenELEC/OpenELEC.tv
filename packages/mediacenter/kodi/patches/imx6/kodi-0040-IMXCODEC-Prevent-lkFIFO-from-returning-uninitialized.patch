@@ -1,0 +1,96 @@
+From c458ee2820562d7f7e6d015a6ff25c7ef126bb88 Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sun, 1 Jan 2017 11:47:08 +0100
+Subject: [PATCH] IMXCODEC: Prevent lkFIFO from returning uninitialized data
+
+---
+ .../VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp     | 15 +++++++++++----
+ xbmc/linux/imx/IMX.h                                     | 16 ++++++++--------
+ 2 files changed, 19 insertions(+), 12 deletions(-)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+index 3e77132..773c878 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+@@ -889,7 +889,7 @@ void CIMXCodec::Process()
+   {
+     RecycleFrameBuffers();
+     SAFE_DELETE(task);
+-    if (!(task = m_decInput.pop()))
++    if (!m_decInput.pop(task))
+       task = new VPUTask();
+ 
+ #if defined(IMX_PROFILE) || defined(IMX_PROFILE_BUFFERS)
+@@ -1048,7 +1048,11 @@ void CIMXCodec::Process()
+ 
+       if (m_decRet & VPU_DEC_NO_ENOUGH_BUF && m_decOutput.size())
+       {
+-        m_decOutput.pop()->Release();
++        CDVDVideoCodecIMXBuffer *buffer;
++
++        if (m_decOutput.pop(buffer))
++          buffer->Release();
++
+         FlushVPU();
+         continue;
+       }
+@@ -1124,8 +1128,11 @@ void CIMXCodec::ExitError(const char *msg, ...)
+ 
+ bool CIMXCodec::GetPicture(DVDVideoPicture* pDvdVideoPicture)
+ {
+-  pDvdVideoPicture->IMXBuffer = m_decOutput.pop();
+-  assert(pDvdVideoPicture->IMXBuffer);
++  if (!m_decOutput.pop(pDvdVideoPicture->IMXBuffer))
++  {
++    memset(pDvdVideoPicture, 0, sizeof(*pDvdVideoPicture));
++    return false;
++  }
+ 
+ #ifdef IMX_PROFILE
+   static unsigned int previous = 0;
+diff --git a/xbmc/linux/imx/IMX.h b/xbmc/linux/imx/IMX.h
+index 2bc6761..201c1e9 100644
+--- a/xbmc/linux/imx/IMX.h
++++ b/xbmc/linux/imx/IMX.h
+@@ -79,23 +79,22 @@ public:
+   lkFIFO() { m_size = queue.max_size(); queue.clear(); m_abort = false; }
+ 
+ public:
+-  T pop()
++  bool pop(T &item)
+   {
+     std::unique_lock<std::mutex> m_lock(lkqueue);
+     m_abort = false;
+     while (!queue.size() && !m_abort)
+       read.wait(m_lock);
+ 
+-    T val;
+-    if (!queue.empty())
+-    {
+-      val = queue.front();
+-      queue.pop_front();
+-    }
++    if (queue.empty())
++      return false;
++
++    item = queue.front();
++    queue.pop_front();
+ 
+     m_lock.unlock();
+     write.notify_one();
+-    return val;
++    return true;
+   }
+ 
+   bool push(const T& item)
+@@ -109,6 +108,7 @@ public:
+       return false;
+ 
+     queue.push_back(item);
++
+     m_lock.unlock();
+     read.notify_one();
+     return true;
+-- 
+1.9.1
+

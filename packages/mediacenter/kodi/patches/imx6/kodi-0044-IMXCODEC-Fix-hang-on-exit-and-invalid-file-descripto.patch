@@ -1,0 +1,121 @@
+From 89ab2c4de60034d81df3c91a19f7e0e7522d1b5e Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Mon, 2 Jan 2017 22:23:24 +0100
+Subject: [PATCH] IMXCODEC: Fix hang on exit and invalid file descriptor
+ handling
+
+---
+ .../DVDCodecs/Video/DVDVideoCodecIMX.cpp           | 28 +++++++++++++---------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+index 6b0e2ee..9436d4e 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecIMX.cpp
+@@ -1268,11 +1268,11 @@ CDVDVideoCodecIMXBuffer::~CDVDVideoCodecIMXBuffer()
+ 
+ CIMXContext::CIMXContext()
+   : CThread("iMX IPU")
+-  , m_fbHandle(0)
++  , m_fbHandle(-1)
+   , m_fbCurrentPage(0)
+   , m_fbPhysAddr(0)
+   , m_fbVirtAddr(NULL)
+-  , m_ipuHandle(0)
++  , m_ipuHandle(-1)
+   , m_vsync(true)
+   , m_pageCrops(NULL)
+   , m_bFbIsConfigured(false)
+@@ -1281,13 +1281,17 @@ CIMXContext::CIMXContext()
+   , m_deviceName("/dev/fb1")
+ {
+   m_pageCrops = new CRectInt[m_fbPages];
++  m_processInfo = 0;
+   OpenDevices();
+ }
+ 
+ CIMXContext::~CIMXContext()
+ {
+-  Stop(false);
++  Stop();
+   Dispose();
++
++  m_processInfo = 0;
++  Clear(-1);
+   CloseDevices();
+ }
+ 
+@@ -1439,7 +1443,7 @@ bool CIMXContext::OpenDevices()
+   m_fbHandle = open(m_deviceName.c_str(), O_RDWR, 0);
+   OpenIPU();
+ 
+-  bool opened = m_fbHandle > 0 && m_ipuHandle > 0;
++  bool opened = m_fbHandle != -1 && m_ipuHandle != -1;
+   if (!opened)
+     CLog::Log(LOGWARNING, "iMX : Failed to open framebuffer: %s\n", m_deviceName.c_str());
+ 
+@@ -1448,10 +1452,10 @@ bool CIMXContext::OpenDevices()
+ 
+ void CIMXContext::CloseIPU()
+ {
+-  if (m_ipuHandle)
++  if (m_ipuHandle != -1)
+   {
+     close(m_ipuHandle);
+-    m_ipuHandle = 0;
++    m_ipuHandle = -1;
+   }
+ }
+ 
+@@ -1459,10 +1463,10 @@ void CIMXContext::CloseDevices()
+ {
+   CLog::Log(LOGINFO, "iMX : Closing devices\n");
+ 
+-  if (m_fbHandle)
++  if (m_fbHandle != -1)
+   {
+     close(m_fbHandle);
+-    m_fbHandle = 0;
++    m_fbHandle = -1;
+   }
+ 
+   CloseIPU();
+@@ -1470,7 +1474,7 @@ void CIMXContext::CloseDevices()
+ 
+ bool CIMXContext::Blank()
+ {
+-  if (!m_fbHandle) return false;
++  if (m_fbHandle == -1) return false;
+ 
+   m_bFbIsConfigured = false;
+   return ioctl(m_fbHandle, FBIOBLANK, 1) == 0;
+@@ -1478,7 +1482,7 @@ bool CIMXContext::Blank()
+ 
+ bool CIMXContext::Unblank()
+ {
+-  if (!m_fbHandle) return false;
++  if (m_fbHandle == -1) return false;
+ 
+   int ret = ioctl(m_fbHandle, FBIOBLANK, FB_BLANK_UNBLANK);
+   m_bFbIsConfigured = true;
+@@ -1620,7 +1624,7 @@ bool CIMXContext::ShowPage()
+ 
+   {
+     CSingleLock lk(m_pageSwapLock);
+-    if (!m_bFbIsConfigured)
++    if (!m_bFbIsConfigured || m_fbHandle == -1 )
+       return false;
+   }
+ 
+@@ -1632,6 +1636,8 @@ bool CIMXContext::ShowPage()
+ 
+   if (ioctl(m_fbHandle, MXCFB_WAIT_FOR_VSYNC, nullptr) < 0 && !CIMX::IsBlank())
+     CLog::Log(LOGWARNING, "Vsync failed: %s\n", strerror(errno));
++
++  return true;
+ }
+ 
+ void CIMXContext::SetProcessInfo(CProcessInfo *m_pProcessInfo)
+-- 
+1.9.1
+

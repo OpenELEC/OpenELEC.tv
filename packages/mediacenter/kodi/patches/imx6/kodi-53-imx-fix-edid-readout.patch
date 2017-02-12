@@ -1,0 +1,100 @@
+--- a/xbmc/windowing/egl/EGLNativeTypeIMX.cpp	2016-09-25 15:18:47.780677140 +0200
++++ b/xbmc/windowing/egl/EGLNativeTypeIMX.cpp	2016-09-25 15:18:47.808677141 +0200
+@@ -336,67 +336,55 @@
+ float CEGLNativeTypeIMX::GetMonitorSAR()
+ {
+   FILE *f_edid;
+-  char *str = NULL;
+-  unsigned char p;
+-  size_t n;
+-  int done = 0;
++  int len;
+ 
+   // kernels <= 3.18 use ./soc0/soc.1 in official imx kernel
+   // kernels  > 3.18 use ./soc0/soc
+   f_edid = fopen("/sys/devices/soc0/soc/20e0000.hdmi_video/edid", "r");
+   if(!f_edid)
+     f_edid = fopen("/sys/devices/soc0/soc.1/20e0000.hdmi_video/edid", "r");
++  if(!f_edid)
++    f_edid = fopen("/sys/devices/soc0/soc.0/20e0000.hdmi_video/edid", "r");
+ 
+   if(!f_edid)
+     return 0;
+ 
++  len = fread(m_edid, 1, EDID_MAXSIZE, f_edid);
++  if (len < 128)
++  {
++    fclose(f_edid);
++    return 0;
++  }
++
+   // first check if EDID is in binary format by reading 512bytes, compare 1st 8bytes
+   // against EDID 1.4 identificator [0x0,0xff,0xff,0xff,0xff,0xff,0xff,0x0]
+   // if no match, seek to 0 input file and continue with previous method.
+-  if (((done = fread(m_edid, 1, EDID_MAXSIZE, f_edid)) % 128) == 0 && done)
+-    if (!memcmp(m_edid, EDID_HEADER, EDID_HEADERSIZE))
+-    {
+-      fclose(f_edid);
+-      return true;
+-    }
+-
+-  done = 0;
+-  memset(m_edid, 0, EDID_MAXSIZE);
+-  fseek(f_edid, 0L, SEEK_SET);
+-  // we need to convert mxc_hdmi output format to binary array
+-  // mxc_hdmi provides the EDID as space delimited 1bytes blocks
+-  // exported as text with format specifier %x eg:
+-  // 0x00 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0x00 0x4C 0x2D 0x7A 0x0A 0x00 0x00 0x00 0x00
+-  //
+-  // this translates into the inner cycle where we move pointer first
+-  // with +2 to skip '0x',
+-  // we sscanf actual data (eg FF) into a byte,
+-  // we move over the FF and delimiting space with +3
+-  //
+-  // this parses whole 512 byte long info into internal binary array for future
+-  // reference and use. current use is only to grab screen's physical params
+-  // at EGL init.
+-  while(getline(&str, &n, f_edid) > 0)
++  if (memcmp(m_edid, EDID_HEADER, EDID_HEADERSIZE) != 0)
+   {
+-    char *c = str;
+-    while(*c != '\n' && done < EDID_MAXSIZE)
+-    {
+-      c += 2;
+-      sscanf(c, "%hhx", &p);
+-      m_edid[done++] = p;
+-      c += 3;
+-    }
+-    if (str)
+-      free(str);
+-    str = NULL;
++    // we need to convert mxc_hdmi output format to binary array
++    // mxc_hdmi provides the EDID as space delimited 1bytes blocks
++    // exported as text with format specifier %x eg:
++    // 0x00 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0x00 0x4C 0x2D 0x7A 0x0A 0x00 0x00 0x00 0x00
++    //
++    // this parses whole 512 byte long info into internal binary array for future
++    // reference and use. current use is only to grab screen's physical params
++    // at EGL init.
++    len = 0;
++    fseek(f_edid, 0, SEEK_SET);
++    while (len < EDID_MAXSIZE && fscanf(f_edid, " 0x%2hhx", m_edid + len) == 1)
++        len++;
+   }
++
++  if (len < EDID_MAXSIZE)
++    memset(m_edid + len, 0, EDID_MAXSIZE - len);
++
+   fclose(f_edid);
+ 
+   // info related to 'Basic display parameters.' is at offset 0x14-0x18.
+   // where W is 2nd byte, H 3rd.
+-  int cmWidth  = (int)*(m_edid +EDID_STRUCT_DISPLAY +1);
+-  int cmHeight = (int)*(m_edid +EDID_STRUCT_DISPLAY +2);
+-  if (cmHeight > 0)
++  int cmWidth  = m_edid[EDID_STRUCT_DISPLAY + 1];
++  int cmHeight = m_edid[EDID_STRUCT_DISPLAY + 2];
++  if (cmHeight > 0 && cmWidth > 0)
+   {
+     float t_sar = (float) cmWidth / cmHeight;
+     if (t_sar >= 0.33 && t_sar <= 3.0)
