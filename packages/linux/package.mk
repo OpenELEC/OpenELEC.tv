@@ -39,7 +39,7 @@ case "$LINUX" in
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   amlogic-3.14)
-    PKG_VERSION="e28d454"
+    PKG_VERSION="83803a1"
 #    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
     PKG_GIT_URL="https://github.com/LibreELEC/linux-amlogic.git"
     PKG_GIT_BRANCH="amlogic-3.14.y"
