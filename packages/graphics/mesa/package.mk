@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="mesa"
-PKG_VERSION="17.0.0-rc3"
+PKG_VERSION="17.0.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 # PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_URL="ftp://freedesktop.org/pub/mesa/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 dri3proto libxshmfence libressl zlib"
+PKG_DEPENDS_TARGET="toolchain Python:host expat glproto dri2proto presentproto libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 dri3proto libxshmfence zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="mesa: 3-D graphics library with OpenGL API"
@@ -59,19 +59,20 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            X11_INCLUDES= \
                            DRI_DRIVER_INSTALL_DIR=/usr/lib/dri \
                            DRI_DRIVER_SEARCH_DIR=/usr/lib/dri \
-                           --disable-debug \
                            --disable-silent-rules \
+                           --disable-debug \
                            --disable-profile \
+                           --disable-libglvnd \
                            --disable-mangling \
                            --enable-texture-float \
                            --enable-asm \
                            --disable-selinux \
-                           --disable-libglvnd \
-                           --disable-lmsensors \
                            --enable-opengl \
                            --disable-gles1 \
                            --enable-gles2 \
                            --enable-dri \
+                           --disable-gallium-extra-hud \
+                           --disable-lmsensors \
                            --enable-dri3 \
                            --enable-glx \
                            --disable-osmesa \
@@ -84,19 +85,15 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            $MESA_VDPAU \
                            --disable-omx \
                            --disable-va \
-                           --disable-opencl \
-                           --enable-opencl-icd \
+                           --disable-opencl --disable-opencl-icd \
                            --disable-gallium-tests \
                            --enable-shared-glapi \
-                           --enable-shader-cache \
                            --enable-driglx-direct \
                            --enable-glx-tls \
                            --disable-glx-read-only-text \
                            $MESA_GALLIUM_LLVM \
-                           --disable-gallium-extra-hud \
                            --disable-valgrind \
                            --with-sysroot=$SYSROOT_PREFIX \
-                           --with-sha1=libcrypto \
                            --with-gl-lib-name=GL \
                            --with-osmesa-lib-name=OSMesa \
                            --with-gallium-drivers=$GALLIUM_DRIVERS \
@@ -104,7 +101,6 @@ PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=$HOST_CC \
                            --with-dri-searchpath=/usr/lib/dri \
                            --with-dri-drivers=$DRI_DRIVERS \
                            --without-vulkan-drivers"
-
 
 pre_configure_target() {
   export LIBS="-lxcb-dri3 -lxcb-present -lxcb-sync -lxshmfence -lz"
