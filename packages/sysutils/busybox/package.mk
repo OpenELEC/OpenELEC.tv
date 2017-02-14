@@ -164,8 +164,8 @@ pre_make_init() {
 }
 
 makeinstall_host() {
-  mkdir -p $ROOT/$TOOLCHAIN/bin
-    cp -R $ROOT/$PKG_BUILD/.install_host/bin/* $ROOT/$TOOLCHAIN/bin
+  mkdir -p $ROOT/$TOOLCHAIN/
+    cp -PR $ROOT/$PKG_BUILD/.install_host/* $ROOT/$TOOLCHAIN/
 }
 
 makeinstall_target() {
