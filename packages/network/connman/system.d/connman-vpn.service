@@ -7,6 +7,7 @@ After=dbus.socket
 Type=dbus
 BusName=net.connman.vpn
 EnvironmentFile=-/run/openelec/debug/connman.conf
+ExecStartPre=/bin/sh -c "mkdir -p /storage/.config/vpn-config"
 ExecStart=/usr/sbin/connman-vpnd -n $CONNMANVPN_DEBUG
 StandardOutput=null
 
