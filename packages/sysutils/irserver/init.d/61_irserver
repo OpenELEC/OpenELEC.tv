@@ -30,6 +30,7 @@ if [ "$REMOTE_BACKEND" = "irtrans" -o "$LCD_DRIVER" = "irtrans" ]; then
   [ "$DEBUG" = "yes" ] && \
     IRSERVER_ARG="$IRSERVER_ARG -loglevel 4" # set loglevel in debugmode
 
+  mkdir -p /run/lirc
   irserver -logfile /var/log/irserver.log -pidfile /var/run/irserver.pid \
            $IRSERVER_ARG -daemon /dev/irtrans0 > /dev/null 2>&1
 
