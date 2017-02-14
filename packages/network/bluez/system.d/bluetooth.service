@@ -8,6 +8,7 @@ ConditionPathExists=/storage/.cache/services/bluez.conf
 NotifyAccess=main
 EnvironmentFile=/storage/.cache/services/bluez.conf
 EnvironmentFile=-/run/openelec/debug/bluez.conf
+ExecStartPre=/bin/sh -c 'mkdir -p /storage/.cache/bluetooth'
 ExecStart=/usr/lib/bluetooth/bluetoothd $BLUEZ_ARGS $BLUEZ_DEBUG
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
 LimitNPROC=1
