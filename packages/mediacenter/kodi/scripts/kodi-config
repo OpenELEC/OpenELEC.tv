@@ -17,11 +17,11 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-
 # hack: make addon-bins executable
 # done in kodi on addon install. but just in case..
 chmod +x /storage/.kodi/addons/*/bin/*
 
+mkdir -p /storage/.kodi/userdata
 # hack: update RSSnews.xml in userdata
 if [ -f /storage/.kodi/userdata/RssFeeds.xml ]; then
   sed -e "s,http://openelec.tv/news?format=feed&type=rss,http://feeds.openelec.tv/news,g" \
@@ -48,5 +48,12 @@ else
   KODI_ARGS="--lircdev /run/lirc/lircd"
 fi
 
-echo "KODI_ARGS=\"$KODI_ARGS\"" > /run/openelec/kodi.conf
+mkdir -p /storage/music
+mkdir -p /storage/pictures
+mkdir -p /storage/tvshows
+mkdir -p /storage/videos
+mkdir -p /storage/screenshots
 
+mkdir -p /run/kodi
+
+echo "KODI_ARGS=\"$KODI_ARGS\"" > /run/openelec/kodi.conf
