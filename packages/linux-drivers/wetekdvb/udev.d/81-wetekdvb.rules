@@ -1,0 +1,5 @@
+ACTION=="remove", GOTO="drivers_end"
+
+KERNEL=="wetek-dvb", SUBSYSTEM=="drivers", RUN+="/sbin/modprobe wetekdvb"
+
+LABEL="drivers_end"
