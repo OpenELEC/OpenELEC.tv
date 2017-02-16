@@ -256,4 +256,6 @@ post_install() {
 
   # bluez looks in /etc/firmware/
     ln -sf /usr/lib/firmware/ $INSTALL/etc/firmware
+
+  enable_service module-load.service
 }
