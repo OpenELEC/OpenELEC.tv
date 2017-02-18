@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="glib"
-PKG_VERSION="2.50.1"
+PKG_VERSION="2.50.3"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
