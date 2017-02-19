@@ -33,7 +33,7 @@
       </group>
     </category>
 
-    <category id="webserver">
+    <category id="control">
       <group id="1">
         <setting id="services.webserver">
           <default>true</default>
