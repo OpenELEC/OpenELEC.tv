@@ -43,7 +43,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-coverage \
                            --disable-kmod \
                            --disable-xkbcommon \
-                           --enable-blkid \
+                           --disable-blkid \
                            --disable-seccomp \
                            --disable-ima \
                            --disable-selinux \
