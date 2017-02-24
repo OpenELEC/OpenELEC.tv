@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,37 +42,37 @@ PKG_MARIADB_SERVER="no"
 # - large :  embedded + archive + federated + blackhole + innodb
 # - xlarge:  embedded + archive + federated + blackhole + innodb + partition
 # - community:  all  features (currently == xlarge)
-  MARIADB_OPTS="$MARIADB_OPTS -DFEATURE_SET=xsmall"
+  MARIADB_OPTS+=" -DFEATURE_SET=xsmall"
 
 # Build MariaDB Server support
   if [ "$PKG_MARIADB_SERVER" = "no" ]; then
-    MARIADB_OPTS="$MARIADB_OPTS -DWITHOUT_SERVER=ON"
+    MARIADB_OPTS+=" -DWITHOUT_SERVER=ON"
   else
-    MARIADB_OPTS="$MARIADB_OPTS -DWITHOUT_SERVER=OFF"
+    MARIADB_OPTS+=" -DWITHOUT_SERVER=OFF"
   fi
 
 # Build MariaDB Embedded Server support
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_EMBEDDED_SERVER=OFF"
+  MARIADB_OPTS+=" -DWITH_EMBEDDED_SERVER=OFF"
 
 # Set MariaDB server storage engines
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_INNOBASE_STORAGE_ENGINE=ON"
-  MARIADB_OPTS="$MARIADB_OPTS -WITH_PARTITION_STORAGE_ENGINE=OFF"
-  MARIADB_OPTS="$MARIADB_OPTS -WITH_PERFSCHEMA_STORAGE_ENGINE=OFF"
+  MARIADB_OPTS+=" -DWITH_INNOBASE_STORAGE_ENGINE=ON"
+  MARIADB_OPTS+=" -WITH_PARTITION_STORAGE_ENGINE=OFF"
+  MARIADB_OPTS+=" -WITH_PERFSCHEMA_STORAGE_ENGINE=OFF"
 
 # According to MariaDB galera cluster documentation these options must be passed
 # to CMake, set to '0' if galera cluster support is not wanted:
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_WSREP=0"
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_INNODB_DISALLOW_WRITES=0"
+  MARIADB_OPTS+=" -DWITH_WSREP=0"
+  MARIADB_OPTS+=" -DWITH_INNODB_DISALLOW_WRITES=0"
 
 # We won't need unit tests:
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_UNIT_TESTS=0"
+  MARIADB_OPTS+=" -DWITH_UNIT_TESTS=0"
 
 # msgpack causes trouble when cross-compiling:
-  MARIADB_OPTS="$MARIADB_OPTS -DGRN_WITH_MESSAGE_PACK=no"
+  MARIADB_OPTS+=" -DGRN_WITH_MESSAGE_PACK=no"
 
 # Mroonga needs libstemmer. Some work still needs to be done before it can be
 # included in buildroot. Disable it for now.
-  MARIADB_OPTS="$MARIADB_OPTS -DWITHOUT_MROONGA=1"
+  MARIADB_OPTS+=" -DWITHOUT_MROONGA=1"
 
 # This value is determined automatically during straight compile by compiling
 # and running a test code. You cannot do that during cross-compile. However the 
@@ -80,18 +80,18 @@ PKG_MARIADB_SERVER="no"
 # am aware of is PA-RISC which is not supported by OpenELEC. Therefore it makes
 # sense to hardcode the value. If an arch is added the stack of which grows up
 # one should expect unpredictable behavior at run time.
-  MARIADB_OPTS="$MARIADB_OPTS -DSTACK_DIRECTION=-1"
+  MARIADB_OPTS+=" -DSTACK_DIRECTION=-1"
 
 # XTRADB requires atomics intrinsic. MariaDB package tests for them by compiling
 # and running C code which is not possible when cross-compiling. It is probably
 # probably possible to use BR2_ARCH_HAS_ATOMIC_INTRINSICS instead of compiling
 # and running some test code but for now we will just disable XTRADB.
-  MARIADB_OPTS="$MARIADB_OPTS -DWITHOUT_XTRADB=1"
+  MARIADB_OPTS+=" -DWITHOUT_XTRADB=1"
 
 # Jemalloc was added for TokuDB. Since its configure script seems somewhat broken
 # when it comes to cross-compilation we shall disable it and also disable TokuDB.
-  MARIADB_OPTS="$MARIADB_OPTS -DWITH_JEMALLOC=no"
-  MARIADB_OPTS="$MARIADB_OPTS -DWITHOUT_TOKUDB=1"
+  MARIADB_OPTS+=" -DWITH_JEMALLOC=no"
+  MARIADB_OPTS+=" -DWITHOUT_TOKUDB=1"
 
 # Some helpers must be compiled for host in order to crosscompile mariadb for
 # the target. They are then included by import_executables.cmake which is
