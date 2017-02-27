@@ -1,7 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 OpenELEC.tv
-#      Copyright (C) 2014-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2016 Alex Deryskyba (alex@codesnake.com)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
