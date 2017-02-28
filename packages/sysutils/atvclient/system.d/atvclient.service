@@ -1,9 +1,0 @@
-[Unit]
-Description=ATV client remote support
-After=syslog.target
-
-[Service]
-ExecPre=/bin/sh -c 'mkdir -p /storage/.cache'
-ExecStart=/usr/sbin/atvclient -m
-KillMode=process
-

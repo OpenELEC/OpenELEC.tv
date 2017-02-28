@@ -153,9 +153,6 @@
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="yes"
 
-# build and install ATV IR remote support (yes / no)
-  ATVCLIENT_SUPPORT="yes"
-
 # build and install IRServer IR/LCD support (yes / no)
   IRSERVER_SUPPORT="yes"
   LCD_DRIVER+="irtrans,"

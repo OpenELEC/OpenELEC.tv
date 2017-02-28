@@ -50,7 +50,6 @@
   show_message "$dashes$dashes"
 
   show_message "- Remote support:\t\t\t $REMOTE_SUPPORT"
-  show_message "- ATV Remote support:\t\t\t $ATVCLIENT_SUPPORT"
   show_message "- CEC Adapter support:\t\t\t $CEC_SUPPORT"
   show_message "- IRTrans support:\t\t\t $IRSERVER_SUPPORT"
 
