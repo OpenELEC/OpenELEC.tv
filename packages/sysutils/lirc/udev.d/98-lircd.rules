@@ -23,12 +23,12 @@ SUBSYSTEM=="lirc", \
   ENV{lircd_conf}="lircd.conf"
 
 ### Microsoft Xbox DVD dongle
-SUBSYSTEM=="lirc", DRIVERS=="lirc_xbox", \
+SUBSYSTEM=="lirc", KERNELS=="lirc_xbox", \
   ENV{lircd_driver}="default", \
   ENV{lircd_conf}="lircd.conf.xbox"
 
 ### RPi GPIO IR Receiver
-SUBSYSTEM=="lirc", DRIVERS=="lirc_rpi", \
+SUBSYSTEM=="lirc", KERNELS=="lirc_rpi", \
   ENV{lircd_driver}="default", \
   ENV{lircd_conf}="lircd.conf.rpi"
 
