@@ -1,0 +1,21 @@
+diff -Naur linux-d8bc59c1/drivers/net/wireless/realtek/Kconfig linux-d8bc59c1.patch/drivers/net/wireless/realtek/Kconfig
+--- linux-d8bc59c1/drivers/net/wireless/realtek/Kconfig	2017-02-17 22:46:31.000000000 +0100
++++ linux-d8bc59c1.patch/drivers/net/wireless/realtek/Kconfig	2017-02-28 02:09:46.001994713 +0100
+@@ -13,7 +13,6 @@
+ 
+ source "drivers/net/wireless/realtek/rtl818x/Kconfig"
+ source "drivers/net/wireless/realtek/rtlwifi/Kconfig"
+-source "drivers/net/wireless/realtek/rtl8192cu/Kconfig"
+ source "drivers/net/wireless/realtek/rtl8xxxu/Kconfig"
+ 
+ endif # WLAN_VENDOR_REALTEK
+diff -Naur linux-d8bc59c1/drivers/net/wireless/realtek/Makefile linux-d8bc59c1.patch/drivers/net/wireless/realtek/Makefile
+--- linux-d8bc59c1/drivers/net/wireless/realtek/Makefile	2017-02-17 22:46:31.000000000 +0100
++++ linux-d8bc59c1.patch/drivers/net/wireless/realtek/Makefile	2017-02-28 02:10:00.215023844 +0100
+@@ -5,6 +5,5 @@
+ obj-$(CONFIG_RTL8180)		+= rtl818x/
+ obj-$(CONFIG_RTL8187)		+= rtl818x/
+ obj-$(CONFIG_RTLWIFI)		+= rtlwifi/
+-obj-$(CONFIG_RTL8192CU)		+= rtl8192cu/
+ obj-$(CONFIG_RTL8XXXU)		+= rtl8xxxu/
+ 
