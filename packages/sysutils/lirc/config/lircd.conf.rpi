@@ -375,7 +375,7 @@ end remote
 
 begin remote
 
-  name  Xbox 360 Remote
+  name  Xbox360Remote
   bits           13
   flags RC6|CONST_LENGTH
   eps            30
@@ -435,7 +435,7 @@ begin remote
           KEY_NEXTSONG             0x0BE5
           KEY_PREVIOUSSONG         0x0BE4
           KEY_DISPLAYTOGGLE        0x0BB0
-          KEY_PAUSE                0x037FF00BE7
+          KEY_PAUSE                0x0BE7
       end codes
 
 end remote
