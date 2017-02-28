@@ -35,7 +35,6 @@ PKG_AUTORECONF="yes"
 get_graphicdrivers
 
 DRM_CONFIG="--disable-intel --disable-radeon --disable-amdgpu"
-DRM_CONFIG="$DRM_CONFIG --disable-nouveau --disable-vmwgfx"
 
 for drv in $GRAPHIC_DRIVERS; do
   [ "$drv" = "i915" -o "$drv" = "i965" ] && \
@@ -50,6 +49,10 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-udev \
                            --enable-largefile \
                            --with-kernel-source=$(get_pkg_build linux) \
                            --disable-libkms \
+                           --disable-nouveau \
+                           --disable-vmwgfx \
+                           --disable-freedreno \
+                           --disable-vc4 \ 
                            $DRM_CONFIG \
                            --disable-install-test-programs \
                            --disable-cairo-tests \
