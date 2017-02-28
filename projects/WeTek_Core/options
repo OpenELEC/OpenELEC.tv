@@ -123,8 +123,7 @@
   # for a list of additinoal drivers see packages/linux-drivers
   # Space separated list is supported,
   # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-    ADDITIONAL_DRIVERS="$ADDITIONAL_DRIVERS"
-
+    ADDITIONAL_DRIVERS="RTL8192DU RTL8192EU RTL8812AU" # todo: dvbhdhomerun
 
   # install extra kernel drivers, see configfiles in packages/linux/config/*.config
   # or projects/*/linux/*.config or distributions/*/linux/*.config
