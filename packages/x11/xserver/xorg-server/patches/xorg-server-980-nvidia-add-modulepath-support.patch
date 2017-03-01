@@ -1,0 +1,851 @@
+From c17e544b271ced65483692103d39ed1188d4ca25 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 27 Sep 2016 14:30:10 +0200
+Subject: [PATCH xserver v2 5/7] xfree86: Remove redundant ServerIsNotSeat0
+ check from xf86CallDriverProbe
+
+If foundScreen is TRUE, then all the code below the removed if
+will not execute until we reach the return foundScreen; at the
+end, so this entire if block is redundant.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86Bus.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86Bus.c b/hw/xfree86/common/xf86Bus.c
+index 5b93940..27c6b1b 100644
+--- a/hw/xfree86/common/xf86Bus.c
++++ b/hw/xfree86/common/xf86Bus.c
+@@ -82,8 +82,6 @@ xf86CallDriverProbe(DriverPtr drv, Bool detect_only)
+     if (!xf86DoConfigure && drv->platformProbe != NULL) {
+         foundScreen = xf86platformProbeDev(drv);
+     }
+-    if (ServerIsNotSeat0() && foundScreen)
+-        return foundScreen;
+ #endif
+ 
+ #ifdef XSERVER_LIBPCIACCESS
+-- 
+2.9.3
+
+From 74bc0fff3a6ca233e56b3fb2971bca97b5a4f8b5 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Fri, 30 Sep 2016 11:59:04 +0200
+Subject: [PATCH xserver v2 6/7] xfree86: Make adding unclaimed devices as GPU
+ devices a separate step
+
+This is primarily a preparation patch for fixing the xserver exiting with
+a "no screens found" error even though there are supported video cards,
+due to the server not recognizing any card as the primary card.
+
+This also fixes the (mostly theoretical) case of a platformBus capable
+driver adding a device as GPUscreen before a driver which only supports
+the old PCI probe method gets a chance to claim it as a normal screen.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86Bus.c         |  4 ++++
+ hw/xfree86/common/xf86platformBus.c | 15 +++++++++++++++
+ hw/xfree86/common/xf86platformBus.h |  6 ++++++
+ 3 files changed, 25 insertions(+)
+
+diff --git a/hw/xfree86/common/xf86Bus.c b/hw/xfree86/common/xf86Bus.c
+index 27c6b1b..a3a9898 100644
+--- a/hw/xfree86/common/xf86Bus.c
++++ b/hw/xfree86/common/xf86Bus.c
+@@ -125,6 +125,10 @@ xf86BusConfig(void)
+         xf86CallDriverProbe(xf86DriverList[i], FALSE);
+     }
+ 
++    for (i = 0; i < xf86NumDrivers; i++) {
++        xf86platformAddGPUDevices(xf86DriverList[i]);
++    }
++
+     /* If nothing was detected, return now */
+     if (xf86NumScreens == 0) {
+         xf86Msg(X_ERROR, "No devices detected.\n");
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 39fb1dd..8dd0d5d 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -475,6 +475,21 @@ xf86platformProbeDev(DriverPtr drvp)
+                                         isGPUDevice(devList[i]) ? PLATFORM_PROBE_GPU_SCREEN : 0);
+     }
+ 
++    return foundScreen;
++}
++
++int
++xf86platformAddGPUDevices(DriverPtr drvp)
++{
++    Bool foundScreen = FALSE;
++    GDevPtr *devList;
++    int j;
++
++    if (!drvp->platformProbe)
++        return FALSE;
++
++    xf86MatchDevice(drvp->driverName, &devList);
++
+     /* if autoaddgpu devices is enabled then go find any unclaimed platform
+      * devices and add them as GPU screens */
+     if (xf86Info.autoAddGPU) {
+diff --git a/hw/xfree86/common/xf86platformBus.h b/hw/xfree86/common/xf86platformBus.h
+index a7335b9..0f5c0ef 100644
+--- a/hw/xfree86/common/xf86platformBus.h
++++ b/hw/xfree86/common/xf86platformBus.h
+@@ -41,6 +41,7 @@ struct xf86_platform_device {
+ #ifdef XSERVER_PLATFORM_BUS
+ int xf86platformProbe(void);
+ int xf86platformProbeDev(DriverPtr drvp);
++int xf86platformAddGPUDevices(DriverPtr drvp);
+ 
+ extern int xf86_num_platform_devices;
+ extern struct xf86_platform_device *xf86_platform_devices;
+@@ -156,6 +157,11 @@ xf86PlatformMatchDriver(char *matches[], int nmatches);
+ 
+ extern void xf86platformVTProbe(void);
+ extern void xf86platformPrimary(void);
++
++#else
++
++static inline int xf86platformAddGPUDevices(DriverPtr drvp) { return FALSE; }
++
+ #endif
+ 
+ #endif
+-- 
+2.9.3
+
+From 02bcb6f189c4ad8b2e73ce99cfa3c10f0c244a88 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Fri, 30 Sep 2016 12:29:09 +0200
+Subject: [PATCH xserver v2 7/7] xfree86: Try harder to find atleast 1 non GPU
+ Screen
+
+If we did not find any non GPU Screens, try again ignoring the notion
+of any video devices being the primary device. This fixes Xorg exiting
+with a "no screens found" error when using virtio-vga in a
+virtual-machine and when using a device driven by simpledrm.
+
+This is a somewhat ugly solution, but it is the best I can come up with
+without major surgery to the bus and probe code.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86.h            |  1 +
+ hw/xfree86/common/xf86Bus.c         | 26 +++++++++++++++++++++++---
+ hw/xfree86/common/xf86Globals.c     |  1 +
+ hw/xfree86/common/xf86pciBus.c      |  4 ++++
+ hw/xfree86/common/xf86platformBus.c |  4 ++++
+ 5 files changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86.h b/hw/xfree86/common/xf86.h
+index e54c811..f724688 100644
+--- a/hw/xfree86/common/xf86.h
++++ b/hw/xfree86/common/xf86.h
+@@ -55,6 +55,7 @@
+ extern _X_EXPORT int xf86DoConfigure;
+ extern _X_EXPORT int xf86DoShowOptions;
+ extern _X_EXPORT Bool xf86DoConfigurePass1;
++extern _X_EXPORT Bool xf86ProbeIgnorePrimary;
+ extern _X_EXPORT Bool xorgHWAccess;
+ 
+ extern _X_EXPORT DevPrivateKeyRec xf86ScreenKeyRec;
+diff --git a/hw/xfree86/common/xf86Bus.c b/hw/xfree86/common/xf86Bus.c
+index a3a9898..9836803 100644
+--- a/hw/xfree86/common/xf86Bus.c
++++ b/hw/xfree86/common/xf86Bus.c
+@@ -117,14 +117,34 @@ xf86BusConfig(void)
+     int i, j;
+ 
+     /*
+-     * Now call each of the Probe functions.  Each successful probe will
+-     * result in an extra entry added to the xf86Screens[] list for each
+-     * instance of the hardware found.
++     * 3 step probe to (hopefully) ensure that we always find at least 1
++     * (non GPU) screen:
++     *
++     * 1. Call each drivers probe function normally,
++     *    Each successful probe will result in an extra entry added to the
++     *    xf86Screens[] list for each instance of the hardware found.
+      */
+     for (i = 0; i < xf86NumDrivers; i++) {
+         xf86CallDriverProbe(xf86DriverList[i], FALSE);
+     }
+ 
++    /*
++     * 2. If no Screens were found, call each drivers probe function with
++     *    ignorePrimary = TRUE, to ensure that we do actually get a
++     *    Screen if there is atleast one supported video card.
++     */
++    if (xf86NumScreens == 0) {
++        xf86ProbeIgnorePrimary = TRUE;
++        for (i = 0; i < xf86NumDrivers && xf86NumScreens == 0; i++) {
++            xf86CallDriverProbe(xf86DriverList[i], FALSE);
++        }
++        xf86ProbeIgnorePrimary = FALSE;
++    }
++
++    /*
++     * 3. Call xf86platformAddGPUDevices() to add any additional video cards as
++     *    GPUScreens (GPUScreens are only supported by platformBus drivers).
++     */
+     for (i = 0; i < xf86NumDrivers; i++) {
+         xf86platformAddGPUDevices(xf86DriverList[i]);
+     }
+diff --git a/hw/xfree86/common/xf86Globals.c b/hw/xfree86/common/xf86Globals.c
+index 07cfabf..e962b75 100644
+--- a/hw/xfree86/common/xf86Globals.c
++++ b/hw/xfree86/common/xf86Globals.c
+@@ -152,6 +152,7 @@ XF86ConfigPtr xf86configptr = NULL;
+ Bool xf86Resetting = FALSE;
+ Bool xf86Initialising = FALSE;
+ Bool xf86DoConfigure = FALSE;
++Bool xf86ProbeIgnorePrimary = FALSE;
+ Bool xf86DoShowOptions = FALSE;
+ DriverPtr *xf86DriverList = NULL;
+ int xf86NumDrivers = 0;
+diff --git a/hw/xfree86/common/xf86pciBus.c b/hw/xfree86/common/xf86pciBus.c
+index 8158c2b..9adfee5 100644
+--- a/hw/xfree86/common/xf86pciBus.c
++++ b/hw/xfree86/common/xf86pciBus.c
+@@ -352,6 +352,10 @@ xf86ComparePciBusString(const char *busID, int bus, int device, int func)
+ Bool
+ xf86IsPrimaryPci(struct pci_device *pPci)
+ {
++    /* Add max. 1 screen for the IgnorePrimary fallback path */
++    if (xf86ProbeIgnorePrimary && xf86NumScreens == 0)
++        return TRUE;
++
+     if (primaryBus.type == BUS_PCI)
+         return pPci == primaryBus.id.pci;
+ #ifdef XSERVER_PLATFORM_BUS
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 8dd0d5d..063e81c 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -114,6 +114,10 @@ xf86_find_platform_device_by_devnum(int major, int minor)
+ static Bool
+ xf86IsPrimaryPlatform(struct xf86_platform_device *plat)
+ {
++    /* Add max. 1 screen for the IgnorePrimary fallback path */
++    if (xf86ProbeIgnorePrimary && xf86NumScreens == 0)
++        return TRUE;
++
+     if (primaryBus.type == BUS_PLATFORM)
+         return plat == primaryBus.id.plat;
+ #ifdef XSERVER_LIBPCIACCESS
+-- 
+2.9.3
+
+From c57c1e53ea3d76ebba5b2a23b7260817d3e6b921 Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:12 +0100
+Subject: [PATCH xserver 1/6] xfree86: Free devlist returned by xf86MatchDevice
+
+xf86MatchDevice returns a dynamically allocated list of GDevPtr-s,
+free this when we're done with it.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86platformBus.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 063e81c..16d934f 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -479,6 +479,8 @@ xf86platformProbeDev(DriverPtr drvp)
+                                         isGPUDevice(devList[i]) ? PLATFORM_PROBE_GPU_SCREEN : 0);
+     }
+ 
++    free(devList);
++
+     return foundScreen;
+ }
+ 
+@@ -505,6 +507,8 @@ xf86platformAddGPUDevices(DriverPtr drvp)
+         }
+     }
+ 
++    free(devList);
++
+     return foundScreen;
+ }
+ 
+-- 
+2.9.3
+
+From 08b84d72878e43401e99059c3c926dfa42a360c3 Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:13 +0100
+Subject: [PATCH xserver 2/6] xfree86: Make OutputClassMatches take a
+ xf86_platform_device
+
+Make OutputClassMatches directly take a xf86_platform_device as argument,
+rather then an index into xf86_platform_devices. This makes things
+easier for callers which already have a xf86_platform_device pointer.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86platformBus.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 16d934f..25a9040 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -214,9 +214,10 @@ MatchToken(const char *value, struct xorg_list *patterns,
+ }
+ 
+ static Bool
+-OutputClassMatches(const XF86ConfOutputClassPtr oclass, int index)
++OutputClassMatches(const XF86ConfOutputClassPtr oclass,
++                   struct xf86_platform_device *dev)
+ {
+-    char *driver = xf86_platform_odev_attributes(index)->driver;
++    char *driver = dev->attribs->driver;
+ 
+     if (!MatchToken(driver, &oclass->match_driver, strcmp))
+         return FALSE;
+@@ -234,7 +235,7 @@ xf86OutputClassDriverList(int index, char *matches[], int nmatches)
+         return 0;
+ 
+     for (cl = xf86configptr->conf_outputclass_lst; cl; cl = cl->list.next) {
+-        if (OutputClassMatches(cl, index)) {
++        if (OutputClassMatches(cl, &xf86_platform_devices[index])) {
+             char *path = xf86_platform_odev_attributes(index)->path;
+ 
+             xf86Msg(X_INFO, "Applying OutputClass \"%s\" to %s\n",
+-- 
+2.9.3
+
+From 9cd3cc75269d9196898487b5712ee47b8291e077 Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:14 +0100
+Subject: [PATCH xserver 3/6] xfree86: Add options support for OutputClass
+ Options
+
+Add support for setting options in OutputClass Sections and having these
+applied to any matching output devices.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86Option.c      |  5 ++++-
+ hw/xfree86/common/xf86platformBus.c | 42 +++++++++++++++++++++++++++++++++++++
+ hw/xfree86/common/xf86platformBus.h |  2 ++
+ hw/xfree86/man/xorg.conf.man        | 10 +++++++++
+ hw/xfree86/parser/OutputClass.c     |  6 ++++++
+ hw/xfree86/parser/xf86Parser.h      |  1 +
+ 6 files changed, 65 insertions(+), 1 deletion(-)
+
+diff --git a/hw/xfree86/common/xf86Option.c b/hw/xfree86/common/xf86Option.c
+index 0e8bc1f..929724d 100644
+--- a/hw/xfree86/common/xf86Option.c
++++ b/hw/xfree86/common/xf86Option.c
+@@ -44,6 +44,7 @@
+ #include "xf86Xinput.h"
+ #include "xf86Optrec.h"
+ #include "xf86Parser.h"
++#include "xf86platformBus.h" /* For OutputClass functions */
+ #include "optionstr.h"
+ 
+ static Bool ParseOptionValue(int scrnIndex, XF86OptionPtr options,
+@@ -64,7 +65,7 @@ static Bool ParseOptionValue(int scrnIndex, XF86OptionPtr options,
+  *
+  * The order of precedence for options is:
+  *
+- *   extraOpts, display, confScreen, monitor, device
++ *   extraOpts, display, confScreen, monitor, device, outputClassOptions
+  */
+ 
+ void
+@@ -79,6 +80,8 @@ xf86CollectOptions(ScrnInfoPtr pScrn, XF86OptionPtr extraOpts)
+     pScrn->options = NULL;
+ 
+     for (i = pScrn->numEntities - 1; i >= 0; i--) {
++        xf86MergeOutputClassOptions(pScrn->entityList[i], &pScrn->options);
++
+         device = xf86GetDevFromEntity(pScrn->entityList[i],
+                                       pScrn->entityInstanceList[i]);
+         if (device && device->options) {
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 25a9040..a698c6c 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -310,6 +310,48 @@ xf86platformProbe(void)
+     return 0;
+ }
+ 
++void
++xf86MergeOutputClassOptions(int entityIndex, void **options)
++{
++    const EntityPtr entity = xf86Entities[entityIndex];
++    struct xf86_platform_device *dev = NULL;
++    XF86ConfOutputClassPtr cl;
++    XF86OptionPtr classopts;
++    int i = 0;
++
++    switch (entity->bus.type) {
++    case BUS_PLATFORM:
++        dev = entity->bus.id.plat;
++        break;
++    case BUS_PCI:
++        for (i = 0; i < xf86_num_platform_devices; i++) {
++            if (MATCH_PCI_DEVICES(xf86_platform_devices[i].pdev,
++                                  entity->bus.id.pci)) {
++                dev = &xf86_platform_devices[i];
++                break;
++            }
++        }
++        break;
++    default:
++        xf86Msg(X_DEBUG, "xf86MergeOutputClassOptions unsupported bus type %d\n",
++                entity->bus.type);
++    }
++
++    if (!dev)
++        return;
++
++    for (cl = xf86configptr->conf_outputclass_lst; cl; cl = cl->list.next) {
++        if (!OutputClassMatches(cl, dev) || !cl->option_lst)
++            continue;
++
++        xf86Msg(X_INFO, "Applying OutputClass \"%s\" options to %s\n",
++                cl->identifier, dev->attribs->path);
++
++        classopts = xf86optionListDup(cl->option_lst);
++        *options = xf86optionListMerge(*options, classopts);
++    }
++}
++
+ static int
+ xf86ClaimPlatformSlot(struct xf86_platform_device * d, DriverPtr drvp,
+                   int chipset, GDevPtr dev, Bool active)
+diff --git a/hw/xfree86/common/xf86platformBus.h b/hw/xfree86/common/xf86platformBus.h
+index 0f5c0ef..70d9ec8 100644
+--- a/hw/xfree86/common/xf86platformBus.h
++++ b/hw/xfree86/common/xf86platformBus.h
+@@ -42,6 +42,7 @@ struct xf86_platform_device {
+ int xf86platformProbe(void);
+ int xf86platformProbeDev(DriverPtr drvp);
+ int xf86platformAddGPUDevices(DriverPtr drvp);
++void xf86MergeOutputClassOptions(int entityIndex, void **options);
+ 
+ extern int xf86_num_platform_devices;
+ extern struct xf86_platform_device *xf86_platform_devices;
+@@ -161,6 +162,7 @@ extern void xf86platformPrimary(void);
+ #else
+ 
+ static inline int xf86platformAddGPUDevices(DriverPtr drvp) { return FALSE; }
++static inline void xf86MergeOutputClassOptions(int index, void **options) {}
+ 
+ #endif
+ 
+diff --git a/hw/xfree86/man/xorg.conf.man b/hw/xfree86/man/xorg.conf.man
+index 7d0c524..8928a53 100644
+--- a/hw/xfree86/man/xorg.conf.man
++++ b/hw/xfree86/man/xorg.conf.man
+@@ -1280,6 +1280,16 @@ For example:
+ Check the case-sensitive string
+ .RI \*q matchdriver \*q
+ against the kernel driver of the device.
++.PP
++When an output device has been matched to the
++.B OutputClass
++section, any
++.B Option
++entries are applied to the device. See the
++.B Device
++section below for a description of the remaining
++.B Option
++entries.
+ .SH "DEVICE SECTION"
+ The config file may have multiple
+ .B Device
+diff --git a/hw/xfree86/parser/OutputClass.c b/hw/xfree86/parser/OutputClass.c
+index 8064e0c..f813ee6 100644
+--- a/hw/xfree86/parser/OutputClass.c
++++ b/hw/xfree86/parser/OutputClass.c
+@@ -36,6 +36,7 @@ static const xf86ConfigSymTabRec OutputClassTab[] = {
+     {ENDSECTION, "endsection"},
+     {IDENTIFIER, "identifier"},
+     {DRIVER, "driver"},
++    {OPTION, "option"},
+     {MATCH_DRIVER, "matchdriver"},
+     {-1, ""},
+ };
+@@ -60,6 +61,8 @@ xf86freeOutputClassList(XF86ConfOutputClassPtr ptr)
+             free(group);
+         }
+ 
++        xf86optionListFree(ptr->option_lst);
++
+         prev = ptr;
+         ptr = ptr->list.next;
+         free(prev);
+@@ -112,6 +115,9 @@ xf86parseOutputClassSection(void)
+             else
+                 ptr->driver = xf86_lex_val.str;
+             break;
++        case OPTION:
++            ptr->option_lst = xf86parseOption(ptr->option_lst);
++            break;
+         case MATCH_DRIVER:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+                 Error(QUOTE_MSG, "MatchDriver");
+diff --git a/hw/xfree86/parser/xf86Parser.h b/hw/xfree86/parser/xf86Parser.h
+index 9c4b403..897edab 100644
+--- a/hw/xfree86/parser/xf86Parser.h
++++ b/hw/xfree86/parser/xf86Parser.h
+@@ -338,6 +338,7 @@ typedef struct {
+     char *identifier;
+     char *driver;
+     struct xorg_list match_driver;
++    XF86OptionPtr option_lst;
+     char *comment;
+ } XF86ConfOutputClassRec, *XF86ConfOutputClassPtr;
+ 
+-- 
+2.9.3
+
+From ab1a65b7755d081b41188104b21f4d21eaa3187b Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:15 +0100
+Subject: [PATCH xserver 4/6] xfree86: xf86platformProbe: split finding
+ pci-info and setting primary GPU
+
+This is a preparation patch for allowing an OutputClass section to
+override the default primary GPU device selection.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86platformBus.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index a698c6c..39b3248 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -145,16 +145,9 @@ platform_find_pci_info(struct xf86_platform_device *pd, char *busid)
+ 
+     iter = pci_slot_match_iterator_create(&devmatch);
+     info = pci_device_next(iter);
+-    if (info) {
++    if (info)
+         pd->pdev = info;
+-        pci_device_probe(info);
+-        if (pci_device_is_boot_vga(info)) {
+-            primaryBus.type = BUS_PLATFORM;
+-            primaryBus.id.plat = pd;
+-        }
+-    }
+     pci_iterator_destroy(iter);
+-
+ }
+ 
+ static Bool
+@@ -307,6 +300,20 @@ xf86platformProbe(void)
+             platform_find_pci_info(&xf86_platform_devices[i], busid);
+         }
+     }
++
++    for (i = 0; i < xf86_num_platform_devices; i++) {
++        struct xf86_platform_device *dev = &xf86_platform_devices[i];
++
++        if (!dev->pdev)
++            continue;
++
++        pci_device_probe(dev->pdev);
++        if (pci_device_is_boot_vga(dev->pdev)) {
++            primaryBus.type = BUS_PLATFORM;
++            primaryBus.id.plat = dev;
++        }
++    }
++
+     return 0;
+ }
+ 
+-- 
+2.9.3
+
+From d75ffcdbf8c1e3c8e0d46debcd533a9f2560f0a8 Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:16 +0100
+Subject: [PATCH xserver 5/6] xfree86: Allow overriding primary GPU detection
+ from an OutputClass section
+
+Allow using:
+
+Option "PrimaryGPU" "yes"
+
+In an OutputClass section to override the default primary GPU device
+selection which selects the GPU used as output by the firmware.
+
+If multiple output devices match an OutputClass section with
+the PrimaryGPU option set, the first one enumerated becomes the
+primary GPU.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86platformBus.c | 19 +++++++++++++++++++
+ hw/xfree86/man/xorg.conf.man        | 12 +++++++++++-
+ 2 files changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index 39b3248..fc17d15 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -286,6 +286,7 @@ xf86platformProbe(void)
+ {
+     int i;
+     Bool pci = TRUE;
++    XF86ConfOutputClassPtr cl;
+ 
+     config_odev_probe(xf86PlatformDeviceProbe);
+ 
+@@ -301,6 +302,24 @@ xf86platformProbe(void)
+         }
+     }
+ 
++    /* First see if there is an OutputClass match marking a device as primary */
++    for (i = 0; i < xf86_num_platform_devices; i++) {
++        struct xf86_platform_device *dev = &xf86_platform_devices[i];
++        for (cl = xf86configptr->conf_outputclass_lst; cl; cl = cl->list.next) {
++            if (!OutputClassMatches(cl, dev))
++                continue;
++
++            if (xf86CheckBoolOption(cl->option_lst, "PrimaryGPU", FALSE)) {
++                xf86Msg(X_CONFIG, "OutputClass \"%s\" setting %s as PrimaryGPU\n",
++                        cl->identifier, dev->attribs->path);
++                primaryBus.type = BUS_PLATFORM;
++                primaryBus.id.plat = dev;
++                return 0;
++            }
++        }
++    }
++
++    /* Then check for pci_device_is_boot_vga() */
+     for (i = 0; i < xf86_num_platform_devices; i++) {
+         struct xf86_platform_device *dev = &xf86_platform_devices[i];
+ 
+diff --git a/hw/xfree86/man/xorg.conf.man b/hw/xfree86/man/xorg.conf.man
+index 8928a53..79b71a8 100644
+--- a/hw/xfree86/man/xorg.conf.man
++++ b/hw/xfree86/man/xorg.conf.man
+@@ -1285,11 +1285,21 @@ When an output device has been matched to the
+ .B OutputClass
+ section, any
+ .B Option
+-entries are applied to the device. See the
++entries are applied to the device. One
++.B OutputClass
++specific
++.B Option
++is recognized. See the
+ .B Device
+ section below for a description of the remaining
+ .B Option
+ entries.
++.TP 7
++.BI "Option \*qPrimaryGPU\*q \*q" boolean \*q
++This option specifies that the matched device should be treated as the
++primary GPU, replacing the selection of the GPU used as output by the
++firmware. If multiple output devices match an OutputClass section with
++the PrimaryGPU option set, the first one enumerated becomes the primary GPU.
+ .SH "DEVICE SECTION"
+ The config file may have multiple
+ .B Device
+-- 
+2.9.3
+
+From b5dffbbac193aa640ffcfa0a431c21b862854e53 Mon Sep 17 00:00:00 2001
+From: Hans De Goede <hdegoede@redhat.com>
+Date: Mon, 12 Dec 2016 17:03:17 +0100
+Subject: [PATCH xserver 6/6] xfree86: Add ModulePath support for OutputClass
+ config Sections
+
+Allow OutputClass config snippets to modify the module-path.
+
+Note that any specified ModulePaths will be pre-pended to the normal
+ModulePath. The idea behind this is that any output hardware specific
+modules should have preference over the normal modules.
+
+One use-case for this is the nvidia binary driver, this allows a
+config snippet like this:
+
+Section "OutputClass"
+    MatchDriver "nvidia"
+    Modulepath "/usr/lib64/nvidia/modules"
+EndSection
+
+To get the nvidia glx specific glx module loaded, but only when the
+nvidia kernel driver is loaded.
+
+Together with the glvnd work done recently, this allows the nouveau
++ mesa and nvidia-binary userspace stacks to co-exist on the same
+system without any ldconfig / xorg.conf tweaking and the xserver will
+automatically do the right thing depending on which kernel driver
+(nouveau or nvidia) is loaded.
+
+Reviewed-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ hw/xfree86/common/xf86platformBus.c | 23 +++++++++++++++++++++++
+ hw/xfree86/loader/loadmod.c         |  1 +
+ hw/xfree86/man/xorg.conf.man        | 16 ++++++++++++++++
+ hw/xfree86/parser/OutputClass.c     | 15 +++++++++++++++
+ hw/xfree86/parser/xf86Parser.h      |  1 +
+ 5 files changed, 56 insertions(+)
+
+diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
+index fc17d15..0b5795f 100644
+--- a/hw/xfree86/common/xf86platformBus.c
++++ b/hw/xfree86/common/xf86platformBus.c
+@@ -40,6 +40,7 @@
+ #include "hotplug.h"
+ #include "systemd-logind.h"
+ 
++#include "loaderProcs.h"
+ #include "xf86.h"
+ #include "xf86_OSproc.h"
+ #include "xf86Priv.h"
+@@ -287,6 +288,7 @@ xf86platformProbe(void)
+     int i;
+     Bool pci = TRUE;
+     XF86ConfOutputClassPtr cl;
++    char *old_path, *path = NULL;
+ 
+     config_odev_probe(xf86PlatformDeviceProbe);
+ 
+@@ -300,8 +302,29 @@ xf86platformProbe(void)
+         if (pci && (strncmp(busid, "pci:", 4) == 0)) {
+             platform_find_pci_info(&xf86_platform_devices[i], busid);
+         }
++
++        /*
++         * Deal with OutputClass ModulePath directives, these must be
++         * processed before we do any module loading.
++         */
++        for (cl = xf86configptr->conf_outputclass_lst; cl; cl = cl->list.next) {
++            if (!OutputClassMatches(cl, &xf86_platform_devices[i]))
++                continue;
++
++            if (cl->modulepath && xf86ModPathFrom != X_CMDLINE) {
++                old_path = path;
++                XNFasprintf(&path, "%s,%s", cl->modulepath,
++                            path ? path : xf86ModulePath);
++                free(old_path);
++                xf86Msg(X_CONFIG, "OutputClass \"%s\" ModulePath extended to \"%s\"\n",
++                        cl->identifier, path);
++                LoaderSetPath(path);
++            }
++        }
+     }
+ 
++    free(path);
++
+     /* First see if there is an OutputClass match marking a device as primary */
+     for (i = 0; i < xf86_num_platform_devices; i++) {
+         struct xf86_platform_device *dev = &xf86_platform_devices[i];
+diff --git a/hw/xfree86/loader/loadmod.c b/hw/xfree86/loader/loadmod.c
+index 8bf6836..940f5fc 100644
+--- a/hw/xfree86/loader/loadmod.c
++++ b/hw/xfree86/loader/loadmod.c
+@@ -184,6 +184,7 @@ LoaderSetPath(const char *path)
+     if (!path)
+         return;
+ 
++    FreeStringList(defaultPathList);
+     defaultPathList = InitPathList(path);
+ }
+ 
+diff --git a/hw/xfree86/man/xorg.conf.man b/hw/xfree86/man/xorg.conf.man
+index 79b71a8..00ebf56 100644
+--- a/hw/xfree86/man/xorg.conf.man
++++ b/hw/xfree86/man/xorg.conf.man
+@@ -1300,6 +1300,22 @@ This option specifies that the matched device should be treated as the
+ primary GPU, replacing the selection of the GPU used as output by the
+ firmware. If multiple output devices match an OutputClass section with
+ the PrimaryGPU option set, the first one enumerated becomes the primary GPU.
++.PP
++A
++.B OutputClass
++Section may contain
++.B ModulePath
++entries. When an output device matches an
++.B OutputClass
++section, any
++.B ModulePath
++entries in that
++.B OutputClass
++are pre-pended to the search path for loadable Xorg server modules. See
++.B ModulePath
++in the
++.B Files
++section for more info.
+ .SH "DEVICE SECTION"
+ The config file may have multiple
+ .B Device
+diff --git a/hw/xfree86/parser/OutputClass.c b/hw/xfree86/parser/OutputClass.c
+index f813ee6..01b348f 100644
+--- a/hw/xfree86/parser/OutputClass.c
++++ b/hw/xfree86/parser/OutputClass.c
+@@ -36,6 +36,7 @@ static const xf86ConfigSymTabRec OutputClassTab[] = {
+     {ENDSECTION, "endsection"},
+     {IDENTIFIER, "identifier"},
+     {DRIVER, "driver"},
++    {MODULEPATH, "modulepath"},
+     {OPTION, "option"},
+     {MATCH_DRIVER, "matchdriver"},
+     {-1, ""},
+@@ -53,6 +54,7 @@ xf86freeOutputClassList(XF86ConfOutputClassPtr ptr)
+         TestFree(ptr->identifier);
+         TestFree(ptr->comment);
+         TestFree(ptr->driver);
++        TestFree(ptr->modulepath);
+ 
+         xorg_list_for_each_entry_safe(group, next, &ptr->match_driver, entry) {
+             xorg_list_del(&group->entry);
+@@ -115,6 +117,19 @@ xf86parseOutputClassSection(void)
+             else
+                 ptr->driver = xf86_lex_val.str;
+             break;
++        case MODULEPATH:
++            if (xf86getSubToken(&(ptr->comment)) != STRING)
++                Error(QUOTE_MSG, "ModulePath");
++            if (ptr->modulepath) {
++                char *path;
++                XNFasprintf(&path, "%s,%s", ptr->modulepath, xf86_lex_val.str);
++                free(xf86_lex_val.str);
++                free(ptr->modulepath);
++                ptr->modulepath = path;
++            } else {
++                ptr->modulepath = xf86_lex_val.str;
++            }
++            break;
+         case OPTION:
+             ptr->option_lst = xf86parseOption(ptr->option_lst);
+             break;
+diff --git a/hw/xfree86/parser/xf86Parser.h b/hw/xfree86/parser/xf86Parser.h
+index 897edab..e014048 100644
+--- a/hw/xfree86/parser/xf86Parser.h
++++ b/hw/xfree86/parser/xf86Parser.h
+@@ -337,6 +337,7 @@ typedef struct {
+     GenericListRec list;
+     char *identifier;
+     char *driver;
++    char *modulepath;
+     struct xorg_list match_driver;
+     XF86OptionPtr option_lst;
+     char *comment;
+-- 
+2.9.3
+

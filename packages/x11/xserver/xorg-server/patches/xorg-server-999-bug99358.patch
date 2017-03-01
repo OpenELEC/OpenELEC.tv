@@ -1,0 +1,162 @@
+From 7198a6d4e74f684cb383b3e0f70dd2bae405e6e7 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Mon, 16 Jan 2017 22:17:36 +0000
+Subject: xfree86: Take the input lock for xf86RecolorCursor
+
+xf86RecolorCursor() may be called directly from XRecolorCursor as well
+as from xf86ScreenSetCursor(). In the latter case, the input lock is
+already held, but not for the former and so we need to add a wrapper
+function that acquires the input lock before performing
+xf86RecolorCursor()
+
+References: https://bugs.freedesktop.org/show_bug.cgi?id=99358
+
+diff --git a/hw/xfree86/ramdac/xf86HWCurs.c b/hw/xfree86/ramdac/xf86HWCurs.c
+index 4481320..55d5861 100644
+--- a/hw/xfree86/ramdac/xf86HWCurs.c
++++ b/hw/xfree86/ramdac/xf86HWCurs.c
+@@ -22,6 +22,9 @@
+ 
+ #include "servermd.h"
+ 
++static void
++xf86RecolorCursor_locked(xf86CursorScreenPtr ScreenPriv, CursorPtr pCurs);
++
+ static CARD32
+ xf86ReverseBitOrder(CARD32 v)
+ {
+@@ -204,7 +207,7 @@ xf86ScreenSetCursor(ScreenPtr pScreen, CursorPtr pCurs, int x, int y)
+         if (!xf86DriverLoadCursorImage (infoPtr, bits))
+             return FALSE;
+ 
+-    xf86RecolorCursor(pScreen, pCurs, 1);
++    xf86RecolorCursor_locked (ScreenPriv, pCurs);
+ 
+     (*infoPtr->SetCursorPosition) (infoPtr->pScrn, x, y);
+ 
+@@ -312,12 +315,9 @@ xf86MoveCursor(ScreenPtr pScreen, int x, int y)
+     input_unlock();
+ }
+ 
+-void
+-xf86RecolorCursor(ScreenPtr pScreen, CursorPtr pCurs, Bool displayed)
++static void
++xf86RecolorCursor_locked(xf86CursorScreenPtr ScreenPriv, CursorPtr pCurs)
+ {
+-    xf86CursorScreenPtr ScreenPriv =
+-        (xf86CursorScreenPtr) dixLookupPrivate(&pScreen->devPrivates,
+-                                               xf86CursorScreenKey);
+     xf86CursorInfoPtr infoPtr = ScreenPriv->CursorInfoPtr;
+ 
+     /* recoloring isn't applicable to ARGB cursors and drivers
+@@ -357,6 +357,18 @@ xf86RecolorCursor(ScreenPtr pScreen, CursorPtr pCurs, Bool displayed)
+     }
+ }
+ 
++void
++xf86RecolorCursor(ScreenPtr pScreen, CursorPtr pCurs, Bool displayed)
++{
++    xf86CursorScreenPtr ScreenPriv =
++        (xf86CursorScreenPtr) dixLookupPrivate(&pScreen->devPrivates,
++                                               xf86CursorScreenKey);
++
++    input_lock();
++    xf86RecolorCursor_locked (ScreenPriv, pCurs);
++    input_unlock();
++}
++
+ /* These functions assume that MaxWidth is a multiple of 32 */
+ static unsigned char *
+ RealizeCursorInterleave0(xf86CursorInfoPtr infoPtr, CursorPtr pCurs)
+-- 
+cgit v0.10.2
+
+From cfddd919cce4178baba07959e5e862d02e166522 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Mon, 16 Jan 2017 22:36:34 +0000
+Subject: xfree86: Take input lock for xf86TransparentCursor
+
+
+diff --git a/hw/xfree86/ramdac/xf86HWCurs.c b/hw/xfree86/ramdac/xf86HWCurs.c
+index 55d5861..26dc7e5 100644
+--- a/hw/xfree86/ramdac/xf86HWCurs.c
++++ b/hw/xfree86/ramdac/xf86HWCurs.c
+@@ -261,6 +261,8 @@ xf86SetTransparentCursor(ScreenPtr pScreen)
+                                                xf86CursorScreenKey);
+     xf86CursorInfoPtr infoPtr = ScreenPriv->CursorInfoPtr;
+ 
++    input_lock();
++
+     if (!ScreenPriv->transparentData)
+         ScreenPriv->transparentData =
+             (*infoPtr->RealizeCursor) (infoPtr, NullCursor);
+@@ -273,6 +275,8 @@ xf86SetTransparentCursor(ScreenPtr pScreen)
+                                    ScreenPriv->transparentData);
+ 
+     (*infoPtr->ShowCursor) (infoPtr->pScrn);
++
++    input_unlock();
+ }
+ 
+ static void
+-- 
+cgit v0.10.2
+
+From 3eb964e25243056dd998f52d3b00171b71c89189 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Fri, 20 Jan 2017 09:49:19 +0000
+Subject: xfree86: Take input_lock() for xf86ScreenCheckHWCursor
+
+
+diff --git a/hw/xfree86/ramdac/xf86HWCurs.c b/hw/xfree86/ramdac/xf86HWCurs.c
+index 26dc7e5..7043a9c 100644
+--- a/hw/xfree86/ramdac/xf86HWCurs.c
++++ b/hw/xfree86/ramdac/xf86HWCurs.c
+@@ -139,9 +139,14 @@ Bool
+ xf86CheckHWCursor(ScreenPtr pScreen, CursorPtr cursor, xf86CursorInfoPtr infoPtr)
+ {
+     ScreenPtr pSlave;
++    Bool use_hw_cursor = TRUE;
+ 
+-    if (!xf86ScreenCheckHWCursor(pScreen, cursor, infoPtr))
+-        return FALSE;
++    input_lock();
++
++    if (!xf86ScreenCheckHWCursor(pScreen, cursor, infoPtr)) {
++        use_hw_cursor = FALSE;
++	goto unlock;
++    }
+ 
+     /* ask each driver consuming a pixmap if it can support HW cursor */
+     xorg_list_for_each_entry(pSlave, &pScreen->slave_list, slave_head) {
+@@ -151,14 +156,22 @@ xf86CheckHWCursor(ScreenPtr pScreen, CursorPtr cursor, xf86CursorInfoPtr infoPtr
+             continue;
+ 
+         sPriv = dixLookupPrivate(&pSlave->devPrivates, xf86CursorScreenKey);
+-        if (!sPriv) /* NULL if Option "SWCursor", possibly other conditions */
+-            return FALSE;
++        if (!sPriv) { /* NULL if Option "SWCursor", possibly other conditions */
++            use_hw_cursor = FALSE;
++	    break;
++	}
+ 
+         /* FALSE if HWCursor not supported by slave */
+-        if (!xf86ScreenCheckHWCursor(pSlave, cursor, sPriv->CursorInfoPtr))
+-            return FALSE;
++        if (!xf86ScreenCheckHWCursor(pSlave, cursor, sPriv->CursorInfoPtr)) {
++            use_hw_cursor = FALSE;
++	    break;
++	}
+     }
+-    return TRUE;
++
++unlock:
++    input_unlock();
++
++    return use_hw_cursor;
+ }
+ 
+ static Bool
+-- 
+cgit v0.10.2
+
