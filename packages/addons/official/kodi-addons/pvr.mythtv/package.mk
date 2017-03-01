@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="pvr.mythtv"
-PKG_VERSION="e376597"
+PKG_VERSION="f8cda05"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
