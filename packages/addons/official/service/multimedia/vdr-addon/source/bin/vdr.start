@@ -1,0 +1,163 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+. /etc/profile
+
+oe_setup_addon service.multimedia.vdr-addon
+
+fix_config() {
+  if [ -f "$ADDON_CONFIG_DIR/setup.conf" ]; then
+    sed -i -e '/^$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^AlwaysSortFoldersFirst.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^SetSystemTime.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^epgsearch.SVDRPPort.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^OSD.*$/d' $ADDON_CONFIG_DIR/setup.conf
+    sed -i -e '/^Font.*$/d' $ADDON_CONFIG_DIR/setup.conf
+  fi
+  cat >>$ADDON_CONFIG_DIR/setup.conf << MYDATA
+AlwaysSortFoldersFirst = 1
+SetSystemTime = 0
+epgsearch.SVDRPPort = 6419
+OSDSkin = sttng
+MYDATA
+}
+
+ADDON_CONFIG_DIR="$ADDON_HOME/config"
+ADDON_PLUGIN_DIR="$ADDON_DIR/plugin"
+
+chmod a+x $ADDON_DIR/bin/*
+
+ADDON_CACHE_DIR="$ADDON_HOME/cache"
+mkdir -p $ADDON_CACHE_DIR
+
+VDR_ARG="-g /tmp --no-kbd"
+if [ "$DEBUG" = "yes" ]; then
+  VDR_ARG="$VDR_ARG --log=3"
+else
+  VDR_ARG="$VDR_ARG --log=1"
+fi
+
+SVDRP_PORT=0
+
+# epgsearch needs svdrp
+if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
+  SVDRP_PORT=6419
+fi
+VDR_ARG="$VDR_ARG --port=$SVDRP_PORT"
+
+VDR_ARG="$VDR_ARG --config=$ADDON_CONFIG_DIR"
+VDR_ARG="$VDR_ARG --resdir=$ADDON_DIR/res"
+VDR_ARG="$VDR_ARG --cachedir=$ADDON_CACHE_DIR"
+VDR_ARG="$VDR_ARG --lib=$ADDON_PLUGIN_DIR"
+VDR_ARG="$VDR_ARG --video=\"$VDR_VIDEO_DIR\""
+
+if [ "$ENABLE_EXTERNAL_RECCMD" == "true" ] ; then
+  if [ ! -z "$EXTERNAL_RECCMD_PATH" -a -x "$EXTERNAL_RECCMD_PATH" ] ; then
+    VDR_ARG="$VDR_ARG -r \"$EXTERNAL_RECCMD_PATH\""
+  fi
+fi
+
+if [ "$ENABLE_CHARSET_OVERRIDE" == "true" ] ; then
+  if [ ! -z "$CHARSET_OVERRIDE_STR" ] ; then
+    VDR_CHARSET_OVERRIDE="$CHARSET_OVERRIDE_STR"
+  fi
+fi
+
+# keep softcam first
+if [ "$ENABLE_SOFTCAM" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P dvbapi"
+fi
+VDR_ARG="$VDR_ARG -P wirbelscan -P wirbelscancontrol"
+if [ "$ENABLE_IPTV" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P 'iptv -d $IPTV_NUM_DEVICES'"
+fi
+if [ "$ENABLE_STREAMDEV_SERVER" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P streamdev-server"
+fi
+if [ "$ENABLE_STREAMDEV_CLIENT" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P streamdev-client"
+fi
+if [ "$ENABLE_LIVE" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P 'live -i $LIVE_IP -p $LIVE_PORT'"
+fi
+if [ "$ENABLE_EEPG" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P eepg"
+fi
+if [ "$ENABLE_EPGFIXER" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P epgfixer"
+fi
+if [ "$ENABLE_EPGSEARCH" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P epgsearch"
+fi
+if [ "$ENABLE_DUMMYDEVICE" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P dummydevice"
+fi
+if [ "$ENABLE_SATIP" == "true" ] ; then
+  VDR_ARG="$VDR_ARG -P satip"
+fi
+
+if [ ! -d "$ADDON_HOME/epgimages" ]; then
+  mkdir -p "$ADDON_HOME/epgimages"
+fi
+if [ ! -z "$ADDON_HOME/channellogos" ]; then
+  mkdir -p "$ADDON_HOME/channellogos"
+fi
+
+RESTFULAPI_ARGS="--ip $RESTFULAPI_IP --port $RESTFULAPI_PORT"
+RESTFULAPI_ARGS="$RESTFULAPI_ARGS --epgimages=\"$ADDON_HOME/epgimages\""
+RESTFULAPI_ARGS="$RESTFULAPI_ARGS --channellogos=\"$ADDON_HOME/channellogos\""
+VDR_ARG="$VDR_ARG -P 'restfulapi $RESTFULAPI_ARGS'"
+
+# vnsi last
+VDR_ARG="$VDR_ARG -P vnsiserver"
+
+cd $ADDON_DIR/config
+mkdir -p $ADDON_CONFIG_DIR
+mkdir -p "$VDR_VIDEO_DIR"
+
+for dir in `find . -type d`; do
+  mkdir -p $ADDON_CONFIG_DIR/$dir
+done
+
+for config in `find . -type f`; do
+  if [ ! -f $ADDON_CONFIG_DIR/$config ]; then
+    cp $config $ADDON_CONFIG_DIR/$config
+  fi
+done
+
+# start userspace DVB driver/addon
+for driver_dvb in $(find /storage/.kodi/addons/driver.dvb.*/bin/userspace-driver.sh -type f 2>/dev/null); do
+  driver_dvb_name=$(echo $driver_dvb | awk 'BEGIN {FS="/"} {printf("%s", $5)}')
+  logger -t VDR "### Loading userspace DVB driver: $driver_dvb_name ###"
+  # use ". " because of variable export
+  . $driver_dvb
+done
+
+if [ "$WAIT_FOR_FEINIT" == "true" ] ; then
+  while [ true ] ; do
+    if [ -e /dev/dvb/adapter$((NUM_ADAPTERS-1))/frontend0 ] ; then
+      break
+    fi
+    sleep 1
+  done
+fi
+
+fix_config
+eval LANG=en_US.UTF-8 VDR_CHARSET_OVERRIDE="$VDR_CHARSET_OVERRIDE" exec vdr.bin $VDR_ARG

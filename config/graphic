@@ -1,0 +1,50 @@
+get_graphicdrivers() {
+  if [ "$GRAPHIC_DRIVERS" = "all" ]; then
+    GRAPHIC_DRIVERS="i915 i965 r200 r300 r600 nvidia"
+  fi
+
+  for drv in $GRAPHIC_DRIVERS; do
+    if [ "$drv" = "i915" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,i915"
+      VAAPI_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "i965" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,i965"
+      VAAPI_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "nvidia" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS nvidia"
+      VDPAU_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "nvidia-legacy" ]; then
+      XORG_DRIVERS="$XORG_DRIVERS nvidia-legacy"
+      VDPAU_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "r200" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,r200"
+    fi
+
+    if [ "$drv" = "r300" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r300"
+      LLVM_SUPPORT="yes"
+      VDPAU_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "r600" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,r600"
+      LLVM_SUPPORT="yes"
+      VDPAU_SUPPORT="yes"
+    fi
+
+    if [ "$drv" = "radeonsi" ]; then
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,radeonsi"
+      LLVM_SUPPORT="yes"
+      VDPAU_SUPPORT="yes"
+    fi
+
+  done
+}

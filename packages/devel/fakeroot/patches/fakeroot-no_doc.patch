@@ -1,0 +1,11 @@
+diff -Naur fakeroot-1.21/Makefile.am fakeroot-1.21.patch/Makefile.am
+--- fakeroot-1.21/Makefile.am	2016-06-26 23:19:15.000000000 +0200
++++ fakeroot-1.21.patch/Makefile.am	2016-09-09 11:06:59.675392260 +0200
+@@ -1,6 +1,6 @@
+ AUTOMAKE_OPTIONS=foreign
+ ACLOCAL_AMFLAGS = -I build-aux
+-SUBDIRS=scripts doc test
++SUBDIRS=scripts test
+ 
+ noinst_LTLIBRARIES = libcommunicate.la libmacosx.la
+ libcommunicate_la_SOURCES = communicate.c

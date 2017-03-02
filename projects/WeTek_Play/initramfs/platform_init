@@ -1,0 +1,89 @@
+#!/bin/sh
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 OpenELEC.tv
+#      Copyright (C) 2014-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2014 Alex Deryskyba (alex@codesnake.com)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+hdmimode="720p"
+
+# Parse command line arguments
+  for arg in $(cat /proc/cmdline); do
+    case $arg in
+      hdmimode=*)
+        hdmimode="${arg#*=}"
+        ;;
+    esac
+  done
+
+# check for valid displaymodes if display is connected
+  HPD_STATE="/sys/class/amhdmitx/amhdmitx0/hpd_state"
+  DISP_CAP="/sys/class/amhdmitx/amhdmitx0/disp_cap"
+
+  if [ -e $HPD_STATE -a -e $DISP_CAP ]; then
+    if [ ! $(cat $HPD_STATE) = "0" ]; then
+      displaymode=$(cat $DISP_CAP | \
+                    sed -e 's/^[[:space:]]*//' \
+                        -e 's/[[:space:]]*$//' \
+                        -e "s,p.*,p,g" \
+                        -e "s,i.*,i,g" | \
+                    sort -n | tail -n1)
+      if [ -n "$displaymode" ]; then
+        hdmimode="$displaymode"
+      fi
+    fi
+  fi
+
+# setup display defaults
+  case $hdmimode in
+    480*)
+      xRes=720; yRes=480; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    576*)
+      xRes=720; yRes=576; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    1080*)
+      xRes=1920; yRes=1080; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32
+      ;;
+    2160*|4k2k*hz|4k2ksmpte|smpte24hz)
+      xRes=3840; yRes=2160; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32; hdmimode=2160p
+      ;;
+    *)
+      xRes=1280; yRes=720; vXRes=$xRes; vYRes=$(( $yRes * 2 )); bpp=32; hdmimode=720p
+  esac
+
+# set displaymode
+  echo "$hdmimode" > /sys/class/display/mode
+
+# Enable first framebuffer
+  echo 0 > /sys/class/graphics/fb0/blank
+
+# Disable second framebuffer
+  echo 1 > /sys/class/graphics/fb1/blank
+
+# Disable framebuffer scaling
+  echo 0 > /sys/class/graphics/fb0/free_scale
+
+# set initial video state
+  echo 1 > /sys/class/video/disable_video
+
+# Set framebuffer geometry to match the resolution
+  fbset -fb /dev/fb0 -g $xRes $yRes $vXRes $vYRes $bpp
+
+# Include deinterlacer into default VFM map
+  echo rm default > /sys/class/vfm/map
+  echo add default decoder ppmgr deinterlace amvideo > /sys/class/vfm/map

@@ -1,0 +1,21 @@
+diff -Naur kodi-fd7fcfa/project/cmake/modules/FindPython.cmake kodi-fd7fcfa.patch/project/cmake/modules/FindPython.cmake
+--- kodi-fd7fcfa/project/cmake/modules/FindPython.cmake	2016-11-24 15:16:21.000000000 +0100
++++ kodi-fd7fcfa.patch/project/cmake/modules/FindPython.cmake	2016-11-25 03:22:24.550027672 +0100
+@@ -14,16 +14,11 @@
+ find_path(PYTHON_INCLUDE_DIR NAMES Python.h PATHS ${PC_PYTHON_INCLUDE_DIRS} ${DEPENDS_PATH}/include/python2.7)
+ 
+ if(CMAKE_CROSSCOMPILING)
+-  find_library(FFI_LIBRARY ffi REQUIRED)
+-  find_library(EXPAT_LIBRARY expat REQUIRED)
+-  find_library(INTL_LIBRARY intl REQUIRED)
+-  find_library(GMP_LIBRARY gmp REQUIRED)
+-
+   if(NOT CORE_SYSTEM_NAME STREQUAL android)
+     set(PYTHON_DEP_LIBRARIES -lpthread -ldl -lutil)
+   endif()
+ 
+-  set(PYTHON_LIBRARIES ${PYTHON_LIBRARY} ${FFI_LIBRARY} ${EXPAT_LIBRARY} ${INTL_LIBRARY} ${GMP_LIBRARY} ${PYTHON_DEP_LIBRARIES})
++  set(PYTHON_LIBRARIES ${PYTHON_LIBRARY} ${PYTHON_DEP_LIBRARIES})
+ else()
+   find_package(PythonLibs 2.7 REQUIRED)
+ endif()

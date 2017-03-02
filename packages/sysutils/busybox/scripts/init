@@ -1,0 +1,748 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2010-2011 Roman Weber (roman@openelec.tv)
+#      Copyright (C) 2012 Yann Cézard (eesprit@free.fr)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+  # create directories
+  /bin/busybox mkdir -p /dev
+  /bin/busybox mkdir -p /proc
+  /bin/busybox mkdir -p /sys
+  /bin/busybox mkdir -p /flash
+  /bin/busybox mkdir -p /sysroot
+  /bin/busybox mkdir -p /storage
+
+  # mount all needed special filesystems
+  /bin/busybox mount -t devtmpfs devtmpfs /dev
+  /bin/busybox mount -t proc proc /proc
+  /bin/busybox mount -t sysfs sysfs /sys
+
+  # set needed variables
+  MODULE_DIR=/lib/modules
+  SYSTEMD_BIN=/lib/systemd/systemd
+
+  UPDATE_DIR=/storage/.update
+  UPDATE_KERNEL="KERNEL"
+  UPDATE_SYSTEM="SYSTEM"
+  IMAGE_KERNEL="KERNEL"
+  IMAGE_SYSTEM="SYSTEM"
+
+  BOOT_STEP="start"
+  MD5_FAILED="0"
+  MD5_NOCHECK="0"
+  SIZE_FAILED="0"
+  RUN_FSCK="yes"
+  RUN_FSCK_DISKS=""
+
+  NBD_DEVS="0"
+  FLASH_FREE_MIN="5"
+
+  LIVE="no"
+
+  # load cpu firmware if possible
+  if [ -e /sys/devices/system/cpu/microcode/reload ]; then
+    echo 1 > /sys/devices/system/cpu/microcode/reload
+  fi
+
+  # hide kernel log messages on console
+  echo '1 4 1 7' > /proc/sys/kernel/printk
+
+  # set ondemand up_threshold
+  if [ -e /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ] ; then
+    echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+  fi
+
+  # run platform_init script if exists
+  if [ -f "./platform_init" ]; then
+    ./platform_init
+  fi
+
+  # clear screen and hide cursor
+  clear
+  if [ -f /sys/devices/virtual/graphics/fbcon/cursor_blink ] ; then
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+  fi
+
+  # parse command line arguments
+  for arg in $(cat /proc/cmdline); do
+    case $arg in
+      BOOT_IMAGE=*)
+        IMAGE_KERNEL="${arg#*=}"
+        ;;
+      SYSTEM_IMAGE=*)
+        IMAGE_SYSTEM="${arg#*=}"
+        ;;
+      boot=*)
+        boot="${arg#*=}"
+        case $boot in
+          ISCSI=*|NBD=*|NFS=*)
+            UPDATE_DISABLED=yes
+            FLASH_NETBOOT=yes
+            ;;
+          /dev/*|LABEL=*|UUID=*)
+            RUN_FSCK_DISKS="$RUN_FSCK_DISKS $boot"
+            ;;
+        esac
+        ;;
+      disk=*)
+        disk="${arg#*=}"
+        case $disk in
+          ISCSI=*|NBD=*|NFS=*)
+            STORAGE_NETBOOT=yes
+            ;;
+          /dev/*|LABEL=*|UUID=*)
+            RUN_FSCK_DISKS="$RUN_FSCK_DISKS $disk"
+            ;;
+        esac
+        ;;
+      wol_mac=*)
+        wol_mac="${arg#*=}"
+        ;;
+      wol_wait=*)
+        wol_wait="${arg#*=}"
+        ;;
+      textmode)
+        INIT_UNIT="--unit=textmode.target"
+        ;;
+      installer)
+        INIT_UNIT="--unit=installer.target"
+        ;;
+      debugging)
+        DEBUG=yes
+        ;;
+      progress)
+        PROGRESS=yes
+        INIT_ARGS="$INIT_ARGS --show-status=1"
+        ;;
+      nofsck)
+        RUN_FSCK=no
+        ;;
+      nosplash)
+        SPLASH=no
+        ;;
+      live)
+        LIVE=yes
+        ;;
+      overlay)
+        OVERLAY=yes
+        ;;
+      break=*)
+        BREAK="${arg#*=}"
+        ;;
+    esac
+  done
+
+  if test "$DEBUG" = "yes"; then
+    exec 3>&1
+  else
+    exec 3>/dev/null
+  fi
+  SILENT_OUT=3
+
+  progress() {
+    if [ "$PROGRESS" = "yes" -a -e /dev/psplash_fifo ] ; then
+      echo "MSG $1" > /dev/psplash_fifo
+    elif [ "$PROGRESS" = "yes" ] ; then
+      echo "### $1 ###"
+    fi
+  }
+
+  message() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "MSG $1" > /dev/psplash_fifo
+    else
+      echo "$1"
+    fi
+  }
+
+  error() {
+    # Display fatal error message
+    # $1:action which caused error, $2:message
+
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
+    echo "*** Error in $BOOT_STEP: $1: $2 ***"
+    debug_shell
+  }
+
+  debug_shell() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
+    echo "### Starting debugging shell... type  exit  to quit ###"
+
+    # show cursor
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+
+    sh </dev/tty1 >/dev/tty1 2>&1
+  }
+
+  break_after() {
+    # Start debug shell after boot step $1
+    case $BREAK in
+      all|*$1*)
+        debug_shell
+        ;;
+    esac
+  }
+
+  # Mount handlers
+  # All handlers take the following parameters:
+  # $1:target, $2:mountpoint, $3:mount options, [$4:fs type]
+
+  mount_common() {
+    # Common mount handler, handles block devices and filesystem images
+    MOUNT_OPTIONS="-o $3"
+    [ -n "$4" ] && MOUNT_OPTIONS="-t $4 $MOUNT_OPTIONS"
+
+    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      ERR_ENV=1
+
+      mount $MOUNT_OPTIONS $1 $2 >&$SILENT_OUT 2>&1
+      [ "$?" -eq "0" ] && ERR_ENV=0 && break
+
+      usleep 1000000
+    done
+    [ "$ERR_ENV" -ne "0" ] && error "mount_common" "Could not mount $1"
+  }
+
+  get_iscsistart_options() {
+    # Convert kernel commandline ISCSI= options to iscsistart options
+    IFS_SAVE="$IFS"
+    IFS=,
+
+    for arg in $1; do
+      val="${arg#*=}"
+      case "$arg" in
+        iscsi_initiator=*)
+          option="-i"
+          ;;
+        iscsi_target_name=*)
+          option="-t"
+          ;;
+        iscsi_target_ip=*)
+          option="-a"
+          ;;
+        iscsi_target_port=*)
+          option="-p"
+          ;;
+        iscsi_target_group=*)
+          option="-g"
+          ;;
+        iscsi_username=*)
+          option="-u"
+          ;;
+        iscsi_password=*)
+          option="-w"
+          ;;
+        iscsi_in_username=*)
+          option="-U"
+          ;;
+        iscsi_in_password=*)
+          option="-W"
+          ;;
+      esac
+      echo "$option $val"
+    done
+
+    IFS="$IFS_SAVE"
+  }
+
+  mount_iscsi() {
+    # Mount iSCSI target
+    ISCSI_DEV="${1##*,}"
+    ISCSI_OPTIONS="${1%,*}"
+
+    if [ ! -f "/sbin/iscsistart" ]; then
+      error "iscsistart" "iSCSI support not available"
+    fi
+
+    if [ "$ISCSI_OPTIONS" = "auto" ]; then
+      progress "Network configuration based on iBFT"
+      /sbin/iscsistart -N >&$SILENT_OUT 2>&1 || \
+        error "iscsistart" "Unable to configure network"
+      progress "iSCSI auto connect based on iBFT"
+      /sbin/iscsistart -b >&$SILENT_OUT 2>&1 || \
+        error "iscsistart" "Unable to auto connect"
+    else
+      /sbin/iscsistart $(get_iscsistart_options "$ISCSI_OPTIONS") >&$SILENT_OUT 2>&1 || \
+        error "iscsistart" "Unable to connect to ISCSI target"
+    fi
+
+    mount_common "$ISCSI_DEV" "$2" "$3" "$4"
+  }
+
+  mount_nbd() {
+  # Mount NBD device
+    NBD_SERVER="${1%%:*}"
+    NBD_PORT="${1#*:}"
+    NBD_DEV="/dev/nbd$NBD_DEVS"
+
+    nbd-client $NBD_SERVER $NBD_PORT $NBD_DEV >&$SILENT_OUT 2>&1 || \
+      error "nbd-client" "Could not connect to NBD server $1"
+
+    mount_common "$NBD_DEV" "$2" "$3" "$4"
+
+    NBD_DEVS=$(( ${NBD_DEVS} + 1 ))
+  }
+
+  mount_nfs() {
+    # Mount NFS export
+    NFS_EXPORT="${1%%,*}"
+    NFS_OPTIONS="${1#*,}"
+
+    [ "$NFS_OPTIONS" = "$1" ] && NFS_OPTIONS=
+
+    mount_common "$NFS_EXPORT" "$2" "$3,nolock,soft,timeo=3,retrans=2,rsize=32768,wsize=32768,$NFS_OPTIONS" "nfs"
+  }
+
+  mount_ubifs() {
+    mount_common "$1" "$2" "$3" "ubifs"
+  }
+
+  mount_part() {
+    # Mount a local or network filesystem
+    # $1:[TYPE=]target, $2:mountpoint, $3:mount options, [$4:fs type]
+    progress "mount filesystem $1 ..."
+
+    MOUNT_TARGET="${1#*=}"
+    case $1 in
+      /dev/ubi*)
+        MOUNT_CMD="mount_ubifs"
+        MOUNT_TARGET="$1"
+        RUN_FSCK="no"
+        ;;
+      LABEL=*|UUID=*|/*)
+        MOUNT_CMD="mount_common"
+        MOUNT_TARGET="$1"
+        ;;
+      ISCSI=*)
+        MOUNT_CMD="mount_iscsi"
+        ;;
+      NBD=*)
+        MOUNT_CMD="mount_nbd"
+        ;;
+      NFS=*)
+        MOUNT_CMD="mount_nfs"
+        ;;
+      *)
+        error "mount_part" "Unknown filesystem $1"
+        ;;
+    esac
+    $MOUNT_CMD "$MOUNT_TARGET" "$2" "$3" "$4"
+  }
+
+  update_file() {
+    if [ -f "$UPDATE_DIR/$2" -a -f "$3" ]; then
+      message "updating $1..."
+      mount -o remount,rw /flash
+      mv $UPDATE_DIR/$2 $3 2>/dev/null
+      # loopback file needs writable /flash all the time
+      if [ "${disk%%=*}" != "FILE" ]; then
+        mount -o remount,ro /flash
+      fi
+      sync
+    fi
+  }
+
+  update_partition() {
+    if [ -f "$UPDATE_DIR/$2" -a -b "$3" ]; then
+      message "updating $1..."
+      dd if="$UPDATE_DIR/$2" of="$3"
+     fi
+   }
+
+  update_bootloader() {
+    export BOOT_ROOT="/flash"
+    export SYSTEM_ROOT="/sysroot"
+
+    mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/update.sh ]; then
+      message "updating Bootloader..."
+      sh $SYSTEM_ROOT/usr/share/bootloader/update.sh
+      sync
+    fi
+
+    umount /sysroot
+  }
+
+  load_modules() {
+    progress "Loading kernel modules"
+
+    [ ! -f "/etc/modules" ] && return
+    for module in $(cat /etc/modules); do
+      progress "Loading kernel module $module"
+      insmod "$MODULE_DIR/$module.ko" || \
+        progress "... Failed to load kernel module $module, skipping"
+    done
+  }
+
+  load_splash() {
+    if [ ! "$SPLASH" = "no" ]; then
+      progress "Loading bootsplash"
+
+      # load uvesafb module if needed
+      if [ -f "$MODULE_DIR/uvesafb.ko" -a ! -e /dev/fb0 ]; then
+        progress "Loading kernel module uvesafb.ko"
+        insmod "$MODULE_DIR/uvesafb.ko" || \
+          progress "... Failed to load kernel module uvesafb, skipping"
+
+        # set framebuffer to a default resolution (1024x768-32)
+        if [ ! "$SWITCH_FRAMEBUFFER" = "no" ]; then
+          fbset -g 1024 768 1024 768 32
+        fi
+      fi
+
+      if [ -e /dev/fb0 ]; then
+        # load splash
+        TMPDIR=/dev /bin/psplash -f 0 &
+      fi
+    fi
+  }
+
+  do_reboot() {
+    message "System reboots now..."
+
+    # syncing filesystem
+      sync
+
+    # unmount filesystems
+      if /bin/busybox mountpoint -q /flash ; then
+         /bin/busybox umount /flash
+      fi
+
+      if /bin/busybox mountpoint -q /storage ; then
+        /bin/busybox umount /storage
+      fi
+
+    usleep 2000000
+    /bin/busybox reboot
+  }
+
+  force_fsck() {
+    if [ -e /dev/psplash_fifo ] ; then
+      echo "QUIT" > /dev/psplash_fifo
+    fi
+    echo "Filesystem corruption has been detected"
+    echo "To prevent an automatic repair attempt continuing"
+    echo "press any key or power off your system within the next 120 seconds"
+    echo ""
+    read -t120 -n1
+    # The exit status is 0 if input is available
+    # The exit status is greater than 128 if the timeout is exceeded
+    if [ "$?" -ne "0" -o "$?" -gt "128" ] ; then
+      message "repairing filesystem.."
+      /sbin/fsck -T -M -y $RUN_FSCK_DISKS
+      FSCK_RET="$?"
+      if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
+        # fubar
+        echo "Forced fsck failed. Your system is broken beyond repair"
+        echo "Please re-install @DISTRONAME@"
+        echo ""
+        echo "Press enter to shutdown now"
+        echo ""
+        read fubar
+        poweroff
+      fi
+      do_reboot
+    else
+      message "shutting down..."
+      sleep 5
+      sync
+      poweroff
+    fi
+  }
+
+  check_disks() {
+    if [ "$RUN_FSCK" = "yes" -a -n "$RUN_FSCK_DISKS" ]; then
+      progress "Checking disk(s): $RUN_FSCK_DISKS"
+        /sbin/fsck -T -M -p -a $RUN_FSCK_DISKS > /dev/null 2>&1
+        FSCK_RET="$?"
+
+        # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
+        if [ "$(( $FSCK_RET & 4 ))" = 4 ] ; then
+          # errors left
+          force_fsck
+        elif [ "$(( $FSCK_RET & 2 ))" = 2 ] ; then
+          # reboot needed
+          message "filesystem repaired, reboot needed..."
+          do_reboot
+        elif [ "$(( $FSCK_RET & 1 ))" = 1 ] ; then
+          # filesystem errors corrected
+          progress "filesystem errors corrected , continuing..."
+        elif [ "$(( $FSCK_RET & 0 ))" = 0 ] ; then
+          # no errors found
+          progress "no filesystem errors found, continuing..."
+        fi
+    fi
+  }
+
+  wakeonlan() {
+    if [ "$STORAGE_NETBOOT" = "yes" ]; then
+      wol_ip=${disk%:*}
+      wol_ip=${wol_ip#*=}
+    elif [ "$FLASH_NETBOOT" = "yes" ]; then
+      wol_ip=${boot%:*}
+      wol_ip=${wol_ip#*=}
+    else
+      return 0
+    fi
+
+    if [ -n "$wol_ip" -a -n "$wol_mac" -a -n "$wol_wait" ]; then
+      progress "Sending Magic Packet (WOL) if needed"
+
+      if ! ping -q -c 2 "$wol_ip" &>/dev/null; then
+        ether-wake "$wol_mac"
+        sleep "$wol_wait"
+      fi
+    fi
+  }
+
+  mount_flash() {
+    progress "Mounting flash"
+
+    wakeonlan
+
+    mount_part "$boot" "/flash" "ro,noatime"
+  }
+
+  mount_storage() {
+    progress "Mounting storage"
+
+    if [ "$LIVE" = "yes" ]; then
+      # mount tmpfs and exit early. disk=xx is not allowed in live mode
+      mount -t tmpfs none /storage
+      return
+    fi
+
+    wakeonlan
+
+    if [ -n "$disk" ]; then
+      if [ -n "$OVERLAY" ]; then
+        OVERLAY_DIR=`cat /sys/class/net/eth0/address | tr -d :`
+
+        mount_part "$disk" "/storage" "rw,noatime"
+        mkdir -p /storage/$OVERLAY_DIR
+        umount /storage
+
+        # split $disk into $target,$options so we can append $OVERLAY_DIR
+        options="${disk#*,}"
+        target="${disk%%,*}"
+        if [ "$options" = "$disk" ]; then
+          disk="$target/$OVERLAY_DIR"
+        else
+          disk="$target/$OVERLAY_DIR,$options"
+        fi
+      fi
+      mount_part "$disk" "/storage" "rw,noatime"
+    else
+      # /storage should always be writable
+      mount -t tmpfs none /storage
+    fi
+  }
+
+  check_update() {
+    progress "Checking for updates"
+
+    UPDATE_TAR=`ls -1 "$UPDATE_DIR"/*.tar 2>/dev/null | head -n 1`
+    if [ -f "$UPDATE_DIR/$UPDATE_KERNEL" -a -f "$UPDATE_DIR/$UPDATE_SYSTEM" -o -f "$UPDATE_TAR" ] ; then
+      if [ "$UPDATE_DISABLED" = "yes" ] ; then
+        rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
+        message "Updating not supported on netboot. normal startup in 10s..."
+        sync
+        usleep 10000000
+        return 0
+      fi
+
+      # check for .tar
+      if [ -f "$UPDATE_TAR" ] ; then
+        message "Found new .tar archive. extracting..."
+        mkdir -p $UPDATE_DIR/.tmp &>/dev/null
+        tar -xf "$UPDATE_TAR" -C $UPDATE_DIR/.tmp &>/dev/null
+        mv $UPDATE_DIR/.tmp/*/target/* $UPDATE_DIR &>/dev/null
+        rm -f "$UPDATE_TAR" &>/dev/null
+        rm -rf $UPDATE_DIR/.tmp &>/dev/null
+        sync
+        if [ ! -f "$UPDATE_DIR/$UPDATE_KERNEL" -o ! -f "$UPDATE_DIR/$UPDATE_SYSTEM" ] ; then
+          message "missing ${UPDATE_KERNEL} or ${UPDATE_SYSTEM}... normal startup in 10s"
+          sync
+          usleep 10000000
+          return 0
+        fi
+      fi
+
+      if [ -f "$UPDATE_DIR/.nocheck" ] ; then
+        MD5_NOCHECK="1"
+      fi
+
+      # check md5 sums if .nocheck doesn't exist
+      if [ "$MD5_NOCHECK" -eq "0" ] ; then
+        if [ -f "$UPDATE_DIR/${UPDATE_KERNEL}.md5" -a -f "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" ] ; then
+          # *.md5 size-check
+          if [ ! -s "$UPDATE_DIR/${UPDATE_KERNEL}.md5" -o ! -s "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" ] ; then
+            message "zero-sized .md5 file..."
+            MD5_FAILED="1"
+          else
+            sed  -i 's#target#/storage/.update#g' "$UPDATE_DIR/${UPDATE_KERNEL}.md5"
+            sed  -i 's#target#/storage/.update#g' "$UPDATE_DIR/${UPDATE_SYSTEM}.md5"
+
+            message "Checking ${UPDATE_KERNEL}.md5..."
+            md5sum -c "$UPDATE_DIR/${UPDATE_KERNEL}.md5" || MD5_FAILED="1"
+
+            message "Checking ${UPDATE_SYSTEM}.md5..."
+            md5sum -c "$UPDATE_DIR/${UPDATE_SYSTEM}.md5" || MD5_FAILED="1"
+          fi
+        else
+          message "missing ${UPDATE_KERNEL}.md5 or ${UPDATE_SYSTEM}.md5..."
+          MD5_FAILED="1"
+        fi
+      fi
+
+      # get sizes
+      FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
+      FLASH_FREE=$(( $FLASH_FREE * 1024 ))
+
+      OLD_KERNEL="0"
+      if [ ! -b $IMAGE_KERNEL ]; then
+        OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
+      fi
+
+      OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
+      NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
+      NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
+
+      # old KERNEL+SYSTEM+free space - new KERNEL+SYSTEM must be higher then 5MB
+      # at least 5MB free after update
+
+      TMP_SIZE=$(($OLD_KERNEL+$OLD_SYSTEM+$FLASH_FREE-$NEW_KERNEL-$NEW_SYSTEM))
+      FLASH_FREE_MIN=$(($FLASH_FREE_MIN*1024*1024))
+
+      if [ $TMP_SIZE -ge $FLASH_FREE_MIN ]; then
+        message "Checking size: OK"
+      else
+        message "Checking size: FAILED"
+        SIZE_FAILED="1"
+      fi
+
+      # update if size check is ok
+      if [ "$SIZE_FAILED" -eq "0" ] ; then
+        # update if md5 check is ok or .nocheck exists
+        if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
+          if [ -b $IMAGE_KERNEL ]; then
+            update_partition "Kernel" "$UPDATE_KERNEL" "$IMAGE_KERNEL"
+          else
+            update_file "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
+          fi
+          update_file "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          update_bootloader
+          rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
+          do_reboot
+        else
+          rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
+          message "md5 check failed. normal startup in 30s..."
+          sync
+          usleep 30000000
+        fi
+      else
+        rm -rf $UPDATE_DIR/[0-9a-zA-Z]* &>/dev/null
+        message "size check failed. normal startup in 30s..."
+        sync
+        usleep 30000000
+      fi
+    fi
+  }
+
+  prepare_sysroot() {
+    progress "Preparing system"
+    mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+
+    chown 0:0 /storage
+    mount --move /flash /sysroot/flash
+    mount --move /storage /sysroot/storage
+
+    if [ ! -f "/sysroot/$SYSTEMD_BIN" ]; then
+      error "final_check" "Could not find system."
+    fi
+  }
+
+  if [ "${boot%%=*}" = "FILE" ]; then
+    error "check arguments" "boot argument can't be FILE type..."
+  fi
+
+  # main boot sequence
+  for BOOT_STEP in \
+      load_splash \
+      load_modules \
+      check_disks \
+      mount_flash \
+      mount_storage \
+      check_update \
+      prepare_sysroot; do
+    $BOOT_STEP
+    [ -n "$DEBUG" ] && break_after $BOOT_STEP
+  done
+
+  BOOT_STEP=final
+
+  # log if booting from usb / removable storage
+  STORAGE=$(cat /proc/mounts | grep " /sysroot/storage " | awk '{print $1}' | awk -F '/' '{print $3}')
+  FLASH=$(cat /proc/mounts | grep " /sysroot/flash " | awk '{print $1}' | awk -F '/' '{print $3}')
+  for i in $STORAGE $FLASH ; do
+    if [ -n "$i" ] ; then
+      removable="/sys/class/block/*/$i/../removable"
+      if [ -e $removable ] ; then
+        if [ "$(cat $removable 2>/dev/null)" = "1" ] ; then
+          echo "### BIG FAT WARNING" > /dev/kmsg
+          echo "### $i is removable. suspend/resume may not work" > /dev/kmsg
+        fi
+      fi
+    fi
+  done
+  # move some special filesystems
+  /bin/busybox mount --move /dev /sysroot/dev
+  /bin/busybox mount --move /proc /sysroot/proc
+  /bin/busybox mount --move /sys /sysroot/sys
+
+  # tell OE settings addon to disable updates
+  if [ "$UPDATE_DISABLED" = "yes" ] ; then
+    echo "" > /sysroot/dev/.update_disabled
+  fi
+  # swap can not be used over nfs.(see scripts/mount-swap)
+  if [ "$STORAGE_NETBOOT" = "yes" ] ; then
+    echo "" > /sysroot/dev/.storage_netboot
+  fi
+
+  if [ -f /sysroot/storage/.please_resize_me ] ; then
+    INIT_UNIT="--unit=fs-resize.target"
+  fi
+
+  BACKUP_FILE=`ls -1 /sysroot/storage/.restore/??????????????.tar 2>/dev/null | head -n 1`
+  if [ -f "$BACKUP_FILE" ] ; then
+    INIT_UNIT="--unit=backup-restore.target"
+  fi
+
+  if [ -f /sysroot/storage/.cache/reset_oe -o -f /sysroot/storage/.cache/reset_xbmc ] ; then
+    INIT_UNIT="--unit=factory-reset.target"
+  fi
+  # switch to new sysroot and start real init
+  exec /bin/busybox switch_root /sysroot $SYSTEMD_BIN $INIT_ARGS $INIT_UNIT
+
+  error "switch_root" "Error in initramfs. Could not switch to new root"

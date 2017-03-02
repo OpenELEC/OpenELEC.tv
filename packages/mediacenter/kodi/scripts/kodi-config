@@ -1,0 +1,51 @@
+#!/bin/sh
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+
+# hack: make addon-bins executable
+# done in kodi on addon install. but just in case..
+chmod +x /storage/.kodi/addons/*/bin/*
+
+# hack: update RSSnews.xml in userdata
+if [ -f /storage/.kodi/userdata/RssFeeds.xml ]; then
+  sed -e "s,http://openelec.tv/news?format=feed&type=rss,http://feeds.openelec.tv/news,g" \
+      -i /storage/.kodi/userdata/RssFeeds.xml
+fi
+
+# setup Kodi sources
+if [ ! -f $HOME/.kodi/userdata/sources.xml ]; then
+  if [ -f /usr/share/kodi/config/sources.xml ]; then
+    cp /usr/share/kodi/config/sources.xml $HOME/.kodi/userdata
+  fi
+fi
+
+# common setup guisettings
+if [ ! -f $HOME/.kodi/userdata/guisettings.xml ] ; then
+  if [ -f /usr/share/kodi/config/guisettings.xml ]; then
+    cp /usr/share/kodi/config/guisettings.xml $HOME/.kodi/userdata
+  fi
+fi
+
+if [ -e /run/lirc/lircd.irtrans ]; then
+  KODI_ARGS="--lircdev /run/lirc/lircd.irtrans"
+else
+  KODI_ARGS="--lircdev /run/lirc/lircd"
+fi
+
+echo "KODI_ARGS=\"$KODI_ARGS\"" > /run/openelec/kodi.conf

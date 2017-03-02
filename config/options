@@ -1,0 +1,106 @@
+# set default language for buildsystem
+  export LC_ALL=C
+
+# determines DISTRO, if not forced by user
+# default is OpenELEC
+if [ -z "$DISTRO" ]; then
+  DISTRO="OpenELEC"
+else
+  DISTRO="$DISTRO"
+fi
+
+# determines PROJECT, if not forced by user
+# default is Generic
+if [ -z "$PROJECT" ]; then
+  PROJECT="Generic"
+else
+  PROJECT="$PROJECT"
+fi
+
+# determines TARGET_ARCH, if not forced by user (x86_64 / arm)
+# default is x86_64
+if [ -z "$ARCH" ]; then
+  TARGET_ARCH="x86_64"
+else
+  TARGET_ARCH="$ARCH"
+fi
+
+ROOT=`pwd`
+DISTRO_DIR="$ROOT/distributions"
+PROJECT_DIR="$ROOT/projects"
+LINUX_DEPENDS="$PROJECT_DIR/$PROJECT/linux/linux.$TARGET_ARCH.conf $ROOT/packages/linux/package.mk"
+for linux_depends in $(find $ROOT/packages/linux/config -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
+for linux_depends in $(find $PROJECT_DIR/$PROJECT/linux -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
+for linux_depends in $(find $DISTRO_DIR/$DISTRO/linux -type f -name *.config 2>&1); do
+  LINUX_DEPENDS+=" $linux_depends"
+done
+
+# include versioning
+  . config/version
+
+# read distro versioning if available
+ if [ -f "$DISTRO_DIR/$DISTRO/version" ]; then
+   . $DISTRO_DIR/$DISTRO/version
+ fi
+
+# read distro options if available
+ if [ -f "$DISTRO_DIR/$DISTRO/options" ]; then
+   . $DISTRO_DIR/$DISTRO/options
+ fi
+
+# read project options if available
+ if [ -f "$PROJECT_DIR/$PROJECT/options" ]; then
+   . $PROJECT_DIR/$PROJECT/options
+ fi
+
+# verbose compilation mode (yes/no)
+  VERBOSE="yes"
+
+# Concurrency make level (-j option)
+#  Try value 1 (default) to 4 on single CPU computer, or more on
+#  multi-processor computer (like hyperthreading SMP CPU)
+  if test -z "${CONCURRENCY_MAKE_LEVEL}"; then
+    CONCURRENCY_MAKE_LEVEL=`cat /proc/cpuinfo | grep -c '^processor[[:cntrl:]]*:'`
+  fi
+
+# cache size for ccache
+# Set the maximum size of the files stored in the cache. You can specify a
+# value in gigabytes, megabytes or kilobytes by appending a G, M or K to the
+# value. The default is gigabytes. The actual value stored is rounded down to
+# the nearest multiple of 16 kilobytes.
+  CCACHE_CACHE_SIZE="30G"
+
+# install devtools on development builds
+  if [ "$OPENELEC_VERSION" = "devel" ]; then
+    DEVTOOLS=yes
+  fi
+
+# read options from $HOME if available
+  if [ -f "$HOME/.openelec/options" ]; then
+    . $HOME/.openelec/options
+  fi
+  if [ -f "$HOME/.openelec/projects/$PROJECT/options" ]; then
+    . $HOME/.openelec/projects/$PROJECT/options
+  fi
+
+# read distro options from $HOME if available
+  if [ -f "$HOME/.openelec/options.$DISTRO" ]; then
+    . $HOME/.openelec/options.$DISTRO
+  fi
+
+# overwrite OEM_SUPPORT via commandline
+if [ "$OEM" = yes -o "$OEM" = no ]; then
+  OEM_SUPPORT=$OEM
+fi
+
+# overwrite REPO_DIR via commandline
+if [ -n "$REPO" ]; then
+  REPO_DIR=$REPO
+fi
+
+. config/graphic
+. config/path $1

@@ -1,0 +1,83 @@
+#!/bin/bash
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+. config/options $1
+
+if [ -z "$3" ]; then
+  echo "usage: $0 package_name file_pattern target_dir"
+  exit 1
+fi
+
+[ -z "$PKG_URL" -a -z "$PKG_GIT_URL" ] && exit 1
+[ ! -d "$SOURCES/$1" -o ! -d "$3" ] && exit 1
+
+if [ -n "$PKG_URL" ]; then
+  for i in $PKG_URL; do
+    FILE="$FILE `basename $i`"
+  done
+elif [ -n "$PKG_GIT_URL" ]; then
+  FILE="$PKG_NAME-$PKG_VERSION.tar.xz"
+fi
+
+for i in $FILE; do
+  case $i in
+  $2)
+    f="$SOURCES/$1/$i"
+    if [ ! -f $f ]; then
+      echo "error: File $i doesn't exists in package $1 sources directory"
+      echo "have you called scripts/extract before scripts/get ?"
+      exit 1
+    fi
+    case $i in
+      *.tar)
+        tar xf $f -C $3
+        ;;
+      *.tar.bz2 | *.tbz)
+        tar xjf $f -C $3
+        ;;
+      *.tar.gz | *.tgz)
+        tar xzf $f -C $3
+        ;;
+      *.tar.xz | *.txz)
+        tar xJf $f -C $3
+        ;;
+      *.7z)
+        mkdir -p $3/$1
+        7z x -o$3/$1 $f
+        ;;
+      *.zip)
+        unzip -q $f -d $3
+        ;;
+      *.diff | *.patch)
+        cat $f | patch -d $3 -p1
+        ;;
+      *.diff.bz2 | *.patch.bz2 | patch-*.bz2)
+        bzcat $f | patch -d $3 -p1
+        ;;
+      *.diff.gz | *.patch.gz | patch-*.gz)
+        zcat $f | patch -d $3 -p1
+        ;;
+      *)
+        cp -pPR $f $3
+        ;;
+    esac
+    ;;
+  esac
+done

@@ -1,0 +1,28 @@
+# determines TARGET_CPU, if not forced by user
+  if [ -z "$TARGET_CPU" ]; then
+    TARGET_CPU=cortex-a53
+  fi
+
+# TARGET_CPU:
+# generic cortex-a35 cortex-a53 cortex-a57 cortex-a72
+# exynos-m1 qdf24xx thunderx xgene1 cortex-a57.cortex-a53
+# cortex-a72.cortex-a53
+
+# determine architecture's family
+  case $TARGET_CPU in
+    generic|cortex-a35|cortex-a53|cortex-a57|cortex-a72|exynos-m1|qdf24xx|thunderx|xgene1|cortex-a57.cortex-a53|cortex-a72.cortex-a53)
+      TARGET_SUBARCH=aarch64
+      TARGET_VARIANT=armv8-a
+      TARGET_ABI=eabi
+      TARGET_EXTRA_FLAGS="-mcpu=${TARGET_CPU}${TARGET_CPU_FLAGS}"
+      SIMD_SUPPORT="yes"
+      ;;
+  esac
+
+  TARGET_GCC_ARCH=${TARGET_SUBARCH/-}
+  TARGET_KERNEL_ARCH=arm64
+
+# setup ARCH specific *FLAGS
+  TARGET_CFLAGS="-march=${TARGET_VARIANT}${TARGET_CPU_FLAGS} -mabi=lp64 -Wno-psabi $TARGET_EXTRA_FLAGS"
+  TARGET_LDFLAGS="-march=${TARGET_VARIANT}${TARGET_CPU_FLAGS} -mtune=$TARGET_CPU"
+  GCC_OPTS="--with-abi=lp64 --with-arch=$TARGET_VARIANT"

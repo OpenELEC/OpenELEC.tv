@@ -1,0 +1,10 @@
+[Unit]
+Description=Udevil mount service
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/bin/udevil --mount %I
+ExecStop=-/usr/bin/udevil --umount %I
+ExecStartPost=-/usr/lib/samba/samba-autoshare
+ExecStopPost=-/usr/lib/samba/samba-autoshare
+RemainAfterExit=yes

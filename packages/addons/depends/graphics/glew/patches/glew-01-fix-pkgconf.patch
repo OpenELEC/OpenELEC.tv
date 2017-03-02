@@ -1,0 +1,11 @@
+diff -Naur glew-1.13.0/glew.pc.in glew-1.13.0.patch/glew.pc.in
+--- glew-1.13.0/glew.pc.in	2015-08-10 13:47:22.000000000 +0200
++++ glew-1.13.0.patch/glew.pc.in	2015-11-19 10:01:42.694904497 +0100
+@@ -1,6 +1,6 @@
+ prefix=@prefix@
+ exec_prefix=${prefix}
+-libdir=@libdir@
++libdir=${exec_prefix}/lib
+ includedir=${prefix}/include
+ 
+ Name: glew

@@ -1,0 +1,10 @@
+[Unit]
+Description=Amlogic IR remote support
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/openelec/remote-config
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target

@@ -1,0 +1,14 @@
+diff -Naur libpng-1.6.25/libpng.pc.in libpng-1.6.25.patch/libpng.pc.in
+--- libpng-1.6.25/libpng.pc.in	2016-09-01 05:26:44.000000000 +0200
++++ libpng-1.6.25.patch/libpng.pc.in	2016-09-19 11:30:50.177048901 +0200
+@@ -1,7 +1,7 @@
+ prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-libdir=@libdir@
+-includedir=@includedir@/libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
++exec_prefix=${prefix}
++libdir=${exec_prefix}/lib
++includedir=${prefix}/include/libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
+ 
+ Name: libpng
+ Description: Loads and saves PNG files

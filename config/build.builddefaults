@@ -1,0 +1,60 @@
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+# set defaults
+  PKG_CONFIGURE_SCRIPT=""
+  PKG_MAKE_OPTS=""
+  PKG_MAKEINSTALL_OPTS=""
+
+# configure TARGET build defaults
+  TARGET_CONFIGURE_OPTS="--host=$TARGET_NAME \
+                         --build=$HOST_NAME \
+                         --prefix=/usr \
+                         --bindir=/usr/bin \
+                         --sbindir=/usr/sbin \
+                         --sysconfdir=/etc \
+                         --libexecdir=/usr/lib \
+                         --localstatedir=/var \
+                         --disable-static \
+                         --enable-shared"
+
+  TARGET_CMAKE_OPTS="-DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+                     -DCMAKE_INSTALL_PREFIX=/usr"
+
+# configure HOST build defaults
+  HOST_CONFIGURE_OPTS="--host=$HOST_NAME \
+                       --build=$HOST_NAME \
+                       --prefix=$ROOT/$TOOLCHAIN \
+                       --bindir=$ROOT/$TOOLCHAIN/bin \
+                       --sbindir=$ROOT/$TOOLCHAIN/sbin \
+                       --sysconfdir=$ROOT/$TOOLCHAIN/etc \
+                       --libexecdir=$ROOT/$TOOLCHAIN/lib \
+                       --localstatedir=$ROOT/$TOOLCHAIN/var \
+                       --disable-static \
+                       --enable-shared"
+
+  HOST_CMAKE_OPTS="-DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+                   -DCMAKE_INSTALL_PREFIX=$ROOT/$TOOLCHAIN"
+
+# configure INIT build defaults
+  INIT_CONFIGURE_OPTS="$TARGET_CONFIGURE_OPTS"
+  INIT_CMAKE_OPTS="$TARGET_CMAKE_OPTS"
+
+# configure BOOTSTRAP build defaults
+  BOOTSTRAP_CONFIGURE_OPTS="$HOST_CONFIGURE_OPTS"
+  BOOTSTRAP_CMAKE_OPTS="$HOST_CMAKE_OPTS"

@@ -1,0 +1,13 @@
+[Unit]
+Description=boblightd
+After=graphical.target
+
+[Service]
+ExecStart=/bin/sh -c "exec sh /storage/.kodi/addons/service.multimedia.boblightd/bin/boblightd.start"
+TimeoutStopSec=1
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+[Install]
+WantedBy=default.target

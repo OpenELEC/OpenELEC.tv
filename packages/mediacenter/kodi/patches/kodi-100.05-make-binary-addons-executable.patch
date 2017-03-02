@@ -1,0 +1,59 @@
+From 416981e6bbcf81443e3ca8f35ca26042e174c971 Mon Sep 17 00:00:00 2001
+From: Stefan Saraev <stefan@saraev.ca>
+Date: Mon, 2 Mar 2015 23:50:40 +0200
+Subject: [PATCH 05/13] make binary addons executable
+
+add executable mode to all files in addon's bin folder
+
+credits to vpeter4 for the patch
+---
+ xbmc/addons/Addon.cpp | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/xbmc/addons/Addon.cpp b/xbmc/addons/Addon.cpp
+index 77c2db8..6c21c87 100644
+--- a/xbmc/addons/Addon.cpp
++++ b/xbmc/addons/Addon.cpp
+@@ -46,6 +46,10 @@
+ #include <string.h>
+ #include <ostream>
+ 
++#include <iostream>
++#include <dirent.h>
++#include <sys/stat.h>
++
+ using XFILE::CDirectory;
+ using XFILE::CFile;
+ 
+@@ -694,6 +698,28 @@ void OnPostInstall(const AddonPtr& addon, bool update, bool modal)
+   if (CAddonMgr::GetInstance().GetAddon(addon->ID(), localAddon, ADDON_REPOSITORY))
+     CRepositoryUpdater::GetInstance().ScheduleUpdate(); //notify updater there is a new addon or version
+ 
++  // OE: make binary addons executable, creddits to vpeter4
++  std::string addonDirPath;
++  std::string chmodFilePath;
++  DIR *addonsDir;
++  struct dirent *fileDirent;
++  struct stat fileStat;
++  int statRet;
++
++  addonDirPath = "/storage/.kodi/addons/" + addon->ID() + "/bin/";
++  if ((addonsDir = opendir(addonDirPath.c_str())) != NULL)
++  {
++    while ((fileDirent = readdir(addonsDir)) != NULL)
++    {
++      chmodFilePath = addonDirPath + fileDirent->d_name;
++      statRet = stat(chmodFilePath.c_str(), &fileStat);
++      if (statRet == 0 && (fileStat.st_mode & S_IFMT) != S_IFDIR)
++        chmod(chmodFilePath.c_str(), fileStat.st_mode | S_IXUSR | S_IXGRP | S_IXOTH);
++    }
++    closedir(addonsDir);
++  }
++  // OE
++
+   addon->OnPostInstall(update, modal);
+ }
+ 
+-- 
+2.5.0
+

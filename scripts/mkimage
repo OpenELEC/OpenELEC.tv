@@ -1,0 +1,270 @@
+#!/bin/bash
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+################################################################################
+# variables such as $ROOT $PATH etc... that are required for this
+# script to work must be passed via env ... in scripts/image
+################################################################################
+
+# set variables
+  OE_TMP=$(mktemp -d)
+  SAVE_ERROR="$OE_TMP/save_error"
+
+  if [ -z "$SYSTEM_SIZE" -o -z "$SYSTEM_PART_START" ]; then
+    echo "mkimage: SYSTEM_SIZE and SYSTEM_PART_START must be configured!"
+    exit 1
+  fi
+
+  STORAGE_SIZE=32 # STORAGE_SIZE must be >= 32 !
+
+  DISK_SIZE=$(( $SYSTEM_SIZE + $STORAGE_SIZE + 4 ))
+  DISK="$TARGET_IMG/$IMAGE_NAME.img"
+
+# functions
+  cleanup() {
+    echo "image: cleanup..."
+    rm -rf "$OE_TMP"
+    echo
+    exit
+  }
+
+  show_error() {
+    echo "image: error happen..."
+    echo
+    cat "$SAVE_ERROR"
+    echo
+    cleanup
+    exit
+  }
+
+trap cleanup SIGINT
+
+# generate volume id for fat partition
+  UUID_1=$(date '+%d%m')
+  UUID_2=$(date '+%M%S')
+  FAT_VOL_ID="${UUID_1}${UUID_2}"
+  UUID_SYSTEM="${UUID_1}-${UUID_2}"
+
+# create an image
+  echo
+  echo "image: creating file $(basename $DISK)..."
+  dd if=/dev/zero of="$DISK" bs=1M count="$DISK_SIZE" conv=fsync >"$SAVE_ERROR" 2>&1 || show_error
+
+# write a disklabel
+  echo "image: creating partition table..."
+  if [ "$BOOTLOADER" = "syslinux" ]; then
+    parted -s "$DISK" mklabel gpt
+  else
+    parted -s "$DISK" mklabel msdos
+  fi
+  sync
+
+# create part1
+  echo "image: creating part1..."
+  SYSTEM_PART_END=$(( ($SYSTEM_SIZE * 1024 * 1024 / 512) + $SYSTEM_PART_START ))
+  parted -s "$DISK" -a min unit s mkpart primary fat32 $SYSTEM_PART_START $SYSTEM_PART_END
+  if [ "$BOOTLOADER" = "syslinux" ]; then
+    parted -s "$DISK" set 1 legacy_boot on
+  else
+    parted -s "$DISK" set 1 boot on
+  fi
+  sync
+# create part2
+  echo "image: creating part2..."
+  STORAGE_PART_START=$(( $SYSTEM_PART_END + 2048 ))
+  STORAGE_PART_END=$(( $STORAGE_PART_START + (( $STORAGE_SIZE * 1024 * 1024 / 512 )) ))
+  parted -s "$DISK" -a min unit s mkpart primary ext4 $STORAGE_PART_START $STORAGE_PART_END
+  sync
+
+if [ "$BOOTLOADER" = "syslinux" ]; then
+  # write mbr
+    echo "image: writing mbr..."
+    MBR="$ROOT/$TOOLCHAIN/share/syslinux/gptmbr.bin"
+    if [ -n "$MBR" ]; then
+      dd bs=440 count=1 conv=fsync,notrunc if="$MBR" of="$DISK" >"$SAVE_ERROR" 2>&1 || show_error
+    fi
+fi
+
+# create filesystem on part1
+  echo "image: creating filesystem on part1..."
+  OFFSET=$(( $SYSTEM_PART_START * 512 ))
+  HEADS=4
+  TRACKS=32
+  SECTORS=$(( $SYSTEM_SIZE * 1024 * 1024 / 512 / $HEADS / $TRACKS ))
+  
+  shopt -s expand_aliases  # enables alias expansion in script
+  alias mformat="mformat -i $DISK@@$OFFSET -h $HEADS -t $TRACKS -s $SECTORS"
+  alias mcopy="mcopy -i $DISK@@$OFFSET"
+  alias mmd="mmd -i $DISK@@$OFFSET"
+
+  if [ "$BOOTLOADER" = "syslinux" ]; then
+    mformat -v "$FAT_VOL_ID" -N "$FAT_VOL_ID" ::
+  elif [ "$BOOTLOADER" = "bcm2835-firmware" -o "$BOOTLOADER" = "u-boot" ]; then
+    mformat ::
+  fi
+  sync
+
+if [ "$BOOTLOADER" = "syslinux" ]; then
+  # create bootloader configuration
+    echo "image: creating bootloader configuration..."
+    cat << EOF > "$OE_TMP"/syslinux.cfg
+SAY Press <TAB> to edit options
+DEFAULT installer
+TIMEOUT 50
+PROMPT 1
+
+LABEL installer
+  KERNEL /$KERNEL_NAME
+  APPEND boot=UUID=$UUID_SYSTEM installer quiet tty vga=current
+
+LABEL live
+  KERNEL /$KERNEL_NAME
+  APPEND boot=UUID=$UUID_SYSTEM live quiet tty vga=current
+EOF
+
+    mcopy "$OE_TMP/syslinux.cfg" ::
+
+  # install extlinux
+    echo "image: installing extlinux to part1..."
+    syslinux.mtools --offset "$OFFSET" -i "$DISK"
+
+  # copy files
+    echo "image: copying files to part1..."
+    mcopy $TARGET_IMG/$IMAGE_NAME.kernel "::/$KERNEL_NAME"
+    mcopy $TARGET_IMG/$IMAGE_NAME.system ::/SYSTEM
+    mmd EFI EFI/BOOT
+    mcopy $ROOT/$TOOLCHAIN/share/syslinux/bootx64.efi ::/EFI/BOOT
+    mcopy $ROOT/$TOOLCHAIN/share/syslinux/ldlinux.e64 ::/EFI/BOOT
+    mcopy "$OE_TMP"/syslinux.cfg ::/EFI/BOOT
+elif [ "$BOOTLOADER" = "bcm2835-firmware" ]; then
+  # create bootloader configuration
+    echo "image: creating bootloader configuration..."
+    cat << EOF > "$OE_TMP"/cmdline.txt
+boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 quiet $EXTRA_CMDLINE
+EOF
+
+    mcopy "$OE_TMP/cmdline.txt" ::
+
+  # copy files
+    echo "image: copying files to part1..."
+    mcopy $TARGET_IMG/$IMAGE_NAME.kernel "::/$KERNEL_NAME"
+    mcopy $TARGET_IMG/$IMAGE_NAME.system ::/SYSTEM
+    mcopy $RELEASE_DIR/3rdparty/bootloader/bootcode.bin ::
+    mcopy $RELEASE_DIR/3rdparty/bootloader/fixup.dat ::
+    mcopy $RELEASE_DIR/3rdparty/bootloader/start.elf ::
+    mcopy $RELEASE_DIR/3rdparty/bootloader/config.txt ::
+
+    for dtb in $RELEASE_DIR/3rdparty/bootloader/*.dtb ; do
+      if [ -f $dtb ] ; then
+        mcopy "$dtb" ::/$(basename "$dtb")
+      fi
+    done
+
+    if [ -d $RELEASE_DIR/3rdparty/bootloader/overlays ]; then
+      mcopy -s $RELEASE_DIR/3rdparty/bootloader/overlays ::
+    fi
+
+elif [ "$BOOTLOADER" = "u-boot" ]; then
+  # create bootloader configuration
+    echo "image: creating bootloader configuration..."
+    if [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/uEnv-$UBOOT_SYSTEM.txt" ]; then
+      mcopy "$RELEASE_DIR/3rdparty/bootloader/uEnv-$UBOOT_SYSTEM.txt" ::/uEnv.txt
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/uEnv.txt" ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/uEnv.txt ::
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/boot.scr" ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/boot.scr ::
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/boot.ini" ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/boot.ini ::
+    fi
+
+    echo "image: installing u-boot bootloader..."
+    if [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/SPL-$UBOOT_SYSTEM" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/SPL-$UBOOT_SYSTEM" of="$DISK" bs=512 seek=2 conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/SPL" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/SPL" of="$DISK" bs=512 seek=2 conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+    elif [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.imx" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.imx" of="$DISK" bs=512 seek=2 conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" ]; then
+      dd if="$RELEASE_DIR/3rdparty/bootloader/u-boot.imx" of="$DISK" bs=512 seek=2 conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+    elif [ -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-fuse" ]; then
+     # allow custom dd script for vendor specific fusing
+      . $RELEASE_DIR/3rdparty/bootloader/u-boot-fuse
+    fi
+
+    echo "image: copying files to part1..."
+    mcopy $TARGET_IMG/$IMAGE_NAME.kernel "::/$KERNEL_NAME"
+    mcopy $TARGET_IMG/$IMAGE_NAME.system ::/SYSTEM
+
+    if [ -n "$UBOOT_SYSTEM" -a -f "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" ]; then
+      mcopy "$RELEASE_DIR/3rdparty/bootloader/u-boot-$UBOOT_SYSTEM.img" ::/u-boot.img
+    elif [ -f $RELEASE_DIR/3rdparty/bootloader/u-boot.img ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/u-boot.img ::
+    fi
+
+    for dtb in $RELEASE_DIR/3rdparty/bootloader/*.dtb ; do
+      if [ -f $dtb ] ; then
+        mcopy "$dtb" ::/$(basename "$dtb")
+      fi
+    done
+
+    # copy Amlogic device tree image
+    if [ -f "$RELEASE_DIR/3rdparty/bootloader/dtb.img" ]; then
+      mcopy $RELEASE_DIR/3rdparty/bootloader/dtb.img ::
+    fi
+fi # bootloader
+
+# extract part2 from image to format and copy files
+  echo "image: extracting part2 from image..."
+  STORAGE_PART_COUNT=$(( $STORAGE_PART_END - $STORAGE_PART_START + 1 ))
+  sync
+  dd if="$DISK" of="$OE_TMP/part2.ext4" bs=512 skip="$STORAGE_PART_START" count="$STORAGE_PART_COUNT" conv=fsync >"$SAVE_ERROR" 2>&1 || show_error
+
+# create filesystem on part2
+  echo "image: creating filesystem on part2..."
+  mke2fs -F -q -t ext4 -m 0 "$OE_TMP/part2.ext4"
+  tune2fs -U $UUID_STORAGE "$OE_TMP/part2.ext4" >"$SAVE_ERROR" 2>&1 || show_error
+  e2fsck -n "$OE_TMP/part2.ext4" >"$SAVE_ERROR" 2>&1 || show_error
+  sync
+
+# add resize mark
+  if [ "$BOOTLOADER" != "syslinux" ]; then
+    mkdir "$OE_TMP/part2.fs"
+    touch "$OE_TMP/part2.fs/.please_resize_me"
+    echo "image: populating filesystem on part2..."
+    populatefs -U -d "$OE_TMP/part2.fs" "$OE_TMP/part2.ext4" >"$SAVE_ERROR" 2>&1 || show_error
+    sync
+    e2fsck -n "$OE_TMP/part2.ext4" >"$SAVE_ERROR" 2>&1 || show_error
+  fi
+
+# merge part2 back to disk image
+  echo "image: merging part2 back to image..."
+  dd if="$OE_TMP/part2.ext4" of="$DISK" bs=512 seek="$STORAGE_PART_START" conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+
+# gzip
+  echo "image: compressing..."
+  gzip $DISK
+
+# set owner
+  if [ -n "$SUDO_USER" ] ; then
+    chown $SUDO_USER: $DISK.gz
+  fi
+
+# cleanup
+  cleanup

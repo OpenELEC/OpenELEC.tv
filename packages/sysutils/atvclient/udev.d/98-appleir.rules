@@ -1,0 +1,3 @@
+ACTION=="add", SUBSYSTEM=="usb", \
+  ATTR{idVendor}=="05ac", ATTR{idProduct}=="824[012]", \
+  TAG+="systemd", ENV{SYSTEMD_WANTS}+="atvclient.service"

@@ -1,0 +1,53 @@
+From 73f401a5a33ad3e647791685a9af14e69c7a89f6 Mon Sep 17 00:00:00 2001
+From: Stefan Saraev <stefan@saraev.ca>
+Date: Fri, 7 Aug 2015 13:25:23 +0300
+Subject: [PATCH 3/8] move hwdb.bin to /run
+
+---
+ src/hwdb/hwdb.c                  |    2 +-
+ src/libsystemd/sd-hwdb/sd-hwdb.c |    2 +-
+ src/udev/udevadm-hwdb.c          |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/hwdb/hwdb.c b/src/hwdb/hwdb.c
+index 446de3a..be91bfe 100644
+--- a/src/hwdb/hwdb.c
++++ b/src/hwdb/hwdb.c
+@@ -38,7 +38,7 @@
+  * Uses a Patricia/radix trie to index all matches for efficient lookup.
+  */
+ 
+-static const char *arg_hwdb_bin_dir = "/etc/udev";
++static const char *arg_hwdb_bin_dir = "/run";
+ static const char *arg_root = "";
+ 
+ static const char * const conf_file_dirs[] = {
+diff --git a/src/libsystemd/sd-hwdb/sd-hwdb.c b/src/libsystemd/sd-hwdb/sd-hwdb.c
+index 61c7b44..6e1de7d 100644
+--- a/src/libsystemd/sd-hwdb/sd-hwdb.c
++++ b/src/libsystemd/sd-hwdb/sd-hwdb.c
+@@ -269,7 +269,7 @@
+ 
+ static const char hwdb_bin_paths[] =
+         "/etc/systemd/hwdb/hwdb.bin\0"
+-        "/etc/udev/hwdb.bin\0"
++        "/run/hwdb.bin\0"
+         "/usr/lib/systemd/hwdb/hwdb.bin\0"
+ #ifdef HAVE_SPLIT_USR
+         "/lib/systemd/hwdb/hwdb.bin\0"
+diff --git a/src/udev/udevadm-hwdb.c b/src/udev/udevadm-hwdb.c
+index d65e40c..8889df7 100644
+--- a/src/udev/udevadm-hwdb.c
++++ b/src/udev/udevadm-hwdb.c
+@@ -562,7 +562,7 @@ static int adm_hwdb(struct udev *udev, int argc, char *argv[]) {
+         };
+         const char *test = NULL;
+         const char *root = "";
+-        const char *hwdb_bin_dir = "/etc/udev";
++        const char *hwdb_bin_dir = "/run";
+         bool update = false;
+         struct trie *trie = NULL;
+         int err, c;
+-- 
+1.7.10.4
+

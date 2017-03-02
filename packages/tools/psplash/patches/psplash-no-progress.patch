@@ -1,0 +1,81 @@
+diff -Naur psplash-5b3c1cc/psplash.c psplash-5b3c1cc.patch/psplash.c
+--- psplash-5b3c1cc/psplash.c	2016-06-05 23:14:59.000000000 +0200
++++ psplash-5b3c1cc.patch/psplash.c	2016-08-18 13:59:18.652024712 +0200
+@@ -66,41 +66,6 @@
+ 			msg);
+ }
+ 
+-void
+-psplash_draw_progress (PSplashFB *fb, int value)
+-{
+-  int x, y, width, height, barwidth;
+-
+-  /* 4 pix border */
+-  x      = ((fb->width  - BAR_IMG_WIDTH)/2) + 4 ;
+-  y      = SPLIT_LINE_POS(fb) + 4;
+-  width  = BAR_IMG_WIDTH - 8; 
+-  height = BAR_IMG_HEIGHT - 8;
+-
+-  if (value > 0)
+-    {
+-      barwidth = (CLAMP(value,0,100) * width) / 100;
+-      psplash_fb_draw_rect (fb, x + barwidth, y, 
+-    			width - barwidth, height,
+-			PSPLASH_BAR_BACKGROUND_COLOR);
+-      psplash_fb_draw_rect (fb, x, y, barwidth,
+-			    height, PSPLASH_BAR_COLOR);
+-    }
+-  else
+-    {
+-      barwidth = (CLAMP(-value,0,100) * width) / 100;
+-      psplash_fb_draw_rect (fb, x, y, 
+-    			width - barwidth, height,
+-			PSPLASH_BAR_BACKGROUND_COLOR);
+-      psplash_fb_draw_rect (fb, x + width - barwidth,
+-			    y, barwidth, height,
+-			    PSPLASH_BAR_COLOR);
+-    }
+-
+-  DBG("value: %i, width: %i, barwidth :%i\n", value, 
+-		width, barwidth);
+-}
+-
+ static int 
+ parse_command (PSplashFB *fb, char *string)
+ {
+@@ -113,11 +78,7 @@
+ 
+   command = strtok(string," ");
+ 
+-  if (!strcmp(command,"PROGRESS")) 
+-    {
+-      psplash_draw_progress (fb, atoi(strtok(NULL,"\0")));
+-    } 
+-  else if (!strcmp(command,"MSG")) 
++  if (!strcmp(command,"MSG")) 
+     {
+       psplash_draw_msg (fb, strtok(NULL,"\0"));
+     } 
+@@ -293,22 +254,6 @@
+ 			 POKY_IMG_ROWSTRIDE,
+ 			 POKY_IMG_RLE_PIXEL_DATA);
+ 
+-  /* Draw progress bar border */
+-  psplash_fb_draw_image (fb, 
+-			 (fb->width  - BAR_IMG_WIDTH)/2, 
+-			 SPLIT_LINE_POS(fb),
+-			 BAR_IMG_WIDTH,
+-			 BAR_IMG_HEIGHT,
+-			 BAR_IMG_BYTES_PER_PIXEL,
+-			 BAR_IMG_ROWSTRIDE,
+-			 BAR_IMG_RLE_PIXEL_DATA);
+-
+-  psplash_draw_progress (fb, 0);
+-
+-#ifdef PSPLASH_STARTUP_MSG
+-  psplash_draw_msg (fb, PSPLASH_STARTUP_MSG);
+-#endif
+-
+   psplash_main (fb, pipe_fd, 0);
+ 
+ 

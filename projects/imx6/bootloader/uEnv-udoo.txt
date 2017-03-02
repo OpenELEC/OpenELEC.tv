@@ -1,0 +1,22 @@
+
+# enable only one video line
+# HDMI
+video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24,bpp=32
+# 7" LVDS
+#video=mxcfb0:dev=ldb,800x480M@60,if=RGB666,bpp=32
+# 15.6" LVDS
+#video=mxcfb0:dev=ldb,1366x768M@60,if=RGB24,bpp=32
+
+# make boot more quiet
+console_arg=quiet morequiet
+# or having quiet and console
+#console_arg=console=ttymxc0,115200 quiet morequiet
+# show messages too
+#console_arg=console=ttymxc0,115200 no_console_suspend=1
+
+# enable ssh
+#ssh_arg=ssh
+
+zImage=/KERNEL
+bootfile=/KERNEL
+mmcargs=setenv bootargs boot=/dev/mmcblk0p1 disk=/dev/mmcblk0p2 ${ssh_arg} ${console_arg} video=${video} dmfc=3 consoleblank=0

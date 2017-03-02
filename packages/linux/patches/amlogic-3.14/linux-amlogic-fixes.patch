@@ -1,0 +1,11 @@
+diff -Naur linux-069e204/drivers/amlogic/video_dev/Kconfig linux-069e204.patch/drivers/amlogic/video_dev/Kconfig
+--- linux-069e204/drivers/amlogic/video_dev/Kconfig	2016-10-07 18:18:12.000000000 +0200
++++ linux-069e204.patch/drivers/amlogic/video_dev/Kconfig	2016-10-18 09:24:29.846808526 +0200
+@@ -3,6 +3,7 @@
+ config V4L_AMLOGIC_VIDEO
+ 	tristate "Amlogic v4l video device support"
+ 	select VIDEO_DEV
++	select VIDEOBUF_GEN
+ 	select VIDEO_V4L2
+ 	select VIDEOBUF_RESOURCE
+ 	default n

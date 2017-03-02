@@ -1,0 +1,12 @@
+diff -Naur atvclient-b8a000a/src/atvclient.cpp atvclient-b8a000a.patch/src/atvclient.cpp
+--- atvclient-b8a000a/src/atvclient.cpp	2016-03-15 22:34:35.099261900 +0100
++++ atvclient-b8a000a.patch/src/atvclient.cpp	2016-03-15 22:33:44.765173590 +0100
+@@ -172,7 +172,7 @@
+ static CPacketNOTIFICATION remote_unpaired("Remote unpaired", "You can now control XBMC with any Apple remote.", 0, NULL);
+ static CPacketNOTIFICATION remote_pair_failed("Remote already paired", "This AppleTV was paired to another remote. To unpair, hold down menu and rewind for 6 seconds.", 0, NULL);
+ 
+-const char* remoteIdFile = "/etc/atvremoteid";
++const char* remoteIdFile = "/storage/.cache/atvremoteid";
+ static int pairedRemoteId = 0;
+ 
+ // new globals to support NEC mode

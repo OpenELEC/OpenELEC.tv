@@ -1,0 +1,148 @@
+#!/bin/bash
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+. config/options $1
+
+if  [ -f /etc/lsb-release ]; then
+  DISTRO=$(grep DISTRIB_ID /etc/lsb-release | cut -d "=" -f 2 | tr A-Z a-z)
+fi
+
+if  [ -f /etc/os-release ]; then
+  DISTRO=$(grep ^ID= /etc/os-release | cut -d "=" -f 2 | tr A-Z a-z)
+fi
+
+deps="wget bash bc gcc sed patch tar bzip2 gzip perl gawk gperf zip unzip diff makeinfo lzop"
+deps_pkg="wget bash bc gcc sed patch tar bzip2 gzip perl gawk gperf zip unzip diffutils texinfo lzop"
+
+files="/usr/include/stdio.h /usr/include/ncurses.h"
+files_pkg="libc6-dev libncurses5-dev"
+
+case "$DISTRO" in
+    fedora|centos|rhel)
+      deps="$deps g++ mkfontscale mkfontdir bdftopcf xsltproc java"
+      deps_pkg="$deps_pkg gcc-c++ xorg-x11-font-utils xorg-x11-font-utils xorg-x11-font-utils libxslt java-1.7.0-openjdk"
+      [[ ! `rpm -qa glibc-static` ]] && deps="$deps glibc-static" && deps_pkg="$deps_pkg glibc-static"
+      [[ ! `rpm -qa libstdc++-static` ]] && deps="$deps libstdc++-static" && deps_pkg="$deps_pkg libstdc++-static"
+      files_pkg="glibc-headers ncurses-devel"
+      ;;
+    gentoo)
+      deps="$deps g++ mkfontscale mkfontdir bdftopcf xsltproc java"
+      deps_pkg="$deps_pkg gcc[cxx] mkfontscale mkfontdir bdftopcf libxslt virtual/jre"
+      files_pkg="glibc ncurses"
+      ;;
+    arch)
+      deps="$deps g++ mkfontscale mkfontdir bdftopcf xsltproc java"
+      deps_pkg="$deps_pkg g++ xorg-mkfontscale xorg-mkfontdir xorg-bdftopcf libxslt java-runtime-common"
+      ;;
+    opensuse)
+      deps="$deps g++ mkfontscale mkfontdir bdftopcf xsltproc java"
+      deps_pkg="$deps_pkg gcc-c++ mkfontscale mkfontdir bdftopcf libxslt-tools java-1_8_0-openjdk"
+      [[ ! `rpm -qa glibc-devel-static` ]] && deps="$deps glibc-devel-static" && deps_pkg="$deps_pkg glibc-devel-static"
+      ;;
+    *)
+      deps="$deps g++ mkfontscale mkfontdir bdftopcf xsltproc java"
+      deps_pkg="$deps_pkg g++ xfonts-utils xfonts-utils xfonts-utils xsltproc default-jre"
+      ;;
+esac
+
+# project specific dependencies
+if [ -n "$EXTRA_DEPS" ] ; then
+  deps="$deps $EXTRA_DEPS"
+fi
+if [ -n "$EXTRA_DEPS_PKG" ] ; then
+  deps_pkg="$deps_pkg $EXTRA_DEPS_PKG"
+fi
+
+getarg() {
+  eval echo \${$(($1+2))}
+}
+
+i=0
+while dep=`getarg $i $deps` && [ -n "$dep" ]; do
+  [ -z "`which $dep 2>/dev/null`" ] && need="$need $dep" && need_pkg="$need_pkg `getarg $i $deps_pkg`"
+  i=$(($i+1))
+done
+
+i=0
+while file=`getarg $i $files` && [ -n "$file" ]; do
+  [ ! -f $file ] && need="$need $file" && need_pkg="$need_pkg `getarg $i $files_pkg`"
+  i=$(($i+1))
+done
+
+if [ -n "$need" ]; then
+  echo "**** Your system lacks the following tools needed to build $DISTRONAME ****"
+  echo $need
+  echo "**** You seem to use a $DISTRO system ****"
+
+  case "$DISTRO" in
+    ubuntu|debian)
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo apt-get install $need_pkg
+      ;;
+    fedora|centos|rhel)
+      if [ `which dnf` ]; then YUM=dnf; else YUM=yum; fi
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo $YUM install $need_pkg
+      ;;
+    gentoo)
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo emerge --ask --deep $need_pkg
+      ;;
+    mageia)
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo urpmi $need_pkg
+      ;;
+    arch)
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo pacman -Sy $need_pkg
+      ;;
+    opensuse)
+      read -p "would you like to install the needed tools ? (y/n) " ans
+      [ "$ans" = "y" ] && sudo zypper install -y --no-recommends $need_pkg
+      ;;
+    *)
+      echo "**** unsupported distro $DISTRO ****"
+      exit 1
+      ;;
+  esac
+fi
+
+
+need=""
+need_pkg=""
+
+i=0
+while dep=`getarg $i $deps` && [ -n "$dep" ]; do
+  [ -z "`which $dep 2>/dev/null`" ] && need="$need $dep" && need_pkg="$need_pkg `getarg $i $deps_pkg`"
+  i=$(($i+1))
+done
+
+i=0
+while file=`getarg $i $files` && [ -n "$file" ]; do
+  [ ! -f $file ] && need="$need $file" && need_pkg="$need_pkg `getarg $i $files_pkg`"
+  i=$(($i+1))
+done
+
+if [ -n "$need" ]; then
+  echo "**** The following packages were not installed correctly ****"
+  echo $need_pkg
+  echo "********"
+  exit 1
+fi

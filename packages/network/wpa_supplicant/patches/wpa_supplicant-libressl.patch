@@ -1,0 +1,51 @@
+diff -Naur wpa_supplicant-2.6/src/crypto/crypto_openssl.c wpa_supplicant-2.6.patch/src/crypto/crypto_openssl.c
+--- wpa_supplicant-2.6/src/crypto/crypto_openssl.c	2016-10-02 20:51:11.000000000 +0200
++++ wpa_supplicant-2.6.patch/src/crypto/crypto_openssl.c	2016-10-30 01:17:58.018292303 +0200
+@@ -611,7 +611,7 @@
+ 
+ void * dh5_init(struct wpabuf **priv, struct wpabuf **publ)
+ {
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ 	DH *dh;
+ 	struct wpabuf *pubkey = NULL, *privkey = NULL;
+ 	size_t publen, privlen;
+@@ -712,7 +712,7 @@
+ 
+ void * dh5_init_fixed(const struct wpabuf *priv, const struct wpabuf *publ)
+ {
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ 	DH *dh;
+ 
+ 	dh = DH_new();
+diff -Naur wpa_supplicant-2.6/src/crypto/tls_openssl.c wpa_supplicant-2.6.patch/src/crypto/tls_openssl.c
+--- wpa_supplicant-2.6/src/crypto/tls_openssl.c	2016-10-02 20:51:11.000000000 +0200
++++ wpa_supplicant-2.6.patch/src/crypto/tls_openssl.c	2016-10-30 02:25:22.648279455 +0200
+@@ -919,7 +919,7 @@
+ 		}
+ #endif /* OPENSSL_FIPS */
+ #endif /* CONFIG_FIPS */
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ 		SSL_load_error_strings();
+ 		SSL_library_init();
+ #ifndef OPENSSL_NO_SHA256
+@@ -1043,7 +1043,7 @@
+ 
+ 	tls_openssl_ref_count--;
+ 	if (tls_openssl_ref_count == 0) {
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ #ifndef OPENSSL_NO_ENGINE
+ 		ENGINE_cleanup();
+ #endif /* OPENSSL_NO_ENGINE */
+@@ -3976,7 +3976,7 @@
+ 		engine_id = "pkcs11";
+ 
+ #if defined(EAP_FAST) || defined(EAP_FAST_DYNAMIC) || defined(EAP_SERVER_FAST)
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+ 	if (params->flags & TLS_CONN_EAP_FAST) {
+ 		wpa_printf(MSG_DEBUG,
+ 			   "OpenSSL: Use TLSv1_method() for EAP-FAST");
