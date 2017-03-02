@@ -41,7 +41,7 @@ case "$KODIPLAYER_DRIVER" in
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="Krypton"
     PKG_KEEP_CHECKOUT="no"
-    PKG_PATCH_DIRS="$LINUX"
+    PKG_PATCH_DIRS="$LINUX non-rpi"
     ;;
 esac
 
