@@ -22,12 +22,13 @@
 # in Xorg.log
 
 PKG_NAME="libepoxy"
-PKG_VERSION="1.4.0"
+PKG_VERSION="1.4.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/anholt/libepoxy"
-PKG_URL="https://github.com/anholt/libepoxy/releases/download/v1.4/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_GIT_URL="https://github.com/anholt/libepoxy.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain opengl"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
