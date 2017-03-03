@@ -20,17 +20,6 @@ KERNEL!="event[0-9]*", GOTO="end"
 ATTRS{name}=="eventlircd", GOTO="end"
 
 #-------------------------------------------------------------------------------
-# Ask eventlircd to handle input event devices created by lircd. For this to
-# work, lircd must be configured to output Linux input events and must be
-# configured to output key names that conform to the LIRC namespace derived from
-# the Linux key/button event names. This rule assumes that lircd performs all
-# key mappings, so the rule does not provide a value for "eventlircd_evmap".
-# For more information on lircd, see <http://www.lirc.org/>.
-#-------------------------------------------------------------------------------
-ATTRS{name}=="lircd", \
-  ENV{eventlircd_enable}="true"
-
-#-------------------------------------------------------------------------------
 # Ask eventlircd to handle input event devices created by bdremoteng. For this
 # to work, bdremoteng must be configured to output Linux input events and must
 # be configured to output key names that conform to LIRC namespace derived
