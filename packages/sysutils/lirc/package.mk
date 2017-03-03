@@ -60,9 +60,6 @@ pre_make_target() {
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/pronto2lirc
 
-  mkdir -p $INSTALL/etc/lirc
-    cp $PKG_DIR/config/lircd.conf.rpi $INSTALL/etc/lirc
-
   mkdir -p $INSTALL/usr/lib/openelec
     cp $PKG_DIR/scripts/lircd_helper $INSTALL/usr/lib/openelec
 
