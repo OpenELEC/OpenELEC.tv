@@ -43,6 +43,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-dependency-tracking \
                            --enable-tools \
                            --enable-datafiles \
                            --disable-experimental \
+                           --enable-deprecated \
                            --enable-sixaxis \
                            --with-gnu-ld \
                            storagedir=/storage/.cache/bluetooth"
@@ -59,7 +60,6 @@ else
   PKG_CONFIGURE_OPTS_TARGET+=" --disable-monitor --disable-test"
 fi
 
-
 pre_configure_target() {
 # bluez fails to build in subdirs
   cd $ROOT/$PKG_BUILD
@@ -73,6 +73,10 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/bluemoon
   rm -rf $INSTALL/usr/bin/ciptool
   rm -rf $INSTALL/usr/share/dbus-1
+
+  mkdir -p $INSTALL/usr/bin
+    cp tools/btinfo $INSTALL/usr/bin
+    cp tools/btmgmt $INSTALL/usr/bin
 
   mkdir -p $INSTALL/etc/bluetooth
     echo "[Policy]" > $INSTALL/etc/bluetooth/main.conf
