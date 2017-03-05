@@ -1,0 +1,36 @@
+diff -Naur bluez-5.44/tools/hciattach_bcm43xx.c bluez-5.44.patch/tools/hciattach_bcm43xx.c
+--- bluez-5.44/tools/hciattach_bcm43xx.c	2015-03-11 11:01:57.000000000 +0100
++++ bluez-5.44.patch/tools/hciattach_bcm43xx.c	2017-03-05 13:20:04.671037461 +0100
+@@ -43,7 +43,7 @@
+ #include "hciattach.h"
+ 
+ #ifndef FIRMWARE_DIR
+-#define FIRMWARE_DIR "/etc/firmware"
++#define FIRMWARE_DIR "/usr/lib/firmware"
+ #endif
+ 
+ #define FW_EXT ".hcd"
+diff -Naur bluez-5.44/tools/hciattach_qualcomm.c bluez-5.44.patch/tools/hciattach_qualcomm.c
+--- bluez-5.44/tools/hciattach_qualcomm.c	2015-03-11 11:01:57.000000000 +0100
++++ bluez-5.44.patch/tools/hciattach_qualcomm.c	2017-03-05 13:20:45.508125969 +0100
+@@ -234,7 +234,7 @@
+ 
+ 	} while (resp[3] != 0 && resp[4] != 2);
+ 
+-	snprintf(fw, sizeof(fw), "/etc/firmware/%c%c%c%c%c%c_%c%c%c%c.bin",
++	snprintf(fw, sizeof(fw), "/usr/lib/firmware/%c%c%c%c%c%c_%c%c%c%c.bin",
+ 				resp[18], resp[19], resp[20], resp[21],
+ 				resp[22], resp[23],
+ 				resp[32], resp[33], resp[34], resp[35]);
+diff -Naur bluez-5.44/tools/hciattach_tialt.c bluez-5.44.patch/tools/hciattach_tialt.c
+--- bluez-5.44/tools/hciattach_tialt.c	2015-03-11 11:01:57.000000000 +0100
++++ bluez-5.44.patch/tools/hciattach_tialt.c	2017-03-05 13:20:26.640085084 +0100
+@@ -233,7 +233,7 @@
+ 				((brf_chip > 7) ? "unknown" : c_brf_chip[brf_chip]),
+ 				brf_chip);
+ 
+-		sprintf(fw, "/etc/firmware/%s.bin", c_brf_chip[brf_chip]);
++		sprintf(fw, "/usr/lib/firmware/%s.bin", c_brf_chip[brf_chip]);
+ 		texas_load_firmware(fd, fw);
+ 
+ 		texas_change_speed(fd, speed);
