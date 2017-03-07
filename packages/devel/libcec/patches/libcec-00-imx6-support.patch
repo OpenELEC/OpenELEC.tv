@@ -67,7 +67,7 @@ diff -Naur libcec-5388d3a/src/libcec/adapter/AdapterFactory.cpp libcec-5388d3a.p
  
  
 -#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_AOCEC_API)
-+#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_IMX_API) && !defined(HAVE_AOCEC_API)
++#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_AOCEC_API) && !defined(HAVE_IMX_API)
  #error "libCEC doesn't have support for any type of adapter. please check your build system or configuration"
  #endif
  
@@ -84,8 +84,8 @@ diff -Naur libcec-5388d3a/src/libcec/adapter/AdapterFactory.cpp libcec-5388d3a.p
    return new CUSBCECAdapterCommunication(m_lib->m_cec, strPort, iBaudRate);
  #endif
  
--#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API)
-+#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_IMX_API)
+-#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_AOCEC_API)
++#if !defined(HAVE_RPI_API) && !defined(HAVE_P8_USB) && !defined(HAVE_TDA995X_API) && !defined(HAVE_EXYNOS_API) && !defined(HAVE_AOCEC_API) && !defined(HAVE_IMX_API)
    return NULL;
  #endif
  }
