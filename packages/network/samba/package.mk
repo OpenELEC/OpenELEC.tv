@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="samba"
-PKG_VERSION="4.5.5"
+PKG_VERSION="4.6.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3+"
@@ -93,7 +93,7 @@ PKG_CONFIGURE_OPTS="--prefix=/usr \
 
 PKG_SAMBA_TARGET="smbclient"
 
-[ "$SAMBA_SERVER" = "yes" ] && PKG_SAMBA_TARGET+=",smbd/smbd,nmbd/nmbd,smbpasswd"
+[ "$SAMBA_SERVER" = "yes" ] && PKG_SAMBA_TARGET+=",smbd/smbd,nmbd,smbpasswd"
 [ "$DEVTOOLS" = "yes" ] && PKG_SAMBA_TARGET+=",smbtree,testparm"
 
 pre_configure_target() {
@@ -148,13 +148,13 @@ post_makeinstall_target() {
 
   if [ "$DEVTOOLS" = "yes" ]; then
     mkdir -p $INSTALL/usr/bin
-      cp -PR bin/default/source3/smbtree $INSTALL/usr/bin
-      cp -PR bin/default/source3/testparm $INSTALL/usr/bin
+      cp -PR bin/default/source3/utils/smbtree $INSTALL/usr/bin
+      cp -PR bin/default/source3/utils/testparm $INSTALL/usr/bin
   fi
 
   if [ "$SAMBA_SERVER" = "yes" ]; then
     mkdir -p $INSTALL/usr/bin
-      cp -PR bin/default/source3/smbpasswd $INSTALL/usr/bin
+      cp -PR bin/default/source3/utils/smbpasswd $INSTALL/usr/bin
 
     mkdir -p $INSTALL/usr/lib/systemd/system
       cp $PKG_DIR/system.d.opt/* $INSTALL/usr/lib/systemd/system
