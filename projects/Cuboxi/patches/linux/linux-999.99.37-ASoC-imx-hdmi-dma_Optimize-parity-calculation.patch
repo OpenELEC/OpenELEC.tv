@@ -1,0 +1,86 @@
+From 826872f4b8669bbbaf4e32f1b69d1ae9af891924 Mon Sep 17 00:00:00 2001
+From: Rudi <r.ihle@s-t.de>
+Date: Sun, 13 Jul 2014 12:57:10 +0200
+Subject: [PATCH] ASoC: imx-hdmi-dma: optimize parity bit calculation
+
+Inline the odd_ones() function and use it in all places. Even though
+it appears that the whole hdmi_dma_mmap_copy() stuff is dead code.
+---
+ sound/soc/fsl/imx-hdmi-dma.c | 35 ++++++++---------------------------
+ 1 file changed, 8 insertions(+), 27 deletions(-)
+
+diff --git a/sound/soc/fsl/imx-hdmi-dma.c b/sound/soc/fsl/imx-hdmi-dma.c
+index 14add58..fd99fde 100644
+--- a/sound/soc/fsl/imx-hdmi-dma.c
++++ b/sound/soc/fsl/imx-hdmi-dma.c
+@@ -211,7 +211,7 @@ static void hdmi_mask(int mask)
+ 	hdmi_writeb(regval, HDMI_AHB_DMA_MASK);
+ }
+ 
+-int odd_ones(unsigned a)
++static inline int odd_ones(unsigned a)
+ {
+ 	a ^= a >> 8;
+ 	a ^= a >> 4;
+@@ -282,51 +282,32 @@ static void init_table(int channels)
+ static void hdmi_dma_copy_16_c_lut(u16 *src, u32 *dst, int samples,
+ 				u8 *lookup_table)
+ {
+-	u32 sample, head, p;
++	u32 sample, head;
+ 	int i;
+ 
+ 	for (i = 0; i < samples; i++) {
+ 		/* get source sample */
+ 		sample = *src++;
+ 
+-		/* xor every bit */
+-		p = sample ^ (sample >> 8);
+-		p ^= (p >> 4);
+-		p ^= (p >> 2);
+-		p ^= (p >> 1);
+-		p &= 1;	/* only want last bit */
+-		p <<= 3; /* bit p */
++		/* get packet header and p-bit */
++		head = *lookup_table++ ^ (odd_ones(sample) << 3);
+ 
+-		/* get packet header */
+-		head = *lookup_table++;
+-
+-		/* fix head */
+-		head ^= p;
+-
+-		/* store */
++		/* store sample and header */
+ 		*dst++ = (head << 24) | (sample << 8);
+ 	}
+ }
+ 
+ static void hdmi_dma_copy_16_c_fast(u16 *src, u32 *dst, int samples)
+ {
+-	u32 sample, p;
++	u32 sample;
+ 	int i;
+ 
+ 	for (i = 0; i < samples; i++) {
+ 		/* get source sample */
+ 		sample = *src++;
+ 
+-		/* xor every bit */
+-		p = sample ^ (sample >> 8);
+-		p ^= (p >> 4);
+-		p ^= (p >> 2);
+-		p ^= (p >> 1);
+-		p &= 1;	/* only want last bit */
+-		p <<= 3; /* bit p */
+-
+-		/* store */
+-		*dst++ = (p << 24) | (sample << 8);
++		/* store sample and p-bit */
++		*dst++ = (odd_ones(sample) << (3+24)) | (sample << 8);
+ 	}
+ }
+ 
+-- 
+1.9.3
+

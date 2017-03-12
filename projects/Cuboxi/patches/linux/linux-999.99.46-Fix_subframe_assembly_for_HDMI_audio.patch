@@ -1,0 +1,88 @@
+From 15729aa38b4c98cb3ae38b46261fa0a93b84cd90 Mon Sep 17 00:00:00 2001
+From: warped-rudi <r.ihle@s-t.de>
+Date: Fri, 25 Jul 2014 10:25:02 +0200
+Subject: [PATCH] [cuboxi] linux: Fix subframe assembly for HDMI audio
+
+---
+ ...9-ASoC-imx-hdmi-dma-Fix-subframe-assembly.patch | 69 ++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/9-ASoC-imx-hdmi-dma-Fix-subframe-assembly.patch
+
+diff --git a/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/9-ASoC-imx-hdmi-dma-Fix-subframe-assembly.patch b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/9-ASoC-imx-hdmi-dma-Fix-subframe-assembly.patch
+new file mode 100644
+index 0000000..55fe280
+--- /dev/null
++++ b/config/platforms/arm/imx6/machines/cuboxi/packages/linux/patches/9-ASoC-imx-hdmi-dma-Fix-subframe-assembly.patch
+@@ -0,0 +1,69 @@
++From 48b9658c2204c835dd5459bb58e684d2063b24f6 Mon Sep 17 00:00:00 2001
++From: warped-rudi <r.ihle@s-t.de>
++Date: Fri, 25 Jul 2014 10:14:38 +0200
++Subject: [PATCH] ASoC: imx-hdmi-dma: Fix subframe assembly
++
++The original code would not work correctly for 24 bit samples.
++Also it includes unused bits of pcm_data in the parity calculation.
++---
++ sound/soc/fsl/imx-hdmi-dma.c |   25 ++++++++++++-------------
++ 1 file changed, 12 insertions(+), 13 deletions(-)
++
++diff --git a/sound/soc/fsl/imx-hdmi-dma.c b/sound/soc/fsl/imx-hdmi-dma.c
++index 612f8ed..3af0450 100644
++--- a/sound/soc/fsl/imx-hdmi-dma.c
+++++ b/sound/soc/fsl/imx-hdmi-dma.c
++@@ -213,6 +213,7 @@ static void hdmi_mask(int mask)
++ 
++ static inline int odd_ones(unsigned a)
++ {
+++	a ^= a >> 16;
++ 	a ^= a >> 8;
++ 	a ^= a >> 4;
++ 	a ^= a >> 2;
++@@ -228,31 +229,29 @@ static u32 hdmi_dma_add_frame_info(struct hdmi_dma_priv *priv,
++ 	union hdmi_audio_dma_data_t subframe;
++ 
++ 	subframe.U = 0;
++-	iec_header.B.channel = subframe_idx;
++-
++-	/* fill b (start-of-block) */
++-	subframe.B.b = (priv->frame_idx == 0) ? 1 : 0;
++ 
++ 	/* fill c (channel status) */
++-	if (priv->frame_idx < 42)
++-		subframe.B.c = (iec_header.U >> priv->frame_idx) & 0x1;
++-	else
++-		subframe.B.c = 0;
+++	if (priv->frame_idx < 42) {
+++		iec_header.B.channel = subframe_idx;
+++		subframe.B.c = iec_header.U >> priv->frame_idx;
+++	}
++ 	
++ 	/* fill v (validity) */
++ 	subframe.B.v = iec_header.B.non_pcm;
++ 
++-	subframe.B.p = odd_ones(pcm_data);
++-	subframe.B.p ^= subframe.B.c;
++-	subframe.B.p ^= subframe.B.u;
++-	subframe.B.p ^= subframe.B.v;
++-
++ 	/* fill data */
++ 	if (priv->sample_bits == 16)
++ 		subframe.B.data = pcm_data << 8;
++ 	else
++ 		subframe.B.data = pcm_data;
++ 
+++	/* fill p (parity) Note: Do not include b ! */
+++	subframe.B.p = odd_ones(subframe.U);
+++
+++	/* fill b (start-of-block) */
+++	if (priv->frame_idx == 0)
+++		subframe.B.b = 1;
+++
++ 	return subframe.U;
++ }
++ 
++-- 
++1.7.9.5
++
+-- 
+2.0.3
+

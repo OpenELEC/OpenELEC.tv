@@ -1,0 +1,38 @@
+--- linux-cuboxi-27bb585/sound/soc/fsl/imx-hdmi.h.orig	2014-07-11 01:40:20.000000000 +0200
++++ linux-cuboxi-27bb585/sound/soc/fsl/imx-hdmi.h	2014-07-29 22:46:16.581673597 +0200
+@@ -50,7 +50,7 @@
+ 	uint64_t  U;
+ 	struct {
+ 		unsigned consumer:1;
+-		unsigned linear_pcm:1;
++		unsigned non_pcm:1;
+ 		unsigned copyright:1;
+ 		unsigned pre_emphasis:3;
+ 		unsigned mode:2;
+--- linux-cuboxi-27bb585/sound/soc/fsl/imx-hdmi-dma.c.orig	2014-07-29 23:13:07.053714833 +0200
++++ linux-cuboxi-27bb585/sound/soc/fsl/imx-hdmi-dma.c	2014-07-29 23:26:21.445735174 +0200
+@@ -498,12 +498,12 @@
+ 
+ static void hdmi_dma_set_hbr(struct device *dev, int channels)
+ {
+-	u8 value = hdmi_readb(HDMI_AHB_DMA_CONF0) & (~HDMI_AHB_DMA_CONF0_HBR);
++	u8 value = hdmi_readb(HDMI_AHB_DMA_CONF0) & (~HDMI_AHB_DMA_CONF0_HBR_MASK);
+ 
+ 	/* non audio AES and 8 channels means we have to enable HBR */
+ 	if ((channels == 8) &&
+-	    (iec_header.B.linear_pcm == 1)) {
+-		value |= HDMI_AHB_DMA_CONF0_HBR;
++	    (iec_header.B.non_pcm == 1)) {
++		value |= HDMI_AHB_DMA_CONF0_HBR_MASK;
+ 		dev_info(dev, "Enabling HBR");
+ 	}
+ 
+@@ -559,7 +540,7 @@
+ 	iec_header.U = 0;
+ 
+ 	iec_header.B.consumer = 0;		/* Consumer use */
+-	iec_header.B.linear_pcm = 0;		/* linear pcm audio */
++	iec_header.B.non_pcm = 0;		/* linear pcm audio */
+ 	iec_header.B.copyright = 1;		/* no copyright */
+ 	iec_header.B.pre_emphasis = 0;		/* 2 channels without pre-emphasis */
+ 	iec_header.B.mode = 0;			/* Mode 0 */
