@@ -16,26 +16,18 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="remote"
-PKG_VERSION="1"
-PKG_REV="1"
+PKG_NAME="evtest"
+PKG_VERSION="1.33"
+PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain eventlircd v4l-utils evtest"
+PKG_SITE="http://cgit.freedesktop.org/evtest/"
+PKG_URL="http://cgit.freedesktop.org/evtest/snapshot/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_DEPENDS_TARGET="toolchain libxml2"
 PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="remote: Meta package for installing various tools needed for remote support"
-PKG_LONGDESC="Meta package for installing various tools needed for remote support"
+PKG_SECTION="debug/tools"
+PKG_SHORTDESC="evtest: Simple tool for input event debugging."
+PKG_LONGDESC="evtest is a simple tool for input event debugging."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
-
-if [ "$IRSERVER_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET irserver"
-fi
-
-if [ "$AMREMOTE_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET amremote"
-fi
+PKG_AUTORECONF="yes"
