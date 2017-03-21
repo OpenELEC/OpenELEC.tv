@@ -44,7 +44,7 @@ elif [ "$TARGET_ARCH" = x86_64 -o "$TARGET_ARCH" = aarch64  ]; then
   elif echo "$PROJECT_CFLAGS" | grep -q '\-msse2'; then
     PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-sse2"
   else
-    PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-uint64"
+    PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-neon"
   fi
 fi
 
