@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="lzo"
-PKG_VERSION="2.09"
+PKG_VERSION="2.10"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
