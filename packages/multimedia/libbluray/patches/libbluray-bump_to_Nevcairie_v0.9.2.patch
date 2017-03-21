@@ -1,38 +1,6 @@
-diff --git a/Makefile.am b/Makefile.am
-index 3a54bfc..035553b 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -161,6 +161,15 @@ noinst_HEADERS = \
- 	jni/win32/jni_md.h \
- 	jni/darwin/jni_md.h
- 
-+
-+bdnavdir=$(pkgincludedir)/bdnav
-+bdnav_HEADERS = \
-+	src/libbluray/bdnav/clpi_data.h
-+
-+utildir=$(pkgincludedir)/../util
-+util_HEADERS = \
-+	src/util/attributes.h
-+
- pkginclude_HEADERS = \
- 	src/file/filesystem.h \
- 	src/libbluray/bluray.h \
-@@ -168,6 +177,9 @@ pkginclude_HEADERS = \
- 	src/libbluray/keys.h \
- 	src/libbluray/player_settings.h \
- 	src/libbluray/bdnav/clpi_data.h \
-+	src/libbluray/bdnav/clpi_parse.h \
-+	src/libbluray/bdnav/mpls_parse.h \
-+	src/libbluray/bdnav/uo_mask_table.h \
- 	src/libbluray/bdnav/meta_data.h \
- 	src/libbluray/decoders/overlay.h \
- 	src/util/log_control.h
-diff --git a/config.h b/config.h
-new file mode 100644
-index 0000000..6764704
---- /dev/null
-+++ b/config.h
+diff -Naur libbluray-1.0.0/config.h libbluray-1.0.0.patch/config.h
+--- libbluray-1.0.0/config.h	1970-01-01 01:00:00.000000000 +0100
++++ libbluray-1.0.0.patch/config.h	2017-03-21 01:55:20.146514415 +0100
 @@ -0,0 +1,157 @@
 +/* config.h.  Generated from config.h.in by configure.  */
 +/* config.h.in.  Generated from configure.ac by autoheader.  */
@@ -191,11 +159,9 @@ index 0000000..6764704
 +
 +/* Define to '0x0502' for Windows XP SP2 APIs. */
 +#define _WIN32_WINNT 0x0502
-diff --git a/includes/inttypes.h b/includes/inttypes.h
-new file mode 100644
-index 0000000..ead903f
---- /dev/null
-+++ b/includes/inttypes.h
+diff -Naur libbluray-1.0.0/includes/inttypes.h libbluray-1.0.0.patch/includes/inttypes.h
+--- libbluray-1.0.0/includes/inttypes.h	1970-01-01 01:00:00.000000000 +0100
++++ libbluray-1.0.0.patch/includes/inttypes.h	2017-03-21 01:55:20.172514471 +0100
 @@ -0,0 +1,305 @@
 +// ISO C9x  compliant inttypes.h for Microsoft Visual Studio
 +// Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124
@@ -502,11 +468,9 @@ index 0000000..ead903f
 +
 +
 +#endif // _MSC_INTTYPES_H_ ]
-diff --git a/libbluray.def b/libbluray.def
-new file mode 100644
-index 0000000..d4c93cb
---- /dev/null
-+++ b/libbluray.def
+diff -Naur libbluray-1.0.0/libbluray.def libbluray-1.0.0.patch/libbluray.def
+--- libbluray-1.0.0/libbluray.def	1970-01-01 01:00:00.000000000 +0100
++++ libbluray-1.0.0.patch/libbluray.def	2017-03-21 01:55:20.172514471 +0100
 @@ -0,0 +1,63 @@
 +; libbluray.def ; declares the exports
 +
@@ -571,623 +535,38 @@ index 0000000..d4c93cb
 +                bd_set_debug_handler
 +                bd_set_debug_mask
 +                bd_get_debug_mask
-diff --git a/libbluray.vcxproj b/libbluray.vcxproj
-new file mode 100644
-index 0000000..c778955
---- /dev/null
-+++ b/libbluray.vcxproj
-@@ -0,0 +1,231 @@
-+﻿<?xml version="1.0" encoding="utf-8"?>
-+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-+  <ItemGroup Label="ProjectConfigurations">
-+    <ProjectConfiguration Include="DebugRelease|Win32">
-+      <Configuration>DebugRelease</Configuration>
-+      <Platform>Win32</Platform>
-+    </ProjectConfiguration>
-+    <ProjectConfiguration Include="DebugRelease|x64">
-+      <Configuration>DebugRelease</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-+    <ProjectConfiguration Include="Debug|Win32">
-+      <Configuration>Debug</Configuration>
-+      <Platform>Win32</Platform>
-+    </ProjectConfiguration>
-+    <ProjectConfiguration Include="Debug|x64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|Win32">
-+      <Configuration>Release</Configuration>
-+      <Platform>Win32</Platform>
-+    </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|x64">
-+      <Configuration>Release</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-+  </ItemGroup>
-+  <ItemGroup>
-+    <ClInclude Include="src\file\dirs.h" />
-+    <ClInclude Include="src\file\dl.h" />
-+    <ClInclude Include="src\file\file.h" />
-+    <ClInclude Include="src\file\filesystem.h" />
-+    <ClInclude Include="src\file\mount.h" />
-+    <ClInclude Include="src\libbluray\bdnav\bdid_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\bdparse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\clpi_data.h" />
-+    <ClInclude Include="src\libbluray\bdnav\clpi_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\extdata_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\index_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\meta_data.h" />
-+    <ClInclude Include="src\libbluray\bdnav\meta_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\mpls_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\navigation.h" />
-+    <ClInclude Include="src\libbluray\bdnav\sound_parse.h" />
-+    <ClInclude Include="src\libbluray\bdnav\uo_mask_table.h" />
-+    <ClInclude Include="src\libbluray\bluray-version.h" />
-+    <ClInclude Include="src\libbluray\bluray.h" />
-+    <ClInclude Include="src\libbluray\bluray_internal.h" />
-+    <ClInclude Include="src\libbluray\decoders\graphics_controller.h" />
-+    <ClInclude Include="src\libbluray\decoders\graphics_processor.h" />
-+    <ClInclude Include="src\libbluray\decoders\ig.h" />
-+    <ClInclude Include="src\libbluray\decoders\ig_decode.h" />
-+    <ClInclude Include="src\libbluray\decoders\m2ts_demux.h" />
-+    <ClInclude Include="src\libbluray\decoders\m2ts_filter.h" />
-+    <ClInclude Include="src\libbluray\decoders\overlay.h" />
-+    <ClInclude Include="src\libbluray\decoders\pes_buffer.h" />
-+    <ClInclude Include="src\libbluray\decoders\pg.h" />
-+    <ClInclude Include="src\libbluray\decoders\pg_decode.h" />
-+    <ClInclude Include="src\libbluray\decoders\rle.h" />
-+    <ClInclude Include="src\libbluray\decoders\textst.h" />
-+    <ClInclude Include="src\libbluray\decoders\textst_decode.h" />
-+    <ClInclude Include="src\libbluray\decoders\textst_render.h" />
-+    <ClInclude Include="src\libbluray\disc\aacs.h" />
-+    <ClInclude Include="src\libbluray\disc\bdplus.h" />
-+    <ClInclude Include="src\libbluray\disc\dec.h" />
-+    <ClInclude Include="src\libbluray\disc\disc.h" />
-+    <ClInclude Include="src\libbluray\disc\enc_info.h" />
-+    <ClInclude Include="src\libbluray\hdmv\hdmv_insn.h" />
-+    <ClInclude Include="src\libbluray\hdmv\hdmv_vm.h" />
-+    <ClInclude Include="src\libbluray\hdmv\mobj_parse.h" />
-+    <ClInclude Include="src\libbluray\keys.h" />
-+    <ClInclude Include="src\libbluray\register.h" />
-+    <ClInclude Include="src\util\array.h" />
-+    <ClInclude Include="src\util\attributes.h" />
-+    <ClInclude Include="src\util\bits.h" />
-+    <ClInclude Include="src\util\logging.h" />
-+    <ClInclude Include="src\util\log_control.h" />
-+    <ClInclude Include="src\util\macro.h" />
-+    <ClInclude Include="src\util\mutex.h" />
-+    <ClInclude Include="src\util\refcnt.h" />
-+    <ClInclude Include="src\util\strutl.h" />
-+    <ClInclude Include="src\util\time.h" />
-+  </ItemGroup>
-+  <ItemGroup>
-+    <ClCompile Include="src\file\dirs_win32.c" />
-+    <ClCompile Include="src\file\dir_win32.c" />
-+    <ClCompile Include="src\file\dl_win32.c" />
-+    <ClCompile Include="src\file\file.c" />
-+    <ClCompile Include="src\file\filesystem.c" />
-+    <ClCompile Include="src\file\file_win32.c" />
-+    <ClCompile Include="src\file\mount.c" />
-+    <ClCompile Include="src\libbluray\bdnav\bdid_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\clpi_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\extdata_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\index_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\meta_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\mpls_parse.c" />
-+    <ClCompile Include="src\libbluray\bdnav\navigation.c" />
-+    <ClCompile Include="src\libbluray\bdnav\sound_parse.c" />
-+    <ClCompile Include="src\libbluray\bluray.c" />
-+    <ClCompile Include="src\libbluray\decoders\graphics_controller.c" />
-+    <ClCompile Include="src\libbluray\decoders\graphics_processor.c" />
-+    <ClCompile Include="src\libbluray\decoders\ig_decode.c" />
-+    <ClCompile Include="src\libbluray\decoders\m2ts_demux.c" />
-+    <ClCompile Include="src\libbluray\decoders\m2ts_filter.c" />
-+    <ClCompile Include="src\libbluray\decoders\pes_buffer.c" />
-+    <ClCompile Include="src\libbluray\decoders\pg_decode.c" />
-+    <ClCompile Include="src\libbluray\decoders\rle.c" />
-+    <ClCompile Include="src\libbluray\decoders\textst_decode.c" />
-+    <ClCompile Include="src\libbluray\decoders\textst_render.c" />
-+    <ClCompile Include="src\libbluray\disc\aacs.c" />
-+    <ClCompile Include="src\libbluray\disc\bdplus.c" />
-+    <ClCompile Include="src\libbluray\disc\dec.c" />
-+    <ClCompile Include="src\libbluray\disc\disc.c" />
-+    <ClCompile Include="src\libbluray\hdmv\hdmv_vm.c" />
-+    <ClCompile Include="src\libbluray\hdmv\mobj_parse.c" />
-+    <ClCompile Include="src\libbluray\hdmv\mobj_print.c" />
-+    <ClCompile Include="src\libbluray\register.c" />
-+    <ClCompile Include="src\util\array.c" />
-+    <ClCompile Include="src\util\bits.c" />
-+    <ClCompile Include="src\util\logging.c" />
-+    <ClCompile Include="src\util\mutex.c" />
-+    <ClCompile Include="src\util\refcnt.c" />
-+    <ClCompile Include="src\util\strutl.c" />
-+    <ClCompile Include="src\util\time.c" />
-+  </ItemGroup>
-+  <ItemGroup>
-+    <None Include="libbluray.def" />
-+  </ItemGroup>
-+  <PropertyGroup Label="Globals">
-+    <ProjectGuid>{E1DA1B95-71F1-4C21-A271-121176925062}</ProjectGuid>
-+    <Keyword>Win32Proj</Keyword>
-+    <RootNamespace>libbluray</RootNamespace>
-+  </PropertyGroup>
-+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-+  <PropertyGroup Label="Configuration" Condition="'$(VisualStudioVersion)' == '11.0'">
-+    <PlatformToolset>v110_xp</PlatformToolset>
-+  </PropertyGroup>
-+  <PropertyGroup Label="Configuration" Condition="'$(VisualStudioVersion)' == '12.0'">
-+    <PlatformToolset>v120_xp</PlatformToolset>
-+  </PropertyGroup>
-+  <PropertyGroup Label="Configuration" Condition="'$(VisualStudioVersion)' == '14.0'">
-+    <PlatformToolset>v140_xp</PlatformToolset>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DebugRelease'" Label="Configuration">
-+    <ConfigurationType>DynamicLibrary</ConfigurationType>
-+    <UseDebugLibraries>true</UseDebugLibraries>
-+    <CharacterSet>Unicode</CharacterSet>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
-+    <ConfigurationType>DynamicLibrary</ConfigurationType>
-+    <UseDebugLibraries>false</UseDebugLibraries>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <CharacterSet>Unicode</CharacterSet>
-+  </PropertyGroup>
-+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-+  <ImportGroup Label="ExtensionSettings">
-+  </ImportGroup>
-+  <ImportGroup Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-+  <PropertyGroup Label="UserMacros" />
-+  <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DebugRelease'">
-+    <LinkIncremental>true</LinkIncremental>
-+    <OutDir>$(SolutionDir)bin_$(PlatformName)d\</OutDir>
-+    <IntDir>$(SolutionDir)bin_$(PlatformName)d\$(ProjectName)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-+    <LinkIncremental>false</LinkIncremental>
-+    <OutDir>$(SolutionDir)bin_$(PlatformName)\$(ProjectName)\</OutDir>
-+    <IntDir>$(SolutionDir)bin_$(PlatformName)\$(ProjectName)\</IntDir>
-+  </PropertyGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DebugRelease'">
-+    <ClCompile>
-+      <PrecompiledHeader>
-+      </PrecompiledHeader>
-+      <WarningLevel>Level3</WarningLevel>
-+      <Optimization>Disabled</Optimization>
-+      <PreprocessorDefinitions>HAVE_CONFIG_H;WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBBLURAY_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions Condition="'$(VisualStudioVersion)' == '12.0'">__STDC_FORMAT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)includes;$(ProjectDir)src;$(ProjectDir)src\libbluray;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-+      <CompileAs Condition="'$(VisualStudioVersion)' == '12.0'">CompileAsCpp</CompileAs>
-+    </ClCompile>
-+    <Link>
-+      <SubSystem>Windows</SubSystem>
-+      <GenerateDebugInformation>true</GenerateDebugInformation>
-+      <ModuleDefinitionFile>libbluray.def</ModuleDefinitionFile>
-+    </Link>
-+    <PostBuildEvent>
-+      <Command>xcopy /I /Y "$(OutDir)$(TargetName).lib" "$(OutDir)lib\"</Command>
-+      <Message>Copy .lib into library path</Message>
-+    </PostBuildEvent>
-+  </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)'=='DebugRelease'">
-+    <ClCompile>
-+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-+    </ClCompile>
-+  </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
-+    <ClCompile>
-+      <WarningLevel>Level3</WarningLevel>
-+      <Optimization>MaxSpeed</Optimization>
-+      <FunctionLevelLinking>true</FunctionLevelLinking>
-+      <IntrinsicFunctions>true</IntrinsicFunctions>
-+      <PreprocessorDefinitions>HAVE_CONFIG_H;WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBBLURAY_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <PreprocessorDefinitions Condition="'$(VisualStudioVersion)' == '12.0'">__STDC_FORMAT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)includes;$(ProjectDir)src;$(ProjectDir)src\libbluray;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-+      <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-+      <CompileAs Condition="'$(VisualStudioVersion)' == '12.0'">CompileAsCpp</CompileAs>
-+    </ClCompile>
-+    <Link>
-+      <SubSystem>Windows</SubSystem>
-+      <GenerateDebugInformation>true</GenerateDebugInformation>
-+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-+      <OptimizeReferences>true</OptimizeReferences>
-+      <ModuleDefinitionFile>libbluray.def</ModuleDefinitionFile>
-+      <SetChecksum>true</SetChecksum>
-+    </Link>
-+    <PostBuildEvent>
-+      <Command>xcopy /I /Y "$(TargetDir)$(TargetName)$(TargetExt)" "$(OutDir)..\"
-+xcopy /I /Y "$(TargetDir)$(TargetName).lib" "$(OutDir)..\lib\"</Command>
-+      <Message>Copy .dll/.lib into library path</Message>
-+    </PostBuildEvent>
-+  </ItemDefinitionGroup>
-+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-+  <ImportGroup Label="ExtensionTargets">
-+  </ImportGroup>
-+</Project>
-\ No newline at end of file
-diff --git a/libbluray.vcxproj.filters b/libbluray.vcxproj.filters
-new file mode 100644
-index 0000000..57ff16c
---- /dev/null
-+++ b/libbluray.vcxproj.filters
-@@ -0,0 +1,353 @@
-+﻿<?xml version="1.0" encoding="utf-8"?>
-+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-+  <ItemGroup>
-+    <Filter Include="Source Files">
-+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-+    </Filter>
-+    <Filter Include="Header Files">
-+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-+    </Filter>
-+    <Filter Include="Resource Files">
-+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-+    </Filter>
-+    <Filter Include="Source Files\util">
-+      <UniqueIdentifier>{1ab0e905-7c04-4090-b385-6363dd1c961c}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\util">
-+      <UniqueIdentifier>{b8fa3348-a089-461f-9ef5-3d9df997b8e5}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\file">
-+      <UniqueIdentifier>{125333e9-0b5e-45f9-a444-f0aaaf547d9b}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\file">
-+      <UniqueIdentifier>{a743058f-f07a-4d0f-bab6-02dc57defda9}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\libbluray">
-+      <UniqueIdentifier>{7dacc7c4-ef59-452b-9e5b-392c9df07c98}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\libbluray">
-+      <UniqueIdentifier>{c7895c81-c186-4d5e-a8ff-645c6d55a731}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\libbluray\bdnav">
-+      <UniqueIdentifier>{c8619466-211b-4c85-9d30-d1b1a822d32e}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\libbluray\bdnav">
-+      <UniqueIdentifier>{8afb6919-994f-4d1f-9638-ce4a06d0b473}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\libbluray\decoders">
-+      <UniqueIdentifier>{0e9086a7-eebf-4b8e-a4fe-b1724d148877}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\libbluray\decoders">
-+      <UniqueIdentifier>{fc5e776b-0f32-493a-b823-240288288502}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\libbluray\hdmv">
-+      <UniqueIdentifier>{96d2d786-cd45-4856-937d-9e6f85ced241}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\libbluray\hdmv">
-+      <UniqueIdentifier>{9f4ea4ae-217a-4d97-a5f3-e561ce1e49cd}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Source Files\libbluray\disc">
-+      <UniqueIdentifier>{09e1b1b8-3aa3-4918-b157-3dfc0554ccbb}</UniqueIdentifier>
-+    </Filter>
-+    <Filter Include="Header Files\libbluray\disc">
-+      <UniqueIdentifier>{1e02e503-752e-4765-9dfb-8cc67a7b79f8}</UniqueIdentifier>
-+    </Filter>
-+  </ItemGroup>
-+  <ItemGroup>
-+    <ClInclude Include="src\util\attributes.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\strutl.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\bits.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\log_control.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\logging.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\macro.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\mutex.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\file\dl.h">
-+      <Filter>Header Files\file</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\file\filesystem.h">
-+      <Filter>Header Files\file</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\file\file.h">
-+      <Filter>Header Files\file</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bluray.h">
-+      <Filter>Header Files\libbluray</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\register.h">
-+      <Filter>Header Files\libbluray</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\keys.h">
-+      <Filter>Header Files\libbluray</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\bdparse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\uo_mask_table.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\clpi_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\index_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\meta_data.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\meta_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\mpls_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\navigation.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\sound_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\graphics_controller.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\pg_decode.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\graphics_processor.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\ig.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\ig_decode.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\m2ts_demux.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\overlay.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\pes_buffer.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\pg.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\hdmv\hdmv_insn.h">
-+      <Filter>Header Files\libbluray\hdmv</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\hdmv\mobj_parse.h">
-+      <Filter>Header Files\libbluray\hdmv</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\hdmv\hdmv_vm.h">
-+      <Filter>Header Files\libbluray\hdmv</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\bdid_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\clpi_data.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bdnav\extdata_parse.h">
-+      <Filter>Header Files\libbluray\bdnav</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\textst.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\textst_render.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\textst_decode.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\rle.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\refcnt.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\time.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bluray_internal.h">
-+      <Filter>Header Files\libbluray</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\decoders\m2ts_filter.h">
-+      <Filter>Header Files\libbluray\decoders</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\file\dirs.h">
-+      <Filter>Header Files\file</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\bluray-version.h">
-+      <Filter>Header Files\libbluray</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\util\array.h">
-+      <Filter>Header Files\util</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\disc\aacs.h">
-+      <Filter>Header Files\libbluray\disc</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\disc\bdplus.h">
-+      <Filter>Header Files\libbluray\disc</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\disc\dec.h">
-+      <Filter>Header Files\libbluray\disc</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\disc\disc.h">
-+      <Filter>Header Files\libbluray\disc</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\libbluray\disc\enc_info.h">
-+      <Filter>Header Files\libbluray\disc</Filter>
-+    </ClInclude>
-+    <ClInclude Include="src\file\mount.h">
-+      <Filter>Header Files\file</Filter>
-+    </ClInclude>
-+  </ItemGroup>
-+  <ItemGroup>
-+    <ClCompile Include="src\util\logging.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\strutl.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\filesystem.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bluray.c">
-+      <Filter>Source Files\libbluray</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\register.c">
-+      <Filter>Source Files\libbluray</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\clpi_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\sound_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\index_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\meta_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\mpls_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\navigation.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\graphics_controller.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\pg_decode.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\graphics_processor.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\ig_decode.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\m2ts_demux.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\pes_buffer.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\hdmv\hdmv_vm.c">
-+      <Filter>Source Files\libbluray\hdmv</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\hdmv\mobj_print.c">
-+      <Filter>Source Files\libbluray\hdmv</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\hdmv\mobj_parse.c">
-+      <Filter>Source Files\libbluray\hdmv</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\bdid_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\bdnav\extdata_parse.c">
-+      <Filter>Source Files\libbluray\bdnav</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\bits.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\dir_win32.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\dirs_win32.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\dl_win32.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\textst_decode.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\textst_render.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\refcnt.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\m2ts_filter.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\decoders\rle.c">
-+      <Filter>Source Files\libbluray\decoders</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\file_win32.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\file.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\array.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\mutex.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\disc\aacs.c">
-+      <Filter>Source Files\libbluray\disc</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\disc\bdplus.c">
-+      <Filter>Source Files\libbluray\disc</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\disc\dec.c">
-+      <Filter>Source Files\libbluray\disc</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\libbluray\disc\disc.c">
-+      <Filter>Source Files\libbluray\disc</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\util\time.c">
-+      <Filter>Source Files\util</Filter>
-+    </ClCompile>
-+    <ClCompile Include="src\file\mount.c">
-+      <Filter>Source Files\file</Filter>
-+    </ClCompile>
-+  </ItemGroup>
-+  <ItemGroup>
-+    <None Include="libbluray.def">
-+      <Filter>Source Files</Filter>
-+    </None>
-+  </ItemGroup>
-+</Project>
-\ No newline at end of file
-diff --git a/src/file/dir_win32.c b/src/file/dir_win32.c
-index 2690658..f42114d 100644
---- a/src/file/dir_win32.c
-+++ b/src/file/dir_win32.c
-@@ -86,8 +86,8 @@ static BD_DIR_H *_dir_open_win32(const char* dirname)
+diff -Naur libbluray-1.0.0/Makefile.am libbluray-1.0.0.patch/Makefile.am
+--- libbluray-1.0.0/Makefile.am	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/Makefile.am	2017-03-21 01:55:20.146514415 +0100
+@@ -161,6 +161,15 @@
+ 	jni/win32/jni_md.h \
+ 	jni/darwin/jni_md.h
  
-     dir->internal = priv;
- 
--    wchar_t wfilespec[MAX_PATH];
--    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, MAX_PATH))
-+    wchar_t wfilespec[4096 + 1] = {0};
-+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, 4096))
-         priv->handle = _wfindfirst(wfilespec, &priv->info);
-     else
-         priv->handle = -1;
-diff --git a/src/file/dirs_win32.c b/src/file/dirs_win32.c
-index e165fea..3d07251 100644
---- a/src/file/dirs_win32.c
-+++ b/src/file/dirs_win32.c
++
++bdnavdir=$(pkgincludedir)/bdnav
++bdnav_HEADERS = \
++	src/libbluray/bdnav/clpi_data.h
++
++utildir=$(pkgincludedir)/../util
++util_HEADERS = \
++	src/util/attributes.h
++
+ pkginclude_HEADERS = \
+ 	src/file/filesystem.h \
+ 	src/libbluray/bluray.h \
+@@ -168,6 +177,9 @@
+ 	src/libbluray/keys.h \
+ 	src/libbluray/player_settings.h \
+ 	src/libbluray/bdnav/clpi_data.h \
++	src/libbluray/bdnav/clpi_parse.h \
++	src/libbluray/bdnav/mpls_parse.h \
++	src/libbluray/bdnav/uo_mask_table.h \
+ 	src/libbluray/bdnav/meta_data.h \
+ 	src/libbluray/decoders/overlay.h \
+ 	src/util/log_control.h
+diff -Naur libbluray-1.0.0/src/file/dirs_win32.c libbluray-1.0.0.patch/src/file/dirs_win32.c
+--- libbluray-1.0.0/src/file/dirs_win32.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/file/dirs_win32.c	2017-03-21 01:55:20.173514474 +0100
 @@ -36,7 +36,7 @@
  
  char *win32_get_font_dir(const char *font_file)
@@ -1197,7 +576,7 @@ index e165fea..3d07251 100644
      if (S_OK != SHGetFolderPathW(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT, wdir)) {
          int lenght = GetWindowsDirectoryW(wdir, MAX_PATH);
          if (lenght == 0 || lenght > (MAX_PATH - 8)) {
-@@ -67,7 +67,7 @@ char *file_get_config_home(void)
+@@ -67,7 +67,7 @@
  
  char *file_get_data_home(void)
  {
@@ -1206,7 +585,7 @@ index e165fea..3d07251 100644
  
      /* Get the "Application Data" folder for the user */
      if (S_OK == SHGetFolderPathW(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE,
-@@ -92,7 +92,7 @@ char *file_get_cache_home(void)
+@@ -92,7 +92,7 @@
  const char *file_get_config_system(const char *dir)
  {
      static char *appdir = NULL;
@@ -1215,11 +594,33 @@ index e165fea..3d07251 100644
  
      if (!dir) {
          // first call
-diff --git a/src/file/dl_win32.c b/src/file/dl_win32.c
-index e4492e1..7f6ae73 100644
---- a/src/file/dl_win32.c
-+++ b/src/file/dl_win32.c
-@@ -57,7 +57,7 @@ void *dl_dlopen(const char *path, const char *version)
+diff -Naur libbluray-1.0.0/src/file/dir_win32.c libbluray-1.0.0.patch/src/file/dir_win32.c
+--- libbluray-1.0.0/src/file/dir_win32.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/file/dir_win32.c	2017-03-21 01:57:53.462864397 +0100
+@@ -76,7 +76,8 @@
+ {
+     dir_data_t *priv;
+     char *filespec;
+-    wchar_t wfilespec[MAX_PATH];
++    wchar_t wfilespec[4096 + 1] = {0};
++
+     int result;
+ 
+     filespec = str_printf("%s" DIR_SEP "*", dirname);
+@@ -84,7 +85,8 @@
+         return NULL;
+     }
+ 
+-    result = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, MAX_PATH);
++    result = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filespec, -1, wfilespec, 4096);
++
+     X_FREE(filespec);
+     if (!result) {
+         return NULL;
+diff -Naur libbluray-1.0.0/src/file/dl_win32.c libbluray-1.0.0.patch/src/file/dl_win32.c
+--- libbluray-1.0.0/src/file/dl_win32.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/file/dl_win32.c	2017-03-21 01:55:20.173514474 +0100
+@@ -57,7 +57,7 @@
  {
      (void)version;
  
@@ -1227,8 +628,8 @@ index e4492e1..7f6ae73 100644
 +    wchar_t wname[MAX_PATH+1] = {0};
      char *name;
      void *result;
- 
-@@ -109,7 +109,7 @@ const char *dl_get_path(void)
+     int iresult;
+@@ -124,7 +124,7 @@
      if (!initialized) {
          initialized = 1;
  
@@ -1237,11 +638,10 @@ index e4492e1..7f6ae73 100644
          HMODULE hModule;
          wchar_t wpath[MAX_PATH];
  
-diff --git a/src/file/file_win32.c b/src/file/file_win32.c
-index d9845fb..b4fb7ad 100644
---- a/src/file/file_win32.c
-+++ b/src/file/file_win32.c
-@@ -107,9 +107,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+diff -Naur libbluray-1.0.0/src/file/file_win32.c libbluray-1.0.0.patch/src/file/file_win32.c
+--- libbluray-1.0.0/src/file/file_win32.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/file/file_win32.c	2017-03-21 01:55:20.174514476 +0100
+@@ -107,9 +107,9 @@
  {
      BD_FILE_H *file;
      FILE *fp;
@@ -1253,7 +653,7 @@ index d9845fb..b4fb7ad 100644
          !MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, mode, -1, wmode, 8)) {
  
          BD_DEBUG(DBG_FILE, "Error opening file %s\n", filename);
-@@ -122,6 +122,9 @@ static BD_FILE_H *_file_open(const char* filename, const char *mode)
+@@ -122,6 +122,9 @@
          return NULL;
      }
  
@@ -1263,10 +663,9 @@ index d9845fb..b4fb7ad 100644
      file = calloc(1, sizeof(BD_FILE_H));
      if (!file) {
          BD_DEBUG(DBG_FILE | DBG_CRIT, "Error opening file %s (out of memory)\n", filename);
-diff --git a/src/libbluray/bdnav/clpi_parse.c b/src/libbluray/bdnav/clpi_parse.c
-index 394347e..39bbcef 100644
---- a/src/libbluray/bdnav/clpi_parse.c
-+++ b/src/libbluray/bdnav/clpi_parse.c
+diff -Naur libbluray-1.0.0/src/libbluray/bdnav/clpi_parse.c libbluray-1.0.0.patch/src/libbluray/bdnav/clpi_parse.c
+--- libbluray-1.0.0/src/libbluray/bdnav/clpi_parse.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/bdnav/clpi_parse.c	2017-03-21 01:55:20.174514476 +0100
 @@ -39,6 +39,7 @@
  #define CLPI_SIG1  ('H' << 24 | 'D' << 16 | 'M' << 8 | 'V')
  #define CLPI_SIG2A ('0' << 24 | '2' << 16 | '0' << 8 | '0')
@@ -1275,7 +674,7 @@ index 394347e..39bbcef 100644
  
  static void
  _human_readable_sig(char *sig, uint32_t s1, uint32_t s2)
-@@ -129,7 +130,8 @@ _parse_header(BITSTREAM *bits, CLPI_CL *cl)
+@@ -134,7 +135,8 @@
      cl->type_indicator2 = bs_read(bits, 32);
      if (cl->type_indicator != CLPI_SIG1 || 
          (cl->type_indicator2 != CLPI_SIG2A &&
@@ -1285,10 +684,9 @@ index 394347e..39bbcef 100644
  
          char sig[9];
          char expect[9];
-diff --git a/src/libbluray/bdnav/mpls_parse.c b/src/libbluray/bdnav/mpls_parse.c
-index e196118..87b240a 100644
---- a/src/libbluray/bdnav/mpls_parse.c
-+++ b/src/libbluray/bdnav/mpls_parse.c
+diff -Naur libbluray-1.0.0/src/libbluray/bdnav/mpls_parse.c libbluray-1.0.0.patch/src/libbluray/bdnav/mpls_parse.c
+--- libbluray-1.0.0/src/libbluray/bdnav/mpls_parse.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/bdnav/mpls_parse.c	2017-03-21 01:59:11.795043819 +0100
 @@ -39,6 +39,7 @@
  #define MPLS_SIG1  ('M' << 24 | 'P' << 16 | 'L' << 8 | 'S')
  #define MPLS_SIG2A ('0' << 24 | '2' << 16 | '0' << 8 | '0')
@@ -1297,18 +695,19 @@ index e196118..87b240a 100644
  
  static void
  _human_readable_sig(char *sig, uint32_t s1, uint32_t s2)
-@@ -137,8 +138,9 @@ _parse_appinfo(BITSTREAM *bits, MPLS_AI *ai)
+@@ -137,9 +138,10 @@
      ai->random_access_flag = bs_read(bits, 1);
      ai->audio_mix_flag = bs_read(bits, 1);
      ai->lossless_bypass_flag = bs_read(bits, 1);
 +    ai->mvc_base_view_r_flag = bs_read(bits, 1);
+ #if 0
      // Reserved
 -    bs_skip(bits, 13);
 +    bs_skip(bits, 12);
      bs_seek_byte(bits, pos + len);
+ #endif
      return 1;
- }
-@@ -155,7 +157,8 @@ _parse_header(BITSTREAM *bits, MPLS_PL *pl)
+@@ -157,7 +159,8 @@
      pl->type_indicator2 = bs_read(bits, 32);
      if (pl->type_indicator != MPLS_SIG1 || 
          (pl->type_indicator2 != MPLS_SIG2A && 
@@ -1318,15 +717,15 @@ index e196118..87b240a 100644
  
          char sig[9];
          char expect[9];
-@@ -259,6 +262,7 @@ _parse_stream(BITSTREAM *bits, MPLS_STREAM *s)
+@@ -263,6 +266,7 @@
              break;
      };
      s->lang[3] = '\0';
 +    s->ss_offset_sequence_id = 0xFF;
  
-     bs_seek_byte(bits, pos + len);
-     return 1;
-@@ -882,6 +886,99 @@ _parse_subpath_extension(BITSTREAM *bits, MPLS_PL *pl)
+     if (bs_seek_byte(bits, pos + len) < 0) {
+         return 0;
+@@ -952,6 +956,99 @@
  }
  
  static int
@@ -1426,7 +825,7 @@ index e196118..87b240a 100644
  _parse_mpls_extension(BITSTREAM *bits, int id1, int id2, void *handle)
  {
      MPLS_PL *pl = (MPLS_PL*)handle;
-@@ -895,7 +992,7 @@ _parse_mpls_extension(BITSTREAM *bits, int id1, int id2, void *handle)
+@@ -965,7 +1062,7 @@
  
      if (id1 == 2) {
          if (id2 == 1) {
@@ -1435,11 +834,10 @@ index e196118..87b240a 100644
          }
          if (id2 == 2) {
              // SubPath entries extension
-diff --git a/src/libbluray/bdnav/mpls_parse.h b/src/libbluray/bdnav/mpls_parse.h
-index 94bfa67..c1b2c31 100644
---- a/src/libbluray/bdnav/mpls_parse.h
-+++ b/src/libbluray/bdnav/mpls_parse.h
-@@ -49,6 +49,7 @@ typedef struct
+diff -Naur libbluray-1.0.0/src/libbluray/bdnav/mpls_parse.h libbluray-1.0.0.patch/src/libbluray/bdnav/mpls_parse.h
+--- libbluray-1.0.0/src/libbluray/bdnav/mpls_parse.h	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/bdnav/mpls_parse.h	2017-03-21 01:55:20.176514480 +0100
+@@ -49,6 +49,7 @@
      uint8_t         sv_num_pip_pg_ref;
      uint8_t        *sv_secondary_audio_ref;
      uint8_t        *sv_pip_pg_ref;
@@ -1447,7 +845,7 @@ index 94bfa67..c1b2c31 100644
  } MPLS_STREAM;
  
  typedef struct
-@@ -109,6 +110,7 @@ typedef struct
+@@ -109,6 +110,7 @@
      uint8_t         random_access_flag;
      uint8_t         audio_mix_flag;
      uint8_t         lossless_bypass_flag;
@@ -1455,11 +853,10 @@ index 94bfa67..c1b2c31 100644
  } MPLS_AI;
  
  typedef struct
-diff --git a/src/libbluray/bluray.c b/src/libbluray/bluray.c
-index 0e60b68..f633d7a 100644
---- a/src/libbluray/bluray.c
-+++ b/src/libbluray/bluray.c
-@@ -1626,6 +1626,25 @@ int64_t bd_seek_time(BLURAY *bd, uint64_t tick)
+diff -Naur libbluray-1.0.0/src/libbluray/bluray.c libbluray-1.0.0.patch/src/libbluray/bluray.c
+--- libbluray-1.0.0/src/libbluray/bluray.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/bluray.c	2017-03-21 02:01:30.380361220 +0100
+@@ -1656,6 +1656,25 @@
      return bd->s_pos;
  }
  
@@ -1485,24 +882,24 @@ index 0e60b68..f633d7a 100644
  uint64_t bd_tell_time(BLURAY *bd)
  {
      uint32_t clip_pkt = 0, out_pkt = 0, out_time = 0;
-@@ -2602,6 +2621,7 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
-         BLURAY_CLIP_INFO *ci = &title_info->clips[ii];
-         NAV_CLIP *nc = &title->clip_list.clip[ii];
+@@ -2661,6 +2680,7 @@
+             NAV_CLIP *nc = &title->clip_list.clip[ii];
  
-+        ci->idx = nc->clip_id;
-         ci->pkt_count = nc->end_pkt - nc->start_pkt;
-         ci->start_time = (uint64_t)nc->title_time * 2;
-         ci->in_time = (uint64_t)pi->in_time * 2;
-@@ -2628,6 +2648,8 @@ static BLURAY_TITLE_INFO* _fill_title_info(NAV_TITLE* title, uint32_t title_idx,
-         _copy_streams(nc, ci->sec_audio_streams, pi->stn.secondary_audio, ci->sec_audio_stream_count);
+             memcpy(ci->clip_id, pi->clip->clip_id, sizeof(ci->clip_id));
++            ci->idx = nc->clip_id;
+             ci->pkt_count = nc->end_pkt - nc->start_pkt;
+             ci->start_time = (uint64_t)nc->title_time * 2;
+             ci->in_time = (uint64_t)pi->in_time * 2;
+@@ -2685,6 +2705,8 @@
+         }
      }
  
 +    title_info->mvc_base_view_r_flag = title->pl->app_info.mvc_base_view_r_flag;
 +
      return title_info;
- }
  
-@@ -3746,3 +3768,28 @@ void bd_free_bdjo(struct bdjo_data *obj)
+  error:
+@@ -3862,3 +3884,28 @@
      (void)obj;
  #endif
  }
@@ -1531,11 +928,10 @@ index 0e60b68..f633d7a 100644
 +  }
 +  return NULL;
 +}
-diff --git a/src/libbluray/bluray.h b/src/libbluray/bluray.h
-index cbf16fc..97dc1a3 100644
---- a/src/libbluray/bluray.h
-+++ b/src/libbluray/bluray.h
-@@ -32,6 +32,7 @@ extern "C" {
+diff -Naur libbluray-1.0.0/src/libbluray/bluray.h libbluray-1.0.0.patch/src/libbluray/bluray.h
+--- libbluray-1.0.0/src/libbluray/bluray.h	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/bluray.h	2017-03-21 01:55:20.178514484 +0100
+@@ -32,6 +32,7 @@
   */
  
  #include <stdint.h>
@@ -1543,7 +939,7 @@ index cbf16fc..97dc1a3 100644
  
  #define TITLES_ALL              0    /**< all titles. */
  #define TITLES_FILTER_DUP_TITLE 0x01 /**< remove duplicate titles. */
-@@ -225,6 +226,7 @@ typedef struct bd_stream_info {
+@@ -222,6 +223,7 @@
  } BLURAY_STREAM_INFO;
  
  typedef struct bd_clip {
@@ -1551,16 +947,16 @@ index cbf16fc..97dc1a3 100644
      uint32_t           pkt_count;
      uint8_t            still_mode;
      uint16_t           still_time;  /* seconds */
-@@ -275,6 +277,8 @@ typedef struct bd_title_info {
- 
-     uint32_t             mark_count;
+@@ -272,6 +274,8 @@
+     BLURAY_CLIP_INFO     *clips;
+     BLURAY_TITLE_CHAPTER *chapters;
      BLURAY_TITLE_MARK    *marks;
 +
 +    uint8_t              mvc_base_view_r_flag;
  } BLURAY_TITLE_INFO;
  
  /*
-@@ -483,6 +487,16 @@ uint32_t bd_get_current_title(BLURAY *bd);
+@@ -480,6 +484,16 @@
  
  /**
   *
@@ -1577,7 +973,7 @@ index cbf16fc..97dc1a3 100644
   *  Read from currently selected title file, decrypt if possible
   *
   * @param bd  BLURAY object
-@@ -1007,7 +1021,6 @@ int bd_mouse_select(BLURAY *bd, int64_t pts, uint16_t x, uint16_t y);
+@@ -1033,7 +1047,6 @@
  
  /* access to internal information */
  
@@ -1585,7 +981,7 @@ index cbf16fc..97dc1a3 100644
  /**
   *
   *  Get copy of clip information for requested playitem.
-@@ -1060,6 +1073,28 @@ void bd_stop_bdj(BLURAY *bd); // shutdown BD-J and clean up resources
+@@ -1086,6 +1099,28 @@
   */
  int bd_read_file(BLURAY *, const char *path, void **data, int64_t *size);
  
@@ -1614,11 +1010,10 @@ index cbf16fc..97dc1a3 100644
  
  #ifdef __cplusplus
  }
-diff --git a/src/libbluray/disc/disc.c b/src/libbluray/disc/disc.c
-index defa084..375e6c3 100644
---- a/src/libbluray/disc/disc.c
-+++ b/src/libbluray/disc/disc.c
-@@ -69,7 +69,7 @@ static BD_FILE_H *_bdrom_open_path(void *p, const char *rel_path)
+diff -Naur libbluray-1.0.0/src/libbluray/disc/disc.c libbluray-1.0.0.patch/src/libbluray/disc/disc.c
+--- libbluray-1.0.0/src/libbluray/disc/disc.c	2017-03-02 14:33:49.000000000 +0100
++++ libbluray-1.0.0.patch/src/libbluray/disc/disc.c	2017-03-21 01:55:20.179514487 +0100
+@@ -72,7 +72,7 @@
          return NULL;
      }
  
