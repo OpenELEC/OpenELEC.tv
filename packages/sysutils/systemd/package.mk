@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="systemd"
-PKG_VERSION="231"
+PKG_VERSION="233"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="https://github.com/systemd/systemd/archive/v$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux entropy"
+PKG_DEPENDS_TARGET="toolchain libcap util-linux entropy"
 PKG_PRIORITY="required"
 PKG_SECTION="system"
 PKG_SHORTDESC="systemd: a system and session manager"
@@ -35,17 +35,15 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            ac_cv_have_decl_IFLA_BOND_AD_INFO=no \
                            ac_cv_have_decl_IFLA_BRPORT_UNICAST_FLOOD=no \
-                           ac_cv_path_MOUNT_PATH="/bin/mount"
-                           ac_cv_path_UMOUNT_PATH="/bin/umount"
-                           KMOD=/usr/bin/kmod \
-                           --with-support-url="$SUPPORT_URL" \
+                           ac_cv_path_MOUNT_PATH=/bin/mount \
+                           ac_cv_path_UMOUNT_PATH=/bin/umount \
                            --disable-nls \
                            --disable-dbus \
                            --disable-utmp \
                            --disable-coverage \
-                           --enable-kmod \
+                           --disable-kmod \
                            --disable-xkbcommon \
-                           --enable-blkid \
+                           --disable-blkid \
                            --disable-seccomp \
                            --disable-ima \
                            --disable-selinux \
@@ -73,6 +71,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-vconsole \
                            --disable-quotacheck \
                            --enable-tmpfiles \
+                           --disable-environment-d \
                            --disable-sysusers \
                            --disable-firstboot \
                            --disable-randomseed \
@@ -107,7 +106,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --with-dbussessionservicedir=/usr/share/dbus-1/services \
                            --with-dbussystemservicedir=/usr/share/dbus-1/system-services \
                            --with-rootprefix=/usr \
-                           --with-rootlibdir=/lib"
+                           --with-rootlibdir=/usr/lib"
 
 unpack() {
   tar xf $ROOT/$SOURCES/systemd/v$PKG_VERSION.tar.gz -C $ROOT/$BUILD
@@ -175,8 +174,8 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/bin/systemd-nspawn
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
 
-  # remove genetators/catalog
-  rm -rf $INSTALL/usr/lib/systemd/system-generators
+  # remove generators/catalog
+  rm -rf $INSTALL/lib/systemd/system-generators/*
   rm -rf $INSTALL/usr/lib/systemd/catalog
 
   # disable usage of presets, see: https://freedesktop.org/wiki/Software/systemd/Preset/

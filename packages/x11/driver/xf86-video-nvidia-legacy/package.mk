@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="xf86-video-nvidia-legacy"
-PKG_VERSION="340.98"
+PKG_VERSION="340.102"
 PKG_REV="1"
 PKG_ARCH="x86_64"
 PKG_LICENSE="nonfree"
@@ -69,8 +69,8 @@ makeinstall_target() {
   # rename to not conflicting with Mesa libGL.so
     cp -P libGL.so* $INSTALL/usr/lib/libGL_nvidia-legacy.so.1
 
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/nvidia
-    ln -sf /var/lib/nvidia.ko $INSTALL/lib/modules/$(get_module_dir)/nvidia/nvidia.ko
+  mkdir -p $INSTALL/usr/lib/modules/$(get_module_dir)/nvidia
+    ln -sf /var/lib/nvidia.ko $INSTALL/usr/lib/modules/$(get_module_dir)/nvidia/nvidia.ko
 
   mkdir -p $INSTALL/usr/lib/nvidia-legacy
     cp kernel/nvidia.ko $INSTALL/usr/lib/nvidia-legacy

@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="busybox"
-PKG_VERSION="1.25.1"
+PKG_VERSION="1.26.2"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -43,11 +43,6 @@ PKG_MAKE_OPTS_INIT="ARCH=$TARGET_ARCH \
                     CROSS_COMPILE=${TARGET_NAME}- \
                     KBUILD_VERBOSE=1 \
                     install"
-
-# nano text editor
-  if [ "$NANO_EDITOR" = "yes" ]; then
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET nano"
-  fi
 
 # nfs support
 if [ "$NFS_SUPPORT" = yes ]; then
@@ -153,9 +148,24 @@ configure_init() {
     make oldconfig
 }
 
+pre_make_host() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}
+
+pre_make_target() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}
+
+pre_make_init() {
+  # dont build parallel
+  MAKEFLAGS=-j1
+}
+
 makeinstall_host() {
-  mkdir -p $ROOT/$TOOLCHAIN/bin
-    cp -R $ROOT/$PKG_BUILD/.install_host/bin/* $ROOT/$TOOLCHAIN/bin
+  mkdir -p $ROOT/$TOOLCHAIN/
+    cp -PR $ROOT/$PKG_BUILD/.install_host/* $ROOT/$TOOLCHAIN/
 }
 
 makeinstall_target() {

@@ -1,13 +1,12 @@
-diff --git a/build-aux/ltmain.sh b/build-aux/ltmain.sh
-index 63ae69d..cfde522 100644
---- a/build-aux/ltmain.sh
-+++ b/build-aux/ltmain.sh
-@@ -6918,7 +6918,7 @@ func_mode_link ()
+diff -Naur pulseaudio-10.0/build-aux/ltmain.sh pulseaudio-10.0.patch/build-aux/ltmain.sh
+--- pulseaudio-10.0/build-aux/ltmain.sh	2017-01-18 04:54:04.000000000 +0100
++++ pulseaudio-10.0.patch/build-aux/ltmain.sh	2017-01-23 11:42:39.168154932 +0100
+@@ -8367,7 +8367,7 @@
  	      fi
  	    else
  	      # We cannot seem to hardcode it, guess we'll fake it.
--	      add_dir="-L$libdir"
-+	      #add_dir="-L$libdir"
+-	      add_dir=-L$libdir
++	      #add_dir=-L$libdir
  	      # Try looking first in the location we're being installed to.
  	      if test -n "$inst_prefix_dir"; then
  		case $libdir in

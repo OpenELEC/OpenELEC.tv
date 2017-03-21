@@ -1,0 +1,5 @@
+ACTION=="remove", GOTO="drivers_end"
+
+KERNEL=="amvideo", SUBSYSTEM=="module", RUN+="/sbin/modprobe mali"
+
+LABEL="drivers_end"

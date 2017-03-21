@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ PKG_LICENSE="GPL"
 PKG_SITE="http://code.google.com/p/eventlircd"
 PKG_GIT_URL="https://github.com/OpenELEC/eventlircd.git"
 PKG_GIT_BRANCH="master"
-PKG_DEPENDS_TARGET="toolchain systemd lirc"
+PKG_DEPENDS_TARGET="toolchain systemd"
 PKG_PRIORITY="optional"
 PKG_SECTION="system/remote"
 PKG_SHORTDESC="eventlircd:The eventlircd daemon provides various functions for LIRC devices"

@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="libnfs"
-PKG_VERSION="1.11.0"
+PKG_VERSION="libnfs-1.11.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/sahlberg/libnfs"
-PKG_URL="https://sites.google.com/site/libnfstarballs/li/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_GIT_URL="https://github.com/sahlberg/libnfs.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
@@ -35,8 +36,5 @@ PKG_AUTORECONF="yes"
 PKG_CONFIGURE_OPTS_TARGET="--disable-examples --disable-tirpc"
 
 pre_configure_target() {
-# dont build parallel
-  MAKEFLAGS=-j1
-
-  export CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -I$ROOT/$PKG_BUILD/mount -I$ROOT/$PKG_BUILD/nfs"
+  export CFLAGS+=" -D_FILE_OFFSET_BITS=64"
 }

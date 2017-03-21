@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2016 Christian Hewitt (chewitt@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,36 +17,34 @@
 ################################################################################
 
 PKG_NAME="mt7610u"
-PKG_VERSION="34a7865"
+PKG_VERSION="de086dc"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-# mediatek: PKG_SITE="http://www.mediatek.com/en/downloads/mt7610u-usb/"
-PKG_SITE="https://github.com/sohaib17/mt7610u"
-PKG_GIT_URL="https://github.com/sohaib17/mt7610u.git"
+PKG_SITE="https://github.com/ulli-kroll/mt7610u.git"
+PKG_GIT_URL="https://github.com/ulli-kroll/mt7610u.git"
 PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain linux"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
 PKG_SECTION="driver"
-PKG_SHORTDESC="Mediatek mt7610u Linux driver"
-PKG_LONGDESC="Mediatek mt7610u Linux driver"
+PKG_SHORTDESC="mt7610u: Mediatek mt7610u Linux driver"
+PKG_LONGDESC="mt7610u: Mediatek mt7610u Linux driver"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-
-  sed -i '198s|.*LINUX_SRC.*|LINUX_SRC = '$(get_pkg_build linux)'|' Makefile
-  sed -i '199s|.*LINUX_SRC_MODULE.*|LINUX_SRC_MODULE = '$INSTALL'/lib/modules/'$(get_module_dir)'/kernel/drivers/net/wireless/|' Makefile
-  make osdrv
-
+  make V=1 \
+       ARCH=$TARGET_KERNEL_ARCH \
+       KSRC=$(get_pkg_build linux) \
+       CROSS_COMPILE=${TARGET_NAME}-
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp os/linux/mt7610u_sta.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
+  mkdir -p $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
+    cp mt7610u.ko $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
 
-  mkdir -p $INSTALL/lib/firmware/mt7610u
-    cp RT2870STA.dat $INSTALL/lib/firmware/mt7610u/mt7610u_sta.dat
+  mkdir -p $INSTALL/usr/lib/firmware
+    cp -n firmware/* $INSTALL/usr/lib/firmware/
 }

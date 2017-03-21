@@ -1,7 +1,7 @@
 #!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-
 # hack: make addon-bins executable
 # done in kodi on addon install. but just in case..
 chmod +x /storage/.kodi/addons/*/bin/*
 
+mkdir -p /storage/.kodi/userdata
 # hack: update RSSnews.xml in userdata
 if [ -f /storage/.kodi/userdata/RssFeeds.xml ]; then
   sed -e "s,http://openelec.tv/news?format=feed&type=rss,http://feeds.openelec.tv/news,g" \
@@ -47,5 +47,13 @@ if [ -e /run/lirc/lircd.irtrans ]; then
 else
   KODI_ARGS="--lircdev /run/lirc/lircd"
 fi
+
+mkdir -p /storage/music
+mkdir -p /storage/pictures
+mkdir -p /storage/tvshows
+mkdir -p /storage/videos
+mkdir -p /storage/screenshots
+
+mkdir -p /run/kodi
 
 echo "KODI_ARGS=\"$KODI_ARGS\"" > /run/openelec/kodi.conf

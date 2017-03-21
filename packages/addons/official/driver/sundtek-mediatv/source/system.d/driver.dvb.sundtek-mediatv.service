@@ -9,4 +9,4 @@ ExecStop=-/bin/sh -c "exec sh /storage/.kodi/addons/driver.dvb.sundtek-mediatv/b
 RemainAfterExit=yes
 
 [Install]
-WantedBy=kodi.target
+WantedBy=default.target

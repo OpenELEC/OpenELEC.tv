@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
-PKG_DEPENDS_TARGET="toolchain kodi:host kodi:bootstrap xmlstarlet:host Python libz systemd pciutils dbus lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio libdvdnav taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib opengl"
+PKG_DEPENDS_TARGET="toolchain kodi:host kodi:bootstrap xmlstarlet:host Python zlib systemd pciutils dbus lzo pcre swig:host libass curl fontconfig fribidi tinyxml libjpeg-turbo freetype libcdio libdvdnav taglib libxml2 libxslt yajl sqlite ffmpeg crossguid giflib opengl"
 PKG_DEPENDS_HOST="toolchain"
 PKG_DEPENDS_BOOTSTRAP="toolchain lzo:host libpng:host libjpeg-turbo:host giflib:host"
 PKG_PRIORITY="optional"
@@ -31,17 +31,17 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="4c67f75"
+    PKG_VERSION="5e1c5ac"
     PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
-    PKG_GIT_BRANCH="newclock5"
+    PKG_GIT_BRANCH="krypton_rbp_backports"
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="e596558"
+    PKG_VERSION="fd49f98"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
-    PKG_GIT_BRANCH="master"
+    PKG_GIT_BRANCH="Krypton"
     PKG_KEEP_CHECKOUT="no"
-    PKG_PATCH_DIRS="$LINUX"
+    PKG_PATCH_DIRS="$LINUX non-rpi"
     ;;
 esac
 
@@ -64,6 +64,7 @@ PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=$ROOT/$TOOLCHAIN \
                        -DPYTHON_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include/python2.7 \
                        -DGIT_VERSION=$PKG_VERSION \
                        -DENABLE_LDGOLD=OFF \
+                       -DWITH_TEXTUREPACKER=$ROOT/$TOOLCHAIN/bin/TexturePacker \
                        -DENABLE_INTERNAL_FFMPEG=OFF \
                        -DFFMPEG_INCLUDE_DIRS=$SYSROOT_PREFIX/usr \
                        -DENABLE_INTERNAL_CROSSGUID=OFF \
@@ -212,7 +213,7 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   if [ "$KODIPLAYER_DRIVER" = bcm2835-firmware ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DENABLE_MMAL=ON -DCORE_SYSTEM_NAME=rbpi"
   elif [ "$KODIPLAYER_DRIVER" = libfslvpuwrap ]; then
-    PKG_CMAKE_OPTS_TARGET+=" -DENABLE_IMXVPU=ON"
+    PKG_CMAKE_OPTS_TARGET+=" -DENABLE_IMX=ON"
     strip_lto # fails to build with LTO support (todo)
   elif [ "$KODIPLAYER_DRIVER" = libamcodec ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DENABLE_AML=ON"
@@ -302,7 +303,7 @@ post_makeinstall_target() {
     xmlstarlet ed -L -d "/addons/addon[text()='skin.estuary']" $KODI_ADDON_MANIFEST
   else
     # Rebrand
-      sed -e "s,@DISTRONAME@,$DISTRONAME,g" -i $INSTALL/usr/share/kodi/addons/skin.estuary/1080i/Settings.xml
+      sed -e "s,@DISTRONAME@,$DISTRONAME,g" -i $INSTALL/usr/share/kodi/addons/skin.estuary/xml/Settings.xml
 
     rm -rf $INSTALL/usr/share/kodi/addons/skin.estuary/media
     mkdir -p $INSTALL/usr/share/kodi/addons/skin.estuary/media
@@ -355,9 +356,6 @@ post_makeinstall_target() {
 }
 
 post_install() {
-# link default.target to kodi.target
-  ln -sf kodi.target $INSTALL/usr/lib/systemd/system/default.target
-
 # enable default services
   enable_service kodi-autostart.service
   enable_service kodi-cleanlogs.service

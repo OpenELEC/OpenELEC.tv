@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2014 Alex Deryskyba (alex@codesnake.com)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ case $OPENGL in
     PKG_LONGDESC="opengl-meson8: OpenGL ES pre-compiled libraries for Mali 450 GPUs found in Amlogic Meson8 SoCs. The libraries could be found in a Linux buildroot released by Amlogic at http://openlinux.amlogic.com:8000/download/ARM/filesystem/. See the opengl package."
     ;;
   meson-gxbb)
-    PKG_VERSION="$OPENGL-r6p1-01rel0"
+    PKG_VERSION="$OPENGL-r5p1-01rel0"
     PKG_REV="1"
     PKG_ARCH="arm aarch64"
     PKG_LICENSE="nonfree"

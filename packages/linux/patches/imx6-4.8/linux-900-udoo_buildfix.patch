@@ -1,0 +1,47 @@
+diff -Naur linux-47b3547/arch/arm/boot/dts/imx6qdl-udoo.dtsi linux-47b3547.patch/arch/arm/boot/dts/imx6qdl-udoo.dtsi
+--- linux-47b3547/arch/arm/boot/dts/imx6qdl-udoo.dtsi	2017-01-04 17:15:10.000000000 +0100
++++ linux-47b3547.patch/arch/arm/boot/dts/imx6qdl-udoo.dtsi	2017-02-10 10:50:06.315446439 +0100
+@@ -56,7 +56,7 @@
+ 		compatible = "urt,umsh-8596md-19t";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_panel>;
+-		power-supply = <&reg_panel>;
++		power-supply = <&reg_lcd0_pwr>;
+ 		backlight = <&backlight>;
+ 		status = "disabled";
+ 
+@@ -148,13 +148,13 @@
+ 			enable-active-high;
+ 		};
+ 
+-		reg_panel: regulator@1 {
+-			compatible = "regulator-fixed";
+-			reg = <1>;
+-			regulator-name = "lcd_panel";
+-			enable-active-high;
+-			gpio = <&gpio1 2 0>;
+-		};
++//		reg_panel: regulator@1 {
++//			compatible = "regulator-fixed";
++//			reg = <1>;
++//			regulator-name = "lcd_panel";
++//			enable-active-high;
++//			gpio = <&gpio1 2 0>;
++//		};
+ 
+ 		reg_2p5v: regulator@5 {
+ 			compatible = "regulator-fixed";
+@@ -531,13 +531,6 @@
+ 			>;
+ 		};
+ 
+-		pinctrl_i2c3: i2c3grp {
+-			fsl,pins = <
+-				MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001f8b1
+-				MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001f8b1
+-			>;
+-		};
+-
+ 		pinctrl_panel: panelgrp {
+ 			fsl,pins = <
+ 				MX6QDL_PAD_GPIO_2__GPIO1_IO02		0x70

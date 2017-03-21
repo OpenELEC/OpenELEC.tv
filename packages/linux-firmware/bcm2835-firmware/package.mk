@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="bcm2835-firmware"
-PKG_VERSION="597c662"
+PKG_VERSION="f5446ba"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -60,6 +60,8 @@ make_target() {
     cp -PRv $FLOAT/opt/vc/lib/libmmal_core.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_util.so $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libmmal_vc_client.so $SYSROOT_PREFIX/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libvchostif.a $SYSROOT_PREFIX/usr/lib
+    cp -PRv $FLOAT/opt/vc/lib/libvcilcs.a $SYSROOT_PREFIX/usr/lib
     cp -PRv $FLOAT/opt/vc/lib/libvcsm.so $SYSROOT_PREFIX/usr/lib
 }
 

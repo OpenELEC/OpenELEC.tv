@@ -1,7 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 OpenELEC.tv
-#      Copyright (C) 2014-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #      Copyright (C) 2016 Alex Deryskyba (alex@codesnake.com)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
@@ -45,11 +44,11 @@ makeinstall_target() {
   LDFLAGS="" \
   make V=1 -C $(get_pkg_build linux) \
        M=$ROOT/$PKG_BUILD/bcmdhd_1_201_59_x \
-       INSTALL_MOD_PATH=$INSTALL \
+       INSTALL_MOD_PATH=$INSTALL/usr \
        INSTALL_MOD_STRIP=1 \
        DEPMOD=: \
        modules_install
 
-  mkdir -p $INSTALL/lib/firmware/brcm
-    cp $PKG_DIR/config/config.txt $INSTALL/lib/firmware/brcm
+  mkdir -p $INSTALL/usr/lib/firmware/brcm
+    cp $PKG_DIR/config/config.txt $INSTALL/usr/lib/firmware/brcm
 }

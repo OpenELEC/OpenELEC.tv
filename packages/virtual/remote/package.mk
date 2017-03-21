@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -31,10 +31,6 @@ PKG_LONGDESC="Meta package for installing various tools needed for remote suppor
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$ATVCLIENT_SUPPORT" = "yes" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET atvclient"
-fi
 
 if [ "$IRSERVER_SUPPORT" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET irserver"

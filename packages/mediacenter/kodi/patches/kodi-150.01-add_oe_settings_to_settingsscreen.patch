@@ -1,6 +1,6 @@
-diff -Naur kodi-5f1ace8/addons/skin.estuary/1080i/Settings.xml kodi-5f1ace8.patch/addons/skin.estuary/1080i/Settings.xml
---- kodi-5f1ace8/addons/skin.estuary/1080i/Settings.xml	2016-05-05 11:27:34.000000000 +0200
-+++ kodi-5f1ace8.patch/addons/skin.estuary/1080i/Settings.xml	2016-05-05 13:06:23.153276651 +0200
+diff -Naur kodi-5f1ace8/addons/skin.estuary/xml/Settings.xml kodi-5f1ace8.patch/addons/skin.estuary/xml/Settings.xml
+--- kodi-5f1ace8/addons/skin.estuary/xml/Settings.xml	2016-05-05 11:27:34.000000000 +0200
++++ kodi-5f1ace8.patch/addons/skin.estuary/xml/Settings.xml	2016-05-05 13:06:23.153276651 +0200
 @@ -134,6 +134,11 @@
  					<icon>icons/settings/profiles.png</icon>
  				</item>

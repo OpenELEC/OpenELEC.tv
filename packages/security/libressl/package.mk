@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libressl"
-PKG_VERSION="2.4.3"
+PKG_VERSION="2.4.5"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
@@ -34,11 +34,25 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 post_makeinstall_target() {
-  mkdir -p $INSTALL/etc/pki/tls
-    ln -sf /etc/ssl/cert.pem $INSTALL/etc/pki/tls/cacert.pem
-  mkdir -p $INSTALL/etc/pki/tls/certs
-    ln -sf /etc/ssl/cert.pem $INSTALL/etc/pki/tls/certs/ca-bundle.crt
+  # libressl default location
+    mkdir -p $INSTALL/etc/ssl/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/cert.pem
 
-  mkdir -p $SYSROOT_PREFIX/usr/lib/pkgconfig
-    cp $PKG_DIR/config/*.pc $SYSROOT_PREFIX/usr/lib/pkgconfig
+  # legacy OpenELEC compat
+    mkdir -p $INSTALL/etc/pki/tls/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/cacert.pem
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/cert.pem
+
+  # Debian/Ubuntu/Gentoo etc. compat
+    mkdir -p $INSTALL/etc/ssl/certs/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/certs/ca-certificates.crt
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/certs/ca-bundle.crt
+
+  # Fedora/RHEL compat
+    mkdir -p $INSTALL/etc/pki/tls/certs/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/pki/tls/certs/ca-bundle.crt
+
+  # OpenSUSE compat
+    mkdir -p $INSTALL/etc/ssl/
+      ln -sf /usr/etc/ssl/cert.pem $INSTALL/etc/ssl/ca-bundle.pem
 }

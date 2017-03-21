@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="kmod"
-PKG_VERSION="23"
+PKG_VERSION="24"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://git.profusion.mobi/cgit.cgi/kmod.git/"
-PKG_URL="http://ftp.kernel.org/pub/linux/utils/kernel/kmod/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="http://www.kernel.org/pub/linux/utils/kernel/kmod/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
@@ -39,6 +39,7 @@ PKG_CONFIGURE_OPTS_HOST="--enable-tools \
                          --disable-gtk-doc-html \
                          --disable-gtk-doc-pdf \
                          --disable-manpages \
+                         --disable-test-modules \
                          --with-gnu-ld \
                          --without-xz \
                          --without-zlib"
@@ -50,9 +51,11 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-tools \
                            --disable-gtk-doc-html \
                            --disable-gtk-doc-pdf \
                            --disable-manpages \
+                           --disable-test-modules \
                            --with-gnu-ld \
                            --without-xz \
-                           --without-zlib"
+                           --without-zlib \
+                           --with-rootlibdir=/lib"
 
 post_makeinstall_host() {
   ln -sf kmod $ROOT/$TOOLCHAIN/bin/depmod
@@ -69,6 +72,9 @@ post_makeinstall_target() {
 
   mkdir -p $INSTALL/etc
     ln -sf /storage/.config/modprobe.d $INSTALL/etc/modprobe.d
+
+  mkdir -p $INSTALL/lib
+    ln -sf /usr/lib/modprobe.d $INSTALL/lib/modprobe.d
 
 # add user modprobe.d dir
   mkdir -p $INSTALL/usr/config/modprobe.d

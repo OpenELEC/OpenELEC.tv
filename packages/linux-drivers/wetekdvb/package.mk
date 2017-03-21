@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="wetekdvb"
-PKG_VERSION="20160930"
+PKG_VERSION="20170116"
 PKG_REV="1"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="nonfree"
@@ -44,9 +44,9 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-    cp driver/$WETEK_DVB_MODULE $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME/wetekdvb.ko
+  mkdir -p $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME
+    cp driver/$WETEK_DVB_MODULE $INSTALL/usr/lib/modules/$(get_module_dir)/$PKG_NAME/wetekdvb.ko
 
-  mkdir -p $INSTALL/lib/firmware
-    cp firmware/* $INSTALL/lib/firmware
+  mkdir -p $INSTALL/usr/lib/firmware
+    cp firmware/* $INSTALL/usr/lib/firmware
 }

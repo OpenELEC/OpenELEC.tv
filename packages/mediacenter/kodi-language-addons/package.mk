@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="kodi-language-addons"
-PKG_VERSION="ce9947c"
+PKG_VERSION="5962ad8"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/xbmc/repo-resources"
-PKG_URL="$DISTRO_SRC/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_SITE="https://github.com/xbmc/repo-resources.git"
+PKG_GIT_URL="https://github.com/xbmc/repo-resources.git"
+PKG_GIT_BRANCH="krypton"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
 PKG_SECTION="mediacenter"
@@ -38,5 +39,5 @@ make_target() {
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/share/kodi/addons/
-    cp -PR $ROOT/$PKG_BUILD/* $INSTALL/usr/share/kodi/addons/
+    cp -PR $ROOT/$PKG_BUILD/resource.language.* $INSTALL/usr/share/kodi/addons/
 }

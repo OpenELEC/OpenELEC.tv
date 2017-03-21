@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="Pillow"
-PKG_VERSION="3.4.1"
+PKG_VERSION="4.0.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.pythonware.com/products/pil/"
-PKG_URL="https://pypi.python.org/packages/80/b5/359ac53b4986abbb5da766f809def82958bbbddf169139cdef8f0880522b/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain Python distutilscross:host libz freetype libjpeg-turbo tiff"
+PKG_URL="https://pypi.python.org/packages/8d/80/eca7a2d1a3c2dafb960f32f844d570de988e609f5fd17de92e1cf6a01b0a/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain Python distutilscross:host zlib freetype libjpeg-turbo tiff"
 PKG_PRIORITY="optional"
 PKG_SECTION="python"
 PKG_SHORTDESC="pil: Imaging handling/processing for Python"
@@ -31,11 +31,6 @@ PKG_LONGDESC="The Python Imaging Library (PIL) adds image processing capabilitie
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-pre_make_target() {
-  export PYTHONXCPREFIX="$SYSROOT_PREFIX/usr"
-  export LDSHARED="$CC -shared"
-}
 
 make_target() {
   python setup.py build_ext --disable-platform-guessing

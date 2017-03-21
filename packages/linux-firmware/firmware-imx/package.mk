@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/firmware/vpu
-    cp -P firmware/vpu/vpu_fw_imx6d.bin $INSTALL/lib/firmware/vpu
-    cp -P firmware/vpu/vpu_fw_imx6q.bin $INSTALL/lib/firmware/vpu
+  mkdir -p $INSTALL/usr/lib/firmware/vpu
+    cp -P firmware/vpu/vpu_fw_imx6d.bin $INSTALL/usr/lib/firmware/vpu
+    cp -P firmware/vpu/vpu_fw_imx6q.bin $INSTALL/usr/lib/firmware/vpu
 }

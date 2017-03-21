@@ -1,0 +1,10 @@
+diff -Naur linux-e28d454/arch/arm64/boot/dts/amlogic/gxbb_p200_1G_wetek_hub.dts linux-e28d454.patch/arch/arm64/boot/dts/amlogic/gxbb_p200_1G_wetek_hub.dts
+--- linux-e28d454/arch/arm64/boot/dts/amlogic/gxbb_p200_1G_wetek_hub.dts	2016-11-28 06:20:30.000000000 +0100
++++ linux-e28d454.patch/arch/arm64/boot/dts/amlogic/gxbb_p200_1G_wetek_hub.dts	2016-12-08 09:14:52.579994401 +0100
+@@ -1216,3 +1216,6 @@
+ &meson_ir {
+ 	status = "okay";
+ };
++&aml_remote {
++	status = "okay";
++};

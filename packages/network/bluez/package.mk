@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="bluez"
-PKG_VERSION="5.41"
+PKG_VERSION="5.44"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.bluez.org/"
 PKG_URL="http://www.kernel.org/pub/linux/bluetooth/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain dbus glib readline netbsd-curses systemd"
+PKG_DEPENDS_TARGET="toolchain dbus glib readline netbsd-curses"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="bluez: Bluetooth Tools and System Daemons for Linux."
@@ -39,10 +39,11 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-dependency-tracking \
                            --disable-cups \
                            --disable-obex \
                            --enable-client \
-                           --enable-systemd \
+                           --disable-systemd \
                            --enable-tools \
                            --enable-datafiles \
                            --disable-experimental \
+                           --enable-deprecated \
                            --enable-sixaxis \
                            --with-gnu-ld \
                            storagedir=/storage/.cache/bluetooth"
@@ -59,7 +60,6 @@ else
   PKG_CONFIGURE_OPTS_TARGET+=" --disable-monitor --disable-test"
 fi
 
-
 pre_configure_target() {
 # bluez fails to build in subdirs
   cd $ROOT/$PKG_BUILD
@@ -69,11 +69,18 @@ pre_configure_target() {
 }
 
 post_makeinstall_target() {
-  rm -rf $INSTALL/usr/lib/systemd
   rm -rf $INSTALL/usr/bin/bccmd
   rm -rf $INSTALL/usr/bin/bluemoon
   rm -rf $INSTALL/usr/bin/ciptool
   rm -rf $INSTALL/usr/share/dbus-1
+
+  mkdir -p $INSTALL/usr/bin
+    cp tools/btinfo $INSTALL/usr/bin
+    cp tools/btmgmt $INSTALL/usr/bin
+
+  mkdir -p $INSTALL/etc/bluetooth
+    echo "[Policy]" > $INSTALL/etc/bluetooth/main.conf
+    echo "AutoEnable=true" >> $INSTALL/etc/bluetooth/main.conf
 }
 
 post_install() {

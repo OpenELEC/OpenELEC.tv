@@ -50,7 +50,6 @@ INSTALL_INIT=$BUILD/image/initramfs/root-image
 . config/sources
 
 MAKE="$ROOT/$TOOLCHAIN/bin/make"
-MAKEINSTALL="$ROOT/$TOOLCHAIN/bin/make -j1 DESTDIR=$SYSROOT_PREFIX install"
 SED="sed -i"
 
 # set package metadata
@@ -171,10 +170,6 @@ export PKG_CONFIG=$ROOT/$TOOLCHAIN/bin/pkg-config
 
 if [ -z "$PATH" -o "$PATH" = "${PATH#$ROOT/$TOOLCHAIN/bin:}" ]; then
   export PATH="$ROOT/$TOOLCHAIN/lib/ccache:$ROOT/$TOOLCHAIN/bin:$ROOT/$TOOLCHAIN/sbin:$PATH"
-fi
-
-if [ -z "$LD_LIBRARY_PATH" -o "$LD_LIBRARY_PATH" = "${LD_LIBRARY_PATH#$ROOT/$TOOLCHAIN/lib:}" ]; then
-  export LD_LIBRARY_PATH="$ROOT/$TOOLCHAIN/lib:$LD_LIBRARY_PATH"
 fi
 
 VERSION_SUFFIX=$TARGET_ARCH

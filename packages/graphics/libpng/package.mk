@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="libpng"
-PKG_VERSION="1.6.25"
+PKG_VERSION="1.6.28"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.libpng.org/"
 PKG_URL="$SOURCEFORGE_SRC/libpng/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_HOST="libz:host"
-PKG_DEPENDS_TARGET="toolchain libz"
+PKG_DEPENDS_HOST="zlib:host"
+PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_PRIORITY="optional"
 PKG_SECTION="graphics"
 PKG_SHORTDESC="libpng: Portable Network Graphics (PNG) Reference Library"
@@ -33,8 +33,8 @@ PKG_LONGDESC="PNG (Portable Network Graphics) is an extensible file format for t
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CMAKE_OPTS_HOST="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF"
-PKG_CMAKE_OPTS_TARGET="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF"
+PKG_CMAKE_OPTS_HOST="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_SYSTEM_PROCESSOR=$(uname -m)"
+PKG_CMAKE_OPTS_TARGET="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_SYSTEM_PROCESSOR=$TARGET_ARCH"
 
 post_makeinstall_target() {
   sed -e "s:\([\"'= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \

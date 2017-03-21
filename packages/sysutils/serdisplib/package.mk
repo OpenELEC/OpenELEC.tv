@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ pre_configure_target() {
   # serdisplib fails to build in subdirs (found this in packages/devel/attr/package.mk)
   cd $ROOT/$PKG_BUILD
     rmdir .$TARGET_NAME
+
+  export LIBUSB_CONFIG="$SYSROOT_PREFIX/usr/bin/libusb-config"
 }
 
 post_make_target() {

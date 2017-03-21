@@ -67,15 +67,15 @@
 # please add all configfiles which should be included without the suffix and prefix
 # except the default-*.config and the ones included in packages/linux/package.mk
 # Space separated list is supported,
-  KERNEL_EXTRA_CONFIG+=" filesystem hid-drivers remote touchscreen joystick audio"
+  KERNEL_EXTRA_CONFIG+=" filesystem mmc hid-drivers remote touchscreen joystick audio"
   KERNEL_EXTRA_CONFIG+=" dvb-usb dvb-other lan-usb lan-phy"
-  KERNEL_EXTRA_CONFIG+=" wlan-usb wlan-other sound-usb"
+  KERNEL_EXTRA_CONFIG+=" wlan-usb wlan-other sound-usb usb-serial usb-gadget led"
 
 # additional drivers to install:
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8192DU RTL8192EU RTL8812AU" # todo: mt7610u dvbhdhomerun
+  ADDITIONAL_DRIVERS="RTL8192DU RTL8192EU RTL8812AU mt7610u" # todo: dvbhdhomerun
 
 # build and install bluetooth support (yes / no)
   BLUETOOTH_SUPPORT="yes"
@@ -142,9 +142,6 @@
 # build and install NTFS-3G fuse support (yes / no)
   NTFS3G="yes"
 
-# build and install hfs filesystem utilities (yes / no)
-  HFSTOOLS="yes"
-
 # Windowmanager to use (ratpoison / fluxbox / none)
   WINDOWMANAGER="fluxbox"
 
@@ -156,17 +153,12 @@
 # build and install remote support (yes / no)
   REMOTE_SUPPORT="yes"
 
-# build and install ATV IR remote support (yes / no)
-  ATVCLIENT_SUPPORT="yes"
-
 # build and install IRServer IR/LCD support (yes / no)
   IRSERVER_SUPPORT="yes"
+  LCD_DRIVER+="irtrans,"
 
 # build and install CEC adapter support (yes / no)
   CEC_SUPPORT="yes"
-
-# build and install iSCSI support - iscsistart (yes / no)
-  ISCSI_SUPPORT="yes"
 
 # LCD driver to Use - Possible drivers are ( Comma seperated:
 # bayrad,CFontz,CFontz633,CFontzPacket,curses,CwLnx,dm140,
@@ -179,7 +171,7 @@
 # 'all' compiles all drivers;
 # 'all,!xxx,!yyy' de-selects previously selected drivers
 # "none" for disable LCD support
-  LCD_DRIVER="irtrans,imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD,shuttleVFD,glcd"
+  LCD_DRIVER+="imon,imonlcd,mdm166a,MtxOrb,lis,dm140,hd44780,CFontz,SureElec,vlsys_m428,serialVFD,shuttleVFD,glcd"
 
 # Support for partitioning and formating disks in initramfs (yes / no)
 # This adds support for parted and mkfs.ext3/4 to initramfs for OEM usage
@@ -208,6 +200,9 @@
 
 # cron support (yes / no)
   CRON_SUPPORT="yes"
+
+# Locales to install. format: "locale.charmap" (eg. de_DE.UTF-8)
+  GLIBC_LOCALES="en_US.UTF-8"
 
 # Distribution Specific source location
   DISTRO_MIRROR="http://sources.openelec.tv/mirror"

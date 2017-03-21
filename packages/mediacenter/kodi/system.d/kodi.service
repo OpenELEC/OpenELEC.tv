@@ -22,5 +22,13 @@ RestartSec=2
 StartLimitInterval=0
 LimitNOFILE=16384
 
+# lowering memory fragmentation
+# https://linux.die.net/man/3/mallopt
+# https://github.com/xbmc/xbmc/pull/11620
+  Environment=MALLOC_MMAP_THRESHOLD_=131072
+
+# Workaround for high CPU load with nvidia GFX
+  Environment=__GL_YIELD=USLEEP
+
 [Install]
-WantedBy=kodi.target
+WantedBy=default.target

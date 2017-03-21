@@ -1,0 +1,11 @@
+ACTION=="remove", GOTO="drivers_end"
+
+ENV{MODALIAS}=="?*", RUN+="/sbin/modprobe $env{MODALIAS}"
+SUBSYSTEM=="tifm", ENV{TIFM_CARD_TYPE}=="SD", RUN+="/sbin/modprobe tifm_sd"
+SUBSYSTEM=="tifm", ENV{TIFM_CARD_TYPE}=="MS", RUN+="/sbin/modprobe tifm_ms"
+SUBSYSTEM=="memstick", RUN+="/sbin/modprobe ms_block mspro_block"
+SUBSYSTEM=="i2o", RUN+="/sbin/modprobe i2o_block"
+SUBSYSTEM=="module", KERNEL=="parport_pc", RUN+="/sbin/modprobe ppdev"
+KERNEL=="mtd*ro", ENV{MTD_FTL}=="smartmedia", RUN+="/sbin/modprobe sm_ftl"
+
+LABEL="drivers_end"

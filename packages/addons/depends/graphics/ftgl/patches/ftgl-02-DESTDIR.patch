@@ -1,0 +1,32 @@
+diff -Naur ftgl-2.1.2/unix/Makefile ftgl-2.1.2.patch/unix/Makefile
+--- ftgl-2.1.2/unix/Makefile	2003-01-12 22:27:04.000000000 +0100
++++ ftgl-2.1.2.patch/unix/Makefile	2016-12-11 01:01:16.592936774 +0100
+@@ -16,8 +16,8 @@
+ 	./configure
+ 
+ install-local: ftgl.pc
+-	$(INSTALL) -d -m 0755 $(libdir)/pkgconfig
+-	$(INSTALL) -m 0644 ftgl.pc $(libdir)/pkgconfig/
++	$(INSTALL) -d -m 0755 $(DESTDIR)/$(libdir)/pkgconfig
++	$(INSTALL) -m 0644 ftgl.pc $(DESTDIR)/$(libdir)/pkgconfig/
+ 
+ maint-clean-local:
+ 	$(RM) $(AUTOGEN_MAINT)
+diff -Naur ftgl-2.1.2/unix/src/Makefile ftgl-2.1.2.patch/unix/src/Makefile
+--- ftgl-2.1.2/unix/src/Makefile	2004-08-16 08:09:43.000000000 +0200
++++ ftgl-2.1.2.patch/unix/src/Makefile	2016-12-11 01:00:34.584944901 +0100
+@@ -73,10 +73,10 @@
+ libftgl.la: $(LOBJS)
+ 
+ install-local: libftgl.la
+-	$(INSTALL) -d -m 0755 $(libdir)
+-	$(LIBTOOL) --mode=install $(INSTALL) -m 0644 $(TARGET) $(libdir)
+-	$(INSTALL) -d -m 0755 $(includedir)/FTGL
+-	$(INSTALL) -m 0644 $(HEADER_FILES) $(includedir)/FTGL
++	$(INSTALL) -d -m 0755 ${DESTDIR}${prefix}/lib
++	$(LIBTOOL) --mode=install $(INSTALL) -m 0644 $(TARGET) ${DESTDIR}${prefix}/lib
++	$(INSTALL) -d -m 0755 ${DESTDIR}${prefix}/include/FTGL
++	$(INSTALL) -m 0644 $(HEADER_FILES) ${DESTDIR}${prefix}/include/FTGL
+ 
+ 
+ clean-local:

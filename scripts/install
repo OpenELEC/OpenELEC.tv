@@ -86,6 +86,11 @@ if [ "$TARGET" = target ] ; then
     cp $PKG_DIR/tmpfiles.d/*.conf $INSTALL/usr/lib/tmpfiles.d
   fi
 
+  if [ -d $PKG_DIR/generators.d ]; then
+    mkdir -p $INSTALL/lib/systemd/system-generators
+    cp $PKG_DIR/generators.d/* $INSTALL/lib/systemd/system-generators
+  fi
+
   if [ -d $PKG_DIR/system.d ]; then
     mkdir -p $INSTALL/usr/lib/systemd/system
     cp $PKG_DIR/system.d/*.* $INSTALL/usr/lib/systemd/system
@@ -127,8 +132,8 @@ if [ "$TARGET" = target ] ; then
   fi
 
   if [ -d $PKG_DIR/modprobe.d ]; then
-    mkdir -p $INSTALL/lib/modprobe.d
-    cp $PKG_DIR/modprobe.d/*.conf $INSTALL/lib/modprobe.d
+    mkdir -p $INSTALL/usr/lib/modprobe.d
+    cp $PKG_DIR/modprobe.d/*.conf $INSTALL/usr/lib/modprobe.d
   fi
 fi
 

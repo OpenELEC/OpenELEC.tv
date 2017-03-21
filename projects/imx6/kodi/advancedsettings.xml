@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <advancedsettings>
   <showexitbutton>false</showexitbutton>
-  <video>
-    <busydialogdelayms>750</busydialogdelayms>
-  </video>
-  <audio>
-    <streamsilence>false</streamsilence>
-  </audio>
+  <remotedelay>1</remotedelay>
+
   <samba>
     <clienttimeout>30</clienttimeout>
   </samba>

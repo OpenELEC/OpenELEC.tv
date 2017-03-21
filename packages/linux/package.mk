@@ -22,7 +22,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
 PKG_DEPENDS_HOST="ccache:host"
-PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb keyutils irqbalance"
+PKG_DEPENDS_TARGET="toolchain cpio:host xz:host pciutils kmod wireless-regdb keyutils irqbalance"
 PKG_DEPENDS_INIT="toolchain cpu-firmware:init"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
@@ -31,14 +31,15 @@ PKG_SHORTDESC="linux26: The Linux kernel 2.6 precompiled kernel binary image and
 PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 case "$LINUX" in
   amlogic-3.10)
-    PKG_VERSION="8b1bb2b"
-    PKG_GIT_URL="https://github.com/codesnake/linux.git"
+    PKG_VERSION="de626d8"
+#    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
+    PKG_GIT_URL="https://github.com/LibreELEC/linux-amlogic.git"
     PKG_GIT_BRANCH="amlogic-3.10.y"
     PKG_PATCH_DIRS="linux-3.10 amlogic-3.10"
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   amlogic-3.14)
-    PKG_VERSION="069e204"
+    PKG_VERSION="eb7e852"
 #    PKG_GIT_URL="https://github.com/codesnake/linux-amlogic.git"
     PKG_GIT_URL="https://github.com/LibreELEC/linux-amlogic.git"
     PKG_GIT_BRANCH="amlogic-3.14.y"
@@ -46,22 +47,27 @@ case "$LINUX" in
     KERNEL_EXTRA_CONFIG+=" kernel-3.x"
     ;;
   imx6)
-    PKG_VERSION="f14907b"
+    PKG_VERSION="47b3547"
     PKG_GIT_URL="https://github.com/xbianonpi/xbian-sources-kernel.git"
-    PKG_GIT_BRANCH="imx6-4.4.y"
+    PKG_GIT_BRANCH="imx6-4.8.y"
     PKG_DEPENDS_TARGET+=" imx6-status-led imx6-soc-fan"
-    PKG_PATCH_DIRS="linux-4.4 imx6-4.4"
+    PKG_PATCH_DIRS="linux-4.8 imx6-4.8"
     ;;
   rpi)
-    PKG_VERSION="0105b0e"
+    PKG_VERSION="935c7ce"
     PKG_GIT_URL="https://github.com/OpenELEC/linux.git"
-    PKG_GIT_BRANCH="raspberry-rpi-4.8.y"
+    PKG_GIT_BRANCH="raspberry-rpi-4.9.y"
+    PKG_PATCH_DIRS="linux-4.9 rpi-4.9"
+    ;;
+  linux-4.8)
+    PKG_VERSION="4.8.6"
+    PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_PATCH_DIRS="linux-4.8"
     ;;
   *)
-    PKG_VERSION="4.8.3"
+    PKG_VERSION="4.9.13"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
-    PKG_PATCH_DIRS="linux-4.8"
+    PKG_PATCH_DIRS="linux-4.9"
     ;;
 esac
 
@@ -74,7 +80,6 @@ PKG_MAKE_OPTS_HOST="headers_check"
 [ "$SWAP_SUPPORT" = yes ]            && KERNEL_EXTRA_CONFIG+=" swap"
 [ "$NFS_SUPPORT" = yes ]             && KERNEL_EXTRA_CONFIG+=" nfs"
 [ "$SAMBA_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" samba"
-[ "$ISCSI_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" iscsi"
 [ "$BLUETOOTH_SUPPORT" = yes ]       && KERNEL_EXTRA_CONFIG+=" bluetooth"
 [ "$UVESAFB_SUPPORT" = yes ]         && KERNEL_EXTRA_CONFIG+=" uvesafb"
 
@@ -164,9 +169,9 @@ make_target() {
   unset LDFLAGS
 
   make modules
-  make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" INSTALL_MOD_STRIP=1 modules_install
-  rm -f $INSTALL/lib/modules/*/build
-  rm -f $INSTALL/lib/modules/*/source
+  make INSTALL_MOD_PATH=$INSTALL/usr INSTALL_MOD_STRIP=1 modules_install
+  rm -f $INSTALL/usr/lib/modules/*/build
+  rm -f $INSTALL/usr/lib/modules/*/source
 
   ( cd $ROOT
     rm -rf $ROOT/$BUILD/initramfs
@@ -221,7 +226,7 @@ makeinstall_init() {
     mkdir -p $INSTALL/lib/modules
 
     for i in $INITRAMFS_MODULES; do
-      module=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name $i.ko`
+      module=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name $i.ko`
       if [ -n "$module" ]; then
         echo $i >> $INSTALL/etc/modules
         cp $module $INSTALL/lib/modules/$(basename $module)
@@ -231,7 +236,7 @@ makeinstall_init() {
 
   if [ "$UVESAFB_SUPPORT" = yes ]; then
     mkdir -p $INSTALL/lib/modules
-      uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
+      uvesafb=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
       cp $uvesafb $INSTALL/lib/modules/$(basename $uvesafb)
   fi
 
@@ -240,9 +245,14 @@ makeinstall_init() {
 }
 
 post_install() {
-  mkdir -p $INSTALL/lib/firmware/
-    ln -sf /storage/.config/firmware/ $INSTALL/lib/firmware/updates
+  mkdir -p $INSTALL/lib
+    ln -sf /usr/lib/modules/ $INSTALL/lib/modules
 
-  # bluez looks in /etc/firmware/
-    ln -sf /lib/firmware/ $INSTALL/etc/firmware
+  mkdir -p $INSTALL/lib
+    ln -sf /usr/lib/firmware/ $INSTALL/lib/firmware
+
+  mkdir -p $INSTALL/usr/lib/firmware/
+    ln -sf /storage/.config/firmware/ $INSTALL/usr/lib/firmware/updates
+
+  enable_service module-load.service
 }

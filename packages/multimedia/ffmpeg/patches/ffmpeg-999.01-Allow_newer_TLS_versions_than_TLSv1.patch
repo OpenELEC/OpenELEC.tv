@@ -1,0 +1,40 @@
+From e8634fb92e2f624f19ee5fced6481d8ece503119 Mon Sep 17 00:00:00 2001
+From: Mark Thompson <sw@jkqxz.net>
+Date: Fri, 28 Oct 2016 19:50:27 +0100
+Subject: [PATCH] openssl: Allow newer TLS versions than TLSv1
+
+The use of TLSv1_*_method() disallows newer protocol versions; instead
+use SSLv23_*_method() and then explicitly disable the deprecated
+protocol versions which should not be supported.
+
+Fixes ticket #5915.
+---
+ libavformat/tls_openssl.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/libavformat/tls_openssl.c b/libavformat/tls_openssl.c
+index c551ac7..178ca9e 100644
+--- a/libavformat/tls_openssl.c
++++ b/libavformat/tls_openssl.c
+@@ -233,12 +233,17 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
+     if ((ret = ff_tls_open_underlying(c, h, uri, options)) < 0)
+         goto fail;
+ 
+-    p->ctx = SSL_CTX_new(c->listen ? TLSv1_server_method() : TLSv1_client_method());
++    // We want to support all versions of TLS >= 1.0, but not the deprecated
++    // and insecure SSLv2 and SSLv3.  Despite the name, SSLv23_*_method()
++    // enables support for all versions of SSL and TLS, and we then disable
++    // support for the old protocols immediately after creating the context.
++    p->ctx = SSL_CTX_new(c->listen ? SSLv23_server_method() : SSLv23_client_method());
+     if (!p->ctx) {
+         av_log(h, AV_LOG_ERROR, "%s\n", ERR_error_string(ERR_get_error(), NULL));
+         ret = AVERROR(EIO);
+         goto fail;
+     }
++    SSL_CTX_set_options(p->ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+     if (c->ca_file) {
+         if (!SSL_CTX_load_verify_locations(p->ctx, c->ca_file, NULL))
+             av_log(h, AV_LOG_ERROR, "SSL_CTX_load_verify_locations %s\n", ERR_error_string(ERR_get_error(), NULL));
+-- 
+2.1.4
+

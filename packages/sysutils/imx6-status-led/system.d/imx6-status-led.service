@@ -9,4 +9,4 @@ ExecStop=-/bin/sh -c "/usr/lib/openelec/imx6-status-led heartbeat"
 RemainAfterExit=yes
 
 [Install]
-WantedBy=kodi.target
+WantedBy=multi-user.target

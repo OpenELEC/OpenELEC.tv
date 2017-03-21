@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="http://mj.ucw.cz/pciutils.shtml"
 PKG_URL="http://www.kernel.org/pub/software/utils/pciutils/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain kmod systemd"
+PKG_DEPENDS_TARGET="toolchain systemd"
 PKG_PRIORITY="optional"
 PKG_SECTION="system"
 PKG_SHORTDESC="pciutils: Linux PCI Utilities"
@@ -39,7 +39,7 @@ make_target() {
        CROSS_COMPILE=${TARGET_NAME}- \
        HOST=$TARGET_ARCH-linux \
        $PKG_MAKE_OPTS \
-       ZLIB=no DNS=no LIBKMOD=yes HWDB=yes
+       ZLIB=no DNS=no LIBKMOD=no HWDB=yes
 }
 
 makeinstall_target() {

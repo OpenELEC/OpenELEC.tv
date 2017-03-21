@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="p8-platform"
-PKG_VERSION="38343e0"
+PKG_VERSION="d7bceb6"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -33,8 +33,9 @@ PKG_LONGDESC="Platform support library used by libCEC and binary add-ons for Kod
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-PKG_CMAKE_OPTS_TARGET="-DCMAKE_INSTALL_LIBDIR=/usr/lib \
-                       -DCMAKE_INSTALL_LIBDIR_NOARCH=/usr/lib \
+PKG_CMAKE_OPTS_TARGET="-DCMAKE_INSTALL_PREFIX=/usr \
+                       -DCMAKE_INSTALL_LIBDIR=lib \
+                       -DCMAKE_INSTALL_LIBDIR_NOARCH=lib \
                        -DCMAKE_INSTALL_PREFIX_TOOLCHAIN=$SYSROOT_PREFIX/usr \
                        -DCMAKE_PREFIX_PATH=$SYSROOT_PREFIX/usr \
                        -DBUILD_SHARED_LIBS=0"

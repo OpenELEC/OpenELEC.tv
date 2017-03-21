@@ -39,6 +39,7 @@ post_unpack() {
 
 pre_configure_target() {
   export LDFLAGS=$(echo $LDFLAGS | sed -e "s|-Wl,--as-needed||")
+  export LDFLAGS+=" -lexpat -lz"
 }
 
 pre_make_target() {

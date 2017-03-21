@@ -1,0 +1,11 @@
+[Unit]
+Description=Modules load
+DefaultDependencies=false
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "for module in $(cat /usr/lib/modules-load.d/*.conf 2>/dev/null) ; do /sbin/modprobe $module; done"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target

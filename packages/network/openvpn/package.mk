@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="openvpn"
-PKG_VERSION="2.3.12"
+PKG_VERSION="2.4.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -33,17 +33,26 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_have_decl_TUNSETPERSIST=no \
+                           --enable-lzo \
+                           --disable-lz4 \
+                           --enable-crypto \
+                           --enable-ofb-cfb \
+                           --disable-x509-alt-username \
+                           --enable-multi \
                            --disable-server \
-                           --enable-password-save \
                            --disable-plugins \
-                           --enable-iproute2 IPROUTE=/sbin/ip \
                            --enable-management \
-                           --disable-socks \
-                           --disable-http-proxy \
+                           --disable-pkcs11 \
                            --enable-fragment \
                            --disable-multihome \
                            --disable-port-share \
-                           --disable-debug"
+                           --disable-debug \
+                           --disable-small \
+                           --enable-iproute2 IPROUTE=/sbin/ip \
+                           --enable-def-auth \
+                           --enable-pf \
+                           --disable-selinux \
+                           --disable-systemd"
 
 post_makeinstall_target() {
   mkdir -p $INSTALL/usr/bin

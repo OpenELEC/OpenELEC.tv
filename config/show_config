@@ -50,7 +50,6 @@
   show_message "$dashes$dashes"
 
   show_message "- Remote support:\t\t\t $REMOTE_SUPPORT"
-  show_message "- ATV Remote support:\t\t\t $ATVCLIENT_SUPPORT"
   show_message "- CEC Adapter support:\t\t\t $CEC_SUPPORT"
   show_message "- IRTrans support:\t\t\t $IRSERVER_SUPPORT"
 
@@ -115,7 +114,6 @@
   fi
   show_message "- exFAT Support (via Fuse):\t\t $EXFAT"
   show_message "- NTFS Support (via Fuse):\t\t $NTFS3G"
-  show_message "- Install HFS Tools:\t\t\t $HFSTOOLS"
 
 # Kodi configuration
 

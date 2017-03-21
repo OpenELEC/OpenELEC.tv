@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="rpcbind"
-PKG_VERSION="0.2.3"
+PKG_VERSION="0.2.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -32,9 +32,9 @@ PKG_LONGDESC="The rpcbind utility is a server that converts RPC program numbers 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--disable-warmstarts \
+PKG_CONFIGURE_OPTS_TARGET="--enable-warmstarts \
                            --disable-libwrap \
-                           --with-statedir=/tmp \
+                           --with-statedir=/run \
                            --with-rpcuser=root"
 
 post_install() {

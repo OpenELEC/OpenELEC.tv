@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 ################################################################################
 
 PKG_NAME="Python"
-PKG_VERSION="2.7.11"
+PKG_VERSION="2.7.13"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.python.org/"
 PKG_URL="http://www.python.org/ftp/python/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_HOST="libz:host"
-PKG_DEPENDS_TARGET="toolchain sqlite expat libz bzip2 libressl libffi Python:host"
+PKG_DEPENDS_HOST="zlib:host"
+PKG_DEPENDS_TARGET="toolchain sqlite expat zlib bzip2 libressl libffi Python:host"
 PKG_PRIORITY="optional"
 PKG_SECTION="lang"
 PKG_SHORTDESC="python: The Python programming language"
@@ -118,6 +118,9 @@ post_makeinstall_target() {
   for dir in $EXCLUDE_DIRS; do
     rm -rf $INSTALL/usr/lib/python*/$dir
   done
+
+# set file permissions
+  chmod 755 $INSTALL/usr/lib/libpython*.so*
 
   ( cd $INSTALL/usr/lib/python2.7
     python -Wi -t -B $ROOT/$PKG_BUILD/Lib/compileall.py -d /usr/lib/python2.7 -f .

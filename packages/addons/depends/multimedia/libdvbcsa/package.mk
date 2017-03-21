@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libdvbcsa"
-PKG_VERSION="f988715"
+PKG_VERSION="bc6c0b1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -38,7 +38,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-shared --enable-static --with-sysroot=$SYSR
 
 if echo "$TARGET_FPU" | grep -q '^neon'; then
   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-neon"
-elif [ "$TARGET_ARCH" = x86_64  ]; then
+elif [ "$TARGET_ARCH" = x86_64 -o "$TARGET_ARCH" = aarch64  ]; then
   if echo "$PROJECT_CFLAGS" | grep -q '\-mssse3'; then
     PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-ssse3"
   elif echo "$PROJECT_CFLAGS" | grep -q '\-msse2'; then

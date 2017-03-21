@@ -1,0 +1,22 @@
+diff -Naur libnfs-libnfs-1.11.0/lib/libnfs.c libnfs-libnfs-1.11.0.patch/lib/libnfs.c
+--- libnfs-libnfs-1.11.0/lib/libnfs.c	2016-10-09 20:23:11.000000000 +0200
++++ libnfs-libnfs-1.11.0.patch/lib/libnfs.c	2017-02-06 09:36:22.936702608 +0100
+@@ -68,10 +68,6 @@
+ #include <sys/mkdev.h>
+ #endif
+ 
+-#ifdef MAJOR_IN_SYSMACROS
+-#include <sys/sysmacros.h>
+-#endif
+-
+ #include <stdio.h>
+ #include <stdarg.h>
+ #include <stdlib.h>
+@@ -79,6 +75,7 @@
+ #include <assert.h>
+ #include <errno.h>
+ #include <time.h>
++#include <sys/sysmacros.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
