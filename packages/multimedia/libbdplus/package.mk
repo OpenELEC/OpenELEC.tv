@@ -17,12 +17,13 @@
 ################################################################################
 
 PKG_NAME="libbdplus"
-PKG_VERSION="0.1.2"
+PKG_VERSION="a908260"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.videolan.org/developers/libbdplus.html"
-PKG_URL="https://ftp.videolan.org/pub/videolan/$PKG_NAME/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_GIT_URL="https://git.videolan.org/git/libbdplus.git"
+PKG_GIT_BRANCH="master"
 PKG_DEPENDS_TARGET="toolchain libgcrypt libgpg-error"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
