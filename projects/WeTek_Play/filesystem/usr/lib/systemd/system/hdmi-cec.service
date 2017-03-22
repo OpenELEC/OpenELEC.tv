@@ -1,0 +1,12 @@
+[Unit]
+Description=hdmi cec service
+DefaultDependencies=no
+ConditionPathExists=!/storage/.no-hdmi-cec
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c "echo 0x0b > /sys/class/amhdmitx/amhdmitx0/cec_config"
+
+[Install]
+WantedBy=sysinit.target
