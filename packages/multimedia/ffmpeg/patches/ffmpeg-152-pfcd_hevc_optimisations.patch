@@ -1,6 +1,6 @@
 diff -Naur ffmpeg-3.2.4/ffmpeg.c ffmpeg-3.2.4.patch/ffmpeg.c
 --- ffmpeg-3.2.4/ffmpeg.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/ffmpeg.c	2017-03-02 11:46:19.841810308 +0100
++++ ffmpeg-3.2.4.patch/ffmpeg.c	2017-03-22 22:42:34.812798482 +0100
 @@ -23,6 +23,11 @@
   * multimedia converter based on the FFmpeg libraries
   */
@@ -270,7 +270,7 @@ diff -Naur ffmpeg-3.2.4/ffmpeg.c ffmpeg-3.2.4.patch/ffmpeg.c
          av_opt_set_int(ist->dec_ctx, "refcounted_frames", 1, 0);
 diff -Naur ffmpeg-3.2.4/libavcodec/allcodecs.c ffmpeg-3.2.4.patch/libavcodec/allcodecs.c
 --- ffmpeg-3.2.4/libavcodec/allcodecs.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/allcodecs.c	2017-03-02 11:46:19.842810310 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/allcodecs.c	2017-03-22 22:42:34.814798487 +0100
 @@ -687,6 +687,7 @@
      REGISTER_PARSER(H261,               h261);
      REGISTER_PARSER(H263,               h263);
@@ -281,7 +281,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/allcodecs.c ffmpeg-3.2.4.patch/libavcodec/all
      REGISTER_PARSER(MLP,                mlp);
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/cabac.h ffmpeg-3.2.4.patch/libavcodec/arm/cabac.h
 --- ffmpeg-3.2.4/libavcodec/arm/cabac.h	2016-03-29 04:25:10.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/cabac.h	2017-03-02 11:46:19.843810312 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/cabac.h	2017-03-22 22:42:34.815798490 +0100
 @@ -26,13 +26,34 @@
  #include "libavutil/internal.h"
  #include "libavcodec/cabac.h"
@@ -462,7 +462,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/cabac.h ffmpeg-3.2.4.patch/libavcodec/arm
  #endif /* AVCODEC_ARM_CABAC_H */
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevc_cabac.h ffmpeg-3.2.4.patch/libavcodec/arm/hevc_cabac.h
 --- ffmpeg-3.2.4/libavcodec/arm/hevc_cabac.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/hevc_cabac.h	2017-03-02 11:46:19.844810313 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/hevc_cabac.h	2017-03-22 22:42:34.816798492 +0100
 @@ -0,0 +1,491 @@
 +/*
 + * This file is part of FFmpeg.
@@ -957,7 +957,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevc_cabac.h ffmpeg-3.2.4.patch/libavcode
 +#endif /* AVCODEC_ARM_HEVC_CABAC_H */
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_deblock_neon.S ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_deblock_neon.S
 --- ffmpeg-3.2.4/libavcodec/arm/hevcdsp_deblock_neon.S	2016-03-29 04:25:10.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_deblock_neon.S	2017-03-02 11:46:19.845810315 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_deblock_neon.S	2017-03-22 22:42:34.817798495 +0100
 @@ -383,3 +383,127 @@
          vst1.8   {d4}, [r0]
          bx       lr
@@ -1088,7 +1088,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_deblock_neon.S ffmpeg-3.2.4.patch
 +endfunc
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_epel_neon.S ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_epel_neon.S
 --- ffmpeg-3.2.4/libavcodec/arm/hevcdsp_epel_neon.S	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_epel_neon.S	2017-03-02 11:46:19.845810315 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_epel_neon.S	2017-03-22 22:42:34.818798498 +0100
 @@ -0,0 +1,337 @@
 +/*
 + * Copyright (c) 2014 - 2015 Seppo Tomperi <seppo.tomperi@vtt.fi>
@@ -1429,7 +1429,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_epel_neon.S ffmpeg-3.2.4.patch/li
 +       .byte 2, 10, 58, 2
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_init_neon.c ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_init_neon.c
 --- ffmpeg-3.2.4/libavcodec/arm/hevcdsp_init_neon.c	2016-03-29 04:25:10.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_init_neon.c	2017-03-02 11:46:19.846810317 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_init_neon.c	2017-03-22 22:42:34.818798498 +0100
 @@ -22,6 +22,8 @@
  #include "libavutil/arm/cpu.h"
  #include "libavcodec/hevcdsp.h"
@@ -1655,7 +1655,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_init_neon.c ffmpeg-3.2.4.patch/li
  }
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_sao_neon.S ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_sao_neon.S
 --- ffmpeg-3.2.4/libavcodec/arm/hevcdsp_sao_neon.S	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_sao_neon.S	2017-03-02 11:46:19.847810319 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/hevcdsp_sao_neon.S	2017-03-22 22:42:34.819798500 +0100
 @@ -0,0 +1,510 @@
 +/*
 + * Copyright (c) 2014 - 2015 Seppo Tomperi <seppo.tomperi@vtt.fi>
@@ -2169,7 +2169,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/hevcdsp_sao_neon.S ffmpeg-3.2.4.patch/lib
 +
 diff -Naur ffmpeg-3.2.4/libavcodec/arm/Makefile ffmpeg-3.2.4.patch/libavcodec/arm/Makefile
 --- ffmpeg-3.2.4/libavcodec/arm/Makefile	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/arm/Makefile	2017-03-02 11:46:19.843810312 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/arm/Makefile	2017-03-22 22:42:34.814798487 +0100
 @@ -132,8 +132,10 @@
  NEON-OBJS-$(CONFIG_DCA_DECODER)        += arm/synth_filter_neon.o
  NEON-OBJS-$(CONFIG_HEVC_DECODER)       += arm/hevcdsp_init_neon.o       \
@@ -2184,7 +2184,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/arm/Makefile ffmpeg-3.2.4.patch/libavcodec/ar
                                            arm/rv40dsp_neon.o
 diff -Naur ffmpeg-3.2.4/libavcodec/avcodec.h ffmpeg-3.2.4.patch/libavcodec/avcodec.h
 --- ffmpeg-3.2.4/libavcodec/avcodec.h	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/avcodec.h	2017-03-02 11:49:38.512214085 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/avcodec.h	2017-03-22 22:43:54.521005055 +0100
 @@ -412,6 +412,8 @@
      AV_CODEC_ID_SHEERVIDEO,
      AV_CODEC_ID_YLC,
@@ -2227,7 +2227,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/avcodec.h ffmpeg-3.2.4.patch/libavcodec/avcod
  AVRational av_codec_get_pkt_timebase         (const AVCodecContext *avctx);
 diff -Naur ffmpeg-3.2.4/libavcodec/cabac.h ffmpeg-3.2.4.patch/libavcodec/cabac.h
 --- ffmpeg-3.2.4/libavcodec/cabac.h	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/cabac.h	2017-03-02 11:46:19.850810324 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/cabac.h	2017-03-22 22:42:34.824798513 +0100
 @@ -43,7 +43,14 @@
  typedef struct CABACContext{
      int low;
@@ -2246,7 +2246,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/cabac.h ffmpeg-3.2.4.patch/libavcodec/cabac.h
      const uint8_t *bytestream_end;
 diff -Naur ffmpeg-3.2.4/libavcodec/codec_desc.c ffmpeg-3.2.4.patch/libavcodec/codec_desc.c
 --- ffmpeg-3.2.4/libavcodec/codec_desc.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/codec_desc.c	2017-03-02 11:46:19.851810326 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/codec_desc.c	2017-03-22 22:42:34.825798516 +0100
 @@ -1564,6 +1564,13 @@
          .props     = AV_CODEC_PROP_LOSSLESS,
          .mime_types= MT("image/png"),
@@ -2263,7 +2263,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/codec_desc.c ffmpeg-3.2.4.patch/libavcodec/co
      {
 diff -Naur ffmpeg-3.2.4/libavcodec/h264.h ffmpeg-3.2.4.patch/libavcodec/h264.h
 --- ffmpeg-3.2.4/libavcodec/h264.h	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/h264.h	2017-03-02 11:48:31.445029819 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/h264.h	2017-03-22 22:45:08.817196788 +0100
 @@ -41,7 +41,9 @@
      H264_NAL_END_STREAM      = 11,
      H264_NAL_FILLER_DATA     = 12,
@@ -2276,18 +2276,17 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264.h ffmpeg-3.2.4.patch/libavcodec/h264.h
  #endif /* AVCODEC_H264_H */
 diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h264_parser.c
 --- ffmpeg-3.2.4/libavcodec/h264_parser.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/h264_parser.c	2017-03-02 11:47:43.484931977 +0100
-@@ -62,6 +62,9 @@
++++ ffmpeg-3.2.4.patch/libavcodec/h264_parser.c	2017-03-22 22:48:48.087757606 +0100
+@@ -62,6 +62,8 @@
      int parse_last_mb;
      int64_t reference_dts;
      int last_frame_num, last_picture_structure;
 +    int is_mvc;
 +    int slice_ext;
-+
  } H264ParseContext;
  
  
-@@ -109,24 +112,27 @@
+@@ -109,24 +111,27 @@
          } else if (state <= 5) {
              int nalu_type = buf[i] & 0x1F;
              if (nalu_type == H264_NAL_SEI || nalu_type == H264_NAL_SPS ||
@@ -2319,7 +2318,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h
                  p->parse_history_count = 0;
                  mb= get_ue_golomb_long(&gb);
                  p->parse_last_mb = mb;
-@@ -149,7 +155,7 @@
+@@ -149,7 +154,7 @@
      pc->frame_start_found = 0;
      if (p->is_avc)
          return next_avc;
@@ -2328,7 +2327,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h
  }
  
  static int scan_mmco_reset(AVCodecParserContext *s, GetBitContext *gb,
-@@ -594,7 +600,8 @@
+@@ -594,7 +599,8 @@
          }
      }
  
@@ -2338,7 +2337,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h
  
      if (avctx->framerate.num)
          avctx->time_base = av_inv_q(av_mul_q(avctx->framerate, (AVRational){avctx->ticks_per_frame, 1}));
-@@ -651,7 +658,7 @@
+@@ -651,7 +657,7 @@
          if ((state & 0xFFFFFF00) != 0x100)
              break;
          nalu_type = state & 0x1F;
@@ -2347,7 +2346,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h
              has_sps = 1;
          } else if (nalu_type == H264_NAL_PPS)
              has_pps = 1;
-@@ -702,4 +709,24 @@
+@@ -702,4 +708,24 @@
      .parser_parse   = h264_parse,
      .parser_close   = h264_close,
      .split          = h264_split,
@@ -2374,7 +2373,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/h264_parser.c ffmpeg-3.2.4.patch/libavcodec/h
  };
 diff -Naur ffmpeg-3.2.4/libavcodec/hevc.c ffmpeg-3.2.4.patch/libavcodec/hevc.c
 --- ffmpeg-3.2.4/libavcodec/hevc.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/hevc.c	2017-03-02 11:46:19.857810336 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevc.c	2017-03-22 22:42:34.834798539 +0100
 @@ -41,8 +41,186 @@
  #include "hevc.h"
  #include "profiles.h"
@@ -4428,7 +4427,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevc.c ffmpeg-3.2.4.patch/libavcodec/hevc.c
          goto fail;
 diff -Naur ffmpeg-3.2.4/libavcodec/hevc_cabac.c ffmpeg-3.2.4.patch/libavcodec/hevc_cabac.c
 --- ffmpeg-3.2.4/libavcodec/hevc_cabac.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/hevc_cabac.c	2017-03-02 11:46:19.861810342 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevc_cabac.c	2017-03-22 22:42:34.838798549 +0100
 @@ -21,14 +21,72 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
   */
@@ -5890,7 +5889,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevc_cabac.c ffmpeg-3.2.4.patch/libavcodec/he
  
 diff -Naur ffmpeg-3.2.4/libavcodec/hevcdsp.c ffmpeg-3.2.4.patch/libavcodec/hevcdsp.c
 --- ffmpeg-3.2.4/libavcodec/hevcdsp.c	2016-06-27 01:54:29.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/hevcdsp.c	2017-03-02 11:46:19.863810346 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevcdsp.c	2017-03-22 22:42:34.841798557 +0100
 @@ -123,6 +123,120 @@
  #include "hevcdsp_template.c"
  #undef BIT_DEPTH
@@ -6023,7 +6022,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevcdsp.c ffmpeg-3.2.4.patch/libavcodec/hevcd
      if (ARCH_ARM)
 diff -Naur ffmpeg-3.2.4/libavcodec/hevcdsp.h ffmpeg-3.2.4.patch/libavcodec/hevcdsp.h
 --- ffmpeg-3.2.4/libavcodec/hevcdsp.h	2016-06-27 01:54:29.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/hevcdsp.h	2017-03-02 11:46:19.863810346 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevcdsp.h	2017-03-22 22:42:34.841798557 +0100
 @@ -42,6 +42,17 @@
      uint8_t type_idx[3];    ///< sao_type_idx
  } SAOParams;
@@ -6054,7 +6053,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevcdsp.h ffmpeg-3.2.4.patch/libavcodec/hevcd
  void ff_hevc_dsp_init(HEVCDSPContext *hpc, int bit_depth);
 diff -Naur ffmpeg-3.2.4/libavcodec/hevc_filter.c ffmpeg-3.2.4.patch/libavcodec/hevc_filter.c
 --- ffmpeg-3.2.4/libavcodec/hevc_filter.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/hevc_filter.c	2017-03-02 11:46:19.862810344 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevc_filter.c	2017-03-22 22:42:34.840798554 +0100
 @@ -22,6 +22,12 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
   */
@@ -6717,7 +6716,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevc_filter.c ffmpeg-3.2.4.patch/libavcodec/h
  void ff_hevc_hls_filters(HEVCContext *s, int x_ctb, int y_ctb, int ctb_size)
 diff -Naur ffmpeg-3.2.4/libavcodec/hevc.h ffmpeg-3.2.4.patch/libavcodec/hevc.h
 --- ffmpeg-3.2.4/libavcodec/hevc.h	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/hevc.h	2017-03-02 11:46:19.858810337 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevc.h	2017-03-22 22:42:34.835798541 +0100
 @@ -23,6 +23,9 @@
  #ifndef AVCODEC_HEVC_H
  #define AVCODEC_HEVC_H
@@ -7023,7 +7022,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevc.h ffmpeg-3.2.4.patch/libavcodec/hevc.h
  
 diff -Naur ffmpeg-3.2.4/libavcodec/hevcpred_template.c ffmpeg-3.2.4.patch/libavcodec/hevcpred_template.c
 --- ffmpeg-3.2.4/libavcodec/hevcpred_template.c	2016-06-27 01:54:29.000000000 +0200
-+++ ffmpeg-3.2.4.patch/libavcodec/hevcpred_template.c	2017-03-02 11:46:19.864810347 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevcpred_template.c	2017-03-22 22:42:34.842798559 +0100
 @@ -20,6 +20,8 @@
   * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
   */
@@ -7059,7 +7058,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevcpred_template.c ffmpeg-3.2.4.patch/libavc
          int size_in_luma_pu_h = PU(size_in_luma_h);
 diff -Naur ffmpeg-3.2.4/libavcodec/hevc_ps.c ffmpeg-3.2.4.patch/libavcodec/hevc_ps.c
 --- ffmpeg-3.2.4/libavcodec/hevc_ps.c	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/hevc_ps.c	2017-03-02 11:46:19.863810346 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/hevc_ps.c	2017-03-22 22:42:34.841798557 +0100
 @@ -1001,6 +1001,8 @@
      sps->amp_enabled_flag = get_bits1(gb);
      sps->sao_enabled      = get_bits1(gb);
@@ -7071,7 +7070,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/hevc_ps.c ffmpeg-3.2.4.patch/libavcodec/hevc_
          sps->pcm.bit_depth   = get_bits(gb, 4) + 1;
 diff -Naur ffmpeg-3.2.4/libavcodec/Makefile ffmpeg-3.2.4.patch/libavcodec/Makefile
 --- ffmpeg-3.2.4/libavcodec/Makefile	2017-02-10 14:25:26.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/Makefile	2017-03-02 11:46:19.842810310 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/Makefile	2017-03-22 22:42:34.813798485 +0100
 @@ -5,6 +5,11 @@
  HEADERS = avcodec.h                                                     \
            avdct.h                                                       \
@@ -7109,7 +7108,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/Makefile ffmpeg-3.2.4.patch/libavcodec/Makefi
 +$(SUBDIR)rpi_qpu.o: $(SUBDIR)rpi_shader.h
 diff -Naur ffmpeg-3.2.4/libavcodec/mmaldec.c ffmpeg-3.2.4.patch/libavcodec/mmaldec.c
 --- ffmpeg-3.2.4/libavcodec/mmaldec.c	2017-02-10 14:25:27.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/mmaldec.c	2017-03-02 11:46:19.864810347 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/mmaldec.c	2017-03-22 22:42:34.842798559 +0100
 @@ -24,6 +24,9 @@
   * MMAL Video Decoder
   */
@@ -7130,7 +7129,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/mmaldec.c ffmpeg-3.2.4.patch/libavcodec/mmald
  #include "internal.h"
 diff -Naur ffmpeg-3.2.4/libavcodec/mpeg4videodec.c ffmpeg-3.2.4.patch/libavcodec/mpeg4videodec.c
 --- ffmpeg-3.2.4/libavcodec/mpeg4videodec.c	2017-02-10 14:25:27.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/mpeg4videodec.c	2017-03-02 11:46:19.865810349 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/mpeg4videodec.c	2017-03-22 22:42:34.843798562 +0100
 @@ -2212,6 +2212,9 @@
  
          if (ctx->divx_version >= 0)
@@ -7151,7 +7150,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/mpeg4videodec.c ffmpeg-3.2.4.patch/libavcodec
          avctx->idct_algo == FF_IDCT_AUTO) {
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.h ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.h
 --- ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.h	2017-03-02 11:46:19.866810350 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.h	2017-03-22 22:42:34.845798567 +0100
 @@ -0,0 +1,3070 @@
 +unsigned char rpi_hevc_transform [] = {
 +21,
@@ -10225,7 +10224,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.h ffmpeg-3.2.4.patch/libav
 +};
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.s ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.s
 --- ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.s	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.s	2017-03-02 11:46:19.867810352 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_hevc_transform.s	2017-03-22 22:42:34.846798570 +0100
 @@ -0,0 +1,917 @@
 +# ******************************************************************************
 +# Argon Design Ltd.
@@ -11146,7 +11145,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_hevc_transform.s ffmpeg-3.2.4.patch/libav
 +  pop r6-r7, pc
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_mailbox.c ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.c
 --- ffmpeg-3.2.4/libavcodec/rpi_mailbox.c	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.c	2017-03-02 11:46:19.868810354 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.c	2017-03-22 22:42:34.846798570 +0100
 @@ -0,0 +1,340 @@
 +/*
 +Copyright (c) 2012, Broadcom Europe Ltd.
@@ -11490,7 +11489,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_mailbox.c ffmpeg-3.2.4.patch/libavcodec/r
 +}
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_mailbox.h ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.h
 --- ffmpeg-3.2.4/libavcodec/rpi_mailbox.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.h	2017-03-02 11:46:19.868810354 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_mailbox.h	2017-03-22 22:42:34.846798570 +0100
 @@ -0,0 +1,25 @@
 +#ifndef RPI_MAILBOX_H
 +#define RPI_MAILBOX_H
@@ -11519,8 +11518,8 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_mailbox.h ffmpeg-3.2.4.patch/libavcodec/r
 +#endif
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.c ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.c
 --- ffmpeg-3.2.4/libavcodec/rpi_qpu.c	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.c	2017-03-02 11:46:19.869810355 +0100
-@@ -0,0 +1,991 @@
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.c	2017-03-22 22:42:34.848798575 +0100
+@@ -0,0 +1,993 @@
 +#ifdef RPI
 +// Use vchiq service for submitting jobs
 +#define GPUSERVICE
@@ -11665,6 +11664,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.c ffmpeg-3.2.4.patch/libavcodec/rpi_q
 +	if (qpu_enable(mb, 1)) return -2;
 +#endif
 +  vcsm_init();
++  vc_gpuserv_init();
 +  gpu_malloc_uncached_internal(sizeof(struct GPU), &gpu_mem_ptr, mb);
 +  ptr = (volatile struct GPU*)gpu_mem_ptr.arm;
 +  memset((void*)ptr, 0, sizeof *ptr);
@@ -11899,6 +11899,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.c ffmpeg-3.2.4.patch/libavcodec/rpi_q
 +  qpu_enable(mb, 0);
 +  gpu_free_internal(&gpu_mem_ptr);
 +
++  vc_gpuserv_deinit();
 +  vcsm_exit();
 +
 +  mbox_close(mb);
@@ -12514,7 +12515,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.c ffmpeg-3.2.4.patch/libavcodec/rpi_q
 +#endif // RPI
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.h ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.h
 --- ffmpeg-3.2.4/libavcodec/rpi_qpu.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.h	2017-03-02 11:46:19.869810355 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_qpu.h	2017-03-22 22:42:34.848798575 +0100
 @@ -0,0 +1,176 @@
 +#ifndef RPI_QPU_H
 +#define RPI_QPU_H
@@ -12694,7 +12695,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_qpu.h ffmpeg-3.2.4.patch/libavcodec/rpi_q
 +#endif
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.c ffmpeg-3.2.4.patch/libavcodec/rpi_shader.c
 --- ffmpeg-3.2.4/libavcodec/rpi_shader.c	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.c	2017-03-02 11:46:19.870810357 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.c	2017-03-22 22:42:34.849798577 +0100
 @@ -0,0 +1,629 @@
 +#include "rpi_shader.h"
 +
@@ -13327,7 +13328,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.c ffmpeg-3.2.4.patch/libavcodec/rp
 +#endif
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.h ffmpeg-3.2.4.patch/libavcodec/rpi_shader.h
 --- ffmpeg-3.2.4/libavcodec/rpi_shader.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.h	2017-03-02 11:46:19.871810358 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.h	2017-03-22 22:42:34.849798577 +0100
 @@ -0,0 +1,19 @@
 +#ifndef rpi_shader_H
 +#define rpi_shader_H
@@ -13350,7 +13351,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.h ffmpeg-3.2.4.patch/libavcodec/rp
 +#endif
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.qasm ffmpeg-3.2.4.patch/libavcodec/rpi_shader.qasm
 --- ffmpeg-3.2.4/libavcodec/rpi_shader.qasm	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.qasm	2017-03-02 11:46:19.872810360 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_shader.qasm	2017-03-22 22:42:34.851798583 +0100
 @@ -0,0 +1,1098 @@
 +# register allocation
 +#
@@ -14452,7 +14453,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_shader.qasm ffmpeg-3.2.4.patch/libavcodec
 +# Do not add code here because mc_end must appear after all other code.
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_user_vcsm.h ffmpeg-3.2.4.patch/libavcodec/rpi_user_vcsm.h
 --- ffmpeg-3.2.4/libavcodec/rpi_user_vcsm.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_user_vcsm.h	2017-03-02 11:46:19.872810360 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_user_vcsm.h	2017-03-22 22:42:34.851798583 +0100
 @@ -0,0 +1,459 @@
 +/*****************************************************************************
 +* Copyright 2001 - 2011 Broadcom Corporation.  All rights reserved.
@@ -14915,7 +14916,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_user_vcsm.h ffmpeg-3.2.4.patch/libavcodec
 +#endif /* __USER_VCSM__H__INCLUDED__ */
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_zc.c ffmpeg-3.2.4.patch/libavcodec/rpi_zc.c
 --- ffmpeg-3.2.4/libavcodec/rpi_zc.c	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_zc.c	2017-03-02 11:46:19.873810362 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_zc.c	2017-03-22 22:42:34.852798585 +0100
 @@ -0,0 +1,406 @@
 +#include "config.h"
 +#ifdef RPI
@@ -15325,7 +15326,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_zc.c ffmpeg-3.2.4.patch/libavcodec/rpi_zc
 +
 diff -Naur ffmpeg-3.2.4/libavcodec/rpi_zc.h ffmpeg-3.2.4.patch/libavcodec/rpi_zc.h
 --- ffmpeg-3.2.4/libavcodec/rpi_zc.h	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/rpi_zc.h	2017-03-02 11:46:19.873810362 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/rpi_zc.h	2017-03-22 22:42:34.852798585 +0100
 @@ -0,0 +1,83 @@
 +#ifndef LIBAVCODEC_RPI_ZC_H
 +#define LIBAVCODEC_RPI_ZC_H
@@ -15412,7 +15413,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/rpi_zc.h ffmpeg-3.2.4.patch/libavcodec/rpi_zc
 +
 diff -Naur ffmpeg-3.2.4/libavcodec/utils.c ffmpeg-3.2.4.patch/libavcodec/utils.c
 --- ffmpeg-3.2.4/libavcodec/utils.c	2017-02-10 14:25:27.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavcodec/utils.c	2017-03-02 11:46:19.874810363 +0100
++++ ffmpeg-3.2.4.patch/libavcodec/utils.c	2017-03-22 22:42:34.853798588 +0100
 @@ -26,6 +26,12 @@
   */
  
@@ -15502,7 +15503,7 @@ diff -Naur ffmpeg-3.2.4/libavcodec/utils.c ffmpeg-3.2.4.patch/libavcodec/utils.c
                                                          NULL :
 diff -Naur ffmpeg-3.2.4/libavformat/mpegts.c ffmpeg-3.2.4.patch/libavformat/mpegts.c
 --- ffmpeg-3.2.4/libavformat/mpegts.c	2017-02-10 14:25:27.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavformat/mpegts.c	2017-03-02 11:46:19.874810363 +0100
++++ ffmpeg-3.2.4.patch/libavformat/mpegts.c	2017-03-22 22:42:34.854798590 +0100
 @@ -701,7 +701,7 @@
  #endif
      { 0x1b, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264       },
@@ -15514,7 +15515,7 @@ diff -Naur ffmpeg-3.2.4/libavformat/mpegts.c ffmpeg-3.2.4.patch/libavformat/mpeg
      { 0x42, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_CAVS       },
 diff -Naur ffmpeg-3.2.4/libavformat/utils.c ffmpeg-3.2.4.patch/libavformat/utils.c
 --- ffmpeg-3.2.4/libavformat/utils.c	2017-02-10 14:25:27.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavformat/utils.c	2017-03-02 11:46:19.875810365 +0100
++++ ffmpeg-3.2.4.patch/libavformat/utils.c	2017-03-22 22:42:34.856798595 +0100
 @@ -733,7 +733,7 @@
          int default_stream_index = av_find_default_stream_index(s);
          if (s->streams[default_stream_index]->pts_wrap_reference == AV_NOPTS_VALUE) {
@@ -15526,7 +15527,7 @@ diff -Naur ffmpeg-3.2.4/libavformat/utils.c ffmpeg-3.2.4.patch/libavformat/utils
                  s->streams[i]->pts_wrap_behavior = pts_wrap_behavior;
 diff -Naur ffmpeg-3.2.4/libavutil/buffer.c ffmpeg-3.2.4.patch/libavutil/buffer.c
 --- ffmpeg-3.2.4/libavutil/buffer.c	2017-02-10 14:25:28.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavutil/buffer.c	2017-03-02 11:46:19.876810367 +0100
++++ ffmpeg-3.2.4.patch/libavutil/buffer.c	2017-03-22 22:42:34.856798595 +0100
 @@ -425,3 +425,9 @@
  
      return ret;
@@ -15539,7 +15540,7 @@ diff -Naur ffmpeg-3.2.4/libavutil/buffer.c ffmpeg-3.2.4.patch/libavutil/buffer.c
 +}
 diff -Naur ffmpeg-3.2.4/libavutil/buffer.h ffmpeg-3.2.4.patch/libavutil/buffer.h
 --- ffmpeg-3.2.4/libavutil/buffer.h	2017-02-10 14:25:28.000000000 +0100
-+++ ffmpeg-3.2.4.patch/libavutil/buffer.h	2017-03-02 11:46:19.876810367 +0100
++++ ffmpeg-3.2.4.patch/libavutil/buffer.h	2017-03-22 22:42:34.856798595 +0100
 @@ -283,6 +283,9 @@
   */
  AVBufferRef *av_buffer_pool_get(AVBufferPool *pool);
@@ -15552,7 +15553,7 @@ diff -Naur ffmpeg-3.2.4/libavutil/buffer.h ffmpeg-3.2.4.patch/libavutil/buffer.h
   */
 diff -Naur ffmpeg-3.2.4/pi-util/conf_h265.csv ffmpeg-3.2.4.patch/pi-util/conf_h265.csv
 --- ffmpeg-3.2.4/pi-util/conf_h265.csv	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/conf_h265.csv	2017-03-02 11:46:19.876810367 +0100
++++ ffmpeg-3.2.4.patch/pi-util/conf_h265.csv	2017-03-22 22:42:34.857798598 +0100
 @@ -0,0 +1,144 @@
 +1,ADJUST_IPRED_ANGLE_A_RExt_Mitsubishi_1,ADJUST_IPRED_ANGLE_A_RExt_Mitsubishi_1.bit,ADJUST_IPRED_ANGLE_A_RExt_Mitsubishi_1.md5
 +2,AMP_A_Samsung_6,AMP_A_Samsung_6.bin,AMP_A_Samsung_6.md5
@@ -15700,7 +15701,7 @@ diff -Naur ffmpeg-3.2.4/pi-util/conf_h265.csv ffmpeg-3.2.4.patch/pi-util/conf_h2
 +1,WPP_F_ericsson_MAIN_2,WPP_F_ericsson_MAIN_2.bit,WPP_F_ericsson_MAIN_2_yuv.md5
 diff -Naur ffmpeg-3.2.4/pi-util/conf.sh ffmpeg-3.2.4.patch/pi-util/conf.sh
 --- ffmpeg-3.2.4/pi-util/conf.sh	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/conf.sh	2017-03-02 11:46:19.876810367 +0100
++++ ffmpeg-3.2.4.patch/pi-util/conf.sh	2017-03-22 22:42:34.857798598 +0100
 @@ -0,0 +1,33 @@
 +echo "Configure for Pi2/3"
 +
@@ -15737,7 +15738,7 @@ diff -Naur ffmpeg-3.2.4/pi-util/conf.sh ffmpeg-3.2.4.patch/pi-util/conf.sh
 +# -Wa,-ahls
 diff -Naur ffmpeg-3.2.4/pi-util/ffconf.py ffmpeg-3.2.4.patch/pi-util/ffconf.py
 --- ffmpeg-3.2.4/pi-util/ffconf.py	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/ffconf.py	2017-03-02 11:46:19.877810368 +0100
++++ ffmpeg-3.2.4.patch/pi-util/ffconf.py	2017-03-22 22:42:34.857798598 +0100
 @@ -0,0 +1,146 @@
 +#!/usr/bin/env python
 +
@@ -15887,7 +15888,7 @@ diff -Naur ffmpeg-3.2.4/pi-util/ffconf.py ffmpeg-3.2.4.patch/pi-util/ffconf.py
 +
 diff -Naur ffmpeg-3.2.4/pi-util/qasm.py ffmpeg-3.2.4.patch/pi-util/qasm.py
 --- ffmpeg-3.2.4/pi-util/qasm.py	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/qasm.py	2017-03-02 11:46:19.878810370 +0100
++++ ffmpeg-3.2.4.patch/pi-util/qasm.py	2017-03-22 22:42:34.860798606 +0100
 @@ -0,0 +1,2502 @@
 +#!/usr/bin/env python
 +
@@ -18393,7 +18394,7 @@ diff -Naur ffmpeg-3.2.4/pi-util/qasm.py ffmpeg-3.2.4.patch/pi-util/qasm.py
 +   main()
 diff -Naur ffmpeg-3.2.4/pi-util/rebase_liblinks.py ffmpeg-3.2.4.patch/pi-util/rebase_liblinks.py
 --- ffmpeg-3.2.4/pi-util/rebase_liblinks.py	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/rebase_liblinks.py	2017-03-02 11:46:19.878810370 +0100
++++ ffmpeg-3.2.4.patch/pi-util/rebase_liblinks.py	2017-03-22 22:42:34.860798606 +0100
 @@ -0,0 +1,37 @@
 +#!/usr/bin/env python
 +
@@ -18434,7 +18435,7 @@ diff -Naur ffmpeg-3.2.4/pi-util/rebase_liblinks.py ffmpeg-3.2.4.patch/pi-util/re
 +
 diff -Naur ffmpeg-3.2.4/pi-util/syncroot.sh ffmpeg-3.2.4.patch/pi-util/syncroot.sh
 --- ffmpeg-3.2.4/pi-util/syncroot.sh	1970-01-01 01:00:00.000000000 +0100
-+++ ffmpeg-3.2.4.patch/pi-util/syncroot.sh	2017-03-02 11:46:19.879810371 +0100
++++ ffmpeg-3.2.4.patch/pi-util/syncroot.sh	2017-03-22 22:42:34.860798606 +0100
 @@ -0,0 +1,43 @@
 +set -e
 +
