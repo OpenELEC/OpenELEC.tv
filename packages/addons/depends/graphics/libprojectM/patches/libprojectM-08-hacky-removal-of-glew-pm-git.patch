@@ -1,0 +1,43 @@
+diff -Naur libprojectM-2.0.0/CMakeLists.txt libprojectM-2.0.0.patch/CMakeLists.txt
+--- libprojectM-2.0.0/CMakeLists.txt	2017-03-23 08:32:22.826500657 +0100
++++ libprojectM-2.0.0.patch/CMakeLists.txt	2017-03-23 08:41:14.887616981 +0100
+@@ -52,7 +52,7 @@
+ SET(GLEW_LINK_TARGETS )
+ else(USE_NATIVE_GLEW)
+ SET(GLEW_SOURCES )
+-SET (GLEW_LINK_TARGETS GLEW)
++SET (GLEW_LINK_TARGETS)
+ endif(USE_NATIVE_GLEW)
+ 
+ SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
+diff -Naur libprojectM-2.0.0/Renderer/FBO.cpp libprojectM-2.0.0.patch/Renderer/FBO.cpp
+--- libprojectM-2.0.0/Renderer/FBO.cpp	2009-12-01 07:38:42.000000000 +0100
++++ libprojectM-2.0.0.patch/Renderer/FBO.cpp	2017-03-23 08:33:12.333604458 +0100
+@@ -97,10 +97,10 @@
+    this->texsize = texsize;
+ 
+ #ifdef USE_FBO
+-   glewInit();
++   //glewInit();
+       // Forceably disable FBO if user requested it but the video card / driver lacks
+       // the appropraite frame buffer extension.
+-      if (useFBO = glewIsSupported("GL_EXT_framebuffer_object"))
++      if (useFBO = 1)//glewIsSupported("GL_EXT_framebuffer_object"))
+ 	{	 
+ 
+ 	  GLuint   fb,  depth_rb, rgba_tex,  other_tex;
+diff -Naur libprojectM-2.0.0/Renderer/FBO.hpp libprojectM-2.0.0.patch/Renderer/FBO.hpp
+--- libprojectM-2.0.0/Renderer/FBO.hpp	2009-12-01 07:38:42.000000000 +0100
++++ libprojectM-2.0.0.patch/Renderer/FBO.hpp	2017-03-23 08:33:12.333604458 +0100
+@@ -32,7 +32,10 @@
+ #ifdef USE_NATIVE_GLEW
+ #include "glew.h"
+ #else
+-#include <GL/glew.h>
++//#include <GL/glew.h>
++#define GL_GLEXT_PROTOTYPES
++#include <GL/gl.h>
++#include <GL/glext.h>
+ #endif
+ #endif
+ 
