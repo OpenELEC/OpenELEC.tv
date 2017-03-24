@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,13 @@
 ################################################################################
 
 PKG_NAME="samba"
-PKG_VERSION="4.6.0"
+PKG_VERSION="4.6.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3+"
 PKG_SITE="http://www.samba.org"
 PKG_URL="https://samba.org/samba/ftp/stable/$PKG_NAME-$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain heimdal:host e2fsprogs:host zlib readline popt libaio connman"
+PKG_DEPENDS_TARGET="toolchain Python heimdal:host e2fsprogs:host zlib readline popt libaio connman"
 PKG_PRIORITY="optional"
 PKG_SECTION="network"
 PKG_SHORTDESC="samba: The free SMB / CIFS fileserver and client"
@@ -104,7 +104,12 @@ pre_configure_target() {
   strip_gold
 
 # work around link issues
-  export LDFLAGS="$LDFLAGS -lreadline"
+  export LDFLAGS+=" -lreadline"
+
+# support 64-bit offsets and seeks on 32-bit platforms
+  if [ "$TARGET_ARCH" = "arm" -o "$TARGET_ARCH" = "i386" ]; then
+    export CFLAGS+=" -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64"
+  fi
 }
 
 configure_target() {
