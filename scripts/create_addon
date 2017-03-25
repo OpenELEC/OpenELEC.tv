@@ -186,7 +186,22 @@ if [ "$PKG_IS_ADDON" = "yes" ] ; then
 
   rm -rf $ADDON_BUILD
 
-  if [ "$(type -t addon)" = "function" ]; then
+
+  if [ -d $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME ]; then
+    mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/
+      cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME/* $ADDON_BUILD/$PKG_ADDON_ID/
+      if [ -d $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$PKG_NAME ]; then
+        if [  -f $ADDON_BUILD/$PKG_ADDON_ID/addon.xml ]; then
+          ADDONSO=$(xmlstarlet sel -t -v "/addon/extension/@library_linux" $ADDON_BUILD/$PKG_ADDON_ID/addon.xml)
+          cp -PL $PKG_BUILD/.install_pkg/usr/lib/$MEDIACENTER/addons/$PKG_NAME/$ADDONSO $ADDON_BUILD/$PKG_ADDON_ID/
+        else
+          cp -PL $PKG_BUILD/.install_pkg/usr/lib/$MEDIACENTER/addons/$PKG_NAME/*.so* $ADDON_BUILD/$PKG_ADDON_ID/
+        fi
+      fi
+    if [ "$(type -t addon)" = "function" ]; then
+      addon
+    fi
+  elif [ "$(type -t addon)" = "function" ]; then
     addon
   else
     echo "*** unsupported package format. please convert your package ***"
