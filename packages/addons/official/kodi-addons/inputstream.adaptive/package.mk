@@ -51,10 +51,6 @@ post_makeinstall_target() {
 }
 
 addon() {
-  mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/
-    cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME/* $ADDON_BUILD/$PKG_ADDON_ID/
-    cp -PL $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$PKG_NAME/*.so $ADDON_BUILD/$PKG_ADDON_ID/
-
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/lib
     cp -P $PKG_BUILD/wvdecrypter/libssd_wv.so $ADDON_BUILD/$PKG_ADDON_ID/lib
 }
