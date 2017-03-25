@@ -39,9 +39,3 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_MODULE_PATH=$SYSROOT_PREFIX/usr/share/kodi \
                        -DOGG_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
                        -DVORBIS_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include \
                        -DVORBISENC_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include"
-
-addon() {
-  mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -PR $PKG_BUILD/.install_pkg/usr/share/kodi/addons/$PKG_NAME/* $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -PL $PKG_BUILD/.install_pkg/usr/lib/kodi/addons/$PKG_NAME/*.so $ADDON_BUILD/$PKG_ADDON_ID/
-}
