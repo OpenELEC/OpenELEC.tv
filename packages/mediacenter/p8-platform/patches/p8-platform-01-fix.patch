@@ -1,6 +1,6 @@
-diff -Naur p8-platform-6535e48/CMakeLists.txt p8-platform-6535e48.patch/CMakeLists.txt
---- p8-platform-6535e48/CMakeLists.txt	2016-10-24 11:56:25.000000000 +0200
-+++ p8-platform-6535e48.patch/CMakeLists.txt	2016-12-12 07:40:06.473765704 +0100
+diff -Naur p8-platform-38343e0/CMakeLists.txt p8-platform-38343e0.patch/CMakeLists.txt
+--- p8-platform-38343e0/CMakeLists.txt	2016-01-19 20:51:52.000000000 +0100
++++ p8-platform-38343e0.patch/CMakeLists.txt	2017-03-23 10:57:41.140861748 +0100
 @@ -22,7 +22,7 @@
                     src/windows/os-threads.cpp)
  endif()
@@ -12,31 +12,16 @@ diff -Naur p8-platform-6535e48/CMakeLists.txt p8-platform-6535e48.patch/CMakeLis
  ENDIF(WIN32)
 @@ -41,7 +41,7 @@
  set_target_properties(p8-platform PROPERTIES VERSION ${p8-platform_VERSION_MAJOR}.${p8-platform_VERSION_MINOR}.${p8-platform_VERSION_PATCH}
-                                               SOVERSION ${p8-platform_VERSION_MAJOR})
+                                               SOVERSION ${p8-platform_VERSION_MAJOR}.0)
  
 -install(TARGETS p8-platform DESTINATION ${CMAKE_INSTALL_LIBDIR})
 +install(TARGETS p8-platform DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
  install(FILES src/os.h DESTINATION include/p8-platform)
  IF(WIN32)
    INSTALL(FILES src/windows/dlfcn-win32.h
-@@ -74,12 +74,12 @@
- IF(NOT WIN32)
-   configure_file(p8-platform.pc.in p8-platform.pc @ONLY)
-   install(FILES ${CMAKE_BINARY_DIR}/p8-platform.pc
--          DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-+          DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/pkgconfig)
- ENDIF(NOT WIN32)
- 
- # config mode
- configure_file (p8-platform-config.cmake.in
-                 p8-platform-config.cmake @ONLY)
- install(FILES ${CMAKE_BINARY_DIR}/p8-platform-config.cmake
--        DESTINATION ${CMAKE_INSTALL_LIBDIR}/p8-platform)
-+        DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/p8-platform)
- 
-diff -Naur p8-platform-6535e48/p8-platform-config.cmake.in p8-platform-6535e48.patch/p8-platform-config.cmake.in
---- p8-platform-6535e48/p8-platform-config.cmake.in	2016-10-24 11:56:25.000000000 +0200
-+++ p8-platform-6535e48.patch/p8-platform-config.cmake.in	2016-12-11 15:02:46.178563123 +0100
+diff -Naur p8-platform-38343e0/p8-platform-config.cmake.in p8-platform-38343e0.patch/p8-platform-config.cmake.in
+--- p8-platform-38343e0/p8-platform-config.cmake.in	2016-01-19 20:51:52.000000000 +0100
++++ p8-platform-38343e0.patch/p8-platform-config.cmake.in	2017-03-23 10:56:04.657668439 +0100
 @@ -10,7 +10,7 @@
  #
  # propagate these properties from one build system to the other
@@ -46,9 +31,9 @@ diff -Naur p8-platform-6535e48/p8-platform-config.cmake.in p8-platform-6535e48.p
  set (p8-platform_LIBRARY_DIRS "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@")
  set (p8-platform_LINKER_FLAGS "@p8-platform_LINKER_FLAGS@")
  set (p8-platform_CONFIG_VARS "@p8-platform_CONFIG_VARS@")
-diff -Naur p8-platform-6535e48/p8-platform.pc.in p8-platform-6535e48.patch/p8-platform.pc.in
---- p8-platform-6535e48/p8-platform.pc.in	2016-10-24 11:56:25.000000000 +0200
-+++ p8-platform-6535e48.patch/p8-platform.pc.in	2016-12-11 15:08:42.060412159 +0100
+diff -Naur p8-platform-38343e0/p8-platform.pc.in p8-platform-38343e0.patch/p8-platform.pc.in
+--- p8-platform-38343e0/p8-platform.pc.in	2016-01-19 20:51:52.000000000 +0100
++++ p8-platform-38343e0.patch/p8-platform.pc.in	2017-03-23 10:56:04.657668439 +0100
 @@ -1,6 +1,6 @@
  prefix=@CMAKE_INSTALL_PREFIX@
  libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
@@ -57,9 +42,9 @@ diff -Naur p8-platform-6535e48/p8-platform.pc.in p8-platform-6535e48.patch/p8-pl
  DEPENDENCIES=@p8-platform_LIBRARIES@
  
  Name: @p8-platform_NAME@
-diff -Naur p8-platform-6535e48/UseMultiArch.cmake p8-platform-6535e48.patch/UseMultiArch.cmake
---- p8-platform-6535e48/UseMultiArch.cmake	2016-10-24 11:56:25.000000000 +0200
-+++ p8-platform-6535e48.patch/UseMultiArch.cmake	2016-12-12 08:35:00.886625179 +0100
+diff -Naur p8-platform-38343e0/UseMultiArch.cmake p8-platform-38343e0.patch/UseMultiArch.cmake
+--- p8-platform-38343e0/UseMultiArch.cmake	2016-01-19 20:51:52.000000000 +0100
++++ p8-platform-38343e0.patch/UseMultiArch.cmake	2017-03-23 10:56:04.658668441 +0100
 @@ -41,8 +41,8 @@
  endif ()
  

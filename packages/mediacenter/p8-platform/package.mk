@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="p8-platform"
-PKG_VERSION="d7bceb6"
+PKG_VERSION="38343e0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
