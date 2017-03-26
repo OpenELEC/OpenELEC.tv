@@ -235,6 +235,10 @@ else
   PKG_CMAKE_OPTS_TARGET+=" -DENABLE_VAAPI=OFF"
 fi
 
+if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
+  PKG_DEPENDS_TARGET+=" kodi-language-addons"
+fi
+
 pre_configure_bootstrap() {
   CXXFLAGS+=" -DTARGET_POSIX -std=c++0x -I$ROOT/$PKG_BUILD/xbmc/linux"
 }
@@ -280,6 +284,17 @@ post_makeinstall_target() {
     xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "os.openelec.tv" $KODI_ADDON_MANIFEST
     xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "service.openelec.settings" $KODI_ADDON_MANIFEST
     xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "repository.openelec.tv" $KODI_ADDON_MANIFEST
+
+  # kodi-language-addons
+    if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
+      mkdir -p $INSTALL/usr/share/kodi/addons
+        cp -R $(get_pkg_build kodi-language-addons)/resource.language.* $INSTALL/usr/share/kodi/addons
+        for addon in $INSTALL/usr/share/kodi/addons/resource.language.* ; do
+          if [ -n "$addon" ]; then
+            xmlstarlet ed -L --subnode "/addons" -t elem -n "addon" -v "$(basename $addon)" $KODI_ADDON_MANIFEST
+          fi
+        done
+    fi
 
   # more binaddons cross compile badness meh
     sed -e "s:INCLUDE_DIR /usr/include/kodi:INCLUDE_DIR $SYSROOT_PREFIX/usr/include/kodi:g" \

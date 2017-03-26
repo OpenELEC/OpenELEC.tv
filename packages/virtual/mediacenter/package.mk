@@ -48,8 +48,4 @@ if [ "$MEDIACENTER" = "kodi" ]; then
       PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $MEDIACENTER-theme-$i"
     done
   fi
-
-  if [ "$KODI_LANGUAGE_ADDONS" = "yes" ]; then
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kodi-language-addons"
-  fi
 fi

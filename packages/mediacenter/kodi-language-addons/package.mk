@@ -38,6 +38,5 @@ make_target() {
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/usr/share/kodi/addons/
-    cp -PR $ROOT/$PKG_BUILD/resource.language.* $INSTALL/usr/share/kodi/addons/
+  : # will be installed from kodi package
 }
