@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="tz"
-PKG_VERSION="2016j"
+PKG_VERSION="2017b"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="Public Domain"
