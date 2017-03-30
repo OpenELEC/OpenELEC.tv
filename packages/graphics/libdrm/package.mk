@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libdrm"
-PKG_VERSION="2.4.75"
+PKG_VERSION="2.4.76"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -52,7 +52,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-udev \
                            --disable-nouveau \
                            --disable-vmwgfx \
                            --disable-freedreno \
-                           --disable-vc4 \ 
+                           --disable-vc4 \
                            $DRM_CONFIG \
                            --disable-install-test-programs \
                            --disable-cairo-tests \
