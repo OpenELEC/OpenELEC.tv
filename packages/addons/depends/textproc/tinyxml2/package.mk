@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="tinyxml2"
-PKG_VERSION="5b733ff"
+PKG_VERSION="fc05f63"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="zlib"
@@ -36,7 +36,7 @@ PKG_AUTORECONF="no"
 PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=off -DBUILD_STATIC_LIBS=on"
 
 pre_configure_target() {
-  export CFLAGS="$CFLAGS -fPIC"
+  export CFLAGS+=" -fPIC"
 }
 
 post_makeinstall_target() {
