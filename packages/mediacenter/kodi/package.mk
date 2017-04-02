@@ -230,7 +230,7 @@ else
 fi
 
 if [ "$VAAPI_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET+=" libva-intel-driver"
+  PKG_DEPENDS_TARGET+=" intel-vaapi-driver"
   PKG_CMAKE_OPTS_TARGET+=" -DENABLE_VAAPI=ON"
 else
   PKG_CMAKE_OPTS_TARGET+=" -DENABLE_VAAPI=OFF"

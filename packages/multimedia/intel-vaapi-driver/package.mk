@@ -16,18 +16,18 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="libva-intel-driver"
-PKG_VERSION="1.7.3"
+PKG_NAME="intel-vaapi-driver"
+PKG_VERSION="1.8.0"
 PKG_REV="1"
 PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="http://freedesktop.org/wiki/Software/vaapi"
-PKG_URL="http://www.freedesktop.org/software/vaapi/releases/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.bz2"
+PKG_URL="https://github.com/01org/intel-vaapi-driver/releases/download/$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain libva libdrm"
 PKG_PRIORITY="optional"
 PKG_SECTION="multimedia"
-PKG_SHORTDESC="libva-driver-intel: Intel G45+ driver for VAAPI"
-PKG_LONGDESC="libva-driver-intel: Intel G45+ driver for VAAPI"
+PKG_SHORTDESC="intel-vaapi-driver: Intel G45+ driver for VAAPI"
+PKG_LONGDESC="intel-vaapi-driver: Intel G45+ driver for VAAPI"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
