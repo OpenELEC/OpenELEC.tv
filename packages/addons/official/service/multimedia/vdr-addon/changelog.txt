@@ -1,3 +1,6 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+
 8.0.1
 - vdr: add upstream patches
 - update to vdr-plugin-dvbapi-7a42b22
