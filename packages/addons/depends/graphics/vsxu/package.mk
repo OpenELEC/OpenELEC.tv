@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -46,10 +46,10 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_INSTALL_LIBDIR=/usr/lib \
 
 post_makeinstall_target() {
   mkdir -p $SYSROOT_PREFIX/usr/lib/vsxu
-  cp -PR $INSTALL/usr/lib/* $SYSROOT_PREFIX/usr/lib
+    cp -PR $INSTALL/usr/lib/* $SYSROOT_PREFIX/usr/lib
 
   mkdir -p $SYSROOT_PREFIX/usr/include/
-  cp -RP $INSTALL/usr/include/* $SYSROOT_PREFIX/usr/include
+    cp -RP $INSTALL/usr/include/* $SYSROOT_PREFIX/usr/include
 
   mkdir -p $SYSROOT_PREFIX/usr/share/
     cp -RP $INSTALL/usr/share/vsxu $SYSROOT_PREFIX/usr/share
