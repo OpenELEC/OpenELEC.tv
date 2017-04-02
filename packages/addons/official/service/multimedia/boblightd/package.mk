@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ PKG_LONGDESC="Boblight's main purpose is to create light effects from an externa
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.service"
 PKG_ADDON_PROVIDES=""
-PKG_ADDON_REPOVERSION="8.0"
+PKG_ADDON_REPOVERSION="8.1"
 
 PKG_AUTORECONF="yes"
 
@@ -58,19 +58,19 @@ makeinstall_target() {
 
 addon() {
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/lib
-  cp -P $PKG_BUILD/.$TARGET_NAME/src/.libs/libboblight.so* $ADDON_BUILD/$PKG_ADDON_ID/lib
+    cp -P $PKG_BUILD/.$TARGET_NAME/src/.libs/libboblight.so* $ADDON_BUILD/$PKG_ADDON_ID/lib
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp -P $PKG_BUILD/.$TARGET_NAME/src/boblightd $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-constant $ADDON_BUILD/$PKG_ADDON_ID/bin
-  cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-aml $ADDON_BUILD/$PKG_ADDON_ID/bin
-  if [ "$DISPLAYSERVER" = "x11" ] ; then
-    cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-X11 $ADDON_BUILD/$PKG_ADDON_ID/bin
-  fi
+    cp -P $PKG_BUILD/.$TARGET_NAME/src/boblightd $ADDON_BUILD/$PKG_ADDON_ID/bin
+    cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-constant $ADDON_BUILD/$PKG_ADDON_ID/bin
+    cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-aml $ADDON_BUILD/$PKG_ADDON_ID/bin
+    if [ "$DISPLAYSERVER" = "x11" ] ; then
+      cp -P $PKG_BUILD/.$TARGET_NAME/src/boblight-X11 $ADDON_BUILD/$PKG_ADDON_ID/bin
+    fi
 
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config
-  cp -R $PKG_DIR/config/boblight.conf $ADDON_BUILD/$PKG_ADDON_ID/config
-  if [ "$DISPLAYSERVER" = "x11" ] ; then
-    cp -R $PKG_DIR/config/boblight.X11.sample $ADDON_BUILD/$PKG_ADDON_ID/config
-  fi
+    cp -R $PKG_DIR/config/boblight.conf $ADDON_BUILD/$PKG_ADDON_ID/config
+    if [ "$DISPLAYSERVER" = "x11" ] ; then
+      cp -R $PKG_DIR/config/boblight.X11.sample $ADDON_BUILD/$PKG_ADDON_ID/config
+    fi
 }
