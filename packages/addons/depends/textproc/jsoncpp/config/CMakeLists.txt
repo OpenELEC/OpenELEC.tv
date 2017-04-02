@@ -11,5 +11,5 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(jsoncpp ${SOURCES})
 
-install(TARGETS jsoncpp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib) 
+install(TARGETS jsoncpp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY include/json DESTINATION ${CMAKE_INSTALL_PREFIX}/include/jsoncpp)
