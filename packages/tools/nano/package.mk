@@ -17,12 +17,12 @@
 ################################################################################
 
 PKG_NAME="nano"
-PKG_VERSION="2.7.5"
+PKG_VERSION="2.8.0"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.nano-editor.org/"
-PKG_URL="https://www.nano-editor.org/dist/v2.7/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://www.nano-editor.org/dist/v2.8/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain netbsd-curses"
 PKG_PRIORITY="optional"
 PKG_SECTION="shell/texteditor"
@@ -32,7 +32,7 @@ PKG_LONGDESC="GNU nano (Nano's ANOther editor, or Not ANOther editor) is an enha
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-utf8 --disable-nls --disable-libmagic"
+PKG_CONFIGURE_OPTS_TARGET="ac_cv_lib_ncursesw___set_escdelay=no --enable-utf8 --disable-nls --disable-libmagic"
 
 post_makeinstall_target() {
   rm -rf $INSTALL/usr/share/nano
