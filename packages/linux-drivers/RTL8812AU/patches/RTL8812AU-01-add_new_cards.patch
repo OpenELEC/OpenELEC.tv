@@ -1,7 +1,7 @@
 diff -Naur RTL8812AU-d716b38/os_dep/linux/usb_intf.c RTL8812AU-d716b38.patch/os_dep/linux/usb_intf.c
 --- RTL8812AU-d716b38/os_dep/linux/usb_intf.c	2016-10-20 21:20:19.000000000 +0200
-+++ RTL8812AU-d716b38.patch/os_dep/linux/usb_intf.c	2017-02-28 09:39:48.358812151 +0100
-@@ -167,6 +167,10 @@
++++ RTL8812AU-d716b38.patch/os_dep/linux/usb_intf.c	2017-04-02 10:38:45.631371842 +0200
+@@ -167,6 +167,12 @@
  	{USB_DEVICE(0x13b1, 0x003f),.driver_info = RTL8812}, /* Linksys - WUSB6300 */
  	{USB_DEVICE(0x2357, 0x0101),.driver_info = RTL8812}, /* TP-Link - T4U */
  	{USB_DEVICE(0x2357, 0x0103),.driver_info = RTL8812}, /* TP-Link - T4UH */
@@ -9,10 +9,12 @@ diff -Naur RTL8812AU-d716b38/os_dep/linux/usb_intf.c RTL8812AU-d716b38.patch/os_
 +	{USB_DEVICE(0x050D, 0x1109),.driver_info = RTL8812}, /* Belkin F9L1109 - SerComm */
 +	{USB_DEVICE(0x20F4, 0x805B),.driver_info = RTL8812}, /* TRENDnet - Cameo */
 +	{USB_DEVICE(0x148F, 0x9097),.driver_info = RTL8812}, /* Amped Wireless ACA1 */
++	{USB_DEVICE(0x2357, 0x010d),.driver_info = RTL8812}, /* TP-Link - Archer T4U AC1300 */
++	{USB_DEVICE(0x2357, 0x010f),.driver_info = RTL8812}, /* TP-Link - T4UHP */
  #endif
  
  #ifdef CONFIG_RTL8821A
-@@ -187,6 +191,15 @@
+@@ -187,6 +193,15 @@
  	{USB_DEVICE(0x056E, 0x400E) , .driver_info = RTL8821}, /* ELECOM -  ELECOM */
  	{USB_DEVICE(0x056E, 0x400F) , .driver_info = RTL8821}, /* ELECOM -  ELECOM */
  	{USB_DEVICE(0x0846, 0x9052),.driver_info = RTL8821}, /* Netgear - A6100 */
