@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ PKG_LONGDESC="Libsamplerate is a Sample Rate Converter for audio. One example of
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no" # ToDo
 
-# package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--disable-shared \
                            --enable-static \
                            --datadir=/usr/share \
