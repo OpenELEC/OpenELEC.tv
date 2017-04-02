@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="sundtek-mediatv"
-PKG_VERSION="8.0"
+PKG_VERSION="8.1"
 PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -32,7 +32,7 @@ PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.service"
 PKG_ADDON_PROVIDES=""
 PKG_AUTORECONF="no"
-PKG_ADDON_REPOVERSION="8.0"
+PKG_ADDON_REPOVERSION="8.1"
 
 make_target() {
   mkdir -p $ROOT/$PKG_BUILD
@@ -49,16 +49,14 @@ make_target() {
       INSTALLER_URL="http://sundtek.de/media/netinst/arm64/installer.tar.gz"
       ;;
   esac
-  
+
   wget -O installer.tar.gz $INSTALLER_URL
-  
   tar -xzf installer.tar.gz
-  
   chmod -R 755 opt/ etc/
-  
-  rm -f  opt/bin/getinput.sh
-  rm -f  opt/bin/lirc.sh
-  rm -fr opt/lib/pm/
+
+  rm -rf opt/bin/getinput.sh
+  rm -rf opt/bin/lirc.sh
+  rm -rf opt/lib/pm/
 
   wget -O version.used http://sundtek.de/media/latest.phtml
 }
@@ -69,9 +67,9 @@ makeinstall_target() {
 
 addon() {
   mkdir -p $ADDON_BUILD/$PKG_ADDON_ID/config/
-  cp -P $PKG_DIR/config/* $ADDON_BUILD/$PKG_ADDON_ID/config/
-  cp -P $PKG_DIR/settings-default.xml $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -Pa $PKG_BUILD/opt/bin $ADDON_BUILD/$PKG_ADDON_ID/
-  cp -Pa $PKG_BUILD/opt/lib $ADDON_BUILD/$PKG_ADDON_ID/
-  cp $PKG_BUILD/version.used $ADDON_BUILD/$PKG_ADDON_ID/
+    cp -P $PKG_DIR/config/* $ADDON_BUILD/$PKG_ADDON_ID/config/
+    cp -P $PKG_DIR/settings-default.xml $ADDON_BUILD/$PKG_ADDON_ID/
+    cp -Pa $PKG_BUILD/opt/bin $ADDON_BUILD/$PKG_ADDON_ID/
+    cp -Pa $PKG_BUILD/opt/lib $ADDON_BUILD/$PKG_ADDON_ID/
+    cp $PKG_BUILD/version.used $ADDON_BUILD/$PKG_ADDON_ID/
 }
