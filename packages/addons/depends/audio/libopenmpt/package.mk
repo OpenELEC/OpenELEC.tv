@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libopenmpt"
-PKG_VERSION="0.2.7386-beta20.3"
+PKG_VERSION="0.2.7774-beta22"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="BSD"
@@ -34,10 +34,10 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
-			   --disable-shared \
-			   --without-pulseaudio \
+                           --disable-shared \
+                           --without-pulseaudio \
                            --without-portaudio \
-			   --without-portaudiocpp \
+                           --without-portaudiocpp \
                            --without-mpg123 \
                            --without-ogg \
                            --without-vorbis \
@@ -45,3 +45,6 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --without-sndfile \
                            --without-flac"
 
+post_makeinstall_target() {
+  rm -rf $INSTALL/usr/bin
+}
