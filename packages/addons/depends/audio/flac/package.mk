@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ PKG_LONGDESC="Grossly oversimplified, FLAC is similar to MP3, but lossless, mean
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-# package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-shared \
                            --disable-rpath \
@@ -52,10 +51,7 @@ else
 fi
 
 pre_configure_target() {
-  # flac-1.3.1 dont build with LTO support
-  strip_lto
-
-  export CFLAGS="$CFLAGS -fPIC -DPIC"
+  export CFLAGS+=" -fPIC -DPIC"
 }
 
 post_makeinstall_target() {
