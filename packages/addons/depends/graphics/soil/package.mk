@@ -1,6 +1,6 @@
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
 #
 #  OpenELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 make_target() {
-  mkdir projects/makefile/obj
-  make CXX="$CXX" CC="$CC" LD="$CC" AR="$AR" CFLAGS="-fPIC -O2" CXXFLAGS="-fPIC -O2" -C projects/makefile
+  mkdir -p projects/makefile/obj
+    make CXX="$CXX" CC="$CC" LD="$CC" AR="$AR" CFLAGS="-fPIC -O2" CXXFLAGS="-fPIC -O2" -C projects/makefile
 }
 
 makeinstall_target() {
