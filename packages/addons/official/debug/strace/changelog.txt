@@ -1,0 +1,32 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+
+8.0.0
+- rebuild for OpenELEC-8.0
+
+7.0.2
+- update to strace-4.16
+
+7.0.2
+- update to strace-4.15
+
+7.0.1
+- update to strace-4.11
+
+7.0.0
+- rebuild for OpenELEC-7.0
+
+6.0.0
+- rebuild for OpenELEC-6.0
+
+4.3.3
+- rebuild
+
+4.3.1
+- update to strace-4.10
+
+4.3.0
+- rebuild for addon api bump
+
+4.1.1
+- initial release
