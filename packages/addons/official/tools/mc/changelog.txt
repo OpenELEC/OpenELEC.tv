@@ -1,0 +1,51 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+- update to mc-4.8.19
+
+8.0.0
+- rebuild for OpenELEC-8.0
+
+7.0.2
+- update to mc-4.8.18
+
+7.0.1
+- update to mc-4.8.16
+
+7.0.0
+- rebuild for OpenELEC-7.0
+
+6.0.0
+- rebuild for OpenELEC-6.0
+
+4.3.7
+- rebuild
+
+4.3.5
+- update to mc-4.8.14
+
+4.3.4
+- rebuild
+
+4.3.3
+- rebuild
+
+4.3.2
+- update to kodi
+
+4.3.1
+- rebuild
+
+4.3.0
+- rebuild for addon api bump
+
+4.1.3
+- update to mc-4.8.12
+
+4.1.2
+- add mcedit and subshell support
+
+4.1.1
+- remove non-english help
+
+4.1.0
+- initial release
