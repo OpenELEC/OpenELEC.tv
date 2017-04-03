@@ -1,0 +1,26 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+
+8.0.0
+- rebuild for OpenELEC-8.0
+
+7.0.3
+- update to file-5.30
+
+7.0.2
+- update to file-5.29
+
+7.0.1
+- update to file-5.25
+
+7.0.0
+- rebuild for OpenELEC-7.0
+
+6.0.0
+- rebuild for OpenELEC-6.0
+
+4.3.3
+- rebuild
+
+4.3.0
+- initial release
