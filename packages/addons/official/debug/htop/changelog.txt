@@ -1,0 +1,82 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+
+8.0.0
+- rebuild for OpenELEC-8.0
+
+7.0.2
+- update to htop-2.0.2
+- use netbsd-curses
+
+7.0.1
+- update to htop-2.0.1
+
+7.0.0
+- rebuild for OpenELEC-7.0
+
+6.0.0
+- rebuild for OpenELEC-6.0
+
+4.3.3
+- rebuild
+
+4.3.1
+- rebuild
+
+4.3.0
+- rebuild for addon api bump
+- update to htop-1.0.3
+
+4.1.1
+- rebuild for ncurses changes
+
+4.1.0
+- rebuild for addon api bump
+
+4.0.1
+- rebuild
+
+4.0.0
+- rebuild for OpenELEC-4.0
+
+3.1.1
+- rebuild
+
+3.0.2
+- update to htop-1.0.2
+
+3.0.1
+- bump addon version
+
+2.1.2
+- cleanup
+
+2.1.1
+- rebuild for addon version 2.1
+- update to htop-1.0.1
+
+2.0.0
+- prepare for OpenELEC-2.0 release
+- update to htop-1.0
+
+1.90.1
+- depends on xbmc.python API 2.0
+
+1.90.0
+- prepare for OpenELEC-1.90 release
+
+1.0.0
+- prepare for OpenELEC-1.0 release
+
+0.99.4
+- change icon
+
+0.99.3
+- build as shared lib
+- include ncurses libs
+
+0.99.2
+- prepare for release
+
+0.99.1
+- initial addon based on htop-0.9
