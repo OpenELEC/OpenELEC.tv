@@ -66,6 +66,10 @@ post_makeinstall_target() {
 
   sed -i $INSTALL/etc/ssh/sshd_config -e "s|^#PermitRootLogin.*|PermitRootLogin yes|g"
   echo "PubkeyAcceptedKeyTypes +ssh-dss" >> $INSTALL/etc/ssh/sshd_config
+
+# remove sftp support
+  rm -rf $INSTALL/usr/bin/sftp
+  rm -rf $INSTALL/usr/lib/openssh/sftp-server
 }
 
 post_install() {
