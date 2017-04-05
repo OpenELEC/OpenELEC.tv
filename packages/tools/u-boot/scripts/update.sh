@@ -33,8 +33,13 @@ if [ -z "$BOOT_DISK" ]; then
 fi
 
 SYSTEM_TYPE=""
+PROJECT=""
 if [ -f $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type ]; then
   . $SYSTEM_ROOT/usr/lib/openelec/imx6-system-type
+fi
+if [ -f $SYSTEM_ROOT/usr/lib/openelec/sunxi-system-type ]; then
+  PROJECT="sunxi"
+  . $SYSTEM_ROOT/usr/lib/openelec/sunxi-system-type
 fi
 
 # mount $BOOT_ROOT r/w
@@ -50,7 +55,14 @@ fi
   done
 
 # update bootloader files
-  if [ "$SYSTEM_TYPE" = "matrix" ]; then
+  if [ "$PROJECT" = "sunxi" ]; then
+    if [ -f $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex ]; then
+      echo "*** updating Allwinner configuration file ..."
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/${SYSTEM_TYPE}.fex $BOOT_ROOT/script.bin
+    fi
+    echo "*** updating u-boot image for board  $SYSTEM_TYPE ..."
+    dd if=$SYSTEM_ROOT/usr/share/bootloader/uboot-sunxi-${SYSTEM_TYPE}.bin of="$BOOT_DISK" bs=1k seek=8 conv=fsync > /dev/null 2>&1
+  elif [ "$SYSTEM_TYPE" = "matrix" ]; then
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/u-boot-$SYSTEM_TYPE.imx ]; then
       echo "*** updating u-boot image in eMMC ..."
       # clean up u-boot parameters
@@ -89,7 +101,8 @@ fi
     cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv-$SYSTEM_TYPE.txt $BOOT_ROOT/uEnv.txt
   elif [ -f $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt -a ! -f $BOOT_ROOT/uEnv.txt ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/uEnv.txt $BOOT_ROOT
-  elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr -a ! -f $BOOT_ROOT/boot.scr ]; then
+  #elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr -a ! -f $BOOT_ROOT/boot.scr ]; then
+  elif [ -f $SYSTEM_ROOT/usr/share/bootloader/boot.scr ]; then
     cp -p $SYSTEM_ROOT/usr/share/bootloader/boot.scr $BOOT_ROOT
   fi
 

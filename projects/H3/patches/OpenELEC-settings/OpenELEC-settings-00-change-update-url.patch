@@ -1,0 +1,14 @@
+diff -Nur a/src/defaults.py b/src/defaults.py
+--- a/src/defaults.py	2016-02-28 14:45:01.000000000 +0100
++++ b/src/defaults.py	2016-05-02 23:29:36.809471401 +0200
+@@ -82,8 +82,8 @@
+     'ENABLED': True,
+     'KERNEL_CMD': '/proc/cmdline',
+     'SET_CLOCK_CMD': '/sbin/hwclock --systohc --utc',
+-    'UPDATE_REQUEST_URL': 'http://update.openelec.tv/updates.php',
+-    'UPDATE_DOWNLOAD_URL': 'http://%s.openelec.tv/%s',
++    'UPDATE_REQUEST_URL': 'http://down.nu/update.php',
++    'UPDATE_DOWNLOAD_URL': 'http://down.nu/%s/%s',
+     'LOCAL_UPDATE_DIR': '/storage/.update/',
+     'GET_CPU_FLAG': "cat /proc/cpuinfo | grep -q 'flags.* lm ' && echo '1' || echo '0'",
+     'XBMC_RESET_FILE': '%s/reset_xbmc' % CONFIG_CACHE,

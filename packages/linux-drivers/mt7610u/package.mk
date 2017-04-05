@@ -35,6 +35,11 @@ PKG_LONGDESC="Mediatek mt7610u Linux driver"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+pre_make_target() {
+  unset LDFLAGS
+}
+
+
 make_target() {
 
   sed -i '198s|.*LINUX_SRC.*|LINUX_SRC = '$(kernel_path)'|' Makefile

@@ -1,0 +1,312 @@
+diff -Nur a/src/basic/btrfs-ctree.h b/src/basic/btrfs-ctree.h
+--- a/src/basic/btrfs-ctree.h	2016-02-06 12:30:04.503129468 +0100
++++ b/src/basic/btrfs-ctree.h	2016-02-06 12:27:13.000000000 +0100
+@@ -4,6 +4,7 @@
+ 
+ #include "macro.h"
+ #include "sparse-endian.h"
++#include "missing.h"
+ 
+ /* Stolen from btrfs' ctree.h */
+ 
+diff -Nur a/src/basic/btrfs-util.c b/src/basic/btrfs-util.c
+--- a/src/basic/btrfs-util.c	2016-02-06 11:57:03.000000000 +0100
++++ b/src/basic/btrfs-util.c	2016-02-06 13:22:47.297815187 +0100
+@@ -543,6 +543,7 @@
+         return 0;
+ }
+ 
++#if 0
+ int btrfs_qgroup_get_quota_fd(int fd, uint64_t qgroupid, BtrfsQuotaInfo *ret) {
+ 
+         struct btrfs_ioctl_search_args args = {
+@@ -759,6 +760,7 @@
+ 
+         return btrfs_subvol_get_subtree_quota_fd(fd, subvol_id, ret);
+ }
++#endif
+ 
+ int btrfs_defrag_fd(int fd) {
+         struct stat st;
+@@ -787,6 +789,7 @@
+         return btrfs_defrag_fd(fd);
+ }
+ 
++#if 0
+ int btrfs_quota_enable_fd(int fd, bool b) {
+         struct btrfs_ioctl_quota_ctl_args args = {
+                 .cmd = b ? BTRFS_QUOTA_CTL_ENABLE : BTRFS_QUOTA_CTL_DISABLE,
+@@ -891,6 +894,7 @@
+ 
+         return btrfs_subvol_set_subtree_quota_limit_fd(fd, subvol_id, referenced_max);
+ }
++#endif
+ 
+ int btrfs_resize_loopback_fd(int fd, uint64_t new_size, bool grow_only) {
+         struct btrfs_ioctl_vol_args args = {};
+@@ -979,6 +983,7 @@
+         return btrfs_resize_loopback_fd(fd, new_size, grow_only);
+ }
+ 
++#if 0
+ int btrfs_qgroupid_make(uint64_t level, uint64_t id, uint64_t *ret) {
+         assert(ret);
+ 
+@@ -1160,6 +1165,7 @@
+ int btrfs_qgroup_unassign(int fd, uint64_t child, uint64_t parent) {
+         return qgroup_assign_or_unassign(fd, false, child, parent);
+ }
++#endif
+ 
+ static int subvol_remove_children(int fd, const char *subvolume, uint64_t subvol_id, BtrfsRemoveFlags flags) {
+         struct btrfs_ioctl_search_args args = {
+@@ -1204,7 +1210,7 @@
+          * already empty, this will just work. */
+         strncpy(vol_args.name, subvolume, sizeof(vol_args.name)-1);
+         if (ioctl(fd, BTRFS_IOC_SNAP_DESTROY, &vol_args) >= 0) {
+-                (void) btrfs_qgroup_destroy_recursive(fd, subvol_id); /* for the leaf subvolumes, the qgroup id is identical to the subvol id */
++                //(void) btrfs_qgroup_destroy_recursive(fd, subvol_id); /* for the leaf subvolumes, the qgroup id is identical to the subvol id */
+                 return 0;
+         }
+         if (!(flags & BTRFS_REMOVE_RECURSIVE) || errno != ENOTEMPTY)
+@@ -1290,7 +1296,7 @@
+         if (ioctl(fd, BTRFS_IOC_SNAP_DESTROY, &vol_args) < 0)
+                 return -errno;
+ 
+-        (void) btrfs_qgroup_destroy_recursive(fd, subvol_id);
++        //(void) btrfs_qgroup_destroy_recursive(fd, subvol_id);
+         return 0;
+ }
+ 
+@@ -1316,6 +1322,7 @@
+         return subvol_remove_children(fd, subvolume, 0, flags);
+ }
+ 
++#if 0
+ int btrfs_qgroup_copy_limits(int fd, uint64_t old_qgroupid, uint64_t new_qgroupid) {
+ 
+         struct btrfs_ioctl_search_args args = {
+@@ -1506,6 +1513,7 @@
+ 
+         return changed;
+ }
++#endif
+ 
+ static int subvol_snapshot_children(int old_fd, int new_fd, const char *subvolume, uint64_t old_subvol_id, BtrfsSnapshotFlags flags) {
+ 
+@@ -1539,8 +1547,8 @@
+         if (ioctl(new_fd, BTRFS_IOC_SNAP_CREATE_V2, &vol_args) < 0)
+                 return -errno;
+ 
+-        if (!(flags & BTRFS_SNAPSHOT_RECURSIVE) &&
+-            !(flags & BTRFS_SNAPSHOT_QUOTA))
++        if (!(flags & BTRFS_SNAPSHOT_RECURSIVE) /*&&
++            !(flags & BTRFS_SNAPSHOT_QUOTA)*/)
+                 return 0;
+ 
+         if (old_subvol_id == 0) {
+@@ -1553,13 +1561,13 @@
+         if (r < 0)
+                 return r;
+ 
+-        if (flags & BTRFS_SNAPSHOT_QUOTA)
+-                (void) copy_quota_hierarchy(new_fd, old_subvol_id, new_subvol_id);
++        //if (flags & BTRFS_SNAPSHOT_QUOTA)
++        //        (void) copy_quota_hierarchy(new_fd, old_subvol_id, new_subvol_id);
+ 
+         if (!(flags & BTRFS_SNAPSHOT_RECURSIVE)) {
+ 
+-                if (flags & BTRFS_SNAPSHOT_QUOTA)
+-                        (void) copy_subtree_quota_limits(new_fd, old_subvol_id, new_subvol_id);
++                //if (flags & BTRFS_SNAPSHOT_QUOTA)
++                //        (void) copy_subtree_quota_limits(new_fd, old_subvol_id, new_subvol_id);
+ 
+                 return 0;
+         }
+@@ -1681,8 +1689,8 @@
+                         break;
+         }
+ 
+-        if (flags & BTRFS_SNAPSHOT_QUOTA)
+-                (void) copy_subtree_quota_limits(new_fd, old_subvol_id, new_subvol_id);
++        //if (flags & BTRFS_SNAPSHOT_QUOTA)
++        //        (void) copy_subtree_quota_limits(new_fd, old_subvol_id, new_subvol_id);
+ 
+         return 0;
+ }
+@@ -1708,14 +1716,14 @@
+ 
+                 r = copy_directory_fd(old_fd, new_path, true);
+                 if (r < 0) {
+-                        (void) btrfs_subvol_remove(new_path, BTRFS_REMOVE_QUOTA);
++                        //(void) btrfs_subvol_remove(new_path, BTRFS_REMOVE_QUOTA);
+                         return r;
+                 }
+ 
+                 if (flags & BTRFS_SNAPSHOT_READ_ONLY) {
+                         r = btrfs_subvol_set_read_only(new_path, true);
+                         if (r < 0) {
+-                                (void) btrfs_subvol_remove(new_path, BTRFS_REMOVE_QUOTA);
++                                //(void) btrfs_subvol_remove(new_path, BTRFS_REMOVE_QUOTA);
+                                 return r;
+                         }
+                 }
+@@ -1747,6 +1755,7 @@
+         return btrfs_subvol_snapshot_fd(old_fd, new_path, flags);
+ }
+ 
++#if 0
+ int btrfs_qgroup_find_parents(int fd, uint64_t qgroupid, uint64_t **ret) {
+ 
+         struct btrfs_ioctl_search_args args = {
+@@ -2054,3 +2063,4 @@
+ 
+         return -ENXIO;
+ }
++#endif
+diff -Nur a/src/shared/import-util.c b/src/shared/import-util.c
+--- a/src/shared/import-util.c	2015-11-18 08:59:06.000000000 +0100
++++ b/src/shared/import-util.c	2016-02-06 13:11:07.000000000 +0100
+@@ -207,6 +207,7 @@
+         return true;
+ }
+ 
++#if 0
+ int import_assign_pool_quota_and_warn(const char *path) {
+         int r;
+ 
+@@ -232,3 +233,4 @@
+ 
+         return 0;
+ }
++#endif
+diff -Nur a/src/shared/machine-image.c b/src/shared/machine-image.c
+--- a/src/shared/machine-image.c	2015-11-18 08:59:06.000000000 +0100
++++ b/src/shared/machine-image.c	2016-02-06 13:10:17.000000000 +0100
+@@ -201,7 +201,7 @@
+                                 if (r < 0)
+                                         return r;
+ 
+-                                if (btrfs_quota_scan_ongoing(fd) == 0) {
++                                /*if (btrfs_quota_scan_ongoing(fd) == 0) {
+                                         BtrfsQuotaInfo quota;
+ 
+                                         r = btrfs_subvol_get_subtree_quota_fd(fd, 0, &quota);
+@@ -212,7 +212,7 @@
+                                                 (*ret)->limit = quota.referenced_max;
+                                                 (*ret)->limit_exclusive = quota.exclusive_max;
+                                         }
+-                                }
++                                }*/
+ 
+                                 return 1;
+                         }
+@@ -601,7 +601,7 @@
+ 
+                 /* Enable "subtree" quotas for the copy, if we didn't
+                  * copy any quota from the source. */
+-                (void) btrfs_subvol_auto_qgroup(i->path, 0, true);
++                //(void) btrfs_subvol_auto_qgroup(i->path, 0, true);
+ 
+                 break;
+ 
+@@ -738,6 +738,7 @@
+         return 0;
+ }
+ 
++#if 0
+ int image_set_limit(Image *i, uint64_t referenced_max) {
+         assert(i);
+ 
+@@ -757,6 +758,7 @@
+         (void) btrfs_subvol_auto_qgroup(i->path, 0, true);
+         return btrfs_subvol_set_subtree_quota_limit(i->path, 0, referenced_max);
+ }
++#endif
+ 
+ int image_name_lock(const char *name, int operation, LockFile *ret) {
+         const char *p;
+diff -Nur a/src/shared/machine-pool.c b/src/shared/machine-pool.c
+--- a/src/shared/machine-pool.c	2015-11-18 08:59:06.000000000 +0100
++++ b/src/shared/machine-pool.c	2016-02-06 13:13:35.000000000 +0100
+@@ -200,13 +200,13 @@
+         if (r > 0) {
+                 (void) btrfs_subvol_make_label("/var/lib/machines");
+ 
+-                r = btrfs_quota_enable("/var/lib/machines", true);
++                /*r = btrfs_quota_enable("/var/lib/machines", true);
+                 if (r < 0)
+                         log_warning_errno(r, "Failed to enable quota for /var/lib/machines, ignoring: %m");
+ 
+                 r = btrfs_subvol_auto_qgroup("/var/lib/machines", 0, true);
+                 if (r < 0)
+-                        log_warning_errno(r, "Failed to set up default quota hierarchy for /var/lib/machines, ignoring: %m");
++                        log_warning_errno(r, "Failed to set up default quota hierarchy for /var/lib/machines, ignoring: %m");*/
+ 
+                 return 1;
+         }
+@@ -291,13 +291,13 @@
+         }
+         mntdir_mounted = true;
+ 
+-        r = btrfs_quota_enable(mntdir, true);
++        /*r = btrfs_quota_enable(mntdir, true);
+         if (r < 0)
+                 log_warning_errno(r, "Failed to enable quota, ignoring: %m");
+ 
+         r = btrfs_subvol_auto_qgroup(mntdir, 0, true);
+         if (r < 0)
+-                log_warning_errno(r, "Failed to set up default quota hierarchy, ignoring: %m");
++                log_warning_errno(r, "Failed to set up default quota hierarchy, ignoring: %m");*/
+ 
+         if (chmod(mntdir, 0700) < 0) {
+                 r = sd_bus_error_set_errnof(error, errno, "Failed to fix owner: %m");
+@@ -406,8 +406,8 @@
+         /* Also bump the quota, of both the subvolume leaf qgroup, as
+          * well as of any subtree quota group by the same id but a
+          * higher level, if it exists. */
+-        (void) btrfs_qgroup_set_limit("/var/lib/machines", 0, new_size);
+-        (void) btrfs_subvol_set_subtree_quota_limit("/var/lib/machines", 0, new_size);
++        //(void) btrfs_qgroup_set_limit("/var/lib/machines", 0, new_size);
++        //(void) btrfs_subvol_set_subtree_quota_limit("/var/lib/machines", 0, new_size);
+ 
+         log_info("Grew /var/lib/machines btrfs loopback file system to %s.", format_bytes(buf, sizeof(buf), new_size));
+         return 1;
+diff -Nur a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+--- a/src/tmpfiles/tmpfiles.c	2015-11-18 08:59:06.000000000 +0100
++++ b/src/tmpfiles/tmpfiles.c	2016-02-06 13:17:20.000000000 +0100
+@@ -1219,13 +1219,13 @@
+         case CREATE_DIRECTORY:
+         case TRUNCATE_DIRECTORY:
+         case CREATE_SUBVOLUME:
+-        case CREATE_SUBVOLUME_INHERIT_QUOTA:
+-        case CREATE_SUBVOLUME_NEW_QUOTA:
++        //case CREATE_SUBVOLUME_INHERIT_QUOTA:
++        //case CREATE_SUBVOLUME_NEW_QUOTA:
+ 
+                 RUN_WITH_UMASK(0000)
+                         mkdir_parents_label(i->path, 0755);
+ 
+-                if (IN_SET(i->type, CREATE_SUBVOLUME, CREATE_SUBVOLUME_INHERIT_QUOTA, CREATE_SUBVOLUME_NEW_QUOTA)) {
++                if (IN_SET(i->type, CREATE_SUBVOLUME/*, CREATE_SUBVOLUME_INHERIT_QUOTA, CREATE_SUBVOLUME_NEW_QUOTA*/)) {
+ 
+                         if (btrfs_is_subvol(isempty(arg_root) ? "/" : arg_root) <= 0)
+ 
+@@ -1277,7 +1277,7 @@
+ 
+                 log_debug("%s directory \"%s\".", creation_mode_verb_to_string(creation), i->path);
+ 
+-                if (IN_SET(i->type, CREATE_SUBVOLUME_NEW_QUOTA, CREATE_SUBVOLUME_INHERIT_QUOTA)) {
++                /*if (IN_SET(i->type, CREATE_SUBVOLUME_NEW_QUOTA, CREATE_SUBVOLUME_INHERIT_QUOTA)) {
+                         r = btrfs_subvol_auto_qgroup(i->path, 0, i->type == CREATE_SUBVOLUME_NEW_QUOTA);
+                         if (r == -ENOTTY) {
+                                 log_debug_errno(r, "Couldn't adjust quota for subvolume \"%s\" because of unsupported file system or because directory is not a subvolume: %m", i->path);
+@@ -1297,7 +1297,7 @@
+                                 log_debug("Adjusted quota for subvolume \"%s\".", i->path);
+                         if (r == 0)
+                                 log_debug("Quota for subvolume \"%s\" already in place, no change made.", i->path);
+-                }
++                }*/
+ 
+                 r = path_set_perms(i, i->path);
+                 if (r < 0)

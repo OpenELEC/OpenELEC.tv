@@ -1,0 +1,20 @@
+diff -Nur a/src/core/socket.c b/src/core/socket.c
+--- a/src/core/socket.c	2016-02-11 17:28:00.000000000 +0100
++++ b/src/core/socket.c	2016-02-23 21:39:03.117473944 +0100
+@@ -26,7 +26,6 @@
+ #include <sys/epoll.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+-#include <linux/sctp.h>
+ 
+ #include "sd-event.h"
+ #include "alloc-util.h"
+@@ -58,6 +57,8 @@
+ #include "unit.h"
+ #include "user-util.h"
+ 
++#define SCTP_NODELAY    3 
++
+ static const UnitActiveState state_translation_table[_SOCKET_STATE_MAX] = {
+         [SOCKET_DEAD] = UNIT_INACTIVE,
+         [SOCKET_START_PRE] = UNIT_ACTIVATING,
