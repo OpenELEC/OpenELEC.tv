@@ -1,0 +1,57 @@
+8.1.0
+- rebuild for OpenELEC-8.0
+- update to w_scan-20170107
+
+8.0.0
+- rebuild for OpenELEC-8.0
+
+7.0.1
+- update to w_scan-20161022
+
+7.0.0
+- rebuild for OpenELEC-7.0
+
+6.0.0
+- rebuild
+
+4.3.4
+- rebuild
+
+4.3.2
+- update to w_scan-20141122
+
+4.3.1
+- update to w_scan-20140727
+
+4.3.0
+- rebuild for addon api bump
+
+4.1.1
+- update to w_scan-20140118
+
+4.1.0
+- rebuild for addon api bump
+
+4.0.1
+- rebuild
+
+4.0.0
+- rebuild for OpenELEC-4.0
+
+3.1.1
+- rebuild for OpenELEC-3.2
+
+3.0.2
+- update to w_scan-20121111
+
+3.0.1
+- bump addon version
+
+2.1.2
+- update to w_scan-20120605
+
+2.1.1
+- update to addon version 2.1
+
+2.0.0
+- initial addon w_scan based on version 20120128
