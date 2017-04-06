@@ -1,3 +1,6 @@
+8.1.1
+- vdr: add upstream patch to dynamically resize buffer for caids
+
 8.1.0
 - rebuild for OpenELEC-8.0
 
