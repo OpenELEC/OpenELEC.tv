@@ -1,0 +1,137 @@
+From 5a04c938ebd232cec8e2319207aa58d9609db516 Mon Sep 17 00:00:00 2001
+From: dhead666 <myfoolishgames@gmail.com>
+Date: Mon, 2 Feb 2015 11:56:52 +0200
+Subject: [PATCH] libavformat/mpegtsenc: allow to set service_type in sdt
+
+This adds an option to set the service type in mpegts as defined in ETSI 300 468.
+
+I added what I believe are the most useful service types as pre defined values,
+the others can be sent by using their hexdecimal form directly (e.g. -mpegts_service_type digital_radio, -mpegts_service_type 0x07).
+
+I've been using this patch in order to pipe internet radio stream (originally as HLS/m3u8) from ffmpeg to tvheadend,
+when the service type set right tvheadend recognize the mpegts stream as a radio channel.
+
+The patch in its original form was written by linuxstb from freenode's hts channel which allowed me pushing it upstream.
+
+This close issue 4118.
+
+Signed-off-by: Michael Niedermayer <michaelni@gmx.at>
+---
+ doc/muxers.texi         | 24 ++++++++++++++++++++++++
+ libavformat/mpegtsenc.c | 37 ++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 60 insertions(+), 1 deletion(-)
+
+diff --git a/doc/muxers.texi b/doc/muxers.texi
+index 57e81f4..53ca2a2 100644
+--- a/doc/muxers.texi
++++ b/doc/muxers.texi
+@@ -636,6 +636,9 @@ Set the transport_stream_id (default 0x0001). This identifies a
+ transponder in DVB.
+ @item -mpegts_service_id @var{number}
+ Set the service_id (default 0x0001) also known as program in DVB.
++@item -mpegts_service_type @var{number}
++Set the program service_type (default @var{digital_tv}), see below
++a list of pre defined values.
+ @item -mpegts_pmt_start_pid @var{number}
+ Set the first PID for PMT (default 0x1000, max 0x1f00).
+ @item -mpegts_start_pid @var{number}
+@@ -670,6 +673,27 @@ ffmpeg -i source2.ts -codec copy -f mpegts -tables_version 1 udp://1.1.1.1:1111
+ @end example
+ @end table
+ 
++Option mpegts_service_type accepts the following values:
++
++@table @option
++@item hex_value
++Any hexdecimal value between 0x01 to 0xff as defined in ETSI 300 468.
++@item digital_tv
++Digital TV service.
++@item digital_radio
++Digital Radio service.
++@item teletext
++Teletext service.
++@item advanced_codec_digital_radio
++Advanced Codec Digital Radio service.
++@item mpeg2_digital_hdtv
++MPEG2 Digital HDTV service.
++@item advanced_codec_digital_sdtv
++Advanced Codec Digital SDTV service.
++@item advanced_codec_digital_hdtv
++Advanced Codec Digital HDTV service.
++@end table
++
+ Option mpegts_flags may take a set of such flags:
+ 
+ @table @option
+diff --git a/libavformat/mpegtsenc.c b/libavformat/mpegtsenc.c
+index 0184d87..964bb25 100644
+--- a/libavformat/mpegtsenc.c
++++ b/libavformat/mpegtsenc.c
+@@ -57,6 +57,16 @@ typedef struct MpegTSService {
+     int pcr_packet_period;
+ } MpegTSService;
+ 
++// service_type values as defined in ETSI 300 468
++enum {
++    MPEGTS_SERVICE_TYPE_DIGITAL_TV                   = 0x01,
++    MPEGTS_SERVICE_TYPE_DIGITAL_RADIO                = 0x02,
++    MPEGTS_SERVICE_TYPE_TELETEXT                     = 0x03,
++    MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_RADIO = 0x0A,
++    MPEGTS_SERVICE_TYPE_MPEG2_DIGITAL_HDTV           = 0x11,
++    MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_SDTV  = 0x16,
++    MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_HDTV  = 0x19
++};
+ typedef struct MpegTSWrite {
+     const AVClass *av_class;
+     MpegTSSection pat; /* MPEG2 pat table */
+@@ -76,6 +86,7 @@ typedef struct MpegTSWrite {
+     int transport_stream_id;
+     int original_network_id;
+     int service_id;
++    int service_type;
+ 
+     int pmt_start_pid;
+     int start_pid;
+@@ -521,7 +532,7 @@ static void mpegts_write_sdt(AVFormatContext *s)
+         *q++         = 0x48;
+         desc_len_ptr = q;
+         q++;
+-        *q++         = 0x01; /* digital television service */
++        *q++         = ts->service_type;
+         putstr8(&q, service->provider_name);
+         putstr8(&q, service->name);
+         desc_len_ptr[0] = q - desc_len_ptr - 1;
+@@ -1428,6 +1439,30 @@ static const AVOption options[] = {
+     { "mpegts_service_id", "Set service_id field.",
+       offsetof(MpegTSWrite, service_id), AV_OPT_TYPE_INT,
+       { .i64 = 0x0001 }, 0x0001, 0xffff, AV_OPT_FLAG_ENCODING_PARAM },
++    { "mpegts_service_type", "Set service_type field.",
++      offsetof(MpegTSWrite, service_type), AV_OPT_TYPE_INT,
++      { .i64 = 0x01 }, 0x01, 0xff, AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "digital_tv", "Digital Television.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_DIGITAL_TV }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "digital_radio", "Digital Radio.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_DIGITAL_RADIO }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "teletext", "Teletext.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_TELETEXT }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "advanced_codec_digital_radio", "Advanced Codec Digital Radio.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_RADIO }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "mpeg2_digital_hdtv", "MPEG2 Digital HDTV.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_MPEG2_DIGITAL_HDTV }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "advanced_codec_digital_sdtv", "Advanced Codec Digital SDTV.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_SDTV }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
++    { "advanced_codec_digital_hdtv", "Advanced Codec Digital HDTV.",
++      0, AV_OPT_TYPE_CONST, { .i64 = MPEGTS_SERVICE_TYPE_ADVANCED_CODEC_DIGITAL_HDTV }, 0x01, 0xff,
++      AV_OPT_FLAG_ENCODING_PARAM, "mpegts_service_type" },
+     { "mpegts_pmt_start_pid", "Set the first pid of the PMT.",
+       offsetof(MpegTSWrite, pmt_start_pid), AV_OPT_TYPE_INT,
+       { .i64 = 0x1000 }, 0x0010, 0x1f00, AV_OPT_FLAG_ENCODING_PARAM },
+-- 
+2.2.2
+
