@@ -36,8 +36,6 @@ PKG_ADDON_REPOVERSION="8.1"
 
 PKG_AUTORECONF="no"
 
-PKG_MAINTAINER="unofficial.addon.pro"
-
 PKG_CONFIGURE_OPTS_TARGET="ac_cv_header_utempter_h=no \
                            --disable-pam \
                            --disable-use-locale \
