@@ -332,7 +332,7 @@ if [ ! -f $STAMP ]; then
                            -exec rm -f "{}" ";" 2>/dev/null || true
           find $INSTALL -type d -exec rmdir -p "{}" ";" 2>/dev/null || true
 
-          if [ ! "$DEBUG" = yes ]; then
+          if [ ! "$DEVTOOLS" = yes ]; then
             $STRIP `find $INSTALL -name "*.so" 2>/dev/null` 2>/dev/null || :
             $STRIP `find $INSTALL -name "*.so.[0-9]*" 2>/dev/null` 2>/dev/null || :
 
