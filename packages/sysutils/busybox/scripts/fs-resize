@@ -29,7 +29,7 @@ progress() {
 if [ -e /storage/.please_resize_me ] ; then
   # this sh** was never intended to be used
   # on already installed and runing system
-  if [ -d /storage/.kodi -o -d /storage/.config -o -d /storage/.cache ] ; then
+  if [ -d /storage/.kodi -a -d /storage/.config -a -d /storage/.cache ] ; then
     rm -f /storage/.please_resize_me
     sync
     progress "resizing not allowed. rebooting in 10s..."
