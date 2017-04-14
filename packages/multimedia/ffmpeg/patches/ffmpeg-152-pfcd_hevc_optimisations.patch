@@ -7094,18 +7094,6 @@ diff -Naur ffmpeg-3.2.4/libavcodec/Makefile ffmpeg-3.2.4.patch/libavcodec/Makefi
         vorbis_parser.o                                                  \
         xiph.o                                                           \
  
-@@ -1093,3 +1102,11 @@
- $(SUBDIR)sinewin.o: $(SUBDIR)sinewin_tables.h
- $(SUBDIR)sinewin_fixed.o: $(SUBDIR)sinewin_fixed_tables.h
- endif
-+
-+$(SUBDIR)rpi_shader.c: $(SUBDIR)rpi_shader.qasm
-+	python $(SUBDIR)../pi-util/qasm.py -mc_c:rpi_shader,rpi_shader,rpi_shader $< > $@
-+
-+$(SUBDIR)rpi_shader.h: $(SUBDIR)rpi_shader.qasm
-+	python $(SUBDIR)../pi-util/qasm.py -mc_h:rpi_shader,rpi_shader,rpi_shader $< > $@
-+
-+$(SUBDIR)rpi_qpu.o: $(SUBDIR)rpi_shader.h
 diff -Naur ffmpeg-3.2.4/libavcodec/mmaldec.c ffmpeg-3.2.4.patch/libavcodec/mmaldec.c
 --- ffmpeg-3.2.4/libavcodec/mmaldec.c	2017-02-10 14:25:27.000000000 +0100
 +++ ffmpeg-3.2.4.patch/libavcodec/mmaldec.c	2017-03-22 22:42:34.842798559 +0100
