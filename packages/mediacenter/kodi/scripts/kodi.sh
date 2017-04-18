@@ -92,6 +92,13 @@ fi
 # clean up any stale cores. just in case
 rm -f /storage/.cache/cores/*
 
+# clean 0 byte database files
+for file in /storage/.kodi/userdata/Database/*.db; do
+  if [ ! -s $file ]; then
+    rm -rf $file
+  fi
+done
+
 # for users who cant read, and because kodi is always broken on major upgrades
 
 VER_DB_ADDONS=26
