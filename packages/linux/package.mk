@@ -54,7 +54,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="linux-4.8 imx6-4.8"
     ;;
   rpi)
-    PKG_VERSION="5e4ee83"
+    PKG_VERSION="7213439"
     PKG_GIT_URL="https://github.com/raspberrypi/linux.git"
     PKG_GIT_BRANCH="rpi-4.9.y"
     PKG_PATCH_DIRS="linux-4.9 rpi-4.9"
@@ -65,7 +65,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="linux-4.8"
     ;;
   *)
-    PKG_VERSION="4.9.21"
+    PKG_VERSION="4.9.23"
     PKG_URL="http://www.kernel.org/pub/linux/kernel/v4.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_PATCH_DIRS="linux-4.9"
     ;;
