@@ -170,6 +170,9 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-udev-hwdb-update.service
   rm -rf $INSTALL/usr/lib/systemd/system/*.target.wants/systemd-udev-hwdb-update.service
 
+  # remove fuse mount rules, we ship this byself
+  rm -rf $INSTALL/usr/lib/systemd/system/sys-fs-fuse-connections.mount
+
   # remove nspawn
   rm -rf $INSTALL/usr/bin/systemd-nspawn
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
