@@ -219,7 +219,6 @@ post_makeinstall_target() {
   cp -PR $PKG_DIR/config/* $INSTALL/usr/config
 
   rm -rf $INSTALL/etc/modules-load.d
-  ln -sf /storage/.config/modules-load.d $INSTALL/etc/modules-load.d
   rm -rf $INSTALL/etc/sysctl.d
   ln -sf /storage/.config/sysctl.d $INSTALL/etc/sysctl.d
   rm -rf $INSTALL/etc/tmpfiles.d
