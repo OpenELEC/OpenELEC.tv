@@ -121,7 +121,3 @@ post_makeinstall_target() {
 
   ln -sf /storage/.config/pulse-daemon.conf.d $INSTALL/etc/pulse/daemon.conf.d
 }
-
-post_install() {
-  enable_service pulseaudio.service
-}

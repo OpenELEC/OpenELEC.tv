@@ -1,6 +1,7 @@
 [Unit]
 Description=PulseAudio Sound System
 After=syslog.target local-fs.target
+ConditionPathExists=/storage/.cache/services/pulse.conf
 
 [Service]
 Restart=on-failure

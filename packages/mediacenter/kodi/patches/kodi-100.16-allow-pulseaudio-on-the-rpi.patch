@@ -1,0 +1,48 @@
+diff -Naur a/xbmc/cores/AudioEngine/AESinkFactory.cpp b/xbmc/cores/AudioEngine/AESinkFactory.cpp
+--- a/xbmc/cores/AudioEngine/AESinkFactory.cpp	2015-11-02 01:54:40.000000000 -0800
++++ b/xbmc/cores/AudioEngine/AESinkFactory.cpp	2015-11-05 15:00:36.874646180 -0800
+@@ -28,6 +28,9 @@
+ #elif defined(TARGET_RASPBERRY_PI)
+   #include "Sinks/AESinkPi.h"
+   #include "Sinks/AESinkALSA.h"
++  #if defined(HAS_PULSEAUDIO)
++    #include "Sinks/AESinkPULSE.h"
++  #endif
+ #elif defined(TARGET_DARWIN_IOS)
+   #include "Sinks/AESinkDARWINIOS.h"
+ #elif defined(TARGET_DARWIN_OSX)
+@@ -67,6 +70,9 @@
+ #elif defined(TARGET_RASPBERRY_PI)
+         driver == "PI"          ||
+         driver == "ALSA"        ||
++  #if defined(HAS_PULSEAUDIO)
++        driver == "PULSE"       ||
++  #endif
+ #elif defined(TARGET_DARWIN_IOS)
+         driver == "DARWINIOS"  ||
+ #elif defined(TARGET_DARWIN_OSX)
+@@ -112,6 +118,10 @@
+   if (driver == "ALSA")
+     sink = new CAESinkALSA();
+   #endif
++  #if defined(HAS_PULSEAUDIO)
++  if (driver == "PULSE")
++    sink = new CAESinkPULSE();
++  #endif
+ #elif defined(TARGET_DARWIN_IOS)
+     sink = new CAESinkDARWINIOS();
+ #elif defined(TARGET_DARWIN_OSX)
+@@ -202,6 +212,13 @@
+   CAESinkPi::EnumerateDevicesEx(info.m_deviceInfoList, force);
+   if(!info.m_deviceInfoList.empty())
+     list.push_back(info);
++  #if defined(HAS_PULSEAUDIO)
++  info.m_deviceInfoList.clear();
++  info.m_sinkName = "PULSE";
++  CAESinkPULSE::EnumerateDevicesEx(info.m_deviceInfoList, force);
++  if(!info.m_deviceInfoList.empty())
++    list.push_back(info);
++  #endif
+   #if defined(HAS_ALSA)
+   info.m_deviceInfoList.clear();
+   info.m_sinkName = "ALSA";
