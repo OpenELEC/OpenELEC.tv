@@ -105,7 +105,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --enable-xshmfence \
                            --disable-install-setuid \
                            --enable-unix-transport \
-                           --disable-tcp-transport \
+                           --enable-tcp-transport \
                            --disable-ipv6 \
                            --disable-local-transport \
                            --disable-secure-rpc \
