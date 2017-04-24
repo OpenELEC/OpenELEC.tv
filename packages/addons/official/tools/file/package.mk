@@ -35,7 +35,6 @@ PKG_AUTORECONF="yes"
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROVIDES=""
-PKG_ADDON_REPOVERSION="8.1"
 PKG_DISCLAIMER="this is an unofficial addon. please don't ask for support in openelec forum / irc channel"
 
 PKG_CONFIGURE_OPTS_HOST="--enable-fsect-man5 --enable-static --disable-shared"
