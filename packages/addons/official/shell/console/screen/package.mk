@@ -32,7 +32,6 @@ PKG_LONGDESC="screen is a terminal multiplexor that runs several separate "scree
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROVIDES=""
-PKG_ADDON_REPOVERSION="8.1"
 
 PKG_AUTORECONF="no"
 
