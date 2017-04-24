@@ -99,58 +99,6 @@ for file in /storage/.kodi/userdata/Database/*.db; do
   fi
 done
 
-# for users who cant read, and because kodi is always broken on major upgrades
-
-VER_DB_ADDONS=26
-VER_DB_EPG=10
-VER_DB_MYMUSIC=59
-VER_DB_MYVIDEOS=106
-VER_DB_TV=28
-VER_DB_TEXTURES=12
-VER_DB_VIEWMODES=5
-
-for ver_db_addons in $(seq 0 $VER_DB_ADDONS); do
-  if [ -f /storage/.kodi/userdata/Database/Addons${ver_db_addons}.db ]; then
-    mv /storage/.kodi/userdata/Database/Addons${ver_db_addons}.db /storage/.kodi/userdata/Database/Addons${ver_db_addons}.db.bk
-  fi
-done
-
-for ver_db_epg in $(seq 0 $VER_DB_EPG); do
-  if [ -f /storage/.kodi/userdata/Database/Epg${ver_db_epg}.db ]; then
-    mv /storage/.kodi/userdata/Database/Epg${ver_db_epg}.db /storage/.kodi/userdata/Database/Epg${ver_db_epg}.db.bk
-  fi
-done
-
-for ver_db_mymusic in $(seq 0 $VER_DB_MYMUSIC); do
-  if [ -f /storage/.kodi/userdata/Database/MyMusic${ver_db_mymusic}.db ]; then
-    mv /storage/.kodi/userdata/Database/MyMusic${ver_db_mymusic}.db /storage/.kodi/userdata/Database/MyMusic${ver_db_mymusic}.db.bk
-  fi
-done
-
-for ver_db_myvideos in $(seq 0 $VER_DB_MYVIDEOS); do
-  if [ -f /storage/.kodi/userdata/Database/MyVideos${ver_db_myvideos}.db ]; then
-    mv /storage/.kodi/userdata/Database/MyVideos${ver_db_myvideos}.db /storage/.kodi/userdata/Database/MyVideos${ver_db_myvideos}.db.bk
-  fi
-done
-
-for ver_db_tv in $(seq 0 $VER_DB_TV); do
-  if [ -f /storage/.kodi/userdata/Database/TV${ver_db_tv}.db ]; then
-    mv /storage/.kodi/userdata/Database/TV${ver_db_tv}.db /storage/.kodi/userdata/Database/TV${ver_db_tv}.db.bk
-  fi
-done
-
-for ver_db_textures in $(seq 0 $VER_DB_TEXTURES); do
-  if [ -f /storage/.kodi/userdata/Database/Textures${ver_db_textures}.db ]; then
-    mv /storage/.kodi/userdata/Database/Textures${ver_db_textures}.db /storage/.kodi/userdata/Database/Textures${ver_db_textures}.db.bk
-  fi
-done
-
-for ver_db_viewmodes in $(seq 0 $VER_DB_VIEWMODES); do
-  if [ -f /storage/.kodi/userdata/Database/ViewModes${ver_db_viewmodes}.db ]; then
-    mv /storage/.kodi/userdata/Database/ViewModes${ver_db_viewmodes}.db /storage/.kodi/userdata/Database/ViewModes${ver_db_viewmodes}.db.bk
-  fi
-done
-
 /usr/lib/kodi/kodi.bin $SAVED_ARGS
 RET=$?
 
