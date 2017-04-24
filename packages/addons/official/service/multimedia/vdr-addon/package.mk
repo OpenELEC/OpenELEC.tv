@@ -18,8 +18,8 @@
 ################################################################################
 
 PKG_NAME="vdr-addon"
-PKG_VERSION="8.1"
-PKG_REV="1"
+PKG_VERSION="8.2"
+PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.openelec.tv"
