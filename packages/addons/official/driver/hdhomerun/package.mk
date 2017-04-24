@@ -28,11 +28,12 @@ PKG_PRIORITY="optional"
 PKG_SECTION="driver/dvb"
 PKG_SHORTDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
 PKG_LONGDESC="A linux DVB driver for the HDHomeRun (http://www.silicondust.com)."
+
 PKG_AUTORECONF="no"
+
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROVIDES=""
-PKG_ADDON_REPOVERSION="8.1"
 
 make_target() {
   : # nothing to do here
