@@ -163,7 +163,7 @@ SED="sed -i"
 . config/optimize
 
 if [ -z "$CCACHE_DIR" ]; then
-    export CCACHE_DIR=$HOME/.ccache-openelec
+    export CCACHE_DIR=$HOME/.ccache-openelec-$OS_VERSION
 fi
 export MAKEFLAGS=-j$CONCURRENCY_MAKE_LEVEL
 export PKG_CONFIG=$ROOT/$TOOLCHAIN/bin/pkg-config
