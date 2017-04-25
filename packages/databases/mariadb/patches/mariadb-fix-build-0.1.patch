@@ -1,0 +1,228 @@
+From 2c2bd8c1556b081fccd0fc3e010dc3ea2c38fffb Mon Sep 17 00:00:00 2001
+From: Sergei Golubchik <serg@mariadb.org>
+Date: Wed, 15 Mar 2017 11:46:54 +0100
+Subject: [PATCH] MDEV-12261 build failure without P_S
+
+restore mysql_file_delete_with_symlink() but let it use
+new my_handler_delete_with_symlink() mysys helper.
+---
+ include/my_sys.h                 |  3 +--
+ include/mysql/psi/mysql_file.h   | 44 ++++++++++++++++++++++++++++++++++++++++
+ mysys/my_symlink2.c              | 14 ++++++-------
+ sql/handler.cc                   |  2 +-
+ sql/sql_db.cc                    |  6 +++---
+ sql/table.cc                     |  2 +-
+ storage/maria/ma_delete_table.c  |  8 ++++----
+ storage/myisam/mi_delete_table.c |  8 ++++----
+ 8 files changed, 64 insertions(+), 23 deletions(-)
+
+diff -Naur mariadb-10.1.22/include/mysql/psi/mysql_file.h mariadb-10.1.22.patch/include/mysql/psi/mysql_file.h
+--- mariadb-10.1.22/include/mysql/psi/mysql_file.h	2017-03-11 20:08:56.000000000 +0100
++++ mariadb-10.1.22.patch/include/mysql/psi/mysql_file.h	2017-04-25 13:43:33.712731159 +0200
+@@ -442,6 +442,20 @@
+ #endif
+ 
+ /**
++  @def mysql_file_delete_with_symlink(K, P1, P2, P3)
++  Instrumented delete with symbolic link.
++  @c mysql_file_delete_with_symlink is a replacement
++  for @c my_handler_delete_with_symlink.
++*/
++#ifdef HAVE_PSI_FILE_INTERFACE
++  #define mysql_file_delete_with_symlink(K, P1, P2, P3) \
++  inline_mysql_file_delete_with_symlink(K, __FILE__, __LINE__, P1, P2, P3)
++#else
++  #define mysql_file_delete_with_symlink(K, P1, P2, P3) \
++  inline_mysql_file_delete_with_symlink(P1, P2, P3)
++#endif
++
++/**
+   @def mysql_file_rename_with_symlink(K, P1, P2, P3)
+   Instrumented rename with symbolic link.
+   @c mysql_file_rename_with_symlink is a replacement
+@@ -1294,6 +1308,7 @@
+   return result;
+ }
+ 
++
+ static inline File
+ inline_mysql_file_create_with_symlink(
+ #ifdef HAVE_PSI_FILE_INTERFACE
+@@ -1324,6 +1339,35 @@
+ }
+ 
+ 
++static inline int
++inline_mysql_file_delete_with_symlink(
++#ifdef HAVE_PSI_FILE_INTERFACE
++  PSI_file_key key, const char *src_file, uint src_line,
++#endif
++  const char *name, const char *ext, myf flags)
++{
++  int result;
++  char fullname[FN_REFLEN];
++  fn_format(fullname, name, "", ext, MY_UNPACK_FILENAME | MY_APPEND_EXT);
++#ifdef HAVE_PSI_FILE_INTERFACE
++  struct PSI_file_locker *locker;
++  PSI_file_locker_state state;
++  locker= PSI_FILE_CALL(get_thread_file_name_locker)
++    (&state, key, PSI_FILE_DELETE, fullname, &locker);
++  if (likely(locker != NULL))
++  {
++    PSI_FILE_CALL(start_file_close_wait)(locker, src_file, src_line);
++    result= my_handler_delete_with_symlink(fullname, flags);
++    PSI_FILE_CALL(end_file_close_wait)(locker, result);
++    return result;
++  }
++#endif
++
++  result= my_handler_delete_with_symlink(fullname, flags);
++  return result;
++}
++
++
+ static inline int
+ inline_mysql_file_rename_with_symlink(
+ #ifdef HAVE_PSI_FILE_INTERFACE
+diff -Naur mariadb-10.1.22/include/my_sys.h mariadb-10.1.22.patch/include/my_sys.h
+--- mariadb-10.1.22/include/my_sys.h	2017-03-11 20:08:56.000000000 +0100
++++ mariadb-10.1.22.patch/include/my_sys.h	2017-04-25 13:43:33.711731151 +0200
+@@ -646,8 +646,7 @@
+ 				   myf MyFlags);
+ extern int my_rename_with_symlink(const char *from,const char *to,myf MyFlags);
+ extern int my_symlink(const char *content, const char *linkname, myf MyFlags);
+-extern int my_handler_delete_with_symlink(PSI_file_key key, const char *name,
+-                                          const char *ext, myf sync_dir);
++extern int my_handler_delete_with_symlink(const char *filename, myf sync_dir);
+ 
+ extern size_t my_read(File Filedes,uchar *Buffer,size_t Count,myf MyFlags);
+ extern size_t my_pread(File Filedes,uchar *Buffer,size_t Count,my_off_t offset,
+diff -Naur mariadb-10.1.22/mysys/my_symlink2.c mariadb-10.1.22.patch/mysys/my_symlink2.c
+--- mariadb-10.1.22/mysys/my_symlink2.c	2017-03-11 20:09:10.000000000 +0100
++++ mariadb-10.1.22.patch/mysys/my_symlink2.c	2017-04-25 13:43:33.713731166 +0200
+@@ -170,22 +170,20 @@
+   in this case both the symlink and the symlinked file are deleted,
+   but only if the symlinked file is not in the datadir.
+ */
+-int my_handler_delete_with_symlink(PSI_file_key key, const char *name,
+-                                   const char *ext, myf sync_dir)
++int my_handler_delete_with_symlink(const char *filename, myf sync_dir)
+ {
+-  char orig[FN_REFLEN], real[FN_REFLEN];
++  char real[FN_REFLEN];
+   int res= 0;
+   DBUG_ENTER("my_handler_delete_with_symlink");
+ 
+-  fn_format(orig, name, "", ext, MY_UNPACK_FILENAME | MY_APPEND_EXT);
+-  if (my_is_symlink(orig))
++  if (my_is_symlink(filename))
+   {
+     /*
+       Delete the symlinked file only if the symlink is not
+       pointing into datadir.
+     */
+-    if (!(my_realpath(real, orig, MYF(0)) || mysys_test_invalid_symlink(real)))
+-      res= mysql_file_delete(key, real, MYF(MY_NOSYMLINKS | sync_dir));
++    if (!(my_realpath(real, filename, MYF(0)) || mysys_test_invalid_symlink(real)))
++      res= my_delete(real, MYF(MY_NOSYMLINKS | sync_dir));
+   }
+-  DBUG_RETURN(mysql_file_delete(key, orig, MYF(sync_dir)) || res);
++  DBUG_RETURN(my_delete(filename, MYF(sync_dir)) || res);
+ }
+diff -Naur mariadb-10.1.22/sql/handler.cc mariadb-10.1.22.patch/sql/handler.cc
+--- mariadb-10.1.22/sql/handler.cc	2017-03-11 20:09:11.000000000 +0100
++++ mariadb-10.1.22.patch/sql/handler.cc	2017-04-25 13:43:33.716731189 +0200
+@@ -3840,7 +3840,7 @@
+ 
+   for (const char **ext=bas_ext(); *ext ; ext++)
+   {
+-    if (my_handler_delete_with_symlink(key_file_misc, name, *ext, 0))
++    if (mysql_file_delete_with_symlink(key_file_misc, name, *ext, 0))
+     {
+       if (my_errno != ENOENT)
+       {
+diff -Naur mariadb-10.1.22/sql/sql_db.cc mariadb-10.1.22.patch/sql/sql_db.cc
+--- mariadb-10.1.22/sql/sql_db.cc	2017-03-11 20:09:12.000000000 +0100
++++ mariadb-10.1.22.patch/sql/sql_db.cc	2017-04-25 13:43:33.717731197 +0200
+@@ -846,7 +846,7 @@
+      if there exists a table with the name 'db', so let's just do it
+      separately. We know this file exists and needs to be deleted anyway.
+   */
+-  if (my_handler_delete_with_symlink(key_file_misc, path, "", MYF(0)) &&
++  if (mysql_file_delete_with_symlink(key_file_misc, path, "", MYF(0)) &&
+       my_errno != ENOENT)
+   {
+     my_error(EE_DELETE, MYF(0), path, my_errno);
+@@ -1152,7 +1152,7 @@
+         We ignore ENOENT error in order to skip files that was deleted
+         by concurrently running statement like REPAIR TABLE ...
+       */
+-      if (my_handler_delete_with_symlink(key_file_misc, filePath, "", MYF(0)) &&
++      if (mysql_file_delete_with_symlink(key_file_misc, filePath, "", MYF(0)) &&
+           my_errno != ENOENT)
+       {
+         my_error(EE_DELETE, MYF(0), filePath, my_errno);
+@@ -1268,7 +1268,7 @@
+       continue;
+     }
+     strxmov(filePath, org_path, "/", file->name, NullS);
+-    if (my_handler_delete_with_symlink(key_file_misc, filePath, "", MYF(MY_WME)))
++    if (mysql_file_delete_with_symlink(key_file_misc, filePath, "", MYF(MY_WME)))
+     {
+       goto err;
+     }
+diff -Naur mariadb-10.1.22/sql/table.cc mariadb-10.1.22.patch/sql/table.cc
+--- mariadb-10.1.22/sql/table.cc	2017-03-11 20:09:12.000000000 +0100
++++ mariadb-10.1.22.patch/sql/table.cc	2017-04-25 13:43:33.720731220 +0200
+@@ -571,7 +571,7 @@
+   {
+     DBUG_ASSERT(flags & GTS_TABLE);
+     DBUG_ASSERT(flags & GTS_USE_DISCOVERY);
+-    my_handler_delete_with_symlink(key_file_frm, path, "", MYF(0));
++    mysql_file_delete_with_symlink(key_file_frm, path, "", MYF(0));
+     file= -1;
+   }
+   else
+diff -Naur mariadb-10.1.22/storage/maria/ma_delete_table.c mariadb-10.1.22.patch/storage/maria/ma_delete_table.c
+--- mariadb-10.1.22/storage/maria/ma_delete_table.c	2017-03-11 20:09:16.000000000 +0100
++++ mariadb-10.1.22.patch/storage/maria/ma_delete_table.c	2017-04-25 13:45:37.101772672 +0200
+@@ -86,13 +86,13 @@
+ {
+   DBUG_ENTER("maria_delete_table_files");
+ 
+-  if (my_handler_delete_with_symlink(key_file_kfile, name, MARIA_NAME_IEXT, MYF(MY_WME | sync_dir)) ||
+-      my_handler_delete_with_symlink(key_file_dfile, name, MARIA_NAME_DEXT, MYF(MY_WME | sync_dir)))
++  if (mysql_file_delete_with_symlink(key_file_kfile, name, MARIA_NAME_IEXT, MYF(MY_WME | sync_dir)) ||
++      mysql_file_delete_with_symlink(key_file_dfile, name, MARIA_NAME_DEXT, MYF(MY_WME | sync_dir)))
+     DBUG_RETURN(my_errno);
+ 
+   if (!temporary) {
+-    my_handler_delete_with_symlink(key_file_dfile, name, ".TMD", MYF(0));
+-    my_handler_delete_with_symlink(key_file_dfile, name, ".OLD", MYF(0));
++    mysql_file_delete_with_symlink(key_file_dfile, name, ".TMD", MYF(0));
++    mysql_file_delete_with_symlink(key_file_dfile, name, ".OLD", MYF(0));
+   }
+   DBUG_RETURN(0);
+ }
+diff -Naur mariadb-10.1.22/storage/myisam/mi_delete_table.c mariadb-10.1.22.patch/storage/myisam/mi_delete_table.c
+--- mariadb-10.1.22/storage/myisam/mi_delete_table.c	2017-03-11 20:09:17.000000000 +0100
++++ mariadb-10.1.22.patch/storage/myisam/mi_delete_table.c	2017-04-25 13:43:33.721731228 +0200
+@@ -34,14 +34,14 @@
+   check_table_is_closed(name,"delete");
+ #endif
+ 
+-  if (my_handler_delete_with_symlink(mi_key_file_kfile, name, MI_NAME_IEXT, MYF(MY_WME)) ||
+-      my_handler_delete_with_symlink(mi_key_file_dfile, name, MI_NAME_DEXT, MYF(MY_WME)))
++  if (mysql_file_delete_with_symlink(mi_key_file_kfile, name, MI_NAME_IEXT, MYF(MY_WME)) ||
++      mysql_file_delete_with_symlink(mi_key_file_dfile, name, MI_NAME_DEXT, MYF(MY_WME)))
+     DBUG_RETURN(my_errno);
+ 
+ 
+   // optionally present:
+-  my_handler_delete_with_symlink(mi_key_file_dfile, name, ".OLD", MYF(0));
+-  my_handler_delete_with_symlink(mi_key_file_dfile, name, ".TMD", MYF(0));
++  mysql_file_delete_with_symlink(mi_key_file_dfile, name, ".OLD", MYF(0));
++  mysql_file_delete_with_symlink(mi_key_file_dfile, name, ".TMD", MYF(0));
+ 
+   DBUG_RETURN(0);
+ }
