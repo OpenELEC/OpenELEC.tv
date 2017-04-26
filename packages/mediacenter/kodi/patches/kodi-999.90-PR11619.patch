@@ -44,26 +44,6 @@ index c48e3a9..4187580 100644
      virtual bool OpenForWrite(const CURL& url, bool bOverWrite = false);
      virtual bool Delete(const CURL& url);
 
-From d80db53b2dcf40e6c9cf3550cf109be2abdaa357 Mon Sep 17 00:00:00 2001
-From: popcornmix <popcornmix@gmail.com>
-Date: Thu, 20 Apr 2017 18:01:16 +0100
-Subject: [PATCH 3/4] DVDDemuxFFMPEG: Increase FFMPEG_FILE_BUFFER_SIZE to 128K
-
----
- xbmc/cores/FFmpeg.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/xbmc/cores/FFmpeg.h b/xbmc/cores/FFmpeg.h
-index b7d25bf..2643d1f 100644
---- a/xbmc/cores/FFmpeg.h
-+++ b/xbmc/cores/FFmpeg.h
-@@ -65,4 +65,4 @@ class CFFmpegLog
-   int level;
- };
- 
--#define FFMPEG_FILE_BUFFER_SIZE   32768 // default reading size for ffmpeg
-+#define FFMPEG_FILE_BUFFER_SIZE   131072 // default reading size for ffmpeg
-
 From 06440afd24df440b039f982b13843f0ce8f929a2 Mon Sep 17 00:00:00 2001
 From: fritsch <Peter.Fruehberger@gmail.com>
 Date: Sat, 22 Apr 2017 08:06:16 +0200
