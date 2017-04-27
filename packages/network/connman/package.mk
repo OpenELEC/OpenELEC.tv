@@ -18,7 +18,7 @@
 
 PKG_NAME="connman"
 # DO NOT UPGRADE!!
-PKG_VERSION="1.33"
+PKG_VERSION="1.34"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -67,6 +67,7 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --enable-ethernet \
                            --disable-gadget \
                            --enable-wifi \
+                           --disable-iwd \
                            --disable-bluetooth \
                            --disable-ofono \
                            --disable-dundee \
@@ -78,7 +79,8 @@ PKG_CONFIGURE_OPTS_TARGET="WPASUPPLICANT=/usr/bin/wpa_supplicant \
                            --enable-datafiles \
                            --with-dbusconfdir=/etc \
                            --with-systemdunitdir=/usr/lib/systemd/system \
-                           --disable-silent-rules"
+                           --disable-silent-rules \
+                           --with-firewall=iptables"
 
 
 PKG_MAKE_OPTS_TARGET="storagedir=/storage/.cache/connman \
