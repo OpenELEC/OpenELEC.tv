@@ -446,7 +446,7 @@ diff -Naur libcec-5388d3a/src/libcec/adapter/IMX/IMXCECAdapterCommunication.cpp 
 +}
 +
 +
-+cec_logical_addresses CIMXCECAdapterCommunication::GetLogicalAddresses(void)
++cec_logical_addresses CIMXCECAdapterCommunication::GetLogicalAddresses(void) const
 +{
 +  cec_logical_addresses addresses;
 +  addresses.Clear();
@@ -635,7 +635,7 @@ diff -Naur libcec-5388d3a/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h li
 +    bool SetLineTimeout(uint8_t UNUSED(iTimeout)) { return true; }
 +    bool StartBootloader(void) { return false; }
 +    bool SetLogicalAddresses(const cec_logical_addresses &addresses);
-+    cec_logical_addresses GetLogicalAddresses(void);
++    cec_logical_addresses GetLogicalAddresses(void) const;
 +    bool PingAdapter(void) { return IsInitialised(); }
 +    uint16_t GetFirmwareVersion(void);
 +    uint32_t GetFirmwareBuildDate(void) { return 0; }
@@ -669,7 +669,7 @@ diff -Naur libcec-5388d3a/src/libcec/adapter/IMX/IMXCECAdapterCommunication.h li
 +    //cec_logical_addresses       m_logicalAddresses;
 +    cec_logical_address         m_logicalAddress;
 +
-+    P8PLATFORM::CMutex            m_mutex;
++    mutable P8PLATFORM::CMutex  m_mutex;
 +    P8PLATFORM::CCDevSocket       *m_dev;	/**< the device connection */
 +    bool                        m_bLogicalAddressRegistered;
 +    bool                        m_bInitialised;
