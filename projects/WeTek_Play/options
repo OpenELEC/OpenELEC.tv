@@ -136,9 +136,6 @@
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
     FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
 
-  # build and install ATV IR remote support (yes / no)
-    ATVCLIENT_SUPPORT="no"
-
   # build and install IRServer IR/LCD support (yes / no)
     IRSERVER_SUPPORT="no"
 
