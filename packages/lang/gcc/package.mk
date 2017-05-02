@@ -34,6 +34,13 @@ PKG_LONGDESC="This package contains the GNU Compiler Collection. It includes com
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+# Some target need gcc/libatomic:
+if [ "GCC_LIBATOMIC_SUPPORT" = "yes" ]; then
+  GCC_LIBATOMIC="--enable-libatomic"
+else
+  GCC_LIBATOMIC="--disable-libatomic"
+fi
+
 GCC_COMMON_CONFIGURE_OPTS="--target=$TARGET_NAME \
                            --with-sysroot=$SYSROOT_PREFIX \
                            --with-gmp=$ROOT/$TOOLCHAIN \
@@ -53,13 +60,13 @@ GCC_COMMON_CONFIGURE_OPTS="--target=$TARGET_NAME \
                            --without-cloog \
                            --disable-libada \
                            --disable-libmudflap \
-                           --disable-libatomic \
                            --disable-libitm \
                            --disable-libquadmath \
                            --disable-libgomp \
                            --disable-libmpx"
 
 PKG_CONFIGURE_OPTS_BOOTSTRAP="$GCC_COMMON_CONFIGURE_OPTS \
+                              --disable-libatomic \
                               --enable-languages=c \
                               --disable-__cxa_atexit \
                               --disable-libsanitizer \
@@ -73,6 +80,7 @@ PKG_CONFIGURE_OPTS_BOOTSTRAP="$GCC_COMMON_CONFIGURE_OPTS \
                               $GCC_OPTS"
 
 PKG_CONFIGURE_OPTS_HOST="$GCC_COMMON_CONFIGURE_OPTS \
+                         $GCC_LIBATOMIC \
                          --enable-languages=c,c++ \
                          --enable-__cxa_atexit \
                          --enable-decimal-float \
