@@ -81,7 +81,7 @@ PKG_MAKE_OPTS_HOST="headers_check"
 [ "$NFS_SUPPORT" = yes ]             && KERNEL_EXTRA_CONFIG+=" nfs"
 [ "$SAMBA_SUPPORT" = yes ]           && KERNEL_EXTRA_CONFIG+=" samba"
 [ "$BLUETOOTH_SUPPORT" = yes ]       && KERNEL_EXTRA_CONFIG+=" bluetooth"
-[ "$UVESAFB_SUPPORT" = yes ]         && KERNEL_EXTRA_CONFIG+=" uvesafb"
+[ "$UVESAFB_SUPPORT" = yes ]         && KERNEL_EXTRA_CONFIG+=" uvesafb" && PKG_DEPENDS_INIT+=" v86d:init"
 
 post_patch() {
   if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then

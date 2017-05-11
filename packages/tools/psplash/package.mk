@@ -32,10 +32,6 @@ PKG_LONGDESC="PSplash is a userspace graphical boot splash screen for mainly emb
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-if [ "$UVESAFB_SUPPORT" = yes ]; then
-  PKG_DEPENDS_INIT+=" v86d:init"
-fi
-
 pre_configure_init() {
   if [ -f $PROJECT_DIR/$PROJECT/splash/splash.h ]; then
     PSPLASH_SPLASH="$PROJECT_DIR/$PROJECT/splash/splash.h"
