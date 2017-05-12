@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <!-- spindown -->
+  <string id="1000">Daemon</string>
+  <string id="1010">Settings</string>
+  <string id="1020">Idle time</string>
+  <string id="1030">Include system disk</string>
+</strings>
