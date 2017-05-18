@@ -43,6 +43,9 @@ PKG_AUTORECONF="yes"
 # data to help it make better index choices.
   CFLAGS="$CFLAGS -DSQLITE_ENABLE_STAT3"
 
+# relocation R_MIPS_HI16 against `a local symbol' can not be used when making a shared object; recompile with -fPIC
+  CFLAGS="$CFLAGS -fPIC"
+
 # When this C-preprocessor macro is defined, SQLite includes some additional APIs
 # that provide convenient access to meta-data about tables and queries. The APIs that
 # are enabled by this option are:
