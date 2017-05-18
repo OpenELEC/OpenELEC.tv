@@ -56,6 +56,7 @@ pre_configure_target() {
   esac
 
   cp $ROOT/$PKG_BUILD/src/syscfg/lock-obj-pub.$GPGERROR_TUPLE.h $ROOT/$PKG_BUILD/src/syscfg/lock-obj-pub.$GPGERROR_TARGET.h
+  CFLAGS="$CFLAGS -fPIC"
 }
 
 post_makeinstall_target() {
