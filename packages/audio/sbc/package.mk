@@ -34,3 +34,7 @@ PKG_AUTORECONF="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--enable-static --disable-shared \
          --disable-tools --disable-tester"
+
+pre_configure_target() {
+  CFLAGS="$CFLAGS -fPIC"
+}
