@@ -35,6 +35,10 @@ PKG_AUTORECONF="no"
 
 MAKEFLAGS="-j1"
 
+pre_configure_target() {
+  CFLAGS="$CFLAGS -fPIC"
+}
+
 make_target() {
   make prefix=/usr \
        incdir=/usr/include/librtmp \
