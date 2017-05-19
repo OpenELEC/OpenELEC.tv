@@ -125,6 +125,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-debug \
                            --with-fontrootdir=/usr/share/fonts \
                            --with-default-font-path=/usr/share/fonts/misc,built-ins \
                            --with-serverconfig-path=/usr/lib/xserver \
+                           --without-doxygen \
                            --without-xmlto \
                            --without-fop"
 
