@@ -45,7 +45,9 @@ pre_configure_target() {
   CFLAGS=`echo $CFLAGS | sed -e "s|-O3|-O2|"`
   CXXFLAGS=`echo $CXXFLAGS | sed -e "s|-O3|-O2|"`
   CFLAGS="$CFLAGS -I$ROOT/$PKG_BUILD"
+  CFLAGS="$CFLAGS -fPIC"
   CXXFLAGS="$CXXFLAGS -I$ROOT/$PKG_BUILD"
+  CXXFLAGS="$CXXFLAGS -fPIC"
   LDFLAGS="$LDFLAGS -lz"
 }
 
