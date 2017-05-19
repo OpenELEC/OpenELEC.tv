@@ -1,0 +1,28 @@
+Description: Ensure groonga is built with libatomic
+ MIPS (and possibly other) platforms require linking against libatomic to
+ support 64-bit atomic integers. Groonga was failing to do so and all related
+ tests were failing with an atomics relocation error on MIPS.
+Author: James Cowgill <jcowgill@debian.org>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/storage/mroonga/vendor/groonga/CMakeLists.txt
++++ b/storage/mroonga/vendor/groonga/CMakeLists.txt
+@@ -234,6 +234,8 @@ endmacro()
+ include(build/ac_macros/check_headers.m4)
+ include(build/ac_macros/check_functions.m4)
+ 
++ac_check_lib(atomic __atomic_store_8)
++
+ ac_check_symbols(fpclassify math.h)
+ ac_check_lib(m fpclassify)
+ 
+--- a/storage/mroonga/vendor/groonga/lib/CMakeLists.txt
++++ b/storage/mroonga/vendor/groonga/lib/CMakeLists.txt
+@@ -62,6 +62,7 @@ endif()
+ set_target_properties(libgroonga PROPERTIES OUTPUT_NAME "groonga")
+ 
+ set(GRN_ALL_LIBRARIES
++    ${ATOMIC_LIBS}
+     ${EXECINFO_LIBS}
+     ${RT_LIBS}
+     ${PTHREAD_LIBS}
