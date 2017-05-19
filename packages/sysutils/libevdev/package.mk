@@ -32,7 +32,7 @@ PKG_LONGDESC="libevdev is a wrapper library for evdev devices. it moves the comm
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--enable-shared --disable-static"
+PKG_CONFIGURE_OPTS_TARGET="ac_cv_path_DOXYGEN=true --enable-shared --disable-static"
 
 pre_configure_target() {
   export CFLAGS="$CFLAGS -fPIC -DPIC"
