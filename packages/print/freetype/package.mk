@@ -42,6 +42,7 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --with-harfbuzz=no"
 
 pre_configure_target() {
+  CFLAGS="$CFLAGS -fPIC"
   # unset LIBTOOL because freetype uses its own
     ( cd ..
       unset LIBTOOL

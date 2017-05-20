@@ -36,6 +36,10 @@ PKG_AUTORECONF="no"
   export CFLAGS=`echo $CFLAGS | sed -e "s|-D_FORTIFY_SOURCE=.||g"`
   export LDFLAGS=`echo $LDFLAGS | sed -e "s|-D_FORTIFY_SOURCE=.||g"`
 
+pre_configure_target() {
+  CFLAGS="$CFLAGS -fPIC"
+}
+
 make_target() {
   make HOSTCC="$HOST_CC" CFLAGS="$CFLAGS -D_GNU_SOURCE" PREFIX=/usr all-static
 }
