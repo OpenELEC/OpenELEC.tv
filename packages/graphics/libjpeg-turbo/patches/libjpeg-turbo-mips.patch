@@ -1,0 +1,21 @@
+From: =?utf-8?q?Ond=C5=99ej_Sur=C3=BD?= <ondrej@sury.org>
+Date: Thu, 20 Oct 2016 15:51:10 +0200
+Subject: Declare env on MIPS on first use (Courtesy of Aurelien Jarno)
+
+---
+ simd/jsimd_mips.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/simd/jsimd_mips.c b/simd/jsimd_mips.c
+index 63b8115..a371a32 100644
+--- a/simd/jsimd_mips.c
++++ b/simd/jsimd_mips.c
+@@ -79,7 +79,7 @@ init_simd (void)
+ #endif
+ 
+   /* Force different settings through environment variables */
+-  env = getenv("JSIMD_FORCEDSPR2");
++  char *env = getenv("JSIMD_FORCEDSPR2");
+   if ((env != NULL) && (strcmp(env, "1") == 0))
+     simd_support = JSIMD_MIPS_DSPR2;
+   env = getenv("JSIMD_FORCENONE");
