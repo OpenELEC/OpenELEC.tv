@@ -1,0 +1,71 @@
+diff -Naru b/system/Lircmap.xml a/system/Lircmap.xml
+--- b/system/Lircmap.xml	2013-05-16 20:23:15.316917554 +0200
++++ a/system/Lircmap.xml	2013-05-16 20:22:34.652918915 +0200
+@@ -416,7 +416,11 @@
+ 		<down>KEY_DOWN</down>
+ 		<select>KEY_OK</select>
+ 		<select>KEY_ENTER</select>
++		<enter>KEY_ENTER</enter>
++		<clear>KEY_DELETE</clear>
+ 		<start>KEY_SELECT</start>
++		<start>KEY_PROG1</start>
++		<start>KEY_HOME</start>
+ 		<back>KEY_ESC</back>
+ 		<back>KEY_EXIT</back>
+ 		<back>KEY_BACK</back>
+@@ -434,8 +438,11 @@
+ 		<channelplus>KEY_CHANNELUP</channelplus>
+ 		<channelminus>KEY_CHANNELDOWN</channelminus>
+ 		<skipplus>KEY_NEXTSONG</skipplus>
++		<skipplus>KEY_NEXT</skipplus>
+ 		<skipminus>KEY_PREVIOUSSONG</skipminus>
++		<skipminus>KEY_PREVIOUS</skipminus>
+ 		<title>KEY_TITLE</title>
++		<title>KEY_EPG</title>
+ 		<subtitle>KEY_SUBTITLE</subtitle>
+ 		<language>KEY_LANGUAGE</language>
+ 		<mute>KEY_MUTE</mute>
+@@ -443,7 +450,10 @@
+ 		<myvideo>KEY_VIDEO</myvideo>
+ 		<mymusic>KEY_AUDIO</mymusic>
+ 		<mypictures>KEY_MHP</mypictures>
++		<mypictures>KEY_CAMERA</mypictures>
+ 		<mytv>KEY_TV</mytv>
++		<liveradio>KEY_RADIO</liveradio>
++		<mytv>KEY_TUNER</mytv>
+ 		<one>KEY_1</one>
+ 		<two>KEY_2</two>
+ 		<three>KEY_3</three>
+@@ -454,17 +464,31 @@
+ 		<eight>KEY_8</eight>
+ 		<nine>KEY_9</nine>
+ 		<zero>KEY_0</zero>
++		<one>KEY_NUMERIC_1</one>
++		<two>KEY_NUMERIC_2</two>
++		<three>KEY_NUMERIC_3</three>
++		<four>KEY_NUMERIC_4</four>
++		<five>KEY_NUMERIC_5</five>
++		<six>KEY_NUMERIC_6</six>
++		<seven>KEY_NUMERIC_7</seven>
++		<eight>KEY_NUMERIC_8</eight>
++		<nine>KEY_NUMERIC_9</nine>
++		<zero>KEY_NUMERIC_0</zero>
++		<star>KEY_NUMERIC_STAR</star>
++		<hash>KEY_NUMERIC_POUND</hash>
+ 		<red>KEY_RED</red>
+ 		<green>KEY_GREEN</green>
+ 		<yellow>KEY_YELLOW</yellow>
+ 		<blue>KEY_BLUE</blue>
++		<menu>KEY_DVD</menu>
+ 		<menu>KEY_MENU</menu>
+ 		<info>KEY_INFO</info>
+ 		<info>KEY_PROPS</info>
+-		<start>KEY_HOME</start>
+ 		<display>KEY_ANGLE</display>
++		<display>KEY_ZOOM</display>
+ 		<recordedtv>KEY_PVR</recordedtv>
+ 		<teletext>KEY_TEXT</teletext>
++		<clear>KEY_DELETE</clear>
+ 	</remote>
+ 	<remote device="mediacenter">
+ 		<pause>pause</pause>
