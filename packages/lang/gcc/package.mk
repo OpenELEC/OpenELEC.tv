@@ -35,7 +35,7 @@ PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
 # Some target need gcc/libatomic:
-if [ "GCC_LIBATOMIC_SUPPORT" = "yes" ]; then
+if [ "$GCC_LIBATOMIC_SUPPORT" = "yes" ]; then
   GCC_LIBATOMIC="--enable-libatomic"
 else
   GCC_LIBATOMIC="--disable-libatomic"
