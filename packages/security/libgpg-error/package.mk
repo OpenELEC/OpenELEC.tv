@@ -49,6 +49,10 @@ pre_configure_target() {
       GPGERROR_TUPLE=i486-pc-linux-gnu
       GPGERROR_TARGET=linux-gnu
       ;;
+    mips)
+      GPGERROR_TUPLE=mipsel-unknown-linux-gnu
+      GPGERROR_TARGET=linux-gnu
+      ;;
     x86_64)
       GPGERROR_TUPLE=x86_64-pc-linux-gnu
       GPGERROR_TARGET=linux-gnu
