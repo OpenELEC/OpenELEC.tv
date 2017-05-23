@@ -17,7 +17,15 @@
 ################################################################################
 
 PKG_NAME="binutils"
-PKG_VERSION="2.28"
+case "$LINUX" in
+  ci20)
+    # mxu patch requires 2.23:
+    PKG_VERSION="2.23.2"
+    ;;
+  *)
+    PKG_VERSION="2.28"
+    ;;
+esac
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
