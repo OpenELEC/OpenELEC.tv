@@ -6,7 +6,7 @@ ENV{installer}=="1", GOTO="exit"
 SUBSYSTEM!="block", KERNEL!="sd*|sr*|mmc*", GOTO="exit"
 
 # check for special partitions we dont want mount
-IMPORT{program}="/sbin/blkid -o udev -p $tempnode"
+IMPORT{builtin}="blkid"
 ENV{ID_FS_LABEL}=="EFI|BOOT|Recovery|RECOVERY|SETTINGS|boot|root0|share0", GOTO="exit"
 
 # /dev/sd* and /dev/mmc* ith partitions/disk and filesystems only and /dev/sr* disks only
