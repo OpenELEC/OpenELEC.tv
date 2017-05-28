@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="autoconf-archive"
-PKG_VERSION="2016.09.16"
+PKG_VERSION="2017.03.21"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
