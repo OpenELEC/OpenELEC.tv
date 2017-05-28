@@ -17,48 +17,28 @@
 ################################################################################
 
 PKG_NAME="dosfstools"
-PKG_VERSION="3.0.28"
+PKG_VERSION="4.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/dosfstools/dosfstools"
 PKG_URL="https://github.com/dosfstools/dosfstools/releases/download/v$PKG_VERSION/$PKG_NAME-$PKG_VERSION.tar.xz"
 PKG_DEPENDS_TARGET="toolchain"
-PKG_DEPENDS_INIT="toolchain dosfstools gcc:init"
+PKG_DEPENDS_INIT="toolchain gcc:init"
 PKG_PRIORITY="optional"
 PKG_SECTION="tools"
 PKG_SHORTDESC="dosfstools: utilities for making and checking MS-DOS FAT filesystems."
 PKG_LONGDESC="dosfstools contains utilities for making and checking MS-DOS FAT filesystems."
 
 PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+PKG_AUTORECONF="yes"
 
-PKG_MAKE_OPTS_TARGET="PREFIX=/usr"
-PKG_MAKEINSTALL_OPTS_TARGET="PREFIX=/usr"
-
-make_init() {
-  : # reuse make_target()
-}
-
-pre_build_host() {
-  mkdir -p $PKG_BUILD/.$HOST_NAME
-  cp -RP $PKG_BUILD/* $PKG_BUILD/.$HOST_NAME
-}
-
-make_host() {
-  cd $ROOT/$PKG_BUILD/.$HOST_NAME
-  make PREFIX=/usr
-}
-
-makeinstall_init() {
-  mkdir -p $INSTALL/sbin
-    cp fsck.fat $INSTALL/sbin
-    ln -sf fsck.fat $INSTALL/sbin/fsck.msdos
-    ln -sf fsck.fat $INSTALL/sbin/fsck.vfat
-}
+PKG_CONFIGURE_OPTS_TARGET="--without-udev"
+PKG_CONFIGURE_OPTS_INIT="--without-udev"
+PKG_CONFIGURE_OPTS_HOST="--without-udev"
 
 makeinstall_host() {
   mkdir -p $ROOT/$TOOLCHAIN/sbin
-    cp mkfs.fat $ROOT/$TOOLCHAIN/sbin
+    cp src/mkfs.fat $ROOT/$TOOLCHAIN/sbin
     ln -sf mkfs.fat $ROOT/$TOOLCHAIN/sbin/mkfs.vfat
 }
