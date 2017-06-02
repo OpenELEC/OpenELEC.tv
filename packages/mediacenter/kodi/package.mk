@@ -378,6 +378,7 @@ post_makeinstall_target() {
 
 post_install() {
 # enable default services
+  enable_service kodi-autostart.service
   enable_service kodi-halt.service
   enable_service kodi-poweroff.service
   enable_service kodi-reboot.service
