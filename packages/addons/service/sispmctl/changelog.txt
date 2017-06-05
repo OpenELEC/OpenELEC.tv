@@ -1,0 +1,6 @@
+1.1
+- hook to screensaver
+
+1
+- initial addon
+

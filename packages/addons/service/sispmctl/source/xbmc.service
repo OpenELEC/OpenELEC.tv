@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.service.sispmctl"
+       name="Sispmctl screensaver"
+       version="1"
+       provider-name="aep">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.service"
+             library="default.py" start="[login|startup]">
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">Switches off devices during screensaver via sispmctl</summary>
+  </extension>
+</addon>
