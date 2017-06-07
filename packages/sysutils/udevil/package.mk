@@ -52,4 +52,8 @@ post_makeinstall_target() {
 
 post_install() {
   enable_service udevil-mount@.service
+	if [ "$SAMBA_SERVER" == "yes" ]; then
+		echo "ExecStartPost=-/usr/lib/samba/samba-autoshare" >> $INSTALL/lib/systemd/system/udevil-mount@.service
+    echo "ExecStopPost=-/usr/lib/samba/samba-autoshare" >> $INSTALL/lib/systemd/system/udevil-mount@.service
+	fi
 }
