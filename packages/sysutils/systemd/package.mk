@@ -43,7 +43,7 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_func_malloc_0_nonnull=yes \
                            --disable-coverage \
                            --disable-kmod \
                            --disable-xkbcommon \
-                           --disable-blkid \
+                           --enable-blkid \
                            --disable-seccomp \
                            --disable-ima \
                            --disable-selinux \
@@ -170,6 +170,9 @@ post_makeinstall_target() {
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-udev-hwdb-update.service
   rm -rf $INSTALL/usr/lib/systemd/system/*.target.wants/systemd-udev-hwdb-update.service
 
+  # remove fuse mount rules, we ship this byself
+  rm -rf $INSTALL/usr/lib/systemd/system/sys-fs-fuse-connections.mount
+
   # remove nspawn
   rm -rf $INSTALL/usr/bin/systemd-nspawn
   rm -rf $INSTALL/usr/lib/systemd/system/systemd-nspawn@.service
@@ -216,7 +219,6 @@ post_makeinstall_target() {
   cp -PR $PKG_DIR/config/* $INSTALL/usr/config
 
   rm -rf $INSTALL/etc/modules-load.d
-  ln -sf /storage/.config/modules-load.d $INSTALL/etc/modules-load.d
   rm -rf $INSTALL/etc/sysctl.d
   ln -sf /storage/.config/sysctl.d $INSTALL/etc/sysctl.d
   rm -rf $INSTALL/etc/tmpfiles.d

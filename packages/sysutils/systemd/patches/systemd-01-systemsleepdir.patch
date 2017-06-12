@@ -1,0 +1,12 @@
+diff -Naur systemd-233/Makefile.am systemd-233.patch/Makefile.am
+--- systemd-233/Makefile.am	2017-03-01 22:43:06.000000000 +0100
++++ systemd-233.patch/Makefile.am	2017-05-21 00:14:46.995223339 +0200
+@@ -84,7 +84,7 @@
+ systemenvgeneratordir=$(prefix)/lib/systemd/system-environment-generators
+ userenvgeneratordir=$(prefix)/lib/systemd/user-environment-generators
+ systemshutdowndir=$(rootlibexecdir)/system-shutdown
+-systemsleepdir=$(rootlibexecdir)/system-sleep
++systemsleepdir=$(rootprefix)/lib/systemd/system-sleep
+ systemunitdir=$(rootprefix)/lib/systemd/system
+ systempresetdir=$(rootprefix)/lib/systemd/system-preset
+ udevlibexecdir=$(rootprefix)/lib/udev

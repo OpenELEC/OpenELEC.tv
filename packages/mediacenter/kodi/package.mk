@@ -31,13 +31,13 @@ PKG_LONGDESC="Kodi Media Center (which was formerly named Xbox Media Center or X
 
 case "$KODIPLAYER_DRIVER" in
   bcm2835-firmware)
-    PKG_VERSION="02fffe1"
+    PKG_VERSION="c1d9c5c"
     PKG_GIT_URL="https://github.com/OpenELEC/xbmc.git"
     PKG_GIT_BRANCH="krypton_rbp_backports"
     PKG_KEEP_CHECKOUT="no"
     ;;
   *)
-    PKG_VERSION="17.1-Krypton"
+    PKG_VERSION="17.3-Krypton"
     PKG_GIT_URL="https://github.com/xbmc/xbmc.git"
     PKG_GIT_BRANCH="Krypton"
     PKG_KEEP_CHECKOUT="no"
@@ -59,7 +59,6 @@ PKG_CMAKE_OPTS_BOOTSTRAP="-DCORE_SOURCE_DIR=$ROOT/$PKG_BUILD"
 PKG_CMAKE_OPTS_HOST="-DCORE_SOURCE_DIR=$ROOT/$PKG_BUILD"
 PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=$ROOT/$TOOLCHAIN \
                        -DDEPENDS_PATH=$ROOT/$PKG_BUILD/depends \
-                       -DWITH_ARCH=$TARGET_ARCH \
                        -DCMAKE_BUILD_TYPE=none \
                        -DPYTHON_INCLUDE_DIRS=$SYSROOT_PREFIX/usr/include/python2.7 \
                        -DGIT_VERSION=$PKG_VERSION \
@@ -80,6 +79,11 @@ PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=$ROOT/$TOOLCHAIN \
                        -DENABLE_XSLT=OFF \
                        -DENABLE_DBUS=ON"
 
+if [ "$TARGET_ARCH" = "x86_64" ]; then
+  PKG_CMAKE_OPTS_TARGET+=" -DWITH_CPU=$TARGET_ARCH"
+else
+  PKG_CMAKE_OPTS_TARGET+=" -DWITH_ARCH=$TARGET_ARCH"
+fi
 
 if [ "$DISPLAYSERVER" = "x11" ]; then
   PKG_DEPENDS_TARGET+=" libX11 libXext libdrm libXrandr"
@@ -375,11 +379,9 @@ post_makeinstall_target() {
 post_install() {
 # enable default services
   enable_service kodi-autostart.service
-  enable_service kodi-cleanlogs.service
   enable_service kodi-halt.service
   enable_service kodi-poweroff.service
   enable_service kodi-reboot.service
-  enable_service kodi-waitonnetwork.service
   enable_service kodi.service
   enable_service kodi-lirc-suspend.service
 }

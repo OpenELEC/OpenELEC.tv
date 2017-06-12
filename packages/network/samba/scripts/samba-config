@@ -17,7 +17,7 @@
 #  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-SMB_USERCONF="/storage/.config/samba.conf"
+SMB_USERCONF="/storage/.config/samba4.conf"
 SMB_DEFCONF="/etc/samba/smb.conf"
 SMB_CONF="/run/samba/smb.conf"
 

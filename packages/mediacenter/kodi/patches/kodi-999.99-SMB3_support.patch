@@ -1,0 +1,17 @@
+diff --git a/xbmc/filesystem/SMBFile.cpp b/xbmc/filesystem/SMBFile.cpp
+index 08fc390..dd1dcb3 100644
+--- a/xbmc/filesystem/SMBFile.cpp
++++ b/xbmc/filesystem/SMBFile.cpp
+@@ -136,6 +136,9 @@ void CSMB::Init()
+         if (g_advancedSettings.m_sambadoscodepage.length() > 0)
+           fprintf(f, "\tdos charset = %s\n", g_advancedSettings.m_sambadoscodepage.c_str());
+ 
++        // Allow better than SMB1/NT1 to be negotiated (if supported)
++          fprintf(f, "\tclient max protocol = SMB3\n");
++
+         fclose(f);
+       }
+     }
+-- 
+2.7.4
+

@@ -1,0 +1,10 @@
+[Unit]
+Description=FUSE Control File System
+DefaultDependencies=no
+ConditionPathExists=/sys/fs/fuse/connections
+Before=sysinit.target
+
+[Mount]
+What=fusectl
+Where=/sys/fs/fuse/connections
+Type=fusectl

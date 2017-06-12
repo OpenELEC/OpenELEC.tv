@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="keyutils"
-PKG_VERSION="1.5.9"
+PKG_VERSION="1.5.10"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

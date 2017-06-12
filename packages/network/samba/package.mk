@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="samba"
-PKG_VERSION="4.6.2"
+PKG_VERSION="4.6.4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3+"
@@ -148,7 +148,7 @@ post_makeinstall_target() {
     mkdir -p $INSTALL/etc/samba
       cp $PKG_DIR/config/smb.conf $INSTALL/etc/samba
     mkdir -p $INSTALL/usr/config
-      cp $PKG_DIR/config/smb.conf $INSTALL/usr/config/samba.conf.sample
+      cp $PKG_DIR/config/smb.conf $INSTALL/usr/config/samba4.conf.sample
   fi
 
   if [ "$DEVTOOLS" = "yes" ]; then

@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="wetekdvb"
-PKG_VERSION="20170116"
+PKG_VERSION="20170602"
 PKG_REV="1"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="nonfree"

@@ -104,6 +104,11 @@
   # Displayserver to use (x11 / no)
     DISPLAYSERVER="no"
 
+  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia)
+  # Space separated list is supported,
+  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia"
+    GRAPHIC_DRIVERS=""
+
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
@@ -118,13 +123,17 @@
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES=""
 
+  # install extra kernel drivers, see configfiles in packages/linux/config/*.config
+  # or projects/*/linux/*.config or distributions/*/linux/*.config
+  # please add all configfiles which should be included without the suffix and prefix
+  # except the default-*.config and the ones included in packages/linux/package.mk
+  # Space separated list is supported,
+    KERNEL_EXTRA_CONFIG+=" fix-config"
+
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
     FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
-
-  # build and install ATV IR remote support (yes / no)
-    ATVCLIENT_SUPPORT="no"
 
   # build and install IRServer IR/LCD support (yes / no)
     IRSERVER_SUPPORT="no"

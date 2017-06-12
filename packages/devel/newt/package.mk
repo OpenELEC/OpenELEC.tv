@@ -18,7 +18,7 @@
 ################################################################################
 
 PKG_NAME="newt"
-PKG_VERSION="0.52.19"
+PKG_VERSION="0.52.20"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="LGPL"
@@ -33,7 +33,7 @@ PKG_LONGDESC="Newt is a programming library for color text mode, widget based us
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--without-python --without-tcl"
+PKG_CONFIGURE_OPTS_TARGET="--disable-nls --without-python --without-tcl"
 
 pre_configure_target() {
  # newt fails to build in subdirs

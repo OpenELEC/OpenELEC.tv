@@ -337,7 +337,7 @@ if [ ! -f $STAMP ]; then
             $STRIP `find $INSTALL -name "*.so.[0-9]*" 2>/dev/null` 2>/dev/null || :
 
             # strip kernel modules
-            for MOD in `find $INSTALL -type f -name *.ko`; do
+            for MOD in `find $INSTALL/lib $INSTALL/usr/lib -type f -name *.ko`; do
               $STRIP --strip-debug $MOD
             done
           fi

@@ -139,6 +139,7 @@
   progress() {
     if [ "$PROGRESS" = "yes" -a -e /dev/psplash_fifo ] ; then
       echo "MSG $1" > /dev/psplash_fifo
+        usleep 500000 # wait a bit until the last message is written
     elif [ "$PROGRESS" = "yes" ] ; then
       echo "### $1 ###"
     fi

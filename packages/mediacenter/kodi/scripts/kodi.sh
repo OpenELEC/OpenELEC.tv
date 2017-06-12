@@ -92,6 +92,13 @@ fi
 # clean up any stale cores. just in case
 rm -f /storage/.cache/cores/*
 
+# clean 0 byte database files
+for file in /storage/.kodi/userdata/Database/*.db; do
+  if [ ! -s $file ]; then
+    rm -rf $file
+  fi
+done
+
 /usr/lib/kodi/kodi.bin $SAVED_ARGS
 RET=$?
 

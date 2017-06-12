@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="sundtek-mediatv"
-PKG_VERSION="8.1"
+PKG_VERSION="8.2"
 PKG_REV="0"
 PKG_ARCH="any"
 PKG_LICENSE="nonfree"
@@ -28,11 +28,12 @@ PKG_PRIORITY="optional"
 PKG_SECTION="driver/dvb"
 PKG_SHORTDESC="Sundtek USB Stick DVB userspace driver"
 PKG_LONGDESC="Driver for Sundtek MediaTV Pro (DVB-C, DVB-T, AnalogTV, Composite, S-Video, FM-Radio USB Stick) and Sundtek SkyTV Ultimate (DVB-S/S2 USB)."
+
 PKG_IS_ADDON="yes"
 PKG_ADDON_TYPE="xbmc.service"
 PKG_ADDON_PROVIDES=""
+
 PKG_AUTORECONF="no"
-PKG_ADDON_REPOVERSION="8.1"
 
 make_target() {
   mkdir -p $ROOT/$PKG_BUILD

@@ -1,0 +1,60 @@
+Description: Remove various tests from unstable-tests which now pass on MIPS
+Author: James Cowgill <jcowgill@debian.org>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/mysql-test/unstable-tests
++++ b/mysql-test/unstable-tests
+@@ -159,7 +159,6 @@
+ 
+ federated.federated_bug_35333    : Modified in 10.1.22
+ federated.federated_innodb       : MDEV-10617, MDEV-10417 - Wrong checksum, timeouts, fails on Mips
+-federated.federated_partition    : MDEV-10417 - Fails on Mips
+ federated.federated_transactions : MDEV-10617, MDEV-10417 - Wrong checksum, timeouts, fails on Mips
+ federated.federatedx             : MDEV-10617 - Wrong checksum, timeouts
+ 
+@@ -290,10 +289,9 @@
+ 
+ #----------------------------------------------------------------
+ 
+-multi_source.gtid        : MDEV-10417 - Fails on Mips
+ multi_source.info_logs   : MDEV-10042 - Wrong result, MDEV-12629 - Valgrind warnings
+-multi_source.multisource : MDEV-10417 - Fails on Mips
+ multi_source.reset_slave : MDEV-10690 - wrong result
++multi_source.gtid        : MDEV-10620 - Timeout in wait condition
+ multi_source.simple      : MDEV-4633 - Wrong slave status output
+ multi_source.status_vars : MDEV-4632 - failed while waiting for Slave_received_heartbeats
+ 
+@@ -361,12 +359,9 @@
+ #----------------------------------------------------------------
+ 
+ rpl.last_insert_id                    : MDEV-10625 - warnings in error log
+-rpl.rpl_auto_increment                : MDEV-10417 - Fails on Mips
+-rpl.rpl_auto_increment_bug45679       : MDEV-10417 - Fails on Mips
+ rpl.rpl_auto_increment_update_failure : MDEV-10625 - warnings in error log
+ rpl.rpl_binlog_index                  : MDEV-9501 - Warning: failed registering on master
+ rpl.rpl_checksum_cache                : MDEV-12173 - Unexpected error
+-rpl.rpl_ddl                           : MDEV-10417 - Fails on Mips
+ rpl.rpl_domain_id_filter_restart      : MDEV-10684 - Wrong result
+ rpl.rpl_gtid_basic                    : MDEV-10681 - server startup problem
+ rpl.rpl_gtid_crash                    : MDEV-9501 - Warning: failed registering on master
+@@ -374,19 +369,17 @@
+ rpl.rpl_gtid_stop_start               : MDEV-10629 - Crash on shutdown, MDEV-12629 - Valgrind warnings
+ rpl.rpl_gtid_until                    : MDEV-10625 - warnings in error log
+ rpl.rpl_heartbeat_basic               : Modified in 10.1.22
+-rpl.rpl_innodb_bug30888               : MDEV-10417 - Fails on Mips
+ rpl.rpl_insert                        : MDEV-9329 - Fails on Ubuntu/s390x
+ rpl.rpl_insert_delayed                : MDEV-9329 - Fails on Ubuntu/s390x
+ rpl.rpl_invoked_features              : MDEV-10417 - Fails on Mips
+ rpl.rpl_mariadb_slave_capability      : MDEV-11018 - sporadic wrong events in binlog
+-rpl.rpl_mdev6020                      : MDEV-10630, MDEV-10417 - Timeouts, fails on Mips
++rpl.rpl_mdev6020                      : MDEV-10630, MDEV-10417 - Timeouts
+ rpl.rpl_mdev6386                      : Modified in 10.1.22
+ rpl.rpl_mysql_upgrade                 : Modified in 10.1.23
+ rpl.rpl_parallel                      : MDEV-10653 - Timeouts
+ rpl.rpl_parallel_optimistic           : MDEV-10511 - timeout
+ rpl.rpl_parallel_retry                : MDEV-11119 - Server crash
+ rpl.rpl_parallel_temptable            : MDEV-10356 - Crash in close_thread_tables
+-rpl.rpl_partition_innodb              : MDEV-10417 - Fails on Mips
+ rpl.rpl_password_boundaries           : MDEV-11534 - Slave IO warnings
+ rpl.rpl_row_log_innodb                : MDEV-10688 - Wrong result
+ rpl.rpl_row_sp001                     : MDEV-9329 - Fails on Ubuntu/s390x

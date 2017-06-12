@@ -1,0 +1,26 @@
+diff -Naur htop-2.0.2/configure.ac htop-2.0.2.patch/configure.ac
+--- htop-2.0.2/configure.ac	2016-07-21 21:54:31.000000000 +0200
++++ htop-2.0.2.patch/configure.ac	2017-01-02 13:49:04.712274123 +0100
+@@ -191,9 +191,10 @@
+       HTOP_CHECK_LIB([ncursesw6], [addnwstr], [HAVE_LIBNCURSESW],
+        HTOP_CHECK_LIB([ncursesw], [addnwstr], [HAVE_LIBNCURSESW],
+         HTOP_CHECK_LIB([ncurses], [addnwstr], [HAVE_LIBNCURSESW],
++         HTOP_CHECK_LIB([curses], [addnwstr], [HAVE_LIBNCURSESW],
+       missing_libraries="$missing_libraries libncursesw"
+       AC_MSG_ERROR([You may want to use --disable-unicode or install libncursesw.])
+-   ))))))
++   )))))))
+ 
+    AC_CHECK_HEADERS([ncursesw/curses.h],[:],
+       [AC_CHECK_HEADERS([ncurses/ncurses.h],[:],
+@@ -204,8 +205,9 @@
+     HTOP_CHECK_SCRIPT([ncurses], [refresh], [HAVE_LIBNCURSES], "ncurses5-config",
+      HTOP_CHECK_LIB([ncurses6],  [refresh], [HAVE_LIBNCURSES],
+       HTOP_CHECK_LIB([ncurses],  [refresh], [HAVE_LIBNCURSES],
++       HTOP_CHECK_LIB([curses],  [refresh], [HAVE_LIBNCURSES],
+       missing_libraries="$missing_libraries libncurses"
+-   ))))
++   )))))
+    
+    AC_CHECK_HEADERS([curses.h],[:],
+       [AC_CHECK_HEADERS([ncurses/curses.h],[:],

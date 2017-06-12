@@ -672,10 +672,22 @@ mkdir -p $TMPDIR
 #create log file
 touch "$LOGFILE"
 
-# main
+# quit splash
+if [ -e /dev/psplash_fifo ]; then
+  echo "QUIT" > /dev/psplash_fifo
+fi
 
+# reset terminal
+sleep 2
+reset
+
+# switch to console 2
+sleep 1
+exec < /dev/tty2 > /dev/tty2
+chvt 2
+
+# main
 while true; do
-  clear
   menu_main
 done
 

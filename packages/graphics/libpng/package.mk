@@ -17,7 +17,7 @@
 ################################################################################
 
 PKG_NAME="libpng"
-PKG_VERSION="1.6.28"
+PKG_VERSION="1.6.29"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
@@ -35,6 +35,12 @@ PKG_AUTORECONF="no"
 
 PKG_CMAKE_OPTS_HOST="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_SYSTEM_PROCESSOR=$(uname -m)"
 PKG_CMAKE_OPTS_TARGET="-DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_SYSTEM_PROCESSOR=$TARGET_ARCH"
+
+pre_configure_target() {
+  if [ "$TARGET_ARCH" = "x86_64" ]; then
+    CFLAGS+=" -DPNG_INTEL_SSE"
+  fi
+}
 
 post_makeinstall_target() {
   sed -e "s:\([\"'= ]\)/usr:\\1$SYSROOT_PREFIX/usr:g" \

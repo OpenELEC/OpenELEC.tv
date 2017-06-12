@@ -39,6 +39,8 @@ if [ "$MEDIACENTER" = "kodi" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pycrypto"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET xmlstarlet"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET peripheral.joystick"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.rtmp"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET inputstream.adaptive"
 
 # other packages
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET OpenELEC-settings"

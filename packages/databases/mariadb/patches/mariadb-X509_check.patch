@@ -1,0 +1,12 @@
+diff -Naur mariadb-10.1.23/sql-common/client.c mariadb-10.1.23.patch/sql-common/client.c
+--- mariadb-10.1.23/sql-common/client.c	2017-05-02 07:13:42.000000000 +0200
++++ mariadb-10.1.23.patch/sql-common/client.c	2017-05-04 09:27:38.883412269 +0200
+@@ -1768,7 +1768,7 @@
+ 
+ #if defined(HAVE_OPENSSL)
+ 
+-#if OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(HAVE_YASSL)
++#ifdef X509_CHECK_FLAG_ALWAYS_CHECK_SUBJECT && !defined(HAVE_YASSL)
+ #include <openssl/x509v3.h>
+ #define HAVE_X509_check_host
+ #endif
