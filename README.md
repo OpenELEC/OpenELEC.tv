@@ -77,4 +77,10 @@ providing cutting edge hardware support to deliver a set-top box experience.
 * Forums on [http://openelec.tv](http://openelec.tv)
 * IRC chatroom **#openelec** on Freenode
 
+**Develop**
+1. Install [docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/)
+2. Clone the source: `git clone https://github.com/OpenELEC/OpenELEC.tv.git`
+3. Start the build environment `cd OpenELEC.tv && docker-compose run build`
+4. and [start compiling](http://wiki.openelec.tv/index.php/Compile_from_source#Start_compiling)
+
 **Happy OpenELEC'ing**
